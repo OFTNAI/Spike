@@ -184,6 +184,24 @@ void Spike::CreateConnection(int pre,
 							parameter);
 }
 
+// Synapse weight loading
+// INPUT:
+//		Number of weights that you are inputting
+//		The array in which the weights are located
+void Spike::LoadWeights(int numWeights,
+						float* newWeights){
+	// Check if you have the correct number of weights
+	if (numWeights != synconnects.numconnections){
+		// Error if not
+		printf("The number of weights being loaded is not equivalent to the model. Exiting \n");
+		exit(-1);
+	}
+	// Continuing and applying the weights
+	for (int i=0; i < numWeights; i++){
+		synconnects.weights[i] = newWeights[i];
+	}
+}
+
 // Poisson Mask Creation
 // No input required
 void Spike::PoissonMask(){

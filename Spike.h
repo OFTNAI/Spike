@@ -46,6 +46,8 @@ public:
 	int CreateNeurons(int number, char type[], float params[]);
 	void CreateGenerator(int popID, int stimulusid, int spikenumber, int* ids, float* spiketimes);
 	void BeginConnections();
+	void LoadWeights(int numWeights,
+						float* newWeights);
 	void CreateConnection(int pre, 
 						int post, 
 						char style[], 
@@ -54,6 +56,6 @@ public:
 						bool stdp,
 						float parameter);
 	void PoissonMask();
-	void Run(float totaltime, int numEpochs, bool saveSpikes);
+	void Run(float totaltime, int numEpochs, bool saveSpikes = false);
 };
 #endif
