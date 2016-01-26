@@ -45,7 +45,8 @@ void GPUDeviceComputation (
 					float timestep,
 					float totaltime,
 					int numEpochs,
-					bool savespikes
+					bool savespikes,
+					bool randompresentation
 					);
 void runSimulator( float totaltime,
 					float timestep,

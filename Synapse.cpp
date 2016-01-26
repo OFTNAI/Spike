@@ -36,7 +36,6 @@ Synapse::Synapse() {
 	lastactive = NULL;
 	delays = NULL;
 	stdp = NULL;
-	spikes = NULL;
 	// STDP
 	w_max = 60.0f;
 	a_minus = -0.015f;
@@ -60,7 +59,6 @@ Synapse::~Synapse() {
 	free(lastactive);
 	free(delays);
 	free(stdp);
-	free(spikes);
 }
 
 // Setting personal STDP parameters
@@ -119,7 +117,6 @@ void Synapse::AddConnection(	int pre,
 		lastactive = (float*)realloc(lastactive, (numconnections + increment)*sizeof(float));
 		delays = (int*)realloc(delays, (numconnections + increment)*sizeof(int));
 		stdp = (int*)realloc(stdp, (numconnections + increment)*sizeof(int));
-		spikes = (int*)realloc(spikes, (numconnections + increment)*sizeof(int));
 	} else if (strcmp(style, "one_to_one") == 0){
 		option = 'o';
 		int increment = (preend-prestart);
@@ -129,7 +126,6 @@ void Synapse::AddConnection(	int pre,
 		lastactive = (float*)realloc(lastactive, (numconnections + increment)*sizeof(float));
 		delays = (int*)realloc(delays, (numconnections + increment)*sizeof(int));
 		stdp = (int*)realloc(stdp, (numconnections + increment)*sizeof(int));
-		spikes = (int*)realloc(spikes, (numconnections + increment)*sizeof(int));
 	} else if (strcmp(style, "random") == 0){
 		option = 'r';
 	} else if (strcmp(style, "gaussian") == 0){
@@ -170,8 +166,6 @@ void Synapse::AddConnection(	int pre,
 					} else {
 						stdp[idx] = 0;
 					}
-					// Set Spikes
-					spikes[idx] = 0;
 				}
 			}
 			// Increment count
@@ -208,8 +202,6 @@ void Synapse::AddConnection(	int pre,
 				} else {
 					stdp[numconnections + i] = 0;
 				}
-				// Set Spikes
-				spikes[numconnections + i] = 0;
 			}
 			// Increment count
 			numconnections += preend-prestart;
@@ -232,7 +224,6 @@ void Synapse::AddConnection(	int pre,
 						lastactive = (float*)realloc(lastactive, (numconnections)*sizeof(float));
 						delays = (int*)realloc(delays, (numconnections)*sizeof(int));
 						stdp = (int*)realloc(stdp, (numconnections)*sizeof(int));
-						spikes = (int*)realloc(spikes, (numconnections)*sizeof(int));
 						// Setup Synapses
 						presyns[numconnections - 1] = i;
 						postsyns[numconnections - 1] = j;
@@ -256,8 +247,6 @@ void Synapse::AddConnection(	int pre,
 						} else {
 							stdp[numconnections - 1] = 0;
 						}
-						// Set Spikes
-						spikes[numconnections - 1] = 0;
 					}
 				}
 			}
@@ -278,7 +267,6 @@ void Synapse::AddConnection(	int pre,
 						lastactive = (float*)realloc(lastactive, (numconnections)*sizeof(float));
 						delays = (int*)realloc(delays, (numconnections)*sizeof(int));
 						stdp = (int*)realloc(stdp, (numconnections)*sizeof(int));
-						spikes = (int*)realloc(spikes, (numconnections)*sizeof(int));
 						// Setup Synapses
 						presyns[numconnections - 1] = i;
 						postsyns[numconnections - 1] = j;
@@ -302,8 +290,6 @@ void Synapse::AddConnection(	int pre,
 						} else {
 							stdp[numconnections - 1] = 0;
 						}
-						// Set Spikes
-						spikes[numconnections - 1] = 0;
 					}
 				}
 			}

@@ -225,7 +225,7 @@ void Spike::PoissonMask(){
 
 // Command for running the simulation
 // No input required
-void Spike::Run(float totaltime, int numEpochs, bool saveSpikes){
+void Spike::Run(float totaltime, int numEpochs, bool saveSpikes, bool randompresentation){
 	// Get the Poisson Mask Sorted
 	PoissonMask();
 
@@ -259,7 +259,6 @@ void Spike::Run(float totaltime, int numEpochs, bool saveSpikes){
 					synconnects.postsyns,
 					synconnects.delays,
 					synconnects.weights,
-					synconnects.spikes,
 					synconnects.stdp,
 					synconnects.lastactive,
 					population.state_v,
@@ -282,7 +281,8 @@ void Spike::Run(float totaltime, int numEpochs, bool saveSpikes){
 					timestep,
 					totaltime,
 					numEpochs,
-					saveSpikes);
+					saveSpikes,
+					randompresentation);
 }
 
 

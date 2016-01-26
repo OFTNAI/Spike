@@ -56,6 +56,6 @@ public:
 						bool stdp,
 						float parameter);
 	void PoissonMask();
-	void Run(float totaltime, int numEpochs, bool saveSpikes = false);
+	void Run(float totaltime, int numEpochs, bool saveSpikes = false, bool randompresentation = false);
 };
 #endif

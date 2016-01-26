@@ -34,7 +34,6 @@ public:
 	float* lastactive;
 	int* delays;
 	int* stdp;
-	int* spikes;
 	// Synapse Functions
 	void AddConnection(int pre, 
 						int post, 

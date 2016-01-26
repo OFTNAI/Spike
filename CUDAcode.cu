@@ -9,6 +9,7 @@
 #include <fstream>
 #include <stdio.h>
 #include <stdlib.h>
+#include <algorithm> // For random shuffle
 using namespace std;
 
 
@@ -105,7 +106,6 @@ void GPUDeviceComputation (
 					int* postsyns,
 					int* delays,
 					float* weights,
-					int* spikes,
 					int* stdp,
 					float* lastactive,
 					float* neuron_v,
@@ -128,7 +128,8 @@ void GPUDeviceComputation (
 					float timestep,
 					float totaltime,
 					int numEpochs,
-					bool savespikes
+					bool savespikes,
+					bool randompresentation
 					){
 
 	// Creating the Device Pointers I need
@@ -191,7 +192,6 @@ void GPUDeviceComputation (
 	CudaSafeCall(cudaMemcpy(d_postsyns, postsyns, sizeof(int)*numConnections, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_delays, delays, sizeof(int)*numConnections, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_weights, weights, sizeof(float)*numConnections, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemcpy(d_spikes, spikes, sizeof(int)*numConnections, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_stdp, stdp, sizeof(int)*numConnections, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_neuron_v, neuron_v, sizeof(float)*numNeurons, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_neuron_u, neuron_u, sizeof(float)*numNeurons, cudaMemcpyHostToDevice));
@@ -200,6 +200,7 @@ void GPUDeviceComputation (
 	CudaSafeCall(cudaMemcpy(d_paramc, paramc, sizeof(float)*numNeurons, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_paramd, paramd, sizeof(float)*numNeurons, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_rate_poisson, rate_poisson, sizeof(float)*numNeurons, cudaMemcpyHostToDevice));
+	CudaSafeCall(cudaMemset(d_spikes, 0, sizeof(int)*numConnections));
 	CudaSafeCall(cudaMemset(d_lastactive, -1000.0f, sizeof(float)*numConnections));
 	CudaSafeCall(cudaMemset(d_lastspiketime, -1000.0f, numNeurons*sizeof(float)));
 	CudaSafeCall(cudaMemset(d_spikebuffer, -1, numConnections*sizeof(int)));
@@ -229,7 +230,7 @@ void GPUDeviceComputation (
 	dim3 genblocksPerGrid(genblocknum,1,1);
 
 
-	//RANDOM NUMBERS
+	// RANDOM NUMBERS
 	// Create the random state seed trackers
 	curandState_t* states;
 	cudaMalloc((void**) &states, numNeurons*sizeof(curandState_t));
@@ -239,20 +240,39 @@ void GPUDeviceComputation (
 	// Keep space for the random numbers
 	float* gpu_randfloats;
 	CudaSafeCall(cudaMalloc((void**) &gpu_randfloats, numNeurons*sizeof(float)));
-	// First create the set of random numbers of poisson neurons
-	randoms<<<threadsPerBlock, vectorblocksPerGrid>>>(states, gpu_randfloats, numNeurons);
-	CudaCheckError();
 	// REQUIRED DATA SPACES
 	float* currentinjection;
 	CudaSafeCall(cudaMalloc((void**)&currentinjection, numNeurons*sizeof(float)));
 	// Variables necessary
 	clock_t begin = clock();
+
+	// STIMULUS ORDER
+	int presentorder[numStimuli];
+	for (int i = 0; i < numStimuli; i++){
+		presentorder[i] = i;
+	}
+
+	// SEEDING
+	srand(42);
+
+	// INITIAL WEIGHT OUTPUT
+	ofstream initweightfile;
+	initweightfile.open("results/NetworkWeights_Initial.bin", ios::out | ios::binary);
+	initweightfile.write((char *)weights, numConnections*sizeof(float));
+	initweightfile.close();
+
 	// Running through all of the Epochs
 	for (int i = 0; i < numEpochs; i++) {
+		// If we want a random presentation, create the set of numbers:
+		if (randompresentation) {
+			random_shuffle(&presentorder[0], &presentorder[numStimuli]);
+		}
 		// Running through every Stimulus
 		for (int j = 0; j < numStimuli; j++){
+			// Get the presentation position:
+			int present = presentorder[j];
 			// Get the number of entries for this specific stimulus
-			size_t numEnts = numEntries[j];
+			size_t numEnts = numEntries[present];
 			if (numEnts > 0){
 				// Calculate the dimensions required:
 				genblocknum = (numEnts + threads) / threads;
@@ -260,8 +280,8 @@ void GPUDeviceComputation (
 				// Setting up the IDs for Spike Generators;
 				CudaSafeCall(cudaMalloc((void **)&d_genids, sizeof(int)*numEnts));
 				CudaSafeCall(cudaMalloc((void **)&d_gentimes, sizeof(float)*numEnts));
-				CudaSafeCall(cudaMemcpy(d_genids, &genids[j][0], sizeof(int)*numEnts, cudaMemcpyHostToDevice));
-				CudaSafeCall(cudaMemcpy(d_gentimes, &gentimes[j][0], sizeof(float)*numEnts, cudaMemcpyHostToDevice));
+				CudaSafeCall(cudaMemcpy(d_genids, &genids[present][0], sizeof(int)*numEnts, cudaMemcpyHostToDevice));
+				CudaSafeCall(cudaMemcpy(d_gentimes, &gentimes[present][0], sizeof(float)*numEnts, cudaMemcpyHostToDevice));
 				for (int k = 0; k < numEnts; k++) {
 				}
 			}
@@ -429,8 +449,46 @@ void GPUDeviceComputation (
 		}
 		#ifndef QUIETSTART
 		clock_t mid = clock();
-		printf("Epoch %d, Complete. Running Time: %f\n", i, (float(mid-begin) / CLOCKS_PER_SEC));
+		printf("Epoch %d, Complete.\n Running Time: %f\n Number of Spikes: %d\n\n", i, (float(mid-begin) / CLOCKS_PER_SEC), h_spikenum);
 		#endif
+		// Reset Neuron States and all parameters regarding neuron 
+		CudaSafeCall(cudaMemcpy(d_neuron_v, neuron_v, sizeof(float)*numNeurons, cudaMemcpyHostToDevice));
+		CudaSafeCall(cudaMemcpy(d_neuron_u, neuron_u, sizeof(float)*numNeurons, cudaMemcpyHostToDevice));
+		CudaSafeCall(cudaMemset(d_spikes, 0, sizeof(int)*numConnections));
+		CudaSafeCall(cudaMemset(d_lastactive, -1000.0f, sizeof(float)*numConnections));
+		CudaSafeCall(cudaMemset(d_lastspiketime, -1000.0f, numNeurons*sizeof(float)));
+		CudaSafeCall(cudaMemset(d_spikebuffer, -1, numConnections*sizeof(int)));
+		// Output Spikes list after each epoch:
+		// Only save the spikes if necessary
+		if (savespikes){
+			// Get the names
+			string file = "results/Epoch_" + to_string(i);
+			// Open the files
+			ofstream spikeidfile, spiketimesfile;
+			spikeidfile.open((file + "SpikeIDs.bin"), ios::out | ios::binary);
+			spiketimesfile.open((file + "SpikeTimes.bin"), ios::out | ios::binary);
+			// Send the data
+			spikeidfile.write((char *)h_spikestoreID, h_spikenum*sizeof(int));
+			spiketimesfile.write((char *)h_spikestoretimes, h_spikenum*sizeof(float));
+			// Close the files
+			spikeidfile.close();
+			spiketimesfile.close();
+
+			// Reset the spike store
+			// Host values
+			h_spikenum = 0;
+			h_tempspikenum[0] = 0;
+			// Free/Clear Device stuff
+			// Reset the number on the device
+			CudaSafeCall(cudaMemset(&d_tempstorenum[0], 0, sizeof(int)));
+			CudaSafeCall(cudaMemset(d_tempstoreID, -1, sizeof(int)*numNeurons));
+			CudaSafeCall(cudaMemset(d_tempstoretimes, -1.0f, sizeof(float)*numNeurons));
+			// Free malloced host stuff
+			free(h_spikestoreID);
+			free(h_spikestoretimes);
+			h_spikestoreID = NULL;
+			h_spikestoretimes = NULL;
+		}
 	}
 	// Finish the simulation and check time
 	clock_t end = clock();
@@ -447,34 +505,24 @@ void GPUDeviceComputation (
 	// Copy back the data that we might want:
 	CudaSafeCall(cudaMemcpy(weights, d_weights, sizeof(float)*numConnections, cudaMemcpyDeviceToHost));
 	// Creating and Opening all the files
-	ofstream synapsepre, synapsepost, weightfile, delayfile, spikeidfile, spiketimesfile;
+	ofstream synapsepre, synapsepost, weightfile, delayfile;
 	weightfile.open("results/NetworkWeights.bin", ios::out | ios::binary);
 	delayfile.open("results/NetworkDelays.bin", ios::out | ios::binary);
 	synapsepre.open("results/NetworkPre.bin", ios::out | ios::binary);
 	synapsepost.open("results/NetworkPost.bin", ios::out | ios::binary);
-	// Only save the spikes if necessary
-	if (savespikes){
-		spikeidfile.open("results/SpikeIDs.bin", ios::out | ios::binary);
-		spiketimesfile.open("results/SpikeTimes.bin", ios::out | ios::binary);
-	}
+	
 	// Writing the data
 	weightfile.write((char *)weights, numConnections*sizeof(float));
 	delayfile.write((char *)delays, numConnections*sizeof(int));
 	synapsepre.write((char *)presyns, numConnections*sizeof(int));
 	synapsepost.write((char *)postsyns, numConnections*sizeof(int));
-	if (savespikes){
-		spikeidfile.write((char *)h_spikestoreID, h_spikenum*sizeof(int));
-		spiketimesfile.write((char *)h_spikestoretimes, h_spikenum*sizeof(float));
-	}
+
 	// Close files
 	weightfile.close();
 	delayfile.close();
 	synapsepre.close();
 	synapsepost.close();
-	if (savespikes){
-		spikeidfile.close();
-		spiketimesfile.close();
-	}
+
 
 	// Free Memory on GPU
 	CudaSafeCall(cudaFree(d_presyns));
