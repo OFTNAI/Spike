@@ -235,7 +235,11 @@ void Spike::Run(float totaltime, int numEpochs, bool saveSpikes, bool randompres
 	printf("Simulation Beginning\n");
 	printf("Time Step: %f\nNumber of Stimuli: %d\nNumber of Epochs: %d\n\n", timestep, numStimuli, numEpochs);
 	printf("Total Number of Neurons: %d\n", population.numNeurons);
-	printf("Total Number of Synapses: %d\n", synconnects.numconnections);
+	printf("Total Number of Synapses: %d\n\n", synconnects.numconnections);
+	if (randompresentation)
+		printf("Stimuli to be presented in a random order.\n");
+	if (saveSpikes)
+		printf("Spikes shall be saved.\n");
 	printf("----------------------------------\n\nBeginning ...\n\n");
 	#endif
 

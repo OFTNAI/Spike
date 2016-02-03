@@ -159,7 +159,6 @@ TEST_CASE("Synapse ALL_TO_ALL SOLO Creation", "[Synapse]"){
 			REQUIRE(syn.weights[index] == 1.0f);
 			REQUIRE(syn.delays[index] == 1.0f);
 			REQUIRE(syn.stdp[index] == 0);
-			REQUIRE(syn.spikes[index] == 0);
 		}
 	}
 	// Test the number of connections
@@ -194,7 +193,6 @@ TEST_CASE("Synapse ALL_TO_ALL SOLO Creation", "[Synapse]"){
 			REQUIRE(syn.presyns[index] == i);
 			REQUIRE(syn.postsyns[index] == j);
 			REQUIRE(syn.stdp[index] == 0);
-			REQUIRE(syn.spikes[index] == 0);
 			// Add to the parameters holding an average
 			weightavg += syn.weights[index];
 			delayavg += (float)syn.delays[index];
@@ -246,7 +244,6 @@ TEST_CASE("Synapse ONE_TO_ONE SOLO Creation", "[Synapse]"){
 		REQUIRE(syn.weights[i] == 2.0f);
 		REQUIRE(syn.delays[i] == 2.0f);
 		REQUIRE(syn.stdp[i] == 1);
-		REQUIRE(syn.spikes[i] == 0);
 	}
 	// Test the number of connections
 	REQUIRE(syn.numconnections == (popNums[post] - popNums[pre]));
@@ -282,7 +279,6 @@ TEST_CASE("Synapse ONE_TO_ONE SOLO Creation", "[Synapse]"){
 		REQUIRE(syn.presyns[i] == pren);
 		REQUIRE(syn.postsyns[i] == postn);
 		REQUIRE(syn.stdp[i] == 1);
-		REQUIRE(syn.spikes[i] == 0);
 		// Add to the parameters holding an average
 		weightavg += syn.weights[index];
 		delayavg += (float)syn.delays[index];
@@ -360,7 +356,6 @@ TEST_CASE("Synapse RANDOM + ONE_TO_ONE Creation", "[Synapse]"){
 		REQUIRE(syn.weights[i] == 3.0f);
 		REQUIRE(syn.delays[i] == 1.0f);
 		REQUIRE(syn.stdp[i] == 1);
-		REQUIRE(syn.spikes[i] == 0);
 	}
 	
 	// RANDOM CONNECTIVITIES & WEIGHTS/DELAYS
@@ -377,7 +372,6 @@ TEST_CASE("Synapse RANDOM + ONE_TO_ONE Creation", "[Synapse]"){
 	for (int i=0; i < (numrand); i++){
 		// Check connections
 		REQUIRE(syn.stdp[i+numoneconns] == 0);
-		REQUIRE(syn.spikes[i+numoneconns] == 0);
 		weightavg += syn.weights[i+numoneconns];
 		delayavg += syn.delays[i+numoneconns];
 	}
@@ -428,7 +422,6 @@ TEST_CASE("Synapse GAUSSIAN SOLO Creation", "[Synapse]"){
 		REQUIRE(syn.weights[i] == 2.0f);
 		REQUIRE(syn.delays[i] == 2.0f);
 		REQUIRE(syn.stdp[i] == 1);
-		REQUIRE(syn.spikes[i] == 0);
 		// Checking the standard deviation of the connections
 		sd += pow(((float)((syn.postsyns[i] - popNums[post-1]) - syn.presyns[i])),2);
 	}
@@ -463,7 +456,6 @@ TEST_CASE("Synapse GAUSSIAN SOLO Creation", "[Synapse]"){
 		int index = i + numgauss;
 		// Check the connections
 		REQUIRE(syn.stdp[index] == 1);
-		REQUIRE(syn.spikes[index] == 0);
 		// Add to the parameters holding an average
 		weightavg += syn.weights[index];
 		delayavg += (float)syn.delays[index];
@@ -649,8 +641,8 @@ TEST_CASE("Spike Create Spike Generators", "[Spike]"){
 	sim.Run(2.5f, 1, true);
 	// Open the output file and check!
 	ifstream spikeidfile, spiketimesfile;
-	spikeidfile.open("results/SpikeIDs.bin", ios::in | ios::binary | ios::ate);
-	spiketimesfile.open("results/SpikeTimes.bin", ios::in | ios::binary | ios::ate);
+	spikeidfile.open("results/Epoch_0SpikeIDs.bin", ios::in | ios::binary | ios::ate);
+	spiketimesfile.open("results/Epoch_0SpikeTimes.bin", ios::in | ios::binary | ios::ate);
 
 	// A variable to hold the size of my file
 	streampos sizeids, sizetimes;

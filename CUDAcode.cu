@@ -22,7 +22,7 @@ using namespace std;
 // I must ensure that I carry out the correct error checking:
 
 // Define this to turn on error checking
-// #define CUDA_ERROR_CHECK
+#define CUDA_ERROR_CHECK
 
 // The two functions that we can use
 #define CudaSafeCall( err ) __cudaSafeCall( err, __FILE__, __LINE__ )
@@ -164,7 +164,6 @@ void GPUDeviceComputation (
 	int* h_spikestoreID = NULL;
 	float* h_spikestoretimes = NULL;
 
-
 	// Allocate memory for data on device
 	CudaSafeCall(cudaMalloc((void **)&d_presyns, sizeof(int)*numConnections));
 	CudaSafeCall(cudaMalloc((void **)&d_postsyns, sizeof(int)*numConnections));
@@ -211,7 +210,6 @@ void GPUDeviceComputation (
 	h_tempstoreID = (int*)malloc(sizeof(int)*numNeurons);
 	h_tempstoretimes = (float*)malloc(sizeof(float)*numNeurons);
 	h_tempspikenum[0] = 0;
-
 
 
 
@@ -276,19 +274,19 @@ void GPUDeviceComputation (
 			if (numEnts > 0){
 				// Calculate the dimensions required:
 				genblocknum = (numEnts + threads) / threads;
-				dim3 genblocksPerGrid(genblocknum,1,1);
 				// Setting up the IDs for Spike Generators;
 				CudaSafeCall(cudaMalloc((void **)&d_genids, sizeof(int)*numEnts));
 				CudaSafeCall(cudaMalloc((void **)&d_gentimes, sizeof(float)*numEnts));
-				CudaSafeCall(cudaMemcpy(d_genids, &genids[present][0], sizeof(int)*numEnts, cudaMemcpyHostToDevice));
-				CudaSafeCall(cudaMemcpy(d_gentimes, &gentimes[present][0], sizeof(float)*numEnts, cudaMemcpyHostToDevice));
-				for (int k = 0; k < numEnts; k++) {
-				}
+				CudaSafeCall(cudaMemcpy(d_genids, genids[present], sizeof(int)*numEnts, cudaMemcpyHostToDevice));
+				CudaSafeCall(cudaMemcpy(d_gentimes, gentimes[present], sizeof(float)*numEnts, cudaMemcpyHostToDevice));
 			}
 			// Reset the variables necessary
+			CudaSafeCall(cudaMemcpy(d_neuron_v, neuron_v, sizeof(float)*numNeurons, cudaMemcpyHostToDevice));
+			CudaSafeCall(cudaMemcpy(d_neuron_u, neuron_u, sizeof(float)*numNeurons, cudaMemcpyHostToDevice));
+			CudaSafeCall(cudaMemset(d_spikes, 0, sizeof(int)*numConnections));
+			CudaSafeCall(cudaMemset(d_lastactive, -1000.0f, sizeof(float)*numConnections));
 			CudaSafeCall(cudaMemset(d_lastspiketime, -1000.0f, numNeurons*sizeof(float)));
 			CudaSafeCall(cudaMemset(d_spikebuffer, -1, numConnections*sizeof(int)));
-			CudaSafeCall(cudaMemset(d_lastactive, -1000.0f, sizeof(float)*numConnections));
 
 			// Running the Simulation!
 			// Variables as Necessary
@@ -318,7 +316,7 @@ void GPUDeviceComputation (
 				// If there are any spike generators
 				if (numEnts > 0) {
 					// Update those neurons corresponding to the Spike Generators
-					genupdate<<<genblocksPerGrid, threadsPerBlock>>> (d_neuron_v,
+					genupdate<<<genblocknum, threadsPerBlock>>> (d_neuron_v,
 																	d_neuron_u,
 																	d_genids,
 																	d_gentimes,
@@ -402,10 +400,9 @@ void GPUDeviceComputation (
 																		currtime,
 																		numNeurons);
 					CudaCheckError();
-
-					// Finally, we want to get the spikes back. Every few timesteps check the number of spikes:
-					if (((k % 2) == 0) || (k == (numtimesteps - 1))){
-						CudaSafeCall(cudaMemcpy(h_tempspikenum, d_tempstorenum, (sizeof(int)), cudaMemcpyDeviceToHost));
+					if (((k % 5) == 0) || (k == (numtimesteps-1))){
+						// Finally, we want to get the spikes back. Every few timesteps check the number of spikes:
+						CudaSafeCall(cudaMemcpy(&h_tempspikenum[0], &d_tempstorenum[0], (sizeof(int)), cudaMemcpyDeviceToHost));
 						// Ensure that we don't have too many
 						if (h_tempspikenum[0] > numNeurons){
 							// ERROR!
@@ -449,20 +446,16 @@ void GPUDeviceComputation (
 		}
 		#ifndef QUIETSTART
 		clock_t mid = clock();
-		printf("Epoch %d, Complete.\n Running Time: %f\n Number of Spikes: %d\n\n", i, (float(mid-begin) / CLOCKS_PER_SEC), h_spikenum);
+		if (savespikes)
+			printf("Epoch %d, Complete.\n Running Time: %f\n Number of Spikes: %d\n\n", i, (float(mid-begin) / CLOCKS_PER_SEC), h_spikenum);
+		else 
+			printf("Epoch %d, Complete.\n Running Time: %f\n\n", i, (float(mid-begin) / CLOCKS_PER_SEC));
 		#endif
-		// Reset Neuron States and all parameters regarding neuron 
-		CudaSafeCall(cudaMemcpy(d_neuron_v, neuron_v, sizeof(float)*numNeurons, cudaMemcpyHostToDevice));
-		CudaSafeCall(cudaMemcpy(d_neuron_u, neuron_u, sizeof(float)*numNeurons, cudaMemcpyHostToDevice));
-		CudaSafeCall(cudaMemset(d_spikes, 0, sizeof(int)*numConnections));
-		CudaSafeCall(cudaMemset(d_lastactive, -1000.0f, sizeof(float)*numConnections));
-		CudaSafeCall(cudaMemset(d_lastspiketime, -1000.0f, numNeurons*sizeof(float)));
-		CudaSafeCall(cudaMemset(d_spikebuffer, -1, numConnections*sizeof(int)));
 		// Output Spikes list after each epoch:
 		// Only save the spikes if necessary
 		if (savespikes){
 			// Get the names
-			string file = "results/Epoch_" + to_string(i);
+			string file = "results/Epoch" + to_string(i) + "_";
 			// Open the files
 			ofstream spikeidfile, spiketimesfile;
 			spikeidfile.open((file + "SpikeIDs.bin"), ios::out | ios::binary);
@@ -498,8 +491,6 @@ void GPUDeviceComputation (
 	printf("Simulation Complete! Time Elapsed: %f\n\n", timed);
 	printf("Outputting binary files.\n");
 	#endif
-
-
 
 
 	// Copy back the data that we might want:
@@ -611,7 +602,9 @@ __global__ void genupdate(float* neuron_v,
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	if (idx < numEntries){
 		// Check if the current time is one of the gen times
-		if (abs(gentimes[idx] - currtime) < (0.2*timestep)) {
+		if (fabs(currtime - gentimes[idx]) < 0.5*timestep) {
+			// This sync seems absolutely necessary for when I spike inputs ... weird.
+			__syncthreads();
 			neuron_u[genids[idx]] = 0.0f;
 			neuron_v[genids[idx]] = 35.0f;
 		} else {
@@ -795,4 +788,5 @@ __global__ void spikeCollect(float* d_lastspiketime,
 			d_tempstoretimes[i] = currtime;
 		}
 	}
+	__syncthreads();
 }
