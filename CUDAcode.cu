@@ -677,9 +677,9 @@ __global__ void stateupdate(float* d_neuron_v,
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	if (idx < numNeurons) {
 		// Update the neuron states according to the Izhikevich equations
-		float v_update = 0.04f*d_neuron_v[idx]*d_neuron_v[idx] + 5.0f*d_neuron_v[idx] + 140 - d_neuron_u[idx];
+		float v_update = 0.04f*d_neuron_v[idx]*d_neuron_v[idx] + 5.0f*d_neuron_v[idx] + 140 - d_neuron_u[idx] + currentinj[idx];
 		d_neuron_u[idx] += eqtimestep*(d_parama[idx]*(d_paramb[idx]*d_neuron_v[idx] - d_neuron_u[idx]));
-		d_neuron_v[idx] += eqtimestep*v_update + currentinj[idx];
+		d_neuron_v[idx] += eqtimestep*v_update;
 	}
 	__syncthreads();
 }
