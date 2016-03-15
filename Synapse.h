@@ -44,4 +44,6 @@ public:
 						bool stdpswitch,
 						float parameter);
 };
+// GAUSS random number generator
+double randn (double mu, double sigma);
 #endif

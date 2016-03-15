@@ -678,8 +678,8 @@ __global__ void stateupdate(float* d_neuron_v,
 	if (idx < numNeurons) {
 		// Update the neuron states according to the Izhikevich equations
 		float v_update = 0.04f*d_neuron_v[idx]*d_neuron_v[idx] + 5.0f*d_neuron_v[idx] + 140 - d_neuron_u[idx] + currentinj[idx];
-		d_neuron_u[idx] += eqtimestep*(d_parama[idx]*(d_paramb[idx]*d_neuron_v[idx] - d_neuron_u[idx]));
 		d_neuron_v[idx] += eqtimestep*v_update;
+		d_neuron_u[idx] += eqtimestep*(d_parama[idx]*(d_paramb[idx]*d_neuron_v[idx] - d_neuron_u[idx]));
 	}
 	__syncthreads();
 }
@@ -738,6 +738,12 @@ __global__ void synapsespikes(int* d_presyns,
 				d_spikes[idx] = -1;
 				d_spikebuffer[idx] = -1;
 			}
+		}
+		// If the buffer has a smaller time than the spike, switch them
+		if ((d_spikebuffer[idx] > 0) && (d_spikebuffer[idx] < d_spikes[idx])){
+			temp = d_spikes[idx]
+			d_spikes[idx] = d_spikebuffer[idx];
+			d_spikebuffer[idx] = temp
 		}
 	}
 }

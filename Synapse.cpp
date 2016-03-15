@@ -130,6 +130,8 @@ void Synapse::AddConnection(	int pre,
 		option = 'r';
 	} else if (strcmp(style, "gaussian") == 0){
 		option = 'g';
+	} else if (strcmp(style, "irina_gaussian") == 0){
+		option = 'i';
 	} else {
 		//Nothing
 	}
@@ -294,6 +296,73 @@ void Synapse::AddConnection(	int pre,
 				}
 			}
 			break;
+		// IRINA's GAUSSIAN
+		case 'i': 
+		{
+			// Getting the population sizes
+			int in_size = preend - prestart;
+			int out_size = postend - poststart;
+			// Diagonal Width value
+			float diagonal_width = parameter;
+			// Irina's application of some sparse measure
+			float in2out_sparse = 0.67f*0.67f;
+			// Irina's implementation of some kind of stride
+			int dist = 1;
+			if ( (float(out_size)/float(in_size)) > 1.0f ){
+				dist = int(out_size/in_size);
+			}
+			// Irina's version of sigma
+			double sigma = dist*diagonal_width;
+			// Number of connections to form
+			int conn_num = int((sigma/in2out_sparse));
+			int conn_tgts = 0;
+			int temp = 0;
+			// Running through the input neurons
+			for (int i = prestart; i < preend; i++){
+				double mu = int(float(dist)/2.0f) + (i-prestart)*dist;
+				conn_tgts = 0;
+				while (conn_tgts < conn_num) {
+					temp = int(randn(mu, sigma));
+					if ((temp >= 0) && (temp < out_size)){
+						// Create space for a connection
+						numconnections += 1;
+						presyns = (int*)realloc(presyns, (numconnections)*sizeof(int));
+						postsyns = (int*)realloc(postsyns, (numconnections)*sizeof(int));
+						weights = (float*)realloc(weights, (numconnections)*sizeof(float));
+						lastactive = (float*)realloc(lastactive, (numconnections)*sizeof(float));
+						delays = (int*)realloc(delays, (numconnections)*sizeof(int));
+						stdp = (int*)realloc(stdp, (numconnections)*sizeof(int));
+						// Setup the synapses:
+						// Setup Synapses
+						presyns[numconnections - 1] = i;
+						postsyns[numconnections - 1] = poststart + temp;
+						// Setup Weights
+						if (weightrange[0] == weightrange[1]) {
+							weights[numconnections - 1] = weightrange[0];
+						} else {
+							float rndweight = weightrange[0] + (weightrange[1] - weightrange[0])*((float)rand() / (RAND_MAX));
+							weights[numconnections - 1] = rndweight;
+						}
+						// Setup Delays
+						if (delayrange[0] == delayrange[1]) {
+							delays[numconnections - 1] = delayrange[0];
+						} else {
+							float rnddelay = delayrange[0] + (delayrange[1] - delayrange[0])*((float)rand() / (RAND_MAX));
+							delays[numconnections - 1] = round(rnddelay);
+						}
+						// Setup STDP
+						if (stdpswitch){
+							stdp[numconnections - 1] = 1;
+						} else {
+							stdp[numconnections - 1] = 0;
+						}
+						// Increment conn_tgts
+						++conn_tgts;
+					}
+				}
+			}
+			break;
+		}
 		default:
 			printf("\n\nUnknown Connection Type\n\n");
 			exit(-1);
@@ -302,3 +371,35 @@ void Synapse::AddConnection(	int pre,
 }
 
 
+
+
+
+// An implementation of the polar gaussian random number generator which I need
+double randn (double mu, double sigma)
+{
+  double U1, U2, W, mult;
+  static double X1, X2;
+  static int call = 0;
+
+  if (call == 1)
+    {
+      call = !call;
+      return (mu + sigma * (double) X2);
+    }
+
+  do
+    {
+      U1 = -1 + ((double) rand () / RAND_MAX) * 2;
+      U2 = -1 + ((double) rand () / RAND_MAX) * 2;
+      W = pow (U1, 2) + pow (U2, 2);
+    }
+  while (W >= 1 || W == 0);
+
+  mult = sqrt ((-2 * log (W)) / W);
+  X1 = U1 * mult;
+  X2 = U2 * mult;
+
+  call = !call;
+
+  return (mu + sigma * (double) X1);
+}
