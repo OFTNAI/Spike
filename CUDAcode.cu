@@ -741,9 +741,9 @@ __global__ void synapsespikes(int* d_presyns,
 		}
 		// If the buffer has a smaller time than the spike, switch them
 		if ((d_spikebuffer[idx] > 0) && (d_spikebuffer[idx] < d_spikes[idx])){
-			temp = d_spikes[idx]
+			int temp = d_spikes[idx];
 			d_spikes[idx] = d_spikebuffer[idx];
-			d_spikebuffer[idx] = temp
+			d_spikebuffer[idx] = temp;
 		}
 	}
 }

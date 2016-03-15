@@ -641,8 +641,8 @@ TEST_CASE("Spike Create Spike Generators", "[Spike]"){
 	sim.Run(2.5f, 1, true);
 	// Open the output file and check!
 	ifstream spikeidfile, spiketimesfile;
-	spikeidfile.open("results/Epoch_0SpikeIDs.bin", ios::in | ios::binary | ios::ate);
-	spiketimesfile.open("results/Epoch_0SpikeTimes.bin", ios::in | ios::binary | ios::ate);
+	spikeidfile.open("results/Epoch0_SpikeIDs.bin", ios::in | ios::binary | ios::ate);
+	spiketimesfile.open("results/Epoch0_SpikeTimes.bin", ios::in | ios::binary | ios::ate);
 
 	// A variable to hold the size of my file
 	streampos sizeids, sizetimes;
@@ -1009,8 +1009,9 @@ TEST_CASE("CUDA State Update Test", "[Spike]"){
 	for (int i = 0; i < numNeurons; i++){
 		// Check that states have been updated correctly
 		float delta_v = 0.04f*h_neuron_v[i]*h_neuron_v[i] + 5.0f*h_neuron_v[i] + 140 - h_neuron_u[i];
-		float delta_u = h_parama[i]*(h_paramb[i]*h_neuron_v[i] - h_neuron_u[i]);
 		REQUIRE(std::abs(e_neuron_v[i] - (h_neuron_v[i] + (sim.timestep*1000.0f)*delta_v + h_currinj[i])) < 0.0001);
+		float new_v = (h_neuron_v[i] + (sim.timestep*1000.0f)*delta_v + h_currinj[i]);
+		float delta_u = h_parama[i]*(h_paramb[i]*new_v - h_neuron_u[i]);
 		REQUIRE(std::abs(e_neuron_u[i] - (h_neuron_u[i] + (sim.timestep*1000.0f)*delta_u)) < 0.0001);
 	}
 
