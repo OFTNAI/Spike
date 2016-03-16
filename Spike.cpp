@@ -87,7 +87,7 @@ int Spike::CreateNeurons(int number, char type[], struct neuron_struct params){
 		return ID;
 	} else {
 		// Not recognised the population
-		printf("Unrecognised Population Type");
+		printf("Unrecognised Population Type\n");
 		exit(-1);
 	}
 }

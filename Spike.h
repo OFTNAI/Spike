@@ -50,7 +50,7 @@ public:
 						float weights[2], 
 						float delays[2], 
 						bool stdp,
-						float parameter);
+						float parameter = 0.0f);
 	void Run(float totaltime, int numEpochs, bool saveSpikes = false, bool randomPresentation = false);
 };
 #endif

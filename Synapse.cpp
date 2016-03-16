@@ -171,7 +171,7 @@ void Synapse::AddConnection(	int pre,
 		case 'o':
 			// If the connectivity is one_to_one
 			if ((preend-prestart) != (postend-poststart)){
-				printf("Unequal populations for one_to_one");
+				printf("Unequal populations for one_to_one. Exiting.\n");
 				exit(-1);
 			}
 			// Create the connectivity

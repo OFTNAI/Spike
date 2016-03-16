@@ -361,7 +361,7 @@ void GPUDeviceComputation (
 																		currtime,
 																		numNeurons);
 					CudaCheckError();
-					if (((k % 5) == 0) || (k == (numtimesteps-1))){
+					if (((k % 1) == 0) || (k == (numtimesteps-1))){
 						// Finally, we want to get the spikes back. Every few timesteps check the number of spikes:
 						CudaSafeCall(cudaMemcpy(&h_tempspikenum[0], &d_tempstorenum[0], (sizeof(int)), cudaMemcpyDeviceToHost));
 						// Ensure that we don't have too many

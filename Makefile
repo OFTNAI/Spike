@@ -15,15 +15,16 @@ CFLAGS = -c
 
 
 # Default
-all: model
+model: ${FILE}
+
 
 # Separating out the individual compilations so as not to compilation time
-model: Model.o Spike.o NeuronPopulations.o Synapse.o CUDAcode.o NeuronDynamics.o STDPDynamics.o
-	$(CC) Model.o Spike.o NeuronPopulations.o Synapse.o CUDAcode.o NeuronDynamics.o STDPDynamics.o -o run
+${FILE}: ${FILE}.o Spike.o NeuronPopulations.o Synapse.o CUDAcode.o NeuronDynamics.o STDPDynamics.o
+	$(CC) ${FILE}.o Spike.o NeuronPopulations.o Synapse.o CUDAcode.o NeuronDynamics.o STDPDynamics.o -o run
 
 # Compiling the Model file
-Model.o: Model.cpp
-	$(CC) $(CFLAGS) Model.cpp
+${FILE}.o: ${FILE}.cpp
+	$(CC) $(CFLAGS) ${FILE}.cpp
 # Compiling the Spike class
 Spike.o: Spike.cpp
 	$(CC) $(CFLAGS) Spike.cpp
