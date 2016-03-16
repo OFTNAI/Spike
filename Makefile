@@ -18,8 +18,8 @@ CFLAGS = -c
 all: model
 
 # Separating out the individual compilations so as not to compilation time
-model: Model.o Spike.o NeuronPopulations.o Synapse.o CUDAcode.o NeuronDynamics.o
-	$(CC) Model.o Spike.o NeuronPopulations.o Synapse.o CUDAcode.o NeuronDynamics.o -o run
+model: Model.o Spike.o NeuronPopulations.o Synapse.o CUDAcode.o NeuronDynamics.o STDPDynamics.o
+	$(CC) Model.o Spike.o NeuronPopulations.o Synapse.o CUDAcode.o NeuronDynamics.o STDPDynamics.o -o run
 
 # Compiling the Model file
 Model.o: Model.cpp
@@ -39,10 +39,14 @@ CUDAcode.o: CUDAcode.cu
 # Compiling the CUDA code
 NeuronDynamics.o: NeuronDynamics.cu
 	$(CC) $(CFLAGS) NeuronDynamics.cu
+# Compiling the CUDA code
+STDPDynamics.o: STDPDynamics.cu
+	$(CC) $(CFLAGS) STDPDynamics.cu
+
 
 # Test script
-test: Spike.o NeuronPopulations.o Synapse.o CUDAcode.o NeuronDynamics.o
-	$(CC) Tests.cu Spike.o NeuronPopulations.o Synapse.o CUDAcode.o NeuronDynamics.o -o unittests
+test: Spike.o NeuronPopulations.o Synapse.o CUDAcode.o NeuronDynamics.o STDPDynamics.o
+	$(CC) Tests.cu Spike.o NeuronPopulations.o Synapse.o CUDAcode.o NeuronDynamics.o STDPDynamics.o -o unittests
 cleantest:
 	rm *.o unittests
 

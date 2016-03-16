@@ -7,6 +7,8 @@
 #ifndef NeuronPopulations_H
 #define NeuronPopulations_H
 
+#include "Structs.h"
+
 class NeuronPopulations{
 public:
 	// Constructor/Destructor

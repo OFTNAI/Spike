@@ -28,11 +28,6 @@ Spike::Spike(){
 	numConnects = 0;
 	// Default parameters
 	timestep = 0.001f;
-	a_plus = 0.005f;
-	a_minus = -0.015f;
-	tau_plus = 0.015f;
-	tau_minus = 0.025f;
-	w_max = 60.0f;
 
 	#ifndef QUIETSTART
 		// Say Hi to the user:
@@ -244,11 +239,7 @@ void Spike::Run(float totaltime, int numEpochs, bool saveSpikes, bool randomPres
 					numEntries,
 					genids,
 					gentimes,
-					synconnects.w_max,
-					synconnects.a_minus,
-					synconnects.a_plus,
-					synconnects.tau_minus,
-					synconnects.tau_plus,
+					synconnects.stdp_vars,
 					timestep,
 					totaltime,
 					numEpochs,

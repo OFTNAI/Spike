@@ -36,12 +36,6 @@ Synapse::Synapse() {
 	lastactive = NULL;
 	delays = NULL;
 	stdp = NULL;
-	// STDP
-	w_max = 60.0f;
-	a_minus = -0.015f;
-	a_plus = 0.005;
-	tau_minus = 0.025;
-	tau_plus = 0.015;
 
 	// On construction, seed
 	srand(42);	// Seeding the random numbers
@@ -68,11 +62,11 @@ void Synapse::SetSTDP(float w_max_new,
 				float tau_minus_new,
 				float tau_plus_new){
 	// Set the values
-	w_max = w_max_new;
-	a_minus = a_minus_new;
-	a_plus = a_plus_new;
-	tau_minus = tau_minus_new;
-	tau_plus = tau_plus_new;
+	stdp_vars.w_max = w_max_new;
+	stdp_vars.a_minus = a_minus_new;
+	stdp_vars.a_plus = a_plus_new;
+	stdp_vars.tau_minus = tau_minus_new;
+	stdp_vars.tau_plus = tau_plus_new;
 }
 
 // Connection Detail implementation

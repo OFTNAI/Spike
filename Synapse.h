@@ -6,7 +6,7 @@
 
 #ifndef Synapse_H
 #define Synapse_H
-
+#include "Structs.h"
 class Synapse{
 public:
 	// Constructor/Destructor
@@ -17,11 +17,7 @@ public:
 	int* pre;
 	int* post;
 	// STDP
-	float w_max;
-	float a_minus;
-	float a_plus;
-	float tau_minus;
-	float tau_plus;
+	struct stdp_struct stdp_vars;
 	void SetSTDP(float w_max_new,
 				float a_minus_new,
 				float a_plus_new,

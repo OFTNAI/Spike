@@ -116,18 +116,18 @@ TEST_CASE("Synapse Class Constructor", "[Synapse]"){
 	Synapse syn;
 	// Testing initial vals
 	REQUIRE(syn.numconnections == 0);
-	REQUIRE(syn.w_max == 60.0f);
-	REQUIRE(syn.a_minus == -0.015f);
-	REQUIRE(syn.a_plus == 0.005f);
-	REQUIRE(syn.tau_minus == 0.025f);
-	REQUIRE(syn.tau_plus == 0.015f);
+	REQUIRE(syn.stdp_vars.w_max == 60.0f);
+	REQUIRE(syn.stdp_vars.a_minus == -0.015f);
+	REQUIRE(syn.stdp_vars.a_plus == 0.005f);
+	REQUIRE(syn.stdp_vars.tau_minus == 0.025f);
+	REQUIRE(syn.stdp_vars.tau_plus == 0.015f);
 	// After setting STDP check that the values change
 	syn.SetSTDP(0.01f, 0.02f, 0.03f, 0.04f, 0.05f);
-	REQUIRE(syn.w_max == 0.01f);
-	REQUIRE(syn.a_minus == 0.02f);
-	REQUIRE(syn.a_plus == 0.03f);
-	REQUIRE(syn.tau_minus == 0.04f);
-	REQUIRE(syn.tau_plus == 0.05f);
+	REQUIRE(syn.stdp_vars.w_max == 0.01f);
+	REQUIRE(syn.stdp_vars.a_minus == 0.02f);
+	REQUIRE(syn.stdp_vars.a_plus == 0.03f);
+	REQUIRE(syn.stdp_vars.tau_minus == 0.04f);
+	REQUIRE(syn.stdp_vars.tau_plus == 0.05f);
 }
 // Next testing what happens when we create a set of Synapses SOLO
 TEST_CASE("Synapse ALL_TO_ALL SOLO Creation", "[Synapse]"){
@@ -506,11 +506,11 @@ TEST_CASE("Spike Constructor", "[Spike]"){
 	REQUIRE(sim.numConnects == 0);
 	// Default parameters
 	REQUIRE(sim.timestep == 0.001f);
-	REQUIRE(sim.a_plus == 0.005f);
-	REQUIRE(sim.a_minus == -0.015f);
-	REQUIRE(sim.tau_plus == 0.015f);
-	REQUIRE(sim.tau_minus == 0.025f);
-	REQUIRE(sim.w_max == 60.0f);
+	REQUIRE(sim.synconnects.stdp_vars.a_plus == 0.005f);
+	REQUIRE(sim.synconnects.stdp_vars.a_minus == -0.015f);
+	REQUIRE(sim.synconnects.stdp_vars.tau_plus == 0.015f);
+	REQUIRE(sim.synconnects.stdp_vars.tau_minus == 0.025f);
+	REQUIRE(sim.synconnects.stdp_vars.w_max == 60.0f);
 }
 // Checking the allocation of a timestep
 TEST_CASE("Spike Timestep Setting", "[Spike]"){
@@ -685,9 +685,6 @@ TEST_CASE("Spike Create Spike Generators", "[Spike]"){
 	// Close the files
 	spikeidfile.close();
 	spiketimesfile.close();
-	for (int i = 0; i < (sim.numEntries[0] + sim.numEntries[1]); i++){
-		printf("%d\n", spikeids[i]);
-	}
 	// Test whether the output is correct!
 	for (int i = 0; i < sim.numEntries[0]; i++){
 		REQUIRE(spikeids[i] == (gIDs[i] + 1000));
@@ -916,11 +913,12 @@ TEST_CASE("CUDA LTD Test", "[Spike]"){
 	float h_lastactive[] = {3.790f, 3.790f, 3.790f, 3.790f, 3.790f, 3.790f, 3.790f, 3.790f, 3.790f};
 	float h_lastspiketime[] = {3.780f, 3.779f, 2.789f, 2.589f, 1.986f, 3.789f, 3.700f, 3.182f, 2.854f, 1.678f};
 	float currtime = 3.790f;
-	float w_max = 60.0f;
-	float a_minus = -0.015f;
-	float tau_minus = 0.025f;
 	size_t numConns = 9;
 	size_t numNeurons = 10;
+	struct stdp_struct stdp_vars;
+	stdp_vars.w_max = 60.0f;
+	stdp_vars.a_minus = -0.015f;
+	stdp_vars.tau_minus = 0.025f;
 
 	// Setting space on the device
 	int* d_stdp;
@@ -949,9 +947,7 @@ TEST_CASE("CUDA LTD Test", "[Spike]"){
 							d_lastspiketime,
 							d_postsyns,
 							currtime,
-							w_max,
-							a_minus,
-							tau_minus,
+							stdp_vars,
 							numConns,
 							numNeurons);
 	CudaCheckError();
@@ -963,7 +959,7 @@ TEST_CASE("CUDA LTD Test", "[Spike]"){
 	for (int i = 0; i < numConns; i++){
 		// Check that LTD has been correctly carried out:
 		if (h_stdp[i] == 1){
-			float change = w_max*(a_minus*exp((h_lastspiketime[h_postsyns[i]] - h_lastactive[i])/tau_minus));
+			float change = stdp_vars.w_max*(stdp_vars.a_minus*exp((h_lastspiketime[h_postsyns[i]] - h_lastactive[i])/stdp_vars.tau_minus));
 			REQUIRE(e_weights[i] == (h_weights[i] + change));
 		} else {
 			REQUIRE(e_weights[i] == h_weights[i]);
@@ -1174,12 +1170,13 @@ TEST_CASE("CUDA LTP Test", "[Spike]"){
 	float h_weights[] = {-30.0f, 10.0f, 5.0f, 7.0f, 11.0f, 13.6f, 40.1f, 76.0f, -3.0f};
 	float h_lastspiketime[] = {3.790f, 3.790f, 3.790f, 3.790f, 3.790f, 3.790f, 3.790f, 3.790f, 3.790f, 3.790};
 	float h_lastactive[] = {3.780f, 3.779f, 2.789f, 2.589f, 1.986f, 3.789f, 3.700f, 3.182f, 2.854f};
-	float w_max = 60.0f;
-	float a_plus = 0.005f;
-	float tau_plus = 0.015f;
 	float currtime = 3.790f;
 	size_t numConns = 9;
 	size_t numNeurons = 10;
+	struct stdp_struct stdp_vars;
+	stdp_vars.w_max = 60.0f;
+	stdp_vars.a_plus = 0.005f;
+	stdp_vars.tau_plus = 0.015f;
 
 	// Setting space on the device
 	int* d_stdp;
@@ -1207,9 +1204,7 @@ TEST_CASE("CUDA LTP Test", "[Spike]"){
 							d_stdp,
 							d_lastactive,
 							d_weights,
-							a_plus,
-							tau_plus,
-							w_max,
+							stdp_vars,
 							currtime,
 							numConns,
 							numNeurons);
@@ -1222,7 +1217,7 @@ TEST_CASE("CUDA LTP Test", "[Spike]"){
 	for (int i = 0; i < numConns; i++){
 		// Check that LTP has been correctly carried out:
 		if ((h_stdp[i] == 1) && (h_lastspiketime[h_postsyns[i]] == currtime)){
-			float change = (w_max - h_weights[i])*(a_plus*expf(-(currtime - h_lastactive[i])/tau_plus));
+			float change = (stdp_vars.w_max - h_weights[i])*(stdp_vars.a_plus*expf(-(currtime - h_lastactive[i])/stdp_vars.tau_plus));
 			REQUIRE(e_weights[i] == (h_weights[i] + change));
 		} else {
 			REQUIRE(e_weights[i] == h_weights[i]);

@@ -14,6 +14,7 @@ using namespace std;
 
 
 #include "CUDAcode.h"
+#include "Structs.h"
 #include <time.h>
 // Silences the printfs
 //#define QUIETSTART
@@ -108,11 +109,7 @@ void GPUDeviceComputation (
 					int* numEntries,
 					int** genids,
 					float** gentimes,
-					float w_max,
-					float a_minus,
-					float a_plus,
-					float tau_minus,
-					float tau_plus,
+					struct stdp_struct stdp_vars,
 					float timestep,
 					float totaltime,
 					int numEpochs,
@@ -316,9 +313,7 @@ void GPUDeviceComputation (
 																	d_lastspiketime,
 																	d_postsyns,
 																	currtime,
-																	w_max,
-																	a_minus,
-																	tau_minus,
+																	stdp_vars,
 																	numConnections,
 																	numNeurons);
 				CudaCheckError();
@@ -350,9 +345,7 @@ void GPUDeviceComputation (
 																	d_stdp,
 																	d_lastactive,
 																	d_weights,
-																	a_plus,
-																	tau_plus,
-																	w_max,
+																	stdp_vars,
 																	currtime,
 																	numConnections,
 																	numNeurons);
@@ -556,31 +549,6 @@ __global__ void currentcalc(int* d_spikes,
 	__syncthreads();
 }
 
-// LTD of weights
-__global__ void ltdweights(float* d_lastactive,
-							float* d_weights,
-							int* d_stdp,
-							float* d_lastspiketime,
-							int* d_postsyns,
-							float currtime,
-							float w_max,
-							float a_minus,
-							float tau_minus,
-							size_t numConns,
-							size_t numNeurons){
-	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	if (idx < (numConns)) {
-		// Get the locations for updating
-		// Get the synapses that are to be LTD'd
-		if ((d_lastactive[idx] == currtime) && (d_stdp[idx] == 1)) {
-			float diff = d_lastspiketime[d_postsyns[idx]] - currtime;
-			float weightscale = w_max*a_minus*expf(diff/tau_minus);
-			// Now scale the weight (using an inverted column/row)
-			d_weights[idx] += weightscale; 
-		}
-	}
-}
-
 // Synapses carrying spikes
 __global__ void synapsespikes(int* d_presyns,
 								int* d_delays,
@@ -619,34 +587,6 @@ __global__ void synapsespikes(int* d_presyns,
 			d_spikes[idx] = d_spikebuffer[idx];
 			d_spikebuffer[idx] = temp;
 		}
-	}
-}
-
-// LTP on synapses
-__global__ void synapseLTP(int* d_postsyns,
-							float* d_lastspiketime,
-							int* d_stdp,
-							float* d_lastactive,
-							float* d_weights,
-							float a_plus,
-							float tau_plus,
-							float w_max,
-							float currtime,
-							size_t numConns,
-							size_t numNeurons) {
-	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	if (idx < numConns) {
-		// Get the synapses upon which we should do LTP
-		// Reversed indexing to check post->pre connections
-		if ((d_lastspiketime[d_postsyns[idx]] == currtime) && (d_stdp[idx] == 1)){
-			// Get the last active time / weight of the synapse
-			// Calc time difference and weight change
-			float diff = currtime - d_lastactive[idx];
-			float weightchange = (w_max - d_weights[idx])*(a_plus*expf(-diff/tau_plus));
-			// Update weights
-			d_weights[idx] += weightchange;
-		}
-
 	}
 }
 

@@ -38,11 +38,6 @@ public:
 	int numConnects;
 	// Parameters
 	float timestep;
-	float a_plus;
-	float a_minus;
-	float tau_plus;
-	float tau_minus;
-	float w_max;
 	void SetTimestep(float timest);
 	int CreateNeurons(int number, char type[], struct neuron_struct params);
 	void CreateGenerator(int popID, int stimulusid, int spikenumber, int* ids, float* spiketimes);

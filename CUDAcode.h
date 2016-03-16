@@ -16,7 +16,7 @@
 
 // Neuron structure
 #include "NeuronDynamics.h"
-
+#include "STDPDynamics.h"
 // Functions!
 void GPUDeviceComputation (
 					size_t numNeurons,
@@ -32,11 +32,7 @@ void GPUDeviceComputation (
 					int* numEntries,
 					int** genids,
 					float** gentimes,
-					float w_max,
-					float a_minus,
-					float a_plus,
-					float tau_minus,
-					float tau_plus,
+					struct stdp_struct stdp_vars,
 					float timestep,
 					float totaltime,
 					int numEpochs,
@@ -54,17 +50,6 @@ __global__ void currentcalc(int* d_spikes,
 							float currtime,
 							size_t numConns,
 							size_t numNeurons);
-__global__ void ltdweights(float* d_lastactive,
-							float* d_weights,
-							int* d_stdp,
-							float* d_lastspiketime,
-							int* d_postsyns,
-							float currtime,
-							float w_max,
-							float a_minus,
-							float tau_minus,
-							size_t numConns,
-							size_t numNeurons);
 __global__ void synapsespikes(int* d_presyns,
 								int* d_delays,
 								int* d_spikes,
@@ -73,17 +58,6 @@ __global__ void synapsespikes(int* d_presyns,
 								float currtime,
 								size_t numConns,
 								size_t numNeurons);
-__global__ void synapseLTP(int* d_postsyns,
-							float* d_lastspiketime,
-							int* d_stdp,
-							float* d_lastactive,
-							float* d_weights,
-							float a_plus,
-							float tau_plus,
-							float w_max,
-							float currtime,
-							size_t numConns,
-							size_t numNeurons);
 __global__ void spikeCollect(float* d_lastspiketime,
 								int* d_tempstorenum,
 								int* d_tempstoreID,

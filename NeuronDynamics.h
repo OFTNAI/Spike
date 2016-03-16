@@ -7,6 +7,8 @@
 #ifndef NeuronDynamics_H
 #define NeuronDynamics_H
 
+#include "Structs.h"
+
 __global__ void poisupdate(float* d_randoms, 
 							struct neuron_struct* neuronpop_variables,
 							float timestep,
