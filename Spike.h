@@ -9,7 +9,8 @@
 // Silences the printfs
 //#define QUIETSTART
 
-#include "Neuron.h"
+#include "Structs.h"
+#include "NeuronPopulations.h"
 #include "Synapse.h"
 #include "CUDAcode.h"
 
@@ -20,7 +21,7 @@ public:
 	Spike();
 	~Spike();
 	// Initialise Classes
-	Neuron population;
+	NeuronPopulations population;
 	Synapse synconnects;
 	// Poisson related data
 	int numPoisson;
@@ -43,7 +44,7 @@ public:
 	float tau_minus;
 	float w_max;
 	void SetTimestep(float timest);
-	int CreateNeurons(int number, char type[], float params[]);
+	int CreateNeurons(int number, char type[], struct neuron_struct params);
 	void CreateGenerator(int popID, int stimulusid, int spikenumber, int* ids, float* spiketimes);
 	void BeginConnections();
 	void LoadWeights(int numWeights,
@@ -55,7 +56,6 @@ public:
 						float delays[2], 
 						bool stdp,
 						float parameter);
-	void PoissonMask();
-	void Run(float totaltime, int numEpochs, bool saveSpikes = false, bool randompresentation = false);
+	void Run(float totaltime, int numEpochs, bool saveSpikes = false, bool randomPresentation = false);
 };
 #endif

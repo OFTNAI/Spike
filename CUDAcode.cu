@@ -76,7 +76,8 @@ inline void __cudaCheckError( const char *file, const int line )
 
 
 // CUDA Spiking Simulator Run
-//	INPUT:	numNeurons = Total number of neurons in simulation
+//	INPUT (incomplete):
+//			numNeurons = Total number of neurons in simulation
 //			numConnections = Total number of Synapses
 //			presyns = vector- entry corresponds to pre-syn neuron ID
 //			postsyns = vector- entry corresponds to post-syn neuron ID
@@ -85,13 +86,7 @@ inline void __cudaCheckError( const char *file, const int line )
 //			spikes = vector- entry corresponds to countdown of spike on syn
 //			stdp = vector- entry corresponding to whether or not syn is stdp
 //			lastactive = vector- indicating last time synapse emitted current
-//			neuron_v = vector- entry for each neuron state v
-//			neuron_u = vector- entry for each neuron state u
-//			parama = vector- entry for each neuron parameter a
-//			paramb = vector- entry for each neuron parameter b
-//			paramc = vector- entry for each neuron parameter c
-//			paramd = vector- entry for each neuron parameter d
-//			rate_poisson = vector- rate of firing of poisson neurons (or 0)
+//			parameters=
 //			w_max = stdp parameter
 //			a_minus = stdp parameter
 //			a_plus = stdp parameter
@@ -108,14 +103,7 @@ void GPUDeviceComputation (
 					float* weights,
 					int* stdp,
 					float* lastactive,
-					float* neuron_v,
-					float* neuron_u,
-					float* parama,
-					float* paramb,
-					float* paramc,
-					float* paramd,
-					float* rate_poisson,
-					int numPoisson,
+					struct neuron_struct* neuronpop_variables,
 					int numStimuli,
 					int* numEntries,
 					int** genids,
@@ -129,7 +117,7 @@ void GPUDeviceComputation (
 					float totaltime,
 					int numEpochs,
 					bool savespikes,
-					bool randompresentation
+					bool randomPresentation
 					){
 
 	// Creating the Device Pointers I need
@@ -140,14 +128,8 @@ void GPUDeviceComputation (
 	int* d_spikes;
 	int* d_stdp;
 	float* d_lastactive;
-	float* d_neuron_v;
-	float* d_neuron_u;
-	float* d_parama;
-	float* d_paramb;
-	float* d_paramc;
-	float* d_paramd;
+	struct neuron_struct* d_neuronpop_variables;
 	float* d_lastspiketime;
-	float* d_rate_poisson;
 	int* d_genids;
 	float* d_gentimes;
 	int* d_spikebuffer;
@@ -172,13 +154,7 @@ void GPUDeviceComputation (
 	CudaSafeCall(cudaMalloc((void **)&d_spikes, sizeof(int)*numConnections));
 	CudaSafeCall(cudaMalloc((void **)&d_stdp, sizeof(int)*numConnections));
 	CudaSafeCall(cudaMalloc((void **)&d_lastactive, sizeof(float)*numConnections));
-	CudaSafeCall(cudaMalloc((void **)&d_neuron_v, sizeof(float)*numNeurons));
-	CudaSafeCall(cudaMalloc((void **)&d_neuron_u, sizeof(float)*numNeurons));
-	CudaSafeCall(cudaMalloc((void **)&d_parama, sizeof(float)*numNeurons));
-	CudaSafeCall(cudaMalloc((void **)&d_paramb, sizeof(float)*numNeurons));
-	CudaSafeCall(cudaMalloc((void **)&d_paramc, sizeof(float)*numNeurons));
-	CudaSafeCall(cudaMalloc((void **)&d_paramd, sizeof(float)*numNeurons));
-	CudaSafeCall(cudaMalloc((void **)&d_rate_poisson, sizeof(float)*numNeurons));
+	CudaSafeCall(cudaMalloc((void **)&d_neuronpop_variables, sizeof(struct neuron_struct)*numNeurons));
 	CudaSafeCall(cudaMalloc((void **)&d_lastspiketime, sizeof(float)*numNeurons));
 	CudaSafeCall(cudaMalloc((void **)&d_spikebuffer, sizeof(int)*numConnections));
 	CudaSafeCall(cudaMalloc((void **)&d_tempstorenum, sizeof(int)));
@@ -192,13 +168,7 @@ void GPUDeviceComputation (
 	CudaSafeCall(cudaMemcpy(d_delays, delays, sizeof(int)*numConnections, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_weights, weights, sizeof(float)*numConnections, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_stdp, stdp, sizeof(int)*numConnections, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemcpy(d_neuron_v, neuron_v, sizeof(float)*numNeurons, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemcpy(d_neuron_u, neuron_u, sizeof(float)*numNeurons, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemcpy(d_parama, parama, sizeof(float)*numNeurons, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemcpy(d_paramb, paramb, sizeof(float)*numNeurons, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemcpy(d_paramc, paramc, sizeof(float)*numNeurons, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemcpy(d_paramd, paramd, sizeof(float)*numNeurons, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemcpy(d_rate_poisson, rate_poisson, sizeof(float)*numNeurons, cudaMemcpyHostToDevice));
+	CudaSafeCall(cudaMemcpy(d_neuronpop_variables, neuronpop_variables, sizeof(struct neuron_struct)*numNeurons, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemset(d_spikes, 0, sizeof(int)*numConnections));
 	CudaSafeCall(cudaMemset(d_lastactive, -1000.0f, sizeof(float)*numConnections));
 	CudaSafeCall(cudaMemset(d_lastspiketime, -1000.0f, numNeurons*sizeof(float)));
@@ -244,6 +214,14 @@ void GPUDeviceComputation (
 	// Variables necessary
 	clock_t begin = clock();
 
+	// Poisson number
+	int numPoisson = 0;
+	for (int i = 0; i < numNeurons; i++){
+		if (neuronpop_variables[i].rate != 0.0f){
+			++numPoisson;
+		}
+	}
+
 	// STIMULUS ORDER
 	int presentorder[numStimuli];
 	for (int i = 0; i < numStimuli; i++){
@@ -262,7 +240,7 @@ void GPUDeviceComputation (
 	// Running through all of the Epochs
 	for (int i = 0; i < numEpochs; i++) {
 		// If we want a random presentation, create the set of numbers:
-		if (randompresentation) {
+		if (randomPresentation) {
 			random_shuffle(&presentorder[0], &presentorder[numStimuli]);
 		}
 		// Running through every Stimulus
@@ -281,8 +259,7 @@ void GPUDeviceComputation (
 				CudaSafeCall(cudaMemcpy(d_gentimes, gentimes[present], sizeof(float)*numEnts, cudaMemcpyHostToDevice));
 			}
 			// Reset the variables necessary
-			CudaSafeCall(cudaMemcpy(d_neuron_v, neuron_v, sizeof(float)*numNeurons, cudaMemcpyHostToDevice));
-			CudaSafeCall(cudaMemcpy(d_neuron_u, neuron_u, sizeof(float)*numNeurons, cudaMemcpyHostToDevice));
+			CudaSafeCall(cudaMemcpy(d_neuronpop_variables, neuronpop_variables, sizeof(float)*numNeurons, cudaMemcpyHostToDevice));
 			CudaSafeCall(cudaMemset(d_spikes, 0, sizeof(int)*numConnections));
 			CudaSafeCall(cudaMemset(d_lastactive, -1000.0f, sizeof(float)*numConnections));
 			CudaSafeCall(cudaMemset(d_lastspiketime, -1000.0f, numNeurons*sizeof(float)));
@@ -306,9 +283,7 @@ void GPUDeviceComputation (
 					CudaCheckError();
 					// Update Poisson neuron states
 					poisupdate<<<vectorblocksPerGrid, threadsPerBlock>>>(gpu_randfloats,
-																		d_neuron_v,
-																		d_neuron_u,
-																		d_rate_poisson,
+																		d_neuronpop_variables,
 																		timestep,
 																		numNeurons);
 					CudaCheckError();
@@ -316,8 +291,7 @@ void GPUDeviceComputation (
 				// If there are any spike generators
 				if (numEnts > 0) {
 					// Update those neurons corresponding to the Spike Generators
-					genupdate<<<genblocknum, threadsPerBlock>>> (d_neuron_v,
-																	d_neuron_u,
+					genupdate<<<genblocknum, threadsPerBlock>>> (d_neuronpop_variables,
 																	d_genids,
 																	d_gentimes,
 																	currtime,
@@ -349,20 +323,14 @@ void GPUDeviceComputation (
 																	numNeurons);
 				CudaCheckError();
 				// Update States of neurons
-				stateupdate<<<vectorblocksPerGrid, threadsPerBlock>>>(d_neuron_v,
-																	d_neuron_u,
+				stateupdate<<<vectorblocksPerGrid, threadsPerBlock>>>(d_neuronpop_variables,
 																	currentinjection,
 																	timestep,
-																	d_parama,
-																	d_paramb,
 																	numNeurons);
 				CudaCheckError();
 				// Check which neurons are spiking and deal with them
-				spikingneurons<<<vectorblocksPerGrid, threadsPerBlock>>>(d_neuron_v,
-																		d_neuron_u,
+				spikingneurons<<<vectorblocksPerGrid, threadsPerBlock>>>(d_neuronpop_variables,
 																		d_lastspiketime,
-																		d_paramc,
-																		d_paramd,
 																		currtime,
 																		numNeurons);
 				CudaCheckError();
@@ -523,13 +491,7 @@ void GPUDeviceComputation (
 	CudaSafeCall(cudaFree(d_spikes));
 	CudaSafeCall(cudaFree(d_stdp));
 	CudaSafeCall(cudaFree(d_lastactive));
-	CudaSafeCall(cudaFree(d_neuron_v));
-	CudaSafeCall(cudaFree(d_neuron_u));
-	CudaSafeCall(cudaFree(d_parama));
-	CudaSafeCall(cudaFree(d_paramb));
-	CudaSafeCall(cudaFree(d_paramc));
-	CudaSafeCall(cudaFree(d_paramd));
-	CudaSafeCall(cudaFree(d_rate_poisson));
+	CudaSafeCall(cudaFree(d_neuronpop_variables));
 	CudaSafeCall(cudaFree(states));
 	CudaSafeCall(cudaFree(gpu_randfloats));
 	CudaSafeCall(cudaFree(currentinjection));
@@ -567,50 +529,6 @@ __global__ void randoms(curandState_t* states, float* numbers, size_t numNeurons
 	if (idx < numNeurons) {
 		/* curand works like rand - except that it takes a state as a parameter */
 		numbers[idx] = curand_uniform(&states[idx]);
-	}
-}
-
-// Poisson Updating Kernel
-__global__ void poisupdate(float* d_randoms, 
-							float* d_neuron_v, 
-							float* d_neuron_u,  
-							float* d_poisson_rate,
-							float timestep,
-							size_t numNeurons){
-	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	if (idx < numNeurons){
-		// if the randomnumber is LT the rate
-		if (d_randoms[idx] < (d_poisson_rate[idx]*timestep)){
-			d_neuron_u[idx] = 0.0f;
-			d_neuron_v[idx] = 35.0f;
-		} else if (d_poisson_rate[idx] > 0.0f) {
-			d_neuron_u[idx] = 0.0f;
-			d_neuron_v[idx] = -70.0f;
-		}
-	}
-	__syncthreads();
-}
-
-// Spike Generator Updating Kernel
-__global__ void genupdate(float* neuron_v,
-							float* neuron_u,
-							int* genids,
-							float* gentimes,
-							float currtime,
-							float timestep,
-							size_t numEntries){
-	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	if (idx < numEntries){
-		// Check if the current time is one of the gen times
-		if (fabs(currtime - gentimes[idx]) < 0.5*timestep) {
-			// This sync seems absolutely necessary for when I spike inputs ... weird.
-			__syncthreads();
-			neuron_u[genids[idx]] = 0.0f;
-			neuron_v[genids[idx]] = 35.0f;
-		} else {
-			neuron_u[genids[idx]] = 0.0f;
-			neuron_v[genids[idx]] = -70.0f;
-		}
 	}
 }
 
@@ -661,50 +579,6 @@ __global__ void ltdweights(float* d_lastactive,
 			d_weights[idx] += weightscale; 
 		}
 	}
-}
-
-// State Update
-__global__ void stateupdate(float* d_neuron_v,
-							float* d_neuron_u,
-							float* currentinj,
-							float timestep,
-							float* d_parama,
-							float* d_paramb,
-							size_t numNeurons){
-	// We require the equation timestep in ms:
-	float eqtimestep = timestep*1000.0f;
-	// Get thread IDs
-	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	if (idx < numNeurons) {
-		// Update the neuron states according to the Izhikevich equations
-		float v_update = 0.04f*d_neuron_v[idx]*d_neuron_v[idx] + 5.0f*d_neuron_v[idx] + 140 - d_neuron_u[idx] + currentinj[idx];
-		d_neuron_v[idx] += eqtimestep*v_update;
-		d_neuron_u[idx] += eqtimestep*(d_parama[idx]*(d_paramb[idx]*d_neuron_v[idx] - d_neuron_u[idx]));
-	}
-	__syncthreads();
-}
-
-// Spiking Neurons
-__global__ void spikingneurons(float* d_neuron_v,
-								float* d_neuron_u,
-								float* d_lastspiketime,
-								float* d_paramc,
-								float* d_paramd,
-								float currtime,
-								size_t numNeurons){
-	// Get thread IDs
-	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	if (idx < numNeurons) {
-		// First checking if neuron has spiked:
-		if (d_neuron_v[idx] >= 30.0f){
-			// Reset the values of these neurons
-			d_neuron_v[idx] = d_paramc[idx];
-			d_neuron_u[idx] += d_paramd[idx];
-			// Update the last spike times of these neurons
-			d_lastspiketime[idx] = currtime;
-		}
-	}
-	__syncthreads();
 }
 
 // Synapses carrying spikes

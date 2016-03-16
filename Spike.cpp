@@ -63,7 +63,7 @@ void Spike::SetTimestep(float timest){
 //		Number of Neurons
 //		Type of Neural Population e.g. "izh"
 //		Izhikevich Parameter List {a, b, c, d}
-int Spike::CreateNeurons(int number, char type[], float params[]){
+int Spike::CreateNeurons(int number, char type[], struct neuron_struct params){
 	// Check which type of population it is
 	if (strcmp(type, "izh") == 0){
 		// If we have an izhikevich population
@@ -79,18 +79,16 @@ int Spike::CreateNeurons(int number, char type[], float params[]){
 		poisson[numPoisson][1] = population.numNeurons + number;
 		// Set the rate as required
 		poissonrate = (float*)realloc(poissonrate, sizeof(float)*(numPoisson+1));
-		poissonrate[numPoisson] = params[0];
+		poissonrate[numPoisson] = params.rate;
 		// Have the neural population created with arbitrary parameters
-		float izhparams[] = {0.0f, 0.0f, 0.0f, 0.0f};
 		// Create the population
-		int ID = population.AddPopulation(number, izhparams);
+		int ID = population.AddPopulation(number, params);
 		++numPoisson;
 		return ID;
 	} else if (strcmp(type, "gen") == 0){
 		// Create the neural population
 		// Have the neural population created with arbitrary parameters
-		float izhparams[] = {0.0f, 0.0f, 0.0f, 0.0f};
-		int ID = population.AddPopulation(number, izhparams);
+		int ID = population.AddPopulation(number, params);
 		return ID;
 	} else {
 		// Not recognised the population
@@ -202,33 +200,9 @@ void Spike::LoadWeights(int numWeights,
 	}
 }
 
-// Poisson Mask Creation
-// No input required
-void Spike::PoissonMask(){
-	// Allocate the memory
-	poissonmask = (float *)malloc(population.numNeurons*sizeof(float));
-	// Set initial value for all neurons to zero
-	for (int i = 0; i < population.numNeurons; i++){
-		poissonmask[i] = 0.0f;
-	}
-	// Go through the poisson neurons and set the rates
-	for (int i = 0; i < numPoisson; i++) {
-		// Get the indices of the poisson populations
-		int startid = poisson[i][0];
-		int endid = poisson[i][1];
-		// Set the mask equal to the rate for each poisson neuron
-		for (int x = startid; x < endid; x++){
-			poissonmask[x] = poissonrate[i];
-		}
-	}
-}
-
 // Command for running the simulation
 // No input required
-void Spike::Run(float totaltime, int numEpochs, bool saveSpikes, bool randompresentation){
-	// Get the Poisson Mask Sorted
-	PoissonMask();
-
+void Spike::Run(float totaltime, int numEpochs, bool saveSpikes, bool randomPresentation){
 	#ifndef QUIETSTART
 	// Give the user some feedback
 	printf("\n\n----------------------------------\n");
@@ -236,7 +210,7 @@ void Spike::Run(float totaltime, int numEpochs, bool saveSpikes, bool randompres
 	printf("Time Step: %f\nNumber of Stimuli: %d\nNumber of Epochs: %d\n\n", timestep, numStimuli, numEpochs);
 	printf("Total Number of Neurons: %d\n", population.numNeurons);
 	printf("Total Number of Synapses: %d\n\n", synconnects.numconnections);
-	if (randompresentation)
+	if (randomPresentation)
 		printf("Stimuli to be presented in a random order.\n");
 	if (saveSpikes)
 		printf("Spikes shall be saved.\n");
@@ -265,14 +239,7 @@ void Spike::Run(float totaltime, int numEpochs, bool saveSpikes, bool randompres
 					synconnects.weights,
 					synconnects.stdp,
 					synconnects.lastactive,
-					population.state_v,
-					population.state_u,
-					population.parama,
-					population.paramb,
-					population.paramc,
-					population.paramd,
-					poissonmask,
-					numPoisson,
+					population.neuronpop_variables,
 					numStimuli,
 					numEntries,
 					genids,
@@ -286,7 +253,7 @@ void Spike::Run(float totaltime, int numEpochs, bool saveSpikes, bool randompres
 					totaltime,
 					numEpochs,
 					saveSpikes,
-					randompresentation);
+					randomPresentation);
 }
 
 

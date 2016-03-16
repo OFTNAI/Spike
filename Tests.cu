@@ -12,7 +12,7 @@
 #include <fstream>
 
 using namespace std;
-
+#include "Structs.h"
 
 /*
 
@@ -21,11 +21,11 @@ using namespace std;
 */
 
 // Unit testing
-#include "Neuron.h"
+#include "NeuronPopulations.h"
 // First testing the constructor
 TEST_CASE("Neuron Class Constructor", "[Neuron]") {
 	// Create an instance of Neuron
-	Neuron neurtest;
+	NeuronPopulations neurtest;
 	// Test the default settings
 	REQUIRE(neurtest.numNeurons == 0);
 	REQUIRE(neurtest.numPopulations == 0);
@@ -35,8 +35,13 @@ TEST_CASE("Neuron Class Constructor", "[Neuron]") {
 // Next test the creation of a population
 TEST_CASE("Neuron Class AddConnection", "[Neuron]") {
 	// Create an instance of Neuron
-	Neuron neurtest;
-	float params[] = {0.01f, 0.02f, 0.03f, 0.04f};
+	NeuronPopulations neurtest;
+	//float params[] = {0.01f, 0.02f, 0.03f, 0.04f};
+	struct neuron_struct params;
+	params.parama = 0.01f;
+	params.paramb = 0.02f;
+	params.paramc = 0.03f;
+	params.paramd = 0.04f;
 	// TESTING SINGLE POPULATION
 	neurtest.AddPopulation(100, params);
 	// Check that the number of neurons has been correctly set
@@ -46,16 +51,20 @@ TEST_CASE("Neuron Class AddConnection", "[Neuron]") {
 	// Check that the values in every part of array
 	for (int i = 0; i < neurtest.numNeurons; i++){
 		// Set the parameters
-		REQUIRE(neurtest.parama[i] == 0.01f);
-		REQUIRE(neurtest.paramb[i] == 0.02f);
-		REQUIRE(neurtest.paramc[i] == 0.03f);
-		REQUIRE(neurtest.paramd[i] == 0.04f);
+		REQUIRE(neurtest.neuronpop_variables[i].parama == 0.01f);
+		REQUIRE(neurtest.neuronpop_variables[i].paramb == 0.02f);
+		REQUIRE(neurtest.neuronpop_variables[i].paramc == 0.03f);
+		REQUIRE(neurtest.neuronpop_variables[i].paramd == 0.04f);
 		// Set state variables
-		REQUIRE(neurtest.state_v[i] == -65.0f);
-		REQUIRE(neurtest.state_u[i] == 10.0f);
+		REQUIRE(neurtest.neuronpop_variables[i].state_v == -70.0f);
+		REQUIRE(neurtest.neuronpop_variables[i].state_u == 0.0f);
 	}
 	// TESTING MULTIPLE POPULATIONS
-	float paramstwo[] = {0.04f,0.03f,0.02f,0.01f};
+	struct neuron_struct paramstwo;
+	paramstwo.parama = 0.04f;
+	paramstwo.paramb = 0.03f;
+	paramstwo.paramc = 0.02f;
+	paramstwo.paramd = 0.01f;
 	neurtest.AddPopulation(28,paramstwo);
 	// Check that the number of neurons has been correctly set
 	REQUIRE(neurtest.numNeurons == 128);
@@ -66,21 +75,21 @@ TEST_CASE("Neuron Class AddConnection", "[Neuron]") {
 	for (int i = 0; i < neurtest.numNeurons; i++){
 		if (i < 100){
 			// Set the parameters
-			REQUIRE(neurtest.parama[i] == 0.01f);
-			REQUIRE(neurtest.paramb[i] == 0.02f);
-			REQUIRE(neurtest.paramc[i] == 0.03f);
-			REQUIRE(neurtest.paramd[i] == 0.04f);
+			REQUIRE(neurtest.neuronpop_variables[i].parama == 0.01f);
+			REQUIRE(neurtest.neuronpop_variables[i].paramb == 0.02f);
+			REQUIRE(neurtest.neuronpop_variables[i].paramc == 0.03f);
+			REQUIRE(neurtest.neuronpop_variables[i].paramd == 0.04f);
 			// Set state variables
-			REQUIRE(neurtest.state_v[i] == -65.0f);
-			REQUIRE(neurtest.state_u[i] == 10.0f);
+			REQUIRE(neurtest.neuronpop_variables[i].state_v == -70.0f);
+			REQUIRE(neurtest.neuronpop_variables[i].state_u == 0.0f);
 		} else {
-			REQUIRE(neurtest.parama[i] == 0.04f);
-			REQUIRE(neurtest.paramb[i] == 0.03f);
-			REQUIRE(neurtest.paramc[i] == 0.02f);
-			REQUIRE(neurtest.paramd[i] == 0.01f);
+			REQUIRE(neurtest.neuronpop_variables[i].parama == 0.04f);
+			REQUIRE(neurtest.neuronpop_variables[i].paramb == 0.03f);
+			REQUIRE(neurtest.neuronpop_variables[i].paramc == 0.02f);
+			REQUIRE(neurtest.neuronpop_variables[i].paramd == 0.01f);
 			// Set state variables
-			REQUIRE(neurtest.state_v[i] == -65.0f);
-			REQUIRE(neurtest.state_u[i] == 10.0f);
+			REQUIRE(neurtest.neuronpop_variables[i].state_v == -70.0f);
+			REQUIRE(neurtest.neuronpop_variables[i].state_u == 0.0f);
 		}
 	}
 }
@@ -519,7 +528,8 @@ TEST_CASE("Spike Poisson Neurons", "[Spike]"){
 	Spike sim;
 	// Parameterise the population
 	char poiss[] = "poisson";
-	float rate[] = {30.0f};
+	struct neuron_struct rate;
+	rate.rate = 30.0f;
 	sim.CreateNeurons(1000, poiss, rate);
 	// Check the stored variables
 	// First, the number of neurons to check
@@ -528,13 +538,13 @@ TEST_CASE("Spike Poisson Neurons", "[Spike]"){
 	// Check that the values in every part of array
 	for (int i = 0; i < sim.population.numNeurons; i++){
 		// Set the parameters
-		REQUIRE(sim.population.parama[i] == 0.0f);
-		REQUIRE(sim.population.paramb[i] == 0.0f);
-		REQUIRE(sim.population.paramc[i] == 0.0f);
-		REQUIRE(sim.population.paramd[i] == 0.0f);
+		REQUIRE(sim.population.neuronpop_variables[i].parama == 0.0f);
+		REQUIRE(sim.population.neuronpop_variables[i].paramb == 0.0f);
+		REQUIRE(sim.population.neuronpop_variables[i].paramc == 0.0f);
+		REQUIRE(sim.population.neuronpop_variables[i].paramd == 0.0f);
 		// Set state variables
-		REQUIRE(sim.population.state_v[i] == -65.0f);
-		REQUIRE(sim.population.state_u[i] == 10.0f);
+		REQUIRE(sim.population.neuronpop_variables[i].state_v == -70.0f);
+		REQUIRE(sim.population.neuronpop_variables[i].state_u == 0.0f);
 	}
 	// Check the poisson specific variables
 	REQUIRE(sim.numPoisson == 1);
@@ -551,8 +561,13 @@ TEST_CASE("Spike Create Connection", "[Spike]"){
 	// Types
 	char poiss[] = "poisson";
 	char izh[] = "izh";
-	float paramCort[] = {0.01f, 0.2f, -65.0f, 8.0f};
-	float rate[] = {30.0f};
+	struct neuron_struct paramCort;
+	struct neuron_struct rate;
+	paramCort.parama = 0.01f;
+	paramCort.paramb = 0.2f;
+	paramCort.paramc = -65.0f;
+	paramCort.paramd = 8.0f;
+	rate.rate = 30.0f;
 	// Connectivity
 	char one[] = "one_to_one";
 	float weights[] = {25.0f, 30.0f};
@@ -577,20 +592,23 @@ TEST_CASE("Spike Create Poisson Mask", "[Spike]"){
 	// Types
 	char poiss[] = "poisson";
 	char izh[] = "izh";
-	float paramCort[] = {0.01f, 0.2f, -65.0f, 8.0f};
-	float rate[] = {30.0f};
+	struct neuron_struct paramCort;
+	struct neuron_struct rate;
+	paramCort.parama = 0.01f;
+	paramCort.paramb = 0.2f;
+	paramCort.paramc = -65.0f;
+	paramCort.paramd = 8.0f;
+	rate.rate = 30.0f;
 	// Create Populations
 	int input = sim.CreateNeurons(1000, poiss, rate);
 	int output = sim.CreateNeurons(1000, izh, paramCort);
 	int lastlayer = sim.CreateNeurons(21, poiss, rate);
-	// Create a poisson mask
-	sim.PoissonMask();
 	// Check the mask that was created
 	for (int i = 0; i < sim.population.numNeurons; i++){
 		if ((i < 1000) || (i > 1999)){
-			REQUIRE(sim.poissonmask[i] == rate[0]);
+			REQUIRE(sim.population.neuronpop_variables[i].rate == rate.rate);
 		} else {
-			REQUIRE(sim.poissonmask[i] == 0.0f);
+			REQUIRE(sim.population.neuronpop_variables[i].rate == 0.0f);
 		}
 	}
 }
@@ -604,8 +622,13 @@ TEST_CASE("Spike Create Spike Generators", "[Spike]"){
 	//char poiss[] = "poisson";
 	char izh[] = "izh";
 	char gen[] = "gen";
-	float paramCort[] = {0.01f, 0.2f, -65.0f, 8.0f};
-	float rate[] = {30.0f};
+	struct neuron_struct paramCort;
+	struct neuron_struct rate;
+	paramCort.parama = 0.01f;
+	paramCort.paramb = 0.2f;
+	paramCort.paramc = -65.0f;
+	paramCort.paramd = 8.0f;
+	rate.rate = 0.0f;
 	// Generator stuff
 	// Stimulus 1
 	int gIDs[] = {0, 1, 3, 500, 999};
@@ -662,6 +685,9 @@ TEST_CASE("Spike Create Spike Generators", "[Spike]"){
 	// Close the files
 	spikeidfile.close();
 	spiketimesfile.close();
+	for (int i = 0; i < (sim.numEntries[0] + sim.numEntries[1]); i++){
+		printf("%d\n", spikeids[i]);
+	}
 	// Test whether the output is correct!
 	for (int i = 0; i < sim.numEntries[0]; i++){
 		REQUIRE(spikeids[i] == (gIDs[i] + 1000));
@@ -762,54 +788,49 @@ TEST_CASE("CUDA Poisson Update Test", "[Spike]"){
 	float h_neuron_v[] = {-30.0f, -30.0f, -30.0f, -30.0f, -30.0f, -30.0f, -30.0f, -30.0f, -30.0f, -30.0f};
 	float h_neuron_u[] = {0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f};
 	float h_poisson_rate[] = {100.0f, 100.0f, 100.0f, 100.0f, 100.0f, 0.0f, 0.0f, 0.0f, 0.0f, 200.0f};
+	struct neuron_struct h_neuronpop_vars[10];
+	for (int i = 0; i < 10; i++){
+		h_neuronpop_vars[i].state_v = h_neuron_v[i];
+		h_neuronpop_vars[i].state_u = h_neuron_u[i];
+		h_neuronpop_vars[i].rate = h_poisson_rate[i];
+	}
 	// Setting space on the device
 	float* d_randoms;
-	float* d_neuron_v;
-	float* d_neuron_u;
-	float* d_poisson_rate;
+	struct neuron_struct *d_neuronpop_vars;
 	CudaSafeCall(cudaMalloc((void **)&d_randoms, sizeof(float)*numNeurons));
-	CudaSafeCall(cudaMalloc((void **)&d_neuron_v, sizeof(float)*numNeurons));
-	CudaSafeCall(cudaMalloc((void **)&d_neuron_u, sizeof(float)*numNeurons));
-	CudaSafeCall(cudaMalloc((void **)&d_poisson_rate, sizeof(float)*numNeurons));
+	CudaSafeCall(cudaMalloc((void **)&d_neuronpop_vars, sizeof(struct neuron_struct)*numNeurons));
 	// Copying the data to the device
 	CudaSafeCall(cudaMemcpy(d_randoms, h_randoms, sizeof(float)*numNeurons, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemcpy(d_neuron_v, h_neuron_v, sizeof(float)*numNeurons, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemcpy(d_neuron_u, h_neuron_u, sizeof(float)*numNeurons, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemcpy(d_poisson_rate, h_poisson_rate, sizeof(float)*numNeurons, cudaMemcpyHostToDevice));
+	CudaSafeCall(cudaMemcpy(d_neuronpop_vars, h_neuronpop_vars, sizeof(struct neuron_struct)*numNeurons, cudaMemcpyHostToDevice));
 	// Setting up dimensions
 	dim3 threads(100,1,1);
 	dim3 blocks(1,1,1);
 	// Running the function
 	poisupdate<<<blocks, threads>>>( d_randoms, 
-								d_neuron_v, 
-								d_neuron_u,  
-								d_poisson_rate,
+								d_neuronpop_vars,
 								sim.timestep,
 								numNeurons);
 	CudaCheckError();
 	// Copying the data back to the host
-	CudaSafeCall(cudaMemcpy(h_neuron_v, d_neuron_v, sizeof(float)*numNeurons, cudaMemcpyDeviceToHost));
-	CudaSafeCall(cudaMemcpy(h_neuron_u, d_neuron_u, sizeof(float)*numNeurons, cudaMemcpyDeviceToHost));
+	CudaSafeCall(cudaMemcpy(h_neuronpop_vars, d_neuronpop_vars, sizeof(struct neuron_struct)*numNeurons, cudaMemcpyDeviceToHost));
 	// Free device memory
 	CudaSafeCall(cudaFree(d_randoms));
-	CudaSafeCall(cudaFree(d_neuron_v));
-	CudaSafeCall(cudaFree(d_neuron_u));
-	CudaSafeCall(cudaFree(d_poisson_rate));
+	CudaSafeCall(cudaFree(d_neuronpop_vars));
 
 	// Run the tests!
 	for (int i = 0; i < numNeurons; i++){
-		if (h_poisson_rate[i] != 0.0f){
-			if (h_randoms[i] < h_poisson_rate[i]*sim.timestep){
-				REQUIRE(h_neuron_v[i] == 35.0f);
-				REQUIRE(h_neuron_u[i] == 0.0f);
+		if (h_neuronpop_vars[i].rate != 0.0f){
+			if (h_randoms[i] < h_neuronpop_vars[i].rate*sim.timestep){
+				REQUIRE(h_neuronpop_vars[i].state_v == 35.0f);
+				REQUIRE(h_neuronpop_vars[i].state_u == 0.0f);
 			} else {
-				REQUIRE(h_neuron_v[i] == -70.0f);
-				REQUIRE(h_neuron_u[i] == 0.0f);
+				REQUIRE(h_neuronpop_vars[i].state_v == -70.0f);
+				REQUIRE(h_neuronpop_vars[i].state_u == 0.0f);
 			}
 
 		} else {
-			REQUIRE(h_neuron_v[i] == -30.0f);
-			REQUIRE(h_neuron_u[i] == 0.5f);
+			REQUIRE(h_neuronpop_vars[i].state_v == -30.0f);
+			REQUIRE(h_neuronpop_vars[i].state_u == 0.5f);
 		}
 	}
 }
@@ -969,59 +990,50 @@ TEST_CASE("CUDA State Update Test", "[Spike]"){
 	float h_parama[] = {0.01f, 0.01f, 0.01f, 0.01f, 0.01f, 0.02f, 0.02f, 0.02f, 0.02f, 0.02f};
 	float h_paramb[] = {0.2f, 0.2f, 0.2f, 0.2f, 0.2f, -0.1f, -0.1f, -0.1f, -0.1f, -0.1f};
 	size_t numNeurons = 10;
+	struct neuron_struct h_neuronpop_vars[10];
+	for (int i = 0; i < 10; i++){
+		h_neuronpop_vars[i].state_v = h_neuron_v[i];
+		h_neuronpop_vars[i].state_u = h_neuron_u[i];
+		h_neuronpop_vars[i].parama = h_parama[i];
+		h_neuronpop_vars[i].paramb = h_paramb[i];
+	}
 
 	// Setting space on the device
-	float* d_neuron_u;
-	float* d_neuron_v;
-	float* d_currinj;
-	float* d_parama;
-	float* d_paramb;	
-	CudaSafeCall(cudaMalloc((void **)&d_neuron_v, sizeof(float)*numNeurons));
-	CudaSafeCall(cudaMalloc((void **)&d_neuron_u, sizeof(float)*numNeurons));
+	struct neuron_struct *d_neuronpop_vars;
+	float* d_currinj;	
+	CudaSafeCall(cudaMalloc((void **)&d_neuronpop_vars, sizeof(struct neuron_struct)*numNeurons));
 	CudaSafeCall(cudaMalloc((void **)&d_currinj, sizeof(float)*numNeurons));
-	CudaSafeCall(cudaMalloc((void **)&d_parama, sizeof(float)*numNeurons));
-	CudaSafeCall(cudaMalloc((void **)&d_paramb, sizeof(float)*numNeurons));
 	// Copying the data to the device
-	CudaSafeCall(cudaMemcpy(d_neuron_v, h_neuron_v, sizeof(float)*numNeurons, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemcpy(d_neuron_u, h_neuron_u, sizeof(float)*numNeurons, cudaMemcpyHostToDevice));
+	CudaSafeCall(cudaMemcpy(d_neuronpop_vars, h_neuronpop_vars, sizeof(struct neuron_struct)*numNeurons, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_currinj, h_currinj, sizeof(float)*numNeurons, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemcpy(d_parama, h_parama, sizeof(float)*numNeurons, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemcpy(d_paramb, h_paramb, sizeof(float)*numNeurons, cudaMemcpyHostToDevice));
+
 	// Setting up dimensions
 	dim3 threads(100,1,1);
 	dim3 blocks(1,1,1);
 	// Running the function
-	stateupdate<<<blocks, threads>>>(d_neuron_v,
-							d_neuron_u,
+	stateupdate<<<blocks, threads>>>(d_neuronpop_vars,
 							d_currinj,
 							sim.timestep,
-							d_parama,
-							d_paramb,
 							numNeurons);
 	CudaCheckError();
 	// Copying the data back to the host
-	float e_neuron_v[] = {-30.0f, -30.0f, -30.0f, -30.0f, -30.0f, -30.0f, -30.0f, -30.0f, -30.0f, -30.0f};
-	float e_neuron_u[] = {0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f};
-	CudaSafeCall(cudaMemcpy(e_neuron_v, d_neuron_v, sizeof(float)*numNeurons, cudaMemcpyDeviceToHost));
-	CudaSafeCall(cudaMemcpy(e_neuron_u, d_neuron_u, sizeof(float)*numNeurons, cudaMemcpyDeviceToHost));
+	struct neuron_struct e_neuronpop_vars[10];
+	CudaSafeCall(cudaMemcpy(e_neuronpop_vars, d_neuronpop_vars, sizeof(struct neuron_struct)*numNeurons, cudaMemcpyDeviceToHost));
 
 	// Run the tests!
 	for (int i = 0; i < numNeurons; i++){
 		// Check that states have been updated correctly
-		float delta_v = 0.04f*h_neuron_v[i]*h_neuron_v[i] + 5.0f*h_neuron_v[i] + 140 - h_neuron_u[i];
-		REQUIRE(std::abs(e_neuron_v[i] - (h_neuron_v[i] + (sim.timestep*1000.0f)*delta_v + h_currinj[i])) < 0.0001);
-		float new_v = (h_neuron_v[i] + (sim.timestep*1000.0f)*delta_v + h_currinj[i]);
-		float delta_u = h_parama[i]*(h_paramb[i]*new_v - h_neuron_u[i]);
-		REQUIRE(std::abs(e_neuron_u[i] - (h_neuron_u[i] + (sim.timestep*1000.0f)*delta_u)) < 0.0001);
+		float delta_v = 0.04f*h_neuronpop_vars[i].state_v*h_neuronpop_vars[i].state_v + 5.0f*h_neuronpop_vars[i].state_v + 140 - h_neuronpop_vars[i].state_u;
+		REQUIRE(std::abs(e_neuronpop_vars[i].state_v - (h_neuronpop_vars[i].state_v + (sim.timestep*1000.0f)*delta_v + h_currinj[i])) < 0.0001);
+		float new_v = (h_neuronpop_vars[i].state_v + (sim.timestep*1000.0f)*delta_v + h_currinj[i]);
+		float delta_u = h_neuronpop_vars[i].parama*(h_neuronpop_vars[i].paramb*new_v - h_neuronpop_vars[i].state_u);
+		REQUIRE(std::abs(e_neuronpop_vars[i].state_u - (h_neuronpop_vars[i].state_u + (sim.timestep*1000.0f)*delta_u)) < 0.0001);
 	}
 
 
 	// Free device memory
-	CudaSafeCall(cudaFree(d_neuron_u));
-	CudaSafeCall(cudaFree(d_neuron_v));
+	CudaSafeCall(cudaFree(d_neuronpop_vars));
 	CudaSafeCall(cudaFree(d_currinj));
-	CudaSafeCall(cudaFree(d_parama));
-	CudaSafeCall(cudaFree(d_paramb));
 }
 
 TEST_CASE("CUDA Spiking Neurons Test", "[Spike]"){
@@ -1033,66 +1045,55 @@ TEST_CASE("CUDA Spiking Neurons Test", "[Spike]"){
 	float h_paramd[] = {8.0f, 8.0f, 8.0f, 8.0f, 8.0f, 6.0f, 6.0f, 6.0f, 6.0f, 6.0f};
 	float currtime = 3.790f;
 	size_t numNeurons = 10;
+	struct neuron_struct h_neuronpop_vars[10];
+	for (int i = 0; i < 10; i++){
+		h_neuronpop_vars[i].state_v = h_neuron_v[i];
+		h_neuronpop_vars[i].state_u = h_neuron_u[i];
+		h_neuronpop_vars[i].paramc = h_paramc[i];
+		h_neuronpop_vars[i].paramd = h_paramd[i];
+	}
 
 	// Setting space on the device
-	float* d_neuron_u;
-	float* d_neuron_v;
 	float* d_lastspiketime;
-	float* d_paramc;
-	float* d_paramd;	
-	CudaSafeCall(cudaMalloc((void **)&d_neuron_v, sizeof(float)*numNeurons));
-	CudaSafeCall(cudaMalloc((void **)&d_neuron_u, sizeof(float)*numNeurons));
+	struct neuron_struct * d_neuronpop_vars;
+	CudaSafeCall(cudaMalloc((void **)&d_neuronpop_vars, sizeof(struct neuron_struct)*numNeurons));
 	CudaSafeCall(cudaMalloc((void **)&d_lastspiketime, sizeof(float)*numNeurons));
-	CudaSafeCall(cudaMalloc((void **)&d_paramc, sizeof(float)*numNeurons));
-	CudaSafeCall(cudaMalloc((void **)&d_paramd, sizeof(float)*numNeurons));
 	// Copying the data to the device
-	CudaSafeCall(cudaMemcpy(d_neuron_v, h_neuron_v, sizeof(float)*numNeurons, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemcpy(d_neuron_u, h_neuron_u, sizeof(float)*numNeurons, cudaMemcpyHostToDevice));
+	CudaSafeCall(cudaMemcpy(d_neuronpop_vars, h_neuronpop_vars, sizeof(struct neuron_struct)*numNeurons, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_lastspiketime, h_lastspiketime, sizeof(float)*numNeurons, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemcpy(d_paramc, h_paramc, sizeof(float)*numNeurons, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemcpy(d_paramd, h_paramd, sizeof(float)*numNeurons, cudaMemcpyHostToDevice));
 	// Setting up dimensions
 	dim3 threads(100,1,1);
 	dim3 blocks(1,1,1);
 	// Running the function
-	spikingneurons<<<blocks, threads>>>(d_neuron_v,
-								d_neuron_u,
+	spikingneurons<<<blocks, threads>>>(d_neuronpop_vars,
 								d_lastspiketime,
-								d_paramc,
-								d_paramd,
 								currtime,
 								numNeurons);
 	CudaCheckError();
 	// Copying the data back to the host
 	float e_lastspiketime[] = {3.780f, 3.779f, 2.789f, 2.589f, 1.986f, 3.789f, 3.700f, 3.182f, 2.854f, 1.678f};
-	float e_neuron_v[] = {-30.0f, -30.0f, -30.0f, -30.0f, -30.0f, -30.0f, -30.0f, -30.0f, -30.0f, -30.0f};
-	float e_neuron_u[] = {0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f};
+	struct neuron_struct e_neuronpop_vars[10];
 	CudaSafeCall(cudaMemcpy(e_lastspiketime, d_lastspiketime, sizeof(float)*numNeurons, cudaMemcpyDeviceToHost));
-	CudaSafeCall(cudaMemcpy(e_neuron_v, d_neuron_v, sizeof(float)*numNeurons, cudaMemcpyDeviceToHost));
-	CudaSafeCall(cudaMemcpy(e_neuron_u, d_neuron_u, sizeof(float)*numNeurons, cudaMemcpyDeviceToHost));
-
+	CudaSafeCall(cudaMemcpy(e_neuronpop_vars, d_neuronpop_vars, sizeof(struct neuron_struct)*numNeurons, cudaMemcpyDeviceToHost));
 	// Run the tests!
 	for (int i = 0; i < numNeurons; i++){
 		// Check for spiking
 		if (h_neuron_v[i] >= 30.0f) {
 			// Check that the neuron states have been corrected
-			REQUIRE(e_neuron_v[i] == h_paramc[i]);
-			REQUIRE(e_neuron_u[i] == (h_neuron_u[i] + h_paramd[i]));
+			REQUIRE(e_neuronpop_vars[i].state_v == h_neuronpop_vars[i].paramc);
+			REQUIRE(e_neuronpop_vars[i].state_u == (h_neuronpop_vars[i].state_u + h_neuronpop_vars[i].paramd));
 			// Reapply the spike times
 			REQUIRE(e_lastspiketime[i] == currtime);
 		} else 	{
 			// If not, ensure that things are still right
-			REQUIRE(e_neuron_v[i] == h_neuron_v[i]);
-			REQUIRE(e_neuron_u[i] == h_neuron_u[i]);
+			REQUIRE(e_neuronpop_vars[i].state_v == h_neuronpop_vars[i].state_v);
+			REQUIRE(e_neuronpop_vars[i].state_u == h_neuronpop_vars[i].state_u);
 			REQUIRE(e_lastspiketime[i] == h_lastspiketime[i]);
 		}
 	}
 	// Free device memory
-	CudaSafeCall(cudaFree(d_neuron_u));
-	CudaSafeCall(cudaFree(d_neuron_v));
+	CudaSafeCall(cudaFree(d_neuronpop_vars));
 	CudaSafeCall(cudaFree(d_lastspiketime));
-	CudaSafeCall(cudaFree(d_paramc));
-	CudaSafeCall(cudaFree(d_paramd));
 }
 
 TEST_CASE("CUDA Spiking Synapse Test", "[Spike]"){
@@ -1250,25 +1251,26 @@ TEST_CASE("CUDA Spike Generator Update Test", "[Spike]"){
 	float currtime = 3.789f;
 	size_t numEntries = 5;
 	// Setting space on the device
-	float* d_neuron_v;
-	float* d_neuron_u;
+	struct neuron_struct h_neuronpop_vars[10];
+	for (int i = 0; i < 10; i++){
+		h_neuronpop_vars[i].state_v = h_neuron_v[i];
+		h_neuronpop_vars[i].state_u = h_neuron_u[i];
+	}
 	int* d_genids;
 	float* d_gentimes;
-	CudaSafeCall(cudaMalloc((void **)&d_neuron_v, sizeof(float)*numNeurons));
-	CudaSafeCall(cudaMalloc((void **)&d_neuron_u, sizeof(float)*numNeurons));
+	struct neuron_struct *d_neuronpop_vars;
+	CudaSafeCall(cudaMalloc((void **)&d_neuronpop_vars, sizeof(struct neuron_struct)*numNeurons));
 	CudaSafeCall(cudaMalloc((void **)&d_genids, sizeof(int)*numEntries));
 	CudaSafeCall(cudaMalloc((void **)&d_gentimes, sizeof(float)*numEntries));
 	// Copying the data to the device
-	CudaSafeCall(cudaMemcpy(d_neuron_v, h_neuron_v, sizeof(float)*numNeurons, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemcpy(d_neuron_u, h_neuron_u, sizeof(float)*numNeurons, cudaMemcpyHostToDevice));
+	CudaSafeCall(cudaMemcpy(d_neuronpop_vars, h_neuronpop_vars, sizeof(struct neuron_struct)*numNeurons, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_gentimes, h_gentimes, sizeof(float)*numEntries, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_genids, h_genids, sizeof(int)*numEntries, cudaMemcpyHostToDevice));
 	// Setting up dimensions
 	dim3 threads(100,1,1);
 	dim3 blocks(1,1,1);
 	// Running the function
-    genupdate<<<blocks, threads>>> (d_neuron_v,
-									d_neuron_u,
+    genupdate<<<blocks, threads>>> (d_neuronpop_vars,
 									d_genids,
 									d_gentimes,
 									currtime,
@@ -1276,24 +1278,21 @@ TEST_CASE("CUDA Spike Generator Update Test", "[Spike]"){
 									numEntries);
 	CudaCheckError();
 	// Copying the data back to the host
-	float e_neuron_v[] = {-30.0f, -30.0f, -30.0f, -30.0f, -30.0f, -30.0f, -30.0f, -30.0f, -30.0f, -30.0f};
-	float e_neuron_u[] = {0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f};
-	CudaSafeCall(cudaMemcpy(e_neuron_v, d_neuron_v, sizeof(float)*numNeurons, cudaMemcpyDeviceToHost));
-	CudaSafeCall(cudaMemcpy(e_neuron_u, d_neuron_u, sizeof(float)*numNeurons, cudaMemcpyDeviceToHost));
+	struct neuron_struct e_neuronpop_vars[10];
+	CudaSafeCall(cudaMemcpy(e_neuronpop_vars, d_neuronpop_vars, sizeof(struct neuron_struct)*numNeurons, cudaMemcpyDeviceToHost));
 
 	// Run the tests!
 	for (int i = 0; i < numEntries; i++){
 		if (h_gentimes[i] == currtime) {
-			REQUIRE(e_neuron_v[h_genids[i]] == 35.0f);
-			REQUIRE(e_neuron_u[h_genids[i]] == 0.0f);
+			REQUIRE(e_neuronpop_vars[h_genids[i]].state_v == 35.0f);
+			REQUIRE(e_neuronpop_vars[h_genids[i]].state_u == 0.0f);
 		} else {
-			REQUIRE(e_neuron_v[h_genids[i]] == -70.0f);
-			REQUIRE(e_neuron_u[h_genids[i]] == 0.0f);
+			REQUIRE(e_neuronpop_vars[h_genids[i]].state_v == -70.0f);
+			REQUIRE(e_neuronpop_vars[h_genids[i]].state_u == 0.0f);
 		}
 	}
 	// Free device memory
-	CudaSafeCall(cudaFree(d_neuron_v));
-	CudaSafeCall(cudaFree(d_neuron_u));
+	CudaSafeCall(cudaFree(d_neuronpop_vars));
 	CudaSafeCall(cudaFree(d_genids));
 	CudaSafeCall(cudaFree(d_gentimes));
 }
