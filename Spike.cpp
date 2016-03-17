@@ -158,7 +158,8 @@ void Spike::CreateConnection(int pre,
 							float weights[2], 
 							float delays[2],
 							bool stdp,
-							float parameter){
+							float parameter,
+							float parameter_two){
 	// Convert delays from time to # timesteps
 	int stepdelays[2] = {int(round(delays[0]/timestep)), int(round(delays[1]/timestep))};
 	// Ensure that the value of delays is sufficiently large.
@@ -174,7 +175,8 @@ void Spike::CreateConnection(int pre,
 							weights,
 							stepdelays,
 							stdp,
-							parameter);
+							parameter,
+							parameter_two);
 }
 
 // Synapse weight loading

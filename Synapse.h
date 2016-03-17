@@ -38,7 +38,8 @@ public:
 						float weightrange[2],
 						int delayrange[2],
 						bool stdpswitch,
-						float parameter);
+						float parameter,
+						float parameter_two);
 };
 // GAUSS random number generator
 double randn (double mu, double sigma);

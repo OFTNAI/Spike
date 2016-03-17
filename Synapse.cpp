@@ -86,7 +86,8 @@ void Synapse::AddConnection(	int pre,
 								float weightrange[2],
 								int delayrange[2],
 								bool stdpswitch,
-								float parameter){
+								float parameter,
+								float parameter_two){
 	// Find the right set of indices
 	// Pre Indices
 	int prestart = 0;
@@ -126,6 +127,8 @@ void Synapse::AddConnection(	int pre,
 		option = 'g';
 	} else if (strcmp(style, "irina_gaussian") == 0){
 		option = 'i';
+	} else if (strcmp(style, "single") == 0){
+		option = 's';
 	} else {
 		//Nothing
 	}
@@ -357,6 +360,41 @@ void Synapse::AddConnection(	int pre,
 			}
 			break;
 		}
+		// SINGLE Connection
+		case 's':
+			// If we desire a single connection
+			// Increase count
+			numconnections += 1;
+			presyns = (int*)realloc(presyns, (numconnections)*sizeof(int));
+			postsyns = (int*)realloc(postsyns, (numconnections)*sizeof(int));
+			weights = (float*)realloc(weights, (numconnections)*sizeof(float));
+			lastactive = (float*)realloc(lastactive, (numconnections)*sizeof(float));
+			delays = (int*)realloc(delays, (numconnections)*sizeof(int));
+			stdp = (int*)realloc(stdp, (numconnections)*sizeof(int));
+			// Setup Synapses
+			presyns[numconnections - 1] = prestart + int(parameter);
+			postsyns[numconnections - 1] = poststart + int(parameter_two);
+			// Setup Weights
+			if (weightrange[0] == weightrange[1]) {
+				weights[numconnections - 1] = weightrange[0];
+			} else {
+				float rndweight = weightrange[0] + (weightrange[1] - weightrange[0])*((float)rand() / (RAND_MAX));
+				weights[numconnections - 1] = rndweight;
+			}
+			// Setup Delays
+			if (delayrange[0] == delayrange[1]) {
+				delays[numconnections - 1] = delayrange[0];
+			} else {
+				float rnddelay = delayrange[0] + (delayrange[1] - delayrange[0])*((float)rand() / (RAND_MAX));
+				delays[numconnections - 1] = round(rnddelay);
+			}
+			// Setup STDP
+			if (stdpswitch){
+				stdp[numconnections - 1] = 1;
+			} else {
+				stdp[numconnections - 1] = 0;
+			}
+			break;
 		default:
 			printf("\n\nUnknown Connection Type\n\n");
 			exit(-1);

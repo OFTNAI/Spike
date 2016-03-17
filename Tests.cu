@@ -156,6 +156,7 @@ TEST_CASE("Synapse ALL_TO_ALL SOLO Creation", "[Synapse]"){
 						weightrange,
 						delayrange,
 						stdpswitch,
+						parameter,
 						parameter);
 	// Time to test
 	for (int i=0; i < popNums[0]; i++){
@@ -188,6 +189,7 @@ TEST_CASE("Synapse ALL_TO_ALL SOLO Creation", "[Synapse]"){
 						weightrange_rand,
 						delayrange_rand,
 						stdpswitch,
+						parameter,
 						parameter);
 	// Create some new zerod parameters to calculate the actual average
 	float weightavg = 0.0f;
@@ -241,6 +243,7 @@ TEST_CASE("Synapse ONE_TO_ONE SOLO Creation", "[Synapse]"){
 						weightrange,
 						delayrange,
 						stdpswitch,
+						parameter,
 						parameter);
 	// Time to test
 	for (int i=0; i < (popNums[post] - popNums[pre]); i++){
@@ -272,6 +275,7 @@ TEST_CASE("Synapse ONE_TO_ONE SOLO Creation", "[Synapse]"){
 						weightrange_rand,
 						delayrange_rand,
 						stdpswitch,
+						parameter,
 						parameter);
 	// Create some new zerod parameters to calculate the actual average
 	float weightavg = 0.0f;
@@ -326,6 +330,7 @@ TEST_CASE("Synapse RANDOM + ONE_TO_ONE Creation", "[Synapse]"){
 						weightrange,
 						delayrange,
 						stdpswitch,
+						parameter,
 						parameter);
 	// Test the number of connections
 	REQUIRE(syn.numconnections == (popNums[post] - popNums[pre]));
@@ -352,7 +357,8 @@ TEST_CASE("Synapse RANDOM + ONE_TO_ONE Creation", "[Synapse]"){
 						weightrange_rand,
 						delayrange_rand,
 						stdprand,
-						randparam);
+						randparam,
+						parameter);
 	// Time to test the synapses
 	// ONE_TO_ONE
 	for (int i=0; i < (popNums[post] - popNums[pre]); i++){
@@ -418,6 +424,7 @@ TEST_CASE("Synapse GAUSSIAN SOLO Creation", "[Synapse]"){
 						weightrange,
 						delayrange,
 						stdpswitch,
+						parameter,
 						parameter);
 	// The number of synapses is:
 	int numgauss = syn.numconnections;
@@ -455,6 +462,7 @@ TEST_CASE("Synapse GAUSSIAN SOLO Creation", "[Synapse]"){
 						weightrange_rand,
 						delayrange_rand,
 						stdpswitch,
+						parameter,
 						parameter);
 	// Create some new zerod parameters to calculate the actual average
 	float weightavg = 0.0f;
