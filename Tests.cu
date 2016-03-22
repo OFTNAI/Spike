@@ -43,7 +43,8 @@ TEST_CASE("Neuron Class AddConnection", "[Neuron]") {
 	params.paramc = 0.03f;
 	params.paramd = 0.04f;
 	// TESTING SINGLE POPULATION
-	neurtest.AddPopulation(100, params);
+	int shape_hundred[] = {1, 100};
+	neurtest.AddPopulation(100, params, shape_hundred);
 	// Check that the number of neurons has been correctly set
 	REQUIRE(neurtest.numNeurons == 100);
 	REQUIRE(neurtest.numPopulations == 1);
@@ -65,7 +66,8 @@ TEST_CASE("Neuron Class AddConnection", "[Neuron]") {
 	paramstwo.paramb = 0.03f;
 	paramstwo.paramc = 0.02f;
 	paramstwo.paramd = 0.01f;
-	neurtest.AddPopulation(28,paramstwo);
+	int shape_two[] = {28, 1};
+	neurtest.AddPopulation(28, paramstwo, shape_two);
 	// Check that the number of neurons has been correctly set
 	REQUIRE(neurtest.numNeurons == 128);
 	REQUIRE(neurtest.numPopulations == 2);
@@ -138,6 +140,11 @@ TEST_CASE("Synapse ALL_TO_ALL SOLO Creation", "[Synapse]"){
 	int post = 1;
 	// Setting their population numbers
 	int popNums[] = {100, 250};
+	int** popShapes = (int**)malloc(sizeof(int*)*2);
+	popShapes[0] = (int *)malloc(sizeof(int)*2);
+	popShapes[1] = (int *)malloc(sizeof(int)*2);
+	popShapes[0][0] = 1; popShapes[0][1] = 100;
+	popShapes[1][0] = 1; popShapes[1][1] = 150;
 	// Setting up the connection style
 	char style[] = "all_to_all";
 	// Setting up Weights
@@ -151,7 +158,8 @@ TEST_CASE("Synapse ALL_TO_ALL SOLO Creation", "[Synapse]"){
 	// Creating the Synapses
 	syn.AddConnection(pre, 
 						post, 
-						popNums, 
+						popNums,
+						popShapes,  
 						style, 
 						weightrange,
 						delayrange,
@@ -184,7 +192,8 @@ TEST_CASE("Synapse ALL_TO_ALL SOLO Creation", "[Synapse]"){
 	// Creating the Synapses
 	syn.AddConnection(pre, 
 						post, 
-						popNums, 
+						popNums,
+						popShapes, 
 						style, 
 						weightrange_rand,
 						delayrange_rand,
@@ -225,6 +234,14 @@ TEST_CASE("Synapse ONE_TO_ONE SOLO Creation", "[Synapse]"){
 	int post = 3;
 	// Setting their population numbers
 	int popNums[] = {100, 250, 340, 430};
+	int** popShapes = (int**)malloc(sizeof(int*)*4);
+	for (int i = 0; i < 4; i++){
+		popShapes[i] = (int*)malloc(sizeof(int)*2);
+	}
+	popShapes[0][0] = 1; popShapes[0][1] = 100;
+	popShapes[1][0] = 1; popShapes[1][1] = 150;
+	popShapes[2][0] = 1; popShapes[2][1] = 90;
+	popShapes[3][0] = 1; popShapes[3][1] = 90;
 	// Setting up the connection style
 	char style[] = "one_to_one";
 	// Setting up Weights
@@ -238,7 +255,8 @@ TEST_CASE("Synapse ONE_TO_ONE SOLO Creation", "[Synapse]"){
 	// Creating the Synapses
 	syn.AddConnection(pre, 
 						post, 
-						popNums, 
+						popNums,
+						popShapes,
 						style, 
 						weightrange,
 						delayrange,
@@ -271,6 +289,7 @@ TEST_CASE("Synapse ONE_TO_ONE SOLO Creation", "[Synapse]"){
 	syn.AddConnection(pre, 
 						post, 
 						popNums, 
+						popShapes, 
 						style, 
 						weightrange_rand,
 						delayrange_rand,
@@ -312,6 +331,14 @@ TEST_CASE("Synapse RANDOM + ONE_TO_ONE Creation", "[Synapse]"){
 	int post = 3;
 	// Setting their population numbers
 	int popNums[] = {100, 250, 340, 430};
+	int** popShapes = (int**)malloc(sizeof(int*)*4);
+	for (int i = 0; i < 4; i++){
+		popShapes[i] = (int*)malloc(sizeof(int)*2);
+	}
+	popShapes[0][0] = 1; popShapes[0][1] = 100;
+	popShapes[1][0] = 1; popShapes[1][1] = 150;
+	popShapes[2][0] = 1; popShapes[2][1] = 90;
+	popShapes[3][0] = 1; popShapes[3][1] = 90;
 	// Setting up the connection style
 	char style[] = "one_to_one";
 	// Setting up Weights
@@ -326,6 +353,7 @@ TEST_CASE("Synapse RANDOM + ONE_TO_ONE Creation", "[Synapse]"){
 	syn.AddConnection(pre, 
 						post, 
 						popNums, 
+						popShapes,
 						style, 
 						weightrange,
 						delayrange,
@@ -352,7 +380,8 @@ TEST_CASE("Synapse RANDOM + ONE_TO_ONE Creation", "[Synapse]"){
 	// Create the Random Synapses
 	syn.AddConnection(prer, 
 						postr, 
-						popNums, 
+						popNums,
+						popShapes, 
 						randstyle, 
 						weightrange_rand,
 						delayrange_rand,
@@ -406,6 +435,12 @@ TEST_CASE("Synapse GAUSSIAN SOLO Creation", "[Synapse]"){
 	int post = 1;
 	// Setting their population numbers
 	int popNums[] = {1000, 2000};
+	int** popShapes = (int**)malloc(sizeof(int*)*2);
+	for (int i = 0; i < 2; i++){
+		popShapes[i] = (int*)malloc(sizeof(int)*2);
+	}
+	popShapes[0][0] = 1; popShapes[0][1] = 1000;
+	popShapes[1][0] = 1; popShapes[1][1] = 1000;
 	// Setting up the connection style
 	char style[] = "gaussian";
 	// Setting up Weights
@@ -420,12 +455,13 @@ TEST_CASE("Synapse GAUSSIAN SOLO Creation", "[Synapse]"){
 	syn.AddConnection(pre, 
 						post, 
 						popNums, 
+						popShapes,
 						style, 
 						weightrange,
 						delayrange,
 						stdpswitch,
 						parameter,
-						parameter);
+						0.0f);
 	// The number of synapses is:
 	int numgauss = syn.numconnections;
 	// Total number of possible synapses is
@@ -457,7 +493,8 @@ TEST_CASE("Synapse GAUSSIAN SOLO Creation", "[Synapse]"){
 	// Creating the Synapses
 	syn.AddConnection(pre, 
 						post, 
-						popNums, 
+						popNums,
+						popShapes,
 						style, 
 						weightrange_rand,
 						delayrange_rand,
@@ -485,8 +522,161 @@ TEST_CASE("Synapse GAUSSIAN SOLO Creation", "[Synapse]"){
 	REQUIRE(std::abs((delayavg - delayrangeavg)/delayrangeavg) < 0.10f);
 }
 
+// Single Synapse test.
+TEST_CASE("Synapse SINGLE Synapse Creation", "[Synapse]"){
+	// Create an instance of Synapse
+	Synapse syn;
+	// Setting fictional pre and post IDs
+	int pre = 0;
+	int post = 1;
+	// Setting their population numbers
+	int popNums[] = {1000, 2000};
+	int** popShapes = (int**)malloc(sizeof(int*)*2);
+	for (int i = 0; i < 2; i++){
+		popShapes[i] = (int*)malloc(sizeof(int)*2);
+	}
+	popShapes[0][0] = 1; popShapes[0][1] = 1000;
+	popShapes[1][0] = 1; popShapes[1][1] = 1000;
+	// Setting up the connection style
+	char style[] = "single";
+	// Setting up Weights
+	float weightrange[] = {2.0f, 2.0f};
+	// Setting up Delays
+	int delayrange[] = {2.0f, 2.0f};
+	// Determining whether or not there is STDP
+	bool stdpswitch = true;
+	// Giving the parameter
+	float preneurons[] = {0.0f, 10.0f, 100.0f, 219.0f, 506.0f, 111.0f, 16.0f};
+	float postneurons[] = {999.0f, 11.0f, 708.0f, 19.0f, 5.0f, 44.0f, 90.0f};
+	int numsingleconns = 7;
+	for (int i=0; i < numsingleconns; i++){
+		// Creating the Synapses
+		syn.AddConnection(pre, 
+							post, 
+							popNums, 
+							popShapes,
+							style, 
+							weightrange,
+							delayrange,
+							stdpswitch,
+							preneurons[i],
+							postneurons[i]);
+	}
+	// The number of synapses is:
+	REQUIRE(syn.numconnections == numsingleconns);
+	// Begin tests
+	for (int i=0; i < syn.numconnections; i++){
+		// Check the connections
+		REQUIRE(syn.weights[i] == 2.0f);
+		REQUIRE(syn.delays[i] == 2.0f);
+		REQUIRE(syn.stdp[i] == 1);
+		REQUIRE(syn.presyns[i] == preneurons[i]);
+		REQUIRE(syn.postsyns[i] == postneurons[i] + popNums[0]);
+	}
 
+	//////////// RANDOM WEIGHTS AND DELAYS ////////////
+	// Creating a new set of ranges
+	float weightrange_rand[] = {0.1f, 200.0f};
+	int delayrange_rand[] = {5, 21};
+	// Calculating the specific average of these ranges
+	float weightrangeavg = std::abs((weightrange_rand[1] + weightrange_rand[0])/2.0f);
+	float delayrangeavg = std::abs((float)(delayrange_rand[1] + delayrange_rand[0])/2.0f);
+	for (int i=0; i < 7; i++){
+		// Creating the Synapses
+		syn.AddConnection(pre, 
+							post, 
+							popNums, 
+							popShapes,
+							style, 
+							weightrange_rand,
+							delayrange_rand,
+							stdpswitch,
+							preneurons[i],
+							postneurons[i]);
+	}
+	// Create some new zerod parameters to calculate the actual average
+	float weightavg = 0.0f;
+	float delayavg = 0.0f;
+	// Time to test
+	for (int i=0; i < (syn.numconnections - numsingleconns); i++){
+		// The index is the value of i + (j-initj)*max_i PLUS the initial pop size
+		int index = i + numsingleconns;
+		// Check the connections
+		REQUIRE(syn.stdp[index] == 1);
+		// Add to the parameters holding an average
+		weightavg += syn.weights[index];
+		delayavg += (float)syn.delays[index];
+	}
+	// Calculate the average by dividing
+	weightavg = weightavg / (float)(syn.numconnections - numsingleconns);
+	delayavg = delayavg / (float)(syn.numconnections - numsingleconns);
+	// Should be within 10% of what the true average is (smaller populations)
+	REQUIRE(std::abs((weightavg - weightrangeavg)/weightrangeavg) < 0.10f);
+	REQUIRE(std::abs((delayavg - delayrangeavg)/delayrangeavg) < 0.10f);
+}
 
+// Gaussian Synapse test time.
+TEST_CASE("Synapse GAUSSIAN 2D Creation", "[Synapse]"){
+	// Create an instance of Synapse
+	Synapse syn;
+	// Setting fictional pre and post IDs
+	int pre = 0;
+	int post = 1;
+	// Setting their population numbers
+	int popNums[] = {100, 200};
+	int** popShapes = (int**)malloc(sizeof(int*)*2);
+	for (int i = 0; i < 2; i++){
+		popShapes[i] = (int*)malloc(sizeof(int)*2);
+	}
+	popShapes[0][0] = 10; popShapes[0][1] = 10;
+	popShapes[1][0] = 10; popShapes[1][1] = 10;
+	// Setting up the connection style
+	char style[] = "gaussian";
+	// Setting up Weights
+	float weightrange[] = {2.0f, 2.0f};
+	// Setting up Delays
+	int delayrange[] = {2.0f, 2.0f};
+	// Determining whether or not there is STDP
+	bool stdpswitch = true;
+	// Giving the parameter
+	float parameter = 5.0f;
+	// Creating the Synapses
+	syn.AddConnection(pre, 
+						post, 
+						popNums, 
+						popShapes,
+						style, 
+						weightrange,
+						delayrange,
+						stdpswitch,
+						parameter,
+						0.0f);
+	// The number of synapses is:
+	int numgauss = syn.numconnections;
+	// Total number of possible synapses is
+	int totposs = (std::abs(popNums[post] - popNums[pre]));
+	// Initialising the standard deviation check
+	float sd = 0;
+	// Begin tests
+	for (int i=0; i < numgauss; i++){
+		// Check the connections
+		REQUIRE(syn.weights[i] == 2.0f);
+		REQUIRE(syn.delays[i] == 2.0f);
+		REQUIRE(syn.stdp[i] == 1);
+		// Checking the standard deviation of the connections
+		int pre_x = syn.presyns[i] % popShapes[0][0];
+		int pre_y = syn.presyns[i] / popShapes[0][0];
+		int post_x = (syn.postsyns[i] - popNums[post-1]) % popShapes[1][0];
+		int post_y = (syn.postsyns[i] - popNums[post-1]) / popShapes[1][0];
+
+		sd += (pow((pre_x-post_x), 2) + pow((pre_y-post_y), 2));
+	}
+	// Checking the standard deviation of the dataset:
+	sd = sd/numgauss;
+	sd = sqrt(sd);
+	// Check that the standard deviation is within 10% of what we expect
+	REQUIRE((std::abs((sd-parameter)/parameter)) < 0.1);
+}
 
 
 
@@ -504,11 +694,6 @@ TEST_CASE("Synapse GAUSSIAN SOLO Creation", "[Synapse]"){
 TEST_CASE("Spike Constructor", "[Spike]"){
 	// Testing the defaults
 	Spike sim;
-	// Poisson Populations
-	REQUIRE(sim.numPoisson == 0);
-	REQUIRE(sim.poisson == NULL);
-	REQUIRE(sim.poissonrate == NULL);
-	REQUIRE(sim.poissonmask == NULL);
 	// Things for checking
 	REQUIRE(sim.numPops == 0);
 	REQUIRE(sim.numConnects == 0);
@@ -538,27 +723,25 @@ TEST_CASE("Spike Poisson Neurons", "[Spike]"){
 	char poiss[] = "poisson";
 	struct neuron_struct rate;
 	rate.rate = 30.0f;
-	sim.CreateNeurons(1000, poiss, rate);
+	int rateShape[] = {1000, 1};
+	sim.CreateNeurons(1000, poiss, rate, rateShape);
 	// Check the stored variables
 	// First, the number of neurons to check
 	REQUIRE(sim.population.numNeurons == 1000);
 	REQUIRE(sim.population.numperPop[0] == 1000);
 	// Check that the values in every part of array
 	for (int i = 0; i < sim.population.numNeurons; i++){
-		// Set the parameters
+		// Check the parameters
 		REQUIRE(sim.population.neuronpop_variables[i].parama == 0.0f);
 		REQUIRE(sim.population.neuronpop_variables[i].paramb == 0.0f);
 		REQUIRE(sim.population.neuronpop_variables[i].paramc == 0.0f);
 		REQUIRE(sim.population.neuronpop_variables[i].paramd == 0.0f);
-		// Set state variables
+		// Check state variables
 		REQUIRE(sim.population.neuronpop_variables[i].state_v == -70.0f);
 		REQUIRE(sim.population.neuronpop_variables[i].state_u == 0.0f);
+		// Check rates
+		REQUIRE(sim.population.neuronpop_variables[i].rate == 30.0f);
 	}
-	// Check the poisson specific variables
-	REQUIRE(sim.numPoisson == 1);
-	REQUIRE(sim.poisson[0][0] == 0);
-	REQUIRE(sim.poisson[0][1] == 1000);
-	REQUIRE(sim.poissonrate[0] == 30.0f);
 }
 // Check that the delay created is correct
 // Try creating Poisson Neurons
@@ -580,9 +763,10 @@ TEST_CASE("Spike Create Connection", "[Spike]"){
 	char one[] = "one_to_one";
 	float weights[] = {25.0f, 30.0f};
 	float delays[] = {25.0f, 25.0f};
+	int rateShape[] = {1000, 1};
 	// Create Populations
-	int input = sim.CreateNeurons(1000, poiss, rate);
-	int output = sim.CreateNeurons(1000, izh, paramCort);
+	int input = sim.CreateNeurons(1000, poiss, rate, rateShape);
+	int output = sim.CreateNeurons(1000, izh, paramCort, rateShape);
 	// Connect the populations with one-to-one connectivity
 	sim.CreateConnection(input, output, one, weights, delays, false, 0.0f);
 	// Check the delays
@@ -607,10 +791,12 @@ TEST_CASE("Spike Create Poisson Mask", "[Spike]"){
 	paramCort.paramc = -65.0f;
 	paramCort.paramd = 8.0f;
 	rate.rate = 30.0f;
+	int rateShape[] = {1000, 1};
+	int smallShape[] = {21, 1};
 	// Create Populations
-	int input = sim.CreateNeurons(1000, poiss, rate);
-	int output = sim.CreateNeurons(1000, izh, paramCort);
-	int lastlayer = sim.CreateNeurons(21, poiss, rate);
+	int input = sim.CreateNeurons(1000, poiss, rate, rateShape);
+	int output = sim.CreateNeurons(1000, izh, paramCort, rateShape);
+	int lastlayer = sim.CreateNeurons(21, poiss, rate, smallShape);
 	// Check the mask that was created
 	for (int i = 0; i < sim.population.numNeurons; i++){
 		if ((i < 1000) || (i > 1999)){
@@ -645,10 +831,11 @@ TEST_CASE("Spike Create Spike Generators", "[Spike]"){
 	int gIDs_two[] = {5, 500, 6, 2, 10, 5};
 	float gtimes_two[] = {0.7f, 1.09f, 0.18f, 0.25f, 2.01f, 0.06f};
 	// Create Populations
+	int rateShape[] = {1000, 1};
 	// int input = sim.CreateNeurons(1000, poiss, rate);
-	int output = sim.CreateNeurons(1000, izh, paramCort);
+	int output = sim.CreateNeurons(1000, izh, paramCort, rateShape);
 	// Creating the Neurons that I wish to have in my generator population
-	int lastlayer = sim.CreateNeurons(1000, gen, rate);
+	int lastlayer = sim.CreateNeurons(1000, gen, rate, rateShape);
 	// Providing this layer a set of firing times
 	sim.CreateGenerator(lastlayer, 0, 5, gIDs, gtimes);
 	sim.CreateGenerator(lastlayer, 1, 6, gIDs_two, gtimes_two);

@@ -18,10 +18,11 @@ public:
 	int numNeurons;
 	int numPopulations;
 	int *numperPop;
+	int **neuronpop_shapes;
 	// Izhikevich Parameters for the neurons
 	struct neuron_struct *neuronpop_variables;
 	// Functions
-	int AddPopulation(int numinpop, struct neuron_struct params);
+	int AddPopulation(int numinpop, struct neuron_struct params, int shape[2]);
 
 };
 #endif

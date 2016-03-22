@@ -13,22 +13,16 @@
 
 // Constructor
 Spike::Spike(){
-	// Poisson Populations
-	numPoisson = 0;
-	poisson = NULL;
-	poissonrate = NULL;
-	poissonmask = NULL;
 	// Spike Generators
 	numStimuli = 0;
 	numEntries = NULL;
 	genids = NULL;
 	gentimes = NULL;
-	// Things for checking
-	numPops = 0;
-	numConnects = 0;
 	// Default parameters
 	timestep = 0.001f;
-
+	numPops = 0;
+	numConnects = 0;
+	
 	#ifndef QUIETSTART
 		// Say Hi to the user:
 		printf("\nWelcome to the SPIKE.\n\n");
@@ -39,8 +33,9 @@ Spike::Spike(){
 
 // Destructor
 Spike::~Spike(){
-	free(poisson);
-	free(poissonrate);
+	free(numEntries);
+	free(genids);
+	free(gentimes);
 }
 
 // Timestep Setting function
@@ -58,32 +53,25 @@ void Spike::SetTimestep(float timest){
 //		Number of Neurons
 //		Type of Neural Population e.g. "izh"
 //		Izhikevich Parameter List {a, b, c, d}
-int Spike::CreateNeurons(int number, char type[], struct neuron_struct params){
+int Spike::CreateNeurons(int number, char type[], struct neuron_struct params, int shape[2]){
+	if (shape[0]*shape[1] != number){
+		printf("Shape of the neuron population and number in population do not match. Exiting. \n");
+		exit(-1);
+	}
 	// Check which type of population it is
 	if (strcmp(type, "izh") == 0){
 		// If we have an izhikevich population
-		int ID = population.AddPopulation(number, params);
+		int ID = population.AddPopulation(number, params, shape);
 		return ID;
 	} else if (strcmp(type, "poisson") == 0){
 		// If we have a poisson population
-		// Add space to store indices
-		poisson = (int**)realloc(poisson, sizeof(int*)*(numPoisson+1));
-		poisson[numPoisson] = (int*)malloc(2*sizeof(int));
-		// Set those spaces equal to the initial and final values of number
-		poisson[numPoisson][0] = population.numNeurons;
-		poisson[numPoisson][1] = population.numNeurons + number;
-		// Set the rate as required
-		poissonrate = (float*)realloc(poissonrate, sizeof(float)*(numPoisson+1));
-		poissonrate[numPoisson] = params.rate;
-		// Have the neural population created with arbitrary parameters
-		// Create the population
-		int ID = population.AddPopulation(number, params);
-		++numPoisson;
+		// Create the population. The params struct should contain the rate.
+		int ID = population.AddPopulation(number, params, shape);
 		return ID;
 	} else if (strcmp(type, "gen") == 0){
 		// Create the neural population
 		// Have the neural population created with arbitrary parameters
-		int ID = population.AddPopulation(number, params);
+		int ID = population.AddPopulation(number, params, shape);
 		return ID;
 	} else {
 		// Not recognised the population
@@ -152,8 +140,8 @@ void Spike::CreateGenerator(int popID, int stimulusid, int spikenumber, int* ids
 //		Weight Range
 //		Delay Range
 //		STDP True/False
-void Spike::CreateConnection(int pre, 
-							int post, 
+void Spike::CreateConnection(int prepop, 
+							int postpop, 
 							char style[], 
 							float weights[2], 
 							float delays[2],
@@ -168,9 +156,10 @@ void Spike::CreateConnection(int pre,
 		exit(-1);
 	}
 	// Create the connection!
-	synconnects.AddConnection(pre, 
-							post, 
-							population.numperPop, 
+	synconnects.AddConnection(prepop, 
+							postpop, 
+							population.numperPop,
+							population.neuronpop_shapes,
 							style, 
 							weights,
 							stepdelays,

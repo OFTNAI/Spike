@@ -20,15 +20,13 @@
 //			x = The pre-population input neuron position that is being checked
 //			u = The post-population neuron to which the connection is forming (taken as mean)
 //			sigma = Standard Deviation of the gaussian distribution
-#define GAUS(x,u,sigma) ( (1.0f/(sigma*(sqrt(2.0f*M_PI)))) * (exp(-1.0f * (pow((x-u),(2.0f))) / (2.0f*(pow(sigma,(2.0f)))))) )
+#define GAUS(distance, sigma) ( (1.0f/(sigma*(sqrt(2.0f*M_PI)))) * (exp(-1.0f * (pow((distance),(2.0f))) / (2.0f*(pow(sigma,(2.0f)))))) )
 
 // Synapse Constructor
 Synapse::Synapse() {
 	// Initialise my parameters
 	// Variables;
 	numconnections = 0;
-	pre = NULL;
-	post = NULL;
 	// Full Matrices
 	presyns = NULL;
 	postsyns = NULL;
@@ -44,8 +42,6 @@ Synapse::Synapse() {
 // Synapse Destructor
 Synapse::~Synapse() {
 	// Just need to free up the memory
-	free(pre);
-	free(post);
 	// Full Matrices
 	free(presyns);
 	free(postsyns);
@@ -79,9 +75,10 @@ void Synapse::SetSTDP(float w_max_new,
 //		2 number float array for delay range
 //		Boolean value to indicate if population is STDP based
 //		Parameter = either probability for random connections or S.D. for Gaussian
-void Synapse::AddConnection(	int pre, 
-								int post, 
-								int* popNums, 
+void Synapse::AddConnection(	int prepop, 
+								int postpop, 
+								int* popNums,
+								int** pop_shapes, 
 								char style[], 
 								float weightrange[2],
 								int delayrange[2],
@@ -89,18 +86,19 @@ void Synapse::AddConnection(	int pre,
 								float parameter,
 								float parameter_two){
 	// Find the right set of indices
-	// Pre Indices
+	// Take everything in 2D
+	// Pre-Population Indices
 	int prestart = 0;
-	if (pre > 0){
-		prestart = popNums[pre-1];
+	if (prepop > 0){
+		prestart = popNums[prepop-1];
 	}
-	int preend = popNums[pre];
-	// Post Indices
+	int preend = popNums[prepop];
+	// Post-Population Indices
 	int poststart = 0;
-	if (post > 0){
-		poststart = popNums[post-1];
+	if (postpop > 0){
+		poststart = popNums[postpop-1];
 	}
-	int postend = popNums[post];
+	int postend = popNums[postpop];
 	// Get the types of connections
 	char option = 'w';
 	if (strcmp(style, "all_to_all") == 0){
@@ -136,6 +134,7 @@ void Synapse::AddConnection(	int pre,
 	switch (option){
 		// ALL TO ALL
 		case 'a':
+		{
 			// If the connectivity is all_to_all
 			for (int i = prestart; i < preend; i++){
 				for (int j = poststart; j < postend; j++){
@@ -170,8 +169,10 @@ void Synapse::AddConnection(	int pre,
 			// Increment count
 			numconnections += (preend-prestart)*(postend-poststart);
 			break;
+		}
 		// ONE TO ONE
 		case 'o':
+		{
 			// If the connectivity is one_to_one
 			if ((preend-prestart) != (postend-poststart)){
 				printf("Unequal populations for one_to_one. Exiting.\n");
@@ -205,8 +206,10 @@ void Synapse::AddConnection(	int pre,
 			// Increment count
 			numconnections += preend-prestart;
 			break;
+		}
 		// RANDOM
 		case 'r':
+		{
 			// If the connectivity is random
 			// Begin a count
 			for (int i = prestart; i < preend; i++){
@@ -250,14 +253,47 @@ void Synapse::AddConnection(	int pre,
 				}
 			}
 			break;
-		// GAUSSIAN
+		}
+		// GAUSSIAN (1-D or 2-D)
 		case 'g':
+		{
+			// For gaussian connectivity, the shape of the layers matters.
+			// If we desire a given number of neurons, we must scale the gaussian
+			float gaussian_scaling_factor = 1.0f;
+			if (parameter_two != 0.0f){
+				gaussian_scaling_factor = 0.0f;
+				int pre_x = pop_shapes[prepop][0] / 2;
+				int pre_y = pop_shapes[prepop][1] / 2;
+				for (int i = 0; i < pop_shapes[postpop][0]; i++){
+					for (int j = 0; j < pop_shapes[postpop][1]; j++){
+						// Post XY
+						int post_x = i;
+						int post_y = j;
+						// Distance
+						float distance = pow((pow((float)(pre_x - post_x), 2.0f) + pow((float)(pre_y - post_y), 2.0f)), 0.5f);
+						// Gaussian Probability
+						gaussian_scaling_factor += GAUS(distance, parameter);
+					}
+				}
+				// Multiplying the gaussian scaling factor by the number of connections you require:
+				gaussian_scaling_factor = gaussian_scaling_factor / parameter_two;
+			}
+			// Running through our neurons
 			for (int i = prestart; i < preend; i++){
 				for (int j = poststart; j < postend; j++){
 					// Probability of connection
 					float prob = ((float) rand() / (RAND_MAX));
+					// Get the relative distance from the two neurons
+					// Pre XY
+					int pre_x = (i-prestart) % pop_shapes[prepop][0];
+					int pre_y = floor((float)(i-prestart) / pop_shapes[prepop][0]);
+					// Post XY
+					int post_x = (j-poststart) % pop_shapes[postpop][0];
+					int post_y = floor((float)(j-poststart) / pop_shapes[postpop][0]);
+					// Distance
+					float distance = sqrt((pow((float)(pre_x - post_x), 2.0f) + pow((float)(pre_y - post_y), 2.0f)));
 					// If it is within the probability range, connect!
-					if (prob <= (GAUS((float)(i-prestart),(float)(j-poststart),parameter))){
+					if (prob <= ((GAUS(distance, parameter)) / gaussian_scaling_factor)){
 						// Increase count
 						numconnections += 1;
 						presyns = (int*)realloc(presyns, (numconnections)*sizeof(int));
@@ -293,7 +329,8 @@ void Synapse::AddConnection(	int pre,
 				}
 			}
 			break;
-		// IRINA's GAUSSIAN
+		}
+		// IRINA's GAUSSIAN (1-D only)
 		case 'i': 
 		{
 			// Getting the population sizes
@@ -362,6 +399,7 @@ void Synapse::AddConnection(	int pre,
 		}
 		// SINGLE Connection
 		case 's':
+		{
 			// If we desire a single connection
 			// Increase count
 			numconnections += 1;
@@ -395,10 +433,13 @@ void Synapse::AddConnection(	int pre,
 				stdp[numconnections - 1] = 0;
 			}
 			break;
+		}
 		default:
+		{
 			printf("\n\nUnknown Connection Type\n\n");
 			exit(-1);
 			break;
+		}
 	}
 }
 

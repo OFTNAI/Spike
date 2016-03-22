@@ -23,11 +23,6 @@ public:
 	// Initialise Classes
 	NeuronPopulations population;
 	Synapse synconnects;
-	// Poisson related data
-	int numPoisson;
-	int** poisson;
-	float* poissonrate;
-	float* poissonmask;
 	// Spike Generator related Data
 	int numStimuli;
 	int* numEntries;
@@ -39,13 +34,13 @@ public:
 	// Parameters
 	float timestep;
 	void SetTimestep(float timest);
-	int CreateNeurons(int number, char type[], struct neuron_struct params);
+	int CreateNeurons(int number, char type[], struct neuron_struct params, int shape[2]);
 	void CreateGenerator(int popID, int stimulusid, int spikenumber, int* ids, float* spiketimes);
 	void BeginConnections();
 	void LoadWeights(int numWeights,
 						float* newWeights);
-	void CreateConnection(int pre, 
-						int post, 
+	void CreateConnection(int prepop, 
+						int postpop, 
 						char style[], 
 						float weights[2], 
 						float delays[2], 

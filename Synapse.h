@@ -14,8 +14,6 @@ public:
 	~Synapse();
 	// Variables;
 	int numconnections;
-	int* pre;
-	int* post;
 	// STDP
 	struct stdp_struct stdp_vars;
 	void SetSTDP(float w_max_new,
@@ -31,9 +29,10 @@ public:
 	int* delays;
 	int* stdp;
 	// Synapse Functions
-	void AddConnection(int pre, 
-						int post, 
-						int* popNums, 
+	void AddConnection(int prepop, 
+						int postpop, 
+						int* popNums,
+						int** pop_shapes, 
 						char style[], 
 						float weightrange[2],
 						int delayrange[2],

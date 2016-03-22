@@ -20,7 +20,7 @@ model: ${FILE}
 
 # Separating out the individual compilations so as not to compilation time
 ${FILE}: ${FILE}.o Spike.o NeuronPopulations.o Synapse.o CUDAcode.o NeuronDynamics.o STDPDynamics.o
-	$(CC) ${FILE}.o Spike.o NeuronPopulations.o Synapse.o CUDAcode.o NeuronDynamics.o STDPDynamics.o -o run
+	$(CC) ${FILE}.o Spike.o NeuronPopulations.o Synapse.o CUDAcode.o NeuronDynamics.o STDPDynamics.o -o ${FILE}
 
 # Compiling the Model file
 ${FILE}.o: ${FILE}.cpp
