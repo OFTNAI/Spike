@@ -72,7 +72,7 @@ void Synapse::SetSTDP(float w_max_new,
 //		Pre-neuron population ID
 //		Post-neuron population ID
 //		An array of the exclusive sum of neuron populations
-//		Style = Character List, e.g. "all_to_all"
+//		CONNECTIVITY_TYPE (Constants.h)
 //		2 number float array for weight range
 //		2 number float array for delay range
 //		Boolean value to indicate if population is STDP based
@@ -101,42 +101,21 @@ void Synapse::AddConnection(	int prepop,
 		poststart = popNums[postpop-1];
 	}
 	int postend = popNums[postpop];
-	// Get the types of connections
-	char option = 'w';
-	if (connectivity_type == CONNECTIVITY_TYPE_ALL_TO_ALL) {
-		option = 'a';
-		int increment = (preend-prestart)*(postend-poststart);
-		presyns = (int*)realloc(presyns, (numconnections + increment)*sizeof(int));
-		postsyns = (int*)realloc(postsyns, (numconnections + increment)*sizeof(int));
-		weights = (float*)realloc(weights, (numconnections + increment)*sizeof(float));
-		lastactive = (float*)realloc(lastactive, (numconnections + increment)*sizeof(float));
-		delays = (int*)realloc(delays, (numconnections + increment)*sizeof(int));
-		stdp = (int*)realloc(stdp, (numconnections + increment)*sizeof(int));
-	} else if (connectivity_type == CONNECTIVITY_TYPE_ONE_TO_ONE){
-		option = 'o';
-		int increment = (preend-prestart);
-		presyns = (int*)realloc(presyns, (numconnections + increment)*sizeof(int));
-		postsyns = (int*)realloc(postsyns, (numconnections + increment)*sizeof(int));
-		weights = (float*)realloc(weights, (numconnections + increment)*sizeof(float));
-		lastactive = (float*)realloc(lastactive, (numconnections + increment)*sizeof(float));
-		delays = (int*)realloc(delays, (numconnections + increment)*sizeof(int));
-		stdp = (int*)realloc(stdp, (numconnections + increment)*sizeof(int));
-	} else if (connectivity_type == CONNECTIVITY_TYPE_RANDOM) {
-		option = 'r';
-	} else if (connectivity_type == CONNECTIVITY_TYPE_GAUSSIAN) {
-		option = 'g';
-	} else if (connectivity_type == CONNECTIVITY_TYPE_IRINA_GAUSSIAN) {
-		option = 'i';
-	} else if (connectivity_type == CONNECTIVITY_TYPE_SINGLE) {
-		option = 's';
-	} else {
-		//Nothing
-	}
+
 	// Carry out the creation of the connectivity matrix
-	switch (option){
-		// ALL TO ALL
-		case 'a':
+	switch (connectivity_type){
+            
+		case CONNECTIVITY_TYPE_ALL_TO_ALL:
 		{
+            
+            int increment = (preend-prestart)*(postend-poststart);
+            presyns = (int*)realloc(presyns, (numconnections + increment)*sizeof(int));
+            postsyns = (int*)realloc(postsyns, (numconnections + increment)*sizeof(int));
+            weights = (float*)realloc(weights, (numconnections + increment)*sizeof(float));
+            lastactive = (float*)realloc(lastactive, (numconnections + increment)*sizeof(float));
+            delays = (int*)realloc(delays, (numconnections + increment)*sizeof(int));
+            stdp = (int*)realloc(stdp, (numconnections + increment)*sizeof(int));
+            
 			// If the connectivity is all_to_all
 			for (int i = prestart; i < preend; i++){
 				for (int j = poststart; j < postend; j++){
@@ -172,9 +151,16 @@ void Synapse::AddConnection(	int prepop,
 			numconnections += (preend-prestart)*(postend-poststart);
 			break;
 		}
-		// ONE TO ONE
-		case 'o':
+		case CONNECTIVITY_TYPE_ONE_TO_ONE:
 		{
+            int increment = (preend-prestart);
+            presyns = (int*)realloc(presyns, (numconnections + increment)*sizeof(int));
+            postsyns = (int*)realloc(postsyns, (numconnections + increment)*sizeof(int));
+            weights = (float*)realloc(weights, (numconnections + increment)*sizeof(float));
+            lastactive = (float*)realloc(lastactive, (numconnections + increment)*sizeof(float));
+            delays = (int*)realloc(delays, (numconnections + increment)*sizeof(int));
+            stdp = (int*)realloc(stdp, (numconnections + increment)*sizeof(int));
+            
 			// If the connectivity is one_to_one
 			if ((preend-prestart) != (postend-poststart)){
 				printf("Unequal populations for one_to_one. Exiting.\n");
@@ -209,8 +195,7 @@ void Synapse::AddConnection(	int prepop,
 			numconnections += preend-prestart;
 			break;
 		}
-		// RANDOM
-		case 'r':
+		case CONNECTIVITY_TYPE_RANDOM:
 		{
 			// If the connectivity is random
 			// Begin a count
@@ -256,8 +241,8 @@ void Synapse::AddConnection(	int prepop,
 			}
 			break;
 		}
-		// GAUSSIAN (1-D or 2-D)
-		case 'g':
+		
+		case CONNECTIVITY_TYPE_GAUSSIAN: // 1-D or 2-D
 		{
 			// For gaussian connectivity, the shape of the layers matters.
 			// If we desire a given number of neurons, we must scale the gaussian
@@ -332,8 +317,7 @@ void Synapse::AddConnection(	int prepop,
 			}
 			break;
 		}
-		// IRINA's GAUSSIAN (1-D only)
-		case 'i': 
+		case CONNECTIVITY_TYPE_IRINA_GAUSSIAN: // 1-D only
 		{
 			// Getting the population sizes
 			int in_size = preend - prestart;
@@ -399,8 +383,7 @@ void Synapse::AddConnection(	int prepop,
 			}
 			break;
 		}
-		// SINGLE Connection
-		case 's':
+		case CONNECTIVITY_TYPE_SINGLE:
 		{
 			// If we desire a single connection
 			// Increase count
