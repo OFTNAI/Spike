@@ -34,7 +34,7 @@ public:
 	// Parameters
 	float timestep;
 	void SetTimestep(float timest);
-	int CreateNeurons(int number, char type[], struct neuron_struct params, int shape[2]);
+	int CreateNeurons(int number, int neuron_type, struct neuron_struct params, int shape[2]);
 	void CreateGenerator(int popID, int stimulusid, int spikenumber, int* ids, float* spiketimes);
 	void BeginConnections();
 	void LoadWeights(int numWeights,

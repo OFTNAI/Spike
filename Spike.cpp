@@ -9,6 +9,7 @@
 #include <string.h>
 #include <cmath>
 #include "Spike.h"
+#include "Constants.h"
 
 
 // Constructor
@@ -53,22 +54,22 @@ void Spike::SetTimestep(float timest){
 //		Number of Neurons
 //		Type of Neural Population e.g. "izh"
 //		Izhikevich Parameter List {a, b, c, d}
-int Spike::CreateNeurons(int number, char type[], struct neuron_struct params, int shape[2]){
+int Spike::CreateNeurons(int number, int neuron_type, struct neuron_struct params, int shape[2]){
 	if (shape[0]*shape[1] != number){
 		printf("Shape of the neuron population and number in population do not match. Exiting. \n");
 		exit(-1);
 	}
 	// Check which type of population it is
-	if (strcmp(type, "izh") == 0){
+	if (neuron_type == NEURON_TYPE_IZHIKEVICH){
 		// If we have an izhikevich population
 		int ID = population.AddPopulation(number, params, shape);
 		return ID;
-	} else if (strcmp(type, "poisson") == 0){
+	} else if (neuron_type == NEURON_TYPE_POISSON){
 		// If we have a poisson population
 		// Create the population. The params struct should contain the rate.
 		int ID = population.AddPopulation(number, params, shape);
 		return ID;
-	} else if (strcmp(type, "gen") == 0){
+	} else if (neuron_type == NEURON_TYPE_GEN){
 		// Create the neural population
 		// Have the neural population created with arbitrary parameters
 		int ID = population.AddPopulation(number, params, shape);
