@@ -55,16 +55,16 @@ int main (int argc, char *argv[]){
 	// Creating populations
 	// Sub-Cortical
 	// Syntax for neuron creation is (number_of_neurons, neuron_type, neuron_parameters)
-	int INPUTLAYER = simulator.CreateNeurons(1000, NEURON_TYPE_POISSON, poisson_params, input_population_shape);
+	int INPUTLAYER = simulator.CreateNeurons(NEURON_TYPE_POISSON, poisson_params, input_population_shape);
 	// Create some intermediary layers
-	int INTERMEDIATE = simulator.CreateNeurons(1000, NEURON_TYPE_IZHIKEVICH, paramSubCort, intermediate_population_shape);
-	int PENULTIMATE = simulator.CreateNeurons(1000, NEURON_TYPE_IZHIKEVICH, paramSubCort, penultimate_population_shape);
+	int INTERMEDIATE = simulator.CreateNeurons(NEURON_TYPE_IZHIKEVICH, paramSubCort, intermediate_population_shape);
+	int PENULTIMATE = simulator.CreateNeurons(NEURON_TYPE_IZHIKEVICH, paramSubCort, penultimate_population_shape);
 	// Inhibitory Neurons
-	int INTERMEDIATE_INHIB = simulator.CreateNeurons(1000, NEURON_TYPE_IZHIKEVICH, paramInh, intermediate_inhibitory_population_shape);
-	int PENULTIMATE_INHIB = simulator.CreateNeurons(1000, NEURON_TYPE_IZHIKEVICH, paramInh, penultimate_inhibitory_population_shape);
+	int INTERMEDIATE_INHIB = simulator.CreateNeurons(NEURON_TYPE_IZHIKEVICH, paramInh, intermediate_inhibitory_population_shape);
+	int PENULTIMATE_INHIB = simulator.CreateNeurons(NEURON_TYPE_IZHIKEVICH, paramInh, penultimate_inhibitory_population_shape);
 	// Cortical Neurons
-	int OUTPUTLAYER = simulator.CreateNeurons(100, NEURON_TYPE_IZHIKEVICH, paramCort, output_population_shape);
-	int OUTPUTLAYER_INHIB = simulator.CreateNeurons(100, NEURON_TYPE_IZHIKEVICH, paramInh, output_inhibitory_population_shape);
+	int OUTPUTLAYER = simulator.CreateNeurons(NEURON_TYPE_IZHIKEVICH, paramCort, output_population_shape);
+	int OUTPUTLAYER_INHIB = simulator.CreateNeurons(NEURON_TYPE_IZHIKEVICH, paramInh, output_inhibitory_population_shape);
 
 	// Connect Populations
 	// Connection profiles

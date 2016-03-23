@@ -709,7 +709,7 @@ TEST_CASE("Spike Poisson Neurons", "[Spike]"){
 	struct neuron_struct rate;
 	rate.rate = 30.0f;
 	int rateShape[] = {1000, 1};
-	sim.CreateNeurons(1000, NEURON_TYPE_POISSON, rate, rateShape);
+	sim.CreateNeurons(NEURON_TYPE_POISSON, rate, rateShape);
 	// Check the stored variables
 	// First, the number of neurons to check
 	REQUIRE(sim.population.numNeurons == 1000);
@@ -747,8 +747,8 @@ TEST_CASE("Spike Create Connection", "[Spike]"){
 	float delays[] = {25.0f, 25.0f};
 	int rateShape[] = {1000, 1};
 	// Create Populations
-	int input = sim.CreateNeurons(1000, NEURON_TYPE_POISSON, rate, rateShape);
-	int output = sim.CreateNeurons(1000, NEURON_TYPE_IZHIKEVICH, paramCort, rateShape);
+	int input = sim.CreateNeurons(NEURON_TYPE_POISSON, rate, rateShape);
+	int output = sim.CreateNeurons(NEURON_TYPE_IZHIKEVICH, paramCort, rateShape);
 	// Connect the populations with one-to-one connectivity
 	sim.CreateConnection(input, output, one, weights, delays, false, 0.0f);
 	// Check the delays
@@ -773,9 +773,9 @@ TEST_CASE("Spike Create Poisson Mask", "[Spike]"){
 	int rateShape[] = {1000, 1};
 	int smallShape[] = {21, 1};
 	// Create Populations
-	int input = sim.CreateNeurons(1000, NEURON_TYPE_POISSON, rate, rateShape);
-	int output = sim.CreateNeurons(1000, NEURON_TYPE_IZHIKEVICH, paramCort, rateShape);
-	int lastlayer = sim.CreateNeurons(21, NEURON_TYPE_POISSON, rate, smallShape);
+	int input = sim.CreateNeurons(NEURON_TYPE_POISSON, rate, rateShape);
+	int output = sim.CreateNeurons(NEURON_TYPE_IZHIKEVICH, paramCort, rateShape);
+	int lastlayer = sim.CreateNeurons(NEURON_TYPE_POISSON, rate, smallShape);
 	// Check the mask that was created
 	for (int i = 0; i < sim.population.numNeurons; i++){
 		if ((i < 1000) || (i > 1999)){
@@ -807,10 +807,10 @@ TEST_CASE("Spike Create Spike Generators", "[Spike]"){
 	float gtimes_two[] = {0.7f, 1.09f, 0.18f, 0.25f, 2.01f, 0.06f};
 	// Create Populations
 	int rateShape[] = {1000, 1};
-	// int input = sim.CreateNeurons(1000, NEURON_TYPE_POISSON, rate);
-	int output = sim.CreateNeurons(1000, NEURON_TYPE_IZHIKEVICH, paramCort, rateShape);
+	// int input = sim.CreateNeurons(NEURON_TYPE_POISSON, rate);
+	int output = sim.CreateNeurons(NEURON_TYPE_IZHIKEVICH, paramCort, rateShape);
 	// Creating the Neurons that I wish to have in my generator population
-	int lastlayer = sim.CreateNeurons(1000, NEURON_TYPE_GEN, rate, rateShape);
+	int lastlayer = sim.CreateNeurons(NEURON_TYPE_GEN, rate, rateShape);
 	// Providing this layer a set of firing times
 	sim.CreateGenerator(lastlayer, 0, 5, gIDs, gtimes);
 	sim.CreateGenerator(lastlayer, 1, 6, gIDs_two, gtimes_two);
