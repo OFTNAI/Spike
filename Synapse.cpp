@@ -14,6 +14,8 @@
 // allow string comparison
 #include <string.h>
 
+#include "Constants.h"
+
 
 // Macro to get the gaussian prob
 //	INPUT:
@@ -79,7 +81,7 @@ void Synapse::AddConnection(	int prepop,
 								int postpop, 
 								int* popNums,
 								int** pop_shapes, 
-								char style[], 
+								int connectivity_type,
 								float weightrange[2],
 								int delayrange[2],
 								bool stdpswitch,
@@ -101,7 +103,7 @@ void Synapse::AddConnection(	int prepop,
 	int postend = popNums[postpop];
 	// Get the types of connections
 	char option = 'w';
-	if (strcmp(style, "all_to_all") == 0){
+	if (connectivity_type == CONNECTIVITY_TYPE_ALL_TO_ALL) {
 		option = 'a';
 		int increment = (preend-prestart)*(postend-poststart);
 		presyns = (int*)realloc(presyns, (numconnections + increment)*sizeof(int));
@@ -110,7 +112,7 @@ void Synapse::AddConnection(	int prepop,
 		lastactive = (float*)realloc(lastactive, (numconnections + increment)*sizeof(float));
 		delays = (int*)realloc(delays, (numconnections + increment)*sizeof(int));
 		stdp = (int*)realloc(stdp, (numconnections + increment)*sizeof(int));
-	} else if (strcmp(style, "one_to_one") == 0){
+	} else if (connectivity_type == CONNECTIVITY_TYPE_ONE_TO_ONE){
 		option = 'o';
 		int increment = (preend-prestart);
 		presyns = (int*)realloc(presyns, (numconnections + increment)*sizeof(int));
@@ -119,13 +121,13 @@ void Synapse::AddConnection(	int prepop,
 		lastactive = (float*)realloc(lastactive, (numconnections + increment)*sizeof(float));
 		delays = (int*)realloc(delays, (numconnections + increment)*sizeof(int));
 		stdp = (int*)realloc(stdp, (numconnections + increment)*sizeof(int));
-	} else if (strcmp(style, "random") == 0){
+	} else if (connectivity_type == CONNECTIVITY_TYPE_RANDOM) {
 		option = 'r';
-	} else if (strcmp(style, "gaussian") == 0){
+	} else if (connectivity_type == CONNECTIVITY_TYPE_GAUSSIAN) {
 		option = 'g';
-	} else if (strcmp(style, "irina_gaussian") == 0){
+	} else if (connectivity_type == CONNECTIVITY_TYPE_IRINA_GAUSSIAN) {
 		option = 'i';
-	} else if (strcmp(style, "single") == 0){
+	} else if (connectivity_type == CONNECTIVITY_TYPE_SINGLE) {
 		option = 's';
 	} else {
 		//Nothing

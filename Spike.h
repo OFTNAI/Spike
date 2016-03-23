@@ -41,7 +41,7 @@ public:
 						float* newWeights);
 	void CreateConnection(int prepop, 
 						int postpop, 
-						char style[], 
+						int connectivity_type,
 						float weights[2], 
 						float delays[2], 
 						bool stdp,

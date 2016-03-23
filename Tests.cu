@@ -146,8 +146,6 @@ TEST_CASE("Synapse ALL_TO_ALL SOLO Creation", "[Synapse]"){
 	popShapes[1] = (int *)malloc(sizeof(int)*2);
 	popShapes[0][0] = 1; popShapes[0][1] = 100;
 	popShapes[1][0] = 1; popShapes[1][1] = 150;
-	// Setting up the connection style
-	char style[] = "all_to_all";
 	// Setting up Weights
 	float weightrange[] = {1.0f, 1.0f};
 	// Setting up Delays
@@ -161,7 +159,7 @@ TEST_CASE("Synapse ALL_TO_ALL SOLO Creation", "[Synapse]"){
 						post, 
 						popNums,
 						popShapes,  
-						style, 
+						CONNECTIVITY_TYPE_ALL_TO_ALL,
 						weightrange,
 						delayrange,
 						stdpswitch,
@@ -195,7 +193,7 @@ TEST_CASE("Synapse ALL_TO_ALL SOLO Creation", "[Synapse]"){
 						post, 
 						popNums,
 						popShapes, 
-						style, 
+						CONNECTIVITY_TYPE_ALL_TO_ALL,
 						weightrange_rand,
 						delayrange_rand,
 						stdpswitch,
@@ -243,8 +241,6 @@ TEST_CASE("Synapse ONE_TO_ONE SOLO Creation", "[Synapse]"){
 	popShapes[1][0] = 1; popShapes[1][1] = 150;
 	popShapes[2][0] = 1; popShapes[2][1] = 90;
 	popShapes[3][0] = 1; popShapes[3][1] = 90;
-	// Setting up the connection style
-	char style[] = "one_to_one";
 	// Setting up Weights
 	float weightrange[] = {2.0f, 2.0f};
 	// Setting up Delays
@@ -258,7 +254,7 @@ TEST_CASE("Synapse ONE_TO_ONE SOLO Creation", "[Synapse]"){
 						post, 
 						popNums,
 						popShapes,
-						style, 
+						CONNECTIVITY_TYPE_ONE_TO_ONE,
 						weightrange,
 						delayrange,
 						stdpswitch,
@@ -291,7 +287,7 @@ TEST_CASE("Synapse ONE_TO_ONE SOLO Creation", "[Synapse]"){
 						post, 
 						popNums, 
 						popShapes, 
-						style, 
+						CONNECTIVITY_TYPE_ONE_TO_ONE,
 						weightrange_rand,
 						delayrange_rand,
 						stdpswitch,
@@ -340,8 +336,6 @@ TEST_CASE("Synapse RANDOM + ONE_TO_ONE Creation", "[Synapse]"){
 	popShapes[1][0] = 1; popShapes[1][1] = 150;
 	popShapes[2][0] = 1; popShapes[2][1] = 90;
 	popShapes[3][0] = 1; popShapes[3][1] = 90;
-	// Setting up the connection style
-	char style[] = "one_to_one";
 	// Setting up Weights
 	float weightrange[] = {3.0f, 3.0f};
 	// Setting up Delays
@@ -355,7 +349,7 @@ TEST_CASE("Synapse RANDOM + ONE_TO_ONE Creation", "[Synapse]"){
 						post, 
 						popNums, 
 						popShapes,
-						style, 
+						CONNECTIVITY_TYPE_ONE_TO_ONE,
 						weightrange,
 						delayrange,
 						stdpswitch,
@@ -365,9 +359,6 @@ TEST_CASE("Synapse RANDOM + ONE_TO_ONE Creation", "[Synapse]"){
 	REQUIRE(syn.numconnections == (popNums[post] - popNums[pre]));
 	// Setting up random connections
 	int prer = 1;
-	int postr = 0;
-	// Random connectivity
-	char randstyle[] = "random";
 	// Creating a new set of ranges
 	float weightrange_rand[] = {0.0f, 600.0f};
 	int delayrange_rand[] = {2, 70};
@@ -383,7 +374,7 @@ TEST_CASE("Synapse RANDOM + ONE_TO_ONE Creation", "[Synapse]"){
 						postr, 
 						popNums,
 						popShapes, 
-						randstyle, 
+						CONNECTIVITY_TYPE_RANDOM,
 						weightrange_rand,
 						delayrange_rand,
 						stdprand,
@@ -442,8 +433,6 @@ TEST_CASE("Synapse GAUSSIAN SOLO Creation", "[Synapse]"){
 	}
 	popShapes[0][0] = 1; popShapes[0][1] = 1000;
 	popShapes[1][0] = 1; popShapes[1][1] = 1000;
-	// Setting up the connection style
-	char style[] = "gaussian";
 	// Setting up Weights
 	float weightrange[] = {2.0f, 2.0f};
 	// Setting up Delays
@@ -457,7 +446,7 @@ TEST_CASE("Synapse GAUSSIAN SOLO Creation", "[Synapse]"){
 						post, 
 						popNums, 
 						popShapes,
-						style, 
+						CONNECTIVITY_TYPE_GAUSSIAN,
 						weightrange,
 						delayrange,
 						stdpswitch,
@@ -496,7 +485,7 @@ TEST_CASE("Synapse GAUSSIAN SOLO Creation", "[Synapse]"){
 						post, 
 						popNums,
 						popShapes,
-						style, 
+						CONNECTIVITY_TYPE_GAUSSIAN,
 						weightrange_rand,
 						delayrange_rand,
 						stdpswitch,
@@ -538,8 +527,6 @@ TEST_CASE("Synapse SINGLE Synapse Creation", "[Synapse]"){
 	}
 	popShapes[0][0] = 1; popShapes[0][1] = 1000;
 	popShapes[1][0] = 1; popShapes[1][1] = 1000;
-	// Setting up the connection style
-	char style[] = "single";
 	// Setting up Weights
 	float weightrange[] = {2.0f, 2.0f};
 	// Setting up Delays
@@ -556,7 +543,7 @@ TEST_CASE("Synapse SINGLE Synapse Creation", "[Synapse]"){
 							post, 
 							popNums, 
 							popShapes,
-							style, 
+							CONNECTIVITY_TYPE_SINGLE,
 							weightrange,
 							delayrange,
 							stdpswitch,
@@ -588,7 +575,7 @@ TEST_CASE("Synapse SINGLE Synapse Creation", "[Synapse]"){
 							post, 
 							popNums, 
 							popShapes,
-							style, 
+							CONNECTIVITY_TYPE_SINGLE,
 							weightrange_rand,
 							delayrange_rand,
 							stdpswitch,
@@ -631,8 +618,6 @@ TEST_CASE("Synapse GAUSSIAN 2D Creation", "[Synapse]"){
 	}
 	popShapes[0][0] = 10; popShapes[0][1] = 10;
 	popShapes[1][0] = 10; popShapes[1][1] = 10;
-	// Setting up the connection style
-	char style[] = "gaussian";
 	// Setting up Weights
 	float weightrange[] = {2.0f, 2.0f};
 	// Setting up Delays
@@ -646,7 +631,7 @@ TEST_CASE("Synapse GAUSSIAN 2D Creation", "[Synapse]"){
 						post, 
 						popNums, 
 						popShapes,
-						style, 
+						CONNECTIVITY_TYPE_GAUSSIAN,
 						weightrange,
 						delayrange,
 						stdpswitch,
