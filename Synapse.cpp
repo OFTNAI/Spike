@@ -11,8 +11,6 @@
 #include <stdio.h>
 // allows maths
 #include <math.h>
-// allow string comparison
-#include <string.h>
 
 #include "Constants.h"
 
