@@ -361,6 +361,7 @@ TEST_CASE("Synapse RANDOM + ONE_TO_ONE Creation", "[Synapse]"){
 	REQUIRE(syn.numconnections == (popNums[post] - popNums[pre]));
 	// Setting up random connections
 	int prer = 1;
+	int postr = 0;
 	// Creating a new set of ranges
 	float weightrange_rand[] = {0.0f, 600.0f};
 	int delayrange_rand[] = {2, 70};
@@ -744,7 +745,6 @@ TEST_CASE("Spike Create Connection", "[Spike]"){
 	paramCort.paramd = 8.0f;
 	rate.rate = 30.0f;
 	// Connectivity
-	char one[] = "one_to_one";
 	float weights[] = {25.0f, 30.0f};
 	float delays[] = {25.0f, 25.0f};
 	int rateShape[] = {1000, 1};
@@ -752,7 +752,7 @@ TEST_CASE("Spike Create Connection", "[Spike]"){
 	int input = sim.CreateNeurons(NEURON_TYPE_POISSON, rate, rateShape);
 	int output = sim.CreateNeurons(NEURON_TYPE_IZHIKEVICH, paramCort, rateShape);
 	// Connect the populations with one-to-one connectivity
-	sim.CreateConnection(input, output, one, weights, delays, false, 0.0f);
+	sim.CreateConnection(input, output, CONNECTIVITY_TYPE_ONE_TO_ONE, weights, delays, false, 0.0f);
 	// Check the delays
 	for (int i=0; i < 1000; i++){
 		REQUIRE(sim.synconnects.delays[i] == std::round(25.0f / sim.timestep));
