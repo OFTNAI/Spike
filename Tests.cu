@@ -4,6 +4,8 @@
 //	Author: Nasir Ahmad
 //	Date of Creation: 16/12/2015
 
+// Developed upon Catch.hpp version 1.3.1
+
 #define CATCH_CONFIG_MAIN
 #define GPU_TEST
 #include "catch.hpp"
