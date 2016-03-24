@@ -34,14 +34,14 @@ public:
 	// Parameters
 	float timestep;
 	void SetTimestep(float timest);
-	int CreateNeurons(int number, char type[], struct neuron_struct params, int shape[2]);
+	int CreateNeurons(int neuron_type, struct neuron_struct params, int shape[2]);
 	void CreateGenerator(int popID, int stimulusid, int spikenumber, int* ids, float* spiketimes);
 	void BeginConnections();
 	void LoadWeights(int numWeights,
 						float* newWeights);
 	void CreateConnection(int prepop, 
 						int postpop, 
-						char style[], 
+						int connectivity_type,
 						float weights[2], 
 						float delays[2], 
 						bool stdp,

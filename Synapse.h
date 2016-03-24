@@ -33,7 +33,7 @@ public:
 						int postpop, 
 						int* popNums,
 						int** pop_shapes, 
-						char style[], 
+						int connectivity_type,
 						float weightrange[2],
 						int delayrange[2],
 						bool stdpswitch,

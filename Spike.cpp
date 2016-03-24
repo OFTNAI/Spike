@@ -6,9 +6,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <cmath>
 #include "Spike.h"
+#include "Constants.h"
 
 
 // Constructor
@@ -53,31 +53,28 @@ void Spike::SetTimestep(float timest){
 //		Number of Neurons
 //		Type of Neural Population e.g. "izh"
 //		Izhikevich Parameter List {a, b, c, d}
-int Spike::CreateNeurons(int number, char type[], struct neuron_struct params, int shape[2]){
-	if (shape[0]*shape[1] != number){
-		printf("Shape of the neuron population and number in population do not match. Exiting. \n");
-		exit(-1);
-	}
-	// Check which type of population it is
-	if (strcmp(type, "izh") == 0){
+int Spike::CreateNeurons(int neuron_type, struct neuron_struct params, int shape[2]){
+    
+    int number = shape[0]*shape[1];
+    
+    // if statements may be useful later.
+    // Check which type of population it is
+	if (neuron_type == NEURON_TYPE_IZHIKEVICH){
 		// If we have an izhikevich population
-		int ID = population.AddPopulation(number, params, shape);
-		return ID;
-	} else if (strcmp(type, "poisson") == 0){
+	} else if (neuron_type == NEURON_TYPE_POISSON){
 		// If we have a poisson population
-		// Create the population. The params struct should contain the rate.
-		int ID = population.AddPopulation(number, params, shape);
-		return ID;
-	} else if (strcmp(type, "gen") == 0){
+		// The params struct should contain the rate.
+	} else if (neuron_type == NEURON_TYPE_GEN){
 		// Create the neural population
 		// Have the neural population created with arbitrary parameters
-		int ID = population.AddPopulation(number, params, shape);
-		return ID;
 	} else {
 		// Not recognised the population
 		printf("Unrecognised Population Type\n");
 		exit(-1);
 	}
+    
+    int ID = population.AddPopulation(number, params, shape);
+    return ID;
 }
 
 
@@ -142,7 +139,7 @@ void Spike::CreateGenerator(int popID, int stimulusid, int spikenumber, int* ids
 //		STDP True/False
 void Spike::CreateConnection(int prepop, 
 							int postpop, 
-							char style[], 
+							int connectivity_type,
 							float weights[2], 
 							float delays[2],
 							bool stdp,
@@ -160,7 +157,7 @@ void Spike::CreateConnection(int prepop,
 							postpop, 
 							population.numperPop,
 							population.neuronpop_shapes,
-							style, 
+							connectivity_type, 
 							weights,
 							stepdelays,
 							stdp,

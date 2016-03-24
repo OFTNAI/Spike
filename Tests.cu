@@ -15,6 +15,7 @@
 
 using namespace std;
 #include "Structs.h"
+#include "Constants.h"
 
 /*
 
@@ -147,8 +148,6 @@ TEST_CASE("Synapse ALL_TO_ALL SOLO Creation", "[Synapse]"){
 	popShapes[1] = (int *)malloc(sizeof(int)*2);
 	popShapes[0][0] = 1; popShapes[0][1] = 100;
 	popShapes[1][0] = 1; popShapes[1][1] = 150;
-	// Setting up the connection style
-	char style[] = "all_to_all";
 	// Setting up Weights
 	float weightrange[] = {1.0f, 1.0f};
 	// Setting up Delays
@@ -162,7 +161,7 @@ TEST_CASE("Synapse ALL_TO_ALL SOLO Creation", "[Synapse]"){
 						post, 
 						popNums,
 						popShapes,  
-						style, 
+						CONNECTIVITY_TYPE_ALL_TO_ALL,
 						weightrange,
 						delayrange,
 						stdpswitch,
@@ -196,7 +195,7 @@ TEST_CASE("Synapse ALL_TO_ALL SOLO Creation", "[Synapse]"){
 						post, 
 						popNums,
 						popShapes, 
-						style, 
+						CONNECTIVITY_TYPE_ALL_TO_ALL,
 						weightrange_rand,
 						delayrange_rand,
 						stdpswitch,
@@ -244,8 +243,6 @@ TEST_CASE("Synapse ONE_TO_ONE SOLO Creation", "[Synapse]"){
 	popShapes[1][0] = 1; popShapes[1][1] = 150;
 	popShapes[2][0] = 1; popShapes[2][1] = 90;
 	popShapes[3][0] = 1; popShapes[3][1] = 90;
-	// Setting up the connection style
-	char style[] = "one_to_one";
 	// Setting up Weights
 	float weightrange[] = {2.0f, 2.0f};
 	// Setting up Delays
@@ -259,7 +256,7 @@ TEST_CASE("Synapse ONE_TO_ONE SOLO Creation", "[Synapse]"){
 						post, 
 						popNums,
 						popShapes,
-						style, 
+						CONNECTIVITY_TYPE_ONE_TO_ONE,
 						weightrange,
 						delayrange,
 						stdpswitch,
@@ -292,7 +289,7 @@ TEST_CASE("Synapse ONE_TO_ONE SOLO Creation", "[Synapse]"){
 						post, 
 						popNums, 
 						popShapes, 
-						style, 
+						CONNECTIVITY_TYPE_ONE_TO_ONE,
 						weightrange_rand,
 						delayrange_rand,
 						stdpswitch,
@@ -341,8 +338,6 @@ TEST_CASE("Synapse RANDOM + ONE_TO_ONE Creation", "[Synapse]"){
 	popShapes[1][0] = 1; popShapes[1][1] = 150;
 	popShapes[2][0] = 1; popShapes[2][1] = 90;
 	popShapes[3][0] = 1; popShapes[3][1] = 90;
-	// Setting up the connection style
-	char style[] = "one_to_one";
 	// Setting up Weights
 	float weightrange[] = {3.0f, 3.0f};
 	// Setting up Delays
@@ -356,7 +351,7 @@ TEST_CASE("Synapse RANDOM + ONE_TO_ONE Creation", "[Synapse]"){
 						post, 
 						popNums, 
 						popShapes,
-						style, 
+						CONNECTIVITY_TYPE_ONE_TO_ONE,
 						weightrange,
 						delayrange,
 						stdpswitch,
@@ -366,9 +361,6 @@ TEST_CASE("Synapse RANDOM + ONE_TO_ONE Creation", "[Synapse]"){
 	REQUIRE(syn.numconnections == (popNums[post] - popNums[pre]));
 	// Setting up random connections
 	int prer = 1;
-	int postr = 0;
-	// Random connectivity
-	char randstyle[] = "random";
 	// Creating a new set of ranges
 	float weightrange_rand[] = {0.0f, 600.0f};
 	int delayrange_rand[] = {2, 70};
@@ -384,7 +376,7 @@ TEST_CASE("Synapse RANDOM + ONE_TO_ONE Creation", "[Synapse]"){
 						postr, 
 						popNums,
 						popShapes, 
-						randstyle, 
+						CONNECTIVITY_TYPE_RANDOM,
 						weightrange_rand,
 						delayrange_rand,
 						stdprand,
@@ -443,8 +435,6 @@ TEST_CASE("Synapse GAUSSIAN SOLO Creation", "[Synapse]"){
 	}
 	popShapes[0][0] = 1; popShapes[0][1] = 1000;
 	popShapes[1][0] = 1; popShapes[1][1] = 1000;
-	// Setting up the connection style
-	char style[] = "gaussian";
 	// Setting up Weights
 	float weightrange[] = {2.0f, 2.0f};
 	// Setting up Delays
@@ -458,7 +448,7 @@ TEST_CASE("Synapse GAUSSIAN SOLO Creation", "[Synapse]"){
 						post, 
 						popNums, 
 						popShapes,
-						style, 
+						CONNECTIVITY_TYPE_GAUSSIAN,
 						weightrange,
 						delayrange,
 						stdpswitch,
@@ -497,7 +487,7 @@ TEST_CASE("Synapse GAUSSIAN SOLO Creation", "[Synapse]"){
 						post, 
 						popNums,
 						popShapes,
-						style, 
+						CONNECTIVITY_TYPE_GAUSSIAN,
 						weightrange_rand,
 						delayrange_rand,
 						stdpswitch,
@@ -539,8 +529,6 @@ TEST_CASE("Synapse SINGLE Synapse Creation", "[Synapse]"){
 	}
 	popShapes[0][0] = 1; popShapes[0][1] = 1000;
 	popShapes[1][0] = 1; popShapes[1][1] = 1000;
-	// Setting up the connection style
-	char style[] = "single";
 	// Setting up Weights
 	float weightrange[] = {2.0f, 2.0f};
 	// Setting up Delays
@@ -557,7 +545,7 @@ TEST_CASE("Synapse SINGLE Synapse Creation", "[Synapse]"){
 							post, 
 							popNums, 
 							popShapes,
-							style, 
+							CONNECTIVITY_TYPE_SINGLE,
 							weightrange,
 							delayrange,
 							stdpswitch,
@@ -589,7 +577,7 @@ TEST_CASE("Synapse SINGLE Synapse Creation", "[Synapse]"){
 							post, 
 							popNums, 
 							popShapes,
-							style, 
+							CONNECTIVITY_TYPE_SINGLE,
 							weightrange_rand,
 							delayrange_rand,
 							stdpswitch,
@@ -632,8 +620,6 @@ TEST_CASE("Synapse GAUSSIAN 2D Creation", "[Synapse]"){
 	}
 	popShapes[0][0] = 10; popShapes[0][1] = 10;
 	popShapes[1][0] = 10; popShapes[1][1] = 10;
-	// Setting up the connection style
-	char style[] = "gaussian";
 	// Setting up Weights
 	float weightrange[] = {2.0f, 2.0f};
 	// Setting up Delays
@@ -647,7 +633,7 @@ TEST_CASE("Synapse GAUSSIAN 2D Creation", "[Synapse]"){
 						post, 
 						popNums, 
 						popShapes,
-						style, 
+						CONNECTIVITY_TYPE_GAUSSIAN,
 						weightrange,
 						delayrange,
 						stdpswitch,
@@ -722,11 +708,10 @@ TEST_CASE("Spike Poisson Neurons", "[Spike]"){
 	// Creating an instance
 	Spike sim;
 	// Parameterise the population
-	char poiss[] = "poisson";
 	struct neuron_struct rate;
 	rate.rate = 30.0f;
 	int rateShape[] = {1000, 1};
-	sim.CreateNeurons(1000, poiss, rate, rateShape);
+	sim.CreateNeurons(NEURON_TYPE_POISSON, rate, rateShape);
 	// Check the stored variables
 	// First, the number of neurons to check
 	REQUIRE(sim.population.numNeurons == 1000);
@@ -751,9 +736,6 @@ TEST_CASE("Spike Create Connection", "[Spike]"){
 	// Creating an instance
 	Spike sim;
 	// Parameterise the population
-	// Types
-	char poiss[] = "poisson";
-	char izh[] = "izh";
 	struct neuron_struct paramCort;
 	struct neuron_struct rate;
 	paramCort.parama = 0.01f;
@@ -767,8 +749,8 @@ TEST_CASE("Spike Create Connection", "[Spike]"){
 	float delays[] = {25.0f, 25.0f};
 	int rateShape[] = {1000, 1};
 	// Create Populations
-	int input = sim.CreateNeurons(1000, poiss, rate, rateShape);
-	int output = sim.CreateNeurons(1000, izh, paramCort, rateShape);
+	int input = sim.CreateNeurons(NEURON_TYPE_POISSON, rate, rateShape);
+	int output = sim.CreateNeurons(NEURON_TYPE_IZHIKEVICH, paramCort, rateShape);
 	// Connect the populations with one-to-one connectivity
 	sim.CreateConnection(input, output, one, weights, delays, false, 0.0f);
 	// Check the delays
@@ -783,9 +765,6 @@ TEST_CASE("Spike Create Poisson Mask", "[Spike]"){
 	// Creating an instance
 	Spike sim;
 	// Parameterise the population
-	// Types
-	char poiss[] = "poisson";
-	char izh[] = "izh";
 	struct neuron_struct paramCort;
 	struct neuron_struct rate;
 	paramCort.parama = 0.01f;
@@ -796,9 +775,9 @@ TEST_CASE("Spike Create Poisson Mask", "[Spike]"){
 	int rateShape[] = {1000, 1};
 	int smallShape[] = {21, 1};
 	// Create Populations
-	int input = sim.CreateNeurons(1000, poiss, rate, rateShape);
-	int output = sim.CreateNeurons(1000, izh, paramCort, rateShape);
-	int lastlayer = sim.CreateNeurons(21, poiss, rate, smallShape);
+	int input = sim.CreateNeurons(NEURON_TYPE_POISSON, rate, rateShape);
+	int output = sim.CreateNeurons(NEURON_TYPE_IZHIKEVICH, paramCort, rateShape);
+	int lastlayer = sim.CreateNeurons(NEURON_TYPE_POISSON, rate, smallShape);
 	// Check the mask that was created
 	for (int i = 0; i < sim.population.numNeurons; i++){
 		if ((i < 1000) || (i > 1999)){
@@ -814,10 +793,6 @@ TEST_CASE("Spike Create Spike Generators", "[Spike]"){
 	// Creating an instance
 	Spike sim;
 	// Parameterise the population
-	// Types
-	//char poiss[] = "poisson";
-	char izh[] = "izh";
-	char gen[] = "gen";
 	struct neuron_struct paramCort;
 	struct neuron_struct rate;
 	paramCort.parama = 0.01f;
@@ -834,10 +809,10 @@ TEST_CASE("Spike Create Spike Generators", "[Spike]"){
 	float gtimes_two[] = {0.7f, 1.09f, 0.18f, 0.25f, 2.01f, 0.06f};
 	// Create Populations
 	int rateShape[] = {1000, 1};
-	// int input = sim.CreateNeurons(1000, poiss, rate);
-	int output = sim.CreateNeurons(1000, izh, paramCort, rateShape);
+	// int input = sim.CreateNeurons(NEURON_TYPE_POISSON, rate);
+	int output = sim.CreateNeurons(NEURON_TYPE_IZHIKEVICH, paramCort, rateShape);
 	// Creating the Neurons that I wish to have in my generator population
-	int lastlayer = sim.CreateNeurons(1000, gen, rate, rateShape);
+	int lastlayer = sim.CreateNeurons(NEURON_TYPE_GEN, rate, rateShape);
 	// Providing this layer a set of firing times
 	sim.CreateGenerator(lastlayer, 0, 5, gIDs, gtimes);
 	sim.CreateGenerator(lastlayer, 1, 6, gIDs_two, gtimes_two);
