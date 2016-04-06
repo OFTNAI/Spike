@@ -21,6 +21,7 @@ int main (int argc, char *argv[]){
 	Simulator simulator;
 	simulator.SetTimestep(timest);
 	
+	simulator.SetModelNeuronsObject(new ModelNeurons());
 
 	struct neuron_struct test_params;
 	test_params.parama = 0.02f;
@@ -30,9 +31,8 @@ int main (int argc, char *argv[]){
 
 	int test_shape[] = {1000, 1};
 
-	simulator.AddModelNeuronsGroup(test_params, test_shape);
+	int test_neuron_group_id = simulator.AddModelNeuronsGroup(test_params, test_shape);
 
-	simulator.SetModelNeuronsObject(new ModelNeurons());
 
 	/*
 
