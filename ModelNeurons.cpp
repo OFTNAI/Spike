@@ -1,8 +1,11 @@
-//	Neuron Populations Class C++
-//	NeuronPopulations.cpp
+//	ModelNeurons Class C++
+//	ModelNeurons.cpp
 //
 //	Author: Nasir Ahmad
 //	Date: 7/12/2015
+//
+//  Adapted from NeuronPopulations by Nasir Ahmad and James Isbister
+//	Date: 6/4/2016
 
 #include "ModelNeurons.h"
 #include <stdlib.h>
@@ -10,55 +13,66 @@
 
 // ModelNeurons Constructor
 ModelNeurons::ModelNeurons() {
-	// Set up the Neuron Population to start at zero
-	numNeurons = 0;
-	numPopulations = 0;
-	// Initialise Pointers
-	numperPop = NULL;
-	neuronpop_shapes = NULL;
-	// Parameters for the neurons
-	neuronpop_variables = NULL;
+
+	total_number_of_neurons = 0;
+	total_number_of_groups = 0;
+
+	group_shapes = NULL;
+	group_parameters = NULL;
+	last_neuron_indices_for_each_group = NULL;
+
 }
 
 // ModelNeurons Destructor
 ModelNeurons::~ModelNeurons() {
+
 	// Just need to free up the memory
-	free(numperPop);
-	free(neuronpop_variables);
+	free(group_shapes);
+	free(group_parameters);
+	free(last_neuron_indices_for_each_group);
+
 }
 
-// Add Population Function
+// Add Group Function
 //	INPUT:
-//		Number of neurons in population
 //		Izhikevich parameter list {a, b, c, d}
-int ModelNeurons::AddGroup(neuron_struct params, int shape[2]){
+//		Group Shape
+int ModelNeurons::AddGroup(neuron_struct params, int group_shape[2]){
 	// Check that it is within bounds
 
-	int number_of_neurons_in_group = shape[0]*shape[1];
-
-	if (number_of_neurons_in_group < 0){
+	int number_of_neurons_in_group = group_shape[0]*group_shape[1];
+ 
+	if (number_of_neurons_in_group < 0) {
 		printf("\nError: Population must have at least 1 neuron.\n\n");
 		exit(-1);
 	}
-	// Update the numbers
-	numNeurons += number_of_neurons_in_group;
-	++numPopulations;
+
+	// Update the totals
+	total_number_of_neurons += number_of_neurons_in_group;
+	++total_number_of_groups;
+	printf("total_number_of_groups: %d\n", total_number_of_groups);
+
+	int new_group_id = total_number_of_groups - 1;
+
+	last_neuron_indices_for_each_group = (int*)realloc(last_neuron_indices_for_each_group,(total_number_of_groups*sizeof(int)));
+	last_neuron_indices_for_each_group[new_group_id] = total_number_of_neurons;
+
 
 	// Allocate space for the new neurons
-	numperPop = (int*)realloc(numperPop,(numPopulations*sizeof(int)));
-	neuronpop_shapes = (int**)realloc(neuronpop_shapes,(numPopulations*sizeof(int*)));
-	neuronpop_shapes[numPopulations-1] = (int*)malloc(2*sizeof(int));
-	neuronpop_variables = (neuron_struct*)realloc(neuronpop_variables, (numNeurons*sizeof(neuron_struct)));
+	group_shapes = (int**)realloc(group_shapes,(total_number_of_groups*sizeof(int*)));
+	group_shapes[new_group_id] = (int*)malloc(2*sizeof(int));
+
+	group_parameters = (neuron_struct*)realloc(group_parameters, (total_number_of_neurons*sizeof(neuron_struct)));
 
 	// Fill the new entries in the pointers
-	numperPop[numPopulations-1] = numNeurons;
-	neuronpop_shapes[numPopulations-1] = shape;
-	for (int i = (numNeurons-number_of_neurons_in_group); i < numNeurons; i++){
-		// Set the parameters
-		neuronpop_variables[i] = params;
+	group_shapes[new_group_id] = group_shape;
+	for (int i = (total_number_of_neurons - number_of_neurons_in_group); i < total_number_of_neurons; i++){
+
+		group_parameters[i] = params;
+	
 	}
-	// Return Population ID
-	return (numPopulations-1);
+	
+	return new_group_id;
 }
 
 

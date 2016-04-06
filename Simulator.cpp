@@ -47,7 +47,7 @@ void Simulator::SetTimestep(float timest){
 	if (synconnects.numconnections == 0){
 		timestep = timest;
 	} else {
-		printf("You must set the timestep before creating any synapses. Exiting ...\n");
+		printf("You must set the timestep before creating any synapses. Exiting ...\n\n");
 		exit(-1);
 	}
 }
@@ -57,12 +57,12 @@ void Simulator::SetModelNeuronsObject(ModelNeurons * model_neurons_parameter) {
 	model_neurons = model_neurons_parameter;
 }
 
-int Simulator::AddModelNeuronsGroup(neuron_struct params, int shape[2]) {
+int Simulator::AddModelNeuronsGroup(neuron_struct group_params, int group_shape[2]) {
 	if (model_neurons == NULL) {
-		printf("Please call SetModelNeuronsObject before adding neuron groups. Exiting ...\n");
+		printf("Please call SetModelNeuronsObject before adding neuron groups. Exiting ...\n\n");
 		exit(-1);
 	}
-	int neuron_group_id = model_neurons->AddGroup(params, shape);
+	int neuron_group_id = model_neurons->AddGroup(group_params, group_shape);
 	return neuron_group_id;
 }
 
@@ -172,6 +172,10 @@ void Simulator::CreateConnection(int prepop,
 		exit(-1);
 	}
 	// Create the connection!
+
+
+	printf("Num per pop: %d\n", population.numperPop[prepop]);
+
 	synconnects.AddConnection(prepop, 
 							postpop, 
 							population.numperPop,

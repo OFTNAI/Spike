@@ -101,17 +101,17 @@ int main (int argc, char *argv[]){
 	// Excitatory Connections
 	// Syntax is (input_layer_id, output_layer_id, connectivity_type, weight_vec, delay_vec, stdp_on, parameter)
 	// The parameter is only necessary for random or gaussian connectivites
-	simulator.CreateConnection(INPUTLAYER, INTERMEDIATE, CONNECTIVITY_TYPE_ALL_TO_ALL, INPUT_TO_INTER_weights, DefaultDelay, false);
-	simulator.CreateConnection(INTERMEDIATE, PENULTIMATE, CONNECTIVITY_TYPE_ONE_TO_ONE, INTER_TO_PEN_weights, DefaultDelay, false);
-	simulator.CreateConnection(PENULTIMATE, OUTPUTLAYER, CONNECTIVITY_TYPE_RANDOM, PEN_TO_OUTPUT_weights, CortDelay, true, 0.75f);
-	// Inhibitory Connections
-	// Excitation for the inhibitory neurons
-	simulator.CreateConnection(INTERMEDIATE, INTERMEDIATE_INHIB, CONNECTIVITY_TYPE_ONE_TO_ONE, EXC_TO_INH_weights, DefaultDelay, false);
-	simulator.CreateConnection(PENULTIMATE, PENULTIMATE_INHIB, CONNECTIVITY_TYPE_ONE_TO_ONE, EXC_TO_INH_weights, DefaultDelay, false);
-	simulator.CreateConnection(OUTPUTLAYER, OUTPUTLAYER_INHIB, CONNECTIVITY_TYPE_ONE_TO_ONE, EXC_TO_INH_weights, DefaultDelay, false);
-	// Inhibition from inhibitory neurons to excitatory
-	simulator.CreateConnection(INTERMEDIATE_INHIB, INTERMEDIATE, CONNECTIVITY_TYPE_ALL_TO_ALL, INH_TO_EXC_weights, DefaultDelay, false);
-	simulator.CreateConnection(PENULTIMATE_INHIB, PENULTIMATE, CONNECTIVITY_TYPE_ALL_TO_ALL, INH_TO_EXC_weights, DefaultDelay, false);
+	// simulator.CreateConnection(INPUTLAYER, INTERMEDIATE, CONNECTIVITY_TYPE_ALL_TO_ALL, INPUT_TO_INTER_weights, DefaultDelay, false);
+	// simulator.CreateConnection(INTERMEDIATE, PENULTIMATE, CONNECTIVITY_TYPE_ONE_TO_ONE, INTER_TO_PEN_weights, DefaultDelay, false);
+	// simulator.CreateConnection(PENULTIMATE, OUTPUTLAYER, CONNECTIVITY_TYPE_RANDOM, PEN_TO_OUTPUT_weights, CortDelay, true, 0.75f);
+	// // Inhibitory Connections
+	// // Excitation for the inhibitory neurons
+	// simulator.CreateConnection(INTERMEDIATE, INTERMEDIATE_INHIB, CONNECTIVITY_TYPE_ONE_TO_ONE, EXC_TO_INH_weights, DefaultDelay, false);
+	// simulator.CreateConnection(PENULTIMATE, PENULTIMATE_INHIB, CONNECTIVITY_TYPE_ONE_TO_ONE, EXC_TO_INH_weights, DefaultDelay, false);
+	// simulator.CreateConnection(OUTPUTLAYER, OUTPUTLAYER_INHIB, CONNECTIVITY_TYPE_ONE_TO_ONE, EXC_TO_INH_weights, DefaultDelay, false);
+	// // Inhibition from inhibitory neurons to excitatory
+	// simulator.CreateConnection(INTERMEDIATE_INHIB, INTERMEDIATE, CONNECTIVITY_TYPE_ALL_TO_ALL, INH_TO_EXC_weights, DefaultDelay, false);
+	// simulator.CreateConnection(PENULTIMATE_INHIB, PENULTIMATE, CONNECTIVITY_TYPE_ALL_TO_ALL, INH_TO_EXC_weights, DefaultDelay, false);
 	simulator.CreateConnection(OUTPUTLAYER_INHIB, OUTPUTLAYER, CONNECTIVITY_TYPE_ALL_TO_ALL, INH_TO_EXC_weights, DefaultDelay, false);
 
 	/*

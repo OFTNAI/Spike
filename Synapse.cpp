@@ -91,8 +91,10 @@ void Synapse::AddConnection(	int prepop,
 	int prestart = 0;
 	if (prepop > 0){
 		prestart = popNums[prepop-1];
+		printf("prestart: %d\n", prestart);
 	}
 	int preend = popNums[prepop];
+	printf("preend: %d\n", preend);
 	// Post-Population Indices
 	int poststart = 0;
 	if (postpop > 0){
