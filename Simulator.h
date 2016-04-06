@@ -1,5 +1,5 @@
-// Simulator Class Header
-// Simulator.h
+// 	Simulator Class Header
+// 	Simulator.h
 //
 //	Original Author: Nasir Ahmad
 //	Date: 8/12/2015
