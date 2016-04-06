@@ -26,7 +26,7 @@
 Connections::Connections() {
 	// Initialise my parameters
 	// Variables;
-	numconnections = 0;
+	total_number_of_connections = 0;
 	// Full Matrices
 	presyns = NULL;
 	postsyns = NULL;
@@ -75,32 +75,32 @@ void Connections::SetSTDP(float w_max_new,
 //		2 number float array for delay range
 //		Boolean value to indicate if population is STDP based
 //		Parameter = either probability for random connections or S.D. for Gaussian
-void Connections::AddGroup(	int prepop, 
-								int postpop, 
-								int* popNums,
-								int** pop_shapes, 
+void Connections::AddGroup(	int presynaptic_group_id, 
+								int postsynaptic_group_id, 
+								int* last_neuron_indices_for_each_neuron_group,
+								int** group_shapes, 
 								int connectivity_type,
-								float weightrange[2],
-								int delayrange[2],
-								bool stdpswitch,
+								float weight_range[2],
+								int delay_range[2],
+								bool stdp_on,
 								float parameter,
 								float parameter_two){
 	// Find the right set of indices
 	// Take everything in 2D
 	// Pre-Population Indices
 	int prestart = 0;
-	if (prepop > 0){
-		prestart = popNums[prepop-1];
+	if (presynaptic_group_id > 0){
+		prestart = last_neuron_indices_for_each_neuron_group[presynaptic_group_id-1];
 		printf("prestart: %d\n", prestart);
 	}
-	int preend = popNums[prepop];
+	int preend = last_neuron_indices_for_each_neuron_group[presynaptic_group_id];
 	printf("preend: %d\n", preend);
 	// Post-Population Indices
 	int poststart = 0;
-	if (postpop > 0){
-		poststart = popNums[postpop-1];
+	if (postsynaptic_group_id > 0){
+		poststart = last_neuron_indices_for_each_neuron_group[postsynaptic_group_id-1];
 	}
-	int postend = popNums[postpop];
+	int postend = last_neuron_indices_for_each_neuron_group[postsynaptic_group_id];
 
 	// Carry out the creation of the connectivity matrix
 	switch (connectivity_type){
@@ -109,38 +109,38 @@ void Connections::AddGroup(	int prepop,
 		{
             
             int increment = (preend-prestart)*(postend-poststart);
-            presyns = (int*)realloc(presyns, (numconnections + increment)*sizeof(int));
-            postsyns = (int*)realloc(postsyns, (numconnections + increment)*sizeof(int));
-            weights = (float*)realloc(weights, (numconnections + increment)*sizeof(float));
-            lastactive = (float*)realloc(lastactive, (numconnections + increment)*sizeof(float));
-            delays = (int*)realloc(delays, (numconnections + increment)*sizeof(int));
-            stdp = (int*)realloc(stdp, (numconnections + increment)*sizeof(int));
+            presyns = (int*)realloc(presyns, (total_number_of_connections + increment)*sizeof(int));
+            postsyns = (int*)realloc(postsyns, (total_number_of_connections + increment)*sizeof(int));
+            weights = (float*)realloc(weights, (total_number_of_connections + increment)*sizeof(float));
+            lastactive = (float*)realloc(lastactive, (total_number_of_connections + increment)*sizeof(float));
+            delays = (int*)realloc(delays, (total_number_of_connections + increment)*sizeof(int));
+            stdp = (int*)realloc(stdp, (total_number_of_connections + increment)*sizeof(int));
             
 			// If the connectivity is all_to_all
 			for (int i = prestart; i < preend; i++){
 				for (int j = poststart; j < postend; j++){
 					// Index
-					int idx = numconnections + (i-prestart) + (j-poststart)*(preend-prestart);
+					int idx = total_number_of_connections + (i-prestart) + (j-poststart)*(preend-prestart);
 					// Setup Synapses
 					presyns[idx] = i;
 					postsyns[idx] = j;
 					// Setup Weights
-					if (weightrange[0] == weightrange[1]) {
-						weights[idx] = weightrange[0];
+					if (weight_range[0] == weight_range[1]) {
+						weights[idx] = weight_range[0];
 					} else {
-						float rndweight = weightrange[0] + (weightrange[1] - weightrange[0])*((float)rand() / (RAND_MAX));
+						float rndweight = weight_range[0] + (weight_range[1] - weight_range[0])*((float)rand() / (RAND_MAX));
 						weights[idx] = rndweight;
 					}
 					// Setup Delays
 					// Get the randoms
-					if (delayrange[0] == delayrange[1]) {
-						delays[idx] = delayrange[0];
+					if (delay_range[0] == delay_range[1]) {
+						delays[idx] = delay_range[0];
 					} else {
-						float rnddelay = delayrange[0] + (delayrange[1] - delayrange[0])*((float)rand() / (RAND_MAX));
+						float rnddelay = delay_range[0] + (delay_range[1] - delay_range[0])*((float)rand() / (RAND_MAX));
 						delays[idx] = round(rnddelay);
 					}
 					// Setup STDP
-					if (stdpswitch){
+					if (stdp_on){
 						stdp[idx] = 1;
 					} else {
 						stdp[idx] = 0;
@@ -148,18 +148,18 @@ void Connections::AddGroup(	int prepop,
 				}
 			}
 			// Increment count
-			numconnections += (preend-prestart)*(postend-poststart);
+			total_number_of_connections += (preend-prestart)*(postend-poststart);
 			break;
 		}
 		case CONNECTIVITY_TYPE_ONE_TO_ONE:
 		{
             int increment = (preend-prestart);
-            presyns = (int*)realloc(presyns, (numconnections + increment)*sizeof(int));
-            postsyns = (int*)realloc(postsyns, (numconnections + increment)*sizeof(int));
-            weights = (float*)realloc(weights, (numconnections + increment)*sizeof(float));
-            lastactive = (float*)realloc(lastactive, (numconnections + increment)*sizeof(float));
-            delays = (int*)realloc(delays, (numconnections + increment)*sizeof(int));
-            stdp = (int*)realloc(stdp, (numconnections + increment)*sizeof(int));
+            presyns = (int*)realloc(presyns, (total_number_of_connections + increment)*sizeof(int));
+            postsyns = (int*)realloc(postsyns, (total_number_of_connections + increment)*sizeof(int));
+            weights = (float*)realloc(weights, (total_number_of_connections + increment)*sizeof(float));
+            lastactive = (float*)realloc(lastactive, (total_number_of_connections + increment)*sizeof(float));
+            delays = (int*)realloc(delays, (total_number_of_connections + increment)*sizeof(int));
+            stdp = (int*)realloc(stdp, (total_number_of_connections + increment)*sizeof(int));
             
 			// If the connectivity is one_to_one
 			if ((preend-prestart) != (postend-poststart)){
@@ -168,31 +168,31 @@ void Connections::AddGroup(	int prepop,
 			}
 			// Create the connectivity
 			for (int i = 0; i < (preend-prestart); i++){
-				presyns[numconnections + i] = prestart + i;
-				postsyns[numconnections + i] = poststart + i;
+				presyns[total_number_of_connections + i] = prestart + i;
+				postsyns[total_number_of_connections + i] = poststart + i;
 				// Setting up the weights
-				if (weightrange[0] == weightrange[1]) {
-					weights[numconnections + i] = weightrange[0];
+				if (weight_range[0] == weight_range[1]) {
+					weights[total_number_of_connections + i] = weight_range[0];
 				} else {
-					float rndweight = weightrange[0] + (weightrange[1] - weightrange[0])*((float)rand() / (RAND_MAX));
-					weights[numconnections + i] = rndweight;
+					float rndweight = weight_range[0] + (weight_range[1] - weight_range[0])*((float)rand() / (RAND_MAX));
+					weights[total_number_of_connections + i] = rndweight;
 				}
 				// Setting up the delays
-				if (delayrange[0] == delayrange[1]) {
-					delays[numconnections + i] = delayrange[0];
+				if (delay_range[0] == delay_range[1]) {
+					delays[total_number_of_connections + i] = delay_range[0];
 				} else {
-					float rnddelay = delayrange[0] + (delayrange[1] - delayrange[0])*((float)rand() / (RAND_MAX));
-					delays[numconnections + i] = round(rnddelay);
+					float rnddelay = delay_range[0] + (delay_range[1] - delay_range[0])*((float)rand() / (RAND_MAX));
+					delays[total_number_of_connections + i] = round(rnddelay);
 				}
 				// Setup STDP
-				if (stdpswitch){
-					stdp[numconnections + i] = 1;
+				if (stdp_on){
+					stdp[total_number_of_connections + i] = 1;
 				} else {
-					stdp[numconnections + i] = 0;
+					stdp[total_number_of_connections + i] = 0;
 				}
 			}
 			// Increment count
-			numconnections += preend-prestart;
+			total_number_of_connections += preend-prestart;
 			break;
 		}
 		case CONNECTIVITY_TYPE_RANDOM:
@@ -206,35 +206,35 @@ void Connections::AddGroup(	int prepop,
 					// If it is within the probability range, connect!
 					if (prob < parameter){
 						// Increase count
-						numconnections += 1;
-						presyns = (int*)realloc(presyns, (numconnections)*sizeof(int));
-						postsyns = (int*)realloc(postsyns, (numconnections)*sizeof(int));
-						weights = (float*)realloc(weights, (numconnections)*sizeof(float));
-						lastactive = (float*)realloc(lastactive, (numconnections)*sizeof(float));
-						delays = (int*)realloc(delays, (numconnections)*sizeof(int));
-						stdp = (int*)realloc(stdp, (numconnections)*sizeof(int));
+						total_number_of_connections += 1;
+						presyns = (int*)realloc(presyns, (total_number_of_connections)*sizeof(int));
+						postsyns = (int*)realloc(postsyns, (total_number_of_connections)*sizeof(int));
+						weights = (float*)realloc(weights, (total_number_of_connections)*sizeof(float));
+						lastactive = (float*)realloc(lastactive, (total_number_of_connections)*sizeof(float));
+						delays = (int*)realloc(delays, (total_number_of_connections)*sizeof(int));
+						stdp = (int*)realloc(stdp, (total_number_of_connections)*sizeof(int));
 						// Setup Synapses
-						presyns[numconnections - 1] = i;
-						postsyns[numconnections - 1] = j;
+						presyns[total_number_of_connections - 1] = i;
+						postsyns[total_number_of_connections - 1] = j;
 						// Setup Weights
-						if (weightrange[0] == weightrange[1]) {
-							weights[numconnections - 1] = weightrange[0];
+						if (weight_range[0] == weight_range[1]) {
+							weights[total_number_of_connections - 1] = weight_range[0];
 						} else {
-							float rndweight = weightrange[0] + (weightrange[1] - weightrange[0])*((float)rand() / (RAND_MAX));
-							weights[numconnections - 1] = rndweight;
+							float rndweight = weight_range[0] + (weight_range[1] - weight_range[0])*((float)rand() / (RAND_MAX));
+							weights[total_number_of_connections - 1] = rndweight;
 						}
 						// Setup Delays
-						if (delayrange[0] == delayrange[1]) {
-							delays[numconnections - 1] = delayrange[0];
+						if (delay_range[0] == delay_range[1]) {
+							delays[total_number_of_connections - 1] = delay_range[0];
 						} else {
-							float rnddelay = delayrange[0] + (delayrange[1] - delayrange[0])*((float)rand() / (RAND_MAX));
-							delays[numconnections - 1] = round(rnddelay);
+							float rnddelay = delay_range[0] + (delay_range[1] - delay_range[0])*((float)rand() / (RAND_MAX));
+							delays[total_number_of_connections - 1] = round(rnddelay);
 						}
 						// Setup STDP
-						if (stdpswitch){
-							stdp[numconnections - 1] = 1;
+						if (stdp_on){
+							stdp[total_number_of_connections - 1] = 1;
 						} else {
-							stdp[numconnections - 1] = 0;
+							stdp[total_number_of_connections - 1] = 0;
 						}
 					}
 				}
@@ -249,10 +249,10 @@ void Connections::AddGroup(	int prepop,
 			float gaussian_scaling_factor = 1.0f;
 			if (parameter_two != 0.0f){
 				gaussian_scaling_factor = 0.0f;
-				int pre_x = pop_shapes[prepop][0] / 2;
-				int pre_y = pop_shapes[prepop][1] / 2;
-				for (int i = 0; i < pop_shapes[postpop][0]; i++){
-					for (int j = 0; j < pop_shapes[postpop][1]; j++){
+				int pre_x = group_shapes[presynaptic_group_id][0] / 2;
+				int pre_y = group_shapes[presynaptic_group_id][1] / 2;
+				for (int i = 0; i < group_shapes[postsynaptic_group_id][0]; i++){
+					for (int j = 0; j < group_shapes[postsynaptic_group_id][1]; j++){
 						// Post XY
 						int post_x = i;
 						int post_y = j;
@@ -272,45 +272,45 @@ void Connections::AddGroup(	int prepop,
 					float prob = ((float) rand() / (RAND_MAX));
 					// Get the relative distance from the two neurons
 					// Pre XY
-					int pre_x = (i-prestart) % pop_shapes[prepop][0];
-					int pre_y = floor((float)(i-prestart) / pop_shapes[prepop][0]);
+					int pre_x = (i-prestart) % group_shapes[presynaptic_group_id][0];
+					int pre_y = floor((float)(i-prestart) / group_shapes[presynaptic_group_id][0]);
 					// Post XY
-					int post_x = (j-poststart) % pop_shapes[postpop][0];
-					int post_y = floor((float)(j-poststart) / pop_shapes[postpop][0]);
+					int post_x = (j-poststart) % group_shapes[postsynaptic_group_id][0];
+					int post_y = floor((float)(j-poststart) / group_shapes[postsynaptic_group_id][0]);
 					// Distance
 					float distance = sqrt((pow((float)(pre_x - post_x), 2.0f) + pow((float)(pre_y - post_y), 2.0f)));
 					// If it is within the probability range, connect!
 					if (prob <= ((GAUS(distance, parameter)) / gaussian_scaling_factor)){
 						// Increase count
-						numconnections += 1;
-						presyns = (int*)realloc(presyns, (numconnections)*sizeof(int));
-						postsyns = (int*)realloc(postsyns, (numconnections)*sizeof(int));
-						weights = (float*)realloc(weights, (numconnections)*sizeof(float));
-						lastactive = (float*)realloc(lastactive, (numconnections)*sizeof(float));
-						delays = (int*)realloc(delays, (numconnections)*sizeof(int));
-						stdp = (int*)realloc(stdp, (numconnections)*sizeof(int));
+						total_number_of_connections += 1;
+						presyns = (int*)realloc(presyns, (total_number_of_connections)*sizeof(int));
+						postsyns = (int*)realloc(postsyns, (total_number_of_connections)*sizeof(int));
+						weights = (float*)realloc(weights, (total_number_of_connections)*sizeof(float));
+						lastactive = (float*)realloc(lastactive, (total_number_of_connections)*sizeof(float));
+						delays = (int*)realloc(delays, (total_number_of_connections)*sizeof(int));
+						stdp = (int*)realloc(stdp, (total_number_of_connections)*sizeof(int));
 						// Setup Synapses
-						presyns[numconnections - 1] = i;
-						postsyns[numconnections - 1] = j;
+						presyns[total_number_of_connections - 1] = i;
+						postsyns[total_number_of_connections - 1] = j;
 						// Setup Weights
-						if (weightrange[0] == weightrange[1]) {
-							weights[numconnections - 1] = weightrange[0];
+						if (weight_range[0] == weight_range[1]) {
+							weights[total_number_of_connections - 1] = weight_range[0];
 						} else {
-							float rndweight = weightrange[0] + (weightrange[1] - weightrange[0])*((float)rand() / (RAND_MAX));
-							weights[numconnections - 1] = rndweight;
+							float rndweight = weight_range[0] + (weight_range[1] - weight_range[0])*((float)rand() / (RAND_MAX));
+							weights[total_number_of_connections - 1] = rndweight;
 						}
 						// Setup Delays
-						if (delayrange[0] == delayrange[1]) {
-							delays[numconnections - 1] = delayrange[0];
+						if (delay_range[0] == delay_range[1]) {
+							delays[total_number_of_connections - 1] = delay_range[0];
 						} else {
-							float rnddelay = delayrange[0] + (delayrange[1] - delayrange[0])*((float)rand() / (RAND_MAX));
-							delays[numconnections - 1] = round(rnddelay);
+							float rnddelay = delay_range[0] + (delay_range[1] - delay_range[0])*((float)rand() / (RAND_MAX));
+							delays[total_number_of_connections - 1] = round(rnddelay);
 						}
 						// Setup STDP
-						if (stdpswitch){
-							stdp[numconnections - 1] = 1;
+						if (stdp_on){
+							stdp[total_number_of_connections - 1] = 1;
 						} else {
-							stdp[numconnections - 1] = 0;
+							stdp[total_number_of_connections - 1] = 0;
 						}
 					}
 				}
@@ -345,36 +345,36 @@ void Connections::AddGroup(	int prepop,
 					temp = int(randn(mu, sigma));
 					if ((temp >= 0) && (temp < out_size)){
 						// Create space for a connection
-						numconnections += 1;
-						presyns = (int*)realloc(presyns, (numconnections)*sizeof(int));
-						postsyns = (int*)realloc(postsyns, (numconnections)*sizeof(int));
-						weights = (float*)realloc(weights, (numconnections)*sizeof(float));
-						lastactive = (float*)realloc(lastactive, (numconnections)*sizeof(float));
-						delays = (int*)realloc(delays, (numconnections)*sizeof(int));
-						stdp = (int*)realloc(stdp, (numconnections)*sizeof(int));
+						total_number_of_connections += 1;
+						presyns = (int*)realloc(presyns, (total_number_of_connections)*sizeof(int));
+						postsyns = (int*)realloc(postsyns, (total_number_of_connections)*sizeof(int));
+						weights = (float*)realloc(weights, (total_number_of_connections)*sizeof(float));
+						lastactive = (float*)realloc(lastactive, (total_number_of_connections)*sizeof(float));
+						delays = (int*)realloc(delays, (total_number_of_connections)*sizeof(int));
+						stdp = (int*)realloc(stdp, (total_number_of_connections)*sizeof(int));
 						// Setup the synapses:
 						// Setup Synapses
-						presyns[numconnections - 1] = i;
-						postsyns[numconnections - 1] = poststart + temp;
+						presyns[total_number_of_connections - 1] = i;
+						postsyns[total_number_of_connections - 1] = poststart + temp;
 						// Setup Weights
-						if (weightrange[0] == weightrange[1]) {
-							weights[numconnections - 1] = weightrange[0];
+						if (weight_range[0] == weight_range[1]) {
+							weights[total_number_of_connections - 1] = weight_range[0];
 						} else {
-							float rndweight = weightrange[0] + (weightrange[1] - weightrange[0])*((float)rand() / (RAND_MAX));
-							weights[numconnections - 1] = rndweight;
+							float rndweight = weight_range[0] + (weight_range[1] - weight_range[0])*((float)rand() / (RAND_MAX));
+							weights[total_number_of_connections - 1] = rndweight;
 						}
 						// Setup Delays
-						if (delayrange[0] == delayrange[1]) {
-							delays[numconnections - 1] = delayrange[0];
+						if (delay_range[0] == delay_range[1]) {
+							delays[total_number_of_connections - 1] = delay_range[0];
 						} else {
-							float rnddelay = delayrange[0] + (delayrange[1] - delayrange[0])*((float)rand() / (RAND_MAX));
-							delays[numconnections - 1] = round(rnddelay);
+							float rnddelay = delay_range[0] + (delay_range[1] - delay_range[0])*((float)rand() / (RAND_MAX));
+							delays[total_number_of_connections - 1] = round(rnddelay);
 						}
 						// Setup STDP
-						if (stdpswitch){
-							stdp[numconnections - 1] = 1;
+						if (stdp_on){
+							stdp[total_number_of_connections - 1] = 1;
 						} else {
-							stdp[numconnections - 1] = 0;
+							stdp[total_number_of_connections - 1] = 0;
 						}
 						// Increment conn_tgts
 						++conn_tgts;
@@ -387,35 +387,35 @@ void Connections::AddGroup(	int prepop,
 		{
 			// If we desire a single connection
 			// Increase count
-			numconnections += 1;
-			presyns = (int*)realloc(presyns, (numconnections)*sizeof(int));
-			postsyns = (int*)realloc(postsyns, (numconnections)*sizeof(int));
-			weights = (float*)realloc(weights, (numconnections)*sizeof(float));
-			lastactive = (float*)realloc(lastactive, (numconnections)*sizeof(float));
-			delays = (int*)realloc(delays, (numconnections)*sizeof(int));
-			stdp = (int*)realloc(stdp, (numconnections)*sizeof(int));
+			total_number_of_connections += 1;
+			presyns = (int*)realloc(presyns, (total_number_of_connections)*sizeof(int));
+			postsyns = (int*)realloc(postsyns, (total_number_of_connections)*sizeof(int));
+			weights = (float*)realloc(weights, (total_number_of_connections)*sizeof(float));
+			lastactive = (float*)realloc(lastactive, (total_number_of_connections)*sizeof(float));
+			delays = (int*)realloc(delays, (total_number_of_connections)*sizeof(int));
+			stdp = (int*)realloc(stdp, (total_number_of_connections)*sizeof(int));
 			// Setup Synapses
-			presyns[numconnections - 1] = prestart + int(parameter);
-			postsyns[numconnections - 1] = poststart + int(parameter_two);
+			presyns[total_number_of_connections - 1] = prestart + int(parameter);
+			postsyns[total_number_of_connections - 1] = poststart + int(parameter_two);
 			// Setup Weights
-			if (weightrange[0] == weightrange[1]) {
-				weights[numconnections - 1] = weightrange[0];
+			if (weight_range[0] == weight_range[1]) {
+				weights[total_number_of_connections - 1] = weight_range[0];
 			} else {
-				float rndweight = weightrange[0] + (weightrange[1] - weightrange[0])*((float)rand() / (RAND_MAX));
-				weights[numconnections - 1] = rndweight;
+				float rndweight = weight_range[0] + (weight_range[1] - weight_range[0])*((float)rand() / (RAND_MAX));
+				weights[total_number_of_connections - 1] = rndweight;
 			}
 			// Setup Delays
-			if (delayrange[0] == delayrange[1]) {
-				delays[numconnections - 1] = delayrange[0];
+			if (delay_range[0] == delay_range[1]) {
+				delays[total_number_of_connections - 1] = delay_range[0];
 			} else {
-				float rnddelay = delayrange[0] + (delayrange[1] - delayrange[0])*((float)rand() / (RAND_MAX));
-				delays[numconnections - 1] = round(rnddelay);
+				float rnddelay = delay_range[0] + (delay_range[1] - delay_range[0])*((float)rand() / (RAND_MAX));
+				delays[total_number_of_connections - 1] = round(rnddelay);
 			}
 			// Setup STDP
-			if (stdpswitch){
-				stdp[numconnections - 1] = 1;
+			if (stdp_on){
+				stdp[total_number_of_connections - 1] = 1;
 			} else {
-				stdp[numconnections - 1] = 0;
+				stdp[total_number_of_connections - 1] = 0;
 			}
 			break;
 		}

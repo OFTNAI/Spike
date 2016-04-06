@@ -49,8 +49,8 @@ Simulator::~Simulator(){
 // Timestep Setting function
 void Simulator::SetTimestep(float timest){
 
-	printf("timest = %d", connections->numconnections);
-	if (connections->numconnections == 0){
+	printf("timest = %d", connections->total_number_of_connections);
+	if (connections->total_number_of_connections == 0){
 		timestep = timest;
 	} else {
 		printf("You must set the timestep before creating any synapses. Exiting ...\n\n");
@@ -80,7 +80,7 @@ void Simulator::AddConnectionGroup(int presynaptic_group_id,
 							int connectivity_type,
 							float weight_range[2], 
 							float delay_range[2],
-							bool stdp,
+							bool stdp_on,
 							float parameter,
 							float parameter_two) {
 	
@@ -98,7 +98,7 @@ void Simulator::AddConnectionGroup(int presynaptic_group_id,
 							connectivity_type, 
 							weight_range,
 							delay_range_in_timesteps,
-							stdp,
+							stdp_on,
 							parameter,
 							parameter_two);
 }
@@ -111,7 +111,7 @@ void Simulator::Run(float totaltime, int numEpochs, bool saveSpikes, bool random
 	printf("Simulation Beginning\n");
 	printf("Time Step: %f\nNumber of Stimuli: %d\nNumber of Epochs: %d\n\n", timestep, numStimuli, numEpochs);
 	printf("Total Number of Neurons: %d\n", model_neurons->total_number_of_neurons);
-	printf("Total Number of Synapses: %d\n\n", connections->numconnections);
+	printf("Total Number of Synapses: %d\n\n", connections->total_number_of_connections);
 	if (randomPresentation)
 		printf("Stimuli to be presented in a random order.\n");
 	if (saveSpikes)
@@ -134,7 +134,7 @@ void Simulator::Run(float totaltime, int numEpochs, bool saveSpikes, bool random
 	// Do the SPIKING SIMULATION!
 	GPUDeviceComputation (
 					model_neurons->total_number_of_neurons,
-					connections->numconnections,
+					connections->total_number_of_connections,
 					connections->presyns,
 					connections->postsyns,
 					connections->delays,

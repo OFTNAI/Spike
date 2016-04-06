@@ -13,7 +13,7 @@ public:
 	Connections();
 	~Connections();
 	// Variables;
-	int numconnections;
+	int total_number_of_connections;
 	// STDP
 	struct stdp_struct stdp_vars;
 	void SetSTDP(float w_max_new,
@@ -29,14 +29,14 @@ public:
 	int* delays;
 	int* stdp;
 	// Synapse Functions
-	void AddGroup(int prepop, 
-						int postpop, 
-						int* popNums,
-						int** pop_shapes, 
+	void AddGroup(int presynaptic_group_id, 
+						int postsynaptic_group_id, 
+						int* last_neuron_indices_for_each_neuron_group,
+						int** neuron_group_shapes, 
 						int connectivity_type,
-						float weightrange[2],
-						int delayrange[2],
-						bool stdpswitch,
+						float weight_range[2],
+						int delay_range[2],
+						bool stdp_on,
 						float parameter,
 						float parameter_two);
 };
