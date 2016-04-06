@@ -1,5 +1,5 @@
-//	ModelNeurons Class C++
-//	ModelNeurons.cpp
+//	Neurons Class C++
+//	Neurons.cpp
 //
 //	Author: Nasir Ahmad
 //	Date: 7/12/2015
@@ -7,13 +7,13 @@
 //  Adapted from NeuronPopulations by Nasir Ahmad and James Isbister
 //	Date: 6/4/2016
 
-#include "ModelNeurons.h"
+#include "Neurons.h"
 #include <stdlib.h>
 #include <stdio.h>
 
 
-// ModelNeurons Constructor
-ModelNeurons::ModelNeurons() {
+// Neurons Constructor
+Neurons::Neurons() {
 
 	// Set totals to zero
 	total_number_of_neurons = 0;
@@ -27,8 +27,8 @@ ModelNeurons::ModelNeurons() {
 }
 
 
-// ModelNeurons Destructor
-ModelNeurons::~ModelNeurons() {
+// Neurons Destructor
+Neurons::~Neurons() {
 
 	// Free up memory
 	free(group_shapes);
@@ -38,7 +38,7 @@ ModelNeurons::~ModelNeurons() {
 }
 
 
-int ModelNeurons::AddGroup(neuron_struct params, int group_shape[2]){
+int Neurons::AddGroup(neuron_struct params, int group_shape[2]){
 	
 	int number_of_neurons_in_group = group_shape[0]*group_shape[1];
  

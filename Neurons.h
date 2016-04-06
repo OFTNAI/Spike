@@ -1,5 +1,5 @@
-//	ModelNeurons Class Header
-//	ModelNeurons.h
+//	Neurons Class Header
+//	Neurons.h
 //
 //	Author: Nasir Ahmad
 //	Date: 7/12/2015
@@ -7,16 +7,16 @@
 //  Adapted from NeuronPopulations by Nasir Ahmad and James Isbister
 //	Date: 6/4/2016
 
-#ifndef ModelNeurons_H
-#define ModelNeurons_H
+#ifndef Neurons_H
+#define Neurons_H
 
 #include "Structs.h"
 
-class ModelNeurons{
+class Neurons{
 public:
 	// Constructor/Destructor
-	ModelNeurons();
-	~ModelNeurons();
+	Neurons();
+	~Neurons();
 
 	// Totals
 	int total_number_of_neurons;
