@@ -4,6 +4,9 @@
 //	Author: Nasir Ahmad
 //	Date: 9/12/2015
 
+//  Adapted by Nasir Ahmad and James Isbister
+//	Date: 23/3/2016
+
 // For files/manipulations
 #include <iostream>
 #include <fstream>
@@ -16,64 +19,9 @@ using namespace std;
 #include "CUDAcode.h"
 #include "Structs.h"
 #include <time.h>
+#include "CUDAErrorCheckHelpers.h"
 // Silences the printfs
 //#define QUIETSTART
-
-
-// I must ensure that I carry out the correct error checking:
-
-// Define this to turn on error checking
-#define CUDA_ERROR_CHECK
-
-// The two functions that we can use
-#define CudaSafeCall( err ) __cudaSafeCall( err, __FILE__, __LINE__ )
-#define CudaCheckError()    __cudaCheckError( __FILE__, __LINE__ )
-
-// When we wish to check for errors in functions such as malloc directly
-inline void __cudaSafeCall( cudaError err, const char *file, const int line )
-{
-// If we want to do error-checking
-#ifdef CUDA_ERROR_CHECK
-	// Check for success
-    if ( cudaSuccess != err )
-    {
-    	// Output the issue if there is one
-        fprintf( stderr, "cudaSafeCall() failed at %s:%i : %s\n",
-                 file, line, cudaGetErrorString( err ) );
-        exit( -1 );
-    }
-#endif
-
-    return;
-}
-
-// When we wish to check that functions did not introduce errors
-inline void __cudaCheckError( const char *file, const int line )
-{
-#ifdef CUDA_ERROR_CHECK
-	// Get last error (i.e. in the function that has just run)
-    cudaError err = cudaGetLastError();
-    if ( cudaSuccess != err )
-    {
-        fprintf( stderr, "cudaCheckError() failed at %s:%i : %s\n",
-                 file, line, cudaGetErrorString( err ) );
-        exit( -1 );
-    }
-
-    // More careful checking. However, this will affect performance.
-    // Comment away if needed.
-    err = cudaDeviceSynchronize();
-    if( cudaSuccess != err )
-    {
-        fprintf( stderr, "cudaCheckError() with sync failed at %s:%i : %s\n",
-                 file, line, cudaGetErrorString( err ) );
-        exit( -1 );
-    }
-#endif
-
-    return;
-}
-
 
 
 // CUDA Spiking Simulator Run

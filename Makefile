@@ -12,6 +12,12 @@ CC = nvcc
 # Wall flag is inefficient
 CFLAGS = -c
 
+# Mac OS X 10.9+ uses libc++, which is an implementation of c++11 standard library. 
+# We must therefore specify c++11 as standard for out of the box compilation on Linux. 
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Linux)
+	CFLAGS += --std=c++11 
+endif
 
 
 # Default
@@ -19,15 +25,15 @@ model: ${FILE}
 
 
 # Separating out the individual compilations so as not to compilation time
-${FILE}: ${FILE}.o Spike.o NeuronPopulations.o Synapse.o CUDAcode.o NeuronDynamics.o STDPDynamics.o
-	$(CC) ${FILE}.o Spike.o NeuronPopulations.o Synapse.o CUDAcode.o NeuronDynamics.o STDPDynamics.o -o ${FILE}
+${FILE}: ${FILE}.o Simulator.o NeuronPopulations.o Synapse.o CUDAcode.o NeuronDynamics.o STDPDynamics.o
+	$(CC) ${FILE}.o Simulator.o NeuronPopulations.o Synapse.o CUDAcode.o NeuronDynamics.o STDPDynamics.o -o ${FILE}
 
 # Compiling the Model file
 ${FILE}.o: ${FILE}.cpp
 	$(CC) $(CFLAGS) ${FILE}.cpp
-# Compiling the Spike class
-Spike.o: Spike.cpp
-	$(CC) $(CFLAGS) Spike.cpp
+# Compiling the Simulator class
+Simulator.o: Simulator.cpp
+	$(CC) $(CFLAGS) Simulator.cpp
 # Compiling the Neuron class
 NeuronPopulations.o: NeuronPopulations.cpp
 	$(CC) $(CFLAGS) NeuronPopulations.cpp
@@ -46,8 +52,8 @@ STDPDynamics.o: STDPDynamics.cu
 
 
 # Test script
-test: Spike.o NeuronPopulations.o Synapse.o CUDAcode.o NeuronDynamics.o STDPDynamics.o
-	$(CC) Tests.cu Spike.o NeuronPopulations.o Synapse.o CUDAcode.o NeuronDynamics.o STDPDynamics.o -o unittests
+test: Simulator.o NeuronPopulations.o Synapse.o CUDAcode.o NeuronDynamics.o STDPDynamics.o
+	$(CC) Tests.cu Simulator.o NeuronPopulations.o Synapse.o CUDAcode.o NeuronDynamics.o STDPDynamics.o -o unittests
 cleantest:
 	rm *.o unittests
 

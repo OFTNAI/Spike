@@ -3,18 +3,21 @@
 //	Author: Nasir Ahmad
 //	Date: 16/03/2016
 
+//  Adapted by Nasir Ahmad and James Isbister
+//	Date: 23/3/2016
+
 // To create the executable for this network, run:
 // make FILE="Example" model
 
 
-#include "Spike.h"
+#include "Simulator.h"
 #include "Constants.h"
 // The function which will autorun when the executable is created
 int main (int argc, char *argv[]){
 	// Set the timestep of the simulation as required (timestep is measure in seconds)
 	float timest = 0.001;
 	// Create an instance of the Simulator and set the timestep
-	Spike simulator;
+	Simulator simulator;
 	simulator.SetTimestep(timest);
 
 	/*

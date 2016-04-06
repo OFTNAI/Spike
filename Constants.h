@@ -13,7 +13,7 @@ enum NEURON_TYPE
 {
     NEURON_TYPE_IZHIKEVICH,
     NEURON_TYPE_POISSON,
-    NEURON_TYPE_GEN //?? In Spike, what are they for? Generator?
+    NEURON_TYPE_GEN
     
 };
 

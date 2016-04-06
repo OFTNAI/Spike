@@ -1,11 +1,16 @@
-// Spike Class Header
-// Spike.h
+// 	Simulator Class Header
+// 	Simulator.h
 //
-//	Author: Nasir Ahmad
+//	Original Author: Nasir Ahmad
 //	Date: 8/12/2015
+//	Originally Spike.h
+//  
+//  Adapted by Nasir Ahmad and James Isbister
+//	Date: 6/4/2016
 
-#ifndef Spike_H
-#define Spike_H
+
+#ifndef Simulator_H
+#define Simulator_H
 // Silences the printfs
 //#define QUIETSTART
 
@@ -14,12 +19,12 @@
 #include "Synapse.h"
 #include "CUDAcode.h"
 
-// Spike Class for running of the simulations
-class Spike{
+// Simulator Class for running of the simulations
+class Simulator{
 public:
 	// Constructor/Destructor
-	Spike();
-	~Spike();
+	Simulator();
+	~Simulator();
 	// Initialise Classes
 	NeuronPopulations population;
 	Synapse synconnects;

@@ -1,8 +1,11 @@
-// Creating a set of tests for my Spike Simulator
+// Set of tests for Spike Simulator
 // Using Catch.hpp to carry out testing
 //
 //	Author: Nasir Ahmad
 //	Date of Creation: 16/12/2015
+//  
+//  Adapted by Nasir Ahmad and James Isbister
+//	Date: 23/3/2016
 
 // Developed upon Catch.hpp version 1.3.1
 
@@ -675,14 +678,14 @@ TEST_CASE("Synapse GAUSSIAN 2D Creation", "[Synapse]"){
 
 /*
 
-		SPIKE CLASS TESTS
+		SIMULATOR CLASS TESTS
 
 */
 // Unit testing
-#include "Spike.h"
-TEST_CASE("Spike Constructor", "[Spike]"){
+#include "Simulator.h"
+TEST_CASE("Simulator Constructor", "[Simulator]"){
 	// Testing the defaults
-	Spike sim;
+	Simulator sim;
 	// Things for checking
 	REQUIRE(sim.numPops == 0);
 	REQUIRE(sim.numConnects == 0);
@@ -695,9 +698,9 @@ TEST_CASE("Spike Constructor", "[Spike]"){
 	REQUIRE(sim.synconnects.stdp_vars.w_max == 60.0f);
 }
 // Checking the allocation of a timestep
-TEST_CASE("Spike Timestep Setting", "[Spike]"){
+TEST_CASE("Simulator Timestep Setting", "[Simulator]"){
 	// Creating an instance
-	Spike sim;
+	Simulator sim;
 	// Initially check default timestep
 	REQUIRE(sim.timestep == 0.001f);
 	// Change timestep and check again
@@ -705,9 +708,9 @@ TEST_CASE("Spike Timestep Setting", "[Spike]"){
 	REQUIRE(sim.timestep == 0.05f);
 }
 // Try creating Poisson Neurons
-TEST_CASE("Spike Poisson Neurons", "[Spike]"){
+TEST_CASE("Simulator Poisson Neurons", "[Simulator]"){
 	// Creating an instance
-	Spike sim;
+	Simulator sim;
 	// Parameterise the population
 	struct neuron_struct rate;
 	rate.rate = 30.0f;
@@ -733,9 +736,9 @@ TEST_CASE("Spike Poisson Neurons", "[Spike]"){
 }
 // Check that the delay created is correct
 // Try creating Poisson Neurons
-TEST_CASE("Spike Create Connection", "[Spike]"){
+TEST_CASE("Simulator Create Connection", "[Simulator]"){
 	// Creating an instance
-	Spike sim;
+	Simulator sim;
 	// Parameterise the population
 	struct neuron_struct paramCort;
 	struct neuron_struct rate;
@@ -761,9 +764,9 @@ TEST_CASE("Spike Create Connection", "[Spike]"){
 // Check the creation of the poisson mask
 // Check that the delay created is correct
 // Try creating Poisson Neurons
-TEST_CASE("Spike Create Poisson Mask", "[Spike]"){
+TEST_CASE("Simulator Create Poisson Mask", "[Simulator]"){
 	// Creating an instance
-	Spike sim;
+	Simulator sim;
 	// Parameterise the population
 	struct neuron_struct paramCort;
 	struct neuron_struct rate;
@@ -789,9 +792,9 @@ TEST_CASE("Spike Create Poisson Mask", "[Spike]"){
 }
 
 // Check the creation of Spike Generator Populations
-TEST_CASE("Spike Create Spike Generators", "[Spike]"){
+TEST_CASE("Simulator Create Spike Generators", "[Simulator]"){
 	// Creating an instance
-	Spike sim;
+	Simulator sim;
 	// Parameterise the population
 	struct neuron_struct paramCort;
 	struct neuron_struct rate;
@@ -893,64 +896,13 @@ TEST_CASE("Spike Create Spike Generators", "[Spike]"){
 #include <cuda.h>
 // Unit testing
 #include "CUDAcode.h"
-// I must ensure that I carry out the correct error checking:
+#include "CUDAErrorCheckHelpers.h"
 
-// Define this to turn on error checking
-#define CUDA_ERROR_CHECK
 
-// The two functions that we can use
-#define CudaSafeCall( err ) __cudaSafeCall( err, __FILE__, __LINE__ )
-#define CudaCheckError()    __cudaCheckError( __FILE__, __LINE__ )
-
-// When we wish to check for errors in functions such as malloc directly
-inline void __cudaSafeCall( cudaError err, const char *file, const int line )
-{
-// If we want to do error-checking
-#ifdef CUDA_ERROR_CHECK
-	// Check for success
-    if ( cudaSuccess != err )
-    {
-    	// Output the issue if there is one
-        fprintf( stderr, "cudaSafeCall() failed at %s:%i : %s\n",
-                 file, line, cudaGetErrorString( err ) );
-        exit( -1 );
-    }
-#endif
-
-    return;
-}
-
-// When we wish to check that functions did not introduce errors
-inline void __cudaCheckError( const char *file, const int line )
-{
-#ifdef CUDA_ERROR_CHECK
-	// Get last error (i.e. in the function that has just run)
-    cudaError err = cudaGetLastError();
-    if ( cudaSuccess != err )
-    {
-        fprintf( stderr, "cudaCheckError() failed at %s:%i : %s\n",
-                 file, line, cudaGetErrorString( err ) );
-        exit( -1 );
-    }
-
-    // More careful checking. However, this will affect performance.
-    // Comment away if needed.
-    err = cudaDeviceSynchronize();
-    if( cudaSuccess != err )
-    {
-        fprintf( stderr, "cudaCheckError() with sync failed at %s:%i : %s\n",
-                 file, line, cudaGetErrorString( err ) );
-        exit( -1 );
-    }
-#endif
-
-    return;
-}
-
-TEST_CASE("CUDA Poisson Update Test", "[Spike]"){
+TEST_CASE("CUDA Poisson Update Test", "[Simulator]"){
 	// Get the default timestep
-	// Create instance of Spike
-	Spike sim;
+	// Create instance of Simulator
+	Simulator sim;
 	// Creating some example data
 	size_t numNeurons = 10;
 	float h_randoms[] = {0.0001f, 0.9f, 0.08f, 0.007f, 0.006f, 0.5f, 0.04f, 0.003f, 0.0002f, 0.1f};
@@ -1004,7 +956,7 @@ TEST_CASE("CUDA Poisson Update Test", "[Spike]"){
 	}
 }
 
-TEST_CASE("CUDA Current Calculation Test", "[Spike]"){
+TEST_CASE("CUDA Current Calculation Test", "[Simulator]"){
 	// Creating some example data
 	int h_spikes[] = {0, 1, 2, 3, 4, 2, 3, 1, 2};
 	int h_postsyns[] = {8, 7, 6, 5, 4, 3, 2, 1, 0};
@@ -1077,7 +1029,7 @@ TEST_CASE("CUDA Current Calculation Test", "[Spike]"){
 	CudaSafeCall(cudaFree(d_currinj));
 }
 
-TEST_CASE("CUDA LTD Test", "[Spike]"){
+TEST_CASE("CUDA LTD Test", "[Simulator]"){
 	// Creating some example data
 	int h_stdp[] = {0, 0, 0, 0, 1, 1, 1, 1, 1};
 	int h_postsyns[] = {8, 7, 6, 5, 4, 3, 2, 1, 0};
@@ -1147,10 +1099,10 @@ TEST_CASE("CUDA LTD Test", "[Spike]"){
 	CudaSafeCall(cudaFree(d_lastspiketime));
 }
 
-TEST_CASE("CUDA State Update Test", "[Spike]"){
+TEST_CASE("CUDA State Update Test", "[Simulator]"){
 	// Get the default timestep
-	// Create instance of Spike
-	Spike sim;
+	// Create instance of Simulator
+	Simulator sim;
 	// Creating some example data
 	float h_neuron_v[] = {-30.0f, -30.0f, -30.0f, -30.0f, -30.0f, -30.0f, -30.0f, -30.0f, -30.0f, -30.0f};
 	float h_neuron_u[] = {0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f};
@@ -1204,7 +1156,7 @@ TEST_CASE("CUDA State Update Test", "[Spike]"){
 	CudaSafeCall(cudaFree(d_currinj));
 }
 
-TEST_CASE("CUDA Spiking Neurons Test", "[Spike]"){
+TEST_CASE("CUDA Spiking Neurons Test", "[Simulator]"){
 	// Creating some example data
 	float h_neuron_v[] = {-30.0f, 30.0f, -20.0f, 20.0f, -40.0f, 40.0f, -50.0f, 50.0f, 90.0f, -3.0f};
 	float h_neuron_u[] = {0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f};
@@ -1264,7 +1216,7 @@ TEST_CASE("CUDA Spiking Neurons Test", "[Spike]"){
 	CudaSafeCall(cudaFree(d_lastspiketime));
 }
 
-TEST_CASE("CUDA Spiking Synapse Test", "[Spike]"){
+TEST_CASE("CUDA Spiking Synapse Test", "[Simulator]"){
 	// Creating some example data
 	int h_presyns[] = {8, 7, 6, 5, 4, 3, 2, 1, 0};
 	int h_spikes[] = {0, -1, 2, 0, 4, -1, 3, -1, -22};
@@ -1335,7 +1287,7 @@ TEST_CASE("CUDA Spiking Synapse Test", "[Spike]"){
 	CudaSafeCall(cudaFree(d_delays));
 }
 
-TEST_CASE("CUDA LTP Test", "[Spike]"){
+TEST_CASE("CUDA LTP Test", "[Simulator]"){
 	// Creating some example data
 	int h_stdp[] = {0, 0, 0, 0, 1, 1, 1, 1, 1};
 	int h_postsyns[] = {8, 7, 6, 5, 4, 3, 2, 1, 0};
@@ -1405,10 +1357,10 @@ TEST_CASE("CUDA LTP Test", "[Spike]"){
 	CudaSafeCall(cudaFree(d_lastspiketime));
 }
 
-TEST_CASE("CUDA Spike Generator Update Test", "[Spike]"){
+TEST_CASE("CUDA Spike Generator Update Test", "[Simulator]"){
 	// Get the default timestep
-	// Create instance of Spike
-	Spike sim;
+	// Create instance of Simulator
+	Simulator sim;
 	// Creating some example data
 	size_t numNeurons = 10;
 	float h_neuron_v[] = {-30.0f, -30.0f, -30.0f, -30.0f, -30.0f, -30.0f, -30.0f, -30.0f, -30.0f, -30.0f};

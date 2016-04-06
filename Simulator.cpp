@@ -1,18 +1,22 @@
-//	Spike Simulator AIO
+// 	Simulator Class
+// 	Simulator.cpp
 //
-//
-//	Author: Nasir Ahmad
+//	Original Author: Nasir Ahmad
 //	Date: 8/12/2015
+//	Originally Spike.cpp
+//  
+//  Adapted by Nasir Ahmad and James Isbister
+//	Date: 23/3/2016
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <cmath>
-#include "Spike.h"
+#include "Simulator.h"
 #include "Constants.h"
 
 
 // Constructor
-Spike::Spike(){
+Simulator::Simulator(){
 	// Spike Generators
 	numStimuli = 0;
 	numEntries = NULL;
@@ -32,14 +36,14 @@ Spike::Spike(){
 }
 
 // Destructor
-Spike::~Spike(){
+Simulator::~Simulator(){
 	free(numEntries);
 	free(genids);
 	free(gentimes);
 }
 
 // Timestep Setting function
-void Spike::SetTimestep(float timest){
+void Simulator::SetTimestep(float timest){
 	if (synconnects.numconnections == 0){
 		timestep = timest;
 	} else {
@@ -53,7 +57,7 @@ void Spike::SetTimestep(float timest){
 //		Number of Neurons
 //		Type of Neural Population e.g. "izh"
 //		Izhikevich Parameter List {a, b, c, d}
-int Spike::CreateNeurons(int neuron_type, struct neuron_struct params, int shape[2]){
+int Simulator::CreateNeurons(int neuron_type, struct neuron_struct params, int shape[2]){
     
     int number = shape[0]*shape[1];
     
@@ -86,7 +90,7 @@ int Spike::CreateNeurons(int neuron_type, struct neuron_struct params, int shape
 //		Number of entries in our arrays
 //		Array of generator indices (neuron IDs)
 //		Corresponding array of the spike times for each instance
-void Spike::CreateGenerator(int popID, int stimulusid, int spikenumber, int* ids, float* spiketimes){
+void Simulator::CreateGenerator(int popID, int stimulusid, int spikenumber, int* ids, float* spiketimes){
 	// We have to ensure that we have created space for the current stimulus.
 	if ((numStimuli - 1) < stimulusid) {
 		// Check what the difference is and quit if it is too high
@@ -137,7 +141,7 @@ void Spike::CreateGenerator(int popID, int stimulusid, int spikenumber, int* ids
 //		Weight Range
 //		Delay Range
 //		STDP True/False
-void Spike::CreateConnection(int prepop, 
+void Simulator::CreateConnection(int prepop, 
 							int postpop, 
 							int connectivity_type,
 							float weights[2], 
@@ -169,7 +173,7 @@ void Spike::CreateConnection(int prepop,
 // INPUT:
 //		Number of weights that you are inputting
 //		The array in which the weights are located
-void Spike::LoadWeights(int numWeights,
+void Simulator::LoadWeights(int numWeights,
 						float* newWeights){
 	// Check if you have the correct number of weights
 	if (numWeights != synconnects.numconnections){
@@ -185,7 +189,7 @@ void Spike::LoadWeights(int numWeights,
 
 // Command for running the simulation
 // No input required
-void Spike::Run(float totaltime, int numEpochs, bool saveSpikes, bool randomPresentation){
+void Simulator::Run(float totaltime, int numEpochs, bool saveSpikes, bool randomPresentation){
 	#ifndef QUIETSTART
 	// Give the user some feedback
 	printf("\n\n----------------------------------\n");
