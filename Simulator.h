@@ -16,9 +16,10 @@
 
 #include "Structs.h"
 #include "NeuronPopulations.h"
-#include "Synapse.h"
+// #include "Synapse.h"
 #include "CUDAcode.h"
 #include "ModelNeurons.h"
+#include "Connections.h"
 
 // Simulator Class for running of the simulations
 class Simulator{
@@ -26,10 +27,14 @@ public:
 	// Constructor/Destructor
 	Simulator();
 	~Simulator();
-	// Initialise Classes
+	
 	NeuronPopulations population;
+	// Synapse synconnects;
+
 	ModelNeurons * model_neurons; // TO REPLACE NeuronPopulations EVENTUALLY
-	Synapse synconnects;
+	Connections * connections;
+
+
 	// Spike Generator related Data
 	int numStimuli;
 	int* numEntries;
@@ -42,8 +47,19 @@ public:
 	float timestep;
 	void SetTimestep(float timest);
 
+	// JI
 	void SetModelNeuronsObject(ModelNeurons * model_neurons_parameter);
 	int AddModelNeuronsGroup(struct neuron_struct params, int shape[2]);
+	void AddConnectionGroup(int presynaptic_group_id, 
+							int postsynaptic_group_id, 
+							int connectivity_type,
+							float weight_range[2], 
+							float delay_range[2],
+							bool stdp,
+							float parameter = 0.0f,
+							float parameter_two = 0.0f);
+
+
 
 	int CreateNeurons(int neuron_type, struct neuron_struct params, int shape[2]);
 	void CreateGenerator(int popID, int stimulusid, int spikenumber, int* ids, float* spiketimes);

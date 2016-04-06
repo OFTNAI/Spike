@@ -4,7 +4,7 @@
 //	Author: Nasir Ahmad
 //	Date: 7/12/2015
 
-#include "Synapse.h"
+#include "Connections.h"
 // stdlib allows random numbers
 #include <stdlib.h>
 // Input Output
@@ -22,8 +22,8 @@
 //			sigma = Standard Deviation of the gaussian distribution
 #define GAUS(distance, sigma) ( (1.0f/(sigma*(sqrt(2.0f*M_PI)))) * (exp(-1.0f * (pow((distance),(2.0f))) / (2.0f*(pow(sigma,(2.0f)))))) )
 
-// Synapse Constructor
-Synapse::Synapse() {
+// Connections Constructor
+Connections::Connections() {
 	// Initialise my parameters
 	// Variables;
 	numconnections = 0;
@@ -39,8 +39,8 @@ Synapse::Synapse() {
 	srand(42);	// Seeding the random numbers
 }
 
-// Synapse Destructor
-Synapse::~Synapse() {
+// Connections Destructor
+Connections::~Connections() {
 	// Just need to free up the memory
 	// Full Matrices
 	free(presyns);
@@ -52,7 +52,7 @@ Synapse::~Synapse() {
 }
 
 // Setting personal STDP parameters
-void Synapse::SetSTDP(float w_max_new,
+void Connections::SetSTDP(float w_max_new,
 				float a_minus_new,
 				float a_plus_new,
 				float tau_minus_new,
@@ -75,7 +75,7 @@ void Synapse::SetSTDP(float w_max_new,
 //		2 number float array for delay range
 //		Boolean value to indicate if population is STDP based
 //		Parameter = either probability for random connections or S.D. for Gaussian
-void Synapse::AddConnection(	int prepop, 
+void Connections::AddGroup(	int prepop, 
 								int postpop, 
 								int* popNums,
 								int** pop_shapes, 
@@ -432,32 +432,32 @@ void Synapse::AddConnection(	int prepop,
 
 
 
-// // An implementation of the polar gaussian random number generator which I need
-// double randn (double mu, double sigma)
-// {
-//   double U1, U2, W, mult;
-//   static double X1, X2;
-//   static int call = 0;
+// An implementation of the polar gaussian random number generator which I need
+double randn (double mu, double sigma)
+{
+  double U1, U2, W, mult;
+  static double X1, X2;
+  static int call = 0;
 
-//   if (call == 1)
-//     {
-//       call = !call;
-//       return (mu + sigma * (double) X2);
-//     }
+  if (call == 1)
+    {
+      call = !call;
+      return (mu + sigma * (double) X2);
+    }
 
-//   do
-//     {
-//       U1 = -1 + ((double) rand () / RAND_MAX) * 2;
-//       U2 = -1 + ((double) rand () / RAND_MAX) * 2;
-//       W = pow (U1, 2) + pow (U2, 2);
-//     }
-//   while (W >= 1 || W == 0);
+  do
+    {
+      U1 = -1 + ((double) rand () / RAND_MAX) * 2;
+      U2 = -1 + ((double) rand () / RAND_MAX) * 2;
+      W = pow (U1, 2) + pow (U2, 2);
+    }
+  while (W >= 1 || W == 0);
 
-//   mult = sqrt ((-2 * log (W)) / W);
-//   X1 = U1 * mult;
-//   X2 = U2 * mult;
+  mult = sqrt ((-2 * log (W)) / W);
+  X1 = U1 * mult;
+  X2 = U2 * mult;
 
-//   call = !call;
+  call = !call;
 
-//   return (mu + sigma * (double) X1);
-// }
+  return (mu + sigma * (double) X1);
+}

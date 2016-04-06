@@ -4,14 +4,14 @@
 //	Author: Nasir Ahmad
 //	Date: 7/12/2015
 
-#ifndef Synapse_H
-#define Synapse_H
+#ifndef Connections_H
+#define Connections_H
 #include "Structs.h"
-class Synapse{
+class Connections {
 public:
 	// Constructor/Destructor
-	Synapse();
-	~Synapse();
+	Connections();
+	~Connections();
 	// Variables;
 	int numconnections;
 	// STDP
@@ -29,7 +29,7 @@ public:
 	int* delays;
 	int* stdp;
 	// Synapse Functions
-	void AddConnection(int prepop, 
+	void AddGroup(int prepop, 
 						int postpop, 
 						int* popNums,
 						int** pop_shapes, 
@@ -41,5 +41,5 @@ public:
 						float parameter_two);
 };
 // GAUSS random number generator
-// double randn (double mu, double sigma);
+double randn (double mu, double sigma);
 #endif
