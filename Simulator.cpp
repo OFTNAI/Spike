@@ -6,7 +6,7 @@
 //	Originally Spike.cpp
 //  
 //  Adapted by Nasir Ahmad and James Isbister
-//	Date: 6/4/2016
+//	Date: 23/3/2016
 
 #include <stdio.h>
 #include <stdlib.h>

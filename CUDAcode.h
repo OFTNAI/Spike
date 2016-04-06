@@ -1,8 +1,11 @@
-// Spike Class Header
-// Spike.h
+// CUDAcode Class Header
+// CUDAcode.h
 //
 //	Author: Nasir Ahmad
 //	Date: 8/12/2015
+
+//  Adapted by Nasir Ahmad and James Isbister
+//	Date: 23/3/2016
 
 #ifndef CUDAcode_H
 #define CUDAcode_H

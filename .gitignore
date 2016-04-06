@@ -3,3 +3,4 @@
 *.o
 Example
 catch.hpp
+unittests

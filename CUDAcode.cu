@@ -4,6 +4,9 @@
 //	Author: Nasir Ahmad
 //	Date: 9/12/2015
 
+//  Adapted by Nasir Ahmad and James Isbister
+//	Date: 23/3/2016
+
 // For files/manipulations
 #include <iostream>
 #include <fstream>
