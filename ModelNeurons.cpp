@@ -31,29 +31,29 @@ ModelNeurons::~ModelNeurons() {
 //	INPUT:
 //		Number of neurons in population
 //		Izhikevich parameter list {a, b, c, d}
-int ModelNeurons::AddGroup(struct neuron_struct params, int shape[2]){
+int ModelNeurons::AddGroup(neuron_struct params, int shape[2]){
 	// Check that it is within bounds
 
-	int numinpop = shape[0]*shape[1];
+	int number_of_neurons_in_group = shape[0]*shape[1];
 
-	if (numinpop < 0){
+	if (number_of_neurons_in_group < 0){
 		printf("\nError: Population must have at least 1 neuron.\n\n");
 		exit(-1);
 	}
 	// Update the numbers
-	numNeurons += numinpop;
+	numNeurons += number_of_neurons_in_group;
 	++numPopulations;
 
 	// Allocate space for the new neurons
 	numperPop = (int*)realloc(numperPop,(numPopulations*sizeof(int)));
 	neuronpop_shapes = (int**)realloc(neuronpop_shapes,(numPopulations*sizeof(int*)));
 	neuronpop_shapes[numPopulations-1] = (int*)malloc(2*sizeof(int));
-	neuronpop_variables = (struct neuron_struct*)realloc(neuronpop_variables, (numNeurons*sizeof(struct neuron_struct)));
+	neuronpop_variables = (neuron_struct*)realloc(neuronpop_variables, (numNeurons*sizeof(neuron_struct)));
 
 	// Fill the new entries in the pointers
 	numperPop[numPopulations-1] = numNeurons;
 	neuronpop_shapes[numPopulations-1] = shape;
-	for (int i = (numNeurons-numinpop); i < numNeurons; i++){
+	for (int i = (numNeurons-number_of_neurons_in_group); i < numNeurons; i++){
 		// Set the parameters
 		neuronpop_variables[i] = params;
 	}

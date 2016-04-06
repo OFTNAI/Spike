@@ -23,7 +23,7 @@ int main (int argc, char *argv[]){
 	
 	simulator.SetModelNeuronsObject(new ModelNeurons());
 
-	struct neuron_struct test_params;
+	neuron_struct test_params;
 	test_params.parama = 0.02f;
 	test_params.paramb = -0.01f;
 	test_params.paramc = -55.0f;
@@ -41,24 +41,26 @@ int main (int argc, char *argv[]){
 	*/
 	// Parameter sets
 	// Parameters for a set of example Sub-Cortical, Cortical and Inhibitory Neurons
-	struct neuron_struct paramSubCort;
+	neuron_struct paramSubCort;
 	paramSubCort.parama = 0.02f;
 	paramSubCort.paramb = -0.01f;
 	paramSubCort.paramc = -55.0f;
 	paramSubCort.paramd = 6.0f;
-	struct neuron_struct paramCort;
+
+	neuron_struct paramCort;
 	paramCort.parama = 0.01f;
 	paramCort.paramb = 0.2f;
 	paramCort.paramc = -65.0f;
 	paramCort.paramd = 8.0f;
-	struct neuron_struct paramInh;
+
+	neuron_struct paramInh;
 	paramCort.parama = 0.02f;
 	paramCort.paramb = 0.25f;
 	paramCort.paramc = -55.0f;
 	paramCort.paramd = 0.05f;
 	// We must also create a neuron parameter structure for our rate coded neurons
 	// Rate is measured in average spikes per second.
-	struct neuron_struct poisson_params;
+	neuron_struct poisson_params;
 	poisson_params.rate = 30.0f;
     
     // Population Shapes

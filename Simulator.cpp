@@ -57,7 +57,7 @@ void Simulator::SetModelNeuronsObject(ModelNeurons * model_neurons_parameter) {
 	model_neurons = model_neurons_parameter;
 }
 
-int Simulator::AddModelNeuronsGroup(struct neuron_struct params, int shape[2]) {
+int Simulator::AddModelNeuronsGroup(neuron_struct params, int shape[2]) {
 	if (model_neurons == NULL) {
 		printf("Please call SetModelNeuronsObject before adding neuron groups. Exiting ...\n");
 		exit(-1);

@@ -20,9 +20,9 @@ public:
 	int *numperPop;
 	int **neuronpop_shapes;
 	// Izhikevich Parameters for the neurons
-	struct neuron_struct *neuronpop_variables;
+	neuron_struct *neuronpop_variables;
 	// Functions
-	int AddGroup(struct neuron_struct params, int shape[2]);
+	int AddGroup(neuron_struct params, int shape[2]);
 
 };
 #endif
