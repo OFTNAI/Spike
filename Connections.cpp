@@ -102,6 +102,8 @@ void Connections::AddGroup(	int presynaptic_group_id,
 	}
 	int postend = last_neuron_indices_for_each_neuron_group[postsynaptic_group_id];
 
+	int original_number_of_connections = total_number_of_connections;
+
 	// Carry out the creation of the connectivity matrix
 	switch (connectivity_type){
             
@@ -138,12 +140,6 @@ void Connections::AddGroup(	int presynaptic_group_id,
 					} else {
 						float rnddelay = delay_range[0] + (delay_range[1] - delay_range[0])*((float)rand() / (RAND_MAX));
 						delays[idx] = round(rnddelay);
-					}
-					// Setup STDP
-					if (stdp_on){
-						stdp[idx] = 1;
-					} else {
-						stdp[idx] = 0;
 					}
 				}
 			}
@@ -184,12 +180,6 @@ void Connections::AddGroup(	int presynaptic_group_id,
 					float rnddelay = delay_range[0] + (delay_range[1] - delay_range[0])*((float)rand() / (RAND_MAX));
 					delays[total_number_of_connections + i] = round(rnddelay);
 				}
-				// Setup STDP
-				if (stdp_on){
-					stdp[total_number_of_connections + i] = 1;
-				} else {
-					stdp[total_number_of_connections + i] = 0;
-				}
 			}
 			// Increment count
 			total_number_of_connections += preend-prestart;
@@ -229,12 +219,6 @@ void Connections::AddGroup(	int presynaptic_group_id,
 						} else {
 							float rnddelay = delay_range[0] + (delay_range[1] - delay_range[0])*((float)rand() / (RAND_MAX));
 							delays[total_number_of_connections - 1] = round(rnddelay);
-						}
-						// Setup STDP
-						if (stdp_on){
-							stdp[total_number_of_connections - 1] = 1;
-						} else {
-							stdp[total_number_of_connections - 1] = 0;
 						}
 					}
 				}
@@ -306,12 +290,6 @@ void Connections::AddGroup(	int presynaptic_group_id,
 							float rnddelay = delay_range[0] + (delay_range[1] - delay_range[0])*((float)rand() / (RAND_MAX));
 							delays[total_number_of_connections - 1] = round(rnddelay);
 						}
-						// Setup STDP
-						if (stdp_on){
-							stdp[total_number_of_connections - 1] = 1;
-						} else {
-							stdp[total_number_of_connections - 1] = 0;
-						}
 					}
 				}
 			}
@@ -370,12 +348,6 @@ void Connections::AddGroup(	int presynaptic_group_id,
 							float rnddelay = delay_range[0] + (delay_range[1] - delay_range[0])*((float)rand() / (RAND_MAX));
 							delays[total_number_of_connections - 1] = round(rnddelay);
 						}
-						// Setup STDP
-						if (stdp_on){
-							stdp[total_number_of_connections - 1] = 1;
-						} else {
-							stdp[total_number_of_connections - 1] = 0;
-						}
 						// Increment conn_tgts
 						++conn_tgts;
 					}
@@ -411,13 +383,6 @@ void Connections::AddGroup(	int presynaptic_group_id,
 				float rnddelay = delay_range[0] + (delay_range[1] - delay_range[0])*((float)rand() / (RAND_MAX));
 				delays[total_number_of_connections - 1] = round(rnddelay);
 			}
-			// Setup STDP
-			if (stdp_on){
-				stdp[total_number_of_connections - 1] = 1;
-			} else {
-				stdp[total_number_of_connections - 1] = 0;
-			}
-			break;
 		}
 		default:
 		{
@@ -426,6 +391,16 @@ void Connections::AddGroup(	int presynaptic_group_id,
 			break;
 		}
 	}
+
+	for (int i = original_number_of_connections; i < total_number_of_connections-1; i++){
+		// Setup STDP
+		if (stdp_on){
+			stdp[i] = 1;
+		} else {
+			stdp[i] = 0;
+		}
+	}
+
 }
 
 
