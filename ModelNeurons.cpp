@@ -11,35 +11,35 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+
 // ModelNeurons Constructor
 ModelNeurons::ModelNeurons() {
 
+	// Set totals to zero
 	total_number_of_neurons = 0;
 	total_number_of_groups = 0;
 
+	// Initialise pointers
 	group_shapes = NULL;
 	group_parameters = NULL;
 	last_neuron_indices_for_each_group = NULL;
 
 }
 
+
 // ModelNeurons Destructor
 ModelNeurons::~ModelNeurons() {
 
-	// Just need to free up the memory
+	// Free up memory
 	free(group_shapes);
 	free(group_parameters);
 	free(last_neuron_indices_for_each_group);
 
 }
 
-// Add Group Function
-//	INPUT:
-//		Izhikevich parameter list {a, b, c, d}
-//		Group Shape
-int ModelNeurons::AddGroup(neuron_struct params, int group_shape[2]){
-	// Check that it is within bounds
 
+int ModelNeurons::AddGroup(neuron_struct params, int group_shape[2]){
+	
 	int number_of_neurons_in_group = group_shape[0]*group_shape[1];
  
 	if (number_of_neurons_in_group < 0) {
@@ -47,29 +47,27 @@ int ModelNeurons::AddGroup(neuron_struct params, int group_shape[2]){
 		exit(-1);
 	}
 
-	// Update the totals
+	// Update totals
 	total_number_of_neurons += number_of_neurons_in_group;
 	++total_number_of_groups;
-	printf("total_number_of_groups: %d\n", total_number_of_groups);
+	printf("total_number_of_groups: %d\n", total_number_of_groups); // Temp helper
 
+	// Calculate new group id
 	int new_group_id = total_number_of_groups - 1;
 
+	// Add last neuron index for new group
 	last_neuron_indices_for_each_group = (int*)realloc(last_neuron_indices_for_each_group,(total_number_of_groups*sizeof(int)));
 	last_neuron_indices_for_each_group[new_group_id] = total_number_of_neurons;
 
-
-	// Allocate space for the new neurons
+	// Add new group shape
 	group_shapes = (int**)realloc(group_shapes,(total_number_of_groups*sizeof(int*)));
 	group_shapes[new_group_id] = (int*)malloc(2*sizeof(int));
-
-	group_parameters = (neuron_struct*)realloc(group_parameters, (total_number_of_neurons*sizeof(neuron_struct)));
-
-	// Fill the new entries in the pointers
 	group_shapes[new_group_id] = group_shape;
-	for (int i = (total_number_of_neurons - number_of_neurons_in_group); i < total_number_of_neurons; i++){
 
+	// Add new group parameters
+	group_parameters = (neuron_struct*)realloc(group_parameters, (total_number_of_neurons*sizeof(neuron_struct)));
+	for (int i = (total_number_of_neurons - number_of_neurons_in_group); i < total_number_of_neurons; i++){
 		group_parameters[i] = params;
-	
 	}
 	
 	return new_group_id;
