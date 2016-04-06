@@ -12,6 +12,7 @@
 
 #include "Simulator.h"
 #include "Constants.h"
+#include "ModelNeurons.h"
 // The function which will autorun when the executable is created
 int main (int argc, char *argv[]){
 	// Set the timestep of the simulation as required (timestep is measure in seconds)
@@ -19,6 +20,7 @@ int main (int argc, char *argv[]){
 	// Create an instance of the Simulator and set the timestep
 	Simulator simulator;
 	simulator.SetTimestep(timest);
+	simulator.SetModelNeuronsObject(new ModelNeurons());
 
 	/*
 

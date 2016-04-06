@@ -25,8 +25,8 @@ model: ${FILE}
 
 
 # Separating out the individual compilations so as not to compilation time
-${FILE}: ${FILE}.o Simulator.o NeuronPopulations.o Synapse.o CUDAcode.o NeuronDynamics.o STDPDynamics.o
-	$(CC) ${FILE}.o Simulator.o NeuronPopulations.o Synapse.o CUDAcode.o NeuronDynamics.o STDPDynamics.o -o ${FILE}
+${FILE}: ${FILE}.o Simulator.o ModelNeurons.o NeuronPopulations.o Synapse.o CUDAcode.o NeuronDynamics.o STDPDynamics.o
+	$(CC) ${FILE}.o Simulator.o ModelNeurons.o NeuronPopulations.o Synapse.o CUDAcode.o NeuronDynamics.o STDPDynamics.o -o ${FILE}
 
 # Compiling the Model file
 ${FILE}.o: ${FILE}.cpp
@@ -34,6 +34,9 @@ ${FILE}.o: ${FILE}.cpp
 # Compiling the Simulator class
 Simulator.o: Simulator.cpp
 	$(CC) $(CFLAGS) Simulator.cpp
+# Compiling the ModelNeurons class
+ModelNeurons.o: ModelNeurons.cpp
+	$(CC) $(CFLAGS) ModelNeurons.cpp
 # Compiling the Neuron class
 NeuronPopulations.o: NeuronPopulations.cpp
 	$(CC) $(CFLAGS) NeuronPopulations.cpp
@@ -52,8 +55,8 @@ STDPDynamics.o: STDPDynamics.cu
 
 
 # Test script
-test: Simulator.o NeuronPopulations.o Synapse.o CUDAcode.o NeuronDynamics.o STDPDynamics.o
-	$(CC) Tests.cu Simulator.o NeuronPopulations.o Synapse.o CUDAcode.o NeuronDynamics.o STDPDynamics.o -o unittests
+test: Simulator.o ModelNeurons.o NeuronPopulations.o Synapse.o CUDAcode.o NeuronDynamics.o STDPDynamics.o
+	$(CC) Tests.cu Simulator.o ModelNeurons.o NeuronPopulations.o Synapse.o CUDAcode.o NeuronDynamics.o STDPDynamics.o -o unittests
 cleantest:
 	rm *.o unittests
 

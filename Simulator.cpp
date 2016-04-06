@@ -52,6 +52,12 @@ void Simulator::SetTimestep(float timest){
 	}
 }
 
+
+void Simulator::SetModelNeuronsObject(ModelNeurons * model_neurons_parameter) {
+	model_neurons = model_neurons_parameter;
+}
+
+
 // Neural Population Creation
 //	INPUT:
 //		Number of Neurons
