@@ -104,6 +104,55 @@ void Simulator::AddConnectionGroup(int presynaptic_group_id,
 }
 
 
+void Simulator::Run(float totaltime, int numEpochs, bool saveSpikes, bool randomPresentation){
+	#ifndef QUIETSTART
+	// Give the user some feedback
+	printf("\n\n----------------------------------\n");
+	printf("Simulation Beginning\n");
+	printf("Time Step: %f\nNumber of Stimuli: %d\nNumber of Epochs: %d\n\n", timestep, numStimuli, numEpochs);
+	printf("Total Number of Neurons: %d\n", model_neurons->total_number_of_neurons);
+	printf("Total Number of Synapses: %d\n\n", connections->numconnections);
+	if (randomPresentation)
+		printf("Stimuli to be presented in a random order.\n");
+	if (saveSpikes)
+		printf("Spikes shall be saved.\n");
+	printf("----------------------------------\n\nBeginning ...\n\n");
+	#endif
+
+	// Check how many stimuli their are and do something about it:
+	if (numStimuli == 0){
+		++numStimuli;
+		numEntries = (int*)realloc(numEntries, sizeof(int)*numStimuli);
+		numEntries[0] = 0;
+	}
+	// Ensure that there is at least one epoch
+	if (numEpochs == 0){
+		printf("Error. There must be at least one epoch. Exiting ...\n\n");
+		exit(-1);
+	}
+
+	// Do the SPIKING SIMULATION!
+	GPUDeviceComputation (
+					model_neurons->total_number_of_neurons,
+					connections->numconnections,
+					connections->presyns,
+					connections->postsyns,
+					connections->delays,
+					connections->weights,
+					connections->stdp,
+					connections->lastactive,
+					model_neurons->group_parameters,
+					numStimuli,
+					numEntries,
+					genids,
+					gentimes,
+					connections->stdp_vars,
+					timestep,
+					totaltime,
+					numEpochs,
+					saveSpikes,
+					randomPresentation);
+}
 
 
 
