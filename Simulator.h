@@ -18,7 +18,7 @@
 #include "NeuronPopulations.h"
 // #include "Synapse.h"
 #include "CUDAcode.h"
-#include "ModelNeurons.h"
+#include "Neurons.h"
 #include "Connections.h"
 
 // Simulator Class for running of the simulations
@@ -31,7 +31,7 @@ public:
 	NeuronPopulations population;
 	// Synapse synconnects;
 
-	ModelNeurons * model_neurons; // TO REPLACE NeuronPopulations EVENTUALLY
+	Neurons * neurons; // TO REPLACE NeuronPopulations EVENTUALLY
 	Connections * connections;
 
 
@@ -48,8 +48,8 @@ public:
 	void SetTimestep(float timest);
 
 	// JI
-	void SetModelNeuronsType(ModelNeurons * model_neurons_parameter);
-	int AddModelNeuronsGroup(struct neuron_struct params, int shape[2]);
+	void SetNeuronType(Neurons * neurons_parameter);
+	int AddNeuronGroup(struct neuron_struct params, int shape[2]);
 	void AddConnectionGroup(int presynaptic_group_id, 
 							int postsynaptic_group_id, 
 							int connectivity_type,

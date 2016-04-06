@@ -12,7 +12,7 @@
 
 #include "Simulator.h"
 #include "Constants.h"
-#include "ModelNeurons.h"
+#include "Neurons.h"
 // The function which will autorun when the executable is created
 int main (int argc, char *argv[]){
 	// Set the timestep of the simulation as required (timestep is measure in seconds)
@@ -21,7 +21,7 @@ int main (int argc, char *argv[]){
 	Simulator simulator;
 	simulator.SetTimestep(timest);
 	
-	simulator.SetModelNeuronsType(new ModelNeurons());
+	simulator.SetNeuronType(new Neurons());
 
 	neuron_struct test_params;
 	test_params.parama = 0.02f;
@@ -31,8 +31,8 @@ int main (int argc, char *argv[]){
 
 	int test_shape[] = {1000, 1};
 
-	int test_neuron_group_1_id = simulator.AddModelNeuronsGroup(test_params, test_shape);
-	int test_neuron_group_2_id = simulator.AddModelNeuronsGroup(test_params, test_shape);
+	int test_neuron_group_1_id = simulator.AddNeuronGroup(test_params, test_shape);
+	int test_neuron_group_2_id = simulator.AddNeuronGroup(test_params, test_shape);
 
 	float test_weight_range[] = {2.50f, 5.0f};
 	float test_delay_range[] = {timest, 50.0f*pow(10, -3)};

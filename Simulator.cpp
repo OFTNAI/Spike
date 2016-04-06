@@ -60,17 +60,17 @@ void Simulator::SetTimestep(float timest){
 
 
 //JI
-void Simulator::SetModelNeuronsType(ModelNeurons * model_neurons_parameter) {
-	model_neurons = model_neurons_parameter;
+void Simulator::SetNeuronType(Neurons * neurons_parameter) {
+	neurons = neurons_parameter;
 }
 
 
-int Simulator::AddModelNeuronsGroup(neuron_struct group_params, int group_shape[2]) {
-	if (model_neurons == NULL) {
-		printf("Please call SetModelNeuronsObject before adding neuron groups. Exiting ...\n\n");
+int Simulator::AddNeuronGroup(neuron_struct group_params, int group_shape[2]) {
+	if (neurons == NULL) {
+		printf("Please call SetNeuronType before adding neuron groups. Exiting ...\n\n");
 		exit(-1);
 	}
-	int neuron_group_id = model_neurons->AddGroup(group_params, group_shape);
+	int neuron_group_id = neurons->AddGroup(group_params, group_shape);
 	return neuron_group_id;
 }
 
@@ -93,8 +93,8 @@ void Simulator::AddConnectionGroup(int presynaptic_group_id,
 
 	connections->AddGroup(presynaptic_group_id, 
 							postsynaptic_group_id, 
-							model_neurons->last_neuron_indices_for_each_group,
-							model_neurons->group_shapes,
+							neurons->last_neuron_indices_for_each_group,
+							neurons->group_shapes,
 							connectivity_type, 
 							weight_range,
 							delay_range_in_timesteps,
@@ -110,7 +110,7 @@ void Simulator::Run(float totaltime, int numEpochs, bool saveSpikes, bool random
 	printf("\n\n----------------------------------\n");
 	printf("Simulation Beginning\n");
 	printf("Time Step: %f\nNumber of Stimuli: %d\nNumber of Epochs: %d\n\n", timestep, numStimuli, numEpochs);
-	printf("Total Number of Neurons: %d\n", model_neurons->total_number_of_neurons);
+	printf("Total Number of Neurons: %d\n", neurons->total_number_of_neurons);
 	printf("Total Number of Synapses: %d\n\n", connections->total_number_of_connections);
 	if (randomPresentation)
 		printf("Stimuli to be presented in a random order.\n");
@@ -133,7 +133,7 @@ void Simulator::Run(float totaltime, int numEpochs, bool saveSpikes, bool random
 
 	// Do the SPIKING SIMULATION!
 	GPUDeviceComputation (
-					model_neurons->total_number_of_neurons,
+					neurons->total_number_of_neurons,
 					connections->total_number_of_connections,
 					connections->presyns,
 					connections->postsyns,
@@ -141,7 +141,7 @@ void Simulator::Run(float totaltime, int numEpochs, bool saveSpikes, bool random
 					connections->weights,
 					connections->stdp,
 					connections->lastactive,
-					model_neurons->group_parameters,
+					neurons->group_parameters,
 					numStimuli,
 					numEntries,
 					genids,
