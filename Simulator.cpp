@@ -30,7 +30,7 @@ Simulator::Simulator(){
 	#ifndef QUIETSTART
 		// Say Hi to the user:
 		printf("\nWelcome to the SPIKE.\n\n");
-		printf("Setting up Populations and Synapses: ");
+		printf("Setting up Populations and Synapses: \n\n");
 		fflush(stdout);
 	#endif
 }
@@ -55,6 +55,14 @@ void Simulator::SetTimestep(float timest){
 
 void Simulator::SetModelNeuronsObject(ModelNeurons * model_neurons_parameter) {
 	model_neurons = model_neurons_parameter;
+}
+
+void Simulator::AddModelNeuronsGroup(struct neuron_struct params, int shape[2]) {
+	if (model_neurons == NULL) {
+		printf("Please call SetModelNeuronsObject before adding neuron groups. Exiting ...\n");
+		exit(-1);
+	}
+	model_neurons->AddGroup(params, shape);
 }
 
 

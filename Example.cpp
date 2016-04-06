@@ -20,6 +20,18 @@ int main (int argc, char *argv[]){
 	// Create an instance of the Simulator and set the timestep
 	Simulator simulator;
 	simulator.SetTimestep(timest);
+	
+
+	struct neuron_struct test_params;
+	test_params.parama = 0.02f;
+	test_params.paramb = -0.01f;
+	test_params.paramc = -55.0f;
+	test_params.paramd = 6.0f;
+
+	int test_shape[] = {1000, 1};
+
+	simulator.AddModelNeuronsGroup(test_params, test_shape);
+
 	simulator.SetModelNeuronsObject(new ModelNeurons());
 
 	/*

@@ -31,8 +31,11 @@ ModelNeurons::~ModelNeurons() {
 //	INPUT:
 //		Number of neurons in population
 //		Izhikevich parameter list {a, b, c, d}
-int ModelNeurons::AddPopulation(int numinpop, struct neuron_struct params, int shape[2]){
+int ModelNeurons::AddGroup(struct neuron_struct params, int shape[2]){
 	// Check that it is within bounds
+
+	int numinpop = shape[0]*shape[1];
+
 	if (numinpop < 0){
 		printf("\nError: Population must have at least 1 neuron.\n\n");
 		exit(-1);

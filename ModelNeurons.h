@@ -22,7 +22,7 @@ public:
 	// Izhikevich Parameters for the neurons
 	struct neuron_struct *neuronpop_variables;
 	// Functions
-	int AddPopulation(int numinpop, struct neuron_struct params, int shape[2]);
+	int AddGroup(struct neuron_struct params, int shape[2]);
 
 };
 #endif

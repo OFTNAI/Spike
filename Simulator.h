@@ -41,7 +41,10 @@ public:
 	// Parameters
 	float timestep;
 	void SetTimestep(float timest);
+
 	void SetModelNeuronsObject(ModelNeurons * model_neurons_parameter);
+	void AddModelNeuronsGroup(struct neuron_struct params, int shape[2]);
+
 	int CreateNeurons(int neuron_type, struct neuron_struct params, int shape[2]);
 	void CreateGenerator(int popID, int stimulusid, int spikenumber, int* ids, float* spiketimes);
 	void BeginConnections();
