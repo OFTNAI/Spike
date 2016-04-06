@@ -21,7 +21,7 @@ int main (int argc, char *argv[]){
 	Simulator simulator;
 	simulator.SetTimestep(timest);
 	
-	simulator.SetModelNeuronsObject(new ModelNeurons()); //Change to Type
+	simulator.SetModelNeuronsType(new ModelNeurons());
 
 	neuron_struct test_params;
 	test_params.parama = 0.02f;

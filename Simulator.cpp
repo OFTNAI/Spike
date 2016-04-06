@@ -60,7 +60,7 @@ void Simulator::SetTimestep(float timest){
 
 
 //JI
-void Simulator::SetModelNeuronsObject(ModelNeurons * model_neurons_parameter) {
+void Simulator::SetModelNeuronsType(ModelNeurons * model_neurons_parameter) {
 	model_neurons = model_neurons_parameter;
 }
 

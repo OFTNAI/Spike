@@ -48,7 +48,7 @@ public:
 	void SetTimestep(float timest);
 
 	// JI
-	void SetModelNeuronsObject(ModelNeurons * model_neurons_parameter);
+	void SetModelNeuronsType(ModelNeurons * model_neurons_parameter);
 	int AddModelNeuronsGroup(struct neuron_struct params, int shape[2]);
 	void AddConnectionGroup(int presynaptic_group_id, 
 							int postsynaptic_group_id, 
