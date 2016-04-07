@@ -130,12 +130,7 @@ void Connections::AddGroup(	int presynaptic_group_id,
 		case CONNECTIVITY_TYPE_ONE_TO_ONE:
 		{
             int increment = (preend-prestart);
-            presynaptic_neuron_indices = (int*)realloc(presynaptic_neuron_indices, (total_number_of_connections + increment)*sizeof(int));
-            postsynaptic_neuron_indices = (int*)realloc(postsynaptic_neuron_indices, (total_number_of_connections + increment)*sizeof(int));
-            weights = (float*)realloc(weights, (total_number_of_connections + increment)*sizeof(float));
-            lastactive = (float*)realloc(lastactive, (total_number_of_connections + increment)*sizeof(float));
-            delays = (int*)realloc(delays, (total_number_of_connections + increment)*sizeof(int));
-            stdp = (int*)realloc(stdp, (total_number_of_connections + increment)*sizeof(int));
+            increment_length_of_main_arrays(increment);
             
 			// If the connectivity is one_to_one
 			if ((preend-prestart) != (postend-poststart)){
@@ -148,7 +143,7 @@ void Connections::AddGroup(	int presynaptic_group_id,
 				postsynaptic_neuron_indices[total_number_of_connections + i] = poststart + i;
 			}
 			// Increment count
-			total_number_of_connections += preend-prestart;
+			total_number_of_connections += increment;
 			break;
 		}
 		case CONNECTIVITY_TYPE_RANDOM:
