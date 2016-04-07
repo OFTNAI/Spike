@@ -25,7 +25,7 @@ public:
 	int* presynaptic_neuron_indices; // Previously presyns
 	int* postsynaptic_neuron_indices; // Previously postsyns
 	float* weights;
-	float* lastactive;
+	float* lastactive; // give new name when sure of function
 	int* delays;
 	int* stdp;
 	// Synapse Functions

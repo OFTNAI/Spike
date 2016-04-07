@@ -126,21 +126,7 @@ void Connections::AddGroup(	int presynaptic_group_id,
 					// Setup Synapses
 					presynaptic_neuron_indices[idx] = i;
 					postsynaptic_neuron_indices[idx] = j;
-					// Setup Weights
-					if (weight_range[0] == weight_range[1]) {
-						weights[idx] = weight_range[0];
-					} else {
-						float rndweight = weight_range[0] + (weight_range[1] - weight_range[0])*((float)rand() / (RAND_MAX));
-						weights[idx] = rndweight;
-					}
-					// Setup Delays
-					// Get the randoms
-					if (delay_range[0] == delay_range[1]) {
-						delays[idx] = delay_range[0];
-					} else {
-						float rnddelay = delay_range[0] + (delay_range[1] - delay_range[0])*((float)rand() / (RAND_MAX));
-						delays[idx] = round(rnddelay);
-					}
+					
 				}
 			}
 			// Increment count
@@ -166,20 +152,6 @@ void Connections::AddGroup(	int presynaptic_group_id,
 			for (int i = 0; i < (preend-prestart); i++){
 				presynaptic_neuron_indices[total_number_of_connections + i] = prestart + i;
 				postsynaptic_neuron_indices[total_number_of_connections + i] = poststart + i;
-				// Setting up the weights
-				if (weight_range[0] == weight_range[1]) {
-					weights[total_number_of_connections + i] = weight_range[0];
-				} else {
-					float rndweight = weight_range[0] + (weight_range[1] - weight_range[0])*((float)rand() / (RAND_MAX));
-					weights[total_number_of_connections + i] = rndweight;
-				}
-				// Setting up the delays
-				if (delay_range[0] == delay_range[1]) {
-					delays[total_number_of_connections + i] = delay_range[0];
-				} else {
-					float rnddelay = delay_range[0] + (delay_range[1] - delay_range[0])*((float)rand() / (RAND_MAX));
-					delays[total_number_of_connections + i] = round(rnddelay);
-				}
 			}
 			// Increment count
 			total_number_of_connections += preend-prestart;
@@ -206,20 +178,6 @@ void Connections::AddGroup(	int presynaptic_group_id,
 						// Setup Synapses
 						presynaptic_neuron_indices[total_number_of_connections - 1] = i;
 						postsynaptic_neuron_indices[total_number_of_connections - 1] = j;
-						// Setup Weights
-						if (weight_range[0] == weight_range[1]) {
-							weights[total_number_of_connections - 1] = weight_range[0];
-						} else {
-							float rndweight = weight_range[0] + (weight_range[1] - weight_range[0])*((float)rand() / (RAND_MAX));
-							weights[total_number_of_connections - 1] = rndweight;
-						}
-						// Setup Delays
-						if (delay_range[0] == delay_range[1]) {
-							delays[total_number_of_connections - 1] = delay_range[0];
-						} else {
-							float rnddelay = delay_range[0] + (delay_range[1] - delay_range[0])*((float)rand() / (RAND_MAX));
-							delays[total_number_of_connections - 1] = round(rnddelay);
-						}
 					}
 				}
 			}
@@ -276,20 +234,6 @@ void Connections::AddGroup(	int presynaptic_group_id,
 						// Setup Synapses
 						presynaptic_neuron_indices[total_number_of_connections - 1] = i;
 						postsynaptic_neuron_indices[total_number_of_connections - 1] = j;
-						// Setup Weights
-						if (weight_range[0] == weight_range[1]) {
-							weights[total_number_of_connections - 1] = weight_range[0];
-						} else {
-							float rndweight = weight_range[0] + (weight_range[1] - weight_range[0])*((float)rand() / (RAND_MAX));
-							weights[total_number_of_connections - 1] = rndweight;
-						}
-						// Setup Delays
-						if (delay_range[0] == delay_range[1]) {
-							delays[total_number_of_connections - 1] = delay_range[0];
-						} else {
-							float rnddelay = delay_range[0] + (delay_range[1] - delay_range[0])*((float)rand() / (RAND_MAX));
-							delays[total_number_of_connections - 1] = round(rnddelay);
-						}
 					}
 				}
 			}
@@ -334,20 +278,7 @@ void Connections::AddGroup(	int presynaptic_group_id,
 						// Setup Synapses
 						presynaptic_neuron_indices[total_number_of_connections - 1] = i;
 						postsynaptic_neuron_indices[total_number_of_connections - 1] = poststart + temp;
-						// Setup Weights
-						if (weight_range[0] == weight_range[1]) {
-							weights[total_number_of_connections - 1] = weight_range[0];
-						} else {
-							float rndweight = weight_range[0] + (weight_range[1] - weight_range[0])*((float)rand() / (RAND_MAX));
-							weights[total_number_of_connections - 1] = rndweight;
-						}
-						// Setup Delays
-						if (delay_range[0] == delay_range[1]) {
-							delays[total_number_of_connections - 1] = delay_range[0];
-						} else {
-							float rnddelay = delay_range[0] + (delay_range[1] - delay_range[0])*((float)rand() / (RAND_MAX));
-							delays[total_number_of_connections - 1] = round(rnddelay);
-						}
+
 						// Increment conn_tgts
 						++conn_tgts;
 					}
@@ -369,20 +300,6 @@ void Connections::AddGroup(	int presynaptic_group_id,
 			// Setup Synapses
 			presynaptic_neuron_indices[total_number_of_connections - 1] = prestart + int(parameter);
 			postsynaptic_neuron_indices[total_number_of_connections - 1] = poststart + int(parameter_two);
-			// Setup Weights
-			if (weight_range[0] == weight_range[1]) {
-				weights[total_number_of_connections - 1] = weight_range[0];
-			} else {
-				float rndweight = weight_range[0] + (weight_range[1] - weight_range[0])*((float)rand() / (RAND_MAX));
-				weights[total_number_of_connections - 1] = rndweight;
-			}
-			// Setup Delays
-			if (delay_range[0] == delay_range[1]) {
-				delays[total_number_of_connections - 1] = delay_range[0];
-			} else {
-				float rnddelay = delay_range[0] + (delay_range[1] - delay_range[0])*((float)rand() / (RAND_MAX));
-				delays[total_number_of_connections - 1] = round(rnddelay);
-			}
 		}
 		default:
 		{
@@ -393,6 +310,21 @@ void Connections::AddGroup(	int presynaptic_group_id,
 	}
 
 	for (int i = original_number_of_connections; i < total_number_of_connections-1; i++){
+		// Setup Weights
+		if (weight_range[0] == weight_range[1]) {
+			weights[i] = weight_range[0];
+		} else {
+			float rndweight = weight_range[0] + (weight_range[1] - weight_range[0])*((float)rand() / (RAND_MAX));
+			weights[i] = rndweight;
+		}
+		// Setup Delays
+		// Get the randoms
+		if (delay_range[0] == delay_range[1]) {
+			delays[i] = delay_range[0];
+		} else {
+			float rnddelay = delay_range[0] + (delay_range[1] - delay_range[0])*((float)rand() / (RAND_MAX));
+			delays[i] = round(rnddelay);
+		}
 		// Setup STDP
 		if (stdp_on){
 			stdp[i] = 1;
