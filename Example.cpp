@@ -38,7 +38,7 @@ int main (int argc, char *argv[]){
 	float test_delay_range[] = {timest, 50.0f*pow(10, -3)};
 	bool stdp_on = true;
 
-	simulator.AddConnectionGroup(test_neuron_group_1_id, test_neuron_group_2_id, CONNECTIVITY_TYPE_SINGLE, test_weight_range, test_delay_range, stdp_on, 3.0, 8.0);
+	simulator.AddConnectionGroup(test_neuron_group_1_id, test_neuron_group_2_id, CONNECTIVITY_TYPE_ALL_TO_ALL, test_weight_range, test_delay_range, stdp_on, 3.0, 8.0);
 
 	// /*
 
