@@ -93,39 +93,51 @@ void GPUDeviceComputation (
 	int* h_spikestoreID = NULL;
 	float* h_spikestoretimes = NULL;
 
-	// Allocate memory for data on device
-	CudaSafeCall(cudaMalloc((void **)&d_presynaptic_neuron_indices, sizeof(int)*total_number_of_connections));
-	CudaSafeCall(cudaMalloc((void **)&d_postsynaptic_neuron_indices, sizeof(int)*total_number_of_connections));
-	CudaSafeCall(cudaMalloc((void **)&d_delays, sizeof(int)*total_number_of_connections));
-	CudaSafeCall(cudaMalloc((void **)&d_weights, sizeof(float)*total_number_of_connections));
-	CudaSafeCall(cudaMalloc((void **)&d_spikes, sizeof(int)*total_number_of_connections));
-	CudaSafeCall(cudaMalloc((void **)&d_stdp, sizeof(int)*total_number_of_connections));
-	CudaSafeCall(cudaMalloc((void **)&d_lastactive, sizeof(float)*total_number_of_connections));
-	CudaSafeCall(cudaMalloc((void **)&d_neuronpop_variables, sizeof(struct neuron_struct)*total_number_of_neurons));
-	CudaSafeCall(cudaMalloc((void **)&d_lastspiketime, sizeof(float)*total_number_of_neurons));
-	CudaSafeCall(cudaMalloc((void **)&d_spikebuffer, sizeof(int)*total_number_of_connections));
+
+	// Allocate memory for data on device for each connection
+	CudaSafeCall(cudaMalloc((void **)&d_presynaptic_neuron_indices, sizeof(int)*connections->total_number_of_connections));
+	CudaSafeCall(cudaMalloc((void **)&d_postsynaptic_neuron_indices, sizeof(int)*connections->total_number_of_connections));
+	CudaSafeCall(cudaMalloc((void **)&d_delays, sizeof(int)*connections->total_number_of_connections));
+	CudaSafeCall(cudaMalloc((void **)&d_weights, sizeof(float)*connections->total_number_of_connections));
+	CudaSafeCall(cudaMalloc((void **)&d_spikes, sizeof(int)*connections->total_number_of_connections));
+	CudaSafeCall(cudaMalloc((void **)&d_stdp, sizeof(int)*connections->total_number_of_connections));
+	CudaSafeCall(cudaMalloc((void **)&d_lastactive, sizeof(float)*connections->total_number_of_connections));
+	CudaSafeCall(cudaMalloc((void **)&d_spikebuffer, sizeof(int)*connections->total_number_of_connections));
+
+	// Allocate memory for data on device for each neuron
+	CudaSafeCall(cudaMalloc((void **)&d_neuronpop_variables, sizeof(struct neuron_struct)*neurons->total_number_of_neurons));
+	CudaSafeCall(cudaMalloc((void **)&d_lastspiketime, sizeof(float)*neurons->total_number_of_neurons));
+	CudaSafeCall(cudaMalloc((void **)&d_tempstoreID, sizeof(int)*neurons->total_number_of_neurons));
+	CudaSafeCall(cudaMalloc((void **)&d_tempstoretimes, sizeof(float)*neurons->total_number_of_neurons));
+
+	// Allocate memory for data on device for other
 	CudaSafeCall(cudaMalloc((void **)&d_tempstorenum, sizeof(int)));
-	CudaSafeCall(cudaMalloc((void **)&d_tempstoreID, sizeof(int)*total_number_of_neurons));
-	CudaSafeCall(cudaMalloc((void **)&d_tempstoretimes, sizeof(float)*total_number_of_neurons));
 
 
-	// Send the actual data!
-	CudaSafeCall(cudaMemcpy(d_presynaptic_neuron_indices, presynaptic_neuron_indices, sizeof(int)*total_number_of_connections, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemcpy(d_postsynaptic_neuron_indices, postsynaptic_neuron_indices, sizeof(int)*total_number_of_connections, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemcpy(d_delays, delays, sizeof(int)*total_number_of_connections, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemcpy(d_weights, weights, sizeof(float)*total_number_of_connections, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemcpy(d_stdp, stdp, sizeof(int)*total_number_of_connections, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemcpy(d_neuronpop_variables, neuronpop_variables, sizeof(struct neuron_struct)*total_number_of_neurons, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemset(d_spikes, 0, sizeof(int)*total_number_of_connections));
-	CudaSafeCall(cudaMemset(d_lastactive, -1000.0f, sizeof(float)*total_number_of_connections));
-	CudaSafeCall(cudaMemset(d_lastspiketime, -1000.0f, total_number_of_neurons*sizeof(float)));
-	CudaSafeCall(cudaMemset(d_spikebuffer, -1, total_number_of_connections*sizeof(int)));
+	// Send data to device: data for each connection
+	CudaSafeCall(cudaMemcpy(d_presynaptic_neuron_indices, presynaptic_neuron_indices, sizeof(int)*connections->total_number_of_connections, cudaMemcpyHostToDevice));
+	CudaSafeCall(cudaMemcpy(d_postsynaptic_neuron_indices, postsynaptic_neuron_indices, sizeof(int)*connections->total_number_of_connections, cudaMemcpyHostToDevice));
+	CudaSafeCall(cudaMemcpy(d_delays, delays, sizeof(int)*connections->total_number_of_connections, cudaMemcpyHostToDevice));
+	CudaSafeCall(cudaMemcpy(d_weights, weights, sizeof(float)*connections->total_number_of_connections, cudaMemcpyHostToDevice));
+	CudaSafeCall(cudaMemcpy(d_stdp, stdp, sizeof(int)*connections->total_number_of_connections, cudaMemcpyHostToDevice));
+	CudaSafeCall(cudaMemset(d_spikes, 0, sizeof(int)*connections->total_number_of_connections));
+	CudaSafeCall(cudaMemset(d_lastactive, -1000.0f, sizeof(float)*connections->total_number_of_connections));
+	CudaSafeCall(cudaMemset(d_spikebuffer, -1, connections->total_number_of_connections*sizeof(int)));
+
+	// Send data to device: data for each neuron
+	CudaSafeCall(cudaMemcpy(d_neuronpop_variables, neuronpop_variables, sizeof(struct neuron_struct)*neurons->total_number_of_neurons, cudaMemcpyHostToDevice));
+	CudaSafeCall(cudaMemset(d_lastspiketime, -1000.0f, neurons->total_number_of_neurons*sizeof(float)));
+	CudaSafeCall(cudaMemset(d_tempstoreID, -1, sizeof(int)*neurons->total_number_of_neurons));
+	CudaSafeCall(cudaMemset(d_tempstoretimes, -1.0f, sizeof(float)*neurons->total_number_of_neurons));
+
+	// Send data to device: other
 	CudaSafeCall(cudaMemset(d_tempstorenum, 0, sizeof(int)));
-	CudaSafeCall(cudaMemset(d_tempstoreID, -1, sizeof(int)*total_number_of_neurons));
-	CudaSafeCall(cudaMemset(d_tempstoretimes, -1.0f, sizeof(float)*total_number_of_neurons));
+	
+
+	// Allocate host data
 	h_tempspikenum = (int*)malloc(sizeof(int));
-	h_tempstoreID = (int*)malloc(sizeof(int)*total_number_of_neurons);
-	h_tempstoretimes = (float*)malloc(sizeof(float)*total_number_of_neurons);
+	h_tempstoreID = (int*)malloc(sizeof(int)*neurons->total_number_of_neurons);
+	h_tempstoretimes = (float*)malloc(sizeof(float)*neurons->total_number_of_neurons);
 	h_tempspikenum[0] = 0;
 
 
@@ -135,7 +147,7 @@ void GPUDeviceComputation (
 	int threads = 128;
 	dim3 threadsPerBlock(threads,1,1);
 	// I now have to calculate the number of blocks ....
-	int connblocknum = (total_number_of_connections + threads) / threads;
+	int connblocknum = (connections->total_number_of_connections + threads) / threads;
 	int vectorblocknum = (total_number_of_neurons + threads) / threads;
 	// The maximum dimension for the grid is 65535
 	dim3 connblocksPerGrid(connblocknum,1,1);
