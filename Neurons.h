@@ -26,7 +26,6 @@ public:
 
 	int* d_test_array;
 
-
 	// Totals
 	int total_number_of_neurons;
 	int total_number_of_groups;
@@ -35,11 +34,18 @@ public:
 	neuron_struct *group_parameters; //Currently actually neuron wise. Should eventually change
 	int **group_shapes;
 	int *last_neuron_indices_for_each_group;
+
+
+	// Device Pointers
+	neuron_struct* d_neuron_group_parameters;
+
 	
 	// Functions
 	int AddGroup(neuron_struct params, int shape[2]);
 
 	void ji_test_allocate_and_set_d_test_array(Connections * connections);
+
+	void initialise_device_pointers();
 
 	void poisupdate_wrapper(float* d_randoms, 
 							neuron_struct* neuronpop_variables,
