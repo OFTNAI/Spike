@@ -47,14 +47,15 @@ void GPUDeviceComputation (
 					Neurons * neurons,
 					Connections * connections,
 
+					int number_of_epochs,
+					bool save_spikes,
+
 					int numStimuli,
 					int* numEntries,
 					int** genids,
 					float** gentimes,
 					float timestep,
 					float totaltime,
-					int numEpochs,
-					bool savespikes,
 					bool randomPresentation
 					){
 
@@ -194,7 +195,7 @@ void GPUDeviceComputation (
 	initweightfile.close();
 
 	// Running through all of the Epochs
-	for (int i = 0; i < numEpochs; i++) {
+	for (int i = 0; i < number_of_epochs; i++) {
 		// If we want a random presentation, create the set of numbers:
 		if (randomPresentation) {
 			random_shuffle(&presentorder[0], &presentorder[numStimuli]);
@@ -311,7 +312,7 @@ void GPUDeviceComputation (
 				CudaCheckError();
 
 				// Only save the spikes if necessary
-				if (savespikes){
+				if (save_spikes){
 					// Storing the spikes that have occurred in this timestep
 					spikeCollect<<<vectorblocksPerGrid, threadsPerBlock>>>(d_lastspiketime,
 																		d_tempstorenum,
@@ -366,14 +367,14 @@ void GPUDeviceComputation (
 		}
 		#ifndef QUIETSTART
 		clock_t mid = clock();
-		if (savespikes)
+		if (save_spikes)
 			printf("Epoch %d, Complete.\n Running Time: %f\n Number of Spikes: %d\n\n", i, (float(mid-begin) / CLOCKS_PER_SEC), h_spikenum);
 		else 
 			printf("Epoch %d, Complete.\n Running Time: %f\n\n", i, (float(mid-begin) / CLOCKS_PER_SEC));
 		#endif
 		// Output Spikes list after each epoch:
 		// Only save the spikes if necessary
-		if (savespikes){
+		if (save_spikes){
 			// Get the names
 			string file = "results/Epoch" + to_string(i) + "_";
 			// Open the files

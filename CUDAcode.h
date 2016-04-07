@@ -29,14 +29,16 @@ void GPUDeviceComputation (
 					Neurons * neurons,
 					Connections * connections,
 
+					int number_of_epochs,
+					bool save_spikes,
+
 					int numStimuli,
 					int* numEntries,
 					int** genids,
 					float** gentimes,
 					float timestep,
 					float totaltime,
-					int numEpochs,
-					bool savespikes,
+					
 					bool randomPresentation
 					);
 

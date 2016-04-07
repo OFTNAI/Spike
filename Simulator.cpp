@@ -104,17 +104,17 @@ void Simulator::AddConnectionGroup(int presynaptic_group_id,
 }
 
 
-void Simulator::Run(float totaltime, int numEpochs, bool saveSpikes, bool randomPresentation){
+void Simulator::Run(float totaltime, int number_of_epochs, bool save_spikes, bool random_presentation){
 	#ifndef QUIETSTART
 	// Give the user some feedback
 	printf("\n\n----------------------------------\n");
 	printf("Simulation Beginning\n");
-	printf("Time Step: %f\nNumber of Stimuli: %d\nNumber of Epochs: %d\n\n", timestep, numStimuli, numEpochs);
+	printf("Time Step: %f\nNumber of Stimuli: %d\nNumber of Epochs: %d\n\n", timestep, numStimuli, number_of_epochs);
 	printf("Total Number of Neurons: %d\n", neurons->total_number_of_neurons);
 	printf("Total Number of Synapses: %d\n\n", connections->total_number_of_connections);
-	if (randomPresentation)
+	if (random_presentation)
 		printf("Stimuli to be presented in a random order.\n");
-	if (saveSpikes)
+	if (save_spikes)
 		printf("Spikes shall be saved.\n");
 	printf("----------------------------------\n\nBeginning ...\n\n");
 	#endif
@@ -126,7 +126,7 @@ void Simulator::Run(float totaltime, int numEpochs, bool saveSpikes, bool random
 		numEntries[0] = 0;
 	}
 	// Ensure that there is at least one epoch
-	if (numEpochs == 0){
+	if (number_of_epochs == 0){
 		printf("Error. There must be at least one epoch. Exiting ...\n\n");
 		exit(-1);
 	}
@@ -136,15 +136,16 @@ void Simulator::Run(float totaltime, int numEpochs, bool saveSpikes, bool random
 					neurons,
 					connections,
 
+					number_of_epochs,
+					save_spikes,
+
 					numStimuli,
 					numEntries,
 					genids,
 					gentimes,
 					timestep,
 					totaltime,
-					numEpochs,
-					saveSpikes,
-					randomPresentation);
+					random_presentation);
 }
 
 
