@@ -136,8 +136,6 @@ void Simulator::Run(float totaltime, int numEpochs, bool saveSpikes, bool random
 					neurons,
 					connections,
 					neurons->group_parameters,
-					connections->presynaptic_neuron_indices,
-					connections->postsynaptic_neuron_indices,
 					connections->delays,
 					connections->weights,
 					connections->stdp,

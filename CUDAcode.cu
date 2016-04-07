@@ -49,8 +49,6 @@ void GPUDeviceComputation (
 
 					struct neuron_struct* neuronpop_variables,
 
-					int* presynaptic_neuron_indices,
-					int* postsynaptic_neuron_indices,
 					int* delays,
 					float* weights,
 					int* stdp,
@@ -69,8 +67,10 @@ void GPUDeviceComputation (
 					){
 
 
+	// Useful to have local versions of totals as used a lot
 	size_t total_number_of_neurons = neurons->total_number_of_neurons;
 	size_t total_number_of_connections = connections->total_number_of_connections;
+
 
 	// Creating the Device Pointers I need
 	int* d_presynaptic_neuron_indices;
@@ -120,8 +120,8 @@ void GPUDeviceComputation (
 
 
 	// Send data to device: data for each connection
-	CudaSafeCall(cudaMemcpy(d_presynaptic_neuron_indices, presynaptic_neuron_indices, sizeof(int)*total_number_of_connections, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemcpy(d_postsynaptic_neuron_indices, postsynaptic_neuron_indices, sizeof(int)*total_number_of_connections, cudaMemcpyHostToDevice));
+	CudaSafeCall(cudaMemcpy(d_presynaptic_neuron_indices, connections->presynaptic_neuron_indices, sizeof(int)*total_number_of_connections, cudaMemcpyHostToDevice));
+	CudaSafeCall(cudaMemcpy(d_postsynaptic_neuron_indices, connections->postsynaptic_neuron_indices, sizeof(int)*total_number_of_connections, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_delays, delays, sizeof(int)*total_number_of_connections, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_weights, weights, sizeof(float)*total_number_of_connections, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_stdp, stdp, sizeof(int)*total_number_of_connections, cudaMemcpyHostToDevice));
@@ -433,8 +433,8 @@ void GPUDeviceComputation (
 	// Writing the data
 	weightfile.write((char *)weights, total_number_of_connections*sizeof(float));
 	delayfile.write((char *)delays, total_number_of_connections*sizeof(int));
-	synapsepre.write((char *)presynaptic_neuron_indices, total_number_of_connections*sizeof(int));
-	synapsepost.write((char *)postsynaptic_neuron_indices, total_number_of_connections*sizeof(int));
+	synapsepre.write((char *)connections->presynaptic_neuron_indices, total_number_of_connections*sizeof(int));
+	synapsepost.write((char *)connections->postsynaptic_neuron_indices, total_number_of_connections*sizeof(int));
 
 	// Close files
 	weightfile.close();

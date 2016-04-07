@@ -31,8 +31,6 @@ void GPUDeviceComputation (
 
 					struct neuron_struct* neuronpop_variables,
 
-					int* presynaptic_neuron_indices,
-					int* postsynaptic_neuron_indices,
 					int* delays,
 					float* weights,
 					int* stdp,
