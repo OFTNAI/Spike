@@ -155,39 +155,6 @@ void Simulator::Run(float totaltime, int numEpochs, bool saveSpikes, bool random
 }
 
 
-
-
-
-// // Neural Population Creation
-// //	INPUT:
-// //		Number of Neurons
-// //		Type of Neural Population e.g. "izh"
-// //		Izhikevich Parameter List {a, b, c, d}
-// int Simulator::CreateNeurons(int neuron_type, struct neuron_struct params, int shape[2]){
-    
-//     int number = shape[0]*shape[1];
-    
-//     // if statements may be useful later.
-//     // Check which type of population it is
-// 	if (neuron_type == NEURON_TYPE_IZHIKEVICH){
-// 		// If we have an izhikevich population
-// 	} else if (neuron_type == NEURON_TYPE_POISSON){
-// 		// If we have a poisson population
-// 		// The params struct should contain the rate.
-// 	} else if (neuron_type == NEURON_TYPE_GEN){
-// 		// Create the neural population
-// 		// Have the neural population created with arbitrary parameters
-// 	} else {
-// 		// Not recognised the population
-// 		printf("Unrecognised Population Type\n");
-// 		exit(-1);
-// 	}
-    
-//     int ID = population.AddPopulation(number, params, shape);
-//     return ID;
-// }
-
-
 // // Spike Generator Spike Creation
 // // INPUT:
 // //		Population ID
@@ -239,45 +206,7 @@ void Simulator::Run(float totaltime, int numEpochs, bool saveSpikes, bool random
 	
 // }
 
-// // Synapse Connection Creation
-// // INPUT:
-// //		Pre-synaptic population ID
-// //		Post-synaptic population ID
-// //		Style of connection (e.g. "all_to_all")
-// //		Weight Range
-// //		Delay Range
-// //		STDP True/False
-// void Simulator::CreateConnection(int prepop, 
-// 							int postpop, 
-// 							int connectivity_type,
-// 							float weights[2], 
-// 							float delays[2],
-// 							bool stdp,
-// 							float parameter,
-// 							float parameter_two){
-// 	// Convert delays from time to # timesteps
-// 	int stepdelays[2] = {int(round(delays[0]/timestep)), int(round(delays[1]/timestep))};
-// 	// Ensure that the value of delays is sufficiently large.
-// 	if ((stepdelays[0] < 1) || (stepdelays[1] < 1)) {
-// 		printf("Delay range be at least one timestep. Exiting ...\n");
-// 		exit(-1);
-// 	}
-// 	// Create the connection!
 
-
-// 	printf("Num per pop: %d\n", population.numperPop[prepop]);
-
-// 	synconnects.AddConnection(prepop, 
-// 							postpop, 
-// 							population.numperPop,
-// 							population.neuronpop_shapes,
-// 							connectivity_type, 
-// 							weights,
-// 							stepdelays,
-// 							stdp,
-// 							parameter,
-// 							parameter_two);
-// }
 
 // // Synapse weight loading
 // // INPUT:
@@ -296,58 +225,3 @@ void Simulator::Run(float totaltime, int numEpochs, bool saveSpikes, bool random
 // 		synconnects.weights[i] = newWeights[i];
 // 	}
 // }
-
-// // Command for running the simulation
-// // No input required
-// void Simulator::Run(float totaltime, int numEpochs, bool saveSpikes, bool randomPresentation){
-// 	#ifndef QUIETSTART
-// 	// Give the user some feedback
-// 	printf("\n\n----------------------------------\n");
-// 	printf("Simulation Beginning\n");
-// 	printf("Time Step: %f\nNumber of Stimuli: %d\nNumber of Epochs: %d\n\n", timestep, numStimuli, numEpochs);
-// 	printf("Total Number of Neurons: %d\n", population.numNeurons);
-// 	printf("Total Number of Synapses: %d\n\n", synconnects.numconnections);
-// 	if (randomPresentation)
-// 		printf("Stimuli to be presented in a random order.\n");
-// 	if (saveSpikes)
-// 		printf("Spikes shall be saved.\n");
-// 	printf("----------------------------------\n\nBeginning ...\n\n");
-// 	#endif
-
-// 	// Check how many stimuli their are and do something about it:
-// 	if (numStimuli == 0){
-// 		++numStimuli;
-// 		numEntries = (int*)realloc(numEntries, sizeof(int)*numStimuli);
-// 		numEntries[0] = 0;
-// 	}
-// 	// Ensure that there is at least one epoch
-// 	if (numEpochs == 0){
-// 		printf("Error. There must be at least one epoch. Exiting ...\n\n");
-// 		exit(-1);
-// 	}
-
-// 	// Do the SPIKING SIMULATION!
-// 	GPUDeviceComputation (
-// 					population.numNeurons,
-// 					synconnects.numconnections,
-// 					synconnects.presyns,
-// 					synconnects.postsyns,
-// 					synconnects.delays,
-// 					synconnects.weights,
-// 					synconnects.stdp,
-// 					synconnects.lastactive,
-// 					population.neuronpop_variables,
-// 					numStimuli,
-// 					numEntries,
-// 					genids,
-// 					gentimes,
-// 					synconnects.stdp_vars,
-// 					timestep,
-// 					totaltime,
-// 					numEpochs,
-// 					saveSpikes,
-// 					randomPresentation);
-// }
-
-
-
