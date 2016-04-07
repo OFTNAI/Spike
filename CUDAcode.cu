@@ -91,6 +91,8 @@ void GPUDeviceComputation (
 	int* h_spikestoreID = NULL;
 	float* h_spikestoretimes = NULL;
 
+	neurons->ji_test_allocate_and_set_d_test_array(connections);
+
 
 	// Allocate memory for data on device for each connection
 	CudaSafeCall(cudaMalloc((void **)&d_presynaptic_neuron_indices, sizeof(int)*total_number_of_connections));

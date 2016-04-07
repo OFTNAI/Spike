@@ -15,11 +15,17 @@
 
 #include "Structs.h"
 
+//temp for test_array test
+#include "Connections.h"
+
 class Neurons{
 public:
 	// Constructor/Destructor
 	Neurons();
 	~Neurons();
+
+	int* d_test_array;
+
 
 	// Totals
 	int total_number_of_neurons;
@@ -32,6 +38,8 @@ public:
 	
 	// Functions
 	int AddGroup(neuron_struct params, int shape[2]);
+
+	void ji_test_allocate_and_set_d_test_array(Connections * connections);
 
 	void poisupdate_wrapper(float* d_randoms, 
 							neuron_struct* neuronpop_variables,

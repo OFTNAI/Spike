@@ -10,10 +10,13 @@
 #include "Neurons.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include "CUDAErrorCheckHelpers.h"
 
 
 // Neurons Constructor
 Neurons::Neurons() {
+
+	d_test_array = NULL;
 
 	// Set totals to zero
 	total_number_of_neurons = 0;
@@ -36,9 +39,6 @@ Neurons::~Neurons() {
 	free(last_neuron_indices_for_each_group);
 
 }
-
-
-
 
 
 int Neurons::AddGroup(neuron_struct params, int group_shape[2]){
@@ -76,6 +76,11 @@ int Neurons::AddGroup(neuron_struct params, int group_shape[2]){
 	return new_group_id;
 }
 
+
+void Neurons::ji_test_allocate_and_set_d_test_array(Connections * connections) {
+	CudaSafeCall(cudaMalloc((void **)&d_test_array, sizeof(int)*connections->total_number_of_connections));
+	CudaSafeCall(cudaMemcpy(d_test_array, connections->delays, sizeof(int)*connections->total_number_of_connections, cudaMemcpyHostToDevice));
+}
 
 
 // CUDA __global__ function declarations
