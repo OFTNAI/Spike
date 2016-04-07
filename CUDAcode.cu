@@ -48,8 +48,6 @@ void GPUDeviceComputation (
 					Connections * connections,
 
 					struct neuron_struct* neuronpop_variables,
-					
-					struct stdp_struct stdp_vars,
 
 					int numStimuli,
 					int* numEntries,
@@ -276,7 +274,7 @@ void GPUDeviceComputation (
 																	d_lastspiketime,
 																	d_postsynaptic_neuron_indices,
 																	currtime,
-																	stdp_vars,
+																	connections->stdp_vars, // Should make device copy?
 																	total_number_of_connections,
 																	total_number_of_neurons);
 				CudaCheckError();
@@ -308,7 +306,7 @@ void GPUDeviceComputation (
 																	d_stdp,
 																	d_lastactive,
 																	d_weights,
-																	stdp_vars,
+																	connections->stdp_vars, 
 																	currtime,
 																	total_number_of_connections,
 																	total_number_of_neurons);
