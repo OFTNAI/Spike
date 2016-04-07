@@ -38,6 +38,9 @@ Neurons::~Neurons() {
 }
 
 
+
+
+
 int Neurons::AddGroup(neuron_struct params, int group_shape[2]){
 	
 	int number_of_neurons_in_group = group_shape[0]*group_shape[1];
@@ -73,22 +76,106 @@ int Neurons::AddGroup(neuron_struct params, int group_shape[2]){
 	return new_group_id;
 }
 
+
+
+// CUDA __global__ function declarations
+// NOTE: these are NOT MEMBER FUNCTIONS
+// They are called by their corresponding wrapper member function
+
+__global__ void poisupdate(float* d_randoms, 
+							struct neuron_struct* d_neuronpop_variables,
+							float timestep,
+							size_t numNeurons);
+
+__global__ void genupdate(struct neuron_struct* neuronpop_variables,
+							int* genids,
+							float* gentimes,
+							float currtime,
+							float timestep,
+							size_t numEntries);
+
+__global__ void spikingneurons(struct neuron_struct* neuronpop_variables,
+							float* d_lastspiketime,
+							float currtime,
+							size_t numNeurons);
+
+__global__ void stateupdate(struct neuron_struct* neuronpop_variables,
+							float* currentinj,
+							float timestep,
+							size_t numNeurons);
+
+
+
+// Wrapper member function definitions
+// See NOTE above
 void Neurons::poisupdate_wrapper(float* d_randoms, 
-							struct neuron_struct* neuronpop_variables,
+							neuron_struct* neuronpop_variables,
 							float timestep,
 							size_t numNeurons, 
 							dim3 vectorblocksPerGrid,
 							dim3 threadsPerBlock) {
 
+	
 	poisupdate<<<vectorblocksPerGrid, threadsPerBlock>>>(d_randoms,
-																		neuronpop_variables,
-																		timestep,
-																		numNeurons);
+														neuronpop_variables,
+														timestep,
+														numNeurons);
+}
+
+
+void Neurons::genupdate_wrapper(neuron_struct* d_neuronpop_variables,
+							int* genids,
+							float* gentimes,
+							float currtime,
+							float timestep,
+							size_t numEntries,
+							int genblocknum, 
+							dim3 threadsPerBlock) {
+
+	genupdate<<<genblocknum, threadsPerBlock>>> (d_neuronpop_variables,
+												genids,
+												gentimes,
+												currtime,
+												timestep,
+												numEntries);
+}
+
+
+void Neurons::spikingneurons_wrapper(neuron_struct* d_neuron_group_parameters,
+								float* d_lastspiketime,
+								float currtime,
+								size_t numNeurons,
+								dim3 vectorblocksPerGrid, 
+								dim3 threadsPerBlock) {
+
+	spikingneurons<<<vectorblocksPerGrid, threadsPerBlock>>>(d_neuron_group_parameters,
+																		d_lastspiketime,
+																		currtime,
+																		total_number_of_neurons);
+}
+
+
+void Neurons::stateupdate_wrapper(neuron_struct* d_neuronpop_variables,
+							float* current_injection,
+							float timestep,
+							size_t total_number_of_neurons,
+							dim3 vectorblocksPerGrid, 
+							dim3 threadsPerBlock) {
+
+	stateupdate<<<vectorblocksPerGrid, threadsPerBlock>>>(d_neuronpop_variables,
+																	current_injection,
+																	timestep,
+																	total_number_of_neurons);
 }
 
 
 
-// Poisson Updating Kernel
+
+// CUDA __global__ function definitions
+// These are called by the Neurons class member functions
+// May have to vary names if 'including' more than one subclass
+
+// Poisson Updating Kernal
 __global__ void poisupdate(float* d_randoms, 
 							struct neuron_struct* d_neuronpop_variables,
 							float timestep,
@@ -106,6 +193,7 @@ __global__ void poisupdate(float* d_randoms,
 	}
 	__syncthreads();
 }
+
 
 // Spike Generator Updating Kernel
 __global__ void genupdate(struct neuron_struct* d_neuronpop_variables,
@@ -149,8 +237,6 @@ __global__ void spikingneurons(struct neuron_struct* d_neuronpop_variables,
 	}
 	__syncthreads();
 }
-
-
 
 
 // State Update

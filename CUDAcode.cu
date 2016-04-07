@@ -240,22 +240,24 @@ void GPUDeviceComputation (
 					CudaCheckError();
 					// Update Poisson neuron states
 					neurons->poisupdate_wrapper(gpu_randfloats,
-																		d_neuron_group_parameters,
-																		timestep,
-																		total_number_of_neurons,
-																		vectorblocksPerGrid,
-																		threadsPerBlock);
+												d_neuron_group_parameters,
+												timestep,
+												total_number_of_neurons,
+												vectorblocksPerGrid,
+												threadsPerBlock);
 					CudaCheckError();
 				}
 				// If there are any spike generators
 				if (numEnts > 0) {
 					// Update those neurons corresponding to the Spike Generators
-					genupdate<<<genblocknum, threadsPerBlock>>> (d_neuron_group_parameters,
-																	d_genids,
-																	d_gentimes,
-																	currtime,
-																	timestep,
-																	numEnts);
+					neurons->genupdate_wrapper(d_neuron_group_parameters,
+											d_genids,
+											d_gentimes,
+											currtime,
+											timestep,
+											numEnts,
+											genblocknum, 
+											threadsPerBlock);
 					CudaCheckError();
 				} 
 				// Calculate current injections to cells
@@ -280,16 +282,20 @@ void GPUDeviceComputation (
 																	total_number_of_neurons);
 				CudaCheckError();
 				// Update States of neurons
-				stateupdate<<<vectorblocksPerGrid, threadsPerBlock>>>(d_neuron_group_parameters,
-																	currentinjection,
-																	timestep,
-																	total_number_of_neurons);
+				neurons->stateupdate_wrapper(d_neuron_group_parameters,
+											currentinjection,
+											timestep,
+											total_number_of_neurons,
+											vectorblocksPerGrid,
+											threadsPerBlock);
 				CudaCheckError();
 				// Check which neurons are spiking and deal with them
-				spikingneurons<<<vectorblocksPerGrid, threadsPerBlock>>>(d_neuron_group_parameters,
-																		d_lastspiketime,
-																		currtime,
-																		total_number_of_neurons);
+				neurons->spikingneurons_wrapper(d_neuron_group_parameters,
+											d_lastspiketime,
+											currtime,
+											total_number_of_neurons,
+											vectorblocksPerGrid, 
+											threadsPerBlock);
 				CudaCheckError();
 				// Check which synapses to send spikes down and do it
 				synapsespikes<<<connblocksPerGrid, threadsPerBlock>>>(d_presynaptic_neuron_indices,
