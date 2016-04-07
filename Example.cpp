@@ -23,22 +23,37 @@ int main (int argc, char *argv[]){
 	
 	simulator.SetNeuronType(new Neurons());
 
+	// neuron parameters
+	neuron_struct poisson_params;
+	poisson_params.rate = 30.0f;
+	int input_population_shape[] = {1000, 1};
+
 	neuron_struct test_params;
 	test_params.parama = 0.02f;
 	test_params.paramb = -0.01f;
 	test_params.paramc = -55.0f;
 	test_params.paramd = 6.0f;
-
 	int test_shape[] = {1000, 1};
 
+
+	// Add neuron Groups
+	int INPUTLAYER = simulator.AddNeuronGroup(poisson_params, input_population_shape);
 	int test_neuron_group_1_id = simulator.AddNeuronGroup(test_params, test_shape);
 	int test_neuron_group_2_id = simulator.AddNeuronGroup(test_params, test_shape);
+
+	// connections parameters
+	float INPUT_TO_INTER_weights[] = {2.50f, 5.0f};
+	float DefaultDelay[] = {timest, timest};
 
 	float test_weight_range[] = {2.50f, 5.0f};
 	float test_delay_range[] = {timest, 50.0f*pow(10, -3)};
 	bool stdp_on = true;
 
+	//Add Connection Groups
+	simulator.AddConnectionGroup(INPUTLAYER, test_neuron_group_1_id, CONNECTIVITY_TYPE_ALL_TO_ALL, INPUT_TO_INTER_weights, DefaultDelay, false);
 	simulator.AddConnectionGroup(test_neuron_group_1_id, test_neuron_group_2_id, CONNECTIVITY_TYPE_ALL_TO_ALL, test_weight_range, test_delay_range, stdp_on, 3.0, 8.0);
+
+
 
 	// /*
 
