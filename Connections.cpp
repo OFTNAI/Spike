@@ -156,14 +156,12 @@ void Connections::AddGroup(	int presynaptic_group_id,
 					float prob = ((float)rand() / (RAND_MAX));
 					// If it is within the probability range, connect!
 					if (prob < parameter){
+						
+						increment_length_of_main_arrays(1);
+
 						// Increase count
 						total_number_of_connections += 1;
-						presynaptic_neuron_indices = (int*)realloc(presynaptic_neuron_indices, (total_number_of_connections)*sizeof(int));
-						postsynaptic_neuron_indices = (int*)realloc(postsynaptic_neuron_indices, (total_number_of_connections)*sizeof(int));
-						weights = (float*)realloc(weights, (total_number_of_connections)*sizeof(float));
-						lastactive = (float*)realloc(lastactive, (total_number_of_connections)*sizeof(float));
-						delays = (int*)realloc(delays, (total_number_of_connections)*sizeof(int));
-						stdp = (int*)realloc(stdp, (total_number_of_connections)*sizeof(int));
+
 						// Setup Synapses
 						presynaptic_neuron_indices[total_number_of_connections - 1] = i;
 						postsynaptic_neuron_indices[total_number_of_connections - 1] = j;
