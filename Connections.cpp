@@ -111,12 +111,7 @@ void Connections::AddGroup(	int presynaptic_group_id,
 		{
             
             int increment = (preend-prestart)*(postend-poststart);
-            presynaptic_neuron_indices = (int*)realloc(presynaptic_neuron_indices, (total_number_of_connections + increment)*sizeof(int));
-            postsynaptic_neuron_indices = (int*)realloc(postsynaptic_neuron_indices, (total_number_of_connections + increment)*sizeof(int));
-            weights = (float*)realloc(weights, (total_number_of_connections + increment)*sizeof(float));
-            lastactive = (float*)realloc(lastactive, (total_number_of_connections + increment)*sizeof(float));
-            delays = (int*)realloc(delays, (total_number_of_connections + increment)*sizeof(int));
-            stdp = (int*)realloc(stdp, (total_number_of_connections + increment)*sizeof(int));
+            increment_length_of_main_arrays(increment);
             
 			// If the connectivity is all_to_all
 			for (int i = prestart; i < preend; i++){
@@ -126,11 +121,10 @@ void Connections::AddGroup(	int presynaptic_group_id,
 					// Setup Synapses
 					presynaptic_neuron_indices[idx] = i;
 					postsynaptic_neuron_indices[idx] = j;
-					
 				}
 			}
 			// Increment count
-			total_number_of_connections += (preend-prestart)*(postend-poststart);
+			total_number_of_connections += increment;
 			break;
 		}
 		case CONNECTIVITY_TYPE_ONE_TO_ONE:
@@ -335,7 +329,14 @@ void Connections::AddGroup(	int presynaptic_group_id,
 
 }
 
-
+void Connections::increment_length_of_main_arrays(int increment) {
+	presynaptic_neuron_indices = (int*)realloc(presynaptic_neuron_indices, (total_number_of_connections + increment)*sizeof(int));
+    postsynaptic_neuron_indices = (int*)realloc(postsynaptic_neuron_indices, (total_number_of_connections + increment)*sizeof(int));
+    weights = (float*)realloc(weights, (total_number_of_connections + increment)*sizeof(float));
+    lastactive = (float*)realloc(lastactive, (total_number_of_connections + increment)*sizeof(float));
+    delays = (int*)realloc(delays, (total_number_of_connections + increment)*sizeof(int));
+    stdp = (int*)realloc(stdp, (total_number_of_connections + increment)*sizeof(int));
+}
 
 
 

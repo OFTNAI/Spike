@@ -39,6 +39,8 @@ public:
 						bool stdp_on,
 						float parameter,
 						float parameter_two);
+private:
+	void increment_length_of_main_arrays(int increment);
 };
 // GAUSS random number generator
 double randn (double mu, double sigma);
