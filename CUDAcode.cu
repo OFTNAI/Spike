@@ -47,8 +47,6 @@ void GPUDeviceComputation (
 					Neurons * neurons,
 					Connections * connections,
 
-					struct neuron_struct* neuronpop_variables,
-
 					int numStimuli,
 					int* numEntries,
 					int** genids,
@@ -74,7 +72,7 @@ void GPUDeviceComputation (
 	int* d_spikes;
 	int* d_stdp;
 	float* d_lastactive;
-	struct neuron_struct* d_neuronpop_variables;
+	struct neuron_struct* d_neuron_group_parameters;
 	float* d_lastspiketime;
 	int* d_genids;
 	float* d_gentimes;
@@ -104,7 +102,7 @@ void GPUDeviceComputation (
 	CudaSafeCall(cudaMalloc((void **)&d_spikebuffer, sizeof(int)*total_number_of_connections));
 
 	// Allocate memory for data on device for each neuron
-	CudaSafeCall(cudaMalloc((void **)&d_neuronpop_variables, sizeof(struct neuron_struct)*total_number_of_neurons));
+	CudaSafeCall(cudaMalloc((void **)&d_neuron_group_parameters, sizeof(struct neuron_struct)*total_number_of_neurons));
 	CudaSafeCall(cudaMalloc((void **)&d_lastspiketime, sizeof(float)*total_number_of_neurons));
 	CudaSafeCall(cudaMalloc((void **)&d_tempstoreID, sizeof(int)*total_number_of_neurons));
 	CudaSafeCall(cudaMalloc((void **)&d_tempstoretimes, sizeof(float)*total_number_of_neurons));
@@ -124,7 +122,7 @@ void GPUDeviceComputation (
 	CudaSafeCall(cudaMemset(d_spikebuffer, -1, total_number_of_connections*sizeof(int)));
 
 	// Send data to device: data for each neuron
-	CudaSafeCall(cudaMemcpy(d_neuronpop_variables, neuronpop_variables, sizeof(struct neuron_struct)*total_number_of_neurons, cudaMemcpyHostToDevice));
+	CudaSafeCall(cudaMemcpy(d_neuron_group_parameters, neurons->group_parameters, sizeof(struct neuron_struct)*total_number_of_neurons, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemset(d_lastspiketime, -1000.0f, total_number_of_neurons*sizeof(float)));
 	CudaSafeCall(cudaMemset(d_tempstoreID, -1, sizeof(int)*total_number_of_neurons));
 	CudaSafeCall(cudaMemset(d_tempstoretimes, -1.0f, sizeof(float)*total_number_of_neurons));
@@ -175,7 +173,7 @@ void GPUDeviceComputation (
 	// Poisson number
 	int numPoisson = 0;
 	for (int i = 0; i < total_number_of_neurons; i++){
-		if (neuronpop_variables[i].rate != 0.0f){
+		if (neurons->group_parameters[i].rate != 0.0f){
 			++numPoisson;
 		}
 	}
@@ -217,7 +215,7 @@ void GPUDeviceComputation (
 				CudaSafeCall(cudaMemcpy(d_gentimes, gentimes[present], sizeof(float)*numEnts, cudaMemcpyHostToDevice));
 			}
 			// Reset the variables necessary
-			CudaSafeCall(cudaMemcpy(d_neuronpop_variables, neuronpop_variables, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
+			CudaSafeCall(cudaMemcpy(d_neuron_group_parameters, neurons->group_parameters, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
 			CudaSafeCall(cudaMemset(d_spikes, 0, sizeof(int)*total_number_of_connections));
 			CudaSafeCall(cudaMemset(d_lastactive, -1000.0f, sizeof(float)*total_number_of_connections));
 			CudaSafeCall(cudaMemset(d_lastspiketime, -1000.0f, total_number_of_neurons*sizeof(float)));
@@ -241,7 +239,7 @@ void GPUDeviceComputation (
 					CudaCheckError();
 					// Update Poisson neuron states
 					poisupdate<<<vectorblocksPerGrid, threadsPerBlock>>>(gpu_randfloats,
-																		d_neuronpop_variables,
+																		d_neuron_group_parameters,
 																		timestep,
 																		total_number_of_neurons);
 					CudaCheckError();
@@ -249,7 +247,7 @@ void GPUDeviceComputation (
 				// If there are any spike generators
 				if (numEnts > 0) {
 					// Update those neurons corresponding to the Spike Generators
-					genupdate<<<genblocknum, threadsPerBlock>>> (d_neuronpop_variables,
+					genupdate<<<genblocknum, threadsPerBlock>>> (d_neuron_group_parameters,
 																	d_genids,
 																	d_gentimes,
 																	currtime,
@@ -279,13 +277,13 @@ void GPUDeviceComputation (
 																	total_number_of_neurons);
 				CudaCheckError();
 				// Update States of neurons
-				stateupdate<<<vectorblocksPerGrid, threadsPerBlock>>>(d_neuronpop_variables,
+				stateupdate<<<vectorblocksPerGrid, threadsPerBlock>>>(d_neuron_group_parameters,
 																	currentinjection,
 																	timestep,
 																	total_number_of_neurons);
 				CudaCheckError();
 				// Check which neurons are spiking and deal with them
-				spikingneurons<<<vectorblocksPerGrid, threadsPerBlock>>>(d_neuronpop_variables,
+				spikingneurons<<<vectorblocksPerGrid, threadsPerBlock>>>(d_neuron_group_parameters,
 																		d_lastspiketime,
 																		currtime,
 																		total_number_of_neurons);
@@ -445,7 +443,7 @@ void GPUDeviceComputation (
 	CudaSafeCall(cudaFree(d_spikes));
 	CudaSafeCall(cudaFree(d_stdp));
 	CudaSafeCall(cudaFree(d_lastactive));
-	CudaSafeCall(cudaFree(d_neuronpop_variables));
+	CudaSafeCall(cudaFree(d_neuron_group_parameters));
 	CudaSafeCall(cudaFree(states));
 	CudaSafeCall(cudaFree(gpu_randfloats));
 	CudaSafeCall(cudaFree(currentinjection));

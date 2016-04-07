@@ -29,8 +29,6 @@ void GPUDeviceComputation (
 					Neurons * neurons,
 					Connections * connections,
 
-					struct neuron_struct* neuronpop_variables,
-
 					int numStimuli,
 					int* numEntries,
 					int** genids,
