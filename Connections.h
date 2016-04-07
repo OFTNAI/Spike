@@ -40,7 +40,7 @@ public:
 						float parameter,
 						float parameter_two);
 private:
-	void increment_length_of_main_arrays(int increment);
+	void increment_number_of_connections(int increment);
 };
 // GAUSS random number generator
 double randn (double mu, double sigma);

@@ -15,8 +15,6 @@
 //#define QUIETSTART
 
 #include "Structs.h"
-#include "NeuronPopulations.h"
-// #include "Synapse.h"
 #include "CUDAcode.h"
 #include "Neurons.h"
 #include "Connections.h"
@@ -27,13 +25,9 @@ public:
 	// Constructor/Destructor
 	Simulator();
 	~Simulator();
-	
-	NeuronPopulations population;
-	// Synapse synconnects;
 
-	Neurons * neurons; // TO REPLACE NeuronPopulations EVENTUALLY
+	Neurons * neurons;
 	Connections * connections;
-
 
 	// Spike Generator related Data
 	int numStimuli;
