@@ -210,14 +210,12 @@ void Connections::AddGroup(	int presynaptic_group_id,
 					float distance = sqrt((pow((float)(pre_x - post_x), 2.0f) + pow((float)(pre_y - post_y), 2.0f)));
 					// If it is within the probability range, connect!
 					if (prob <= ((GAUS(distance, parameter)) / gaussian_scaling_factor)){
+						
+						increment_length_of_main_arrays(1);
+
 						// Increase count
 						total_number_of_connections += 1;
-						presynaptic_neuron_indices = (int*)realloc(presynaptic_neuron_indices, (total_number_of_connections)*sizeof(int));
-						postsynaptic_neuron_indices = (int*)realloc(postsynaptic_neuron_indices, (total_number_of_connections)*sizeof(int));
-						weights = (float*)realloc(weights, (total_number_of_connections)*sizeof(float));
-						lastactive = (float*)realloc(lastactive, (total_number_of_connections)*sizeof(float));
-						delays = (int*)realloc(delays, (total_number_of_connections)*sizeof(int));
-						stdp = (int*)realloc(stdp, (total_number_of_connections)*sizeof(int));
+
 						// Setup Synapses
 						presynaptic_neuron_indices[total_number_of_connections - 1] = i;
 						postsynaptic_neuron_indices[total_number_of_connections - 1] = j;
@@ -253,14 +251,11 @@ void Connections::AddGroup(	int presynaptic_group_id,
 				while (conn_tgts < conn_num) {
 					temp = int(randn(mu, sigma));
 					if ((temp >= 0) && (temp < out_size)){
-						// Create space for a connection
+						
+						increment_length_of_main_arrays(1);
+
+						// Increase count
 						total_number_of_connections += 1;
-						presynaptic_neuron_indices = (int*)realloc(presynaptic_neuron_indices, (total_number_of_connections)*sizeof(int));
-						postsynaptic_neuron_indices = (int*)realloc(postsynaptic_neuron_indices, (total_number_of_connections)*sizeof(int));
-						weights = (float*)realloc(weights, (total_number_of_connections)*sizeof(float));
-						lastactive = (float*)realloc(lastactive, (total_number_of_connections)*sizeof(float));
-						delays = (int*)realloc(delays, (total_number_of_connections)*sizeof(int));
-						stdp = (int*)realloc(stdp, (total_number_of_connections)*sizeof(int));
 						// Setup the synapses:
 						// Setup Synapses
 						presynaptic_neuron_indices[total_number_of_connections - 1] = i;
@@ -276,21 +271,20 @@ void Connections::AddGroup(	int presynaptic_group_id,
 		case CONNECTIVITY_TYPE_SINGLE:
 		{
 			// If we desire a single connection
+			increment_length_of_main_arrays(1);
+
 			// Increase count
 			total_number_of_connections += 1;
-			presynaptic_neuron_indices = (int*)realloc(presynaptic_neuron_indices, (total_number_of_connections)*sizeof(int));
-			postsynaptic_neuron_indices = (int*)realloc(postsynaptic_neuron_indices, (total_number_of_connections)*sizeof(int));
-			weights = (float*)realloc(weights, (total_number_of_connections)*sizeof(float));
-			lastactive = (float*)realloc(lastactive, (total_number_of_connections)*sizeof(float));
-			delays = (int*)realloc(delays, (total_number_of_connections)*sizeof(int));
-			stdp = (int*)realloc(stdp, (total_number_of_connections)*sizeof(int));
+
 			// Setup Synapses
 			presynaptic_neuron_indices[total_number_of_connections - 1] = prestart + int(parameter);
 			postsynaptic_neuron_indices[total_number_of_connections - 1] = poststart + int(parameter_two);
+
+			break;
 		}
 		default:
 		{
-			printf("\n\nUnknown Connection Type\n\n");
+			printf("\n\nUnknown Connection Type: %d\n\n", CONNECTIVITY_TYPE_SINGLE);
 			exit(-1);
 			break;
 		}
