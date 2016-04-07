@@ -10,6 +10,9 @@
 #ifndef Neurons_H
 #define Neurons_H
 
+//	CUDA library
+#include <cuda.h>
+
 #include "Structs.h"
 
 class Neurons{
@@ -30,14 +33,20 @@ public:
 	// Functions
 	int AddGroup(neuron_struct params, int shape[2]);
 
-
+	void poisupdate_wrapper(float* d_randoms, 
+							struct neuron_struct* neuronpop_variables,
+							float timestep,
+							size_t numNeurons, 
+							dim3 vectorblocksPerGrid,
+							dim3 threadsPerBlock);
 
 };
 
 __global__ void poisupdate(float* d_randoms, 
-							struct neuron_struct* neuronpop_variables,
+							struct neuron_struct* d_neuronpop_variables,
 							float timestep,
 							size_t numNeurons);
+
 __global__ void genupdate(struct neuron_struct* neuronpop_variables,
 							int* genids,
 							float* gentimes,

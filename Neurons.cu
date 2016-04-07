@@ -73,6 +73,19 @@ int Neurons::AddGroup(neuron_struct params, int group_shape[2]){
 	return new_group_id;
 }
 
+void Neurons::poisupdate_wrapper(float* d_randoms, 
+							struct neuron_struct* neuronpop_variables,
+							float timestep,
+							size_t numNeurons, 
+							dim3 vectorblocksPerGrid,
+							dim3 threadsPerBlock) {
+
+	poisupdate<<<vectorblocksPerGrid, threadsPerBlock>>>(d_randoms,
+																		neuronpop_variables,
+																		timestep,
+																		numNeurons);
+}
+
 
 
 // Poisson Updating Kernel
