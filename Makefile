@@ -25,8 +25,8 @@ model: ${FILE}
 
 
 # Separating out the individual compilations so as not to compilation time
-${FILE}: ${FILE}.o Simulator.o Neurons.o Connections.o CUDAcode.o NeuronDynamics.o STDPDynamics.o
-	$(CC) ${FILE}.o Simulator.o Neurons.o Connections.o CUDAcode.o NeuronDynamics.o STDPDynamics.o -o ${FILE}
+${FILE}: ${FILE}.o Simulator.o Neurons.o Connections.o CUDAcode.o STDPDynamics.o
+	$(CC) ${FILE}.o Simulator.o Neurons.o Connections.o CUDAcode.o STDPDynamics.o -o ${FILE}
 
 # Compiling the Model file
 ${FILE}.o: ${FILE}.cpp
@@ -44,16 +44,13 @@ Connections.o: Connections.cpp
 CUDAcode.o: CUDAcode.cu
 	$(CC) $(CFLAGS) CUDAcode.cu
 # Compiling the CUDA code
-NeuronDynamics.o: NeuronDynamics.cu
-	$(CC) $(CFLAGS) NeuronDynamics.cu
-# Compiling the CUDA code
 STDPDynamics.o: STDPDynamics.cu
 	$(CC) $(CFLAGS) STDPDynamics.cu
 
 
 # Test script
-test: Simulator.o Neurons.o Connections.o CUDAcode.o NeuronDynamics.o STDPDynamics.o
-	$(CC) Tests.cu Simulator.o Neurons.o Connections.o CUDAcode.o NeuronDynamics.o STDPDynamics.o -o unittests
+test: Simulator.o Neurons.o Connections.o CUDAcode.o STDPDynamics.o
+	$(CC) Tests.cu Simulator.o Neurons.o Connections.o CUDAcode.o STDPDynamics.o -o unittests
 cleantest:
 	rm *.o unittests
 
