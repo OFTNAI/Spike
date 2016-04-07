@@ -133,6 +133,8 @@ void Simulator::Run(float totaltime, int numEpochs, bool saveSpikes, bool random
 
 	// Do the SPIKING SIMULATION!
 	GPUDeviceComputation (
+					neurons,
+					connections,
 					neurons->total_number_of_neurons,
 					connections->total_number_of_connections,
 					connections->presynaptic_neuron_indices,

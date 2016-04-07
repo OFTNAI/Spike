@@ -20,8 +20,14 @@
 // Neuron structure
 #include "NeuronDynamics.h"
 #include "STDPDynamics.h"
+
+#include "Neurons.h"
+#include "Connections.h"
+
 // Functions!
 void GPUDeviceComputation (
+					Neurons * neurons,
+					Connections * connections,
 					size_t total_number_of_neurons,
 					size_t total_number_of_connections,
 					int* presynaptic_neuron_indices,
@@ -42,6 +48,8 @@ void GPUDeviceComputation (
 					bool savespikes,
 					bool randomPresentation
 					);
+
+
 // GPU Functions
 __global__ void init(unsigned int seed, curandState_t* states, size_t numNeurons);
 __global__ void randoms(curandState_t* states, float* numbers, size_t numNeurons);

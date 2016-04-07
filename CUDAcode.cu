@@ -44,6 +44,8 @@ using namespace std;
 //			timestep = timestep of the simulation
 //			totaltime = total time for which the sim should run
 void GPUDeviceComputation (
+					Neurons * neurons,
+					Connections * connections,
 					size_t total_number_of_neurons,
 					size_t total_number_of_connections,
 					int* presynaptic_neuron_indices,
