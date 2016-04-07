@@ -43,9 +43,6 @@ Connections.o: Connections.cpp
 # Compiling the Neuron class
 NeuronPopulations.o: NeuronPopulations.cpp
 	$(CC) $(CFLAGS) NeuronPopulations.cpp
-# # Compiling the Synapse class
-# Synapse.o: Synapse.cpp
-# 	$(CC) $(CFLAGS) Synapse.cpp
 # Compiling the CUDA code
 CUDAcode.o: CUDAcode.cu
 	$(CC) $(CFLAGS) CUDAcode.cu
