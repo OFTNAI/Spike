@@ -35,8 +35,8 @@ ${FILE}.o: ${FILE}.cpp
 Simulator.o: Simulator.cpp
 	$(CC) $(CFLAGS) Simulator.cpp
 # Compiling the Neurons class
-Neurons.o: Neurons.cpp
-	$(CC) $(CFLAGS) Neurons.cpp
+Neurons.o: Neurons.cu
+	$(CC) $(CFLAGS) Neurons.cu
 # Compiling the Connections class
 Connections.o: Connections.cpp
 	$(CC) $(CFLAGS) Connections.cpp
