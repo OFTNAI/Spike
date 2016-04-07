@@ -104,7 +104,7 @@ void Simulator::AddConnectionGroup(int presynaptic_group_id,
 }
 
 
-void Simulator::Run(float totaltime, int number_of_epochs, bool save_spikes, bool random_presentation){
+void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_spikes, bool random_presentation){
 	#ifndef QUIETSTART
 	// Give the user some feedback
 	printf("\n\n----------------------------------\n");
@@ -136,6 +136,7 @@ void Simulator::Run(float totaltime, int number_of_epochs, bool save_spikes, boo
 					neurons,
 					connections,
 
+					total_time_per_epoch,
 					number_of_epochs,
 					save_spikes,
 
@@ -144,7 +145,6 @@ void Simulator::Run(float totaltime, int number_of_epochs, bool save_spikes, boo
 					genids,
 					gentimes,
 					timestep,
-					totaltime,
 					random_presentation);
 }
 

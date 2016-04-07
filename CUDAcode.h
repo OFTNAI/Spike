@@ -29,6 +29,7 @@ void GPUDeviceComputation (
 					Neurons * neurons,
 					Connections * connections,
 
+					float total_time_per_epoch,
 					int number_of_epochs,
 					bool save_spikes,
 
@@ -37,7 +38,6 @@ void GPUDeviceComputation (
 					int** genids,
 					float** gentimes,
 					float timestep,
-					float totaltime,
 					
 					bool randomPresentation
 					);

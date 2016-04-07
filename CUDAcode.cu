@@ -42,11 +42,12 @@ using namespace std;
 //			tau_minus = stdp parameter
 //			tau_plus = stdp parameter
 //			timestep = timestep of the simulation
-//			totaltime = total time for which the sim should run
+//			total_time_per_epoch = total time for which the sim should run per epoch
 void GPUDeviceComputation (
 					Neurons * neurons,
 					Connections * connections,
 
+					float total_time_per_epoch,
 					int number_of_epochs,
 					bool save_spikes,
 
@@ -55,7 +56,6 @@ void GPUDeviceComputation (
 					int** genids,
 					float** gentimes,
 					float timestep,
-					float totaltime,
 					bool randomPresentation
 					){
 
@@ -224,10 +224,10 @@ void GPUDeviceComputation (
 
 			// Running the Simulation!
 			// Variables as Necessary
-			int numtimesteps = totaltime / timestep;
+			int number_of_timesteps_per_epoch = total_time_per_epoch / timestep;
 			float currtime = 0.0f;
 			// GO!
-			for (int k = 0; k < numtimesteps; k++){
+			for (int k = 0; k < number_of_timesteps_per_epoch; k++){
 				// SIMULATION
 				// Current simulation timestep
 				currtime = (float(k))*(float(timestep));
@@ -321,7 +321,7 @@ void GPUDeviceComputation (
 																		currtime,
 																		total_number_of_neurons);
 					CudaCheckError();
-					if (((k % 1) == 0) || (k == (numtimesteps-1))){
+					if (((k % 1) == 0) || (k == (number_of_timesteps_per_epoch-1))){
 						// Finally, we want to get the spikes back. Every few timesteps check the number of spikes:
 						CudaSafeCall(cudaMemcpy(&h_tempspikenum[0], &d_tempstorenum[0], (sizeof(int)), cudaMemcpyDeviceToHost));
 						// Ensure that we don't have too many
@@ -331,7 +331,7 @@ void GPUDeviceComputation (
 							exit(-1);
 						}
 						// Deal with them!
-						if ((h_tempspikenum[0] >= (0.25*total_number_of_neurons)) ||  (k == (numtimesteps - 1))){
+						if ((h_tempspikenum[0] >= (0.25*total_number_of_neurons)) ||  (k == (number_of_timesteps_per_epoch - 1))){
 							// Allocate some memory for them:
 							h_spikestoreID = (int*)realloc(h_spikestoreID, sizeof(int)*(h_spikenum + h_tempspikenum[0]));
 							h_spikestoretimes = (float*)realloc(h_spikestoretimes, sizeof(float)*(h_spikenum + h_tempspikenum[0]));

@@ -68,6 +68,6 @@ public:
 						bool stdp,
 						float parameter = 0.0f,
 						float parameter_two = 0.0f);
-	void Run(float totaltime, int numEpochs, bool saveSpikes = false, bool randomPresentation = false);
+	void Run(float total_time_per_epoch, int number_of_epochs, bool save_spikes = false, bool random_presentation = false);
 };
 #endif

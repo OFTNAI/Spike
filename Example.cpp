@@ -142,10 +142,10 @@ int main (int argc, char *argv[]){
 	*/
 
 	// Run the actual simulator!
-	float totaltime = 1.25f;
-	int epochs = 1;
+	float total_time_per_epoch = 1.25f;
+	int number_of_epochs = 1;
 	bool save_spikes = true;
-	simulator.Run(totaltime, epochs, save_spikes);
+	simulator.Run(total_time_per_epoch, number_of_epochs, save_spikes);
 
 	// Since outputspikes was set to true, the spike times of every neuron will be output along side the network connectivity and weights.
 	// All outputs are placed in a results folder in the current directory.
