@@ -31,8 +31,6 @@ void GPUDeviceComputation (
 
 					struct neuron_struct* neuronpop_variables,
 
-					struct stdp_struct stdp_vars,
-
 					int numStimuli,
 					int* numEntries,
 					int** genids,
