@@ -48,13 +48,9 @@ void GPUDeviceComputation (
 					Connections * connections,
 
 					struct neuron_struct* neuronpop_variables,
-
-					int* delays,
-					float* weights,
-					int* stdp,
 					
-					float* lastactive,
 					struct stdp_struct stdp_vars,
+
 					int numStimuli,
 					int* numEntries,
 					int** genids,
@@ -122,9 +118,9 @@ void GPUDeviceComputation (
 	// Send data to device: data for each connection
 	CudaSafeCall(cudaMemcpy(d_presynaptic_neuron_indices, connections->presynaptic_neuron_indices, sizeof(int)*total_number_of_connections, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_postsynaptic_neuron_indices, connections->postsynaptic_neuron_indices, sizeof(int)*total_number_of_connections, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemcpy(d_delays, delays, sizeof(int)*total_number_of_connections, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemcpy(d_weights, weights, sizeof(float)*total_number_of_connections, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemcpy(d_stdp, stdp, sizeof(int)*total_number_of_connections, cudaMemcpyHostToDevice));
+	CudaSafeCall(cudaMemcpy(d_delays, connections->delays, sizeof(int)*total_number_of_connections, cudaMemcpyHostToDevice));
+	CudaSafeCall(cudaMemcpy(d_weights, connections->weights, sizeof(float)*total_number_of_connections, cudaMemcpyHostToDevice));
+	CudaSafeCall(cudaMemcpy(d_stdp, connections->stdp, sizeof(int)*total_number_of_connections, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemset(d_spikes, 0, sizeof(int)*total_number_of_connections));
 	CudaSafeCall(cudaMemset(d_lastactive, -1000.0f, sizeof(float)*total_number_of_connections));
 	CudaSafeCall(cudaMemset(d_spikebuffer, -1, total_number_of_connections*sizeof(int)));
@@ -198,7 +194,7 @@ void GPUDeviceComputation (
 	// INITIAL WEIGHT OUTPUT
 	ofstream initweightfile;
 	initweightfile.open("results/NetworkWeights_Initial.bin", ios::out | ios::binary);
-	initweightfile.write((char *)weights, total_number_of_connections*sizeof(float));
+	initweightfile.write((char *)connections->weights, total_number_of_connections*sizeof(float));
 	initweightfile.close();
 
 	// Running through all of the Epochs
@@ -422,7 +418,7 @@ void GPUDeviceComputation (
 
 
 	// Copy back the data that we might want:
-	CudaSafeCall(cudaMemcpy(weights, d_weights, sizeof(float)*total_number_of_connections, cudaMemcpyDeviceToHost));
+	CudaSafeCall(cudaMemcpy(connections->weights, d_weights, sizeof(float)*total_number_of_connections, cudaMemcpyDeviceToHost));
 	// Creating and Opening all the files
 	ofstream synapsepre, synapsepost, weightfile, delayfile;
 	weightfile.open("results/NetworkWeights.bin", ios::out | ios::binary);
@@ -431,8 +427,8 @@ void GPUDeviceComputation (
 	synapsepost.open("results/NetworkPost.bin", ios::out | ios::binary);
 	
 	// Writing the data
-	weightfile.write((char *)weights, total_number_of_connections*sizeof(float));
-	delayfile.write((char *)delays, total_number_of_connections*sizeof(int));
+	weightfile.write((char *)connections->weights, total_number_of_connections*sizeof(float));
+	delayfile.write((char *)connections->delays, total_number_of_connections*sizeof(int));
 	synapsepre.write((char *)connections->presynaptic_neuron_indices, total_number_of_connections*sizeof(int));
 	synapsepost.write((char *)connections->postsynaptic_neuron_indices, total_number_of_connections*sizeof(int));
 

@@ -31,7 +31,6 @@ Connections::Connections() {
 	presynaptic_neuron_indices = NULL;
 	postsynaptic_neuron_indices = NULL;
 	weights = NULL;
-	lastactive = NULL;
 	delays = NULL;
 	stdp = NULL;
 
@@ -46,7 +45,6 @@ Connections::~Connections() {
 	free(presynaptic_neuron_indices);
 	free(postsynaptic_neuron_indices);
 	free(weights);
-	free(lastactive);
 	free(delays);
 	free(stdp);
 }
@@ -306,7 +304,6 @@ void Connections::increment_number_of_connections(int increment) {
 	presynaptic_neuron_indices = (int*)realloc(presynaptic_neuron_indices, (total_number_of_connections + increment)*sizeof(int));
     postsynaptic_neuron_indices = (int*)realloc(postsynaptic_neuron_indices, (total_number_of_connections + increment)*sizeof(int));
     weights = (float*)realloc(weights, (total_number_of_connections + increment)*sizeof(float));
-    lastactive = (float*)realloc(lastactive, (total_number_of_connections + increment)*sizeof(float));
     delays = (int*)realloc(delays, (total_number_of_connections + increment)*sizeof(int));
     stdp = (int*)realloc(stdp, (total_number_of_connections + increment)*sizeof(int));
 

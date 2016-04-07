@@ -135,12 +135,11 @@ void Simulator::Run(float totaltime, int numEpochs, bool saveSpikes, bool random
 	GPUDeviceComputation (
 					neurons,
 					connections,
+
 					neurons->group_parameters,
-					connections->delays,
-					connections->weights,
-					connections->stdp,
-					connections->lastactive,
+
 					connections->stdp_vars,
+
 					numStimuli,
 					numEntries,
 					genids,
