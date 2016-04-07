@@ -22,8 +22,8 @@ public:
 				float tau_minus_new,
 				float tau_plus_new);
 	// Full Matrices
-	int* presyns;
-	int* postsyns;
+	int* presynaptic_neuron_indices; // Previously presyns
+	int* postsynaptic_neuron_indices; // Previously postsyns
 	float* weights;
 	float* lastactive;
 	int* delays;

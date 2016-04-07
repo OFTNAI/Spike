@@ -28,8 +28,8 @@ Connections::Connections() {
 	// Variables;
 	total_number_of_connections = 0;
 	// Full Matrices
-	presyns = NULL;
-	postsyns = NULL;
+	presynaptic_neuron_indices = NULL;
+	postsynaptic_neuron_indices = NULL;
 	weights = NULL;
 	lastactive = NULL;
 	delays = NULL;
@@ -43,8 +43,8 @@ Connections::Connections() {
 Connections::~Connections() {
 	// Just need to free up the memory
 	// Full Matrices
-	free(presyns);
-	free(postsyns);
+	free(presynaptic_neuron_indices);
+	free(postsynaptic_neuron_indices);
 	free(weights);
 	free(lastactive);
 	free(delays);
@@ -111,8 +111,8 @@ void Connections::AddGroup(	int presynaptic_group_id,
 		{
             
             int increment = (preend-prestart)*(postend-poststart);
-            presyns = (int*)realloc(presyns, (total_number_of_connections + increment)*sizeof(int));
-            postsyns = (int*)realloc(postsyns, (total_number_of_connections + increment)*sizeof(int));
+            presynaptic_neuron_indices = (int*)realloc(presynaptic_neuron_indices, (total_number_of_connections + increment)*sizeof(int));
+            postsynaptic_neuron_indices = (int*)realloc(postsynaptic_neuron_indices, (total_number_of_connections + increment)*sizeof(int));
             weights = (float*)realloc(weights, (total_number_of_connections + increment)*sizeof(float));
             lastactive = (float*)realloc(lastactive, (total_number_of_connections + increment)*sizeof(float));
             delays = (int*)realloc(delays, (total_number_of_connections + increment)*sizeof(int));
@@ -124,8 +124,8 @@ void Connections::AddGroup(	int presynaptic_group_id,
 					// Index
 					int idx = total_number_of_connections + (i-prestart) + (j-poststart)*(preend-prestart);
 					// Setup Synapses
-					presyns[idx] = i;
-					postsyns[idx] = j;
+					presynaptic_neuron_indices[idx] = i;
+					postsynaptic_neuron_indices[idx] = j;
 					// Setup Weights
 					if (weight_range[0] == weight_range[1]) {
 						weights[idx] = weight_range[0];
@@ -150,8 +150,8 @@ void Connections::AddGroup(	int presynaptic_group_id,
 		case CONNECTIVITY_TYPE_ONE_TO_ONE:
 		{
             int increment = (preend-prestart);
-            presyns = (int*)realloc(presyns, (total_number_of_connections + increment)*sizeof(int));
-            postsyns = (int*)realloc(postsyns, (total_number_of_connections + increment)*sizeof(int));
+            presynaptic_neuron_indices = (int*)realloc(presynaptic_neuron_indices, (total_number_of_connections + increment)*sizeof(int));
+            postsynaptic_neuron_indices = (int*)realloc(postsynaptic_neuron_indices, (total_number_of_connections + increment)*sizeof(int));
             weights = (float*)realloc(weights, (total_number_of_connections + increment)*sizeof(float));
             lastactive = (float*)realloc(lastactive, (total_number_of_connections + increment)*sizeof(float));
             delays = (int*)realloc(delays, (total_number_of_connections + increment)*sizeof(int));
@@ -164,8 +164,8 @@ void Connections::AddGroup(	int presynaptic_group_id,
 			}
 			// Create the connectivity
 			for (int i = 0; i < (preend-prestart); i++){
-				presyns[total_number_of_connections + i] = prestart + i;
-				postsyns[total_number_of_connections + i] = poststart + i;
+				presynaptic_neuron_indices[total_number_of_connections + i] = prestart + i;
+				postsynaptic_neuron_indices[total_number_of_connections + i] = poststart + i;
 				// Setting up the weights
 				if (weight_range[0] == weight_range[1]) {
 					weights[total_number_of_connections + i] = weight_range[0];
@@ -197,15 +197,15 @@ void Connections::AddGroup(	int presynaptic_group_id,
 					if (prob < parameter){
 						// Increase count
 						total_number_of_connections += 1;
-						presyns = (int*)realloc(presyns, (total_number_of_connections)*sizeof(int));
-						postsyns = (int*)realloc(postsyns, (total_number_of_connections)*sizeof(int));
+						presynaptic_neuron_indices = (int*)realloc(presynaptic_neuron_indices, (total_number_of_connections)*sizeof(int));
+						postsynaptic_neuron_indices = (int*)realloc(postsynaptic_neuron_indices, (total_number_of_connections)*sizeof(int));
 						weights = (float*)realloc(weights, (total_number_of_connections)*sizeof(float));
 						lastactive = (float*)realloc(lastactive, (total_number_of_connections)*sizeof(float));
 						delays = (int*)realloc(delays, (total_number_of_connections)*sizeof(int));
 						stdp = (int*)realloc(stdp, (total_number_of_connections)*sizeof(int));
 						// Setup Synapses
-						presyns[total_number_of_connections - 1] = i;
-						postsyns[total_number_of_connections - 1] = j;
+						presynaptic_neuron_indices[total_number_of_connections - 1] = i;
+						postsynaptic_neuron_indices[total_number_of_connections - 1] = j;
 						// Setup Weights
 						if (weight_range[0] == weight_range[1]) {
 							weights[total_number_of_connections - 1] = weight_range[0];
@@ -267,15 +267,15 @@ void Connections::AddGroup(	int presynaptic_group_id,
 					if (prob <= ((GAUS(distance, parameter)) / gaussian_scaling_factor)){
 						// Increase count
 						total_number_of_connections += 1;
-						presyns = (int*)realloc(presyns, (total_number_of_connections)*sizeof(int));
-						postsyns = (int*)realloc(postsyns, (total_number_of_connections)*sizeof(int));
+						presynaptic_neuron_indices = (int*)realloc(presynaptic_neuron_indices, (total_number_of_connections)*sizeof(int));
+						postsynaptic_neuron_indices = (int*)realloc(postsynaptic_neuron_indices, (total_number_of_connections)*sizeof(int));
 						weights = (float*)realloc(weights, (total_number_of_connections)*sizeof(float));
 						lastactive = (float*)realloc(lastactive, (total_number_of_connections)*sizeof(float));
 						delays = (int*)realloc(delays, (total_number_of_connections)*sizeof(int));
 						stdp = (int*)realloc(stdp, (total_number_of_connections)*sizeof(int));
 						// Setup Synapses
-						presyns[total_number_of_connections - 1] = i;
-						postsyns[total_number_of_connections - 1] = j;
+						presynaptic_neuron_indices[total_number_of_connections - 1] = i;
+						postsynaptic_neuron_indices[total_number_of_connections - 1] = j;
 						// Setup Weights
 						if (weight_range[0] == weight_range[1]) {
 							weights[total_number_of_connections - 1] = weight_range[0];
@@ -324,16 +324,16 @@ void Connections::AddGroup(	int presynaptic_group_id,
 					if ((temp >= 0) && (temp < out_size)){
 						// Create space for a connection
 						total_number_of_connections += 1;
-						presyns = (int*)realloc(presyns, (total_number_of_connections)*sizeof(int));
-						postsyns = (int*)realloc(postsyns, (total_number_of_connections)*sizeof(int));
+						presynaptic_neuron_indices = (int*)realloc(presynaptic_neuron_indices, (total_number_of_connections)*sizeof(int));
+						postsynaptic_neuron_indices = (int*)realloc(postsynaptic_neuron_indices, (total_number_of_connections)*sizeof(int));
 						weights = (float*)realloc(weights, (total_number_of_connections)*sizeof(float));
 						lastactive = (float*)realloc(lastactive, (total_number_of_connections)*sizeof(float));
 						delays = (int*)realloc(delays, (total_number_of_connections)*sizeof(int));
 						stdp = (int*)realloc(stdp, (total_number_of_connections)*sizeof(int));
 						// Setup the synapses:
 						// Setup Synapses
-						presyns[total_number_of_connections - 1] = i;
-						postsyns[total_number_of_connections - 1] = poststart + temp;
+						presynaptic_neuron_indices[total_number_of_connections - 1] = i;
+						postsynaptic_neuron_indices[total_number_of_connections - 1] = poststart + temp;
 						// Setup Weights
 						if (weight_range[0] == weight_range[1]) {
 							weights[total_number_of_connections - 1] = weight_range[0];
@@ -360,15 +360,15 @@ void Connections::AddGroup(	int presynaptic_group_id,
 			// If we desire a single connection
 			// Increase count
 			total_number_of_connections += 1;
-			presyns = (int*)realloc(presyns, (total_number_of_connections)*sizeof(int));
-			postsyns = (int*)realloc(postsyns, (total_number_of_connections)*sizeof(int));
+			presynaptic_neuron_indices = (int*)realloc(presynaptic_neuron_indices, (total_number_of_connections)*sizeof(int));
+			postsynaptic_neuron_indices = (int*)realloc(postsynaptic_neuron_indices, (total_number_of_connections)*sizeof(int));
 			weights = (float*)realloc(weights, (total_number_of_connections)*sizeof(float));
 			lastactive = (float*)realloc(lastactive, (total_number_of_connections)*sizeof(float));
 			delays = (int*)realloc(delays, (total_number_of_connections)*sizeof(int));
 			stdp = (int*)realloc(stdp, (total_number_of_connections)*sizeof(int));
 			// Setup Synapses
-			presyns[total_number_of_connections - 1] = prestart + int(parameter);
-			postsyns[total_number_of_connections - 1] = poststart + int(parameter_two);
+			presynaptic_neuron_indices[total_number_of_connections - 1] = prestart + int(parameter);
+			postsynaptic_neuron_indices[total_number_of_connections - 1] = poststart + int(parameter_two);
 			// Setup Weights
 			if (weight_range[0] == weight_range[1]) {
 				weights[total_number_of_connections - 1] = weight_range[0];

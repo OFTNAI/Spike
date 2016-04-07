@@ -28,8 +28,8 @@ using namespace std;
 //	INPUT (incomplete):
 //			numNeurons = Total number of neurons in simulation
 //			numConnections = Total number of Synapses
-//			presyns = vector- entry corresponds to pre-syn neuron ID
-//			postsyns = vector- entry corresponds to post-syn neuron ID
+//			presynaptic_neuron_indices = vector- entry corresponds to pre-syn neuron ID
+//			postsynaptic_neuron_indices = vector- entry corresponds to post-syn neuron ID
 //			delays = vector- entry corresponds to axonal delay of syn
 //			weight = vector- entry correponds to synaptic weight
 //			spikes = vector- entry corresponds to countdown of spike on syn
@@ -46,8 +46,8 @@ using namespace std;
 void GPUDeviceComputation (
 					size_t numNeurons,
 					size_t numConnections,
-					int* presyns,
-					int* postsyns,
+					int* presynaptic_neuron_indices,
+					int* postsynaptic_neuron_indices,
 					int* delays,
 					float* weights,
 					int* stdp,
@@ -66,8 +66,8 @@ void GPUDeviceComputation (
 					){
 
 	// Creating the Device Pointers I need
-	int* d_presyns;
-	int* d_postsyns;
+	int* d_presynaptic_neuron_indices;
+	int* d_postsynaptic_neuron_indices;
 	int* d_delays;
 	float* d_weights;
 	int* d_spikes;
@@ -92,8 +92,8 @@ void GPUDeviceComputation (
 	float* h_spikestoretimes = NULL;
 
 	// Allocate memory for data on device
-	CudaSafeCall(cudaMalloc((void **)&d_presyns, sizeof(int)*numConnections));
-	CudaSafeCall(cudaMalloc((void **)&d_postsyns, sizeof(int)*numConnections));
+	CudaSafeCall(cudaMalloc((void **)&d_presynaptic_neuron_indices, sizeof(int)*numConnections));
+	CudaSafeCall(cudaMalloc((void **)&d_postsynaptic_neuron_indices, sizeof(int)*numConnections));
 	CudaSafeCall(cudaMalloc((void **)&d_delays, sizeof(int)*numConnections));
 	CudaSafeCall(cudaMalloc((void **)&d_weights, sizeof(float)*numConnections));
 	CudaSafeCall(cudaMalloc((void **)&d_spikes, sizeof(int)*numConnections));
@@ -108,8 +108,8 @@ void GPUDeviceComputation (
 
 
 	// Send the actual data!
-	CudaSafeCall(cudaMemcpy(d_presyns, presyns, sizeof(int)*numConnections, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemcpy(d_postsyns, postsyns, sizeof(int)*numConnections, cudaMemcpyHostToDevice));
+	CudaSafeCall(cudaMemcpy(d_presynaptic_neuron_indices, presynaptic_neuron_indices, sizeof(int)*numConnections, cudaMemcpyHostToDevice));
+	CudaSafeCall(cudaMemcpy(d_postsynaptic_neuron_indices, postsynaptic_neuron_indices, sizeof(int)*numConnections, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_delays, delays, sizeof(int)*numConnections, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_weights, weights, sizeof(float)*numConnections, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_stdp, stdp, sizeof(int)*numConnections, cudaMemcpyHostToDevice));
@@ -248,7 +248,7 @@ void GPUDeviceComputation (
 				currentcalc<<<connblocksPerGrid, threadsPerBlock>>>(d_spikes,
 																	d_weights,
 																	d_lastactive,
-																	d_postsyns,
+																	d_postsynaptic_neuron_indices,
 																	currentinjection,
 																	currtime,
 																	numConnections,
@@ -259,7 +259,7 @@ void GPUDeviceComputation (
 																	d_weights,
 																	d_stdp,
 																	d_lastspiketime,
-																	d_postsyns,
+																	d_postsynaptic_neuron_indices,
 																	currtime,
 																	stdp_vars,
 																	numConnections,
@@ -278,7 +278,7 @@ void GPUDeviceComputation (
 																		numNeurons);
 				CudaCheckError();
 				// Check which synapses to send spikes down and do it
-				synapsespikes<<<connblocksPerGrid, threadsPerBlock>>>(d_presyns,
+				synapsespikes<<<connblocksPerGrid, threadsPerBlock>>>(d_presynaptic_neuron_indices,
 																		d_delays,
 																		d_spikes,
 																		d_lastspiketime,
@@ -288,7 +288,7 @@ void GPUDeviceComputation (
 																		numNeurons);
 				CudaCheckError();
 				// Carry out the last step, LTP!
-				synapseLTP<<<connblocksPerGrid, threadsPerBlock>>>(d_postsyns,
+				synapseLTP<<<connblocksPerGrid, threadsPerBlock>>>(d_postsynaptic_neuron_indices,
 																	d_lastspiketime,
 																	d_stdp,
 																	d_lastactive,
@@ -414,8 +414,8 @@ void GPUDeviceComputation (
 	// Writing the data
 	weightfile.write((char *)weights, numConnections*sizeof(float));
 	delayfile.write((char *)delays, numConnections*sizeof(int));
-	synapsepre.write((char *)presyns, numConnections*sizeof(int));
-	synapsepost.write((char *)postsyns, numConnections*sizeof(int));
+	synapsepre.write((char *)presynaptic_neuron_indices, numConnections*sizeof(int));
+	synapsepost.write((char *)postsynaptic_neuron_indices, numConnections*sizeof(int));
 
 	// Close files
 	weightfile.close();
@@ -425,8 +425,8 @@ void GPUDeviceComputation (
 
 
 	// Free Memory on GPU
-	CudaSafeCall(cudaFree(d_presyns));
-	CudaSafeCall(cudaFree(d_postsyns));
+	CudaSafeCall(cudaFree(d_presynaptic_neuron_indices));
+	CudaSafeCall(cudaFree(d_postsynaptic_neuron_indices));
 	CudaSafeCall(cudaFree(d_delays));
 	CudaSafeCall(cudaFree(d_weights));
 	CudaSafeCall(cudaFree(d_spikes));
@@ -477,7 +477,7 @@ __global__ void randoms(curandState_t* states, float* numbers, size_t numNeurons
 __global__ void currentcalc(int* d_spikes,
 							float* d_weights,
 							float* d_lastactive,
-							int* d_postsyns,
+							int* d_postsynaptic_neuron_indices,
 							float* currentinj,
 							float currtime,
 							size_t numConns,
@@ -488,7 +488,7 @@ __global__ void currentcalc(int* d_spikes,
 		d_spikes[idx] -= 1;
 		if (d_spikes[idx] == 0) {
 			// Get locations of weights and lastactive
-			atomicAdd(&currentinj[d_postsyns[idx]], d_weights[idx]);
+			atomicAdd(&currentinj[d_postsynaptic_neuron_indices[idx]], d_weights[idx]);
 			// Change lastactive
 			d_lastactive[idx] = currtime;
 			// Done!
@@ -498,7 +498,7 @@ __global__ void currentcalc(int* d_spikes,
 }
 
 // Synapses carrying spikes
-__global__ void synapsespikes(int* d_presyns,
+__global__ void synapsespikes(int* d_presynaptic_neuron_indices,
 								int* d_delays,
 								int* d_spikes,
 								float* d_lastspiketime,
@@ -511,7 +511,7 @@ __global__ void synapsespikes(int* d_presyns,
 		// Reduce the spikebuffer by 1
 		d_spikebuffer[idx] -= 1;
 		// Check if the neuron PRE has just fired and if the synapse exists
-		if (d_lastspiketime[d_presyns[idx]] == currtime){
+		if (d_lastspiketime[d_presynaptic_neuron_indices[idx]] == currtime){
 			// Update the spikes with the correct delay
 			if (d_spikes[idx] <= 0){
 				d_spikes[idx] = d_delays[idx];
