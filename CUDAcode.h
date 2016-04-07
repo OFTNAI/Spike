@@ -28,16 +28,17 @@
 void GPUDeviceComputation (
 					Neurons * neurons,
 					Connections * connections,
-					size_t total_number_of_neurons,
-					size_t total_number_of_connections,
+
+					struct neuron_struct* neuronpop_variables,
+
 					int* presynaptic_neuron_indices,
 					int* postsynaptic_neuron_indices,
 					int* delays,
 					float* weights,
 					int* stdp,
+
 					float* lastactive,
 					struct stdp_struct stdp_vars,
-					struct neuron_struct* neuronpop_variables,
 					int numStimuli,
 					int* numEntries,
 					int** genids,

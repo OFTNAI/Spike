@@ -135,8 +135,7 @@ void Simulator::Run(float totaltime, int numEpochs, bool saveSpikes, bool random
 	GPUDeviceComputation (
 					neurons,
 					connections,
-					neurons->total_number_of_neurons,
-					connections->total_number_of_connections,
+					neurons->group_parameters,
 					connections->presynaptic_neuron_indices,
 					connections->postsynaptic_neuron_indices,
 					connections->delays,
@@ -144,7 +143,6 @@ void Simulator::Run(float totaltime, int numEpochs, bool saveSpikes, bool random
 					connections->stdp,
 					connections->lastactive,
 					connections->stdp_vars,
-					neurons->group_parameters,
 					numStimuli,
 					numEntries,
 					genids,
