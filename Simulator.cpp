@@ -138,13 +138,13 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_
 
 					total_time_per_epoch,
 					number_of_epochs,
+					timestep,
 					save_spikes,
 
 					numStimuli,
 					numEntries,
 					genids,
 					gentimes,
-					timestep,
 					random_presentation);
 }
 

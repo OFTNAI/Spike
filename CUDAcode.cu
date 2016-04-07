@@ -49,13 +49,13 @@ void GPUDeviceComputation (
 
 					float total_time_per_epoch,
 					int number_of_epochs,
+					float timestep,
 					bool save_spikes,
 
 					int numStimuli,
 					int* numEntries,
 					int** genids,
 					float** gentimes,
-					float timestep,
 					bool randomPresentation
 					){
 
