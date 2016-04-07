@@ -84,7 +84,10 @@ void Neurons::ji_test_allocate_and_set_d_test_array(Connections * connections) {
 
 void Neurons::initialise_device_pointers() {
 	CudaSafeCall(cudaMalloc((void **)&d_neuron_group_parameters, sizeof(struct neuron_struct)*total_number_of_neurons));
+	CudaSafeCall(cudaMalloc((void **)&d_lastspiketime, sizeof(float)*total_number_of_neurons));
+
 	CudaSafeCall(cudaMemcpy(d_neuron_group_parameters, group_parameters, sizeof(struct neuron_struct)*total_number_of_neurons, cudaMemcpyHostToDevice));
+	CudaSafeCall(cudaMemset(d_lastspiketime, -1000.0f, total_number_of_neurons*sizeof(float)));
 }
 
 

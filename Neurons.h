@@ -38,6 +38,7 @@ public:
 
 	// Device Pointers
 	neuron_struct* d_neuron_group_parameters;
+	float* d_lastspiketime;
 
 	
 	// Functions

@@ -73,8 +73,8 @@ void GPUDeviceComputation (
 	int* d_spikes;
 	int* d_stdp;
 	float* d_lastactive;
-	// struct neuron_struct* d_neuron_group_parameters;
-	float* d_lastspiketime;
+
+	// float* d_lastspiketime;
 	int* d_genids;
 	float* d_gentimes;
 	int* d_spikebuffer;
@@ -105,8 +105,6 @@ void GPUDeviceComputation (
 	CudaSafeCall(cudaMalloc((void **)&d_spikebuffer, sizeof(int)*total_number_of_connections));
 
 	// Allocate memory for data on device for each neuron
-	// CudaSafeCall(cudaMalloc((void **)&d_neuron_group_parameters, sizeof(struct neuron_struct)*total_number_of_neurons));
-	CudaSafeCall(cudaMalloc((void **)&d_lastspiketime, sizeof(float)*total_number_of_neurons));
 	CudaSafeCall(cudaMalloc((void **)&d_tempstoreID, sizeof(int)*total_number_of_neurons));
 	CudaSafeCall(cudaMalloc((void **)&d_tempstoretimes, sizeof(float)*total_number_of_neurons));
 
@@ -125,8 +123,6 @@ void GPUDeviceComputation (
 	CudaSafeCall(cudaMemset(d_spikebuffer, -1, total_number_of_connections*sizeof(int)));
 
 	// Send data to device: data for each neuron
-	// CudaSafeCall(cudaMemcpy(d_neuron_group_parameters, neurons->group_parameters, sizeof(struct neuron_struct)*total_number_of_neurons, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemset(d_lastspiketime, -1000.0f, total_number_of_neurons*sizeof(float)));
 	CudaSafeCall(cudaMemset(d_tempstoreID, -1, sizeof(int)*total_number_of_neurons));
 	CudaSafeCall(cudaMemset(d_tempstoretimes, -1.0f, sizeof(float)*total_number_of_neurons));
 
@@ -221,10 +217,11 @@ void GPUDeviceComputation (
 				CudaSafeCall(cudaMemcpy(d_gentimes, gentimes[present], sizeof(float)*numEnts, cudaMemcpyHostToDevice));
 			}
 			// Reset the variables necessary
+			// CAN GO INTO CLASSES EVENTUALLY
 			CudaSafeCall(cudaMemcpy(neurons->d_neuron_group_parameters, neurons->group_parameters, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
 			CudaSafeCall(cudaMemset(d_spikes, 0, sizeof(int)*total_number_of_connections));
 			CudaSafeCall(cudaMemset(d_lastactive, -1000.0f, sizeof(float)*total_number_of_connections));
-			CudaSafeCall(cudaMemset(d_lastspiketime, -1000.0f, total_number_of_neurons*sizeof(float)));
+			CudaSafeCall(cudaMemset(neurons->d_lastspiketime, -1000.0f, total_number_of_neurons*sizeof(float)));
 			CudaSafeCall(cudaMemset(d_spikebuffer, -1, total_number_of_connections*sizeof(int)));
 
 			// Running the Simulation!
@@ -279,7 +276,7 @@ void GPUDeviceComputation (
 				ltdweights<<<connblocksPerGrid, threadsPerBlock>>>(d_lastactive,
 																	d_weights,
 																	d_stdp,
-																	d_lastspiketime,
+																	neurons->d_lastspiketime,
 																	d_postsynaptic_neuron_indices,
 																	currtime,
 																	connections->stdp_vars, // Should make device copy?
@@ -296,7 +293,7 @@ void GPUDeviceComputation (
 				CudaCheckError();
 				// Check which neurons are spiking and deal with them
 				neurons->spikingneurons_wrapper(neurons->d_neuron_group_parameters,
-											d_lastspiketime,
+											neurons->d_lastspiketime,
 											currtime,
 											total_number_of_neurons,
 											vectorblocksPerGrid, 
@@ -306,7 +303,7 @@ void GPUDeviceComputation (
 				synapsespikes<<<connblocksPerGrid, threadsPerBlock>>>(d_presynaptic_neuron_indices,
 																		d_delays,
 																		d_spikes,
-																		d_lastspiketime,
+																		neurons->d_lastspiketime,
 																		d_spikebuffer,
 																		currtime,
 																		total_number_of_connections,
@@ -314,7 +311,7 @@ void GPUDeviceComputation (
 				CudaCheckError();
 				// Carry out the last step, LTP!
 				synapseLTP<<<connblocksPerGrid, threadsPerBlock>>>(d_postsynaptic_neuron_indices,
-																	d_lastspiketime,
+																	neurons->d_lastspiketime,
 																	d_stdp,
 																	d_lastactive,
 																	d_weights,
@@ -327,7 +324,7 @@ void GPUDeviceComputation (
 				// Only save the spikes if necessary
 				if (save_spikes){
 					// Storing the spikes that have occurred in this timestep
-					spikeCollect<<<vectorblocksPerGrid, threadsPerBlock>>>(d_lastspiketime,
+					spikeCollect<<<vectorblocksPerGrid, threadsPerBlock>>>(neurons->d_lastspiketime,
 																		d_tempstorenum,
 																		d_tempstoreID,
 																		d_tempstoretimes,
