@@ -215,7 +215,7 @@ void GPUDeviceComputation (
 
 					// Update Poisson neuron states
 					neurons->poisupdate_wrapper(gpu_randfloats, timestep);
-					CudaCheckError();
+					
 				}
 				// If there are any spike generators
 				if (numEnts > 0) {
@@ -227,36 +227,26 @@ void GPUDeviceComputation (
 											numEnts,
 											genblocknum, 
 											threadsPerBlock);
-					CudaCheckError();
+					
 				} 
 				
 				connections->calculate_postsynaptic_current_injection_for_connection_wrapper(currentinjection, current_time_in_seconds);
-				CudaCheckError();
-
 
 				// Carry out LTD on appropriate synapses
 				connections->ltdweights_wrapper(neurons->d_lastspiketime, current_time_in_seconds);
-				CudaCheckError();
-
 
 				// Update States of neurons
 				neurons->stateupdate_wrapper(currentinjection, timestep);
-				CudaCheckError();
-				
+
 				// Check which neurons are spiking and deal with them
 				neurons->spikingneurons_wrapper(current_time_in_seconds);
-				CudaCheckError();
-				
-				
+								
 				// Check which synapses to send spikes down and do it
 				connections->synapsespikes_wrapper(neurons->d_lastspiketime, current_time_in_seconds);
-				CudaCheckError();
-
-
 
 				// // Carry out the last step, LTP!
 				connections->synapseLTP_wrapper(neurons->d_lastspiketime, current_time_in_seconds);
-				CudaCheckError();
+				
 
 				// Only save the spikes if necessary
 				if (save_spikes){

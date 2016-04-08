@@ -134,6 +134,7 @@ void Neurons::poisupdate_wrapper(float* d_randoms, float timestep) {
 														d_neuron_group_parameters,
 														timestep,
 														total_number_of_neurons);
+	CudaCheckError();
 }
 
 
@@ -151,6 +152,8 @@ void Neurons::genupdate_wrapper(int* genids,
 												currtime,
 												timestep,
 												numEntries);
+
+	CudaCheckError();
 }
 
 
@@ -160,6 +163,8 @@ void Neurons::spikingneurons_wrapper(float currtime) {
 																		d_lastspiketime,
 																		currtime,
 																		total_number_of_neurons);
+
+	CudaCheckError();
 }
 
 
@@ -170,6 +175,8 @@ void Neurons::stateupdate_wrapper(float* current_injection,
 																	current_injection,
 																	timestep,
 																	total_number_of_neurons);
+
+	CudaCheckError();
 }
 
 

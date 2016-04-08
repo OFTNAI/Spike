@@ -412,6 +412,8 @@ void Connections::calculate_postsynaptic_current_injection_for_connection_wrappe
 																	currentinjection,
 																	current_time_in_seconds,
 																	total_number_of_connections);
+
+	CudaCheckError();
 }
 
 void Connections::synapsespikes_wrapper(float* d_lastspiketime, float current_time_in_seconds) {
@@ -423,6 +425,8 @@ void Connections::synapsespikes_wrapper(float* d_lastspiketime, float current_ti
 																		d_spikebuffer,
 																		current_time_in_seconds,
 																		total_number_of_connections);
+
+	CudaCheckError();
 }
 
 void Connections::ltdweights_wrapper(float* d_lastspiketime, float current_time_in_seconds) {
@@ -435,6 +439,8 @@ void Connections::ltdweights_wrapper(float* d_lastspiketime, float current_time_
 																	current_time_in_seconds,
 																	stdp_vars, // Should make device copy?
 																	total_number_of_connections);
+
+	CudaCheckError();
 }
 
 
@@ -448,6 +454,8 @@ void Connections::synapseLTP_wrapper(float* d_lastspiketime, float current_time_
 																	stdp_vars, 
 																	current_time_in_seconds,
 																	total_number_of_connections);
+
+	CudaCheckError();
 }
 
 
