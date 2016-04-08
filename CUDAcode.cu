@@ -212,10 +212,9 @@ void GPUDeviceComputation (
 					// First create the set of random numbers of poisson neurons
 					randoms<<<vectorblocksPerGrid, threadsPerBlock>>>(states, gpu_randfloats, total_number_of_neurons);
 					CudaCheckError();
+					
 					// Update Poisson neuron states
-					neurons->poisupdate_wrapper(gpu_randfloats,
-												neurons->d_neuron_group_parameters,
-												timestep);
+					neurons->poisupdate_wrapper(gpu_randfloats, timestep);
 					CudaCheckError();
 				}
 				// If there are any spike generators

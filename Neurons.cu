@@ -128,13 +128,11 @@ __global__ void stateupdate(struct neuron_struct* neuronpop_variables,
 
 // Wrapper member function definitions
 // See NOTE above
-void Neurons::poisupdate_wrapper(float* d_randoms, 
-							neuron_struct* neuronpop_variables,
-							float timestep) {
+void Neurons::poisupdate_wrapper(float* d_randoms, float timestep) {
 
 	
 	poisupdate<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_randoms,
-														neuronpop_variables,
+														d_neuron_group_parameters,
 														timestep,
 														total_number_of_neurons);
 }

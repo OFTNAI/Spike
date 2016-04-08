@@ -47,9 +47,7 @@ public:
 	void initialise_device_pointers();
 	void set_threads_per_block_and_blocks_per_grid(int threads);
 
-	void poisupdate_wrapper(float* d_randoms, 
-							neuron_struct* neuronpop_variables,
-							float timestep);
+	void poisupdate_wrapper(float* d_randoms, float timestep);
 
 	void genupdate_wrapper(neuron_struct* neuronpop_variables,
 							int* genids,
