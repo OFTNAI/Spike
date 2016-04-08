@@ -354,6 +354,12 @@ void Connections::initialise_device_pointers() {
 }
 
 
+void Connections::set_number_of_connection_blocks_per_grid(int threads) {
+	int number_of_connection_blocks = (total_number_of_connections + threads) / threads;
+	number_of_connection_blocks_per_grid.x = number_of_connection_blocks;
+}
+
+
 
 __global__ void calculate_postsynaptic_current_injection_for_connection(int* d_spikes,
 							float* d_weights,
@@ -366,10 +372,11 @@ __global__ void calculate_postsynaptic_current_injection_for_connection(int* d_s
 
 void Connections::calculate_postsynaptic_current_injection_for_connection_wrapper(float* currentinjection,
 							float currtime,
-							dim3 connblocksPerGrid,
 							dim3 threadsPerBlock) {
 
-	calculate_postsynaptic_current_injection_for_connection<<<connblocksPerGrid, threadsPerBlock>>>(d_spikes,
+	// printf("number_of_connection_blocks_per_grid: %d\n", number_of_connection_blocks_per_grid.x);
+
+	calculate_postsynaptic_current_injection_for_connection<<<number_of_connection_blocks_per_grid, threadsPerBlock>>>(d_spikes,
 																	d_weights,
 																	d_lastactive,
 																	d_postsynaptic_neuron_indices,

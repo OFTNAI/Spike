@@ -109,13 +109,17 @@ void GPUDeviceComputation (
 	// THREADS&BLOCKS
 	// The number of threads per block I shall keep held at 128
 	int threads = 128;
+	connections->set_number_of_connection_blocks_per_grid(threads);
+
+
 	dim3 threadsPerBlock(threads,1,1);
 	// I now have to calculate the number of blocks ....
-	int connblocknum = (total_number_of_connections + threads) / threads;
+	int number_of_connection_blocks = (total_number_of_connections + threads) / threads; //Previously number_of_connection_blocks
 	int vectorblocknum = (total_number_of_neurons + threads) / threads;
 	// The maximum dimension for the grid is 65535
-	dim3 connblocksPerGrid(connblocknum,1,1);
-	dim3 vectorblocksPerGrid(vectorblocknum,1,1);
+	dim3 number_of_connection_blocks_per_grid(number_of_connection_blocks,1,1); // Previously connblocksPerGrid
+	printf("number_of_connection_blocks_per_grid: %d\n", number_of_connection_blocks_per_grid.x);
+	dim3 vectorblocksPerGrid(vectorblocknum,1,1);  
 	// Temp Values which will be replaced
 	int genblocknum = 1;
 	dim3 genblocksPerGrid(genblocknum,1,1);
@@ -232,12 +236,11 @@ void GPUDeviceComputation (
 				connections->calculate_postsynaptic_current_injection_for_connection_wrapper(
 																	currentinjection,
 																	currtime,
-																	connblocksPerGrid,
 																	threadsPerBlock);
 				CudaCheckError();
 				// Carry out LTD on appropriate synapses
 				// JI CANDIDATE FOR GOING IN CONNECTIONS
-				ltdweights<<<connblocksPerGrid, threadsPerBlock>>>(connections->d_lastactive,
+				ltdweights<<<number_of_connection_blocks_per_grid, threadsPerBlock>>>(connections->d_lastactive,
 																	connections->d_weights,
 																	connections->d_stdp,
 																	neurons->d_lastspiketime,
@@ -265,7 +268,7 @@ void GPUDeviceComputation (
 				CudaCheckError();
 				// Check which synapses to send spikes down and do it
 				// JI CANDIDATE FOR GOING IN CONNECTIONS
-				synapsespikes<<<connblocksPerGrid, threadsPerBlock>>>(connections->d_presynaptic_neuron_indices,
+				synapsespikes<<<number_of_connection_blocks_per_grid, threadsPerBlock>>>(connections->d_presynaptic_neuron_indices,
 																		connections->d_delays,
 																		connections->d_spikes,
 																		neurons->d_lastspiketime,
@@ -276,7 +279,7 @@ void GPUDeviceComputation (
 				CudaCheckError();
 				// Carry out the last step, LTP!
 				// JI CANDIDATE FOR GOING IN CONNECTIONS
-				synapseLTP<<<connblocksPerGrid, threadsPerBlock>>>(connections->d_postsynaptic_neuron_indices,
+				synapseLTP<<<number_of_connection_blocks_per_grid, threadsPerBlock>>>(connections->d_postsynaptic_neuron_indices,
 																	neurons->d_lastspiketime,
 																	connections->d_stdp,
 																	connections->d_lastactive,
