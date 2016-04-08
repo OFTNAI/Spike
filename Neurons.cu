@@ -130,7 +130,6 @@ __global__ void stateupdate(struct neuron_struct* neuronpop_variables,
 // See NOTE above
 void Neurons::poisupdate_wrapper(float* d_randoms, float timestep) {
 
-	
 	poisupdate<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_randoms,
 														d_neuron_group_parameters,
 														timestep,
@@ -138,8 +137,7 @@ void Neurons::poisupdate_wrapper(float* d_randoms, float timestep) {
 }
 
 
-void Neurons::genupdate_wrapper(neuron_struct* d_neuronpop_variables,
-							int* genids,
+void Neurons::genupdate_wrapper(int* genids,
 							float* gentimes,
 							float currtime,
 							float timestep,
@@ -147,7 +145,7 @@ void Neurons::genupdate_wrapper(neuron_struct* d_neuronpop_variables,
 							int genblocknum, 
 							dim3 threadsPerBlock) {
 
-	genupdate<<<genblocknum, threadsPerBlock>>> (d_neuronpop_variables,
+	genupdate<<<genblocknum, threadsPerBlock>>> (d_neuron_group_parameters,
 												genids,
 												gentimes,
 												currtime,
@@ -156,8 +154,7 @@ void Neurons::genupdate_wrapper(neuron_struct* d_neuronpop_variables,
 }
 
 
-void Neurons::spikingneurons_wrapper(neuron_struct* d_neuron_group_parameters,
-								float* d_lastspiketime,
+void Neurons::spikingneurons_wrapper(float* d_lastspiketime,
 								float currtime) {
 
 	spikingneurons<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_neuron_group_parameters,
@@ -167,11 +164,10 @@ void Neurons::spikingneurons_wrapper(neuron_struct* d_neuron_group_parameters,
 }
 
 
-void Neurons::stateupdate_wrapper(neuron_struct* d_neuronpop_variables,
-							float* current_injection,
+void Neurons::stateupdate_wrapper(float* current_injection,
 							float timestep) {
 
-	stateupdate<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_neuronpop_variables,
+	stateupdate<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_neuron_group_parameters,
 																	current_injection,
 																	timestep,
 																	total_number_of_neurons);

@@ -49,8 +49,7 @@ public:
 
 	void poisupdate_wrapper(float* d_randoms, float timestep);
 
-	void genupdate_wrapper(neuron_struct* neuronpop_variables,
-							int* genids,
+	void genupdate_wrapper(int* genids,
 							float* gentimes,
 							float currtime,
 							float timestep,
@@ -58,12 +57,10 @@ public:
 							int genblocknum, 
 							dim3 threadsPerBlock);
 
-	void spikingneurons_wrapper(neuron_struct* d_neuron_group_parameters,
-								float* d_lastspiketime,
+	void spikingneurons_wrapper(float* d_lastspiketime,
 								float currtime);
 
-	void stateupdate_wrapper(neuron_struct* d_neuronpop_variables,
-							float* current_injection,
+	void stateupdate_wrapper(float* current_injection,
 							float timestep);
 
 
