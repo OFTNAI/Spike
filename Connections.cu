@@ -13,6 +13,8 @@
 #include <math.h>
 
 #include "Constants.h"
+#include <cuda.h>
+#include "CUDAErrorCheckHelpers.h"
 
 
 // Macro to get the gaussian prob
@@ -308,6 +310,16 @@ void Connections::increment_number_of_connections(int increment) {
     stdp = (int*)realloc(stdp, (total_number_of_connections + increment)*sizeof(int));
 
     total_number_of_connections += increment;
+}
+
+
+void Connections::initialise_device_pointers() {
+	CudaSafeCall(cudaMalloc((void **)&d_presynaptic_neuron_indices, sizeof(int)*total_number_of_connections));
+	CudaSafeCall(cudaMalloc((void **)&d_postsynaptic_neuron_indices, sizeof(int)*total_number_of_connections));
+
+
+	CudaSafeCall(cudaMemcpy(d_presynaptic_neuron_indices, presynaptic_neuron_indices, sizeof(int)*total_number_of_connections, cudaMemcpyHostToDevice));
+	CudaSafeCall(cudaMemcpy(d_postsynaptic_neuron_indices, postsynaptic_neuron_indices, sizeof(int)*total_number_of_connections, cudaMemcpyHostToDevice));
 }
 
 

@@ -27,6 +27,11 @@ public:
 	float* weights;
 	int* delays;
 	int* stdp;
+
+	// Device pointers
+	int* d_presynaptic_neuron_indices;
+	int* d_postsynaptic_neuron_indices;
+
 	// Synapse Functions
 	void AddGroup(int presynaptic_group_id, 
 						int postsynaptic_group_id, 
@@ -38,6 +43,9 @@ public:
 						bool stdp_on,
 						float parameter,
 						float parameter_two);
+
+	void initialise_device_pointers();
+
 private:
 	void increment_number_of_connections(int increment);
 };

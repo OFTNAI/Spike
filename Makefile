@@ -38,8 +38,8 @@ Simulator.o: Simulator.cpp
 Neurons.o: Neurons.cu
 	$(CC) $(CFLAGS) Neurons.cu
 # Compiling the Connections class
-Connections.o: Connections.cpp
-	$(CC) $(CFLAGS) Connections.cpp
+Connections.o: Connections.cu
+	$(CC) $(CFLAGS) Connections.cu
 # Compiling the CUDA code
 CUDAcode.o: CUDAcode.cu
 	$(CC) $(CFLAGS) CUDAcode.cu
