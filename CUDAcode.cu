@@ -196,12 +196,12 @@ void GPUDeviceComputation (
 			// Running the Simulation!
 			// Variables as Necessary
 			int number_of_timesteps_per_epoch = total_time_per_epoch / timestep;
-			float currtime = 0.0f;
+			float current_time_in_seconds = 0.0f;
 			// GO!
 			for (int timestep_index = 0; timestep_index < number_of_timesteps_per_epoch; timestep_index++){
 				// SIMULATION
 				// Current simulation timestep
-				currtime = float(timestep_index)*float(timestep);
+				current_time_in_seconds = float(timestep_index)*float(timestep);
 				// Start by resetting all the things
 				CudaSafeCall(cudaMemset(currentinjection, 0.0f, total_number_of_neurons*sizeof(float)));	
 				// If there are poisson populations
@@ -224,7 +224,7 @@ void GPUDeviceComputation (
 					neurons->genupdate_wrapper(neurons->d_neuron_group_parameters,
 											d_genids,
 											d_gentimes,
-											currtime,
+											current_time_in_seconds,
 											timestep,
 											numEnts,
 											genblocknum, 
@@ -232,7 +232,7 @@ void GPUDeviceComputation (
 					CudaCheckError();
 				} 
 				
-				connections->calculate_postsynaptic_current_injection_for_connection_wrapper(currentinjection, currtime);
+				connections->calculate_postsynaptic_current_injection_for_connection_wrapper(currentinjection, current_time_in_seconds);
 				CudaCheckError();
 
 
@@ -243,7 +243,7 @@ void GPUDeviceComputation (
 																	connections->d_stdp,
 																	neurons->d_lastspiketime,
 																	connections->d_postsynaptic_neuron_indices,
-																	currtime,
+																	current_time_in_seconds,
 																	connections->stdp_vars, // Should make device copy?
 																	total_number_of_connections,
 																	total_number_of_neurons);
@@ -259,7 +259,7 @@ void GPUDeviceComputation (
 				// Check which neurons are spiking and deal with them
 				neurons->spikingneurons_wrapper(neurons->d_neuron_group_parameters,
 											neurons->d_lastspiketime,
-											currtime,
+											current_time_in_seconds,
 											total_number_of_neurons,
 											vectorblocksPerGrid, 
 											threadsPerBlock);
@@ -271,7 +271,7 @@ void GPUDeviceComputation (
 																		connections->d_spikes,
 																		neurons->d_lastspiketime,
 																		connections->d_spikebuffer,
-																		currtime,
+																		current_time_in_seconds,
 																		total_number_of_connections,
 																		total_number_of_neurons);
 				CudaCheckError();
@@ -283,7 +283,7 @@ void GPUDeviceComputation (
 																	connections->d_lastactive,
 																	connections->d_weights,
 																	connections->stdp_vars, 
-																	currtime,
+																	current_time_in_seconds,
 																	total_number_of_connections,
 																	total_number_of_neurons);
 				CudaCheckError();
@@ -295,7 +295,7 @@ void GPUDeviceComputation (
 																		d_tempstorenum,
 																		d_tempstoreID,
 																		d_tempstoretimes,
-																		currtime,
+																		current_time_in_seconds,
 																		total_number_of_neurons);
 					CudaCheckError();
 
@@ -463,7 +463,7 @@ __global__ void synapsespikes(int* d_presynaptic_neuron_indices,
 								int* d_spikes,
 								float* d_lastspiketime,
 								int* d_spikebuffer,
-								float currtime,
+								float current_time_in_seconds,
 								size_t numConns,
 								size_t total_number_of_neurons){
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
@@ -471,7 +471,7 @@ __global__ void synapsespikes(int* d_presynaptic_neuron_indices,
 		// Reduce the spikebuffer by 1
 		d_spikebuffer[idx] -= 1;
 		// Check if the neuron PRE has just fired and if the synapse exists
-		if (d_lastspiketime[d_presynaptic_neuron_indices[idx]] == currtime){
+		if (d_lastspiketime[d_presynaptic_neuron_indices[idx]] == current_time_in_seconds){
 			// Update the spikes with the correct delay
 			if (d_spikes[idx] <= 0){
 				d_spikes[idx] = d_delays[idx];
@@ -503,17 +503,17 @@ __global__ void spikeCollect(float* d_lastspiketime,
 								int* d_tempstorenum,
 								int* d_tempstoreID,
 								float* d_tempstoretimes,
-								float currtime,
+								float current_time_in_seconds,
 								size_t total_number_of_neurons){
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	if (idx < total_number_of_neurons) {
 		// If a neuron has fired
-		if (d_lastspiketime[idx] == currtime) {
+		if (d_lastspiketime[idx] == current_time_in_seconds) {
 			// Increase the number of spikes stored
 			int i = atomicAdd(&d_tempstorenum[0], 1);
 			// In the location, add the id and the time
 			d_tempstoreID[i] = idx;
-			d_tempstoretimes[i] = currtime;
+			d_tempstoretimes[i] = current_time_in_seconds;
 		}
 	}
 	__syncthreads();

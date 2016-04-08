@@ -369,18 +369,18 @@ __global__ void calculate_postsynaptic_current_injection_for_connection(int* d_s
 							float* d_lastactive,
 							int* d_postsynaptic_neuron_indices,
 							float* currentinj,
-							float currtime,
+							float current_time_in_seconds,
 							size_t total_number_of_connections);
 
 
-void Connections::calculate_postsynaptic_current_injection_for_connection_wrapper(float* currentinjection, float currtime) {
+void Connections::calculate_postsynaptic_current_injection_for_connection_wrapper(float* currentinjection, float current_time_in_seconds) {
 
 	calculate_postsynaptic_current_injection_for_connection<<<number_of_connection_blocks_per_grid, threads_per_block>>>(d_spikes,
 																	d_weights,
 																	d_lastactive,
 																	d_postsynaptic_neuron_indices,
 																	currentinjection,
-																	currtime,
+																	current_time_in_seconds,
 																	total_number_of_connections);
 }
 
@@ -392,7 +392,7 @@ __global__ void calculate_postsynaptic_current_injection_for_connection(int* d_s
 							float* d_lastactive,
 							int* d_postsynaptic_neuron_indices,
 							float* currentinj,
-							float currtime,
+							float current_time_in_seconds,
 							size_t total_number_of_connections){
 
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
@@ -403,7 +403,7 @@ __global__ void calculate_postsynaptic_current_injection_for_connection(int* d_s
 			// Get locations of weights and lastactive
 			atomicAdd(&currentinj[d_postsynaptic_neuron_indices[idx]], d_weights[idx]);
 			// Change lastactive
-			d_lastactive[idx] = currtime;
+			d_lastactive[idx] = current_time_in_seconds;
 			// Done!
 		}
 	}
