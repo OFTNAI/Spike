@@ -198,10 +198,10 @@ void GPUDeviceComputation (
 			int number_of_timesteps_per_epoch = total_time_per_epoch / timestep;
 			float currtime = 0.0f;
 			// GO!
-			for (int k = 0; k < number_of_timesteps_per_epoch; k++){
+			for (int timestep_index = 0; timestep_index < number_of_timesteps_per_epoch; timestep_index++){
 				// SIMULATION
 				// Current simulation timestep
-				currtime = (float(k))*(float(timestep));
+				currtime = float(timestep_index)*float(timestep);
 				// Start by resetting all the things
 				CudaSafeCall(cudaMemset(currentinjection, 0.0f, total_number_of_neurons*sizeof(float)));	
 				// If there are poisson populations
@@ -231,10 +231,11 @@ void GPUDeviceComputation (
 											threadsPerBlock);
 					CudaCheckError();
 				} 
-				// Calculate current injections to cells
-				// JI CANDIDATE FOR GOING IN CONNECTIONS
+				
 				connections->calculate_postsynaptic_current_injection_for_connection_wrapper(currentinjection, currtime);
 				CudaCheckError();
+
+
 				// Carry out LTD on appropriate synapses
 				// JI CANDIDATE FOR GOING IN CONNECTIONS
 				ltdweights<<<number_of_connection_blocks_per_grid, threadsPerBlock>>>(connections->d_lastactive,
@@ -297,7 +298,8 @@ void GPUDeviceComputation (
 																		currtime,
 																		total_number_of_neurons);
 					CudaCheckError();
-					if (((k % 1) == 0) || (k == (number_of_timesteps_per_epoch-1))){
+
+					if (((timestep_index % 1) == 0) || (timestep_index == (number_of_timesteps_per_epoch-1))){
 						// Finally, we want to get the spikes back. Every few timesteps check the number of spikes:
 						CudaSafeCall(cudaMemcpy(&h_tempspikenum[0], &d_tempstorenum[0], (sizeof(int)), cudaMemcpyDeviceToHost));
 						// Ensure that we don't have too many
@@ -307,7 +309,7 @@ void GPUDeviceComputation (
 							exit(-1);
 						}
 						// Deal with them!
-						if ((h_tempspikenum[0] >= (0.25*total_number_of_neurons)) ||  (k == (number_of_timesteps_per_epoch - 1))){
+						if ((h_tempspikenum[0] >= (0.25*total_number_of_neurons)) ||  (timestep_index == (number_of_timesteps_per_epoch - 1))){
 							// Allocate some memory for them:
 							h_spikestoreID = (int*)realloc(h_spikestoreID, sizeof(int)*(h_spikenum + h_tempspikenum[0]));
 							h_spikestoretimes = (float*)realloc(h_spikestoretimes, sizeof(float)*(h_spikenum + h_tempspikenum[0]));

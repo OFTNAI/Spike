@@ -54,14 +54,13 @@ public:
 
 	void set_threads_per_block_and_blocks_per_grid(int threads);
 
-	void calculate_postsynaptic_current_injection_for_connection_wrapper(float* currentinjection,
-							float currtime);
+	void calculate_postsynaptic_current_injection_for_connection_wrapper(float* currentinjection, float currtime);
 
 
 private:
 	dim3 number_of_connection_blocks_per_grid;
 	dim3 threads_per_block;
-	
+
 	void increment_number_of_connections(int increment);
 };
 // GAUSS random number generator
