@@ -88,6 +88,14 @@ void Neurons::initialise_device_pointers() {
 	CudaSafeCall(cudaMemset(d_lastspiketime, -1000.0f, total_number_of_neurons*sizeof(float)));
 }
 
+void Neurons::set_threads_per_block_and_blocks_per_grid(int threads) {
+	
+	threads_per_block.x = threads;
+
+	int number_of_neuron_blocks = (total_number_of_neurons + threads) / threads;
+	number_of_neuron_blocks_per_grid.x = number_of_neuron_blocks;
+}
+
 
 
 // CUDA __global__ function declarations
@@ -122,16 +130,13 @@ __global__ void stateupdate(struct neuron_struct* neuronpop_variables,
 // See NOTE above
 void Neurons::poisupdate_wrapper(float* d_randoms, 
 							neuron_struct* neuronpop_variables,
-							float timestep,
-							size_t numNeurons, 
-							dim3 vectorblocksPerGrid,
-							dim3 threadsPerBlock) {
+							float timestep) {
 
 	
-	poisupdate<<<vectorblocksPerGrid, threadsPerBlock>>>(d_randoms,
+	poisupdate<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_randoms,
 														neuronpop_variables,
 														timestep,
-														numNeurons);
+														total_number_of_neurons);
 }
 
 
@@ -155,12 +160,9 @@ void Neurons::genupdate_wrapper(neuron_struct* d_neuronpop_variables,
 
 void Neurons::spikingneurons_wrapper(neuron_struct* d_neuron_group_parameters,
 								float* d_lastspiketime,
-								float currtime,
-								size_t numNeurons,
-								dim3 vectorblocksPerGrid, 
-								dim3 threadsPerBlock) {
+								float currtime) {
 
-	spikingneurons<<<vectorblocksPerGrid, threadsPerBlock>>>(d_neuron_group_parameters,
+	spikingneurons<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_neuron_group_parameters,
 																		d_lastspiketime,
 																		currtime,
 																		total_number_of_neurons);
@@ -169,12 +171,9 @@ void Neurons::spikingneurons_wrapper(neuron_struct* d_neuron_group_parameters,
 
 void Neurons::stateupdate_wrapper(neuron_struct* d_neuronpop_variables,
 							float* current_injection,
-							float timestep,
-							size_t total_number_of_neurons,
-							dim3 vectorblocksPerGrid, 
-							dim3 threadsPerBlock) {
+							float timestep) {
 
-	stateupdate<<<vectorblocksPerGrid, threadsPerBlock>>>(d_neuronpop_variables,
+	stateupdate<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_neuronpop_variables,
 																	current_injection,
 																	timestep,
 																	total_number_of_neurons);

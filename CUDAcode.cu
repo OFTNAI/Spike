@@ -110,17 +110,20 @@ void GPUDeviceComputation (
 	// The number of threads per block I shall keep held at 128
 	int threads = 128;
 	connections->set_threads_per_block_and_blocks_per_grid(threads);
+	neurons->set_threads_per_block_and_blocks_per_grid(threads);
 
 
 	dim3 threadsPerBlock(threads,1,1);
 	// I now have to calculate the number of blocks ....
 	int number_of_connection_blocks = (total_number_of_connections + threads) / threads; //Previously number_of_connection_blocks
 	int vectorblocknum = (total_number_of_neurons + threads) / threads;
+
 	// The maximum dimension for the grid is 65535
 	dim3 number_of_connection_blocks_per_grid(number_of_connection_blocks,1,1); // Previously connblocksPerGrid
 	printf("number_of_connection_blocks_per_grid: %d\n", number_of_connection_blocks_per_grid.x);
 	dim3 vectorblocksPerGrid(vectorblocknum,1,1);  
 	// Temp Values which will be replaced
+
 	int genblocknum = 1;
 	dim3 genblocksPerGrid(genblocknum,1,1);
 
@@ -212,10 +215,7 @@ void GPUDeviceComputation (
 					// Update Poisson neuron states
 					neurons->poisupdate_wrapper(gpu_randfloats,
 												neurons->d_neuron_group_parameters,
-												timestep,
-												total_number_of_neurons,
-												vectorblocksPerGrid,
-												threadsPerBlock);
+												timestep);
 					CudaCheckError();
 				}
 				// If there are any spike generators
@@ -244,18 +244,12 @@ void GPUDeviceComputation (
 				// Update States of neurons
 				neurons->stateupdate_wrapper(neurons->d_neuron_group_parameters,
 											currentinjection,
-											timestep,
-											total_number_of_neurons,
-											vectorblocksPerGrid,
-											threadsPerBlock);
+											timestep);
 				CudaCheckError();
 				// Check which neurons are spiking and deal with them
 				neurons->spikingneurons_wrapper(neurons->d_neuron_group_parameters,
 											neurons->d_lastspiketime,
-											current_time_in_seconds,
-											total_number_of_neurons,
-											vectorblocksPerGrid, 
-											threadsPerBlock);
+											current_time_in_seconds);
 				CudaCheckError();
 				
 				

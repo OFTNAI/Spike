@@ -45,13 +45,11 @@ public:
 	int AddGroup(neuron_struct params, int shape[2]);
 
 	void initialise_device_pointers();
+	void set_threads_per_block_and_blocks_per_grid(int threads);
 
 	void poisupdate_wrapper(float* d_randoms, 
 							neuron_struct* neuronpop_variables,
-							float timestep,
-							size_t numNeurons, 
-							dim3 vectorblocksPerGrid,
-							dim3 threadsPerBlock);
+							float timestep);
 
 	void genupdate_wrapper(neuron_struct* neuronpop_variables,
 							int* genids,
@@ -64,17 +62,16 @@ public:
 
 	void spikingneurons_wrapper(neuron_struct* d_neuron_group_parameters,
 								float* d_lastspiketime,
-								float currtime,
-								size_t numNeurons,
-								dim3 vectorblocksPerGrid, 
-								dim3 threadsPerBlock);
+								float currtime);
 
 	void stateupdate_wrapper(neuron_struct* d_neuronpop_variables,
 							float* current_injection,
-							float timestep,
-							size_t total_number_of_neurons,
-							dim3 vectorblocksPerGrid, 
-							dim3 threadsPerBlock);
+							float timestep);
+
+
+private:
+	dim3 number_of_neuron_blocks_per_grid;
+	dim3 threads_per_block;
 
 };
 
