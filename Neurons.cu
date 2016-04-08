@@ -77,11 +77,6 @@ int Neurons::AddGroup(neuron_struct params, int group_shape[2]){
 }
 
 
-void Neurons::ji_test_allocate_and_set_d_test_array(Connections * connections) {
-	CudaSafeCall(cudaMalloc((void **)&d_test_array, sizeof(int)*connections->total_number_of_connections));
-	CudaSafeCall(cudaMemcpy(d_test_array, connections->delays, sizeof(int)*connections->total_number_of_connections, cudaMemcpyHostToDevice));
-}
-
 void Neurons::initialise_device_pointers() {
 	CudaSafeCall(cudaMalloc((void **)&d_neuron_group_parameters, sizeof(struct neuron_struct)*total_number_of_neurons));
 	CudaSafeCall(cudaMalloc((void **)&d_lastspiketime, sizeof(float)*total_number_of_neurons));

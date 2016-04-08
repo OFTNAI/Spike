@@ -44,8 +44,6 @@ public:
 	// Functions
 	int AddGroup(neuron_struct params, int shape[2]);
 
-	void ji_test_allocate_and_set_d_test_array(Connections * connections);
-
 	void initialise_device_pointers();
 
 	void poisupdate_wrapper(float* d_randoms, 

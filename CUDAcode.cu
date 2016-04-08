@@ -68,7 +68,7 @@ void GPUDeviceComputation (
 	// Creating the Device Pointers I need
 	// int* d_presynaptic_neuron_indices;
 	// int* d_postsynaptic_neuron_indices;
-	int* d_delays;
+	// int* d_delays;
 	float* d_weights;
 	int* d_spikes;
 	int* d_stdp;
@@ -89,13 +89,11 @@ void GPUDeviceComputation (
 	int* h_spikestoreID = NULL;
 	float* h_spikestoretimes = NULL;
 
-	neurons->ji_test_allocate_and_set_d_test_array(connections);
-
 
 	// Allocate memory for data on device for each connection
 	// CudaSafeCall(cudaMalloc((void **)&d_presynaptic_neuron_indices, sizeof(int)*total_number_of_connections));
 	// CudaSafeCall(cudaMalloc((void **)&d_postsynaptic_neuron_indices, sizeof(int)*total_number_of_connections));
-	CudaSafeCall(cudaMalloc((void **)&d_delays, sizeof(int)*total_number_of_connections));
+	// CudaSafeCall(cudaMalloc((void **)&d_delays, sizeof(int)*total_number_of_connections));
 	CudaSafeCall(cudaMalloc((void **)&d_weights, sizeof(float)*total_number_of_connections));
 	CudaSafeCall(cudaMalloc((void **)&d_spikes, sizeof(int)*total_number_of_connections));
 	CudaSafeCall(cudaMalloc((void **)&d_stdp, sizeof(int)*total_number_of_connections));
@@ -111,7 +109,7 @@ void GPUDeviceComputation (
 	// Send data to device: data for each connection
 	// CudaSafeCall(cudaMemcpy(d_presynaptic_neuron_indices, connections->presynaptic_neuron_indices, sizeof(int)*total_number_of_connections, cudaMemcpyHostToDevice));
 	// CudaSafeCall(cudaMemcpy(d_postsynaptic_neuron_indices, connections->postsynaptic_neuron_indices, sizeof(int)*total_number_of_connections, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemcpy(d_delays, connections->delays, sizeof(int)*total_number_of_connections, cudaMemcpyHostToDevice));
+	// CudaSafeCall(cudaMemcpy(d_delays, connections->delays, sizeof(int)*total_number_of_connections, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_weights, connections->weights, sizeof(float)*total_number_of_connections, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_stdp, connections->stdp, sizeof(int)*total_number_of_connections, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemset(d_spikes, 0, sizeof(int)*total_number_of_connections));
@@ -297,8 +295,9 @@ void GPUDeviceComputation (
 											threadsPerBlock);
 				CudaCheckError();
 				// Check which synapses to send spikes down and do it
+				// JI CANDIDATE FOR GOING IN CONNECTIONS
 				synapsespikes<<<connblocksPerGrid, threadsPerBlock>>>(connections->d_presynaptic_neuron_indices,
-																		d_delays,
+																		connections->d_delays,
 																		d_spikes,
 																		neurons->d_lastspiketime,
 																		d_spikebuffer,
@@ -448,7 +447,7 @@ void GPUDeviceComputation (
 	// JI ADD TO CONNECTIONS CLASS
 	CudaSafeCall(cudaFree(connections->d_presynaptic_neuron_indices));
 	CudaSafeCall(cudaFree(connections->d_postsynaptic_neuron_indices));
-	CudaSafeCall(cudaFree(d_delays));
+	CudaSafeCall(cudaFree(connections->d_delays));
 	CudaSafeCall(cudaFree(d_weights));
 	CudaSafeCall(cudaFree(d_spikes));
 	CudaSafeCall(cudaFree(d_stdp));

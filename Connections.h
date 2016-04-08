@@ -31,6 +31,7 @@ public:
 	// Device pointers
 	int* d_presynaptic_neuron_indices;
 	int* d_postsynaptic_neuron_indices;
+	int* d_delays;
 
 	// Synapse Functions
 	void AddGroup(int presynaptic_group_id, 
