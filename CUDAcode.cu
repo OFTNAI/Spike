@@ -119,8 +119,6 @@ void GPUDeviceComputation (
 	int vectorblocknum = (total_number_of_neurons + threads) / threads;
 
 	// The maximum dimension for the grid is 65535
-	dim3 number_of_connection_blocks_per_grid(number_of_connection_blocks,1,1); // Previously connblocksPerGrid
-	printf("number_of_connection_blocks_per_grid: %d\n", number_of_connection_blocks_per_grid.x);
 	dim3 vectorblocksPerGrid(vectorblocknum,1,1);  
 	// Temp Values which will be replaced
 
