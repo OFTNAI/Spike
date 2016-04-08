@@ -109,7 +109,7 @@ void GPUDeviceComputation (
 	// THREADS&BLOCKS
 	// The number of threads per block I shall keep held at 128
 	int threads = 128;
-	connections->set_number_of_connection_blocks_per_grid(threads);
+	connections->set_threads_per_block_and_blocks_per_grid(threads);
 
 
 	dim3 threadsPerBlock(threads,1,1);
@@ -233,10 +233,7 @@ void GPUDeviceComputation (
 				} 
 				// Calculate current injections to cells
 				// JI CANDIDATE FOR GOING IN CONNECTIONS
-				connections->calculate_postsynaptic_current_injection_for_connection_wrapper(
-																	currentinjection,
-																	currtime,
-																	threadsPerBlock);
+				connections->calculate_postsynaptic_current_injection_for_connection_wrapper(currentinjection, currtime);
 				CudaCheckError();
 				// Carry out LTD on appropriate synapses
 				// JI CANDIDATE FOR GOING IN CONNECTIONS

@@ -28,8 +28,6 @@ public:
 	int* delays;
 	int* stdp;
 
-	dim3 number_of_connection_blocks_per_grid;
-
 	// Device pointers
 	int* d_presynaptic_neuron_indices;
 	int* d_postsynaptic_neuron_indices;
@@ -54,14 +52,16 @@ public:
 
 	void initialise_device_pointers();
 
-	void set_number_of_connection_blocks_per_grid(int threads);
+	void set_threads_per_block_and_blocks_per_grid(int threads);
 
 	void calculate_postsynaptic_current_injection_for_connection_wrapper(float* currentinjection,
-							float currtime,
-							dim3 threadsPerBlock);
+							float currtime);
 
 
 private:
+	dim3 number_of_connection_blocks_per_grid;
+	dim3 threads_per_block;
+	
 	void increment_number_of_connections(int increment);
 };
 // GAUSS random number generator
