@@ -415,16 +415,9 @@ void GPUDeviceComputation (
 	synapsepost.close();
 
 
-	// Free Memory on GPU
-	// JI ADD TO CONNECTIONS CLASS
-	CudaSafeCall(cudaFree(connections->d_presynaptic_neuron_indices));
-	CudaSafeCall(cudaFree(connections->d_postsynaptic_neuron_indices));
-	CudaSafeCall(cudaFree(connections->d_delays));
-	CudaSafeCall(cudaFree(connections->d_weights));
-	CudaSafeCall(cudaFree(connections->d_spikes));
-	CudaSafeCall(cudaFree(connections->d_stdp));
-	CudaSafeCall(cudaFree(connections->d_lastactive));
-	CudaSafeCall(cudaFree(neurons->d_neuron_group_parameters));
+	delete neurons;
+	delete connections;
+
 	CudaSafeCall(cudaFree(states));
 	CudaSafeCall(cudaFree(gpu_randfloats));
 	CudaSafeCall(cudaFree(currentinjection));

@@ -147,6 +147,8 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_
 					genids,
 					gentimes,
 					random_presentation);
+
+
 }
 
 

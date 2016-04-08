@@ -36,6 +36,15 @@ Connections::Connections() {
 	delays = NULL;
 	stdp = NULL;
 
+	d_presynaptic_neuron_indices = NULL;
+	d_postsynaptic_neuron_indices = NULL;
+	d_delays = NULL;
+	d_weights = NULL;
+	d_spikes = NULL;
+	d_stdp = NULL;
+	d_lastactive = NULL;
+	d_spikebuffer = NULL;
+
 	// On construction, seed
 	srand(42);	// Seeding the random numbers
 }
@@ -49,6 +58,16 @@ Connections::~Connections() {
 	free(weights);
 	free(delays);
 	free(stdp);
+
+	CudaSafeCall(cudaFree(d_presynaptic_neuron_indices));
+	CudaSafeCall(cudaFree(d_postsynaptic_neuron_indices));
+	CudaSafeCall(cudaFree(d_delays));
+	CudaSafeCall(cudaFree(d_weights));
+	CudaSafeCall(cudaFree(d_spikes));
+	CudaSafeCall(cudaFree(d_stdp));
+	CudaSafeCall(cudaFree(d_lastactive));
+	CudaSafeCall(cudaFree(d_spikebuffer));
+
 }
 
 // Setting personal STDP parameters
@@ -333,7 +352,6 @@ void Connections::initialise_device_pointers() {
 	CudaSafeCall(cudaMemset(d_lastactive, -1000.0f, sizeof(float)*total_number_of_connections));
 	CudaSafeCall(cudaMemset(d_spikebuffer, -1, total_number_of_connections*sizeof(int)));
 }
-
 
 
 // An implementation of the polar gaussian random number generator which I need

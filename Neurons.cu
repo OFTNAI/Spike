@@ -38,6 +38,9 @@ Neurons::~Neurons() {
 	free(group_parameters);
 	free(last_neuron_indices_for_each_group);
 
+	CudaSafeCall(cudaFree(d_neuron_group_parameters));
+	CudaSafeCall(cudaFree(d_lastspiketime));
+
 }
 
 
@@ -84,8 +87,6 @@ void Neurons::initialise_device_pointers() {
 	CudaSafeCall(cudaMemcpy(d_neuron_group_parameters, group_parameters, sizeof(struct neuron_struct)*total_number_of_neurons, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemset(d_lastspiketime, -1000.0f, total_number_of_neurons*sizeof(float)));
 }
-
-
 
 
 
