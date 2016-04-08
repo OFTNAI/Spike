@@ -229,14 +229,11 @@ void GPUDeviceComputation (
 				} 
 				// Calculate current injections to cells
 				// JI CANDIDATE FOR GOING IN CONNECTIONS
-				calculate_postsynaptic_current_injection_for_connection<<<connblocksPerGrid, threadsPerBlock>>>(connections->d_spikes,
-																	connections->d_weights,
-																	connections->d_lastactive,
-																	connections->d_postsynaptic_neuron_indices,
+				connections->calculate_postsynaptic_current_injection_for_connection_wrapper(
 																	currentinjection,
 																	currtime,
-																	total_number_of_connections,
-																	total_number_of_neurons);
+																	connblocksPerGrid,
+																	threadsPerBlock);
 				CudaCheckError();
 				// Carry out LTD on appropriate synapses
 				// JI CANDIDATE FOR GOING IN CONNECTIONS
@@ -456,31 +453,6 @@ __global__ void randoms(curandState_t* states, float* numbers, size_t total_numb
 		/* curand works like rand - except that it takes a state as a parameter */
 		numbers[idx] = curand_uniform(&states[idx]);
 	}
-}
-
-// If spike has reached synapse add synapse weight to postsyn current injection
-// Was currentcalc
-__global__ void calculate_postsynaptic_current_injection_for_connection(int* d_spikes,
-							float* d_weights,
-							float* d_lastactive,
-							int* d_postsynaptic_neuron_indices,
-							float* currentinj,
-							float currtime,
-							size_t numConns,
-							size_t total_number_of_neurons){
-	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	if (idx < (numConns)) {
-		// Decrememnt Spikes
-		d_spikes[idx] -= 1;
-		if (d_spikes[idx] == 0) {
-			// Get locations of weights and lastactive
-			atomicAdd(&currentinj[d_postsynaptic_neuron_indices[idx]], d_weights[idx]);
-			// Change lastactive
-			d_lastactive[idx] = currtime;
-			// Done!
-		}
-	}
-	__syncthreads();
 }
 
 // Synapses carrying spikes

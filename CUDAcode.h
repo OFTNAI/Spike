@@ -45,14 +45,6 @@ void GPUDeviceComputation (
 // GPU Functions
 __global__ void init(unsigned int seed, curandState_t* states, size_t numNeurons);
 __global__ void randoms(curandState_t* states, float* numbers, size_t numNeurons);
-__global__ void calculate_postsynaptic_current_injection_for_connection(int* d_spikes,
-							float* d_weights,
-							float* d_lastactive,
-							int* d_postsynaptic_neuron_indices,
-							float* currentinj,
-							float currtime,
-							size_t numConns,
-							size_t numNeurons);
 __global__ void synapsespikes(int* d_presynaptic_neuron_indices,
 								int* d_delays,
 								int* d_spikes,

@@ -52,6 +52,12 @@ public:
 
 	void initialise_device_pointers();
 
+	void calculate_postsynaptic_current_injection_for_connection_wrapper(float* currentinjection,
+							float currtime,
+							dim3 connblocksPerGrid,
+							dim3 threadsPerBlock);
+
+
 private:
 	void increment_number_of_connections(int increment);
 };
