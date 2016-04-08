@@ -34,6 +34,9 @@ public:
 	int* d_delays;
 	float* d_weights;
 	int* d_spikes;
+	int* d_stdp;
+	float* d_lastactive;
+	int* d_spikebuffer;
 
 	// Synapse Functions
 	void AddGroup(int presynaptic_group_id, 
