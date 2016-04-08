@@ -18,7 +18,6 @@
 #include <cuda.h>
 
 // Neuron structure
-#include "STDPDynamics.h"
 
 #include "Neurons.h"
 #include "Connections.h"
