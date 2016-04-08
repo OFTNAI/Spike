@@ -383,6 +383,15 @@ __global__ void synapsespikes(int* d_presynaptic_neuron_indices,
 								float currtime,
 								size_t total_number_of_connections);
 
+__global__ void ltdweights(float* d_lastactive,
+							float* d_weights,
+							int* d_stdp,
+							float* d_lastspiketime,
+							int* d_postsyns,
+							float currtime,
+							struct stdp_struct stdp_vars,
+							size_t numConns);
+
 
 
 void Connections::calculate_postsynaptic_current_injection_for_connection_wrapper(float* currentinjection, float current_time_in_seconds) {
@@ -405,6 +414,18 @@ void Connections::synapsespikes_wrapper(float* d_lastspiketime, float current_ti
 																		d_spikebuffer,
 																		current_time_in_seconds,
 																		total_number_of_connections);
+}
+
+void Connections::ltdweights_wrapper(float* d_lastspiketime, float current_time_in_seconds) {
+
+	ltdweights<<<number_of_connection_blocks_per_grid, threads_per_block>>>(d_lastactive,
+																	d_weights,
+																	d_stdp,
+																	d_lastspiketime,
+																	d_postsynaptic_neuron_indices,
+																	current_time_in_seconds,
+																	stdp_vars, // Should make device copy?
+																	total_number_of_connections);
 }
 
 
@@ -435,6 +456,7 @@ __global__ void calculate_postsynaptic_current_injection_for_connection(int* d_s
 
 
 // Synapses carrying spikes
+// JI GIVE A BETTER NAME
 __global__ void synapsespikes(int* d_presynaptic_neuron_indices,
 								int* d_delays,
 								int* d_spikes,
@@ -470,6 +492,32 @@ __global__ void synapsespikes(int* d_presynaptic_neuron_indices,
 			int temp = d_spikes[idx];
 			d_spikes[idx] = d_spikebuffer[idx];
 			d_spikebuffer[idx] = temp;
+		}
+	}
+}
+
+
+
+// LTD of weights
+__global__ void ltdweights(float* d_lastactive,
+							float* d_weights,
+							int* d_stdp,
+							float* d_lastspiketime,
+							int* d_postsyns,
+							float currtime,
+							struct stdp_struct stdp_vars,
+							size_t numConns){
+
+	int idx = threadIdx.x + blockIdx.x * blockDim.x;
+	if (idx < (numConns)) {
+		// Get the locations for updating
+		// Get the synapses that are to be LTD'd
+		if ((d_lastactive[idx] == currtime) && (d_stdp[idx] == 1)) {
+			float diff = d_lastspiketime[d_postsyns[idx]] - currtime;
+			// STDP Update Rule
+			float weightscale = stdp_vars.w_max * stdp_vars.a_minus * expf(diff / stdp_vars.tau_minus);
+			// Now scale the weight (using an inverted column/row)
+			d_weights[idx] += weightscale; 
 		}
 	}
 }
