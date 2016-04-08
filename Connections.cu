@@ -392,6 +392,15 @@ __global__ void ltdweights(float* d_lastactive,
 							struct stdp_struct stdp_vars,
 							size_t numConns);
 
+__global__ void synapseLTP(int* d_postsyns,
+							float* d_lastspiketime,
+							int* d_stdp,
+							float* d_lastactive,
+							float* d_weights,
+							struct stdp_struct stdp_vars,
+							float currtime,
+							size_t numConns);
+
 
 
 void Connections::calculate_postsynaptic_current_injection_for_connection_wrapper(float* currentinjection, float current_time_in_seconds) {
@@ -427,6 +436,20 @@ void Connections::ltdweights_wrapper(float* d_lastspiketime, float current_time_
 																	stdp_vars, // Should make device copy?
 																	total_number_of_connections);
 }
+
+
+void Connections::synapseLTP_wrapper(float* d_lastspiketime, float current_time_in_seconds) {
+	// Carry out the last step, LTP!
+	synapseLTP<<<number_of_connection_blocks_per_grid, threads_per_block>>>(d_postsynaptic_neuron_indices,
+																	d_lastspiketime,
+																	d_stdp,
+																	d_lastactive,
+																	d_weights,
+																	stdp_vars, 
+																	current_time_in_seconds,
+																	total_number_of_connections);
+}
+
 
 
 // If spike has reached synapse add synapse weight to postsyn current injection
@@ -519,6 +542,33 @@ __global__ void ltdweights(float* d_lastactive,
 			// Now scale the weight (using an inverted column/row)
 			d_weights[idx] += weightscale; 
 		}
+	}
+}
+
+
+// LTP on synapses
+__global__ void synapseLTP(int* d_postsyns,
+							float* d_lastspiketime,
+							int* d_stdp,
+							float* d_lastactive,
+							float* d_weights,
+							struct stdp_struct stdp_vars,
+							float currtime,
+							size_t numConns) {
+
+	int idx = threadIdx.x + blockIdx.x * blockDim.x;
+	if (idx < numConns) {
+		// Get the synapses upon which we should do LTP
+		// Reversed indexing to check post->pre connections
+		if ((d_lastspiketime[d_postsyns[idx]] == currtime) && (d_stdp[idx] == 1)){
+			// Get the last active time / weight of the synapse
+			// Calc time difference and weight change
+			float diff = currtime - d_lastactive[idx];
+			float weightchange = (stdp_vars.w_max - d_weights[idx]) * (stdp_vars.a_plus * expf(-diff / stdp_vars.tau_plus));
+			// Update weights
+			d_weights[idx] += weightchange;
+		}
+
 	}
 }
 

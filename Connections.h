@@ -57,6 +57,7 @@ public:
 	void calculate_postsynaptic_current_injection_for_connection_wrapper(float* currentinjection, float current_time_in_seconds);
 	void synapsespikes_wrapper(float* d_lastspiketime, float current_time_in_seconds);
 	void ltdweights_wrapper(float* d_lastspiketime, float current_time_in_seconds);
+	void synapseLTP_wrapper(float* d_lastspiketime, float current_time_in_seconds);
 
 
 private:

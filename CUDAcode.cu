@@ -265,17 +265,8 @@ void GPUDeviceComputation (
 
 
 
-				// Carry out the last step, LTP!
-				// JI CANDIDATE FOR GOING IN CONNECTIONS
-				synapseLTP<<<number_of_connection_blocks_per_grid, threadsPerBlock>>>(connections->d_postsynaptic_neuron_indices,
-																	neurons->d_lastspiketime,
-																	connections->d_stdp,
-																	connections->d_lastactive,
-																	connections->d_weights,
-																	connections->stdp_vars, 
-																	current_time_in_seconds,
-																	total_number_of_connections,
-																	total_number_of_neurons);
+				// // Carry out the last step, LTP!
+				connections->synapseLTP_wrapper(neurons->d_lastspiketime, current_time_in_seconds);
 				CudaCheckError();
 
 				// Only save the spikes if necessary
