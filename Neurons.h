@@ -57,8 +57,7 @@ public:
 							int genblocknum, 
 							dim3 threadsPerBlock);
 
-	void spikingneurons_wrapper(float* d_lastspiketime,
-								float currtime);
+	void spikingneurons_wrapper(float currtime);
 
 	void stateupdate_wrapper(float* current_injection,
 							float timestep);

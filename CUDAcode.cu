@@ -242,8 +242,9 @@ void GPUDeviceComputation (
 				// Update States of neurons
 				neurons->stateupdate_wrapper(currentinjection, timestep);
 				CudaCheckError();
+				
 				// Check which neurons are spiking and deal with them
-				neurons->spikingneurons_wrapper(neurons->d_lastspiketime, current_time_in_seconds);
+				neurons->spikingneurons_wrapper(current_time_in_seconds);
 				CudaCheckError();
 				
 				

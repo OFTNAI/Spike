@@ -154,8 +154,7 @@ void Neurons::genupdate_wrapper(int* genids,
 }
 
 
-void Neurons::spikingneurons_wrapper(float* d_lastspiketime,
-								float currtime) {
+void Neurons::spikingneurons_wrapper(float currtime) {
 
 	spikingneurons<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_neuron_group_parameters,
 																		d_lastspiketime,
