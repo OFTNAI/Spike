@@ -32,6 +32,8 @@ public:
 	int* d_presynaptic_neuron_indices;
 	int* d_postsynaptic_neuron_indices;
 	int* d_delays;
+	float* d_weights;
+	int* d_spikes;
 
 	// Synapse Functions
 	void AddGroup(int presynaptic_group_id, 
