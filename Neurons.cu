@@ -24,7 +24,7 @@ Neurons::Neurons() {
 
 	// Initialise pointers
 	group_shapes = NULL;
-	group_parameters = NULL;
+	neuron_variables = NULL;
 	last_neuron_indices_for_each_group = NULL;
 
 }
@@ -35,10 +35,10 @@ Neurons::~Neurons() {
 
 	// Free up memory
 	free(group_shapes);
-	free(group_parameters);
+	free(neuron_variables);
 	free(last_neuron_indices_for_each_group);
 
-	CudaSafeCall(cudaFree(d_neuron_group_parameters));
+	CudaSafeCall(cudaFree(d_neuron_variables));
 	CudaSafeCall(cudaFree(d_lastspiketime));
 
 }
@@ -71,9 +71,9 @@ int Neurons::AddGroup(neuron_struct params, int group_shape[2]){
 	group_shapes[new_group_id] = group_shape;
 
 	// Add new group parameters
-	group_parameters = (neuron_struct*)realloc(group_parameters, (total_number_of_neurons*sizeof(neuron_struct)));
+	neuron_variables = (neuron_struct*)realloc(neuron_variables, (total_number_of_neurons*sizeof(neuron_struct)));
 	for (int i = (total_number_of_neurons - number_of_neurons_in_group); i < total_number_of_neurons; i++){
-		group_parameters[i] = params;
+		neuron_variables[i] = params;
 	}
 	
 	return new_group_id;
@@ -81,10 +81,10 @@ int Neurons::AddGroup(neuron_struct params, int group_shape[2]){
 
 
 void Neurons::initialise_device_pointers() {
-	CudaSafeCall(cudaMalloc((void **)&d_neuron_group_parameters, sizeof(struct neuron_struct)*total_number_of_neurons));
+	CudaSafeCall(cudaMalloc((void **)&d_neuron_variables, sizeof(struct neuron_struct)*total_number_of_neurons));
 	CudaSafeCall(cudaMalloc((void **)&d_lastspiketime, sizeof(float)*total_number_of_neurons));
 
-	CudaSafeCall(cudaMemcpy(d_neuron_group_parameters, group_parameters, sizeof(struct neuron_struct)*total_number_of_neurons, cudaMemcpyHostToDevice));
+	CudaSafeCall(cudaMemcpy(d_neuron_variables, neuron_variables, sizeof(struct neuron_struct)*total_number_of_neurons, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemset(d_lastspiketime, -1000.0f, total_number_of_neurons*sizeof(float)));
 }
 
@@ -131,7 +131,7 @@ __global__ void stateupdate(struct neuron_struct* neuronpop_variables,
 void Neurons::poisupdate_wrapper(float* d_randoms, float timestep) {
 
 	poisupdate<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_randoms,
-														d_neuron_group_parameters,
+														d_neuron_variables,
 														timestep,
 														total_number_of_neurons);
 	CudaCheckError();
@@ -146,7 +146,7 @@ void Neurons::genupdate_wrapper(int* genids,
 							int genblocknum, 
 							dim3 threadsPerBlock) {
 
-	genupdate<<<genblocknum, threadsPerBlock>>> (d_neuron_group_parameters,
+	genupdate<<<genblocknum, threadsPerBlock>>> (d_neuron_variables,
 												genids,
 												gentimes,
 												currtime,
@@ -159,7 +159,7 @@ void Neurons::genupdate_wrapper(int* genids,
 
 void Neurons::spikingneurons_wrapper(float currtime) {
 
-	spikingneurons<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_neuron_group_parameters,
+	spikingneurons<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_neuron_variables,
 																		d_lastspiketime,
 																		currtime,
 																		total_number_of_neurons);
@@ -171,7 +171,7 @@ void Neurons::spikingneurons_wrapper(float currtime) {
 void Neurons::stateupdate_wrapper(float* current_injection,
 							float timestep) {
 
-	stateupdate<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_neuron_group_parameters,
+	stateupdate<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_neuron_variables,
 																	current_injection,
 																	timestep,
 																	total_number_of_neurons);

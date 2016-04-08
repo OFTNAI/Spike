@@ -115,7 +115,6 @@ void GPUDeviceComputation (
 
 	dim3 threadsPerBlock(threads,1,1);
 	// I now have to calculate the number of blocks ....
-	int number_of_connection_blocks = (total_number_of_connections + threads) / threads; //Previously number_of_connection_blocks
 	int vectorblocknum = (total_number_of_neurons + threads) / threads;
 
 	// The maximum dimension for the grid is 65535
@@ -145,7 +144,7 @@ void GPUDeviceComputation (
 	// Poisson number
 	int numPoisson = 0;
 	for (int i = 0; i < total_number_of_neurons; i++){
-		if (neurons->group_parameters[i].rate != 0.0f){
+		if (neurons->neuron_variables[i].rate != 0.0f){
 			++numPoisson;
 		}
 	}
@@ -188,10 +187,10 @@ void GPUDeviceComputation (
 			}
 			// Reset the variables necessary
 			// CAN GO INTO CLASSES EVENTUALLY
-			CudaSafeCall(cudaMemcpy(neurons->d_neuron_group_parameters, neurons->group_parameters, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
+			CudaSafeCall(cudaMemcpy(neurons->d_neuron_variables, neurons->neuron_variables, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
+			CudaSafeCall(cudaMemset(neurons->d_lastspiketime, -1000.0f, total_number_of_neurons*sizeof(float)));
 			CudaSafeCall(cudaMemset(connections->d_spikes, 0, sizeof(int)*total_number_of_connections));
 			CudaSafeCall(cudaMemset(connections->d_lastactive, -1000.0f, sizeof(float)*total_number_of_connections));
-			CudaSafeCall(cudaMemset(neurons->d_lastspiketime, -1000.0f, total_number_of_neurons*sizeof(float)));
 			CudaSafeCall(cudaMemset(connections->d_spikebuffer, -1, total_number_of_connections*sizeof(int)));
 
 			// Running the Simulation!

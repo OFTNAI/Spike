@@ -31,13 +31,13 @@ public:
 	int total_number_of_groups;
 
 	// Group parameters, shapes and indices
-	neuron_struct *group_parameters; //Currently actually neuron wise. Should eventually change
+	neuron_struct *neuron_variables; //Currently actually neuron wise. Should eventually change
 	int **group_shapes;
 	int *last_neuron_indices_for_each_group;
 
 
 	// Device Pointers
-	neuron_struct* d_neuron_group_parameters;
+	neuron_struct* d_neuron_variables;
 	float* d_lastspiketime;
 
 	
