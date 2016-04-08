@@ -264,17 +264,14 @@ void GPUDeviceComputation (
 											vectorblocksPerGrid, 
 											threadsPerBlock);
 				CudaCheckError();
+				
+				
 				// Check which synapses to send spikes down and do it
-				// JI CANDIDATE FOR GOING IN CONNECTIONS
-				synapsespikes<<<number_of_connection_blocks_per_grid, threadsPerBlock>>>(connections->d_presynaptic_neuron_indices,
-																		connections->d_delays,
-																		connections->d_spikes,
-																		neurons->d_lastspiketime,
-																		connections->d_spikebuffer,
-																		current_time_in_seconds,
-																		total_number_of_connections,
-																		total_number_of_neurons);
+				connections->synapsespikes_wrapper(neurons->d_lastspiketime, current_time_in_seconds);
 				CudaCheckError();
+
+
+
 				// Carry out the last step, LTP!
 				// JI CANDIDATE FOR GOING IN CONNECTIONS
 				synapseLTP<<<number_of_connection_blocks_per_grid, threadsPerBlock>>>(connections->d_postsynaptic_neuron_indices,
@@ -457,46 +454,46 @@ __global__ void randoms(curandState_t* states, float* numbers, size_t total_numb
 	}
 }
 
-// Synapses carrying spikes
-__global__ void synapsespikes(int* d_presynaptic_neuron_indices,
-								int* d_delays,
-								int* d_spikes,
-								float* d_lastspiketime,
-								int* d_spikebuffer,
-								float current_time_in_seconds,
-								size_t numConns,
-								size_t total_number_of_neurons){
-	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	if (idx < (numConns)) {
-		// Reduce the spikebuffer by 1
-		d_spikebuffer[idx] -= 1;
-		// Check if the neuron PRE has just fired and if the synapse exists
-		if (d_lastspiketime[d_presynaptic_neuron_indices[idx]] == current_time_in_seconds){
-			// Update the spikes with the correct delay
-			if (d_spikes[idx] <= 0){
-				d_spikes[idx] = d_delays[idx];
-			} else if (d_spikebuffer[idx] <= 0){
-				d_spikebuffer[idx] = d_delays[idx];
-			}
-		}
-		// If there is no waiting spike
-		if (d_spikes[idx] <= 0) {
-			// Use the buffer if necessary
-			if (d_spikebuffer[idx] > 0) {
-				d_spikes[idx] = d_spikebuffer[idx];
-			} else {
-				d_spikes[idx] = -1;
-				d_spikebuffer[idx] = -1;
-			}
-		}
-		// If the buffer has a smaller time than the spike, switch them
-		if ((d_spikebuffer[idx] > 0) && (d_spikebuffer[idx] < d_spikes[idx])){
-			int temp = d_spikes[idx];
-			d_spikes[idx] = d_spikebuffer[idx];
-			d_spikebuffer[idx] = temp;
-		}
-	}
-}
+// // Synapses carrying spikes
+// __global__ void synapsespikes(int* d_presynaptic_neuron_indices,
+// 								int* d_delays,
+// 								int* d_spikes,
+// 								float* d_lastspiketime,
+// 								int* d_spikebuffer,
+// 								float current_time_in_seconds,
+// 								size_t numConns,
+// 								size_t total_number_of_neurons){
+// 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
+// 	if (idx < (numConns)) {
+// 		// Reduce the spikebuffer by 1
+// 		d_spikebuffer[idx] -= 1;
+// 		// Check if the neuron PRE has just fired and if the synapse exists
+// 		if (d_lastspiketime[d_presynaptic_neuron_indices[idx]] == current_time_in_seconds){
+// 			// Update the spikes with the correct delay
+// 			if (d_spikes[idx] <= 0){
+// 				d_spikes[idx] = d_delays[idx];
+// 			} else if (d_spikebuffer[idx] <= 0){
+// 				d_spikebuffer[idx] = d_delays[idx];
+// 			}
+// 		}
+// 		// If there is no waiting spike
+// 		if (d_spikes[idx] <= 0) {
+// 			// Use the buffer if necessary
+// 			if (d_spikebuffer[idx] > 0) {
+// 				d_spikes[idx] = d_spikebuffer[idx];
+// 			} else {
+// 				d_spikes[idx] = -1;
+// 				d_spikebuffer[idx] = -1;
+// 			}
+// 		}
+// 		// If the buffer has a smaller time than the spike, switch them
+// 		if ((d_spikebuffer[idx] > 0) && (d_spikebuffer[idx] < d_spikes[idx])){
+// 			int temp = d_spikes[idx];
+// 			d_spikes[idx] = d_spikebuffer[idx];
+// 			d_spikebuffer[idx] = temp;
+// 		}
+// 	}
+// }
 
 // Collect Spikes
 __global__ void spikeCollect(float* d_lastspiketime,

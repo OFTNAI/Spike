@@ -55,6 +55,7 @@ public:
 	void set_threads_per_block_and_blocks_per_grid(int threads);
 
 	void calculate_postsynaptic_current_injection_for_connection_wrapper(float* currentinjection, float current_time_in_seconds);
+	void synapsespikes_wrapper(float* d_lastspiketime, float current_time_in_seconds);
 
 
 private:

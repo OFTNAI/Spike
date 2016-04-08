@@ -364,6 +364,9 @@ void Connections::set_threads_per_block_and_blocks_per_grid(int threads) {
 
 
 
+
+
+
 __global__ void calculate_postsynaptic_current_injection_for_connection(int* d_spikes,
 							float* d_weights,
 							float* d_lastactive,
@@ -371,6 +374,15 @@ __global__ void calculate_postsynaptic_current_injection_for_connection(int* d_s
 							float* currentinj,
 							float current_time_in_seconds,
 							size_t total_number_of_connections);
+
+__global__ void synapsespikes(int* d_presynaptic_neuron_indices,
+								int* d_delays,
+								int* d_spikes,
+								float* d_lastspiketime,
+								int* d_spikebuffer,
+								float currtime,
+								size_t total_number_of_connections);
+
 
 
 void Connections::calculate_postsynaptic_current_injection_for_connection_wrapper(float* currentinjection, float current_time_in_seconds) {
@@ -382,6 +394,17 @@ void Connections::calculate_postsynaptic_current_injection_for_connection_wrappe
 																	currentinjection,
 																	current_time_in_seconds,
 																	total_number_of_connections);
+}
+
+void Connections::synapsespikes_wrapper(float* d_lastspiketime, float current_time_in_seconds) {
+
+	synapsespikes<<<number_of_connection_blocks_per_grid, threads_per_block>>>(d_presynaptic_neuron_indices,
+																		d_delays,
+																		d_spikes,
+																		d_lastspiketime,
+																		d_spikebuffer,
+																		current_time_in_seconds,
+																		total_number_of_connections);
 }
 
 
@@ -409,6 +432,49 @@ __global__ void calculate_postsynaptic_current_injection_for_connection(int* d_s
 	}
 	__syncthreads();
 }
+
+
+// Synapses carrying spikes
+__global__ void synapsespikes(int* d_presynaptic_neuron_indices,
+								int* d_delays,
+								int* d_spikes,
+								float* d_lastspiketime,
+								int* d_spikebuffer,
+								float current_time_in_seconds,
+								size_t total_number_of_connections){
+	int idx = threadIdx.x + blockIdx.x * blockDim.x;
+	if (idx < total_number_of_connections) {
+		// Reduce the spikebuffer by 1
+		d_spikebuffer[idx] -= 1;
+		// Check if the neuron PRE has just fired and if the synapse exists
+		if (d_lastspiketime[d_presynaptic_neuron_indices[idx]] == current_time_in_seconds){
+			// Update the spikes with the correct delay
+			if (d_spikes[idx] <= 0){
+				d_spikes[idx] = d_delays[idx];
+			} else if (d_spikebuffer[idx] <= 0){
+				d_spikebuffer[idx] = d_delays[idx];
+			}
+		}
+		// If there is no waiting spike
+		if (d_spikes[idx] <= 0) {
+			// Use the buffer if necessary
+			if (d_spikebuffer[idx] > 0) {
+				d_spikes[idx] = d_spikebuffer[idx];
+			} else {
+				d_spikes[idx] = -1;
+				d_spikebuffer[idx] = -1;
+			}
+		}
+		// If the buffer has a smaller time than the spike, switch them
+		if ((d_spikebuffer[idx] > 0) && (d_spikebuffer[idx] < d_spikes[idx])){
+			int temp = d_spikes[idx];
+			d_spikes[idx] = d_spikebuffer[idx];
+			d_spikebuffer[idx] = temp;
+		}
+	}
+}
+
+
 
 // An implementation of the polar gaussian random number generator which I need
 double randn (double mu, double sigma)
