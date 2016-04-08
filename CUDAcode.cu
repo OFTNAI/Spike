@@ -229,7 +229,7 @@ void GPUDeviceComputation (
 				} 
 				// Calculate current injections to cells
 				// JI CANDIDATE FOR GOING IN CONNECTIONS
-				currentcalc<<<connblocksPerGrid, threadsPerBlock>>>(connections->d_spikes,
+				calculate_postsynaptic_current_injection_for_connection<<<connblocksPerGrid, threadsPerBlock>>>(connections->d_spikes,
 																	connections->d_weights,
 																	connections->d_lastactive,
 																	connections->d_postsynaptic_neuron_indices,
@@ -458,8 +458,9 @@ __global__ void randoms(curandState_t* states, float* numbers, size_t total_numb
 	}
 }
 
-// Current Calculation Kernel
-__global__ void currentcalc(int* d_spikes,
+// If spike has reached synapse add synapse weight to postsyn current injection
+// Was currentcalc
+__global__ void calculate_postsynaptic_current_injection_for_connection(int* d_spikes,
 							float* d_weights,
 							float* d_lastactive,
 							int* d_postsynaptic_neuron_indices,
