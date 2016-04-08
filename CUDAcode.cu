@@ -73,8 +73,6 @@ void GPUDeviceComputation (
 	int* d_spikes;
 	int* d_stdp;
 	float* d_lastactive;
-
-	// float* d_lastspiketime;
 	int* d_genids;
 	float* d_gentimes;
 	int* d_spikebuffer;
@@ -104,11 +102,9 @@ void GPUDeviceComputation (
 	CudaSafeCall(cudaMalloc((void **)&d_lastactive, sizeof(float)*total_number_of_connections));
 	CudaSafeCall(cudaMalloc((void **)&d_spikebuffer, sizeof(int)*total_number_of_connections));
 
-	// Allocate memory for data on device for each neuron
+	// For saving spikes (Make seperate class)
 	CudaSafeCall(cudaMalloc((void **)&d_tempstoreID, sizeof(int)*total_number_of_neurons));
 	CudaSafeCall(cudaMalloc((void **)&d_tempstoretimes, sizeof(float)*total_number_of_neurons));
-
-	// Allocate memory for data on device for other
 	CudaSafeCall(cudaMalloc((void **)&d_tempstorenum, sizeof(int)));
 
 
@@ -122,11 +118,9 @@ void GPUDeviceComputation (
 	CudaSafeCall(cudaMemset(d_lastactive, -1000.0f, sizeof(float)*total_number_of_connections));
 	CudaSafeCall(cudaMemset(d_spikebuffer, -1, total_number_of_connections*sizeof(int)));
 
-	// Send data to device: data for each neuron
+	// Send data to device: data for saving spikes
 	CudaSafeCall(cudaMemset(d_tempstoreID, -1, sizeof(int)*total_number_of_neurons));
 	CudaSafeCall(cudaMemset(d_tempstoretimes, -1.0f, sizeof(float)*total_number_of_neurons));
-
-	// Send data to device: other
 	CudaSafeCall(cudaMemset(d_tempstorenum, 0, sizeof(int)));
 
 
