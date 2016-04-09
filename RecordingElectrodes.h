@@ -19,12 +19,17 @@ public:
 	int* d_tempstoreID;
 	float* d_tempstoretimes;
 
+	int* h_tempstoreID;
+	float* h_tempstoretimes;
+	int* h_tempspikenum;
+
 
 	// Constructor/Destructor
 	RecordingElectrodes();
 	~RecordingElectrodes();
 
 	void initialise_device_pointers(int total_number_of_neurons);
+	void initialise_host_pointers(int total_number_of_neurons);
 
 	void set_threads_per_block_and_blocks_per_grid(int threads);
 

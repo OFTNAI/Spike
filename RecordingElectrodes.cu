@@ -14,7 +14,6 @@
 // RecordingElectrodes Constructor
 RecordingElectrodes::RecordingElectrodes() {
 
-
 }
 
 
@@ -34,6 +33,14 @@ void RecordingElectrodes::initialise_device_pointers(int total_number_of_neurons
 	CudaSafeCall(cudaMemset(d_tempstoreID, -1, sizeof(int)*total_number_of_neurons));
 	CudaSafeCall(cudaMemset(d_tempstoretimes, -1.0f, sizeof(float)*total_number_of_neurons));
 	CudaSafeCall(cudaMemset(d_tempstorenum, 0, sizeof(int)));
+}
+
+void RecordingElectrodes::initialise_host_pointers(int total_number_of_neurons) {
+	h_tempstoreID = (int*)malloc(sizeof(int)*total_number_of_neurons);
+	h_tempstoretimes = (float*)malloc(sizeof(float)*total_number_of_neurons);
+
+	h_tempspikenum = (int*)malloc(sizeof(int));
+	h_tempspikenum[0] = 0;
 }
 
 void RecordingElectrodes::set_threads_per_block_and_blocks_per_grid(int threads) {
