@@ -36,6 +36,7 @@ public:
 	void initialise_host_pointers(int total_number_of_neurons);
 
 	void save_spikes_to_host(Neurons *neurons, float current_time_in_seconds, int timestep_index, int number_of_timesteps_per_epoch, dim3 number_of_neuron_blocks_per_grid, dim3 threads_per_block);
+	void write_spikes_to_file(Neurons *neurons, int epoch_number);
 
 };
 

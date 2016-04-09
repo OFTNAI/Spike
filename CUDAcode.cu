@@ -138,7 +138,7 @@ void GPUDeviceComputation (
 	initweightfile.close();
 
 	// Running through all of the Epochs
-	for (int i = 0; i < number_of_epochs; i++) {
+	for (int epoch_number = 0; epoch_number < number_of_epochs; epoch_number++) {
 		// If we want a random presentation, create the set of numbers:
 		if (randomPresentation) {
 			random_shuffle(&presentorder[0], &presentorder[numStimuli]);
@@ -231,40 +231,14 @@ void GPUDeviceComputation (
 		#ifndef QUIETSTART
 		clock_t mid = clock();
 		if (save_spikes)
-			printf("Epoch %d, Complete.\n Running Time: %f\n Number of Spikes: %d\n\n", i, (float(mid-begin) / CLOCKS_PER_SEC), recording_electrodes->h_total_number_of_spikes);
+			printf("Epoch %d, Complete.\n Running Time: %f\n Number of Spikes: %d\n\n", epoch_number, (float(mid-begin) / CLOCKS_PER_SEC), recording_electrodes->h_total_number_of_spikes);
 		else 
-			printf("Epoch %d, Complete.\n Running Time: %f\n\n", i, (float(mid-begin) / CLOCKS_PER_SEC));
+			printf("Epoch %d, Complete.\n Running Time: %f\n\n", epoch_number, (float(mid-begin) / CLOCKS_PER_SEC));
 		#endif
 		// Output Spikes list after each epoch:
 		// Only save the spikes if necessary
 		if (save_spikes){
-			// Get the names
-			string file = "results/Epoch" + to_string(i) + "_";
-			// Open the files
-			ofstream spikeidfile, spiketimesfile;
-			spikeidfile.open((file + "SpikeIDs.bin"), ios::out | ios::binary);
-			spiketimesfile.open((file + "SpikeTimes.bin"), ios::out | ios::binary);
-			// Send the data
-			spikeidfile.write((char *)recording_electrodes->h_spikestoreID, recording_electrodes->h_total_number_of_spikes*sizeof(int));
-			spiketimesfile.write((char *)recording_electrodes->h_spikestoretimes, recording_electrodes->h_total_number_of_spikes*sizeof(float));
-			// Close the files
-			spikeidfile.close();
-			spiketimesfile.close();
-
-			// Reset the spike store
-			// Host values
-			recording_electrodes->h_total_number_of_spikes = 0;
-			recording_electrodes->h_temp_total_number_of_spikes[0] = 0;
-			// Free/Clear Device stuff
-			// Reset the number on the device
-			CudaSafeCall(cudaMemset(&(recording_electrodes->d_tempstorenum[0]), 0, sizeof(int)));
-			CudaSafeCall(cudaMemset(recording_electrodes->d_tempstoreID, -1, sizeof(int)*total_number_of_neurons));
-			CudaSafeCall(cudaMemset(recording_electrodes->d_tempstoretimes, -1.0f, sizeof(float)*total_number_of_neurons));
-			// Free malloced host stuff
-			free(recording_electrodes->h_spikestoreID);
-			free(recording_electrodes->h_spikestoretimes);
-			recording_electrodes->h_spikestoreID = NULL;
-			recording_electrodes->h_spikestoretimes = NULL;
+			recording_electrodes->write_spikes_to_file(neurons, epoch_number);
 		}
 	}
 	// Finish the simulation and check time

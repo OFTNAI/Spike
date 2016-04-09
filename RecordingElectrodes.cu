@@ -7,9 +7,12 @@
 
 #include "RecordingElectrodes.h"
 #include <stdlib.h>
+#include <iostream>
 #include <stdio.h>
+#include <fstream>
 #include "CUDAErrorCheckHelpers.h"
 
+using namespace std;
 
 // RecordingElectrodes Constructor
 RecordingElectrodes::RecordingElectrodes() {
@@ -98,6 +101,38 @@ void RecordingElectrodes::save_spikes_to_host(Neurons *neurons, float current_ti
 		}
 	}
 }
+
+
+void RecordingElectrodes::write_spikes_to_file(Neurons *neurons, int epoch_number) {
+	// Get the names
+	string file = "results/Epoch" + to_string(epoch_number) + "_";
+	// Open the files
+	ofstream spikeidfile, spiketimesfile;
+	spikeidfile.open((file + "SpikeIDs.bin"), ios::out | ios::binary);
+	spiketimesfile.open((file + "SpikeTimes.bin"), ios::out | ios::binary);
+	// Send the data
+	spikeidfile.write((char *)h_spikestoreID, h_total_number_of_spikes*sizeof(int));
+	spiketimesfile.write((char *)h_spikestoretimes, h_total_number_of_spikes*sizeof(float));
+	// Close the files
+	spikeidfile.close();
+	spiketimesfile.close();
+
+	// Reset the spike store
+	// Host values
+	h_total_number_of_spikes = 0;
+	h_temp_total_number_of_spikes[0] = 0;
+	// Free/Clear Device stuff
+	// Reset the number on the device
+	CudaSafeCall(cudaMemset(&(d_tempstorenum[0]), 0, sizeof(int)));
+	CudaSafeCall(cudaMemset(d_tempstoreID, -1, sizeof(int)*neurons->total_number_of_neurons));
+	CudaSafeCall(cudaMemset(d_tempstoretimes, -1.0f, sizeof(float)*neurons->total_number_of_neurons));
+	// Free malloced host stuff
+	free(h_spikestoreID);
+	free(h_spikestoretimes);
+	h_spikestoreID = NULL;
+	h_spikestoretimes = NULL;
+}
+
 
 // Collect Spikes
 __global__ void spikeCollect(float* d_lastspiketime,
