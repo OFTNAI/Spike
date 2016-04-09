@@ -14,11 +14,17 @@
 
 class RecordingElectrodes{
 public:
+
+	int* d_tempstorenum;
+	int* d_tempstoreID;
+	float* d_tempstoretimes;
+
+
 	// Constructor/Destructor
 	RecordingElectrodes();
 	~RecordingElectrodes();
 
-	void initialise_device_pointers();
+	void initialise_device_pointers(int total_number_of_neurons);
 
 	void set_threads_per_block_and_blocks_per_grid(int threads);
 
