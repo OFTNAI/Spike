@@ -40,6 +40,9 @@ public:
 	neuron_struct* d_neuron_variables;
 	float* d_lastspiketime;
 
+	dim3 number_of_neuron_blocks_per_grid;
+	dim3 threads_per_block;
+
 	
 	// Functions
 	int AddGroup(neuron_struct params, int shape[2]);
@@ -63,9 +66,6 @@ public:
 							float timestep);
 
 
-private:
-	dim3 number_of_neuron_blocks_per_grid;
-	dim3 threads_per_block;
 
 };
 

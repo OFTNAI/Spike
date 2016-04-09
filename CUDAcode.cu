@@ -220,52 +220,7 @@ void GPUDeviceComputation (
 
 				// Only save the spikes if necessary
 				if (save_spikes){
-					// Storing the spikes that have occurred in this timestep
-					spikeCollect<<<vectorblocksPerGrid, threadsPerBlock>>>(neurons->d_lastspiketime,
-																		recording_electrodes->d_tempstorenum,
-																		recording_electrodes->d_tempstoreID,
-																		recording_electrodes->d_tempstoretimes,
-																		current_time_in_seconds,
-																		total_number_of_neurons);
-					CudaCheckError();
-
-					if (((timestep_index % 1) == 0) || (timestep_index == (number_of_timesteps_per_epoch-1))){
-						// Finally, we want to get the spikes back. Every few timesteps check the number of spikes:
-						CudaSafeCall(cudaMemcpy(&(recording_electrodes->h_tempspikenum[0]), &(recording_electrodes->d_tempstorenum[0]), (sizeof(int)), cudaMemcpyDeviceToHost));
-						// Ensure that we don't have too many
-						if (recording_electrodes->h_tempspikenum[0] > total_number_of_neurons){
-							// ERROR!
-							printf("Spike recorder has been overloaded! Reduce threshold. Exiting ...\n");
-							exit(-1);
-						}
-						// Deal with them!
-						if ((recording_electrodes->h_tempspikenum[0] >= (0.25*total_number_of_neurons)) ||  (timestep_index == (number_of_timesteps_per_epoch - 1))){
-							// Allocate some memory for them:
-							recording_electrodes->h_spikestoreID = (int*)realloc(recording_electrodes->h_spikestoreID, sizeof(int)*(recording_electrodes->h_spikenum + recording_electrodes->h_tempspikenum[0]));
-							recording_electrodes->h_spikestoretimes = (float*)realloc(recording_electrodes->h_spikestoretimes, sizeof(float)*(recording_electrodes->h_spikenum + recording_electrodes->h_tempspikenum[0]));
-							// Copy the data from device to host
-							CudaSafeCall(cudaMemcpy(recording_electrodes->h_tempstoreID, 
-													recording_electrodes->d_tempstoreID, 
-													(sizeof(int)*(total_number_of_neurons)), 
-													cudaMemcpyDeviceToHost));
-							CudaSafeCall(cudaMemcpy(recording_electrodes->h_tempstoretimes, 
-													recording_electrodes->d_tempstoretimes, 
-													sizeof(float)*(total_number_of_neurons), 
-													cudaMemcpyDeviceToHost));
-							// Pop all of the times where they need to be:
-							for (int l = 0; l < recording_electrodes->h_tempspikenum[0]; l++){
-								recording_electrodes->h_spikestoreID[recording_electrodes->h_spikenum + l] = recording_electrodes->h_tempstoreID[l];
-								recording_electrodes->h_spikestoretimes[recording_electrodes->h_spikenum + l] = recording_electrodes->h_tempstoretimes[l];
-							}
-							// Reset the number on the device
-							CudaSafeCall(cudaMemset(&(recording_electrodes->d_tempstorenum[0]), 0, sizeof(int)));
-							CudaSafeCall(cudaMemset(recording_electrodes->d_tempstoreID, -1, sizeof(int)*total_number_of_neurons));
-							CudaSafeCall(cudaMemset(recording_electrodes->d_tempstoretimes, -1.0f, sizeof(float)*total_number_of_neurons));
-							// Increase the number on host
-							recording_electrodes->h_spikenum += recording_electrodes->h_tempspikenum[0];
-							recording_electrodes->h_tempspikenum[0] = 0;
-						}
-					}
+					recording_electrodes->save_spikes_to_host(neurons, current_time_in_seconds, timestep_index, number_of_timesteps_per_epoch, neurons->number_of_neuron_blocks_per_grid, neurons->threads_per_block);
 				}
 			}
 			if (numEnts > 0){
@@ -276,7 +231,7 @@ void GPUDeviceComputation (
 		#ifndef QUIETSTART
 		clock_t mid = clock();
 		if (save_spikes)
-			printf("Epoch %d, Complete.\n Running Time: %f\n Number of Spikes: %d\n\n", i, (float(mid-begin) / CLOCKS_PER_SEC), recording_electrodes->h_spikenum);
+			printf("Epoch %d, Complete.\n Running Time: %f\n Number of Spikes: %d\n\n", i, (float(mid-begin) / CLOCKS_PER_SEC), recording_electrodes->h_total_number_of_spikes);
 		else 
 			printf("Epoch %d, Complete.\n Running Time: %f\n\n", i, (float(mid-begin) / CLOCKS_PER_SEC));
 		#endif
@@ -290,16 +245,16 @@ void GPUDeviceComputation (
 			spikeidfile.open((file + "SpikeIDs.bin"), ios::out | ios::binary);
 			spiketimesfile.open((file + "SpikeTimes.bin"), ios::out | ios::binary);
 			// Send the data
-			spikeidfile.write((char *)recording_electrodes->h_spikestoreID, recording_electrodes->h_spikenum*sizeof(int));
-			spiketimesfile.write((char *)recording_electrodes->h_spikestoretimes, recording_electrodes->h_spikenum*sizeof(float));
+			spikeidfile.write((char *)recording_electrodes->h_spikestoreID, recording_electrodes->h_total_number_of_spikes*sizeof(int));
+			spiketimesfile.write((char *)recording_electrodes->h_spikestoretimes, recording_electrodes->h_total_number_of_spikes*sizeof(float));
 			// Close the files
 			spikeidfile.close();
 			spiketimesfile.close();
 
 			// Reset the spike store
 			// Host values
-			recording_electrodes->h_spikenum = 0;
-			recording_electrodes->h_tempspikenum[0] = 0;
+			recording_electrodes->h_total_number_of_spikes = 0;
+			recording_electrodes->h_temp_total_number_of_spikes[0] = 0;
 			// Free/Clear Device stuff
 			// Reset the number on the device
 			CudaSafeCall(cudaMemset(&(recording_electrodes->d_tempstorenum[0]), 0, sizeof(int)));
@@ -385,26 +340,4 @@ __global__ void randoms(curandState_t* states, float* numbers, size_t total_numb
 		/* curand works like rand - except that it takes a state as a parameter */
 		numbers[idx] = curand_uniform(&states[idx]);
 	}
-}
-
-
-// Collect Spikes
-__global__ void spikeCollect(float* d_lastspiketime,
-								int* d_tempstorenum,
-								int* d_tempstoreID,
-								float* d_tempstoretimes,
-								float current_time_in_seconds,
-								size_t total_number_of_neurons){
-	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	if (idx < total_number_of_neurons) {
-		// If a neuron has fired
-		if (d_lastspiketime[idx] == current_time_in_seconds) {
-			// Increase the number of spikes stored
-			int i = atomicAdd(&d_tempstorenum[0], 1);
-			// In the location, add the id and the time
-			d_tempstoreID[i] = idx;
-			d_tempstoretimes[i] = current_time_in_seconds;
-		}
-	}
-	__syncthreads();
 }
