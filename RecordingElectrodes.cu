@@ -13,7 +13,9 @@
 
 // RecordingElectrodes Constructor
 RecordingElectrodes::RecordingElectrodes() {
-
+	h_spikenum = 0;
+	h_spikestoreID = NULL;
+	h_spikestoretimes = NULL;
 }
 
 

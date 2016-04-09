@@ -71,12 +71,6 @@ void GPUDeviceComputation (
 	float* d_gentimes;
 	
 
-	// And some on host for copy back
-	int h_spikenum = 0;
-	int* h_spikestoreID = NULL;
-	float* h_spikestoretimes = NULL;
-
-
 	RecordingElectrodes * recording_electrodes = new RecordingElectrodes();
 
 	neurons->initialise_device_pointers();
@@ -247,8 +241,8 @@ void GPUDeviceComputation (
 						// Deal with them!
 						if ((recording_electrodes->h_tempspikenum[0] >= (0.25*total_number_of_neurons)) ||  (timestep_index == (number_of_timesteps_per_epoch - 1))){
 							// Allocate some memory for them:
-							h_spikestoreID = (int*)realloc(h_spikestoreID, sizeof(int)*(h_spikenum + recording_electrodes->h_tempspikenum[0]));
-							h_spikestoretimes = (float*)realloc(h_spikestoretimes, sizeof(float)*(h_spikenum + recording_electrodes->h_tempspikenum[0]));
+							recording_electrodes->h_spikestoreID = (int*)realloc(recording_electrodes->h_spikestoreID, sizeof(int)*(recording_electrodes->h_spikenum + recording_electrodes->h_tempspikenum[0]));
+							recording_electrodes->h_spikestoretimes = (float*)realloc(recording_electrodes->h_spikestoretimes, sizeof(float)*(recording_electrodes->h_spikenum + recording_electrodes->h_tempspikenum[0]));
 							// Copy the data from device to host
 							CudaSafeCall(cudaMemcpy(recording_electrodes->h_tempstoreID, 
 													recording_electrodes->d_tempstoreID, 
@@ -260,15 +254,15 @@ void GPUDeviceComputation (
 													cudaMemcpyDeviceToHost));
 							// Pop all of the times where they need to be:
 							for (int l = 0; l < recording_electrodes->h_tempspikenum[0]; l++){
-								h_spikestoreID[h_spikenum + l] = recording_electrodes->h_tempstoreID[l];
-								h_spikestoretimes[h_spikenum + l] = recording_electrodes->h_tempstoretimes[l];
+								recording_electrodes->h_spikestoreID[recording_electrodes->h_spikenum + l] = recording_electrodes->h_tempstoreID[l];
+								recording_electrodes->h_spikestoretimes[recording_electrodes->h_spikenum + l] = recording_electrodes->h_tempstoretimes[l];
 							}
 							// Reset the number on the device
 							CudaSafeCall(cudaMemset(&(recording_electrodes->d_tempstorenum[0]), 0, sizeof(int)));
 							CudaSafeCall(cudaMemset(recording_electrodes->d_tempstoreID, -1, sizeof(int)*total_number_of_neurons));
 							CudaSafeCall(cudaMemset(recording_electrodes->d_tempstoretimes, -1.0f, sizeof(float)*total_number_of_neurons));
 							// Increase the number on host
-							h_spikenum += recording_electrodes->h_tempspikenum[0];
+							recording_electrodes->h_spikenum += recording_electrodes->h_tempspikenum[0];
 							recording_electrodes->h_tempspikenum[0] = 0;
 						}
 					}
@@ -282,7 +276,7 @@ void GPUDeviceComputation (
 		#ifndef QUIETSTART
 		clock_t mid = clock();
 		if (save_spikes)
-			printf("Epoch %d, Complete.\n Running Time: %f\n Number of Spikes: %d\n\n", i, (float(mid-begin) / CLOCKS_PER_SEC), h_spikenum);
+			printf("Epoch %d, Complete.\n Running Time: %f\n Number of Spikes: %d\n\n", i, (float(mid-begin) / CLOCKS_PER_SEC), recording_electrodes->h_spikenum);
 		else 
 			printf("Epoch %d, Complete.\n Running Time: %f\n\n", i, (float(mid-begin) / CLOCKS_PER_SEC));
 		#endif
@@ -296,15 +290,15 @@ void GPUDeviceComputation (
 			spikeidfile.open((file + "SpikeIDs.bin"), ios::out | ios::binary);
 			spiketimesfile.open((file + "SpikeTimes.bin"), ios::out | ios::binary);
 			// Send the data
-			spikeidfile.write((char *)h_spikestoreID, h_spikenum*sizeof(int));
-			spiketimesfile.write((char *)h_spikestoretimes, h_spikenum*sizeof(float));
+			spikeidfile.write((char *)recording_electrodes->h_spikestoreID, recording_electrodes->h_spikenum*sizeof(int));
+			spiketimesfile.write((char *)recording_electrodes->h_spikestoretimes, recording_electrodes->h_spikenum*sizeof(float));
 			// Close the files
 			spikeidfile.close();
 			spiketimesfile.close();
 
 			// Reset the spike store
 			// Host values
-			h_spikenum = 0;
+			recording_electrodes->h_spikenum = 0;
 			recording_electrodes->h_tempspikenum[0] = 0;
 			// Free/Clear Device stuff
 			// Reset the number on the device
@@ -312,10 +306,10 @@ void GPUDeviceComputation (
 			CudaSafeCall(cudaMemset(recording_electrodes->d_tempstoreID, -1, sizeof(int)*total_number_of_neurons));
 			CudaSafeCall(cudaMemset(recording_electrodes->d_tempstoretimes, -1.0f, sizeof(float)*total_number_of_neurons));
 			// Free malloced host stuff
-			free(h_spikestoreID);
-			free(h_spikestoretimes);
-			h_spikestoreID = NULL;
-			h_spikestoretimes = NULL;
+			free(recording_electrodes->h_spikestoreID);
+			free(recording_electrodes->h_spikestoretimes);
+			recording_electrodes->h_spikestoreID = NULL;
+			recording_electrodes->h_spikestoretimes = NULL;
 		}
 	}
 	// Finish the simulation and check time
@@ -357,8 +351,8 @@ void GPUDeviceComputation (
 	CudaSafeCall(cudaFree(gpu_randfloats));
 	CudaSafeCall(cudaFree(currentinjection));
 	// Free Memory on CPU
-	free(h_spikestoretimes);
-	free(h_spikestoreID);
+	free(recording_electrodes->h_spikestoretimes);
+	free(recording_electrodes->h_spikestoreID);
 
 }
 

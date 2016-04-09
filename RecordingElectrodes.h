@@ -23,6 +23,10 @@ public:
 	float* h_tempstoretimes;
 	int* h_tempspikenum;
 
+	int h_spikenum;
+	int* h_spikestoreID;
+	float* h_spikestoretimes;
+
 
 	// Constructor/Destructor
 	RecordingElectrodes();
