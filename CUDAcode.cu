@@ -22,28 +22,10 @@ using namespace std;
 #include "CUDAErrorCheckHelpers.h"
 #include "RecordingElectrodes.h"
 // Silences the printfs
-//#define QUIETSTART
+// #define QUIETSTART
 
 
-// CUDA Spiking Simulator Run
-//	INPUT (incomplete):
-//			total_number_of_neurons = Total number of neurons in simulation
-//			total_number_of_connections = Total number of Synapses
-//			presynaptic_neuron_indices = vector- entry corresponds to pre-syn neuron ID
-//			postsynaptic_neuron_indices = vector- entry corresponds to post-syn neuron ID
-//			delays = vector- entry corresponds to axonal delay of syn
-//			weight = vector- entry correponds to synaptic weight
-//			spikes = vector- entry corresponds to countdown of spike on syn
-//			stdp = vector- entry corresponding to whether or not syn is stdp
 //			lastactive = vector- indicating last time synapse emitted current
-//			parameters=
-//			w_max = stdp parameter
-//			a_minus = stdp parameter
-//			a_plus = stdp parameter
-//			tau_minus = stdp parameter
-//			tau_plus = stdp parameter
-//			timestep = timestep of the simulation
-//			total_time_per_epoch = total time for which the sim should run per epoch
 void GPUDeviceComputation (
 					Neurons * neurons,
 					Connections * connections,
@@ -61,16 +43,10 @@ void GPUDeviceComputation (
 					){
 
 
-	// Useful to have local versions of totals as used a lot
-	size_t total_number_of_neurons = neurons->total_number_of_neurons;
-	size_t total_number_of_connections = connections->total_number_of_connections;
-
-
 	// Creating the Device Pointers I need
 	int* d_genids;
 	float* d_gentimes;
 	
-
 	RecordingElectrodes * recording_electrodes = new RecordingElectrodes();
 
 	neurons->initialise_device_pointers();
@@ -88,7 +64,7 @@ void GPUDeviceComputation (
 
 	dim3 threadsPerBlock(threads,1,1);
 	// I now have to calculate the number of blocks ....
-	int vectorblocknum = (total_number_of_neurons + threads) / threads;
+	int vectorblocknum = (neurons->total_number_of_neurons + threads) / threads;
 
 	// The maximum dimension for the grid is 65535
 	dim3 vectorblocksPerGrid(vectorblocknum,1,1);  
@@ -101,22 +77,22 @@ void GPUDeviceComputation (
 	// RANDOM NUMBERS
 	// Create the random state seed trackers
 	curandState_t* states;
-	cudaMalloc((void**) &states, total_number_of_neurons*sizeof(curandState_t));
+	cudaMalloc((void**) &states, neurons->total_number_of_neurons*sizeof(curandState_t));
 	// Initialise the random states
-	init<<<threadsPerBlock, vectorblocksPerGrid>>>(42, states, total_number_of_neurons);
+	init<<<threadsPerBlock, vectorblocksPerGrid>>>(42, states, neurons->total_number_of_neurons);
 	CudaCheckError();
 	// Keep space for the random numbers
 	float* gpu_randfloats;
-	CudaSafeCall(cudaMalloc((void**) &gpu_randfloats, total_number_of_neurons*sizeof(float)));
+	CudaSafeCall(cudaMalloc((void**) &gpu_randfloats, neurons->total_number_of_neurons*sizeof(float)));
 	// REQUIRED DATA SPACES
 	float* currentinjection;
-	CudaSafeCall(cudaMalloc((void**)&currentinjection, total_number_of_neurons*sizeof(float)));
+	CudaSafeCall(cudaMalloc((void**)&currentinjection, neurons->total_number_of_neurons*sizeof(float)));
 	// Variables necessary
 	clock_t begin = clock();
 
 	// Poisson number
 	int numPoisson = 0;
-	for (int i = 0; i < total_number_of_neurons; i++){
+	for (int i = 0; i < neurons->total_number_of_neurons; i++){
 		if (neurons->neuron_variables[i].rate != 0.0f){
 			++numPoisson;
 		}
@@ -160,8 +136,8 @@ void GPUDeviceComputation (
 			}
 			// Reset the variables necessary
 			// CAN GO INTO CLASSES EVENTUALLY
-			CudaSafeCall(cudaMemcpy(neurons->d_neuron_variables, neurons->neuron_variables, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
-			CudaSafeCall(cudaMemset(neurons->d_lastspiketime, -1000.0f, total_number_of_neurons*sizeof(float)));
+			CudaSafeCall(cudaMemcpy(neurons->d_neuron_variables, neurons->neuron_variables, sizeof(float)*neurons->total_number_of_neurons, cudaMemcpyHostToDevice));
+			CudaSafeCall(cudaMemset(neurons->d_lastspiketime, -1000.0f, neurons->total_number_of_neurons*sizeof(float)));
 			CudaSafeCall(cudaMemset(connections->d_spikes, 0, sizeof(int)*total_number_of_connections));
 			CudaSafeCall(cudaMemset(connections->d_lastactive, -1000.0f, sizeof(float)*total_number_of_connections));
 			CudaSafeCall(cudaMemset(connections->d_spikebuffer, -1, total_number_of_connections*sizeof(int)));
@@ -176,11 +152,11 @@ void GPUDeviceComputation (
 				// Current simulation timestep
 				current_time_in_seconds = float(timestep_index)*float(timestep);
 				// Start by resetting all the things
-				CudaSafeCall(cudaMemset(currentinjection, 0.0f, total_number_of_neurons*sizeof(float)));	
+				CudaSafeCall(cudaMemset(currentinjection, 0.0f, neurons->total_number_of_neurons*sizeof(float)));	
 				// If there are poisson populations
 				if (numPoisson > 0) {
 					// First create the set of random numbers of poisson neurons
-					randoms<<<vectorblocksPerGrid, threadsPerBlock>>>(states, gpu_randfloats, total_number_of_neurons);
+					randoms<<<vectorblocksPerGrid, threadsPerBlock>>>(states, gpu_randfloats, neurons->total_number_of_neurons);
 					CudaCheckError();
 
 					// Update Poisson neuron states
@@ -275,6 +251,7 @@ void GPUDeviceComputation (
 
 	delete neurons;
 	delete connections;
+	delete recording_electrodes;
 
 	CudaSafeCall(cudaFree(states));
 	CudaSafeCall(cudaFree(gpu_randfloats));
@@ -285,13 +262,6 @@ void GPUDeviceComputation (
 
 }
 
-
-
-
-
-//////////////////////////////
-/////// CUDA FUNCTIONS ///////
-//////////////////////////////
 
 
 // Random Number Generator intialiser
