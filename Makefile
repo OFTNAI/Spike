@@ -25,8 +25,8 @@ model: ${FILE}
 
 
 # Separating out the individual compilations so as not to compilation time
-${FILE}: ${FILE}.o Simulator.o Neurons.o Connections.o CUDAcode.o
-	$(CC) ${FILE}.o Simulator.o Neurons.o Connections.o CUDAcode.o -o ${FILE}
+${FILE}: ${FILE}.o Simulator.o Neurons.o Connections.o RecordingElectrodes.o CUDAcode.o
+	$(CC) ${FILE}.o Simulator.o Neurons.o Connections.o RecordingElectrodes.o CUDAcode.o -o ${FILE}
 
 # Compiling the Model file
 ${FILE}.o: ${FILE}.cpp
@@ -40,14 +40,17 @@ Neurons.o: Neurons.cu
 # Compiling the Connections class
 Connections.o: Connections.cu
 	$(CC) $(CFLAGS) Connections.cu
+# Compiling RecordingElectrodes class
+RecordingElectrodes.o: RecordingElectrodes.cu
+	$(CC) $(CFLAGS) RecordingElectrodes.cu
 # Compiling the CUDA code
 CUDAcode.o: CUDAcode.cu
 	$(CC) $(CFLAGS) CUDAcode.cu
 
 
 # Test script
-test: Simulator.o Neurons.o Connections.o CUDAcode.o
-	$(CC) Tests.cu Simulator.o Neurons.o Connections.o CUDAcode.o -o unittests
+test: Simulator.o Neurons.o Connections.o RecordingElectrodes.o CUDAcode.o
+	$(CC) Tests.cu Simulator.o Neurons.o Connections.o RecordingElectrodes.o CUDAcode.o -o unittests
 cleantest:
 	rm *.o unittests
 
