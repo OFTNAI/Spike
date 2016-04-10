@@ -347,10 +347,15 @@ void Connections::initialise_device_pointers() {
 	CudaSafeCall(cudaMemcpy(d_postsynaptic_neuron_indices, postsynaptic_neuron_indices, sizeof(int)*total_number_of_connections, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_delays, delays, sizeof(int)*total_number_of_connections, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_weights, weights, sizeof(float)*total_number_of_connections, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemset(d_spikes, 0, sizeof(int)*total_number_of_connections));
 	CudaSafeCall(cudaMemcpy(d_stdp, stdp, sizeof(int)*total_number_of_connections, cudaMemcpyHostToDevice));
+
+	reset_connection_spikes();
+}
+
+void Connections::reset_connection_spikes() {
+	CudaSafeCall(cudaMemset(d_spikes, 0, sizeof(int)*total_number_of_connections));
 	CudaSafeCall(cudaMemset(d_lastactive, -1000.0f, sizeof(float)*total_number_of_connections));
-	CudaSafeCall(cudaMemset(d_spikebuffer, -1, total_number_of_connections*sizeof(int)));
+	CudaSafeCall(cudaMemset(d_spikebuffer, -1, sizeof(int)*total_number_of_connections));
 }
 
 

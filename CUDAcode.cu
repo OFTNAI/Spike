@@ -131,12 +131,8 @@ void GPUDeviceComputation (
 				CudaSafeCall(cudaMemcpy(d_gentimes, gentimes[present], sizeof(float)*numEnts, cudaMemcpyHostToDevice));
 			}
 			// Reset the variables necessary
-			// CAN GO INTO CLASSES EVENTUALLY
-			CudaSafeCall(cudaMemcpy(neurons->d_neuron_variables, neurons->neuron_variables, sizeof(float)*neurons->total_number_of_neurons, cudaMemcpyHostToDevice));
-			CudaSafeCall(cudaMemset(neurons->d_lastspiketime, -1000.0f, neurons->total_number_of_neurons*sizeof(float)));
-			CudaSafeCall(cudaMemset(connections->d_spikes, 0, sizeof(int)*connections->total_number_of_connections));
-			CudaSafeCall(cudaMemset(connections->d_lastactive, -1000.0f, sizeof(float)*connections->total_number_of_connections));
-			CudaSafeCall(cudaMemset(connections->d_spikebuffer, -1, connections->total_number_of_connections*sizeof(int)));
+			neurons->reset_neuron_variables_and_spikes();
+			connections->reset_connection_spikes();
 
 			// Running the Simulation!
 			// Variables as Necessary

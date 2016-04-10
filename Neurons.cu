@@ -84,6 +84,10 @@ void Neurons::initialise_device_pointers() {
 	CudaSafeCall(cudaMalloc((void **)&d_neuron_variables, sizeof(struct neuron_struct)*total_number_of_neurons));
 	CudaSafeCall(cudaMalloc((void **)&d_lastspiketime, sizeof(float)*total_number_of_neurons));
 
+	reset_neuron_variables_and_spikes();
+}
+
+void Neurons::reset_neuron_variables_and_spikes() {
 	CudaSafeCall(cudaMemcpy(d_neuron_variables, neuron_variables, sizeof(struct neuron_struct)*total_number_of_neurons, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemset(d_lastspiketime, -1000.0f, total_number_of_neurons*sizeof(float)));
 }

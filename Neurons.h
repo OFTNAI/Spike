@@ -48,6 +48,7 @@ public:
 	int AddGroup(neuron_struct params, int shape[2]);
 
 	void initialise_device_pointers();
+	void reset_neuron_variables_and_spikes();
 	void set_threads_per_block_and_blocks_per_grid(int threads);
 
 	void poisupdate_wrapper(float* d_randoms, float timestep);
