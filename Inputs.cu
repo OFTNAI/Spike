@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "CUDAErrorCheckHelpers.h"
+#include <algorithm> // For random shuffle
+using namespace std;
 
 
 // Inputs Constructor
@@ -68,18 +70,25 @@ int Inputs::AddGroup(input_struct params, int group_shape[2]){
 	return -total_number_of_groups;
 }
 
-
-void Inputs::initialise_device_pointers() {
-	// CudaSafeCall(cudaMalloc((void **)&d_input_variables, sizeof(struct input_struct)*total_number_of_inputs));
-	// CudaSafeCall(cudaMalloc((void **)&d_lastspiketime, sizeof(float)*total_number_of_inputs));
-
-	// reset_input_variables_and_spikes();
+void Inputs::generate_states() {
+	cudaMalloc((void**) &d_states, total_number_of_inputs*sizeof(curandState_t));
+	// Initialise the random states
+	init<<<threads_per_block, number_of_input_blocks_per_grid>>>(42, d_states, total_number_of_inputs);
+	CudaCheckError();
 }
 
-// void Inputs::reset_neuron_variables_and_spikes() {
-// 	// CudaSafeCall(cudaMemcpy(d_neuron_variables, neuron_variables, sizeof(struct neuron_struct)*total_number_of_neurons, cudaMemcpyHostToDevice));
+
+void Inputs::initialise_device_pointers() {
+	CudaSafeCall(cudaMalloc((void **)&d_input_variables, sizeof(struct input_struct)*total_number_of_inputs));
+	// CudaSafeCall(cudaMalloc((void **)&d_lastspiketime, sizeof(float)*total_number_of_inputs));
+
+	reset_input_variables();
+}
+
+void Inputs::reset_input_variables() {
+	CudaSafeCall(cudaMemcpy(d_input_variables, input_variables, sizeof(struct input_struct)*total_number_of_inputs, cudaMemcpyHostToDevice));
 // 	// CudaSafeCall(cudaMemset(d_lastspiketime, -1000.0f, total_number_of_neurons*sizeof(float)));
-// }
+}
 
 void Inputs::set_threads_per_block_and_blocks_per_grid(int threads) {
 	
@@ -90,15 +99,15 @@ void Inputs::set_threads_per_block_and_blocks_per_grid(int threads) {
 }
 
 
+__global__ void poisupdate2(curandState_t* states,
+							struct input_struct* d_input_group_variables,
+							float timestep,
+							size_t total_number_of_inputs);
+
 
 // CUDA __global__ function declarations
 // NOTE: these are NOT MEMBER FUNCTIONS
 // They are called by their corresponding wrapper member function
-
-// __global__ void poisupdate(float* d_randoms, 
-// 							struct input_struct* d_neuronpop_variables,
-// 							float timestep,
-// 							size_t numNeurons);
 
 // __global__ void genupdate(struct neuron_struct* neuronpop_variables,
 // 							int* genids,
@@ -121,14 +130,14 @@ void Inputs::set_threads_per_block_and_blocks_per_grid(int threads) {
 
 // // Wrapper member function definitions
 // // See NOTE above
-// void Neurons::poisupdate_wrapper(float* d_randoms, float timestep) {
+void Inputs::poisupdate_wrapper2(float timestep) {
 
-// 	poisupdate<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_randoms,
-// 														d_neuron_variables,
-// 														timestep,
-// 														total_number_of_neurons);
-// 	CudaCheckError();
-// }
+	poisupdate2<<<number_of_input_blocks_per_grid, threads_per_block>>>(d_states,
+														d_input_variables,
+														timestep,
+														total_number_of_inputs);
+	CudaCheckError();
+}
 
 
 // void Neurons::genupdate_wrapper(int* genids,
@@ -172,31 +181,45 @@ void Inputs::set_threads_per_block_and_blocks_per_grid(int threads) {
 // 	CudaCheckError();
 // }
 
-
-
+// Random Number Generator intialiser
+/* this GPU kernel function is used to initialize the random states */
+__global__ void init(unsigned int seed, curandState_t* states, size_t total_number_of_neurons) {
+	int idx = threadIdx.x + blockIdx.x * blockDim.x;
+	if (idx < total_number_of_neurons) {
+		curand_init(seed, /* the seed can be the same for each core, here we pass the time in from the CPU */
+					idx, /* the sequence number should be different for each core (unless you want all
+							cores to get the same sequence of numbers for some reason - use thread id! */
+ 					0, /* the offset is how much extra we advance in the sequence for each call, can be 0 */
+					&states[idx]);
+	}
+}
 
 // // CUDA __global__ function definitions
 // // These are called by the Neurons class member functions
 // // May have to vary names if 'including' more than one subclass
 
-// // Poisson Updating Kernal
-// __global__ void poisupdate(float* d_randoms, 
-// 							struct neuron_struct* d_neuronpop_variables,
-// 							float timestep,
-// 							size_t numNeurons){
-// 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-// 	if (idx < numNeurons){
-// 		// if the randomnumber is LT the rate
-// 		if (d_randoms[idx] < (d_neuronpop_variables[idx].rate*timestep)){
-// 			d_neuronpop_variables[idx].state_u = 0.0f;
-// 			d_neuronpop_variables[idx].state_v = 35.0f;
-// 		} else if (d_neuronpop_variables[idx].rate != 0.0f) {
-// 			d_neuronpop_variables[idx].state_u = 0.0f;
-// 			d_neuronpop_variables[idx].state_v = -70.0f;
-// 		}
-// 	}
-// 	__syncthreads();
-// }
+// Poisson Updating Kernal
+__global__ void poisupdate2(curandState_t* states,
+							struct input_struct* d_input_group_variables,
+							float timestep,
+							size_t total_number_of_inputs){
+
+	int idx = threadIdx.x + blockIdx.x * blockDim.x;
+	if (idx < total_number_of_inputs){
+
+		float random_float = curand_uniform(&states[idx]);;
+		
+		// if the randomnumber is LT the rate
+		if (random_float < (d_input_group_variables[idx].rate*timestep)){
+			d_input_group_variables[idx].state_u = 0.0f;
+			d_input_group_variables[idx].state_v = 35.0f;
+		} else if (d_input_group_variables[idx].rate != 0.0f) {
+			d_input_group_variables[idx].state_u = 0.0f;
+			d_input_group_variables[idx].state_v = -70.0f;
+		}
+	}
+	__syncthreads();
+}
 
 
 // // Spike Generator Updating Kernel

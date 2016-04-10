@@ -149,6 +149,7 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_
 	GPUDeviceComputation (
 					neurons,
 					connections,
+					inputs,
 
 					// Could put following 4 in Simulator parameters dictionary
 					total_time_per_epoch,

@@ -22,6 +22,10 @@ struct neuron_struct {
 };
 
 struct input_struct {
+	// State variables
+	float state_v;
+	float state_u;
+	// Rate for poisson
 	float rate;
 };
 

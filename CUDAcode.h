@@ -21,11 +21,14 @@
 
 #include "Neurons.h"
 #include "Connections.h"
+#include "Inputs.h"
+
 
 // Functions!
 void GPUDeviceComputation (
 					Neurons * neurons,
 					Connections * connections,
+					Inputs * inputs,
 
 					float total_time_per_epoch,
 					int number_of_epochs,
@@ -40,8 +43,4 @@ void GPUDeviceComputation (
 					bool randomPresentation
 					);
 
-
-// GPU Functions
-__global__ void init(unsigned int seed, curandState_t* states, size_t numNeurons);
-__global__ void randoms(curandState_t* states, float* numbers, size_t numNeurons);
 #endif

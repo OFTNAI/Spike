@@ -4,6 +4,9 @@
 //	CUDA library
 #include <cuda.h>
 
+#include <curand.h>
+#include <curand_kernel.h>
+
 #include "Structs.h"
 
 //temp for test_array test
@@ -26,6 +29,7 @@ public:
 
 
 	// Device Pointers
+	curandState_t* d_states;
 	input_struct* d_input_variables;
 	float* d_lastspiketime;
 
@@ -37,10 +41,11 @@ public:
 	int AddGroup(input_struct params, int shape[2]);
 
 	void initialise_device_pointers();
-	// void reset_input_variables_and_spikes();
+	void reset_input_variables();
 	void set_threads_per_block_and_blocks_per_grid(int threads);
+	void generate_states();
 
-	// void poisupdate_wrapper(float* d_randoms, float timestep);
+	void poisupdate_wrapper2(float timestep);
 
 	// void genupdate_wrapper(int* genids,
 	// 						float* gentimes,
@@ -59,6 +64,7 @@ public:
 
 };
 
+__global__ void init(unsigned int seed, curandState_t* states, size_t numNeurons);
 
 
 #endif
