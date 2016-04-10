@@ -209,36 +209,16 @@ void GPUDeviceComputation (
 			recording_electrodes->write_spikes_to_file(neurons, epoch_number);
 		}
 	}
+	
+	// SIMULATION COMPLETE!
+	#ifndef QUIETSTART
 	// Finish the simulation and check time
 	clock_t end = clock();
 	float timed = float(end-begin) / CLOCKS_PER_SEC;
-	// SIMULATION COMPLETE!
-	#ifndef QUIETSTART
 	printf("Simulation Complete! Time Elapsed: %f\n\n", timed);
-	printf("Outputting binary files.\n");
 	#endif
 
-
-	// Copy back the data that we might want:
-	CudaSafeCall(cudaMemcpy(connections->weights, connections->d_weights, sizeof(float)*connections->total_number_of_connections, cudaMemcpyDeviceToHost));
-	// Creating and Opening all the files
-	ofstream synapsepre, synapsepost, weightfile, delayfile;
-	weightfile.open("results/NetworkWeights.bin", ios::out | ios::binary);
-	delayfile.open("results/NetworkDelays.bin", ios::out | ios::binary);
-	synapsepre.open("results/NetworkPre.bin", ios::out | ios::binary);
-	synapsepost.open("results/NetworkPost.bin", ios::out | ios::binary);
-	
-	// Writing the data
-	weightfile.write((char *)connections->weights, connections->total_number_of_connections*sizeof(float));
-	delayfile.write((char *)connections->delays, connections->total_number_of_connections*sizeof(int));
-	synapsepre.write((char *)connections->presynaptic_neuron_indices, connections->total_number_of_connections*sizeof(int));
-	synapsepost.write((char *)connections->postsynaptic_neuron_indices, connections->total_number_of_connections*sizeof(int));
-
-	// Close files
-	weightfile.close();
-	delayfile.close();
-	synapsepre.close();
-	synapsepost.close();
+	recording_electrodes->save_network_state(connections);
 
 
 	delete neurons;

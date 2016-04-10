@@ -165,3 +165,33 @@ void RecordingElectrodes::write_initial_synaptic_weights_to_file(Connections *co
 	initweightfile.close();
 }
 
+
+void RecordingElectrodes::save_network_state(Connections *connections) {
+
+	#ifndef QUIETSTART
+	printf("Outputting binary files.\n");
+	#endif
+
+	// Copy back the data that we might want:
+	CudaSafeCall(cudaMemcpy(connections->weights, connections->d_weights, sizeof(float)*connections->total_number_of_connections, cudaMemcpyDeviceToHost));
+	// Creating and Opening all the files
+	ofstream synapsepre, synapsepost, weightfile, delayfile;
+	weightfile.open("results/NetworkWeights.bin", ios::out | ios::binary);
+	delayfile.open("results/NetworkDelays.bin", ios::out | ios::binary);
+	synapsepre.open("results/NetworkPre.bin", ios::out | ios::binary);
+	synapsepost.open("results/NetworkPost.bin", ios::out | ios::binary);
+	
+	// Writing the data
+	weightfile.write((char *)connections->weights, connections->total_number_of_connections*sizeof(float));
+	delayfile.write((char *)connections->delays, connections->total_number_of_connections*sizeof(int));
+	synapsepre.write((char *)connections->presynaptic_neuron_indices, connections->total_number_of_connections*sizeof(int));
+	synapsepost.write((char *)connections->postsynaptic_neuron_indices, connections->total_number_of_connections*sizeof(int));
+
+	// Close files
+	weightfile.close();
+	delayfile.close();
+	synapsepre.close();
+	synapsepost.close();
+}
+
+

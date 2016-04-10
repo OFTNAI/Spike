@@ -40,6 +40,7 @@ public:
 	void write_spikes_to_file(Neurons *neurons, int epoch_number);
 
 	void write_initial_synaptic_weights_to_file(Connections *connections);
+	void save_network_state(Connections *connections);
 
 };
 
