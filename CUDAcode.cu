@@ -107,11 +107,7 @@ void GPUDeviceComputation (
 	// SEEDING
 	srand(42);
 
-	// INITIAL WEIGHT OUTPUT
-	ofstream initweightfile;
-	initweightfile.open("results/NetworkWeights_Initial.bin", ios::out | ios::binary);
-	initweightfile.write((char *)connections->weights, total_number_of_connections*sizeof(float));
-	initweightfile.close();
+	recording_electrodes->write_initial_synaptic_weights_to_file(connections);
 
 	// Running through all of the Epochs
 	for (int epoch_number = 0; epoch_number < number_of_epochs; epoch_number++) {
@@ -138,9 +134,9 @@ void GPUDeviceComputation (
 			// CAN GO INTO CLASSES EVENTUALLY
 			CudaSafeCall(cudaMemcpy(neurons->d_neuron_variables, neurons->neuron_variables, sizeof(float)*neurons->total_number_of_neurons, cudaMemcpyHostToDevice));
 			CudaSafeCall(cudaMemset(neurons->d_lastspiketime, -1000.0f, neurons->total_number_of_neurons*sizeof(float)));
-			CudaSafeCall(cudaMemset(connections->d_spikes, 0, sizeof(int)*total_number_of_connections));
-			CudaSafeCall(cudaMemset(connections->d_lastactive, -1000.0f, sizeof(float)*total_number_of_connections));
-			CudaSafeCall(cudaMemset(connections->d_spikebuffer, -1, total_number_of_connections*sizeof(int)));
+			CudaSafeCall(cudaMemset(connections->d_spikes, 0, sizeof(int)*connections->total_number_of_connections));
+			CudaSafeCall(cudaMemset(connections->d_lastactive, -1000.0f, sizeof(float)*connections->total_number_of_connections));
+			CudaSafeCall(cudaMemset(connections->d_spikebuffer, -1, connections->total_number_of_connections*sizeof(int)));
 
 			// Running the Simulation!
 			// Variables as Necessary
@@ -228,7 +224,7 @@ void GPUDeviceComputation (
 
 
 	// Copy back the data that we might want:
-	CudaSafeCall(cudaMemcpy(connections->weights, connections->d_weights, sizeof(float)*total_number_of_connections, cudaMemcpyDeviceToHost));
+	CudaSafeCall(cudaMemcpy(connections->weights, connections->d_weights, sizeof(float)*connections->total_number_of_connections, cudaMemcpyDeviceToHost));
 	// Creating and Opening all the files
 	ofstream synapsepre, synapsepost, weightfile, delayfile;
 	weightfile.open("results/NetworkWeights.bin", ios::out | ios::binary);
@@ -237,10 +233,10 @@ void GPUDeviceComputation (
 	synapsepost.open("results/NetworkPost.bin", ios::out | ios::binary);
 	
 	// Writing the data
-	weightfile.write((char *)connections->weights, total_number_of_connections*sizeof(float));
-	delayfile.write((char *)connections->delays, total_number_of_connections*sizeof(int));
-	synapsepre.write((char *)connections->presynaptic_neuron_indices, total_number_of_connections*sizeof(int));
-	synapsepost.write((char *)connections->postsynaptic_neuron_indices, total_number_of_connections*sizeof(int));
+	weightfile.write((char *)connections->weights, connections->total_number_of_connections*sizeof(float));
+	delayfile.write((char *)connections->delays, connections->total_number_of_connections*sizeof(int));
+	synapsepre.write((char *)connections->presynaptic_neuron_indices, connections->total_number_of_connections*sizeof(int));
+	synapsepost.write((char *)connections->postsynaptic_neuron_indices, connections->total_number_of_connections*sizeof(int));
 
 	// Close files
 	weightfile.close();

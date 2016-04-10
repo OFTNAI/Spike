@@ -156,3 +156,12 @@ int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	__syncthreads();
 }
 
+
+
+void RecordingElectrodes::write_initial_synaptic_weights_to_file(Connections *connections) {
+	ofstream initweightfile;
+	initweightfile.open("results/NetworkWeights_Initial.bin", ios::out | ios::binary);
+	initweightfile.write((char *)connections->weights, connections->total_number_of_connections*sizeof(float));
+	initweightfile.close();
+}
+
