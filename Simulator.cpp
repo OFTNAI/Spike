@@ -59,9 +59,12 @@ void Simulator::SetTimestep(float timest){
 }
 
 
-//JI
 void Simulator::SetNeuronType(Neurons * neurons_parameter) {
 	neurons = neurons_parameter;
+}
+
+void Simulator::SetInputType(Inputs * inputs_parameter) {
+	inputs = inputs_parameter;
 }
 
 

@@ -18,6 +18,7 @@
 #include "CUDAcode.h"
 #include "Neurons.h"
 #include "Connections.h"
+#include "Inputs.h"
 
 // Simulator Class for running of the simulations
 class Simulator{
@@ -28,6 +29,7 @@ public:
 
 	Neurons * neurons;
 	Connections * connections;
+	Inputs * inputs;
 
 	// Spike Generator related Data
 	int numStimuli;
@@ -43,6 +45,7 @@ public:
 
 	// JI
 	void SetNeuronType(Neurons * neurons_parameter);
+	void SetInputType(Inputs * inputs_parameter);
 	int AddNeuronGroup(struct neuron_struct params, int shape[2]);
 	void AddConnectionGroup(int presynaptic_group_id, 
 							int postsynaptic_group_id, 
