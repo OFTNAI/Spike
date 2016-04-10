@@ -97,6 +97,7 @@ void Connections::SetSTDP(float w_max_new,
 void Connections::AddGroup(	int presynaptic_group_id, 
 								int postsynaptic_group_id, 
 								int* last_neuron_indices_for_each_neuron_group,
+								int* last_input_indices_for_each_group,
 								int** group_shapes, 
 								int connectivity_type,
 								float weight_range[2],
@@ -104,22 +105,52 @@ void Connections::AddGroup(	int presynaptic_group_id,
 								bool stdp_on,
 								float parameter,
 								float parameter_two){
+	
 	// Find the right set of indices
 	// Take everything in 2D
-	// Pre-Population Indices
+
+	int group_type_factor = 1;
 	int prestart = 0;
-	if (presynaptic_group_id > 0){
-		prestart = last_neuron_indices_for_each_neuron_group[presynaptic_group_id-1];
-		printf("prestart: %d\n", prestart);
-	}
-	int preend = last_neuron_indices_for_each_neuron_group[presynaptic_group_id];
-	printf("preend: %d\n", preend);
-	// Post-Population Indices
+	int preend = 0;
 	int poststart = 0;
+
+	// Calculate presynaptic group start and end indices
+	if (presynaptic_group_id < 0) { // If presynaptic group is Input group
+		group_type_factor = -1;
+
+		if (presynaptic_group_id < -1){
+			prestart = last_input_indices_for_each_group[-1*presynaptic_group_id - 1];
+		}
+		preend = last_input_indices_for_each_group[-1*postsynaptic_group_id];
+
+	} else {
+
+		if (presynaptic_group_id > 0){
+			prestart = last_neuron_indices_for_each_neuron_group[presynaptic_group_id - 1];
+		}
+		preend = last_neuron_indices_for_each_neuron_group[presynaptic_group_id];
+
+	}
+
+	// Calculate postsynaptic group start and end indices
+	if (postsynaptic_group_id < 0) { // If presynaptic group is Input group EXIT
+
+		printf("Input groups cannot be the postsynaptic. Exiting...\n");
+		exit(-1);
+
+	} 
+
 	if (postsynaptic_group_id > 0){
 		poststart = last_neuron_indices_for_each_neuron_group[postsynaptic_group_id-1];
 	}
 	int postend = last_neuron_indices_for_each_neuron_group[postsynaptic_group_id];
+
+
+	printf("prestart: %d\n", prestart);
+	printf("preend: %d\n", preend);
+	printf("poststart: %d\n", poststart);
+	printf("postend: %d\n", postend);
+
 
 	int original_number_of_connections = total_number_of_connections;
 
@@ -138,7 +169,7 @@ void Connections::AddGroup(	int presynaptic_group_id,
 					// Index
 					int idx = original_number_of_connections + (i-prestart) + (j-poststart)*(preend-prestart);
 					// Setup Synapses
-					presynaptic_neuron_indices[idx] = i;
+					presynaptic_neuron_indices[idx] = group_type_factor*i;
 					postsynaptic_neuron_indices[idx] = j;
 				}
 			}
@@ -151,12 +182,12 @@ void Connections::AddGroup(	int presynaptic_group_id,
             
 			// If the connectivity is one_to_one
 			if ((preend-prestart) != (postend-poststart)){
-				printf("Unequal populations for one_to_one. Exiting.\n");
+				printf("Unequal populations for one_to_one. Exiting...\n");
 				exit(-1);
 			}
 			// Create the connectivity
 			for (int i = 0; i < (preend-prestart); i++){
-				presynaptic_neuron_indices[original_number_of_connections + i] = prestart + i;
+				presynaptic_neuron_indices[original_number_of_connections + i] = prestart + group_type_factor*i;
 				postsynaptic_neuron_indices[original_number_of_connections + i] = poststart + i;
 			}
 
@@ -176,7 +207,7 @@ void Connections::AddGroup(	int presynaptic_group_id,
 						increment_number_of_connections(1);
 
 						// Setup Synapses
-						presynaptic_neuron_indices[total_number_of_connections - 1] = i;
+						presynaptic_neuron_indices[total_number_of_connections - 1] = group_type_factor*i;
 						postsynaptic_neuron_indices[total_number_of_connections - 1] = j;
 					}
 				}
@@ -227,7 +258,7 @@ void Connections::AddGroup(	int presynaptic_group_id,
 						increment_number_of_connections(1);
 
 						// Setup Synapses
-						presynaptic_neuron_indices[total_number_of_connections - 1] = i;
+						presynaptic_neuron_indices[total_number_of_connections - 1] = group_type_factor*i;
 						postsynaptic_neuron_indices[total_number_of_connections - 1] = j;
 					}
 				}
@@ -266,7 +297,7 @@ void Connections::AddGroup(	int presynaptic_group_id,
 
 						// Setup the synapses:
 						// Setup Synapses
-						presynaptic_neuron_indices[total_number_of_connections - 1] = i;
+						presynaptic_neuron_indices[total_number_of_connections - 1] = group_type_factor*i;
 						postsynaptic_neuron_indices[total_number_of_connections - 1] = poststart + temp;
 
 						// Increment conn_tgts
@@ -282,14 +313,14 @@ void Connections::AddGroup(	int presynaptic_group_id,
 			increment_number_of_connections(1);
 
 			// Setup Synapses
-			presynaptic_neuron_indices[original_number_of_connections] = prestart + int(parameter);
+			presynaptic_neuron_indices[original_number_of_connections] = prestart + group_type_factor*int(parameter);
 			postsynaptic_neuron_indices[original_number_of_connections] = poststart + int(parameter_two);
 
 			break;
 		}
 		default:
 		{
-			printf("\n\nUnknown Connection Type: %d\n\n", CONNECTIVITY_TYPE_SINGLE);
+			printf("\n\nUnknown Connection Type: %d\n\n", connectivity_type);
 			exit(-1);
 			break;
 		}

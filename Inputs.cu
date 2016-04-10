@@ -48,16 +48,16 @@ int Inputs::AddGroup(input_struct params, int group_shape[2]){
 	printf("total_number_of_groups: %d\n", total_number_of_groups); // Temp helper
 
 	// Calculate new group id
-	int new_group_id = total_number_of_groups - 1;
+	int new_group_index = total_number_of_groups - 1;
 
 	// Add last input index for new group
 	last_input_indices_for_each_group = (int*)realloc(last_input_indices_for_each_group,(total_number_of_groups*sizeof(int)));
-	last_input_indices_for_each_group[new_group_id] = total_number_of_inputs;
+	last_input_indices_for_each_group[new_group_index] = total_number_of_inputs;
 
 	// Add new group shape
 	group_shapes = (int**)realloc(group_shapes,(total_number_of_groups*sizeof(int*)));
-	group_shapes[new_group_id] = (int*)malloc(2*sizeof(int));
-	group_shapes[new_group_id] = group_shape;
+	group_shapes[new_group_index] = (int*)malloc(2*sizeof(int));
+	group_shapes[new_group_index] = group_shape;
 
 	// Add new group parameters
 	input_variables = (input_struct*)realloc(input_variables, (total_number_of_inputs*sizeof(input_struct)));
@@ -65,7 +65,7 @@ int Inputs::AddGroup(input_struct params, int group_shape[2]){
 		input_variables[i] = params;
 	}
 	
-	return new_group_id;
+	return -total_number_of_groups;
 }
 
 
