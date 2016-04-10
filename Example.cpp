@@ -24,10 +24,15 @@ int main (int argc, char *argv[]){
 	simulator.SetNeuronType(new Neurons());
 	simulator.SetInputType(new Inputs());
 
+
+	// input parameters
+	input_struct input_poisson_params;
+	input_poisson_params.rate = 30.0f;
+	int input_population_shape[] = {1000, 1};
+
 	// neuron parameters
 	neuron_struct poisson_params;
 	poisson_params.rate = 30.0f;
-	int input_population_shape[] = {1000, 1};
 
 	neuron_struct test_params;
 	test_params.parama = 0.02f;
@@ -38,6 +43,9 @@ int main (int argc, char *argv[]){
 
 
 	// Add neuron Groups
+
+	int test_input_group_1_id = simulator.AddInputGroup(input_poisson_params, input_population_shape);
+
 	int INPUTLAYER = simulator.AddNeuronGroup(poisson_params, input_population_shape);
 	int test_neuron_group_1_id = simulator.AddNeuronGroup(test_params, test_shape);
 	int test_neuron_group_2_id = simulator.AddNeuronGroup(test_params, test_shape);

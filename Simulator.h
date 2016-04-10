@@ -43,10 +43,11 @@ public:
 	float timestep;
 	void SetTimestep(float timest);
 
-	// JI
 	void SetNeuronType(Neurons * neurons_parameter);
 	void SetInputType(Inputs * inputs_parameter);
+
 	int AddNeuronGroup(struct neuron_struct params, int shape[2]);
+	int AddInputGroup(input_struct group_params, int group_shape[2]);
 	void AddConnectionGroup(int presynaptic_group_id, 
 							int postsynaptic_group_id, 
 							int connectivity_type,
