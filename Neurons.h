@@ -24,14 +24,12 @@ public:
 	Neurons();
 	~Neurons();
 
-	int* d_test_array;
-
 	// Totals
 	int total_number_of_neurons;
 	int total_number_of_groups;
 
 	// Group parameters, shapes and indices
-	neuron_struct *neuron_variables; //Currently actually neuron wise. Should eventually change
+	neuron_struct *neuron_variables;
 	int **group_shapes;
 	int *last_neuron_indices_for_each_group;
 

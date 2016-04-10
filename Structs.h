@@ -21,6 +21,10 @@ struct neuron_struct {
 	float rate;
 };
 
+struct input_struct {
+	float rate;
+};
+
 // STDP Parameters
 struct stdp_struct {
 	stdp_struct(): w_max(60.0f), a_minus(-0.015f), a_plus(0.005f), tau_minus(0.025f), tau_plus(0.015) { } // default Constructor

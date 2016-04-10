@@ -16,8 +16,6 @@
 // Neurons Constructor
 Neurons::Neurons() {
 
-	d_test_array = NULL;
-
 	// Set totals to zero
 	total_number_of_neurons = 0;
 	total_number_of_groups = 0;
@@ -49,7 +47,7 @@ int Neurons::AddGroup(neuron_struct params, int group_shape[2]){
 	int number_of_neurons_in_group = group_shape[0]*group_shape[1];
  
 	if (number_of_neurons_in_group < 0) {
-		printf("\nError: Population must have at least 1 neuron.\n\n");
+		printf("\nError: Group must have at least 1 neuron.\n\n");
 		exit(-1);
 	}
 
