@@ -24,8 +24,6 @@ Simulator::Simulator(){
 	gentimes = NULL;
 	// Default parameters
 	timestep = 0.001f;
-	numPops = 0;
-	numConnects = 0;
 
 	connections = new Connections();
 	

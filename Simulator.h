@@ -36,9 +36,7 @@ public:
 	int* numEntries;
 	int** genids;
 	float** gentimes;
-	// Numbers of Neurons/Synapses
-	int numPops;
-	int numConnects;
+
 	// Parameters
 	float timestep;
 	void SetTimestep(float timest);
@@ -58,20 +56,11 @@ public:
 							float parameter_two = 0.0f);
 
 
-
-	int CreateNeurons(int neuron_type, struct neuron_struct params, int shape[2]);
 	void CreateGenerator(int popID, int stimulusid, int spikenumber, int* ids, float* spiketimes);
-	void BeginConnections();
+
 	void LoadWeights(int numWeights,
 						float* newWeights);
-	void CreateConnection(int prepop, 
-						int postpop, 
-						int connectivity_type,
-						float weights[2], 
-						float delays[2], 
-						bool stdp,
-						float parameter = 0.0f,
-						float parameter_two = 0.0f);
+
 	void Run(float total_time_per_epoch, int number_of_epochs, bool save_spikes = false, bool random_presentation = false);
 };
 #endif
