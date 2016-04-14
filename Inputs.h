@@ -47,25 +47,9 @@ public:
 
 	void poisupdate_wrapper2(float timestep);
 
-	// void genupdate_wrapper(int* genids,
-	// 						float* gentimes,
-	// 						float currtime,
-	// 						float timestep,
-	// 						size_t numEntries,
-	// 						int genblocknum, 
-	// 						dim3 threadsPerBlock);
-
-	// void spikingneurons_wrapper(float currtime);
-
-	// void stateupdate_wrapper(float* current_injection,
-	// 						float timestep);
-
-
-
 };
 
 __global__ void init(unsigned int seed, curandState_t* states, size_t numNeurons);
-__global__ void randoms(curandState_t* states, float* numbers, size_t numNeurons);
 
 
 #endif
