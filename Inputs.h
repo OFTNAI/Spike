@@ -65,6 +65,7 @@ public:
 };
 
 __global__ void init(unsigned int seed, curandState_t* states, size_t numNeurons);
+__global__ void randoms(curandState_t* states, float* numbers, size_t numNeurons);
 
 
 #endif

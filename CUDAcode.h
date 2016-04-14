@@ -43,4 +43,6 @@ void GPUDeviceComputation (
 					bool randomPresentation
 					);
 
+__global__ void randoms(curandState_t* states, float* numbers, size_t numNeurons);
+
 #endif

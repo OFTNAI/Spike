@@ -242,5 +242,15 @@ void GPUDeviceComputation (
 }
 
 
+// Random Number Getter
+__global__ void randoms(curandState_t* states, float* numbers, size_t total_number_of_neurons) {
+	int idx = threadIdx.x + blockIdx.x * blockDim.x;
+	if (idx < total_number_of_neurons) {
+		/* curand works like rand - except that it takes a state as a parameter */
+		numbers[idx] = curand_uniform(&states[idx]);
+	}
+}
+
+
 
 
