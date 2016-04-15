@@ -13,8 +13,8 @@
 #include "Simulator.h"
 #include "Constants.h"
 #include "Neurons.h"
-#include "IzhikevichNeurons.h"
-#include "Inputs.h"
+#include "IzhikevichSpikingNeurons.h"
+// #include "Inputs.h"
 // The function which will autorun when the executable is created
 int main (int argc, char *argv[]){
 	// Set the timestep of the simulation as required (timestep is measure in seconds)
@@ -22,28 +22,28 @@ int main (int argc, char *argv[]){
 	// Create an instance of the Simulator and set the timestep
 	
 
-	Simulator simulator2;
-	simulator2.SetTimestep(timest);
-	simulator2.SetNeuronType(new IzhikevichNeurons());
+	// Simulator simulator2;
+	// simulator2.SetTimestep(timest);
+	// simulator2.SetNeuronType(new IzhikevichSpikingNeurons());
 
-	izhikevich_neuron_struct *ji_test_params = new izhikevich_neuron_struct();
-	ji_test_params->test = 5.0f;
+	// izhikevich_neuron_struct *ji_test_params = new izhikevich_neuron_struct();
+	// ji_test_params->test = 5.0f;
 
-	int ji_test_shape[] = {1000, 1};
+	// int ji_test_shape[] = {1000, 1};
 
-	simulator2.neurons->AddGroupNew(ji_test_params, ji_test_shape);
-	simulator2.neurons->initialise_device_pointersNew();
+	// simulator2.neurons->AddGroupNew(ji_test_params, ji_test_shape);
+	// simulator2.neurons->initialise_device_pointersNew();
 
 
 
 	Simulator simulator;
 	simulator.SetTimestep(timest);
 	simulator.SetNeuronType(new Neurons());
-	simulator.SetInputType(new Inputs());
+	// simulator.SetInputType(new Inputs());
 
-	// input parameters
-	input_struct input_poisson_params;
-	input_poisson_params.rate = 30.0f;
+	// // input parameters
+	// input_struct input_poisson_params;
+	// input_poisson_params.rate = 30.0f;
 	int input_population_shape[] = {1000, 1};
 
 	// neuron parameters

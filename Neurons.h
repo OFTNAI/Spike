@@ -14,10 +14,21 @@
 #include <cuda.h>
 #include <stdio.h>
 
-#include "Structs.h"
-
 //temp for test_array test
 #include "Connections.h"
+
+struct neuron_struct {
+	neuron_struct(): parama(0.0f), paramb(0.0f), paramc(0.0f), paramd(0.0f), state_v(-70.0f), state_u(0.0f), rate(0.0f) { }   // default Constructor
+	float parama;
+	float paramb;
+	float paramc;
+	float paramd;
+	// State variables
+	float state_v;
+	float state_u;
+	// Rate for poisson
+	float rate;
+};
 
 class Neurons{
 public:
@@ -28,6 +39,8 @@ public:
 	// Totals
 	int total_number_of_neurons;
 	int total_number_of_groups;
+
+	// neuron_struct **neuron_variablesNew;
 
 	// Group parameters, shapes and indices
 	neuron_struct *neuron_variables;
@@ -51,7 +64,7 @@ public:
 	virtual void initialise_device_pointersNew();
 	virtual void reset_neuron_variables_and_spikesNew();
 
-	
+
 
 	int AddGroup(neuron_struct params, int shape[2]);
 	virtual void initialise_device_pointers();

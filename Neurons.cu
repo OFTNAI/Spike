@@ -19,6 +19,8 @@ Neurons::Neurons() {
 	total_number_of_neurons = 0;
 	total_number_of_groups = 0;
 
+	// neuron_variablesNew = NULL;
+
 	// Initialise pointers
 	group_shapes = NULL;
 	neuron_variables = NULL;
@@ -41,20 +43,7 @@ Neurons::~Neurons() {
 }
 
 
-// template <class Type>
-// int Neurons::AddGroupTest(Type params, int group_shape[2]) {
-// 	// printf("JI SIZE OF: %lu", sizeof(params));
-// 	// printf("JI TYPEID: %s", typeid(*params).name());
-
-
-
-// 	return 4;
-// }
-
 int Neurons::AddGroupNew(neuron_struct *params, int group_shape[2]){
-
-
-	// printf("JI SIZE OF: %lu", sizeof(params));
 	
 	number_of_neurons_in_new_group = group_shape[0]*group_shape[1];
  
@@ -79,6 +68,8 @@ int Neurons::AddGroupNew(neuron_struct *params, int group_shape[2]){
 	group_shapes = (int**)realloc(group_shapes,(total_number_of_groups*sizeof(int*)));
 	group_shapes[new_group_id] = (int*)malloc(2*sizeof(int));
 	group_shapes[new_group_id] = group_shape;
+
+	Neurons::reset_neuron_variables_and_spikesNew();
 	
 	return new_group_id;
 }
@@ -97,6 +88,9 @@ void Neurons::reset_neuron_variables_and_spikesNew() {
 }
 
 
+
+
+///////// OLD CODE ////////////
 
 int Neurons::AddGroup(neuron_struct params, int group_shape[2]){
 

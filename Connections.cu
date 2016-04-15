@@ -97,7 +97,7 @@ void Connections::SetSTDP(float w_max_new,
 void Connections::AddGroup(	int presynaptic_group_id, 
 								int postsynaptic_group_id, 
 								int* last_neuron_indices_for_each_neuron_group,
-								int* last_input_indices_for_each_group,
+								// int* last_input_indices_for_each_group,
 								int** group_shapes, 
 								int connectivity_type,
 								float weight_range[2],
@@ -116,12 +116,12 @@ void Connections::AddGroup(	int presynaptic_group_id,
 
 	// Calculate presynaptic group start and end indices
 	if (presynaptic_group_id < 0) { // If presynaptic group is Input group
-		group_type_factor = -1;
+		// group_type_factor = -1;
 
-		if (presynaptic_group_id < -1){
-			prestart = last_input_indices_for_each_group[-1*presynaptic_group_id - 1];
-		}
-		preend = last_input_indices_for_each_group[-1*postsynaptic_group_id];
+		// if (presynaptic_group_id < -1){
+		// 	prestart = last_input_indices_for_each_group[-1*presynaptic_group_id - 1];
+		// }
+		// preend = last_input_indices_for_each_group[-1*postsynaptic_group_id];
 
 	} else {
 

@@ -14,11 +14,10 @@
 // Silences the printfs
 //#define QUIETSTART
 
-#include "Structs.h"
 #include "CUDAcode.h"
 #include "Neurons.h"
 #include "Connections.h"
-#include "Inputs.h"
+// #include "Inputs.h"
 
 // Simulator Class for running of the simulations
 class Simulator{
@@ -29,7 +28,7 @@ public:
 
 	Neurons * neurons;
 	Connections * connections;
-	Inputs * inputs;
+	// Inputs * inputs;
 
 	// Spike Generator related Data
 	int numStimuli;
@@ -42,10 +41,10 @@ public:
 	void SetTimestep(float timest);
 
 	void SetNeuronType(Neurons * neurons_parameter);
-	void SetInputType(Inputs * inputs_parameter);
+	// void SetInputType(Inputs * inputs_parameter);
 
 	int AddNeuronGroup(struct neuron_struct params, int shape[2]);
-	int AddInputGroup(input_struct group_params, int group_shape[2]);
+	// int AddInputGroup(input_struct group_params, int group_shape[2]);
 	void AddConnectionGroup(int presynaptic_group_id, 
 							int postsynaptic_group_id, 
 							int connectivity_type,

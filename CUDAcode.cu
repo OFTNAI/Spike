@@ -17,19 +17,21 @@ using namespace std;
 
 
 #include "CUDAcode.h"
-#include "Structs.h"
 #include <time.h>
 #include "CUDAErrorCheckHelpers.h"
 #include "RecordingElectrodes.h"
 // Silences the printfs
 // #define QUIETSTART
 
+__global__ void init(unsigned int seed, curandState_t* states, size_t numNeurons);
+
+
 
 //			lastactive = vector- indicating last time synapse emitted current
 void GPUDeviceComputation (
 					Neurons * neurons,
 					Connections * connections,
-					Inputs * inputs,
+					// Inputs * inputs,
 
 					float total_time_per_epoch,
 					int number_of_epochs,
@@ -52,7 +54,7 @@ void GPUDeviceComputation (
 
 	neurons->initialise_device_pointers();
 	connections->initialise_device_pointers();
-	inputs->initialise_device_pointers();
+	// inputs->initialise_device_pointers();
 	recording_electrodes->initialise_device_pointers(neurons->total_number_of_neurons);
 	recording_electrodes->initialise_host_pointers(neurons->total_number_of_neurons);
 
@@ -62,7 +64,7 @@ void GPUDeviceComputation (
 	int threads = 128;
 	connections->set_threads_per_block_and_blocks_per_grid(threads);
 	neurons->set_threads_per_block_and_blocks_per_grid(threads);
-	inputs->set_threads_per_block_and_blocks_per_grid(threads);
+	// inputs->set_threads_per_block_and_blocks_per_grid(threads);
 
 
 	dim3 threadsPerBlock(threads,1,1);
@@ -80,7 +82,7 @@ void GPUDeviceComputation (
 	// RANDOM NUMBERS
 	// Create the random state seed trackers
 
-	inputs->generate_states();
+	// inputs->generate_states();
 
 	curandState_t* states;
 	cudaMalloc((void**) &states, neurons->total_number_of_neurons*sizeof(curandState_t));
@@ -159,7 +161,7 @@ void GPUDeviceComputation (
 
 					// Update Poisson neuron states
 					neurons->poisupdate_wrapper(gpu_randfloats, timestep);
-					inputs->poisupdate_wrapper2(timestep);
+					// inputs->poisupdate_wrapper2(timestep);
 					
 				}
 				// If there are any spike generators
@@ -251,6 +253,15 @@ __global__ void randoms(curandState_t* states, float* numbers, size_t total_numb
 	}
 }
 
-
+__global__ void init(unsigned int seed, curandState_t* states, size_t total_number_of_neurons) {
+	int idx = threadIdx.x + blockIdx.x * blockDim.x;
+	if (idx < total_number_of_neurons) {
+		curand_init(seed, /* the seed can be the same for each core, here we pass the time in from the CPU */
+					idx, /* the sequence number should be different for each core (unless you want all
+							cores to get the same sequence of numbers for some reason - use thread id! */
+ 					0, /* the offset is how much extra we advance in the sequence for each call, can be 0 */
+					&states[idx]);
+	}
+}
 
 

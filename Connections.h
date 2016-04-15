@@ -6,7 +6,19 @@
 
 #ifndef Connections_H
 #define Connections_H
-#include "Structs.h"
+
+// STDP Parameters
+struct stdp_struct {
+	stdp_struct(): w_max(60.0f), a_minus(-0.015f), a_plus(0.005f), tau_minus(0.025f), tau_plus(0.015) { } // default Constructor
+	// STDP Parameters
+	float w_max;
+	float a_minus;
+	float a_plus;
+	float tau_minus;
+	float tau_plus;
+};
+
+
 class Connections {
 public:
 	// Constructor/Destructor
@@ -42,7 +54,7 @@ public:
 	void AddGroup(int presynaptic_group_id, 
 						int postsynaptic_group_id, 
 						int* last_neuron_indices_for_each_neuron_group,
-						int* last_input_indices_for_each_group,
+						// int* last_input_indices_for_each_group,
 						int** neuron_group_shapes, 
 						int connectivity_type,
 						float weight_range[2],

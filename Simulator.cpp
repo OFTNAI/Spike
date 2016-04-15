@@ -61,9 +61,9 @@ void Simulator::SetNeuronType(Neurons * neurons_parameter) {
 	neurons = neurons_parameter;
 }
 
-void Simulator::SetInputType(Inputs * inputs_parameter) {
-	inputs = inputs_parameter;
-}
+// void Simulator::SetInputType(Inputs * inputs_parameter) {
+// 	inputs = inputs_parameter;
+// }
 
 
 int Simulator::AddNeuronGroup(neuron_struct group_params, int group_shape[2]) {
@@ -75,14 +75,14 @@ int Simulator::AddNeuronGroup(neuron_struct group_params, int group_shape[2]) {
 	return neuron_group_id;
 }
 
-int Simulator::AddInputGroup(input_struct group_params, int group_shape[2]) {
-	if (inputs == NULL) {
-		printf("Please call SetInputType before adding inputs groups. Exiting ...\n\n");
-		exit(-1);
-	}
-	int input_group_id = inputs->AddGroup(group_params, group_shape);
-	return input_group_id;
-}
+// int Simulator::AddInputGroup(input_struct group_params, int group_shape[2]) {
+// 	if (inputs == NULL) {
+// 		printf("Please call SetInputType before adding inputs groups. Exiting ...\n\n");
+// 		exit(-1);
+// 	}
+// 	int input_group_id = inputs->AddGroup(group_params, group_shape);
+// 	return input_group_id;
+// }
 
 
 
@@ -106,7 +106,7 @@ void Simulator::AddConnectionGroup(int presynaptic_group_id,
 							postsynaptic_group_id, 
 
 							neurons->last_neuron_indices_for_each_group,
-							inputs->last_input_indices_for_each_group,
+							// inputs->last_input_indices_for_each_group,
 
 							neurons->group_shapes,
 							connectivity_type, 
@@ -149,7 +149,7 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_
 	GPUDeviceComputation (
 					neurons,
 					connections,
-					inputs,
+					// inputs,
 
 					// Could put following 4 in Simulator parameters dictionary
 					total_time_per_epoch,
