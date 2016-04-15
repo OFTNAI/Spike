@@ -9,7 +9,6 @@
 
 #include "Neurons.h"
 #include <stdlib.h>
-#include <stdio.h>
 #include "CUDAErrorCheckHelpers.h"
 
 
@@ -42,17 +41,77 @@ Neurons::~Neurons() {
 }
 
 
-int Neurons::AddGroup(neuron_struct params, int group_shape[2]){
+// template <class Type>
+// int Neurons::AddGroupTest(Type params, int group_shape[2]) {
+// 	// printf("JI SIZE OF: %lu", sizeof(params));
+// 	// printf("JI TYPEID: %s", typeid(*params).name());
+
+
+
+// 	return 4;
+// }
+
+int Neurons::AddGroupNew(neuron_struct *params, int group_shape[2]){
+
+
+	// printf("JI SIZE OF: %lu", sizeof(params));
 	
-	int number_of_neurons_in_group = group_shape[0]*group_shape[1];
+	number_of_neurons_in_new_group = group_shape[0]*group_shape[1];
  
-	if (number_of_neurons_in_group < 0) {
+	if (number_of_neurons_in_new_group < 0) {
 		printf("\nError: Group must have at least 1 neuron.\n\n");
 		exit(-1);
 	}
 
 	// Update totals
-	total_number_of_neurons += number_of_neurons_in_group;
+	total_number_of_neurons += number_of_neurons_in_new_group;
+	++total_number_of_groups;
+	printf("total_number_of_groups: %d\n", total_number_of_groups); // Temp helper
+
+	// Calculate new group id
+	int new_group_id = total_number_of_groups - 1;
+
+	// Add last neuron index for new group
+	last_neuron_indices_for_each_group = (int*)realloc(last_neuron_indices_for_each_group,(total_number_of_groups*sizeof(int)));
+	last_neuron_indices_for_each_group[new_group_id] = total_number_of_neurons;
+
+	// Add new group shape
+	group_shapes = (int**)realloc(group_shapes,(total_number_of_groups*sizeof(int*)));
+	group_shapes[new_group_id] = (int*)malloc(2*sizeof(int));
+	group_shapes[new_group_id] = group_shape;
+	
+	return new_group_id;
+}
+
+
+void Neurons::initialise_device_pointersNew() {
+
+	CudaSafeCall(cudaMalloc((void **)&d_lastspiketime, sizeof(float)*total_number_of_neurons));
+
+	Neurons::reset_neuron_variables_and_spikesNew();
+}
+
+void Neurons::reset_neuron_variables_and_spikesNew() {
+
+	CudaSafeCall(cudaMemset(d_lastspiketime, -1000.0f, total_number_of_neurons*sizeof(float)));
+}
+
+
+
+int Neurons::AddGroup(neuron_struct params, int group_shape[2]){
+
+
+	// printf("JI SIZE OF: %lu", sizeof(params));
+	
+	number_of_neurons_in_new_group = group_shape[0]*group_shape[1];
+ 
+	if (number_of_neurons_in_new_group < 0) {
+		printf("\nError: Group must have at least 1 neuron.\n\n");
+		exit(-1);
+	}
+
+	// Update totals
+	total_number_of_neurons += number_of_neurons_in_new_group;
 	++total_number_of_groups;
 	printf("total_number_of_groups: %d\n", total_number_of_groups); // Temp helper
 
@@ -70,7 +129,7 @@ int Neurons::AddGroup(neuron_struct params, int group_shape[2]){
 
 	// Add new group parameters
 	neuron_variables = (neuron_struct*)realloc(neuron_variables, (total_number_of_neurons*sizeof(neuron_struct)));
-	for (int i = (total_number_of_neurons - number_of_neurons_in_group); i < total_number_of_neurons; i++){
+	for (int i = (total_number_of_neurons - number_of_neurons_in_new_group); i < total_number_of_neurons; i++){
 		neuron_variables[i] = params;
 	}
 	

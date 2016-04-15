@@ -13,17 +13,33 @@
 #include "Simulator.h"
 #include "Constants.h"
 #include "Neurons.h"
+#include "IzhikevichNeurons.h"
 #include "Inputs.h"
 // The function which will autorun when the executable is created
 int main (int argc, char *argv[]){
 	// Set the timestep of the simulation as required (timestep is measure in seconds)
 	float timest = 0.001;
 	// Create an instance of the Simulator and set the timestep
+	
+
+	Simulator simulator2;
+	simulator2.SetTimestep(timest);
+	simulator2.SetNeuronType(new IzhikevichNeurons());
+
+	izhikevich_neuron_struct *ji_test_params = new izhikevich_neuron_struct();
+	ji_test_params->test = 5.0f;
+
+	int ji_test_shape[] = {1000, 1};
+
+	simulator2.neurons->AddGroupNew(ji_test_params, ji_test_shape);
+	simulator2.neurons->initialise_device_pointersNew();
+
+
+
 	Simulator simulator;
 	simulator.SetTimestep(timest);
 	simulator.SetNeuronType(new Neurons());
 	simulator.SetInputType(new Inputs());
-
 
 	// input parameters
 	input_struct input_poisson_params;
@@ -33,6 +49,7 @@ int main (int argc, char *argv[]){
 	// neuron parameters
 	neuron_struct poisson_params;
 	poisson_params.rate = 30.0f;
+
 
 	neuron_struct test_params;
 	test_params.parama = 0.02f;
@@ -44,10 +61,15 @@ int main (int argc, char *argv[]){
 
 	// Add neuron Groups
 
-	int test_input_group_1_id = simulator.AddInputGroup(input_poisson_params, input_population_shape);
+	// int test_input_group_1_id = simulator.AddInputGroup(input_poisson_params, input_population_shape);
+
+
+	// simulator.neurons->AddGroupTest(ji_test, test_shape);
+
 
 	int INPUTLAYER = simulator.AddNeuronGroup(poisson_params, input_population_shape);
 	int test_neuron_group_1_id = simulator.AddNeuronGroup(test_params, test_shape);
+	// int test_neuron_group_1_id = simulator.AddNeuronGroup(ji_test, test_shape);
 	int test_neuron_group_2_id = simulator.AddNeuronGroup(test_params, test_shape);
 
 	// connections parameters
@@ -59,6 +81,7 @@ int main (int argc, char *argv[]){
 	bool stdp_on = true;
 
 	//Add Connection Groups
+	// simulator.AddConnectionGroup(test_input_group_1_id, test_neuron_group_1_id, CONNECTIVITY_TYPE_ALL_TO_ALL, INPUT_TO_INTER_weights, DefaultDelay, false);
 	simulator.AddConnectionGroup(INPUTLAYER, test_neuron_group_1_id, CONNECTIVITY_TYPE_ALL_TO_ALL, INPUT_TO_INTER_weights, DefaultDelay, false);
 	simulator.AddConnectionGroup(test_neuron_group_1_id, test_neuron_group_2_id, CONNECTIVITY_TYPE_ALL_TO_ALL, test_weight_range, test_delay_range, stdp_on, 3.0, 8.0);
 

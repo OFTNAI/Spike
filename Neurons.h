@@ -12,6 +12,7 @@
 
 //	CUDA library
 #include <cuda.h>
+#include <stdio.h>
 
 #include "Structs.h"
 
@@ -33,6 +34,7 @@ public:
 	int **group_shapes;
 	int *last_neuron_indices_for_each_group;
 
+	int number_of_neurons_in_new_group;
 
 	// Device Pointers
 	neuron_struct* d_neuron_variables;
@@ -42,16 +44,24 @@ public:
 	dim3 threads_per_block;
 
 	
-	// Functions
-	int AddGroup(neuron_struct params, int shape[2]);
 
-	void initialise_device_pointers();
-	void reset_neuron_variables_and_spikes();
+
+	// Functions
+	virtual int AddGroupNew(neuron_struct *params, int shape[2]);
+	virtual void initialise_device_pointersNew();
+	virtual void reset_neuron_variables_and_spikesNew();
+
+	
+
+	int AddGroup(neuron_struct params, int shape[2]);
+	virtual void initialise_device_pointers();
+	virtual void reset_neuron_variables_and_spikes();
+
 	void set_threads_per_block_and_blocks_per_grid(int threads);
 
-	void poisupdate_wrapper(float* d_randoms, float timestep);
+	virtual void poisupdate_wrapper(float* d_randoms, float timestep);
 
-	void genupdate_wrapper(int* genids,
+	virtual void genupdate_wrapper(int* genids,
 							float* gentimes,
 							float currtime,
 							float timestep,
@@ -59,9 +69,9 @@ public:
 							int genblocknum, 
 							dim3 threadsPerBlock);
 
-	void spikingneurons_wrapper(float currtime);
+	virtual void spikingneurons_wrapper(float currtime);
 
-	void stateupdate_wrapper(float* current_injection,
+	virtual void stateupdate_wrapper(float* current_injection,
 							float timestep);
 
 
