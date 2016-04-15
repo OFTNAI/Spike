@@ -24,6 +24,10 @@ int PoissonSpikingNeurons::AddGroupNew(neuron_struct * params, int group_shape[2
 
 	rates = (float*)realloc(rates, (total_number_of_neurons*sizeof(float)));
 
+	for (int i = 0; i < total_number_of_neurons; i++) {
+		rates[i] = params->rate;
+	}
+
 	return -1 * new_group_id;
 
 }

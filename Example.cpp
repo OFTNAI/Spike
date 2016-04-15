@@ -65,7 +65,7 @@ int main (int argc, char *argv[]){
 
 	// simulator.neurons->AddGroupTest(ji_test, test_shape);
 
-	simulator.AddInputNeuronGroup(ji_test_params, ji_test_shape);
+	simulator.AddInputNeuronGroup(poisson_params, ji_test_shape);
 
 	int INPUTLAYER = simulator.AddNeuronGroup(poisson_params, input_population_shape);
 	int test_neuron_group_1_id = simulator.AddNeuronGroup(test_params, test_shape);
