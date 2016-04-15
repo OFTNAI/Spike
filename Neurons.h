@@ -40,7 +40,7 @@ public:
 	int total_number_of_neurons;
 	int total_number_of_groups;
 
-	// neuron_struct **neuron_variablesNew;
+	float * d_last_spike_time;
 
 	// Group parameters, shapes and indices
 	neuron_struct *neuron_variables;

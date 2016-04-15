@@ -15,7 +15,9 @@
 using namespace std;
 
 // RecordingElectrodes Constructor
-RecordingElectrodes::RecordingElectrodes() {
+RecordingElectrodes::RecordingElectrodes(Neurons * neurons_parameter) {
+	neurons = neurons_parameter;
+
 	h_total_number_of_spikes = 0;
 	h_spikestoreID = NULL;
 	h_spikestoretimes = NULL;
@@ -28,38 +30,54 @@ RecordingElectrodes::~RecordingElectrodes() {
 }
 
 
-void RecordingElectrodes::initialise_device_pointers(int total_number_of_neurons) {
+void RecordingElectrodes::initialise_device_pointers() {
 	// For saving spikes (Make seperate class)
-	CudaSafeCall(cudaMalloc((void **)&d_tempstoreID, sizeof(int)*total_number_of_neurons));
-	CudaSafeCall(cudaMalloc((void **)&d_tempstoretimes, sizeof(float)*total_number_of_neurons));
+	CudaSafeCall(cudaMalloc((void **)&d_tempstoreID, sizeof(int)*(neurons->total_number_of_neurons)));
+	CudaSafeCall(cudaMalloc((void **)&d_tempstoretimes, sizeof(float)*(neurons->total_number_of_neurons)));
 	CudaSafeCall(cudaMalloc((void **)&d_tempstorenum, sizeof(int)));
 
 	// Send data to device: data for saving spikes
-	CudaSafeCall(cudaMemset(d_tempstoreID, -1, sizeof(int)*total_number_of_neurons));
-	CudaSafeCall(cudaMemset(d_tempstoretimes, -1.0f, sizeof(float)*total_number_of_neurons));
+	CudaSafeCall(cudaMemset(d_tempstoreID, -1, sizeof(int)*(neurons->total_number_of_neurons)));
+	CudaSafeCall(cudaMemset(d_tempstoretimes, -1.0f, sizeof(float)*(neurons->total_number_of_neurons)));
 	CudaSafeCall(cudaMemset(d_tempstorenum, 0, sizeof(int)));
 }
 
-void RecordingElectrodes::initialise_host_pointers(int total_number_of_neurons) {
-	h_tempstoreID = (int*)malloc(sizeof(int)*total_number_of_neurons);
-	h_tempstoretimes = (float*)malloc(sizeof(float)*total_number_of_neurons);
+void RecordingElectrodes::initialise_host_pointers() {
+	h_tempstoreID = (int*)malloc(sizeof(int)*(neurons->total_number_of_neurons));
+	h_tempstoretimes = (float*)malloc(sizeof(float)*(neurons->total_number_of_neurons));
 
 	h_temp_total_number_of_spikes = (int*)malloc(sizeof(int));
 	h_temp_total_number_of_spikes[0] = 0;
 }
 
-void RecordingElectrodes::save_spikes_to_host(Neurons *neurons, float current_time_in_seconds, int timestep_index, int number_of_timesteps_per_epoch, dim3 number_of_neuron_blocks_per_grid, dim3 threads_per_block) {
+void RecordingElectrodes::save_spikes_to_host(float current_time_in_seconds, int timestep_index, int number_of_timesteps_per_epoch, bool temp_use_old_spiketimes_pointer) {
 
 	// printf("Save spikes to host. total_number_of_neurons = %d.\n", neurons->total_number_of_neurons);
 
 	// Storing the spikes that have occurred in this timestep
-	spikeCollect<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(neurons->d_lastspiketime,
+
+	if (temp_use_old_spiketimes_pointer == true) {
+
+		spikeCollect<<<neurons->number_of_neuron_blocks_per_grid, neurons->threads_per_block>>>(neurons->d_lastspiketime,
 														d_tempstorenum,
 														d_tempstoreID,
 														d_tempstoretimes,
 														current_time_in_seconds,
 														neurons->total_number_of_neurons);
+
+	} else {
+
+	spikeCollect<<<neurons->number_of_neuron_blocks_per_grid, neurons->threads_per_block>>>(neurons->d_last_spike_time,
+														d_tempstorenum,
+														d_tempstoreID,
+														d_tempstoretimes,
+														current_time_in_seconds,
+														neurons->total_number_of_neurons);
+	}
+
 	CudaCheckError();
+
+
 
 	if (((timestep_index % 1) == 0) || (timestep_index == (number_of_timesteps_per_epoch-1))){
 

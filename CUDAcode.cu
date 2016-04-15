@@ -51,13 +51,18 @@ void GPUDeviceComputation (
 	int* d_genids;
 	float* d_gentimes;
 	
-	RecordingElectrodes * recording_electrodes = new RecordingElectrodes();
+	RecordingElectrodes * recording_electrodes = new RecordingElectrodes(neurons);
+	RecordingElectrodes * input_recording_electrodes = new RecordingElectrodes(input_neurons);
 
 	neurons->initialise_device_pointers();
 	connections->initialise_device_pointers();
 	input_neurons->initialise_device_pointersNew();
-	recording_electrodes->initialise_device_pointers(neurons->total_number_of_neurons);
-	recording_electrodes->initialise_host_pointers(neurons->total_number_of_neurons);
+
+	recording_electrodes->initialise_device_pointers();
+	recording_electrodes->initialise_host_pointers();
+
+	input_recording_electrodes->initialise_device_pointers();
+	input_recording_electrodes->initialise_host_pointers();
 
 
 	// THREADS&BLOCKS
@@ -188,6 +193,7 @@ void GPUDeviceComputation (
 
 				// Check which neurons are spiking and deal with them
 				neurons->spikingneurons_wrapper(current_time_in_seconds);
+				input_neurons->spikingneurons_wrapper(current_time_in_seconds);
 								
 				// Check which synapses to send spikes down and do it
 				connections->synapsespikes_wrapper(neurons->d_lastspiketime, current_time_in_seconds);
@@ -198,7 +204,9 @@ void GPUDeviceComputation (
 
 				// Only save the spikes if necessary
 				if (save_spikes){
-					recording_electrodes->save_spikes_to_host(neurons, current_time_in_seconds, timestep_index, number_of_timesteps_per_epoch, neurons->number_of_neuron_blocks_per_grid, neurons->threads_per_block);
+					recording_electrodes->save_spikes_to_host(current_time_in_seconds, timestep_index, number_of_timesteps_per_epoch, true);
+					input_recording_electrodes->save_spikes_to_host(current_time_in_seconds, timestep_index, number_of_timesteps_per_epoch, false);
+
 				}
 			}
 			if (numEnts > 0){
@@ -208,10 +216,13 @@ void GPUDeviceComputation (
 		}
 		#ifndef QUIETSTART
 		clock_t mid = clock();
-		if (save_spikes)
+		if (save_spikes) {
 			printf("Epoch %d, Complete.\n Running Time: %f\n Number of Spikes: %d\n\n", epoch_number, (float(mid-begin) / CLOCKS_PER_SEC), recording_electrodes->h_total_number_of_spikes);
-		else 
+			printf("Number of Input Spikes: %d\n\n", input_recording_electrodes->h_total_number_of_spikes);
+		
+		} else {
 			printf("Epoch %d, Complete.\n Running Time: %f\n\n", epoch_number, (float(mid-begin) / CLOCKS_PER_SEC));
+		}
 		#endif
 		// Output Spikes list after each epoch:
 		// Only save the spikes if necessary
