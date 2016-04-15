@@ -14,6 +14,7 @@
 #include "Constants.h"
 #include "Neurons.h"
 #include "IzhikevichSpikingNeurons.h"
+#include "PoissonSpikingNeurons.h"
 // #include "Inputs.h"
 // The function which will autorun when the executable is created
 int main (int argc, char *argv[]){
@@ -22,17 +23,15 @@ int main (int argc, char *argv[]){
 	// Create an instance of the Simulator and set the timestep
 	
 
-	// Simulator simulator2;
-	// simulator2.SetTimestep(timest);
-	// simulator2.SetNeuronType(new IzhikevichSpikingNeurons());
+	Simulator simulator2;
+	simulator2.SetTimestep(timest);
+	simulator2.SetNeuronType(new IzhikevichSpikingNeurons());
+	simulator2.SetInputNeuronType(new PoissonSpikingNeurons());
 
-	// izhikevich_neuron_struct *ji_test_params = new izhikevich_neuron_struct();
-	// ji_test_params->test = 5.0f;
-
-	// int ji_test_shape[] = {1000, 1};
-
-	// simulator2.neurons->AddGroupNew(ji_test_params, ji_test_shape);
-	// simulator2.neurons->initialise_device_pointersNew();
+	int ji_test_shape[] = {1000, 1};
+	neuron_struct ji_test_params;
+	simulator2.AddInputNeuronGroup(ji_test_params, ji_test_shape);
+	simulator2.AddNeuronGroup(ji_test_params, ji_test_shape);
 
 
 

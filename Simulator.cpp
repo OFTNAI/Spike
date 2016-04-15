@@ -61,9 +61,9 @@ void Simulator::SetNeuronType(Neurons * neurons_parameter) {
 	neurons = neurons_parameter;
 }
 
-// void Simulator::SetInputType(Inputs * inputs_parameter) {
-// 	inputs = inputs_parameter;
-// }
+void Simulator::SetInputNeuronType(Neurons * inputs_parameter) {
+	input_neurons = inputs_parameter;
+}
 
 
 int Simulator::AddNeuronGroup(neuron_struct group_params, int group_shape[2]) {
@@ -75,14 +75,14 @@ int Simulator::AddNeuronGroup(neuron_struct group_params, int group_shape[2]) {
 	return neuron_group_id;
 }
 
-// int Simulator::AddInputGroup(input_struct group_params, int group_shape[2]) {
-// 	if (inputs == NULL) {
-// 		printf("Please call SetInputType before adding inputs groups. Exiting ...\n\n");
-// 		exit(-1);
-// 	}
-// 	int input_group_id = inputs->AddGroup(group_params, group_shape);
-// 	return input_group_id;
-// }
+int Simulator::AddInputNeuronGroup(neuron_struct group_params, int group_shape[2]) {
+	if (input_neurons == NULL) {
+		printf("Please call SetInputNeuronType before adding inputs groups. Exiting ...\n\n");
+		exit(-1);
+	}
+	int input_group_id = input_neurons->AddGroupNew(&group_params, group_shape);
+	return input_group_id;
+}
 
 
 

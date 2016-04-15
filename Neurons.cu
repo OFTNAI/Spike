@@ -68,8 +68,6 @@ int Neurons::AddGroupNew(neuron_struct *params, int group_shape[2]){
 	group_shapes = (int**)realloc(group_shapes,(total_number_of_groups*sizeof(int*)));
 	group_shapes[new_group_id] = (int*)malloc(2*sizeof(int));
 	group_shapes[new_group_id] = group_shape;
-
-	Neurons::reset_neuron_variables_and_spikesNew();
 	
 	return new_group_id;
 }
