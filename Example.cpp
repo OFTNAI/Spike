@@ -38,7 +38,7 @@ int main (int argc, char *argv[]){
 	Simulator simulator;
 	simulator.SetTimestep(timest);
 	simulator.SetNeuronType(new Neurons());
-	// simulator.SetInputType(new Inputs());
+	simulator.SetInputNeuronType(new PoissonSpikingNeurons());
 
 	// // input parameters
 	// input_struct input_poisson_params;
@@ -65,10 +65,10 @@ int main (int argc, char *argv[]){
 
 	// simulator.neurons->AddGroupTest(ji_test, test_shape);
 
+	simulator.AddInputNeuronGroup(ji_test_params, ji_test_shape);
 
 	int INPUTLAYER = simulator.AddNeuronGroup(poisson_params, input_population_shape);
 	int test_neuron_group_1_id = simulator.AddNeuronGroup(test_params, test_shape);
-	// int test_neuron_group_1_id = simulator.AddNeuronGroup(ji_test, test_shape);
 	int test_neuron_group_2_id = simulator.AddNeuronGroup(test_params, test_shape);
 
 	// connections parameters
@@ -80,7 +80,6 @@ int main (int argc, char *argv[]){
 	bool stdp_on = true;
 
 	//Add Connection Groups
-	// simulator.AddConnectionGroup(test_input_group_1_id, test_neuron_group_1_id, CONNECTIVITY_TYPE_ALL_TO_ALL, INPUT_TO_INTER_weights, DefaultDelay, false);
 	simulator.AddConnectionGroup(INPUTLAYER, test_neuron_group_1_id, CONNECTIVITY_TYPE_ALL_TO_ALL, INPUT_TO_INTER_weights, DefaultDelay, false);
 	simulator.AddConnectionGroup(test_neuron_group_1_id, test_neuron_group_2_id, CONNECTIVITY_TYPE_ALL_TO_ALL, test_weight_range, test_delay_range, stdp_on, 3.0, 8.0);
 

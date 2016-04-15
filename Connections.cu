@@ -94,17 +94,17 @@ void Connections::SetSTDP(float w_max_new,
 //		2 number float array for delay range
 //		Boolean value to indicate if population is STDP based
 //		Parameter = either probability for random connections or S.D. for Gaussian
-void Connections::AddGroup(	int presynaptic_group_id, 
-								int postsynaptic_group_id, 
-								int* last_neuron_indices_for_each_neuron_group,
-								// int* last_input_indices_for_each_group,
-								int** group_shapes, 
-								int connectivity_type,
-								float weight_range[2],
-								int delay_range[2],
-								bool stdp_on,
-								float parameter,
-								float parameter_two){
+void Connections::AddGroup(int presynaptic_group_id, 
+						int postsynaptic_group_id, 
+						int* last_neuron_indices_for_neuron_groups,
+						int* last_neuron_indices_for_neuron_input_groups,
+						int** neuron_group_shapes, 
+						int connectivity_type,
+						float weight_range[2],
+						int delay_range[2],
+						bool stdp_on,
+						float parameter,
+						float parameter_two) {
 	
 	// Find the right set of indices
 	// Take everything in 2D
@@ -126,9 +126,9 @@ void Connections::AddGroup(	int presynaptic_group_id,
 	} else {
 
 		if (presynaptic_group_id > 0){
-			prestart = last_neuron_indices_for_each_neuron_group[presynaptic_group_id - 1];
+			prestart = last_neuron_indices_for_neuron_groups[presynaptic_group_id - 1];
 		}
-		preend = last_neuron_indices_for_each_neuron_group[presynaptic_group_id];
+		preend = last_neuron_indices_for_neuron_groups[presynaptic_group_id];
 
 	}
 
@@ -141,9 +141,9 @@ void Connections::AddGroup(	int presynaptic_group_id,
 	} 
 
 	if (postsynaptic_group_id > 0){
-		poststart = last_neuron_indices_for_each_neuron_group[postsynaptic_group_id-1];
+		poststart = last_neuron_indices_for_neuron_groups[postsynaptic_group_id-1];
 	}
-	int postend = last_neuron_indices_for_each_neuron_group[postsynaptic_group_id];
+	int postend = last_neuron_indices_for_neuron_groups[postsynaptic_group_id];
 
 
 	printf("prestart: %d\n", prestart);
@@ -222,10 +222,10 @@ void Connections::AddGroup(	int presynaptic_group_id,
 			float gaussian_scaling_factor = 1.0f;
 			if (parameter_two != 0.0f){
 				gaussian_scaling_factor = 0.0f;
-				int pre_x = group_shapes[presynaptic_group_id][0] / 2;
-				int pre_y = group_shapes[presynaptic_group_id][1] / 2;
-				for (int i = 0; i < group_shapes[postsynaptic_group_id][0]; i++){
-					for (int j = 0; j < group_shapes[postsynaptic_group_id][1]; j++){
+				int pre_x = neuron_group_shapes[presynaptic_group_id][0] / 2;
+				int pre_y = neuron_group_shapes[presynaptic_group_id][1] / 2;
+				for (int i = 0; i < neuron_group_shapes[postsynaptic_group_id][0]; i++){
+					for (int j = 0; j < neuron_group_shapes[postsynaptic_group_id][1]; j++){
 						// Post XY
 						int post_x = i;
 						int post_y = j;
@@ -245,11 +245,11 @@ void Connections::AddGroup(	int presynaptic_group_id,
 					float prob = ((float) rand() / (RAND_MAX));
 					// Get the relative distance from the two neurons
 					// Pre XY
-					int pre_x = (i-prestart) % group_shapes[presynaptic_group_id][0];
-					int pre_y = floor((float)(i-prestart) / group_shapes[presynaptic_group_id][0]);
+					int pre_x = (i-prestart) % neuron_group_shapes[presynaptic_group_id][0];
+					int pre_y = floor((float)(i-prestart) / neuron_group_shapes[presynaptic_group_id][0]);
 					// Post XY
-					int post_x = (j-poststart) % group_shapes[postsynaptic_group_id][0];
-					int post_y = floor((float)(j-poststart) / group_shapes[postsynaptic_group_id][0]);
+					int post_x = (j-poststart) % neuron_group_shapes[postsynaptic_group_id][0];
+					int post_y = floor((float)(j-poststart) / neuron_group_shapes[postsynaptic_group_id][0]);
 					// Distance
 					float distance = sqrt((pow((float)(pre_x - post_x), 2.0f) + pow((float)(pre_y - post_y), 2.0f)));
 					// If it is within the probability range, connect!

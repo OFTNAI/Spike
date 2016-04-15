@@ -20,6 +20,7 @@ public:
 	float * param_c;
 	float * param_d;
 
+	float * d_last_spike_time;
 	float * d_states_v;
 	float * d_states_u;
 	float * d_param_c;

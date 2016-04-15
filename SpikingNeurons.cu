@@ -10,6 +10,7 @@ SpikingNeurons::SpikingNeurons() {
 	param_c = NULL;
 	param_d = NULL;
 
+	d_last_spike_time = NULL;
 	d_states_v = NULL;
 	d_states_u = NULL;
 	d_param_c = NULL;
@@ -38,7 +39,7 @@ int SpikingNeurons::AddGroupNew(neuron_struct *params, int group_shape[2]){
 
 void SpikingNeurons::initialise_device_pointersNew() {
 
-	CudaSafeCall(cudaMalloc((void **)&d_lastspiketime, sizeof(float)*total_number_of_neurons));
+	CudaSafeCall(cudaMalloc((void **)&d_last_spike_time, sizeof(float)*total_number_of_neurons));
 
 	CudaSafeCall(cudaMalloc((void **)&d_states_v, sizeof(float)*total_number_of_neurons));
  	CudaSafeCall(cudaMalloc((void **)&d_states_u, sizeof(float)*total_number_of_neurons));
@@ -51,7 +52,7 @@ void SpikingNeurons::initialise_device_pointersNew() {
 
 void SpikingNeurons::reset_neuron_variables_and_spikesNew() {
 
-	CudaSafeCall(cudaMemset(d_lastspiketime, -1000.0f, total_number_of_neurons*sizeof(float)));
+	CudaSafeCall(cudaMemset(d_last_spike_time, -1000.0f, total_number_of_neurons*sizeof(float)));
 
 	CudaSafeCall(cudaMemcpy(d_states_v, states_v, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_states_u, states_u, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
@@ -68,7 +69,7 @@ __global__ void spikingneurons2(float *d_states_v,
 								float *d_states_u,
 								float *d_param_c,
 								float *d_param_d,
-								float* d_lastspiketime,
+								float* d_last_spike_time,
 								float currtime,
 								size_t total_number_of_neurons);
 
@@ -79,7 +80,7 @@ void SpikingNeurons::spikingneurons_wrapper(float currtime) {
 																	d_states_u,
 																	d_param_c,
 																	d_param_d,
-																	d_lastspiketime,
+																	d_last_spike_time,
 																	currtime,
 																	total_number_of_neurons);
 
@@ -92,7 +93,7 @@ __global__ void spikingneurons2(float *d_states_v,
 								float *d_states_u,
 								float *d_param_c,
 								float *d_param_d,
-								float* d_lastspiketime,
+								float* d_last_spike_time,
 								float currtime,
 								size_t total_number_of_neurons) {
 
@@ -105,7 +106,7 @@ __global__ void spikingneurons2(float *d_states_v,
 			d_states_v[idx] = d_param_c[idx];
 			d_states_u[idx] += d_param_d[idx];
 			// Update the last spike times of these neurons
-			d_lastspiketime[idx] = currtime;
+			d_last_spike_time[idx] = currtime;
 		}
 	}
 	__syncthreads();

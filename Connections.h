@@ -53,8 +53,8 @@ public:
 	// Synapse Functions
 	void AddGroup(int presynaptic_group_id, 
 						int postsynaptic_group_id, 
-						int* last_neuron_indices_for_each_neuron_group,
-						// int* last_input_indices_for_each_group,
+						int* last_neuron_indices_for_neuron_groups,
+						int* last_neuron_indices_for_neuron_input_groups,
 						int** neuron_group_shapes, 
 						int connectivity_type,
 						float weight_range[2],
