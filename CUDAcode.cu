@@ -20,6 +20,7 @@ using namespace std;
 #include <time.h>
 #include "CUDAErrorCheckHelpers.h"
 #include "RecordingElectrodes.h"
+
 // Silences the printfs
 // #define QUIETSTART
 
@@ -31,7 +32,7 @@ __global__ void init(unsigned int seed, curandState_t* states, size_t numNeurons
 void GPUDeviceComputation (
 					Neurons * neurons,
 					Connections * connections,
-					// Inputs * inputs,
+					PoissonSpikingNeurons * input_neurons,
 
 					float total_time_per_epoch,
 					int number_of_epochs,
@@ -54,7 +55,7 @@ void GPUDeviceComputation (
 
 	neurons->initialise_device_pointers();
 	connections->initialise_device_pointers();
-	// inputs->initialise_device_pointers();
+	input_neurons->initialise_device_pointersNew();
 	recording_electrodes->initialise_device_pointers(neurons->total_number_of_neurons);
 	recording_electrodes->initialise_host_pointers(neurons->total_number_of_neurons);
 
@@ -64,7 +65,7 @@ void GPUDeviceComputation (
 	int threads = 128;
 	connections->set_threads_per_block_and_blocks_per_grid(threads);
 	neurons->set_threads_per_block_and_blocks_per_grid(threads);
-	// inputs->set_threads_per_block_and_blocks_per_grid(threads);
+	input_neurons->set_threads_per_block_and_blocks_per_grid(threads);
 
 
 	dim3 threadsPerBlock(threads,1,1);
@@ -82,7 +83,7 @@ void GPUDeviceComputation (
 	// RANDOM NUMBERS
 	// Create the random state seed trackers
 
-	// inputs->generate_states();
+	input_neurons->generate_random_states_wrapper();
 
 	curandState_t* states;
 	cudaMalloc((void**) &states, neurons->total_number_of_neurons*sizeof(curandState_t));
@@ -161,7 +162,7 @@ void GPUDeviceComputation (
 
 					// Update Poisson neuron states
 					neurons->poisupdate_wrapper(gpu_randfloats, timestep);
-					// inputs->poisupdate_wrapper2(timestep);
+					input_neurons->update_poisson_state_wrapper(timestep);
 					
 				}
 				// If there are any spike generators

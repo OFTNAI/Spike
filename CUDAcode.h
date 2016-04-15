@@ -21,14 +21,14 @@
 
 #include "Neurons.h"
 #include "Connections.h"
-// #include "Inputs.h"
+#include "PoissonSpikingNeurons.h"
 
 
 // Functions!
 void GPUDeviceComputation (
 					Neurons * neurons,
 					Connections * connections,
-					// Inputs * inputs,
+					PoissonSpikingNeurons * input_neurons,
 
 					float total_time_per_epoch,
 					int number_of_epochs,

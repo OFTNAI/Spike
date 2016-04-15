@@ -17,7 +17,7 @@
 #include "CUDAcode.h"
 #include "Neurons.h"
 #include "Connections.h"
-// #include "Inputs.h"
+#include "PoissonSpikingNeurons.h"
 
 // Simulator Class for running of the simulations
 class Simulator{
@@ -28,7 +28,7 @@ public:
 
 	Neurons * neurons;
 	Connections * connections;
-	Neurons * input_neurons;
+	PoissonSpikingNeurons * input_neurons;
 
 	// Spike Generator related Data
 	int numStimuli;
@@ -41,7 +41,7 @@ public:
 	void SetTimestep(float timest);
 
 	void SetNeuronType(Neurons * neurons_parameter);
-	void SetInputNeuronType(Neurons * neurons_parameter);
+	void SetInputNeuronType(PoissonSpikingNeurons * neurons_parameter);
 
 	int AddNeuronGroup(struct neuron_struct params, int shape[2]);
 	int AddInputNeuronGroup(neuron_struct group_params, int group_shape[2]);
