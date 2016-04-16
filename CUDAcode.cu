@@ -50,10 +50,6 @@ void GPUDeviceComputation (
 
 	GeneratorSpikingNeurons * temp_test_generator = new GeneratorSpikingNeurons();
 
-
-	// Creating the Device Pointers I need
-	int* d_genids;
-	float* d_gentimes;
 	
 	RecordingElectrodes * recording_electrodes = new RecordingElectrodes(neurons);
 	RecordingElectrodes * input_recording_electrodes = new RecordingElectrodes(input_neurons);
@@ -75,9 +71,6 @@ void GPUDeviceComputation (
 	connections->set_threads_per_block_and_blocks_per_grid(threads);
 	neurons->set_threads_per_block_and_blocks_per_grid(threads);
 	input_neurons->set_threads_per_block_and_blocks_per_grid(threads);
-
-	int genblocknum = 1;
-	dim3 genblocksPerGrid(genblocknum,1,1);
 
 
 	input_neurons->generate_random_states_wrapper();
@@ -128,13 +121,10 @@ void GPUDeviceComputation (
 			// Get the number of entries for this specific stimulus
 			size_t numEnts = numEntries[present];
 			if (numEnts > 0){
-				// Calculate the dimensions required:
-				genblocknum = (numEnts + threads) / threads;
-				// Setting up the IDs for Spike Generators;
-				CudaSafeCall(cudaMalloc((void **)&d_genids, sizeof(int)*numEnts));
-				CudaSafeCall(cudaMalloc((void **)&d_gentimes, sizeof(float)*numEnts));
-				CudaSafeCall(cudaMemcpy(d_genids, genids[present], sizeof(int)*numEnts, cudaMemcpyHostToDevice));
-				CudaSafeCall(cudaMemcpy(d_gentimes, gentimes[present], sizeof(float)*numEnts, cudaMemcpyHostToDevice));
+
+				temp_test_generator->initialise_device_pointers_for_ents(numEnts, present);
+				temp_test_generator->set_threads_per_block_and_blocks_per_grid(threads);
+				
 			}
 			// Reset the variables necessary
 			neurons->reset_neuron_variables_and_spikes();
@@ -165,14 +155,7 @@ void GPUDeviceComputation (
 				// If there are any spike generators
 				if (numEnts > 0) {
 					// Update those neurons corresponding to the Spike Generators
-					neurons->genupdate_wrapper(d_genids,
-											d_gentimes,
-											current_time_in_seconds,
-											timestep,
-											numEnts,
-											genblocknum, 
-											neurons->threads_per_block);
-					
+					temp_test_generator->generupdate2_wrapper(current_time_in_seconds, timestep);
 				} 
 				
 				connections->calculate_postsynaptic_current_injection_for_connection_wrapper(currentinjection, current_time_in_seconds);
@@ -202,8 +185,8 @@ void GPUDeviceComputation (
 				}
 			}
 			if (numEnts > 0){
-				CudaSafeCall(cudaFree(d_genids));
-				CudaSafeCall(cudaFree(d_gentimes));
+				// CudaSafeCall(cudaFree(d_genids));
+				// CudaSafeCall(cudaFree(d_gentimes));
 			}
 		}
 		#ifndef QUIETSTART

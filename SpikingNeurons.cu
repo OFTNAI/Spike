@@ -63,6 +63,11 @@ void SpikingNeurons::reset_neuron_variables_and_spikesNew() {
 }
 
 
+void SpikingNeurons::set_threads_per_block_and_blocks_per_grid(int threads) {
+	
+	Neurons::set_threads_per_block_and_blocks_per_grid(threads);
+
+}
 
 
 

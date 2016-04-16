@@ -70,7 +70,7 @@ public:
 	virtual void initialise_device_pointers();
 	virtual void reset_neuron_variables_and_spikes();
 
-	void set_threads_per_block_and_blocks_per_grid(int threads);
+	virtual void set_threads_per_block_and_blocks_per_grid(int threads);
 
 	virtual void poisupdate_wrapper(float* d_randoms, float timestep);
 

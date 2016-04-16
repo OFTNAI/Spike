@@ -32,25 +32,37 @@ int GeneratorSpikingNeurons::AddGroupNew(neuron_struct * params, int group_shape
 
 }
 
-void GeneratorSpikingNeurons::initialise_device_pointersNew() {
+void GeneratorSpikingNeurons::initialise_device_pointers_for_ents(int numEntsParam, int present) {
 
 	SpikingNeurons::initialise_device_pointersNew();
 
-	// CudaSafeCall(cudaMalloc((void **)&d_rates, sizeof(float)*total_number_of_neurons));
-	// CudaSafeCall(cudaMalloc((void**) &d_states, total_number_of_neurons*sizeof(curandState_t)));
+	numEnts = numEntsParam;
 
-	GeneratorSpikingNeurons::reset_input_variables();
+	CudaSafeCall(cudaMalloc((void **)&d_genids, sizeof(int)*numEnts));
+	CudaSafeCall(cudaMalloc((void **)&d_gentimes, sizeof(float)*numEnts));
+
+	GeneratorSpikingNeurons::reset_input_variables(present);
 }
 
 
-void GeneratorSpikingNeurons::reset_input_variables() {
-	// CudaSafeCall(cudaMemcpy(d_rates, rates, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
-	// CudaSafeCall(cudaMemcpy(d_states_v, states_v, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
+void GeneratorSpikingNeurons::reset_input_variables(int present) {
+	CudaSafeCall(cudaMemcpy(d_genids, genids[present], sizeof(int)*numEnts, cudaMemcpyHostToDevice));
+	CudaSafeCall(cudaMemcpy(d_gentimes, gentimes[present], sizeof(float)*numEnts, cudaMemcpyHostToDevice));
+}
+
+
+void GeneratorSpikingNeurons::set_threads_per_block_and_blocks_per_grid(int threads) {
+	
+	SpikingNeurons::set_threads_per_block_and_blocks_per_grid(threads);
+
+	int genblocknum = (numEnts + threads) / threads;
+	genblocksPerGrid.x = genblocknum;
 }
 
 
 
-__global__ void genupdate2(struct neuron_struct* neuronpop_variables,
+__global__ void genupdate2(float *d_states_v,
+							float *d_states_u,
 							int* genids,
 							float* gentimes,
 							float currtime,
@@ -58,25 +70,24 @@ __global__ void genupdate2(struct neuron_struct* neuronpop_variables,
 							size_t numEntries);
 
 
-void GeneratorSpikingNeurons::generupdate2_wrapper(int* genids,
-							float* gentimes,
-							float currtime,
-							float timestep,
-							size_t numEntries) {
+void GeneratorSpikingNeurons::generupdate2_wrapper(float currtime,
+							float timestep) {
 
-	genupdate2<<<number_of_neuron_blocks_per_grid, threads_per_block>>> (d_neuron_variables,
-												genids,
-												gentimes,
-												currtime,
-												timestep,
-												numEntries);
+	genupdate2<<<genblocksPerGrid, threads_per_block>>> (d_states_v,
+														d_states_u,
+														d_genids,
+														d_gentimes,
+														currtime,
+														timestep,
+														numEnts);
 
 	CudaCheckError();
 }
 
 
 // Spike Generator Updating Kernel
-__global__ void genupdate2(struct neuron_struct* d_neuronpop_variables,
+__global__ void genupdate2(float *d_states_v,
+							float *d_states_u,
 							int* genids,
 							float* gentimes,
 							float currtime,
@@ -87,12 +98,12 @@ __global__ void genupdate2(struct neuron_struct* d_neuronpop_variables,
 		// Check if the current time is one of the gen times
 		if (fabs(currtime - gentimes[idx]) > 0.5*timestep) {
 			// This sync seems absolutely necessary for when I spike inputs ... weird.
-			d_neuronpop_variables[genids[idx]].state_u = 0.0f;
-			d_neuronpop_variables[genids[idx]].state_v = -70.0f;
+			d_states_u[idx] = 0.0f;
+			d_states_v[idx] = -70.0f;
 		} else {
 			__syncthreads();
-			d_neuronpop_variables[genids[idx]].state_u = 0.0f;
-			d_neuronpop_variables[genids[idx]].state_v = 35.0f;
+			d_states_u[idx] = 0.0f;
+			d_states_v[idx] = 35.0f;
 		}
 	}
 }
