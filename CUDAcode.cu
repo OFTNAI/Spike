@@ -73,27 +73,15 @@ void GPUDeviceComputation (
 	input_neurons->set_threads_per_block_and_blocks_per_grid(threads);
 
 
-	dim3 threadsPerBlock(threads,1,1);
-	// I now have to calculate the number of blocks ....
-	int vectorblocknum = (neurons->total_number_of_neurons + threads) / threads;
+	dim3 genblocksPerGrid(1,1,1);
 
-	// The maximum dimension for the grid is 65535
-	dim3 vectorblocksPerGrid(vectorblocknum,1,1);  
-	// Temp Values which will be replaced
-
-	int genblocknum = 1;
-	dim3 genblocksPerGrid(genblocknum,1,1);
-
-
-	// RANDOM NUMBERS
-	// Create the random state seed trackers
 
 	input_neurons->generate_random_states_wrapper();
 
 	curandState_t* states;
 	cudaMalloc((void**) &states, neurons->total_number_of_neurons*sizeof(curandState_t));
 	// Initialise the random states
-	init<<<threadsPerBlock, vectorblocksPerGrid>>>(42, states, neurons->total_number_of_neurons);
+	init<<<neurons->threads_per_block, neurons->number_of_neuron_blocks_per_grid>>>(42, states, neurons->total_number_of_neurons);
 	CudaCheckError();
 	// Keep space for the random numbers
 	float* gpu_randfloats;
@@ -162,7 +150,7 @@ void GPUDeviceComputation (
 				// If there are poisson populations
 				if (numPoisson > 0) {
 					// First create the set of random numbers of poisson neurons
-					randoms<<<vectorblocksPerGrid, threadsPerBlock>>>(states, gpu_randfloats, neurons->total_number_of_neurons);
+					randoms<<<neurons->threads_per_block, neurons->number_of_neuron_blocks_per_grid>>>(states, gpu_randfloats, neurons->total_number_of_neurons);
 					CudaCheckError();
 
 					// Update Poisson neuron states
@@ -179,7 +167,7 @@ void GPUDeviceComputation (
 											timestep,
 											numEnts,
 											genblocknum, 
-											threadsPerBlock);
+											neurons->threads_per_block);
 					
 				} 
 				
