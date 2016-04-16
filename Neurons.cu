@@ -132,6 +132,8 @@ int Neurons::AddGroup(neuron_struct params, int group_shape[2]){
 void Neurons::initialise_device_pointers() {
 	CudaSafeCall(cudaMalloc((void **)&d_neuron_variables, sizeof(struct neuron_struct)*total_number_of_neurons));
 	CudaSafeCall(cudaMalloc((void **)&d_lastspiketime, sizeof(float)*total_number_of_neurons));
+	CudaSafeCall(cudaMalloc((void**)&d_current_injections, sizeof(float)*total_number_of_neurons));
+
 
 	reset_neuron_variables_and_spikes();
 }
@@ -140,6 +142,12 @@ void Neurons::reset_neuron_variables_and_spikes() {
 	CudaSafeCall(cudaMemcpy(d_neuron_variables, neuron_variables, sizeof(struct neuron_struct)*total_number_of_neurons, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemset(d_lastspiketime, -1000.0f, total_number_of_neurons*sizeof(float)));
 }
+
+
+void Neurons::reset_device_current_injections() {
+	CudaSafeCall(cudaMemset(d_current_injections, 0.0f, total_number_of_neurons*sizeof(float)));
+}
+
 
 void Neurons::set_threads_per_block_and_blocks_per_grid(int threads) {
 	
@@ -221,11 +229,10 @@ void Neurons::spikingneurons_wrapper(float currtime) {
 }
 
 
-void Neurons::stateupdate_wrapper(float* current_injection,
-							float timestep) {
+void Neurons::stateupdate_wrapper(float timestep) {
 
 	stateupdate<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_neuron_variables,
-																	current_injection,
+																	d_current_injections,
 																	timestep,
 																	total_number_of_neurons);
 

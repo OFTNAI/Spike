@@ -83,9 +83,7 @@ void GPUDeviceComputation (
 	// Keep space for the random numbers
 	float* gpu_randfloats;
 	CudaSafeCall(cudaMalloc((void**) &gpu_randfloats, neurons->total_number_of_neurons*sizeof(float)));
-	// REQUIRED DATA SPACES
-	float* currentinjection;
-	CudaSafeCall(cudaMalloc((void**)&currentinjection, neurons->total_number_of_neurons*sizeof(float)));
+
 	// Variables necessary
 	clock_t begin = clock();
 
@@ -140,7 +138,7 @@ void GPUDeviceComputation (
 				// Current simulation timestep
 				current_time_in_seconds = float(timestep_index)*float(timestep);
 				// Start by resetting all the things
-				CudaSafeCall(cudaMemset(currentinjection, 0.0f, neurons->total_number_of_neurons*sizeof(float)));	
+				neurons->reset_device_current_injections();
 				// If there are poisson populations
 				if (numPoisson > 0) {
 					// First create the set of random numbers of poisson neurons
@@ -158,13 +156,13 @@ void GPUDeviceComputation (
 					temp_test_generator->generupdate2_wrapper(current_time_in_seconds, timestep);
 				} 
 				
-				connections->calculate_postsynaptic_current_injection_for_connection_wrapper(currentinjection, current_time_in_seconds);
+				connections->calculate_postsynaptic_current_injection_for_connection_wrapper(neurons->d_current_injections, current_time_in_seconds);
 
 				// Carry out LTD on appropriate synapses
 				connections->ltdweights_wrapper(neurons->d_lastspiketime, current_time_in_seconds);
 
 				// Update States of neurons
-				neurons->stateupdate_wrapper(currentinjection, timestep);
+				neurons->stateupdate_wrapper(timestep);
 
 				// Check which neurons are spiking and deal with them
 				neurons->spikingneurons_wrapper(current_time_in_seconds);
@@ -223,7 +221,7 @@ void GPUDeviceComputation (
 
 	CudaSafeCall(cudaFree(states));
 	CudaSafeCall(cudaFree(gpu_randfloats));
-	CudaSafeCall(cudaFree(currentinjection));
+	// CudaSafeCall(cudaFree(currentinjection));
 	// Free Memory on CPU
 	free(recording_electrodes->h_spikestoretimes);
 	free(recording_electrodes->h_spikestoreID);

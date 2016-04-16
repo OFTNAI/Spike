@@ -28,7 +28,7 @@ public:
 	virtual void initialise_device_pointersNew();
 	virtual void reset_neuron_variables_and_spikesNew();
 
-	void izhikevich_state_update_wrapper(float* current_injection, float timestep);
+	void izhikevich_state_update_wrapper(float timestep);
 
 };
 

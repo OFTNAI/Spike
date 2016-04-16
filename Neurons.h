@@ -42,6 +42,8 @@ public:
 
 	float * d_last_spike_time;
 
+	float* d_current_injections;
+
 	// Group parameters, shapes and indices
 	neuron_struct *neuron_variables;
 	int **group_shapes;
@@ -70,6 +72,8 @@ public:
 	virtual void initialise_device_pointers();
 	virtual void reset_neuron_variables_and_spikes();
 
+	void reset_device_current_injections();
+
 	virtual void set_threads_per_block_and_blocks_per_grid(int threads);
 
 	virtual void poisupdate_wrapper(float* d_randoms, float timestep);
@@ -84,8 +88,7 @@ public:
 
 	virtual void spikingneurons_wrapper(float currtime);
 
-	virtual void stateupdate_wrapper(float* current_injection,
-							float timestep);
+	virtual void stateupdate_wrapper(float timestep);
 
 
 

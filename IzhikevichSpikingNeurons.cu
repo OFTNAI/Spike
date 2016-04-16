@@ -57,12 +57,13 @@ __global__ void izhikevich_state_update(float *d_states_v,
 								size_t total_number_of_neurons);
 
 
-void IzhikevichSpikingNeurons::izhikevich_state_update_wrapper(float* current_injection, float timestep) {
+void IzhikevichSpikingNeurons::izhikevich_state_update_wrapper(float timestep) {
 
 	izhikevich_state_update<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_states_v,
 																	d_states_u,
 																	d_param_a,
-																	d_param_b,current_injection,
+																	d_param_b,
+																	d_current_injections,
 																	timestep,
 																	total_number_of_neurons);
 
