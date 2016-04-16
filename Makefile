@@ -25,8 +25,8 @@ model: ${FILE}
 
 
 # Separating out the individual compilations so as not to compilation time
-${FILE}: ${FILE}.o Simulator.o Neurons.o SpikingNeurons.o IzhikevichSpikingNeurons.o PoissonSpikingNeurons.o Connections.o RecordingElectrodes.o CUDAcode.o
-	$(CC) ${FILE}.o Simulator.o Neurons.o SpikingNeurons.o IzhikevichSpikingNeurons.o PoissonSpikingNeurons.o Connections.o RecordingElectrodes.o CUDAcode.o -o ${FILE}
+${FILE}: ${FILE}.o Simulator.o Neurons.o SpikingNeurons.o IzhikevichSpikingNeurons.o PoissonSpikingNeurons.o GeneratorSpikingNeurons.o Connections.o RecordingElectrodes.o CUDAcode.o
+	$(CC) ${FILE}.o Simulator.o Neurons.o SpikingNeurons.o IzhikevichSpikingNeurons.o PoissonSpikingNeurons.o GeneratorSpikingNeurons.o Connections.o RecordingElectrodes.o CUDAcode.o -o ${FILE}
 
 # Compiling the Model file
 ${FILE}.o: ${FILE}.cpp
@@ -46,6 +46,9 @@ IzhikevichSpikingNeurons.o: IzhikevichSpikingNeurons.cu
 # Compiling the PoissonSpikingNeurons class
 PoissonSpikingNeurons.o: PoissonSpikingNeurons.cu
 	$(CC) $(CFLAGS) PoissonSpikingNeurons.cu
+# Compiling the GeneratorSpikingNeurons class
+GeneratorSpikingNeurons.o: GeneratorSpikingNeurons.cu
+	$(CC) $(CFLAGS) GeneratorSpikingNeurons.cu
 # Compiling the Connections class
 Connections.o: Connections.cu
 	$(CC) $(CFLAGS) Connections.cu
@@ -58,8 +61,8 @@ CUDAcode.o: CUDAcode.cu
 
 
 # Test script
-test: Simulator.o Neurons.o SpikingNeurons.o IzhikevichSpikingNeurons.o PoissonSpikingNeurons.o Connections.o RecordingElectrodes.o CUDAcode.o
-	$(CC) Tests.cu Simulator.o Neurons.o SpikingNeurons.o IzhikevichSpikingNeurons.o PoissonSpikingNeurons.o Connections.o RecordingElectrodes.o CUDAcode.o -o unittests
+test: Simulator.o Neurons.o SpikingNeurons.o IzhikevichSpikingNeurons.o PoissonSpikingNeurons.o GeneratorSpikingNeurons.o Connections.o RecordingElectrodes.o CUDAcode.o
+	$(CC) Tests.cu Simulator.o Neurons.o SpikingNeurons.o IzhikevichSpikingNeurons.o PoissonSpikingNeurons.o GeneratorSpikingNeurons.o Connections.o RecordingElectrodes.o CUDAcode.o -o unittests
 cleantest:
 	rm *.o unittests
 

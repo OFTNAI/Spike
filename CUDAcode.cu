@@ -21,6 +21,8 @@ using namespace std;
 #include "CUDAErrorCheckHelpers.h"
 #include "RecordingElectrodes.h"
 
+#include "GeneratorSpikingNeurons.h"
+
 // Silences the printfs
 // #define QUIETSTART
 
@@ -45,6 +47,8 @@ void GPUDeviceComputation (
 					float** gentimes,
 					bool randomPresentation
 					){
+
+	GeneratorSpikingNeurons * temp_test_generator = new GeneratorSpikingNeurons();
 
 
 	// Creating the Device Pointers I need
@@ -72,8 +76,8 @@ void GPUDeviceComputation (
 	neurons->set_threads_per_block_and_blocks_per_grid(threads);
 	input_neurons->set_threads_per_block_and_blocks_per_grid(threads);
 
-
-	dim3 genblocksPerGrid(1,1,1);
+	int genblocknum = 1;
+	dim3 genblocksPerGrid(genblocknum,1,1);
 
 
 	input_neurons->generate_random_states_wrapper();
