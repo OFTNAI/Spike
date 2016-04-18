@@ -40,7 +40,7 @@ int main (int argc, char *argv[]){
 	int ji_test_shape[] = {1000, 1};
 
 	simulator2.AddNeuronGroupNew(izhhikevich_spiking_group_params, ji_test_shape);
-	// simulator2.AddInputNeuronGroup(poisson_spiking_group_params, ji_test_shape);
+	simulator2.AddInputNeuronGroup(poisson_spiking_group_params, ji_test_shape);
 
 
 		// Run the actual simulator!

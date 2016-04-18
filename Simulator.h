@@ -31,7 +31,7 @@ public:
 	PoissonSpikingNeurons * input_neurons;
 
 	// Spike Generator related Data
-	int numStimuli;
+	int number_of_stimuli;
 	int* numEntries;
 	int** genids;
 	float** gentimes;
@@ -61,6 +61,6 @@ public:
 	void LoadWeights(int numWeights,
 						float* newWeights);
 
-	void Run(float total_time_per_epoch, int number_of_epochs, bool save_spikes = false, bool random_presentation = false);
+	void Run(float total_time_per_epoch, int number_of_epochs, bool save_spikes = false, bool present_stimuli_in_random_order = false);
 };
 #endif

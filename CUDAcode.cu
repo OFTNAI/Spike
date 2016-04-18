@@ -41,11 +41,11 @@ void GPUDeviceComputation (
 					float timestep,
 					bool save_spikes,
 
-					int numStimuli,
+					int number_of_stimuli,
 					int* numEntries,
 					int** genids,
 					float** gentimes,
-					bool randomPresentation
+					bool present_stimuli_in_random_order
 					){
 
 	GeneratorSpikingNeurons * temp_test_generator = new GeneratorSpikingNeurons();
@@ -74,21 +74,10 @@ void GPUDeviceComputation (
 	input_neurons->generate_random_states_wrapper();
 
 
-	// Variables necessary
-	clock_t begin = clock();
-
-	// Poisson number
-	int numPoisson = 0;
-	for (int i = 0; i < neurons->total_number_of_neurons; i++){
-		if (neurons->neuron_variables[i].rate != 0.0f){
-			++numPoisson;
-		}
-	}
-
 	// STIMULUS ORDER
-	int presentorder[numStimuli];
-	for (int i = 0; i < numStimuli; i++){
-		presentorder[i] = i;
+	int stimuli_presentation_order[number_of_stimuli];
+	for (int i = 0; i < number_of_stimuli; i++){
+		stimuli_presentation_order[i] = i;
 	}
 
 	// SEEDING
@@ -96,22 +85,24 @@ void GPUDeviceComputation (
 
 	recording_electrodes->write_initial_synaptic_weights_to_file(connections);
 
-	// Running through all of the Epochs
+
+	clock_t begin = clock();
+
 	for (int epoch_number = 0; epoch_number < number_of_epochs; epoch_number++) {
-		// If we want a random presentation, create the set of numbers:
-		if (randomPresentation) {
-			random_shuffle(&presentorder[0], &presentorder[numStimuli]);
+
+		if (present_stimuli_in_random_order) {
+			random_shuffle(&stimuli_presentation_order[0], &stimuli_presentation_order[number_of_stimuli]);
 		}
 		// Running through every Stimulus
-		for (int j = 0; j < numStimuli; j++){
+		for (int j = 0; j < number_of_stimuli; j++){
 			// Get the presentation position:
-			int present = presentorder[j];
+			int present = stimuli_presentation_order[j];
 			// Get the number of entries for this specific stimulus
 			size_t numEnts = numEntries[present];
 			if (numEnts > 0){
 
 				temp_test_generator->initialise_device_pointers_for_ents(numEnts, present);
-				temp_test_generator->set_threads_per_block_and_blocks_per_grid(threads);
+				temp_test_generator->set_threads_per_block_and_blocks_per_grid(threads_per_block);
 				
 			}
 			// Reset the variables necessary
@@ -120,49 +111,49 @@ void GPUDeviceComputation (
 
 			int number_of_timesteps_per_epoch = total_time_per_epoch / timestep;
 			float current_time_in_seconds = 0.0f;
-			// GO!
+		
 			for (int timestep_index = 0; timestep_index < number_of_timesteps_per_epoch; timestep_index++){
 				
-				current_time_in_seconds = float(timestep_index)*float(timestep);
+				// current_time_in_seconds = float(timestep_index)*float(timestep);
 				
-				neurons->reset_device_current_injections();
+				// neurons->reset_device_current_injections();
 				
 
-				if (numPoisson > 0) {
-					input_neurons->update_poisson_state_wrapper(timestep);
-				}
+				// if (numPoisson > 0) {
+				// 	input_neurons->update_poisson_state_wrapper(timestep);
+				// }
 
-				// If there are any spike generators
-				if (numEnts > 0) {
-					// Update those neurons corresponding to the Spike Generators
-					temp_test_generator->generupdate2_wrapper(current_time_in_seconds, timestep);
-				} 
+				// // If there are any spike generators
+				// if (numEnts > 0) {
+				// 	// Update those neurons corresponding to the Spike Generators
+				// 	temp_test_generator->generupdate2_wrapper(current_time_in_seconds, timestep);
+				// } 
 				
-				connections->calculate_postsynaptic_current_injection_for_connection_wrapper(neurons->d_current_injections, current_time_in_seconds);
+				// connections->calculate_postsynaptic_current_injection_for_connection_wrapper(neurons->d_current_injections, current_time_in_seconds);
 
-				// Carry out LTD on appropriate synapses
-				connections->ltdweights_wrapper(neurons->d_lastspiketime, current_time_in_seconds);
+				// // Carry out LTD on appropriate synapses
+				// connections->ltdweights_wrapper(neurons->d_lastspiketime, current_time_in_seconds);
 
-				// Update States of neurons
-				neurons->stateupdate_wrapper(timestep);
+				// // Update States of neurons
+				// neurons->stateupdate_wrapper(timestep);
 
-				// Check which neurons are spiking and deal with them
-				neurons->spikingneurons_wrapper(current_time_in_seconds);
-				input_neurons->spikingneurons_wrapper(current_time_in_seconds);
+				// // Check which neurons are spiking and deal with them
+				// neurons->spikingneurons_wrapper(current_time_in_seconds);
+				// input_neurons->spikingneurons_wrapper(current_time_in_seconds);
 								
-				// Check which synapses to send spikes down and do it
-				connections->synapsespikes_wrapper(neurons->d_lastspiketime, current_time_in_seconds);
+				// // Check which synapses to send spikes down and do it
+				// connections->synapsespikes_wrapper(neurons->d_lastspiketime, current_time_in_seconds);
 
-				// // Carry out the last step, LTP!
-				connections->synapseLTP_wrapper(neurons->d_lastspiketime, current_time_in_seconds);
+				// // // Carry out the last step, LTP!
+				// connections->synapseLTP_wrapper(neurons->d_lastspiketime, current_time_in_seconds);
 				
 
-				// Only save the spikes if necessary
-				if (save_spikes){
-					recording_electrodes->save_spikes_to_host(current_time_in_seconds, timestep_index, number_of_timesteps_per_epoch, true);
-					input_recording_electrodes->save_spikes_to_host(current_time_in_seconds, timestep_index, number_of_timesteps_per_epoch, false);
+				// // Only save the spikes if necessary
+				// if (save_spikes){
+				// 	recording_electrodes->save_spikes_to_host(current_time_in_seconds, timestep_index, number_of_timesteps_per_epoch, true);
+				// 	input_recording_electrodes->save_spikes_to_host(current_time_in_seconds, timestep_index, number_of_timesteps_per_epoch, false);
 
-				}
+				// }
 			}
 			if (numEnts > 0){
 				// CudaSafeCall(cudaFree(d_genids));

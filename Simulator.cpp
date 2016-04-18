@@ -18,7 +18,7 @@
 // Constructor
 Simulator::Simulator(){
 	// Spike Generators
-	numStimuli = 0;
+	number_of_stimuli = 0;
 	numEntries = NULL;
 	genids = NULL;
 	gentimes = NULL;
@@ -121,15 +121,15 @@ void Simulator::AddConnectionGroup(int presynaptic_group_id,
 }
 
 
-void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_spikes, bool random_presentation){
+void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_spikes, bool present_stimuli_in_random_order){
 	#ifndef QUIETSTART
 	// Give the user some feedback
 	printf("\n\n----------------------------------\n");
 	printf("Simulation Beginning\n");
-	printf("Time Step: %f\nNumber of Stimuli: %d\nNumber of Epochs: %d\n\n", timestep, numStimuli, number_of_epochs);
+	printf("Time Step: %f\nNumber of Stimuli: %d\nNumber of Epochs: %d\n\n", timestep, number_of_stimuli, number_of_epochs);
 	printf("Total Number of Neurons: %d\n", neurons->total_number_of_neurons);
 	printf("Total Number of Synapses: %d\n\n", connections->total_number_of_connections);
-	if (random_presentation)
+	if (present_stimuli_in_random_order)
 		printf("Stimuli to be presented in a random order.\n");
 	if (save_spikes)
 		printf("Spikes shall be saved.\n");
@@ -137,9 +137,9 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_
 	#endif
 
 	// Check how many stimuli their are and do something about it:
-	if (numStimuli == 0){
-		++numStimuli;
-		numEntries = (int*)realloc(numEntries, sizeof(int)*numStimuli);
+	if (number_of_stimuli == 0){
+		++number_of_stimuli;
+		numEntries = (int*)realloc(numEntries, sizeof(int)*number_of_stimuli);
 		numEntries[0] = 0;
 	}
 	// Ensure that there is at least one epoch
@@ -160,11 +160,11 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_
 					timestep,
 					save_spikes,
 
-					numStimuli,
+					number_of_stimuli,
 					numEntries,
 					genids,
 					gentimes,
-					random_presentation);
+					present_stimuli_in_random_order);
 
 
 }
@@ -180,18 +180,18 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_
 //		Corresponding array of the spike times for each instance
 void Simulator::CreateGenerator(int popID, int stimulusid, int spikenumber, int* ids, float* spiketimes){
 	// We have to ensure that we have created space for the current stimulus.
-	if ((numStimuli - 1) < stimulusid) {
+	if ((number_of_stimuli - 1) < stimulusid) {
 		// Check what the difference is and quit if it is too high
-		if ((stimulusid - (numStimuli - 1)) > 1){
+		if ((stimulusid - (number_of_stimuli - 1)) > 1){
 			// Error Quit
 			printf("Error: Stimuli not created in order. Exiting ...\n");
 			exit(-1);
 		}
 		// If it isn't greater than 1, make space!
-		++numStimuli;
-		numEntries = (int*)realloc(numEntries, sizeof(int)*numStimuli);
-		genids = (int**)realloc(genids, sizeof(int*)*numStimuli);
-		gentimes = (float**)realloc(gentimes, sizeof(float*)*numStimuli);
+		++number_of_stimuli;
+		numEntries = (int*)realloc(numEntries, sizeof(int)*number_of_stimuli);
+		genids = (int**)realloc(genids, sizeof(int*)*number_of_stimuli);
+		gentimes = (float**)realloc(gentimes, sizeof(float*)*number_of_stimuli);
 		// Initialize stuff
 		genids[stimulusid] = NULL;
 		gentimes[stimulusid] = NULL;
