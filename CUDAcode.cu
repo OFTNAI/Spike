@@ -29,8 +29,6 @@ using namespace std;
 __global__ void init(unsigned int seed, curandState_t* states, size_t numNeurons);
 
 
-
-//			lastactive = vector- indicating last time synapse emitted current
 void GPUDeviceComputation (
 					Neurons * neurons,
 					Connections * connections,

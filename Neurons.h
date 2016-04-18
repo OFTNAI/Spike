@@ -18,7 +18,6 @@
 
 struct neuron_parameters_struct {
 	neuron_parameters_struct() { }
-
 };
 
 
