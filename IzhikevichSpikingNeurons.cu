@@ -20,9 +20,9 @@ IzhikevichSpikingNeurons::~IzhikevichSpikingNeurons() {
 }
 
 
-int IzhikevichSpikingNeurons::AddGroupNew(neuron_parameters_struct * group_params, int group_shape[2]){
+int IzhikevichSpikingNeurons::AddGroup(neuron_parameters_struct * group_params, int group_shape[2]){
 
-	int new_group_id = SpikingNeurons::AddGroupNew(group_params, group_shape);
+	int new_group_id = SpikingNeurons::AddGroup(group_params, group_shape);
 
 	izhikevich_spiking_neuron_parameters_struct * izhikevich_spiking_group_params = (izhikevich_spiking_neuron_parameters_struct*)group_params;
 
@@ -38,20 +38,20 @@ int IzhikevichSpikingNeurons::AddGroupNew(neuron_parameters_struct * group_param
 }
 
 
-void IzhikevichSpikingNeurons::initialise_device_pointersNew() {
+void IzhikevichSpikingNeurons::initialise_device_pointers() {
  	
- 	SpikingNeurons::initialise_device_pointersNew();
+ 	SpikingNeurons::initialise_device_pointers();
 
 
  	CudaSafeCall(cudaMalloc((void **)&d_param_a, sizeof(float)*total_number_of_neurons));
  	CudaSafeCall(cudaMalloc((void **)&d_param_b, sizeof(float)*total_number_of_neurons));
 	
-	reset_neuron_variables_and_spikesNew();
+	reset_neuron_variables_and_spikes();
 }
 
-void IzhikevichSpikingNeurons::reset_neuron_variables_and_spikesNew() {
+void IzhikevichSpikingNeurons::reset_neuron_variables_and_spikes() {
 
-	SpikingNeurons::reset_neuron_variables_and_spikesNew();	
+	SpikingNeurons::reset_neuron_variables_and_spikes();	
 
 	CudaSafeCall(cudaMemcpy(d_param_a, param_a, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_param_b, param_b, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));

@@ -24,9 +24,9 @@ SpikingNeurons::~SpikingNeurons() {
 }
 
 
-int SpikingNeurons::AddGroupNew(neuron_parameters_struct * group_params, int group_shape[2]){
+int SpikingNeurons::AddGroup(neuron_parameters_struct * group_params, int group_shape[2]){
 	
-	int new_group_id = Neurons::AddGroupNew(group_params, group_shape);
+	int new_group_id = Neurons::AddGroup(group_params, group_shape);
 
 	spiking_neuron_parameters_struct * spiking_group_params = (spiking_neuron_parameters_struct*)group_params;
 
@@ -46,10 +46,10 @@ int SpikingNeurons::AddGroupNew(neuron_parameters_struct * group_params, int gro
 }
 
 
-void SpikingNeurons::initialise_device_pointersNew() {
+void SpikingNeurons::initialise_device_pointers() {
 
 	// CudaSafeCall(cudaMalloc((void **)&d_last_spike_time, sizeof(float)*total_number_of_neurons));
-	Neurons::initialise_device_pointersNew();
+	Neurons::initialise_device_pointers();
 
 	CudaSafeCall(cudaMalloc((void **)&d_states_v, sizeof(float)*total_number_of_neurons));
  	CudaSafeCall(cudaMalloc((void **)&d_states_u, sizeof(float)*total_number_of_neurons));
@@ -57,10 +57,10 @@ void SpikingNeurons::initialise_device_pointersNew() {
  	CudaSafeCall(cudaMalloc((void **)&d_param_d, sizeof(float)*total_number_of_neurons));
 
 
-	SpikingNeurons::reset_neuron_variables_and_spikesNew();
+	SpikingNeurons::reset_neuron_variables_and_spikes();
 }
 
-void SpikingNeurons::reset_neuron_variables_and_spikesNew() {
+void SpikingNeurons::reset_neuron_variables_and_spikes() {
 
 	// CudaSafeCall(cudaMemset(d_last_spike_time, -1000.0f, total_number_of_neurons*sizeof(float)));
 

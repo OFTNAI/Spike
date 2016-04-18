@@ -53,9 +53,9 @@ void GPUDeviceComputation (
 	RecordingElectrodes * recording_electrodes = new RecordingElectrodes(neurons);
 	RecordingElectrodes * input_recording_electrodes = new RecordingElectrodes(input_neurons);
 
-	neurons->initialise_device_pointersNew();
+	neurons->initialise_device_pointers();
 	connections->initialise_device_pointers();
-	input_neurons->initialise_device_pointersNew();
+	input_neurons->initialise_device_pointers();
 
 	recording_electrodes->initialise_device_pointers();
 	recording_electrodes->initialise_host_pointers();
@@ -107,7 +107,7 @@ void GPUDeviceComputation (
 				
 			}
 			// Reset the variables necessary
-			neurons->reset_neuron_variables_and_spikesNew();
+			neurons->reset_neuron_variables_and_spikes();
 			connections->reset_connection_spikes();
 
 			int number_of_timesteps_per_epoch = total_time_per_epoch / timestep;

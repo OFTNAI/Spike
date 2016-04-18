@@ -63,9 +63,9 @@ public:
 
 
 	// Functions
-	virtual int AddGroupNew(neuron_parameters_struct * group_params, int group_shape[2]);
-	virtual void initialise_device_pointersNew();
-	virtual void reset_neuron_variables_and_spikesNew();
+	virtual int AddGroup(neuron_parameters_struct * group_params, int group_shape[2]);
+	virtual void initialise_device_pointers();
+	virtual void reset_neuron_variables_and_spikes();
 
 	void reset_device_current_injections();
 

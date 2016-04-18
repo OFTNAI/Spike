@@ -37,9 +37,9 @@ public:
 	float * d_param_d;
 
 	// Functions
-	virtual int AddGroupNew(neuron_parameters_struct * group_params, int group_shape[2]);
-	virtual void initialise_device_pointersNew();
-	virtual void reset_neuron_variables_and_spikesNew();
+	virtual int AddGroup(neuron_parameters_struct * group_params, int group_shape[2]);
+	virtual void initialise_device_pointers();
+	virtual void reset_neuron_variables_and_spikes();
 
 	virtual void set_threads_per_block_and_blocks_per_grid(int threads);
 

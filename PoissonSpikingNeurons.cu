@@ -20,9 +20,9 @@ PoissonSpikingNeurons::~PoissonSpikingNeurons() {
 }
 
 
-int PoissonSpikingNeurons::AddGroupNew(neuron_parameters_struct * group_params, int group_shape[2]){
+int PoissonSpikingNeurons::AddGroup(neuron_parameters_struct * group_params, int group_shape[2]){
 
-	int new_group_id = SpikingNeurons::AddGroupNew(group_params, group_shape);
+	int new_group_id = SpikingNeurons::AddGroup(group_params, group_shape);
 
 	poisson_spiking_neuron_parameters_struct * poisson_spiking_group_params = (poisson_spiking_neuron_parameters_struct*)group_params;
 
@@ -35,9 +35,9 @@ int PoissonSpikingNeurons::AddGroupNew(neuron_parameters_struct * group_params, 
 
 }
 
-void PoissonSpikingNeurons::initialise_device_pointersNew() {
+void PoissonSpikingNeurons::initialise_device_pointers() {
 
-	SpikingNeurons::initialise_device_pointersNew();
+	SpikingNeurons::initialise_device_pointers();
 
 	CudaSafeCall(cudaMalloc((void **)&d_rates, sizeof(float)*total_number_of_neurons));
 	CudaSafeCall(cudaMalloc((void**) &d_states, sizeof(curandState_t)*total_number_of_neurons));

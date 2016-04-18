@@ -28,8 +28,8 @@ public:
 
 	
 	// Functions
-	virtual int AddGroupNew(neuron_parameters_struct * group_params, int group_shape[2]);
-	virtual void initialise_device_pointersNew();
+	virtual int AddGroup(neuron_parameters_struct * group_params, int group_shape[2]);
+	virtual void initialise_device_pointers();
 	void reset_input_variables();
 
 	void generate_random_states_wrapper();
