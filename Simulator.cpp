@@ -88,18 +88,6 @@ int Simulator::AddInputNeuronGroup(neuron_parameters_struct group_params, int gr
 
 //OLD 
 
-int Simulator::AddNeuronGroup(neuron_struct group_params, int group_shape[2]) {
-	if (neurons == NULL) {
-		printf("Please call SetNeuronType before adding neuron groups. Exiting ...\n\n");
-		exit(-1);
-	}
-	int neuron_group_id = neurons->AddGroup(group_params, group_shape);
-	return neuron_group_id;
-}
-
-
-
-
 
 void Simulator::AddConnectionGroup(int presynaptic_group_id, 
 							int postsynaptic_group_id, 

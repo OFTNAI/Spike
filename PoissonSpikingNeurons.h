@@ -12,7 +12,7 @@
 
 #include "SpikingNeurons.h"
 
-struct poisson_spiking_neuron_parameters_struct {
+struct poisson_spiking_neuron_parameters_struct : spiking_neuron_parameters_struct {
 	poisson_spiking_neuron_parameters_struct(): rate(0.0f) { spiking_neuron_parameters_struct(); }
 
 	float rate;

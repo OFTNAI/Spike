@@ -9,7 +9,7 @@
 
 #include "Neurons.h"
 
-struct spiking_neuron_parameters_struct {
+struct spiking_neuron_parameters_struct : neuron_parameters_struct {
 	spiking_neuron_parameters_struct(): state_v(-70.0f), state_u(0.0f), paramc(0.0f), paramd(0.0f) { neuron_parameters_struct(); }
 
 	float state_v;

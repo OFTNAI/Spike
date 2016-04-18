@@ -6,7 +6,11 @@
 
 // IzhikevichSpikingNeurons Constructor
 IzhikevichSpikingNeurons::IzhikevichSpikingNeurons() {
+	param_a = NULL;
+	param_b = NULL;
 
+	d_param_a = NULL;
+	d_param_b = NULL;
 }
 
 

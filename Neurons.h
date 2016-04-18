@@ -73,29 +73,10 @@ public:
 	virtual void initialise_device_pointersNew();
 	virtual void reset_neuron_variables_and_spikesNew();
 
-
-
-	int AddGroup(neuron_struct params, int shape[2]);
-	virtual void initialise_device_pointers();
-	virtual void reset_neuron_variables_and_spikes();
-
 	void reset_device_current_injections();
 
 	virtual void set_threads_per_block_and_blocks_per_grid(int threads);
 
-	virtual void poisupdate_wrapper(float* d_randoms, float timestep);
-
-	virtual void genupdate_wrapper(int* genids,
-							float* gentimes,
-							float currtime,
-							float timestep,
-							size_t numEntries,
-							int genblocknum, 
-							dim3 threadsPerBlock);
-
-	virtual void spikingneurons_wrapper(float currtime);
-
-	virtual void stateupdate_wrapper(float timestep);
 
 
 

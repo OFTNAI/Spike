@@ -28,60 +28,27 @@ int main (int argc, char *argv[]){
 	simulator2.SetNeuronType(new IzhikevichSpikingNeurons());
 	simulator2.SetInputNeuronType(new PoissonSpikingNeurons());
 
+	izhikevich_spiking_neuron_parameters_struct izhhikevich_spiking_group_params;
+	izhhikevich_spiking_group_params.parama = 0.02f;
+	izhhikevich_spiking_group_params.paramb = -0.01f;
+	izhhikevich_spiking_group_params.paramc = -55.0f;
+	izhhikevich_spiking_group_params.paramd = 6.0f;
+
+	poisson_spiking_neuron_parameters_struct poisson_spiking_group_params;
+	poisson_spiking_group_params.rate = 30.0f;
+
 	int ji_test_shape[] = {1000, 1};
-	neuron_parameters_struct ji_test_params;
-	simulator2.AddNeuronGroupNew(ji_test_params, ji_test_shape);
-	simulator2.AddInputNeuronGroup(ji_test_params, ji_test_shape);
-	
+
+	simulator2.AddNeuronGroupNew(izhhikevich_spiking_group_params, ji_test_shape);
+	// simulator2.AddInputNeuronGroup(poisson_spiking_group_params, ji_test_shape);
 
 
+		// Run the actual simulator!
+	float total_time_per_epoch = 1.25f;
+	int number_of_epochs = 1;
+	bool save_spikes = true;
+	simulator2.Run(total_time_per_epoch, number_of_epochs, save_spikes);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	// Simulator simulator;
-	// simulator.SetTimestep(timest);
-	// simulator.SetNeuronType(new Neurons());
-	// // simulator.SetInputNeuronType(new PoissonSpikingNeurons());
-
-	// // // input parameters
-	// // input_struct input_poisson_params;
-	// // input_poisson_params.rate = 30.0f;
-	// int input_population_shape[] = {1000, 1};
-
-	// // neuron parameters
-	// neuron_struct poisson_params;
-	// poisson_params.rate = 30.0f;
-
-
-	// neuron_struct test_params;
-	// test_params.parama = 0.02f;
-	// test_params.paramb = -0.01f;
-	// test_params.paramc = -55.0f;
-	// test_params.paramd = 6.0f;
-	// int test_shape[] = {1000, 1};
-
-
-
-
-	// // simulator.AddInputNeuronGroup(poisson_params, ji_test_shape);
-
-	// int INPUTLAYER = simulator.AddNeuronGroup(poisson_params, input_population_shape);
-	// int test_neuron_group_1_id = simulator.AddNeuronGroup(test_params, test_shape);
-	// int test_neuron_group_2_id = simulator.AddNeuronGroup(test_params, test_shape);
 
 	// // connections parameters
 	// float INPUT_TO_INTER_weights[] = {2.50f, 5.0f};
@@ -95,15 +62,5 @@ int main (int argc, char *argv[]){
 	// simulator.AddConnectionGroup(INPUTLAYER, test_neuron_group_1_id, CONNECTIVITY_TYPE_ALL_TO_ALL, INPUT_TO_INTER_weights, DefaultDelay, false);
 	// simulator.AddConnectionGroup(test_neuron_group_1_id, test_neuron_group_2_id, CONNECTIVITY_TYPE_ALL_TO_ALL, test_weight_range, test_delay_range, stdp_on, 3.0, 8.0);
 
-
-
-	// // Run the actual simulator!
-	// float total_time_per_epoch = 1.25f;
-	// int number_of_epochs = 1;
-	// bool save_spikes = true;
-	// simulator.Run(total_time_per_epoch, number_of_epochs, save_spikes);
-
-	// Since outputspikes was set to true, the spike times of every neuron will be output along side the network connectivity and weights.
-	// All outputs are placed in a results folder in the current directory.
 	return 1;
 }

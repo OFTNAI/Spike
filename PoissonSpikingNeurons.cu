@@ -8,7 +8,9 @@ using namespace std;
 
 // PoissonSpikingNeurons Constructor
 PoissonSpikingNeurons::PoissonSpikingNeurons() {
-
+	rates = NULL;
+	d_rates = NULL;
+	d_states = NULL;
 }
 
 

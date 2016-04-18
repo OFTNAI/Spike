@@ -49,12 +49,10 @@ void GPUDeviceComputation (
 					){
 
 	GeneratorSpikingNeurons * temp_test_generator = new GeneratorSpikingNeurons();
-
-	
 	RecordingElectrodes * recording_electrodes = new RecordingElectrodes(neurons);
 	RecordingElectrodes * input_recording_electrodes = new RecordingElectrodes(input_neurons);
 
-	neurons->initialise_device_pointers();
+	neurons->initialise_device_pointersNew();
 	connections->initialise_device_pointers();
 	input_neurons->initialise_device_pointersNew();
 
@@ -67,22 +65,14 @@ void GPUDeviceComputation (
 
 	// THREADS&BLOCKS
 	// The number of threads per block I shall keep held at 128
-	int threads = 128;
-	connections->set_threads_per_block_and_blocks_per_grid(threads);
-	neurons->set_threads_per_block_and_blocks_per_grid(threads);
-	input_neurons->set_threads_per_block_and_blocks_per_grid(threads);
+	int threads_per_block = 128;
+	connections->set_threads_per_block_and_blocks_per_grid(threads_per_block);
+	neurons->set_threads_per_block_and_blocks_per_grid(threads_per_block);
+	input_neurons->set_threads_per_block_and_blocks_per_grid(threads_per_block);
 
 
 	input_neurons->generate_random_states_wrapper();
 
-	curandState_t* states;
-	cudaMalloc((void**) &states, neurons->total_number_of_neurons*sizeof(curandState_t));
-	// Initialise the random states
-	init<<<neurons->threads_per_block, neurons->number_of_neuron_blocks_per_grid>>>(42, states, neurons->total_number_of_neurons);
-	CudaCheckError();
-	// Keep space for the random numbers
-	float* gpu_randfloats;
-	CudaSafeCall(cudaMalloc((void**) &gpu_randfloats, neurons->total_number_of_neurons*sizeof(float)));
 
 	// Variables necessary
 	clock_t begin = clock();
@@ -125,7 +115,7 @@ void GPUDeviceComputation (
 				
 			}
 			// Reset the variables necessary
-			neurons->reset_neuron_variables_and_spikes();
+			neurons->reset_neuron_variables_and_spikesNew();
 			connections->reset_connection_spikes();
 
 			int number_of_timesteps_per_epoch = total_time_per_epoch / timestep;
@@ -139,14 +129,7 @@ void GPUDeviceComputation (
 				
 
 				if (numPoisson > 0) {
-					// First create the set of random numbers of poisson neurons
-					randoms<<<neurons->threads_per_block, neurons->number_of_neuron_blocks_per_grid>>>(states, gpu_randfloats, neurons->total_number_of_neurons);
-					CudaCheckError();
-
-					// Update Poisson neuron states
-					neurons->poisupdate_wrapper(gpu_randfloats, timestep);
 					input_neurons->update_poisson_state_wrapper(timestep);
-					
 				}
 
 				// If there are any spike generators
@@ -218,34 +201,8 @@ void GPUDeviceComputation (
 	delete connections;
 	delete recording_electrodes;
 
-	CudaSafeCall(cudaFree(states));
-	CudaSafeCall(cudaFree(gpu_randfloats));
-	// CudaSafeCall(cudaFree(currentinjection));
 	// Free Memory on CPU
 	free(recording_electrodes->h_spikestoretimes);
 	free(recording_electrodes->h_spikestoreID);
 
 }
-
-
-// Random Number Getter
-__global__ void randoms(curandState_t* states, float* numbers, size_t total_number_of_neurons) {
-	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	if (idx < total_number_of_neurons) {
-		/* curand works like rand - except that it takes a state as a parameter */
-		numbers[idx] = curand_uniform(&states[idx]);
-	}
-}
-
-__global__ void init(unsigned int seed, curandState_t* states, size_t total_number_of_neurons) {
-	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	if (idx < total_number_of_neurons) {
-		curand_init(seed, /* the seed can be the same for each core, here we pass the time in from the CPU */
-					idx, /* the sequence number should be different for each core (unless you want all
-							cores to get the same sequence of numbers for some reason - use thread id! */
- 					0, /* the offset is how much extra we advance in the sequence for each call, can be 0 */
-					&states[idx]);
-	}
-}
-
-

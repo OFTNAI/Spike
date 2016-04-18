@@ -6,7 +6,7 @@
 
 #include "SpikingNeurons.h"
 
-struct izhikevich_spiking_neuron_parameters_struct {
+struct izhikevich_spiking_neuron_parameters_struct : spiking_neuron_parameters_struct {
 	izhikevich_spiking_neuron_parameters_struct(): parama(0.0f), paramb(0.0f) { spiking_neuron_parameters_struct(); }
 
 	float parama;
