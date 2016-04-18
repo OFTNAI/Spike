@@ -16,12 +16,19 @@ IzhikevichSpikingNeurons::~IzhikevichSpikingNeurons() {
 }
 
 
-int IzhikevichSpikingNeurons::AddGroupNew(neuron_struct *params, int group_shape[2]){
+int IzhikevichSpikingNeurons::AddGroupNew(neuron_parameters_struct * group_params, int group_shape[2]){
 
-	int new_group_id = SpikingNeurons::AddGroupNew(params, group_shape);
+	int new_group_id = SpikingNeurons::AddGroupNew(group_params, group_shape);
+
+	izhikevich_spiking_neuron_parameters_struct * izhikevich_spiking_group_params = (izhikevich_spiking_neuron_parameters_struct*)group_params;
 
 	param_a = (float*)realloc(param_a, (total_number_of_neurons*sizeof(float)));
 	param_b = (float*)realloc(param_b, (total_number_of_neurons*sizeof(float)));
+
+	for (int i = 0; i < total_number_of_neurons; i++) {
+		param_a[i] = izhikevich_spiking_group_params->parama;
+		param_b[i] = izhikevich_spiking_group_params->paramb;
+	}
 
 	return new_group_id;
 }

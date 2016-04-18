@@ -43,7 +43,7 @@ Neurons::~Neurons() {
 }
 
 
-int Neurons::AddGroupNew(neuron_struct *params, int group_shape[2]){
+int Neurons::AddGroupNew(neuron_parameters_struct * group_params, int group_shape[2]){
 	
 	number_of_neurons_in_new_group = group_shape[0]*group_shape[1];
  

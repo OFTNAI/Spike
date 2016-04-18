@@ -128,18 +128,16 @@ void GPUDeviceComputation (
 			neurons->reset_neuron_variables_and_spikes();
 			connections->reset_connection_spikes();
 
-			// Running the Simulation!
-			// Variables as Necessary
 			int number_of_timesteps_per_epoch = total_time_per_epoch / timestep;
 			float current_time_in_seconds = 0.0f;
 			// GO!
 			for (int timestep_index = 0; timestep_index < number_of_timesteps_per_epoch; timestep_index++){
-				// SIMULATION
-				// Current simulation timestep
+				
 				current_time_in_seconds = float(timestep_index)*float(timestep);
-				// Start by resetting all the things
+				
 				neurons->reset_device_current_injections();
-				// If there are poisson populations
+				
+
 				if (numPoisson > 0) {
 					// First create the set of random numbers of poisson neurons
 					randoms<<<neurons->threads_per_block, neurons->number_of_neuron_blocks_per_grid>>>(states, gpu_randfloats, neurons->total_number_of_neurons);
@@ -150,6 +148,7 @@ void GPUDeviceComputation (
 					input_neurons->update_poisson_state_wrapper(timestep);
 					
 				}
+
 				// If there are any spike generators
 				if (numEnts > 0) {
 					// Update those neurons corresponding to the Spike Generators

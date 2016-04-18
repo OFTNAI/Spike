@@ -12,6 +12,11 @@
 
 #include "SpikingNeurons.h"
 
+struct poisson_spiking_neuron_parameters_struct {
+	poisson_spiking_neuron_parameters_struct(): rate(0.0f) { spiking_neuron_parameters_struct(); }
+
+	float rate;
+};
 
 struct input_struct {
 
@@ -38,7 +43,7 @@ public:
 
 	
 	// Functions
-	virtual int AddGroupNew(neuron_struct * params, int shape[2]);
+	virtual int AddGroupNew(neuron_parameters_struct * group_params, int group_shape[2]);
 	virtual void initialise_device_pointersNew();
 	void reset_input_variables();
 

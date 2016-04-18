@@ -18,9 +18,9 @@ GeneratorSpikingNeurons::~GeneratorSpikingNeurons() {
 }
 
 
-int GeneratorSpikingNeurons::AddGroupNew(neuron_struct * params, int group_shape[2]){
+int GeneratorSpikingNeurons::AddGroupNew(neuron_parameters_struct * group_params, int group_shape[2]){
 	
-	int new_group_id = SpikingNeurons::AddGroupNew(params, group_shape);
+	int new_group_id = SpikingNeurons::AddGroupNew(group_params, group_shape);
 
 	// rates = (float*)realloc(rates, (total_number_of_neurons*sizeof(float)));
 

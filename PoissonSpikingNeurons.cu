@@ -18,14 +18,16 @@ PoissonSpikingNeurons::~PoissonSpikingNeurons() {
 }
 
 
-int PoissonSpikingNeurons::AddGroupNew(neuron_struct * params, int group_shape[2]){
+int PoissonSpikingNeurons::AddGroupNew(neuron_parameters_struct * group_params, int group_shape[2]){
 	
-	int new_group_id = SpikingNeurons::AddGroupNew(params, group_shape);
+	int new_group_id = SpikingNeurons::AddGroupNew(group_params, group_shape);
+
+	poisson_spiking_neuron_parameters_struct * poisson_spiking_group_params = (poisson_spiking_neuron_parameters_struct*)group_params;
 
 	rates = (float*)realloc(rates, (total_number_of_neurons*sizeof(float)));
 
 	for (int i = 0; i < total_number_of_neurons; i++) {
-		rates[i] = params->rate;
+		rates[i] = poisson_spiking_group_params->rate;
 	}
 
 	return -1 * new_group_id;

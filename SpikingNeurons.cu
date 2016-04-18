@@ -24,14 +24,23 @@ SpikingNeurons::~SpikingNeurons() {
 }
 
 
-int SpikingNeurons::AddGroupNew(neuron_struct *params, int group_shape[2]){
+int SpikingNeurons::AddGroupNew(neuron_parameters_struct * group_params, int group_shape[2]){
 	
-	int new_group_id = Neurons::AddGroupNew(params, group_shape);
+	int new_group_id = Neurons::AddGroupNew(group_params, group_shape);
+
+	spiking_neuron_parameters_struct * spiking_group_params = (spiking_neuron_parameters_struct*)group_params;
 
 	states_v = (float*)realloc(states_v, (total_number_of_neurons*sizeof(float)));
 	states_u = (float*)realloc(states_u, (total_number_of_neurons*sizeof(float)));
 	param_c = (float*)realloc(param_c, (total_number_of_neurons*sizeof(float)));
 	param_d = (float*)realloc(param_d, (total_number_of_neurons*sizeof(float)));
+
+	for (int i = 0; i < total_number_of_neurons; i++) {
+		states_v[i] = spiking_group_params->state_v;
+		states_u[i] = spiking_group_params->state_u;
+		param_c[i] = spiking_group_params->paramc;
+		param_d[i] = spiking_group_params->paramd;
+	}
 
 	return new_group_id;
 }

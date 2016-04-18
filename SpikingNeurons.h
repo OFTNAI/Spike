@@ -9,6 +9,17 @@
 
 #include "Neurons.h"
 
+struct spiking_neuron_parameters_struct {
+	spiking_neuron_parameters_struct(): state_v(-70.0f), state_u(0.0f), paramc(0.0f), paramd(0.0f) { neuron_parameters_struct(); }
+
+	float state_v;
+	float state_u;
+	float paramc;
+	float paramd;
+};
+
+
+
 class SpikingNeurons : public Neurons {
 public:
 	// Constructor/Destructor
@@ -26,7 +37,7 @@ public:
 	float * d_param_d;
 
 	// Functions
-	virtual int AddGroupNew(neuron_struct *params, int shape[2]);
+	virtual int AddGroupNew(neuron_parameters_struct * group_params, int group_shape[2]);
 	virtual void initialise_device_pointersNew();
 	virtual void reset_neuron_variables_and_spikesNew();
 

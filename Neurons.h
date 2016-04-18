@@ -17,6 +17,13 @@
 //temp for test_array test
 #include "Connections.h"
 
+struct neuron_parameters_struct {
+	neuron_parameters_struct() { }
+
+};
+
+
+
 struct neuron_struct {
 	neuron_struct(): parama(0.0f), paramb(0.0f), paramc(0.0f), paramd(0.0f), state_v(-70.0f), state_u(0.0f), rate(0.0f) { }   // default Constructor
 	float parama;
@@ -62,7 +69,7 @@ public:
 
 
 	// Functions
-	virtual int AddGroupNew(neuron_struct *params, int shape[2]);
+	virtual int AddGroupNew(neuron_parameters_struct * group_params, int group_shape[2]);
 	virtual void initialise_device_pointersNew();
 	virtual void reset_neuron_variables_and_spikesNew();
 
