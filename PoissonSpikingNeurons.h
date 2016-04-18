@@ -8,6 +8,7 @@
 #include "SpikingNeurons.h"
 #include "Connections.h"
 
+
 struct poisson_spiking_neuron_parameters_struct : spiking_neuron_parameters_struct {
 	poisson_spiking_neuron_parameters_struct(): rate(0.0f) { spiking_neuron_parameters_struct(); }
 
@@ -26,8 +27,6 @@ public:
 
 	curandState_t* d_states;
 
-	
-	// Functions
 	virtual int AddGroup(neuron_parameters_struct * group_params, int group_shape[2]);
 	virtual void initialise_device_pointers();
 	void reset_input_variables();

@@ -10,12 +10,11 @@
 #ifndef Neurons_H
 #define Neurons_H
 
-//	CUDA library
 #include <cuda.h>
 #include <stdio.h>
 
-//temp for test_array test
 #include "Connections.h"
+
 
 struct neuron_parameters_struct {
 	neuron_parameters_struct() { }
@@ -23,32 +22,16 @@ struct neuron_parameters_struct {
 };
 
 
-
-struct neuron_struct {
-	neuron_struct(): parama(0.0f), paramb(0.0f), paramc(0.0f), paramd(0.0f), state_v(-70.0f), state_u(0.0f), rate(0.0f) { }   // default Constructor
-	float parama;
-	float paramb;
-	float paramc;
-	float paramd;
-	// State variables
-	float state_v;
-	float state_u;
-	// Rate for poisson
-	float rate;
-};
-
 class Neurons{
 public:
 	// Constructor/Destructor
 	Neurons();
 	~Neurons();
 
-	// Totals
 	int total_number_of_neurons;
 	int total_number_of_groups;
 
 	float * d_last_spike_time;
-
 	float* d_current_injections;
 
 	int **group_shapes;
@@ -58,8 +41,6 @@ public:
 
 	dim3 number_of_neuron_blocks_per_grid;
 	dim3 threads_per_block;
-
-	
 
 
 	// Functions
@@ -71,11 +52,6 @@ public:
 
 	virtual void set_threads_per_block_and_blocks_per_grid(int threads);
 
-
-
-
 };
-
-
 
 #endif

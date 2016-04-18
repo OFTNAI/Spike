@@ -1,17 +1,12 @@
 #ifndef GeneratorSpikingNeurons_H
 #define GeneratorSpikingNeurons_H
 
-//	CUDA library
 #include <cuda.h>
-
 #include <curand.h>
 #include <curand_kernel.h>
 
-//temp for test_array test
-#include "Connections.h"
-
 #include "SpikingNeurons.h"
-
+#include "Connections.h"
 
 class GeneratorSpikingNeurons : public SpikingNeurons {
 public:
