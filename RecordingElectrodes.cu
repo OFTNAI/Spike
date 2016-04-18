@@ -50,22 +50,11 @@ void RecordingElectrodes::initialise_host_pointers() {
 	h_temp_total_number_of_spikes[0] = 0;
 }
 
-void RecordingElectrodes::save_spikes_to_host(float current_time_in_seconds, int timestep_index, int number_of_timesteps_per_epoch, bool temp_use_old_spiketimes_pointer) {
+void RecordingElectrodes::save_spikes_to_host(float current_time_in_seconds, int timestep_index, int number_of_timesteps_per_epoch) {
 
 	// printf("Save spikes to host. total_number_of_neurons = %d.\n", neurons->total_number_of_neurons);
 
 	// Storing the spikes that have occurred in this timestep
-
-	if (temp_use_old_spiketimes_pointer == true) {
-
-		spikeCollect<<<neurons->number_of_neuron_blocks_per_grid, neurons->threads_per_block>>>(neurons->d_lastspiketime,
-														d_tempstorenum,
-														d_tempstoreID,
-														d_tempstoretimes,
-														current_time_in_seconds,
-														neurons->total_number_of_neurons);
-
-	} else {
 
 	spikeCollect<<<neurons->number_of_neuron_blocks_per_grid, neurons->threads_per_block>>>(neurons->d_last_spike_time,
 														d_tempstorenum,
@@ -73,7 +62,6 @@ void RecordingElectrodes::save_spikes_to_host(float current_time_in_seconds, int
 														d_tempstoretimes,
 														current_time_in_seconds,
 														neurons->total_number_of_neurons);
-	}
 
 	CudaCheckError();
 

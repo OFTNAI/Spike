@@ -28,18 +28,18 @@ int main (int argc, char *argv[]){
 	simulator2.SetNeuronType(new IzhikevichSpikingNeurons());
 	simulator2.SetInputNeuronType(new PoissonSpikingNeurons());
 
-	izhikevich_spiking_neuron_parameters_struct izhhikevich_spiking_group_params;
-	izhhikevich_spiking_group_params.parama = 0.02f;
-	izhhikevich_spiking_group_params.paramb = -0.01f;
-	izhhikevich_spiking_group_params.paramc = -55.0f;
-	izhhikevich_spiking_group_params.paramd = 6.0f;
+	// izhikevich_spiking_neuron_parameters_struct izhhikevich_spiking_group_params;
+	// izhhikevich_spiking_group_params.parama = 0.02f;
+	// izhhikevich_spiking_group_params.paramb = -0.01f;
+	// izhhikevich_spiking_group_params.paramc = -55.0f;
+	// izhhikevich_spiking_group_params.paramd = 6.0f;
 
-	poisson_spiking_neuron_parameters_struct poisson_spiking_group_params;
-	poisson_spiking_group_params.rate = 30.0f;
+	poisson_spiking_neuron_parameters_struct * poisson_spiking_group_params = new poisson_spiking_neuron_parameters_struct();
+	poisson_spiking_group_params->rate = 30.0f;
 
 	int ji_test_shape[] = {1000, 1};
 
-	simulator2.AddNeuronGroupNew(izhhikevich_spiking_group_params, ji_test_shape);
+	// simulator2.AddNeuronGroupNew(izhhikevich_spiking_group_params, ji_test_shape);
 	simulator2.AddInputNeuronGroup(poisson_spiking_group_params, ji_test_shape);
 
 

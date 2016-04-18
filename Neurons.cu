@@ -16,6 +16,7 @@
 Neurons::Neurons() {
 
 	d_last_spike_time = NULL;
+	d_current_injections = NULL;
 
 	// Set totals to zero
 	total_number_of_neurons = 0;
@@ -25,7 +26,6 @@ Neurons::Neurons() {
 
 	// Initialise pointers
 	group_shapes = NULL;
-	neuron_variables = NULL;
 	last_neuron_indices_for_each_group = NULL;
 
 }
@@ -36,11 +36,7 @@ Neurons::~Neurons() {
 
 	// Free up memory
 	free(group_shapes);
-	free(neuron_variables);
 	free(last_neuron_indices_for_each_group);
-
-	CudaSafeCall(cudaFree(d_neuron_variables));
-	CudaSafeCall(cudaFree(d_lastspiketime));
 
 }
 
@@ -78,13 +74,19 @@ int Neurons::AddGroupNew(neuron_parameters_struct * group_params, int group_shap
 void Neurons::initialise_device_pointersNew() {
 
 	CudaSafeCall(cudaMalloc((void **)&d_last_spike_time, sizeof(float)*total_number_of_neurons));
+	CudaSafeCall(cudaMalloc((void **)&d_current_injections, sizeof(float)*total_number_of_neurons));
 
 	Neurons::reset_neuron_variables_and_spikesNew();
+	Neurons::reset_device_current_injections();
 }
 
 void Neurons::reset_neuron_variables_and_spikesNew() {
 
 	CudaSafeCall(cudaMemset(d_last_spike_time, -1000.0f, total_number_of_neurons*sizeof(float)));
+}
+
+void Neurons::reset_device_current_injections() {
+	CudaSafeCall(cudaMemset(d_current_injections, 0.0f, total_number_of_neurons*sizeof(float)));
 }
 
 

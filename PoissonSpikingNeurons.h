@@ -1,16 +1,12 @@
 #ifndef PoissonSpikingNeurons_H
 #define PoissonSpikingNeurons_H
 
-//	CUDA library
 #include <cuda.h>
-
 #include <curand.h>
 #include <curand_kernel.h>
 
-//temp for test_array test
-#include "Connections.h"
-
 #include "SpikingNeurons.h"
+#include "Connections.h"
 
 struct poisson_spiking_neuron_parameters_struct : spiking_neuron_parameters_struct {
 	poisson_spiking_neuron_parameters_struct(): rate(0.0f) { spiking_neuron_parameters_struct(); }
@@ -18,17 +14,6 @@ struct poisson_spiking_neuron_parameters_struct : spiking_neuron_parameters_stru
 	float rate;
 };
 
-struct input_struct {
-
-	input_struct(): paramc(0.0f), paramd(0.0f), state_v(-70.0f), state_u(0.0f), rate(0.0f) { }   // default Constructor
-	float paramc;
-	float paramd;
-	// State variables
-	float state_v;
-	float state_u;
-	// Rate for poisson
-	float rate;
-};
 
 class PoissonSpikingNeurons : public SpikingNeurons {
 public:

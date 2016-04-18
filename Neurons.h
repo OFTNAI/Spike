@@ -51,16 +51,10 @@ public:
 
 	float* d_current_injections;
 
-	// Group parameters, shapes and indices
-	neuron_struct *neuron_variables;
 	int **group_shapes;
 	int *last_neuron_indices_for_each_group;
 
 	int number_of_neurons_in_new_group;
-
-	// Device Pointers
-	neuron_struct* d_neuron_variables;
-	float* d_lastspiketime;
 
 	dim3 number_of_neuron_blocks_per_grid;
 	dim3 threads_per_block;

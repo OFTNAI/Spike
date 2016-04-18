@@ -48,6 +48,7 @@ void GPUDeviceComputation (
 					bool present_stimuli_in_random_order
 					){
 
+
 	GeneratorSpikingNeurons * temp_test_generator = new GeneratorSpikingNeurons();
 	RecordingElectrodes * recording_electrodes = new RecordingElectrodes(neurons);
 	RecordingElectrodes * input_recording_electrodes = new RecordingElectrodes(input_neurons);
@@ -114,14 +115,11 @@ void GPUDeviceComputation (
 		
 			for (int timestep_index = 0; timestep_index < number_of_timesteps_per_epoch; timestep_index++){
 				
-				// current_time_in_seconds = float(timestep_index)*float(timestep);
+				current_time_in_seconds = float(timestep_index)*float(timestep);
 				
-				// neurons->reset_device_current_injections();
+				neurons->reset_device_current_injections();
 				
-
-				// if (numPoisson > 0) {
-				// 	input_neurons->update_poisson_state_wrapper(timestep);
-				// }
+				input_neurons->update_poisson_state_wrapper(timestep);
 
 				// // If there are any spike generators
 				// if (numEnts > 0) {
@@ -139,7 +137,7 @@ void GPUDeviceComputation (
 
 				// // Check which neurons are spiking and deal with them
 				// neurons->spikingneurons_wrapper(current_time_in_seconds);
-				// input_neurons->spikingneurons_wrapper(current_time_in_seconds);
+				input_neurons->spikingneurons_wrapper(current_time_in_seconds);
 								
 				// // Check which synapses to send spikes down and do it
 				// connections->synapsespikes_wrapper(neurons->d_lastspiketime, current_time_in_seconds);
@@ -149,11 +147,11 @@ void GPUDeviceComputation (
 				
 
 				// // Only save the spikes if necessary
-				// if (save_spikes){
-				// 	recording_electrodes->save_spikes_to_host(current_time_in_seconds, timestep_index, number_of_timesteps_per_epoch, true);
-				// 	input_recording_electrodes->save_spikes_to_host(current_time_in_seconds, timestep_index, number_of_timesteps_per_epoch, false);
+				if (save_spikes){
+					// recording_electrodes->save_spikes_to_host(current_time_in_seconds, timestep_index, number_of_timesteps_per_epoch);
+					input_recording_electrodes->save_spikes_to_host(current_time_in_seconds, timestep_index, number_of_timesteps_per_epoch);
 
-				// }
+				}
 			}
 			if (numEnts > 0){
 				// CudaSafeCall(cudaFree(d_genids));

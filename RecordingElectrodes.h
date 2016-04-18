@@ -37,7 +37,7 @@ public:
 	void initialise_device_pointers();
 	void initialise_host_pointers();
 
-	void save_spikes_to_host(float current_time_in_seconds, int timestep_index, int number_of_timesteps_per_epoch, bool temp_use_old_spiketimes_pointer);
+	void save_spikes_to_host(float current_time_in_seconds, int timestep_index, int number_of_timesteps_per_epoch);
 	void write_spikes_to_file(Neurons *neurons, int epoch_number);
 
 	void write_initial_synaptic_weights_to_file(Connections *connections);
