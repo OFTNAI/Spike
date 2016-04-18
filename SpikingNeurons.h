@@ -43,7 +43,7 @@ public:
 
 	virtual void set_threads_per_block_and_blocks_per_grid(int threads);
 
-	virtual void spikingneurons_wrapper(float currtime);
+	virtual void check_for_neuron_spikes_wrapper(float currtime);
 
 };
 

@@ -136,8 +136,8 @@ void GPUDeviceComputation (
 				// neurons->stateupdate_wrapper(timestep);
 
 				// // Check which neurons are spiking and deal with them
-				// neurons->spikingneurons_wrapper(current_time_in_seconds);
-				input_neurons->spikingneurons_wrapper(current_time_in_seconds);
+				// neurons->check_for_neuron_spikes_wrapper(current_time_in_seconds);
+				input_neurons->check_for_neuron_spikes_wrapper(current_time_in_seconds);
 								
 				// // Check which synapses to send spikes down and do it
 				// connections->synapsespikes_wrapper(neurons->d_lastspiketime, current_time_in_seconds);

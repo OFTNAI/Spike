@@ -48,7 +48,6 @@ int SpikingNeurons::AddGroup(neuron_parameters_struct * group_params, int group_
 
 void SpikingNeurons::initialise_device_pointers() {
 
-	// CudaSafeCall(cudaMalloc((void **)&d_last_spike_time, sizeof(float)*total_number_of_neurons));
 	Neurons::initialise_device_pointers();
 
 	CudaSafeCall(cudaMalloc((void **)&d_states_v, sizeof(float)*total_number_of_neurons));
@@ -61,8 +60,6 @@ void SpikingNeurons::initialise_device_pointers() {
 }
 
 void SpikingNeurons::reset_neuron_variables_and_spikes() {
-
-	// CudaSafeCall(cudaMemset(d_last_spike_time, -1000.0f, total_number_of_neurons*sizeof(float)));
 
 	CudaSafeCall(cudaMemcpy(d_states_v, states_v, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_states_u, states_u, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
@@ -80,7 +77,7 @@ void SpikingNeurons::set_threads_per_block_and_blocks_per_grid(int threads) {
 
 
 
-__global__ void spikingneurons2(float *d_states_v,
+__global__ void check_for_neuron_spikes(float *d_states_v,
 								float *d_states_u,
 								float *d_param_c,
 								float *d_param_d,
@@ -89,9 +86,9 @@ __global__ void spikingneurons2(float *d_states_v,
 								size_t total_number_of_neurons);
 
 
-void SpikingNeurons::spikingneurons_wrapper(float currtime) {
+void SpikingNeurons::check_for_neuron_spikes_wrapper(float currtime) {
 
-	spikingneurons2<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_states_v,
+	check_for_neuron_spikes<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_states_v,
 																	d_states_u,
 																	d_param_c,
 																	d_param_d,
@@ -104,7 +101,7 @@ void SpikingNeurons::spikingneurons_wrapper(float currtime) {
 
 
 // Spiking Neurons
-__global__ void spikingneurons2(float *d_states_v,
+__global__ void check_for_neuron_spikes(float *d_states_v,
 								float *d_states_u,
 								float *d_param_c,
 								float *d_param_d,
