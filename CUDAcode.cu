@@ -125,7 +125,7 @@ void GPUDeviceComputation (
 				// 	temp_test_generator->generupdate2_wrapper(current_time_in_seconds, timestep);
 				// } 
 				
-				// connections->calculate_postsynaptic_current_injection_for_connection_wrapper(neurons->d_current_injections, current_time_in_seconds);
+				connections->calculate_postsynaptic_current_injection_for_connection_wrapper(neurons->d_current_injections, input_neurons->d_current_injections, current_time_in_seconds);
 
 				// // Carry out LTD on appropriate synapses
 				// connections->ltdweights_wrapper(neurons->d_lastspiketime, current_time_in_seconds);

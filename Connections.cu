@@ -424,7 +424,8 @@ __global__ void calculate_postsynaptic_current_injection_for_connection(int* d_s
 							float* d_weights,
 							float* d_lastactive,
 							int* d_postsynaptic_neuron_indices,
-							float* currentinj,
+							float* neurons_current_injections,
+							float* input_neurons_current_injections,
 							float current_time_in_seconds,
 							size_t total_number_of_connections);
 
@@ -456,13 +457,14 @@ __global__ void synapseLTP(int* d_postsyns,
 
 
 
-void Connections::calculate_postsynaptic_current_injection_for_connection_wrapper(float* currentinjection, float current_time_in_seconds) {
+void Connections::calculate_postsynaptic_current_injection_for_connection_wrapper(float* neurons_current_injections, float* input_neurons_current_injections, float current_time_in_seconds) {
 
 	calculate_postsynaptic_current_injection_for_connection<<<number_of_connection_blocks_per_grid, threads_per_block>>>(d_spikes,
 																	d_weights,
 																	d_lastactive,
 																	d_postsynaptic_neuron_indices,
-																	currentinjection,
+																	neurons_current_injections,
+																	input_neurons_current_injections,
 																	current_time_in_seconds,
 																	total_number_of_connections);
 
@@ -519,7 +521,8 @@ __global__ void calculate_postsynaptic_current_injection_for_connection(int* d_s
 							float* d_weights,
 							float* d_lastactive,
 							int* d_postsynaptic_neuron_indices,
-							float* currentinj,
+							float* neurons_current_injections,
+							float* input_neurons_current_injections,
 							float current_time_in_seconds,
 							size_t total_number_of_connections){
 
@@ -528,8 +531,15 @@ __global__ void calculate_postsynaptic_current_injection_for_connection(int* d_s
 		// Decrememnt Spikes
 		d_spikes[idx] -= 1;
 		if (d_spikes[idx] == 0) {
-			// Get locations of weights and lastactive
-			atomicAdd(&currentinj[d_postsynaptic_neuron_indices[idx]], d_weights[idx]);
+
+			int postsynaptic_neuron_indices = d_postsynaptic_neuron_indices[idx];
+
+			if (postsynaptic_neuron_indices >= 0) {
+				atomicAdd(&neurons_current_injections[d_postsynaptic_neuron_indices[idx]], d_weights[idx]);
+			} else {
+				atomicAdd(&input_neurons_current_injections[-1*postsynaptic_neuron_indices - 1], d_weights[idx]);
+			}
+
 			// Change lastactive
 			d_lastactive[idx] = current_time_in_seconds;
 			// Done!
