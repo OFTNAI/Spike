@@ -428,7 +428,8 @@ __global__ void calculate_postsynaptic_current_injection_for_connection(int* d_s
 __global__ void synapsespikes(int* d_presynaptic_neuron_indices,
 								int* d_delays,
 								int* d_spikes,
-								float* d_lastspiketime,
+								float* d_neurons_last_spike_time,
+								float* d_input_neurons_last_spike_time,
 								int* d_spikebuffer,
 								float currtime,
 								size_t total_number_of_connections);
@@ -466,12 +467,13 @@ void Connections::calculate_postsynaptic_current_injection_for_connection_wrappe
 	CudaCheckError();
 }
 
-void Connections::synapsespikes_wrapper(float* d_lastspiketime, float current_time_in_seconds) {
+void Connections::synapsespikes_wrapper(float* d_neurons_last_spike_time, float* d_input_neurons_last_spike_time, float current_time_in_seconds) {
 
 	synapsespikes<<<number_of_connection_blocks_per_grid, threads_per_block>>>(d_presynaptic_neuron_indices,
 																		d_delays,
 																		d_spikes,
-																		d_lastspiketime,
+																		d_neurons_last_spike_time,
+																		d_input_neurons_last_spike_time,
 																		d_spikebuffer,
 																		current_time_in_seconds,
 																		total_number_of_connections);
@@ -542,7 +544,8 @@ __global__ void calculate_postsynaptic_current_injection_for_connection(int* d_s
 __global__ void synapsespikes(int* d_presynaptic_neuron_indices,
 								int* d_delays,
 								int* d_spikes,
-								float* d_lastspiketime,
+								float* d_neurons_last_spike_time,
+								float* d_input_neurons_last_spike_time,
 								int* d_spikebuffer,
 								float current_time_in_seconds,
 								size_t total_number_of_connections){
@@ -551,7 +554,7 @@ __global__ void synapsespikes(int* d_presynaptic_neuron_indices,
 		// Reduce the spikebuffer by 1
 		d_spikebuffer[idx] -= 1;
 		// Check if the neuron PRE has just fired and if the synapse exists
-		if (d_lastspiketime[d_presynaptic_neuron_indices[idx]] == current_time_in_seconds){
+		if (d_neurons_last_spike_time[d_presynaptic_neuron_indices[idx]] == current_time_in_seconds){
 			// Update the spikes with the correct delay
 			if (d_spikes[idx] <= 0){
 				d_spikes[idx] = d_delays[idx];

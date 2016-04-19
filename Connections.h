@@ -70,7 +70,7 @@ public:
 	void set_threads_per_block_and_blocks_per_grid(int threads);
 
 	void calculate_postsynaptic_current_injection_for_connection_wrapper(float* d_neurons_current_injections, float current_time_in_seconds);
-	void synapsespikes_wrapper(float* d_lastspiketime, float current_time_in_seconds);
+	void synapsespikes_wrapper(float* d_neurons_last_spike_time, float* d_input_neurons_last_spike_time, float current_time_in_seconds);
 	void ltdweights_wrapper(float* d_lastspiketime, float current_time_in_seconds);
 	void synapseLTP_wrapper(float* d_lastspiketime, float current_time_in_seconds);
 

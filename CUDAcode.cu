@@ -138,7 +138,7 @@ void GPUDeviceComputation (
 				input_neurons->check_for_neuron_spikes_wrapper(current_time_in_seconds);
 								
 				// // Check which synapses to send spikes down and do it
-				// connections->synapsespikes_wrapper(neurons->d_lastspiketime, current_time_in_seconds);
+				connections->synapsespikes_wrapper(neurons->d_last_spike_time, input_neurons->d_last_spike_time, current_time_in_seconds);
 
 				// // // Carry out the last step, LTP!
 				// connections->synapseLTP_wrapper(neurons->d_lastspiketime, current_time_in_seconds);
