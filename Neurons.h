@@ -13,8 +13,6 @@
 #include <cuda.h>
 #include <stdio.h>
 
-#include "Connections.h"
-
 
 struct neuron_parameters_struct {
 	neuron_parameters_struct() { }

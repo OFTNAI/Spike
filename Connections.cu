@@ -96,9 +96,8 @@ void Connections::SetSTDP(float w_max_new,
 //		Parameter = either probability for random connections or S.D. for Gaussian
 void Connections::AddGroup(int presynaptic_group_id, 
 						int postsynaptic_group_id, 
-						int* last_neuron_indices_for_neuron_groups,
-						int* last_neuron_indices_for_neuron_input_groups,
-						int** neuron_group_shapes, 
+						Neurons * neurons,
+						Neurons * input_neurons,
 						int connectivity_type,
 						float weight_range[2],
 						int delay_range[2],
@@ -108,6 +107,10 @@ void Connections::AddGroup(int presynaptic_group_id,
 	
 	// Find the right set of indices
 	// Take everything in 2D
+
+	int* last_neuron_indices_for_neuron_groups = neurons->last_neuron_indices_for_each_group;
+	// int* last_neuron_indices_for_neuron_input_group = input_neurons->last_neuron_indices_for_each_group;
+	int** neuron_group_shapes = neurons->group_shapes;
 
 	int group_type_factor = 1;
 	int prestart = 0;

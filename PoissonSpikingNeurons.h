@@ -6,8 +6,6 @@
 #include <curand_kernel.h>
 
 #include "SpikingNeurons.h"
-#include "Connections.h"
-
 
 struct poisson_spiking_neuron_parameters_struct : spiking_neuron_parameters_struct {
 	poisson_spiking_neuron_parameters_struct(): rate(0.0f) { spiking_neuron_parameters_struct(); }

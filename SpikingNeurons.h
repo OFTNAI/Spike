@@ -5,7 +5,6 @@
 #include <stdio.h>
 
 #include "Neurons.h"
-#include "Connections.h"
 
 
 struct spiking_neuron_parameters_struct : neuron_parameters_struct {

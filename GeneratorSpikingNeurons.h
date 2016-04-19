@@ -6,7 +6,6 @@
 #include <curand_kernel.h>
 
 #include "SpikingNeurons.h"
-#include "Connections.h"
 
 class GeneratorSpikingNeurons : public SpikingNeurons {
 public:

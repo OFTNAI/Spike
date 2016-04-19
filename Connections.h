@@ -7,6 +7,9 @@
 #ifndef Connections_H
 #define Connections_H
 
+#include "Neurons.h"
+
+
 // STDP Parameters
 struct stdp_struct {
 	stdp_struct(): w_max(60.0f), a_minus(-0.015f), a_plus(0.005f), tau_minus(0.025f), tau_plus(0.015) { } // default Constructor
@@ -53,9 +56,8 @@ public:
 	// Synapse Functions
 	void AddGroup(int presynaptic_group_id, 
 						int postsynaptic_group_id, 
-						int* last_neuron_indices_for_neuron_groups,
-						int* last_neuron_indices_for_neuron_input_groups,
-						int** neuron_group_shapes, 
+						Neurons * neurons,
+						Neurons * input_neurons,
 						int connectivity_type,
 						float weight_range[2],
 						int delay_range[2],

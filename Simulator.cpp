@@ -107,11 +107,8 @@ void Simulator::AddConnectionGroup(int presynaptic_group_id,
 
 	connections->AddGroup(presynaptic_group_id, 
 							postsynaptic_group_id, 
-
-							neurons->last_neuron_indices_for_each_group,
-							input_neurons->last_neuron_indices_for_each_group,
-
-							neurons->group_shapes,
+							neurons,
+							input_neurons,
 							connectivity_type, 
 							weight_range,
 							delay_range_in_timesteps,
