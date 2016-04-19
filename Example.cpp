@@ -38,9 +38,16 @@ int main (int argc, char *argv[]){
 
 	int ji_test_shape[] = {1000, 1};
 
-	simulator2.AddNeuronGroup(izhhikevich_spiking_group_params, ji_test_shape);
-	simulator2.AddInputNeuronGroup(poisson_spiking_group_params, ji_test_shape);
+	int POISSON_SPIKING_GROUP_ID_LAYER_1 = simulator2.AddInputNeuronGroup(poisson_spiking_group_params, ji_test_shape);
+	int POISSON_SPIKING_GROUP_ID_LAYER_1b = simulator2.AddInputNeuronGroup(poisson_spiking_group_params, ji_test_shape);
+	int IZHIKEVICH_SPIKING_GROUP_ID_LAYER_2 = simulator2.AddNeuronGroup(izhhikevich_spiking_group_params, ji_test_shape);
+	int IZHIKEVICH_SPIKING_GROUP_ID_LAYER_2b = simulator2.AddNeuronGroup(izhhikevich_spiking_group_params, ji_test_shape);
+	
 
+	float LAYER_1_TO_LAYER_2_WEIGHTS[] = {2.50f, 5.0f};
+	float LAYER_1_TO_LAYER_2_DELAY_RANGE[] = {timest, timest};
+	simulator2.AddConnectionGroup(POISSON_SPIKING_GROUP_ID_LAYER_1, IZHIKEVICH_SPIKING_GROUP_ID_LAYER_2, CONNECTIVITY_TYPE_ALL_TO_ALL, LAYER_1_TO_LAYER_2_WEIGHTS, LAYER_1_TO_LAYER_2_DELAY_RANGE, false);
+	simulator2.AddConnectionGroup(POISSON_SPIKING_GROUP_ID_LAYER_1b, IZHIKEVICH_SPIKING_GROUP_ID_LAYER_2b, CONNECTIVITY_TYPE_ALL_TO_ALL, LAYER_1_TO_LAYER_2_WEIGHTS, LAYER_1_TO_LAYER_2_DELAY_RANGE, false);
 
 		// Run the actual simulator!
 	float total_time_per_epoch = 1.25f;
@@ -50,8 +57,8 @@ int main (int argc, char *argv[]){
 
 
 	// // connections parameters
-	// float INPUT_TO_INTER_weights[] = {2.50f, 5.0f};
-	// float DefaultDelay[] = {timest, timest};
+	// 
+	// 
 
 	// float test_weight_range[] = {2.50f, 5.0f};
 	// float test_delay_range[] = {timest, 50.0f*pow(10, -3)};

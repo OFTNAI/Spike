@@ -53,7 +53,7 @@ int Neurons::AddGroup(neuron_parameters_struct * group_params, int group_shape[2
 	// Update totals
 	total_number_of_neurons += number_of_neurons_in_new_group;
 	++total_number_of_groups;
-	printf("total_number_of_groups: %d\n", total_number_of_groups); // Temp helper
+	// printf("total_number_of_groups: %d\n", total_number_of_groups); // Temp helper
 
 	// Calculate new group id
 	int new_group_id = total_number_of_groups - 1;

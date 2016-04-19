@@ -108,9 +108,15 @@ void Connections::AddGroup(int presynaptic_group_id,
 	// Find the right set of indices
 	// Take everything in 2D
 
+	printf("presynaptic_group_id: %d\n", presynaptic_group_id);
+	printf("postsynaptic_group_id: %d\n", postsynaptic_group_id);
+
 	int* last_neuron_indices_for_neuron_groups = neurons->last_neuron_indices_for_each_group;
-	// int* last_neuron_indices_for_neuron_input_group = input_neurons->last_neuron_indices_for_each_group;
-	int** neuron_group_shapes = neurons->group_shapes;
+	int* last_neuron_indices_for_input_neuron_groups = input_neurons->last_neuron_indices_for_each_group;
+	int** neuron_group_shapes = neurons->group_shapes; //OLD
+
+	int * presynaptic_group_shape;
+	int * postsynaptic_group_shape;
 
 	int group_type_factor = 1;
 	int prestart = 0;
@@ -118,15 +124,20 @@ void Connections::AddGroup(int presynaptic_group_id,
 	int poststart = 0;
 
 	// Calculate presynaptic group start and end indices
+	// Also assign presynaptic group shape
 	if (presynaptic_group_id < 0) { // If presynaptic group is Input group
-		// group_type_factor = -1;
 
-		// if (presynaptic_group_id < -1){
-		// 	prestart = last_input_indices_for_each_group[-1*presynaptic_group_id - 1];
-		// }
-		// preend = last_input_indices_for_each_group[-1*postsynaptic_group_id];
+		group_type_factor = -1;
+		presynaptic_group_shape = input_neurons->group_shapes[-1*presynaptic_group_id - 1];
+
+		if (presynaptic_group_id < -1){
+			prestart = last_neuron_indices_for_input_neuron_groups[-1*presynaptic_group_id - 2];
+		}
+		preend = last_neuron_indices_for_input_neuron_groups[-1*presynaptic_group_id - 1];
 
 	} else {
+
+		presynaptic_group_shape = neurons->group_shapes[presynaptic_group_id];
 
 		if (presynaptic_group_id > 0){
 			prestart = last_neuron_indices_for_neuron_groups[presynaptic_group_id - 1];
@@ -136,14 +147,15 @@ void Connections::AddGroup(int presynaptic_group_id,
 	}
 
 	// Calculate postsynaptic group start and end indices
+	// Also assign postsynaptic group shape
 	if (postsynaptic_group_id < 0) { // If presynaptic group is Input group EXIT
 
-		printf("Input groups cannot be the postsynaptic. Exiting...\n");
+		printf("Input groups cannot be a postsynaptic neuron group. Exiting...\n");
 		exit(-1);
 
-	} 
+	} else if (postsynaptic_group_id >= 0){
+		postsynaptic_group_shape = neurons->group_shapes[postsynaptic_group_id];
 
-	if (postsynaptic_group_id > 0){
 		poststart = last_neuron_indices_for_neuron_groups[postsynaptic_group_id-1];
 	}
 	int postend = last_neuron_indices_for_neuron_groups[postsynaptic_group_id];
@@ -152,7 +164,7 @@ void Connections::AddGroup(int presynaptic_group_id,
 	printf("prestart: %d\n", prestart);
 	printf("preend: %d\n", preend);
 	printf("poststart: %d\n", poststart);
-	printf("postend: %d\n", postend);
+	printf("postend: %d\n\n", postend);
 
 
 	int original_number_of_connections = total_number_of_connections;

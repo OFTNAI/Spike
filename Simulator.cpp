@@ -47,7 +47,7 @@ Simulator::~Simulator(){
 // Timestep Setting function
 void Simulator::SetTimestep(float timest){
 
-	printf("timest = %d", connections->total_number_of_connections);
+	printf("timest = %d\n\n", connections->total_number_of_connections);
 	if (connections->total_number_of_connections == 0){
 		timestep = timest;
 	} else {

@@ -31,7 +31,9 @@ int PoissonSpikingNeurons::AddGroup(neuron_parameters_struct * group_params, int
 		rates[i] = poisson_spiking_group_params->rate;
 	}
 
-	return -1 * new_group_id;
+
+	// printf("POISSON  GROUP ID: %d\n", new_group_id);
+	return -1 * new_group_id - 1;
 
 }
 
