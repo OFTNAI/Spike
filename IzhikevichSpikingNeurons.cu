@@ -29,7 +29,7 @@ int IzhikevichSpikingNeurons::AddGroup(neuron_parameters_struct * group_params, 
 	param_a = (float*)realloc(param_a, (total_number_of_neurons*sizeof(float)));
 	param_b = (float*)realloc(param_b, (total_number_of_neurons*sizeof(float)));
 
-	for (int i = 0; i < total_number_of_neurons; i++) {
+	for (int i = total_number_of_neurons - number_of_neurons_in_new_group; i < total_number_of_neurons; i++) {
 		param_a[i] = izhikevich_spiking_group_params->parama;
 		param_b[i] = izhikevich_spiking_group_params->paramb;
 	}

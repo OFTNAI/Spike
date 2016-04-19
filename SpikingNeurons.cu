@@ -35,7 +35,7 @@ int SpikingNeurons::AddGroup(neuron_parameters_struct * group_params, int group_
 	param_c = (float*)realloc(param_c, (total_number_of_neurons*sizeof(float)));
 	param_d = (float*)realloc(param_d, (total_number_of_neurons*sizeof(float)));
 
-	for (int i = 0; i < total_number_of_neurons; i++) {
+	for (int i = total_number_of_neurons - number_of_neurons_in_new_group; i < total_number_of_neurons; i++) {
 		states_v[i] = spiking_group_params->state_v;
 		states_u[i] = spiking_group_params->state_u;
 		param_c[i] = spiking_group_params->paramc;

@@ -27,7 +27,7 @@ int PoissonSpikingNeurons::AddGroup(neuron_parameters_struct * group_params, int
 	poisson_spiking_neuron_parameters_struct * poisson_spiking_group_params = (poisson_spiking_neuron_parameters_struct*)group_params;
 
 	rates = (float*)realloc(rates, sizeof(float)*total_number_of_neurons);
-	for (int i = 0; i < total_number_of_neurons; i++) {
+	for (int i = total_number_of_neurons - number_of_neurons_in_new_group; i < total_number_of_neurons; i++) {
 		rates[i] = poisson_spiking_group_params->rate;
 	}
 

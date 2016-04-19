@@ -24,7 +24,7 @@ int GeneratorSpikingNeurons::AddGroup(neuron_parameters_struct * group_params, i
 
 	// rates = (float*)realloc(rates, (total_number_of_neurons*sizeof(float)));
 
-	for (int i = 0; i < total_number_of_neurons; i++) {
+	for (int i = total_number_of_neurons - number_of_neurons_in_new_group; i < total_number_of_neurons; i++) {
 		// rates[i] = params->rate;
 	}
 
