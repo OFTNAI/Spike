@@ -417,9 +417,6 @@ void Connections::set_threads_per_block_and_blocks_per_grid(int threads) {
 
 
 
-
-
-
 __global__ void calculate_postsynaptic_current_injection_for_connection(int* d_spikes,
 							float* d_weights,
 							float* d_lastactive,

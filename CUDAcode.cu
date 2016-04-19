@@ -30,7 +30,7 @@ __global__ void init(unsigned int seed, curandState_t* states, size_t numNeurons
 
 
 void GPUDeviceComputation (
-					Neurons * neurons,
+					SpikingNeurons * neurons,
 					Connections * connections,
 					PoissonSpikingNeurons * input_neurons,
 
@@ -131,7 +131,7 @@ void GPUDeviceComputation (
 				// connections->ltdweights_wrapper(neurons->d_lastspiketime, current_time_in_seconds);
 
 				// // Update States of neurons
-				// neurons->stateupdate_wrapper(timestep);
+				neurons->state_update_wrapper(timestep);
 
 				// // Check which neurons are spiking and deal with them
 				// neurons->check_for_neuron_spikes_wrapper(current_time_in_seconds);

@@ -57,7 +57,7 @@ void Simulator::SetTimestep(float timest){
 }
 
 
-void Simulator::SetNeuronType(Neurons * neurons_parameter) {
+void Simulator::SetNeuronType(SpikingNeurons * neurons_parameter) {
 	neurons = neurons_parameter;
 }
 

@@ -18,6 +18,7 @@
 #include "Neurons.h"
 #include "Connections.h"
 #include "PoissonSpikingNeurons.h"
+#include "SpikingNeurons.h"
 
 // Simulator Class for running of the simulations
 class Simulator{
@@ -26,7 +27,7 @@ public:
 	Simulator();
 	~Simulator();
 
-	Neurons * neurons;
+	SpikingNeurons * neurons;
 	Connections * connections;
 	PoissonSpikingNeurons * input_neurons;
 
@@ -40,7 +41,7 @@ public:
 	float timestep;
 	void SetTimestep(float timest);
 
-	void SetNeuronType(Neurons * neurons_parameter);
+	void SetNeuronType(SpikingNeurons * neurons_parameter);
 	void SetInputNeuronType(PoissonSpikingNeurons * neurons_parameter);
 
 	int AddNeuronGroup(neuron_parameters_struct * group_params, int shape[2]);

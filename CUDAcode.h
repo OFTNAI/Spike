@@ -20,13 +20,14 @@
 // Neuron structure
 
 #include "Neurons.h"
+#include "SpikingNeurons.h"
 #include "Connections.h"
 #include "PoissonSpikingNeurons.h"
 
 
 // Functions!
 void GPUDeviceComputation (
-					Neurons * neurons,
+					SpikingNeurons * neurons,
 					Connections * connections,
 					PoissonSpikingNeurons * input_neurons,
 

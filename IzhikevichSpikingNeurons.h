@@ -30,7 +30,7 @@ public:
 	virtual void initialise_device_pointers();
 	virtual void reset_neuron_variables_and_spikes();
 
-	void izhikevich_state_update_wrapper(float timestep);
+	virtual void state_update_wrapper(float timestep);
 
 };
 
