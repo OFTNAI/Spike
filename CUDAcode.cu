@@ -57,32 +57,29 @@ void GPUDeviceComputation (
 
 	recording_electrodes->initialise_device_pointers();
 	recording_electrodes->initialise_host_pointers();
-
 	input_recording_electrodes->initialise_device_pointers();
 	input_recording_electrodes->initialise_host_pointers();
 
 
-	// THREADS&BLOCKS
-	// The number of threads per block I shall keep held at 128
+
 	int threads_per_block = 128;
 	connections->set_threads_per_block_and_blocks_per_grid(threads_per_block);
 	neurons->set_threads_per_block_and_blocks_per_grid(threads_per_block);
 	input_neurons->set_threads_per_block_and_blocks_per_grid(threads_per_block);
 
+	// SEEDING
+	srand(42);
 
-	input_neurons->generate_random_states_wrapper();
-
-
-	// STIMULUS ORDER
+	// STIMULUS ORDER (Put into function + variable)
 	int stimuli_presentation_order[number_of_stimuli];
 	for (int i = 0; i < number_of_stimuli; i++){
 		stimuli_presentation_order[i] = i;
 	}
 
-	// SEEDING
-	srand(42);
 
 	recording_electrodes->write_initial_synaptic_weights_to_file(connections);
+	
+	input_neurons->generate_random_states_wrapper();
 
 
 	clock_t begin = clock();
@@ -93,16 +90,14 @@ void GPUDeviceComputation (
 			random_shuffle(&stimuli_presentation_order[0], &stimuli_presentation_order[number_of_stimuli]);
 		}
 		// Running through every Stimulus
-		for (int j = 0; j < number_of_stimuli; j++){
+		for (int stimulus_index = 0; stimulus_index < number_of_stimuli; stimulus_index++){
 			// Get the presentation position:
-			int present = stimuli_presentation_order[j];
+			int present = stimuli_presentation_order[stimulus_index];
 			// Get the number of entries for this specific stimulus
 			size_t numEnts = numEntries[present];
 			if (numEnts > 0){
-
 				temp_test_generator->initialise_device_pointers_for_ents(numEnts, present);
 				temp_test_generator->set_threads_per_block_and_blocks_per_grid(threads_per_block);
-				
 			}
 			// Reset the variables necessary
 			neurons->reset_neuron_variables_and_spikes();
@@ -128,7 +123,7 @@ void GPUDeviceComputation (
 				connections->calculate_postsynaptic_current_injection_for_connection_wrapper(neurons->d_current_injections, current_time_in_seconds);
 
 				// // Carry out LTD on appropriate synapses
-				connections->ltdweights_wrapper(neurons->d_last_spike_time, current_time_in_seconds);
+				connections->apply_ltd_to_connection_weights(neurons->d_last_spike_time, current_time_in_seconds);
 
 				// // Update States of neurons
 				neurons->state_update_wrapper(timestep);
@@ -141,7 +136,7 @@ void GPUDeviceComputation (
 				connections->synapsespikes_wrapper(neurons->d_last_spike_time, input_neurons->d_last_spike_time, current_time_in_seconds);
 
 				// // // Carry out the last step, LTP!
-				connections->synapseLTP_wrapper(neurons->d_last_spike_time, current_time_in_seconds);
+				connections->apply_ltp_to_connection_weights(neurons->d_last_spike_time, current_time_in_seconds);
 				
 
 				// // Only save the spikes if necessary

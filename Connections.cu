@@ -440,7 +440,7 @@ __global__ void synapsespikes(int* d_presynaptic_neuron_indices,
 								float currtime,
 								size_t total_number_of_connections);
 
-__global__ void ltdweights(float* d_lastactive,
+__global__ void apply_ltd_to_connection_weights_kernal(float* d_lastactive,
 							float* d_weights,
 							int* d_stdp,
 							float* d_lastspiketime,
@@ -449,7 +449,7 @@ __global__ void ltdweights(float* d_lastactive,
 							struct stdp_struct stdp_vars,
 							size_t numConns);
 
-__global__ void synapseLTP(int* d_postsyns,
+__global__ void apply_ltp_to_connection_weights_kernal(int* d_postsyns,
 							float* d_lastspiketime,
 							int* d_stdp,
 							float* d_lastactive,
@@ -487,9 +487,9 @@ void Connections::synapsespikes_wrapper(float* d_neurons_last_spike_time, float*
 	CudaCheckError();
 }
 
-void Connections::ltdweights_wrapper(float* d_lastspiketime, float current_time_in_seconds) {
+void Connections::apply_ltd_to_connection_weights(float* d_lastspiketime, float current_time_in_seconds) {
 
-	ltdweights<<<number_of_connection_blocks_per_grid, threads_per_block>>>(d_lastactive,
+	apply_ltd_to_connection_weights_kernal<<<number_of_connection_blocks_per_grid, threads_per_block>>>(d_lastactive,
 																	d_weights,
 																	d_stdp,
 																	d_lastspiketime,
@@ -502,9 +502,9 @@ void Connections::ltdweights_wrapper(float* d_lastspiketime, float current_time_
 }
 
 
-void Connections::synapseLTP_wrapper(float* d_lastspiketime, float current_time_in_seconds) {
+void Connections::apply_ltp_to_connection_weights(float* d_lastspiketime, float current_time_in_seconds) {
 	// Carry out the last step, LTP!
-	synapseLTP<<<number_of_connection_blocks_per_grid, threads_per_block>>>(d_postsynaptic_neuron_indices,
+	apply_ltp_to_connection_weights_kernal<<<number_of_connection_blocks_per_grid, threads_per_block>>>(d_postsynaptic_neuron_indices,
 																	d_lastspiketime,
 																	d_stdp,
 																	d_lastactive,
@@ -599,7 +599,7 @@ __global__ void synapsespikes(int* d_presynaptic_neuron_indices,
 
 
 // LTD of weights
-__global__ void ltdweights(float* d_lastactive,
+__global__ void apply_ltd_to_connection_weights_kernal(float* d_lastactive,
 							float* d_weights,
 							int* d_stdp,
 							float* d_lastspiketime,
@@ -624,7 +624,7 @@ __global__ void ltdweights(float* d_lastactive,
 
 
 // LTP on synapses
-__global__ void synapseLTP(int* d_postsyns,
+__global__ void apply_ltp_to_connection_weights_kernal(int* d_postsyns,
 							float* d_lastspiketime,
 							int* d_stdp,
 							float* d_lastactive,
