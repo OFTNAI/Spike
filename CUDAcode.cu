@@ -128,7 +128,7 @@ void GPUDeviceComputation (
 				connections->calculate_postsynaptic_current_injection_for_connection_wrapper(neurons->d_current_injections, current_time_in_seconds);
 
 				// // Carry out LTD on appropriate synapses
-				// connections->ltdweights_wrapper(neurons->d_lastspiketime, current_time_in_seconds);
+				connections->ltdweights_wrapper(neurons->d_last_spike_time, current_time_in_seconds);
 
 				// // Update States of neurons
 				neurons->state_update_wrapper(timestep);
@@ -141,7 +141,7 @@ void GPUDeviceComputation (
 				connections->synapsespikes_wrapper(neurons->d_last_spike_time, input_neurons->d_last_spike_time, current_time_in_seconds);
 
 				// // // Carry out the last step, LTP!
-				// connections->synapseLTP_wrapper(neurons->d_lastspiketime, current_time_in_seconds);
+				connections->synapseLTP_wrapper(neurons->d_last_spike_time, current_time_in_seconds);
 				
 
 				// // Only save the spikes if necessary

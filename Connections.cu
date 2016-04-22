@@ -128,6 +128,11 @@ void Connections::AddGroup(int presynaptic_group_id,
 	// Also assign presynaptic group shape
 	if (presynaptic_group_id < 0) { // If presynaptic group is Input group
 
+		if (stdp_on == true) {
+			printf("Plasticity between input neurons and model neurons is not currently supported. Exiting...\n");
+			exit(-1);
+		}
+
 		group_type_factor = -1;
 		group_type_component = -1;
 		presynaptic_group_shape = input_neurons->group_shapes[-1*presynaptic_group_id - 1];
@@ -565,7 +570,6 @@ __global__ void synapsespikes(int* d_presynaptic_neuron_indices,
 
 		// Check if the neuron PRE has just fired and if the synapse exists
 		if (presynaptic_neurons_last_spike_time == current_time_in_seconds){
-			printf("SPIKE NOW!\n");
 			// Update the spikes with the correct delay
 			if (d_spikes[idx] <= 0){
 				d_spikes[idx] = d_delays[idx];
