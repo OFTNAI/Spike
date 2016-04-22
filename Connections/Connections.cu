@@ -12,7 +12,6 @@
 // allows maths
 #include <math.h>
 
-#include "../Constants.h"
 #include <cuda.h>
 #include "../CUDAErrorCheckHelpers.h"
 

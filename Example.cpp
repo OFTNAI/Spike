@@ -11,7 +11,7 @@
 
 
 #include "Simulator.h"
-#include "Constants.h"
+#include "Connections/Connections.h"
 #include "Neurons/Neurons.h"
 #include "Neurons/IzhikevichSpikingNeurons.h"
 #include "Neurons/PoissonSpikingNeurons.h"

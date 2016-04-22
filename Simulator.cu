@@ -15,7 +15,6 @@
 #include <time.h>
 
 #include "Simulator.h"
-#include "Constants.h"
 #include "RecordingElectrodes.h"
 #include "Neurons/GeneratorSpikingNeurons.h"
 

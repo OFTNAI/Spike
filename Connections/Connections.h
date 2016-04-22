@@ -10,6 +10,17 @@
 #include "../Neurons/Neurons.h"
 
 
+enum CONNECTIVITY_TYPE
+{
+    CONNECTIVITY_TYPE_ALL_TO_ALL,
+    CONNECTIVITY_TYPE_ONE_TO_ONE,
+    CONNECTIVITY_TYPE_RANDOM,
+    CONNECTIVITY_TYPE_GAUSSIAN,
+    CONNECTIVITY_TYPE_IRINA_GAUSSIAN,
+    CONNECTIVITY_TYPE_SINGLE
+};
+
+
 // STDP Parameters
 struct stdp_struct {
 	stdp_struct(): w_max(60.0f), a_minus(-0.015f), a_plus(0.005f), tau_minus(0.025f), tau_plus(0.015) { } // default Constructor
