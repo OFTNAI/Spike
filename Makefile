@@ -25,15 +25,15 @@ model: ${FILE}
 
 
 # Separating out the individual compilations so as not to compilation time
-${FILE}: ${FILE}.o Simulator.o Neurons.o SpikingNeurons.o IzhikevichSpikingNeurons.o PoissonSpikingNeurons.o GeneratorSpikingNeurons.o Connections.o RecordingElectrodes.o CUDAcode.o
-	$(CC) ${FILE}.o Simulator.o Neurons.o SpikingNeurons.o IzhikevichSpikingNeurons.o PoissonSpikingNeurons.o GeneratorSpikingNeurons.o Connections.o RecordingElectrodes.o CUDAcode.o -o ${FILE}
+${FILE}: ${FILE}.o Simulator.o Neurons.o SpikingNeurons.o IzhikevichSpikingNeurons.o PoissonSpikingNeurons.o GeneratorSpikingNeurons.o Connections.o RecordingElectrodes.o
+	$(CC) ${FILE}.o Simulator.o Neurons.o SpikingNeurons.o IzhikevichSpikingNeurons.o PoissonSpikingNeurons.o GeneratorSpikingNeurons.o Connections.o RecordingElectrodes.o -o ${FILE}
 
 # Compiling the Model file
 ${FILE}.o: ${FILE}.cpp
 	$(CC) $(CFLAGS) ${FILE}.cpp
 # Compiling the Simulator class
-Simulator.o: Simulator.cpp
-	$(CC) $(CFLAGS) Simulator.cpp
+Simulator.o: Simulator.cu
+	$(CC) $(CFLAGS) Simulator.cu
 # Compiling the Neurons class
 Neurons.o: Neurons.cu
 	$(CC) $(CFLAGS) Neurons.cu
@@ -55,14 +55,11 @@ Connections.o: Connections.cu
 # Compiling RecordingElectrodes class
 RecordingElectrodes.o: RecordingElectrodes.cu
 	$(CC) $(CFLAGS) RecordingElectrodes.cu
-# Compiling the CUDA code
-CUDAcode.o: CUDAcode.cu
-	$(CC) $(CFLAGS) CUDAcode.cu
 
 
 # Test script
-test: Simulator.o Neurons.o SpikingNeurons.o IzhikevichSpikingNeurons.o PoissonSpikingNeurons.o GeneratorSpikingNeurons.o Connections.o RecordingElectrodes.o CUDAcode.o
-	$(CC) Tests.cu Simulator.o Neurons.o SpikingNeurons.o IzhikevichSpikingNeurons.o PoissonSpikingNeurons.o GeneratorSpikingNeurons.o Connections.o RecordingElectrodes.o CUDAcode.o -o unittests
+test: Simulator.o Neurons.o SpikingNeurons.o IzhikevichSpikingNeurons.o PoissonSpikingNeurons.o GeneratorSpikingNeurons.o Connections.o RecordingElectrodes.o
+	$(CC) Tests.cu Simulator.o Neurons.o SpikingNeurons.o IzhikevichSpikingNeurons.o PoissonSpikingNeurons.o GeneratorSpikingNeurons.o Connections.o RecordingElectrodes.o -o unittests
 cleantest:
 	rm *.o unittests
 

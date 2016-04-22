@@ -14,7 +14,14 @@
 // Silences the printfs
 //#define QUIETSTART
 
-#include "CUDAcode.h"
+// cuRand Library import
+#include <curand.h>
+#include <curand_kernel.h>
+
+//	CUDA library
+#include <cuda.h>
+
+// #include "CUDAcode.h"
 #include "Neurons.h"
 #include "Connections.h"
 #include "PoissonSpikingNeurons.h"

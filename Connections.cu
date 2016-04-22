@@ -431,7 +431,7 @@ __global__ void calculate_postsynaptic_current_injection_for_connection(int* d_s
 							float current_time_in_seconds,
 							size_t total_number_of_connections);
 
-__global__ void synapsespikes(int* d_presynaptic_neuron_indices,
+__global__ void check_for_synapse_spike_arrival_kernal(int* d_presynaptic_neuron_indices,
 								int* d_delays,
 								int* d_spikes,
 								float* d_neurons_last_spike_time,
@@ -473,9 +473,9 @@ void Connections::calculate_postsynaptic_current_injection_for_connection_wrappe
 	CudaCheckError();
 }
 
-void Connections::synapsespikes_wrapper(float* d_neurons_last_spike_time, float* d_input_neurons_last_spike_time, float current_time_in_seconds) {
+void Connections::check_for_synapse_spike_arrival(float* d_neurons_last_spike_time, float* d_input_neurons_last_spike_time, float current_time_in_seconds) {
 
-	synapsespikes<<<number_of_connection_blocks_per_grid, threads_per_block>>>(d_presynaptic_neuron_indices,
+	check_for_synapse_spike_arrival_kernal<<<number_of_connection_blocks_per_grid, threads_per_block>>>(d_presynaptic_neuron_indices,
 																		d_delays,
 																		d_spikes,
 																		d_neurons_last_spike_time,
@@ -547,7 +547,7 @@ __global__ void calculate_postsynaptic_current_injection_for_connection(int* d_s
 
 // Synapses carrying spikes
 // JI GIVE A BETTER NAME
-__global__ void synapsespikes(int* d_presynaptic_neuron_indices,
+__global__ void check_for_synapse_spike_arrival_kernal(int* d_presynaptic_neuron_indices,
 								int* d_delays,
 								int* d_spikes,
 								float* d_neurons_last_spike_time,

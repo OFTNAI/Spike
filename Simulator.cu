@@ -4,15 +4,22 @@
 //	Original Author: Nasir Ahmad
 //	Date: 8/12/2015
 //	Originally Spike.cpp
-//  
+// 
 //  Adapted by Nasir Ahmad and James Isbister
 //	Date: 23/3/2016
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <cmath>
+#include <algorithm> // For random shuffle
+#include <time.h>
+
 #include "Simulator.h"
 #include "Constants.h"
+#include "RecordingElectrodes.h"
+#include "GeneratorSpikingNeurons.h"
+
+#include "CUDAErrorCheckHelpers.h"
 
 
 // Constructor
@@ -85,10 +92,6 @@ int Simulator::AddInputNeuronGroup(neuron_parameters_struct * group_params, int 
 }
 
 
-
-//OLD 
-
-
 void Simulator::AddConnectionGroup(int presynaptic_group_id, 
 							int postsynaptic_group_id, 
 							int connectivity_type,
@@ -118,9 +121,10 @@ void Simulator::AddConnectionGroup(int presynaptic_group_id,
 }
 
 
+
+
 void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_spikes, bool present_stimuli_in_random_order){
 	#ifndef QUIETSTART
-	// Give the user some feedback
 	printf("\n\n----------------------------------\n");
 	printf("Simulation Beginning\n");
 	printf("Time Step: %f\nNumber of Stimuli: %d\nNumber of Epochs: %d\n\n", timestep, number_of_stimuli, number_of_epochs);
@@ -145,24 +149,142 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_
 		exit(-1);
 	}
 
-	// Do the SPIKING SIMULATION!
-	GPUDeviceComputation (
-					neurons,
-					connections,
-					input_neurons,
 
-					// Could put following 4 in Simulator parameters dictionary
-					total_time_per_epoch,
-					number_of_epochs,
-					timestep,
-					save_spikes,
+	GeneratorSpikingNeurons * temp_test_generator = new GeneratorSpikingNeurons();
+	RecordingElectrodes * recording_electrodes = new RecordingElectrodes(neurons);
+	RecordingElectrodes * input_recording_electrodes = new RecordingElectrodes(input_neurons);
 
-					number_of_stimuli,
-					numEntries,
-					genids,
-					gentimes,
-					present_stimuli_in_random_order);
+	neurons->initialise_device_pointers();
+	connections->initialise_device_pointers();
+	input_neurons->initialise_device_pointers();
 
+	recording_electrodes->initialise_device_pointers();
+	recording_electrodes->initialise_host_pointers();
+	input_recording_electrodes->initialise_device_pointers();
+	input_recording_electrodes->initialise_host_pointers();
+
+
+
+	int threads_per_block = 128;
+	connections->set_threads_per_block_and_blocks_per_grid(threads_per_block);
+	neurons->set_threads_per_block_and_blocks_per_grid(threads_per_block);
+	input_neurons->set_threads_per_block_and_blocks_per_grid(threads_per_block);
+
+	// SEEDING
+	srand(42);
+
+	// STIMULUS ORDER (Put into function + variable)
+	int stimuli_presentation_order[number_of_stimuli];
+	for (int i = 0; i < number_of_stimuli; i++){
+		stimuli_presentation_order[i] = i;
+	}
+
+
+	recording_electrodes->write_initial_synaptic_weights_to_file(connections);
+	
+	input_neurons->generate_random_states_wrapper();
+
+
+	clock_t begin = clock();
+
+	for (int epoch_number = 0; epoch_number < number_of_epochs; epoch_number++) {
+
+		if (present_stimuli_in_random_order) {
+			std::random_shuffle(&stimuli_presentation_order[0], &stimuli_presentation_order[number_of_stimuli]);
+		}
+		// Running through every Stimulus
+		for (int stimulus_index = 0; stimulus_index < number_of_stimuli; stimulus_index++){
+			// Get the presentation position:
+			int present = stimuli_presentation_order[stimulus_index];
+			// Get the number of entries for this specific stimulus
+			size_t numEnts = numEntries[present];
+			if (numEnts > 0){
+				temp_test_generator->initialise_device_pointers_for_ents(numEnts, present);
+				temp_test_generator->set_threads_per_block_and_blocks_per_grid(threads_per_block);
+			}
+			// Reset the variables necessary
+			neurons->reset_neuron_variables_and_spikes();
+			connections->reset_connection_spikes();
+
+			int number_of_timesteps_per_epoch = total_time_per_epoch / timestep;
+			float current_time_in_seconds = 0.0f;
+		
+			for (int timestep_index = 0; timestep_index < number_of_timesteps_per_epoch; timestep_index++){
+				
+				current_time_in_seconds = float(timestep_index)*float(timestep);
+				
+				neurons->reset_device_current_injections();
+				
+				input_neurons->update_poisson_state_wrapper(timestep);
+
+				// // If there are any spike generators
+				// if (numEnts > 0) {
+				// 	// Update those neurons corresponding to the Spike Generators
+				// 	temp_test_generator->generupdate2_wrapper(current_time_in_seconds, timestep);
+				// } 
+				
+				connections->calculate_postsynaptic_current_injection_for_connection_wrapper(neurons->d_current_injections, current_time_in_seconds);
+
+				connections->apply_ltd_to_connection_weights(neurons->d_last_spike_time, current_time_in_seconds);
+
+				neurons->update_neuron_states(timestep);
+
+				// // Check which neurons are spiking and deal with them
+				neurons->check_for_neuron_spikes_wrapper(current_time_in_seconds);
+				input_neurons->check_for_neuron_spikes_wrapper(current_time_in_seconds);
+								
+				connections->check_for_synapse_spike_arrival(neurons->d_last_spike_time, input_neurons->d_last_spike_time, current_time_in_seconds);
+
+				connections->apply_ltp_to_connection_weights(neurons->d_last_spike_time, current_time_in_seconds);
+				
+
+				// // Only save the spikes if necessary
+				if (save_spikes){
+					recording_electrodes->save_spikes_to_host(current_time_in_seconds, timestep_index, number_of_timesteps_per_epoch);
+					input_recording_electrodes->save_spikes_to_host(current_time_in_seconds, timestep_index, number_of_timesteps_per_epoch);
+
+				}
+			}
+			if (numEnts > 0){
+				// CudaSafeCall(cudaFree(d_genids));
+				// CudaSafeCall(cudaFree(d_gentimes));
+			}
+		}
+		#ifndef QUIETSTART
+		clock_t mid = clock();
+		if (save_spikes) {
+			printf("Epoch %d, Complete.\n Running Time: %f\n Number of Spikes: %d\n\n", epoch_number, (float(mid-begin) / CLOCKS_PER_SEC), recording_electrodes->h_total_number_of_spikes);
+			printf("Number of Input Spikes: %d\n\n", input_recording_electrodes->h_total_number_of_spikes);
+		
+		} else {
+			printf("Epoch %d, Complete.\n Running Time: %f\n\n", epoch_number, (float(mid-begin) / CLOCKS_PER_SEC));
+		}
+		#endif
+		// Output Spikes list after each epoch:
+		// Only save the spikes if necessary
+		if (save_spikes){
+			recording_electrodes->write_spikes_to_file(neurons, epoch_number);
+		}
+	}
+	
+	// SIMULATION COMPLETE!
+	#ifndef QUIETSTART
+	// Finish the simulation and check time
+	clock_t end = clock();
+	float timed = float(end-begin) / CLOCKS_PER_SEC;
+	printf("Simulation Complete! Time Elapsed: %f\n\n", timed);
+	#endif
+
+	recording_electrodes->save_network_state(connections);
+
+
+	delete neurons;
+	delete connections;
+	delete recording_electrodes;
+
+	// Free Memory on CPU
+	free(recording_electrodes->h_spikestoretimes);
+	free(recording_electrodes->h_spikestoreID);
 
 }
 
