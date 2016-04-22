@@ -27,7 +27,7 @@ public:
 
 	virtual int AddGroup(neuron_parameters_struct * group_params, int group_shape[2]);
 	virtual void initialise_device_pointers();
-	void reset_input_variables();
+	virtual void reset_neurons();
 
 	void generate_random_states_wrapper();
 	void update_poisson_state_wrapper(float timestep);

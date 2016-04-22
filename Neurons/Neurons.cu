@@ -65,18 +65,14 @@ int Neurons::AddGroup(neuron_parameters_struct * group_params, int group_shape[2
 
 void Neurons::initialise_device_pointers() {
 
-	
 	CudaSafeCall(cudaMalloc((void **)&d_current_injections, sizeof(float)*total_number_of_neurons));
-
-	Neurons::reset_neuron_variables_and_spikes();
-	Neurons::reset_device_current_injections();
 }
 
-void Neurons::reset_neuron_variables_and_spikes() {
-
+void Neurons::reset_neurons() {
+	reset_current_injections();
 }
 
-void Neurons::reset_device_current_injections() {
+void Neurons::reset_current_injections() {
 	CudaSafeCall(cudaMemset(d_current_injections, 0.0f, total_number_of_neurons*sizeof(float)));
 }
 

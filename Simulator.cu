@@ -163,7 +163,6 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_
 	input_recording_electrodes->initialise_host_pointers();
 
 
-
 	int threads_per_block = 128;
 	connections->set_threads_per_block_and_blocks_per_grid(threads_per_block);
 	neurons->set_threads_per_block_and_blocks_per_grid(threads_per_block);
@@ -202,7 +201,8 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_
 				temp_test_generator->set_threads_per_block_and_blocks_per_grid(threads_per_block);
 			}
 			// Reset the variables necessary
-			neurons->reset_neuron_variables_and_spikes();
+			neurons->reset_neurons();
+			input_neurons->reset_neurons();
 			connections->reset_connection_spikes();
 
 			int number_of_timesteps_per_epoch = total_time_per_epoch / timestep;
@@ -212,7 +212,7 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_
 				
 				current_time_in_seconds = float(timestep_index)*float(timestep);
 				
-				neurons->reset_device_current_injections();
+				neurons->reset_current_injections();
 				
 				input_neurons->update_poisson_state_wrapper(timestep);
 
@@ -228,7 +228,6 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_
 
 				neurons->update_neuron_states(timestep);
 
-				// // Check which neurons are spiking and deal with them
 				neurons->check_for_neuron_spikes_wrapper(current_time_in_seconds);
 				input_neurons->check_for_neuron_spikes_wrapper(current_time_in_seconds);
 								

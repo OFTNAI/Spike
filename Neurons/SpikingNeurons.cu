@@ -56,14 +56,11 @@ void SpikingNeurons::initialise_device_pointers() {
  	CudaSafeCall(cudaMalloc((void **)&d_states_u, sizeof(float)*total_number_of_neurons));
  	CudaSafeCall(cudaMalloc((void **)&d_param_c, sizeof(float)*total_number_of_neurons));
  	CudaSafeCall(cudaMalloc((void **)&d_param_d, sizeof(float)*total_number_of_neurons));
-
-
-	SpikingNeurons::reset_neuron_variables_and_spikes();
 }
 
-void SpikingNeurons::reset_neuron_variables_and_spikes() {
+void SpikingNeurons::reset_neurons() {
 
-	Neurons::reset_neuron_variables_and_spikes();
+	Neurons::reset_neurons();
 
 	CudaSafeCall(cudaMemset(d_last_spike_times, -1000.0f, total_number_of_neurons*sizeof(float)));
 
@@ -71,7 +68,6 @@ void SpikingNeurons::reset_neuron_variables_and_spikes() {
 	CudaSafeCall(cudaMemcpy(d_states_u, states_u, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_param_c, param_c, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_param_d, param_d, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
-	
 }
 
 

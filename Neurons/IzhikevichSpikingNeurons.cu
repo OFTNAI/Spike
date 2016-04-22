@@ -42,20 +42,17 @@ void IzhikevichSpikingNeurons::initialise_device_pointers() {
  	
  	SpikingNeurons::initialise_device_pointers();
 
-
  	CudaSafeCall(cudaMalloc((void **)&d_param_a, sizeof(float)*total_number_of_neurons));
  	CudaSafeCall(cudaMalloc((void **)&d_param_b, sizeof(float)*total_number_of_neurons));
-	
-	reset_neuron_variables_and_spikes();
+ 	
 }
 
-void IzhikevichSpikingNeurons::reset_neuron_variables_and_spikes() {
+void IzhikevichSpikingNeurons::reset_neurons() {
 
-	SpikingNeurons::reset_neuron_variables_and_spikes();	
+	SpikingNeurons::reset_neurons();	
 
 	CudaSafeCall(cudaMemcpy(d_param_a, param_a, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_param_b, param_b, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
-
 }
 
 
