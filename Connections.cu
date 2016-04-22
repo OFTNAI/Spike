@@ -370,6 +370,7 @@ void Connections::AddGroup(int presynaptic_group_id,
 }
 
 void Connections::increment_number_of_connections(int increment) {
+	printf("Increment: %d\n", increment);
 	presynaptic_neuron_indices = (int*)realloc(presynaptic_neuron_indices, (total_number_of_connections + increment)*sizeof(int));
     postsynaptic_neuron_indices = (int*)realloc(postsynaptic_neuron_indices, (total_number_of_connections + increment)*sizeof(int));
     weights = (float*)realloc(weights, (total_number_of_connections + increment)*sizeof(float));
@@ -553,8 +554,18 @@ __global__ void synapsespikes(int* d_presynaptic_neuron_indices,
 	if (idx < total_number_of_connections) {
 		// Reduce the spikebuffer by 1
 		d_spikebuffer[idx] -= 1;
+
+		int presynaptic_neuron_index = d_presynaptic_neuron_indices[idx];
+		float presynaptic_neurons_last_spike_time;
+		if (presynaptic_neuron_index < 0) {
+			presynaptic_neurons_last_spike_time = d_input_neurons_last_spike_time[-1*presynaptic_neuron_index - 1];
+		} else {
+			presynaptic_neurons_last_spike_time = d_neurons_last_spike_time[presynaptic_neuron_index];
+		}
+
 		// Check if the neuron PRE has just fired and if the synapse exists
-		if (d_neurons_last_spike_time[d_presynaptic_neuron_indices[idx]] == current_time_in_seconds){
+		if (presynaptic_neurons_last_spike_time == current_time_in_seconds){
+			printf("SPIKE NOW!\n");
 			// Update the spikes with the correct delay
 			if (d_spikes[idx] <= 0){
 				d_spikes[idx] = d_delays[idx];

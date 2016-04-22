@@ -134,7 +134,7 @@ void GPUDeviceComputation (
 				neurons->state_update_wrapper(timestep);
 
 				// // Check which neurons are spiking and deal with them
-				// neurons->check_for_neuron_spikes_wrapper(current_time_in_seconds);
+				neurons->check_for_neuron_spikes_wrapper(current_time_in_seconds);
 				input_neurons->check_for_neuron_spikes_wrapper(current_time_in_seconds);
 								
 				// // Check which synapses to send spikes down and do it
@@ -146,7 +146,7 @@ void GPUDeviceComputation (
 
 				// // Only save the spikes if necessary
 				if (save_spikes){
-					// recording_electrodes->save_spikes_to_host(current_time_in_seconds, timestep_index, number_of_timesteps_per_epoch);
+					recording_electrodes->save_spikes_to_host(current_time_in_seconds, timestep_index, number_of_timesteps_per_epoch);
 					input_recording_electrodes->save_spikes_to_host(current_time_in_seconds, timestep_index, number_of_timesteps_per_epoch);
 
 				}
@@ -169,7 +169,7 @@ void GPUDeviceComputation (
 		// Output Spikes list after each epoch:
 		// Only save the spikes if necessary
 		if (save_spikes){
-			recording_electrodes->write_spikes_to_file(neurons, epoch_number);
+			// recording_electrodes->write_spikes_to_file(neurons, epoch_number);
 		}
 	}
 	

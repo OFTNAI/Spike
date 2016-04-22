@@ -28,26 +28,31 @@ int main (int argc, char *argv[]){
 	simulator2.SetInputNeuronType(new PoissonSpikingNeurons());
 
 	izhikevich_spiking_neuron_parameters_struct * izhhikevich_spiking_group_params = new izhikevich_spiking_neuron_parameters_struct();
-	izhhikevich_spiking_group_params->parama = 0.02f;
-	izhhikevich_spiking_group_params->paramb = -0.01f;
-	izhhikevich_spiking_group_params->paramc = -55.0f;
-	izhhikevich_spiking_group_params->paramd = 6.0f;
+	// izhhikevich_spiking_group_params->parama = 0.02f;
+	// izhhikevich_spiking_group_params->paramb = -0.01f;
+	// izhhikevich_spiking_group_params->paramc = -55.0f;
+	// izhhikevich_spiking_group_params->paramd = 6.0f;
+	izhhikevich_spiking_group_params->parama = 0.01f;
+	izhhikevich_spiking_group_params->paramb = 0.2f;
+	izhhikevich_spiking_group_params->paramc = -65.0f;
+	izhhikevich_spiking_group_params->paramd = 8.0f;
 
 	poisson_spiking_neuron_parameters_struct * poisson_spiking_group_params = new poisson_spiking_neuron_parameters_struct();
 	poisson_spiking_group_params->rate = 30.0f;
 
-	int ji_test_shape[] = {1000, 1};
+	int ji_test_shape[] = {10, 1};
+	int ji_test_shape2[] = {20, 1};
 
 	int POISSON_SPIKING_GROUP_ID_LAYER_1 = simulator2.AddInputNeuronGroup(poisson_spiking_group_params, ji_test_shape);
-	int POISSON_SPIKING_GROUP_ID_LAYER_1b = simulator2.AddInputNeuronGroup(poisson_spiking_group_params, ji_test_shape);
-	int IZHIKEVICH_SPIKING_GROUP_ID_LAYER_2 = simulator2.AddNeuronGroup(izhhikevich_spiking_group_params, ji_test_shape);
-	int IZHIKEVICH_SPIKING_GROUP_ID_LAYER_2b = simulator2.AddNeuronGroup(izhhikevich_spiking_group_params, ji_test_shape);
+	// int POISSON_SPIKING_GROUP_ID_LAYER_1b = simulator2.AddInputNeuronGroup(poisson_spiking_group_params, ji_test_shape);
+	int IZHIKEVICH_SPIKING_GROUP_ID_LAYER_2 = simulator2.AddNeuronGroup(izhhikevich_spiking_group_params, ji_test_shape2);
+	// int IZHIKEVICH_SPIKING_GROUP_ID_LAYER_2b = simulator2.AddNeuronGroup(izhhikevich_spiking_group_params, ji_test_shape);
 	
 
 	float LAYER_1_TO_LAYER_2_WEIGHTS[] = {2.50f, 5.0f};
 	float LAYER_1_TO_LAYER_2_DELAY_RANGE[] = {timest, timest};
 	simulator2.AddConnectionGroup(POISSON_SPIKING_GROUP_ID_LAYER_1, IZHIKEVICH_SPIKING_GROUP_ID_LAYER_2, CONNECTIVITY_TYPE_ALL_TO_ALL, LAYER_1_TO_LAYER_2_WEIGHTS, LAYER_1_TO_LAYER_2_DELAY_RANGE, false);
-	simulator2.AddConnectionGroup(POISSON_SPIKING_GROUP_ID_LAYER_1b, IZHIKEVICH_SPIKING_GROUP_ID_LAYER_2b, CONNECTIVITY_TYPE_ALL_TO_ALL, LAYER_1_TO_LAYER_2_WEIGHTS, LAYER_1_TO_LAYER_2_DELAY_RANGE, false);
+	// simulator2.AddConnectionGroup(POISSON_SPIKING_GROUP_ID_LAYER_1b, IZHIKEVICH_SPIKING_GROUP_ID_LAYER_2b, CONNECTIVITY_TYPE_ALL_TO_ALL, LAYER_1_TO_LAYER_2_WEIGHTS, LAYER_1_TO_LAYER_2_DELAY_RANGE, false);
 
 		// Run the actual simulator!
 	float total_time_per_epoch = 1.25f;

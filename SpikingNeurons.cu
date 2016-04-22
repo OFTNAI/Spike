@@ -119,6 +119,9 @@ __global__ void check_for_neuron_spikes(float *d_states_v,
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	if (idx < total_number_of_neurons) {
 		// First checking if neuron has spiked:
+		if (total_number_of_neurons == 20) {
+			printf("d_states_v[idx] = %f\n", d_states_v[idx]);
+		}
 		if (d_states_v[idx] >= 30.0f){
 			// Reset the values of these neurons
 			d_states_v[idx] = d_param_c[idx];
