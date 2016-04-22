@@ -10,8 +10,8 @@
 
 #include <cuda.h>
 
-#include "Neurons.h"
-#include "Connections.h"
+#include "Neurons/Neurons.h"
+#include "Connections/Connections.h"
 
 class RecordingElectrodes{
 public:

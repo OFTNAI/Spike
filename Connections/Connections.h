@@ -7,7 +7,7 @@
 #ifndef Connections_H
 #define Connections_H
 
-#include "Neurons.h"
+#include "../Neurons/Neurons.h"
 
 
 // STDP Parameters

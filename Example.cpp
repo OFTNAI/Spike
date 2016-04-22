@@ -12,9 +12,9 @@
 
 #include "Simulator.h"
 #include "Constants.h"
-#include "Neurons.h"
-#include "IzhikevichSpikingNeurons.h"
-#include "PoissonSpikingNeurons.h"
+#include "Neurons/Neurons.h"
+#include "Neurons/IzhikevichSpikingNeurons.h"
+#include "Neurons/PoissonSpikingNeurons.h"
 // #include "Inputs.h"
 // The function which will autorun when the executable is created
 int main (int argc, char *argv[]){

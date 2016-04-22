@@ -9,7 +9,7 @@
 
 #include "Neurons.h"
 #include <stdlib.h>
-#include "CUDAErrorCheckHelpers.h"
+#include "../CUDAErrorCheckHelpers.h"
 
 
 // Neurons Constructor

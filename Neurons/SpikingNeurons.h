@@ -4,7 +4,7 @@
 #include <cuda.h>
 #include <stdio.h>
 
-#include "Neurons.h"
+#include "../Neurons/Neurons.h"
 
 
 struct spiking_neuron_parameters_struct : neuron_parameters_struct {

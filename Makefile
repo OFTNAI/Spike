@@ -35,23 +35,23 @@ ${FILE}.o: ${FILE}.cpp
 Simulator.o: Simulator.cu
 	$(CC) $(CFLAGS) Simulator.cu
 # Compiling the Neurons class
-Neurons.o: Neurons.cu
-	$(CC) $(CFLAGS) Neurons.cu
+Neurons.o: Neurons/Neurons.cu
+	$(CC) $(CFLAGS) Neurons/Neurons.cu
 # Compiling the SpikingNeurons class
-SpikingNeurons.o: SpikingNeurons.cu
-	$(CC) $(CFLAGS) SpikingNeurons.cu
+SpikingNeurons.o: Neurons/SpikingNeurons.cu
+	$(CC) $(CFLAGS) Neurons/SpikingNeurons.cu
 # Compiling the IzhikevichSpikingNeurons class
-IzhikevichSpikingNeurons.o: IzhikevichSpikingNeurons.cu
-	$(CC) $(CFLAGS) IzhikevichSpikingNeurons.cu
+IzhikevichSpikingNeurons.o: Neurons/IzhikevichSpikingNeurons.cu
+	$(CC) $(CFLAGS) Neurons/IzhikevichSpikingNeurons.cu
 # Compiling the PoissonSpikingNeurons class
-PoissonSpikingNeurons.o: PoissonSpikingNeurons.cu
-	$(CC) $(CFLAGS) PoissonSpikingNeurons.cu
+PoissonSpikingNeurons.o: Neurons/PoissonSpikingNeurons.cu
+	$(CC) $(CFLAGS) Neurons/PoissonSpikingNeurons.cu
 # Compiling the GeneratorSpikingNeurons class
-GeneratorSpikingNeurons.o: GeneratorSpikingNeurons.cu
-	$(CC) $(CFLAGS) GeneratorSpikingNeurons.cu
+GeneratorSpikingNeurons.o: Neurons/GeneratorSpikingNeurons.cu
+	$(CC) $(CFLAGS) Neurons/GeneratorSpikingNeurons.cu
 # Compiling the Connections class
-Connections.o: Connections.cu
-	$(CC) $(CFLAGS) Connections.cu
+Connections.o: Connections/Connections.cu
+	$(CC) $(CFLAGS) Connections/Connections.cu
 # Compiling RecordingElectrodes class
 RecordingElectrodes.o: RecordingElectrodes.cu
 	$(CC) $(CFLAGS) RecordingElectrodes.cu

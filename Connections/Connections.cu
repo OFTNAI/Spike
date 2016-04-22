@@ -12,9 +12,9 @@
 // allows maths
 #include <math.h>
 
-#include "Constants.h"
+#include "../Constants.h"
 #include <cuda.h>
-#include "CUDAErrorCheckHelpers.h"
+#include "../CUDAErrorCheckHelpers.h"
 
 
 // Macro to get the gaussian prob

@@ -17,7 +17,7 @@
 #include "Simulator.h"
 #include "Constants.h"
 #include "RecordingElectrodes.h"
-#include "GeneratorSpikingNeurons.h"
+#include "Neurons/GeneratorSpikingNeurons.h"
 
 #include "CUDAErrorCheckHelpers.h"
 

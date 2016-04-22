@@ -1,7 +1,7 @@
 #include "GeneratorSpikingNeurons.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include "CUDAErrorCheckHelpers.h"
+#include "../CUDAErrorCheckHelpers.h"
 #include <algorithm> // For random shuffle
 using namespace std;
 
