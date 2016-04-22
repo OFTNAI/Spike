@@ -10,7 +10,7 @@
 
 #include <cuda.h>
 
-#include "Neurons/Neurons.h"
+#include "Neurons/SpikingNeurons.h"
 #include "Connections/Connections.h"
 
 class RecordingElectrodes{
@@ -28,10 +28,10 @@ public:
 	int* h_spikestoreID;
 	float* h_spikestoretimes;
 
-	Neurons * neurons;
+	SpikingNeurons * neurons;
 
 	// Constructor/Destructor
-	RecordingElectrodes(Neurons * neurons_parameter);
+	RecordingElectrodes(SpikingNeurons * neurons_parameter);
 	~RecordingElectrodes();
 
 	void initialise_device_pointers();
@@ -45,7 +45,7 @@ public:
 
 };
 
-__global__ void spikeCollect(float* d_lastspiketime,
+__global__ void spikeCollect(float* d_last_spike_times,
 								int* d_tempstorenum,
 								int* d_tempstoreID,
 								float* d_tempstoretimes,

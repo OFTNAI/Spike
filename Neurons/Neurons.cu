@@ -1,11 +1,7 @@
 //	Neurons Class C++
 //	Neurons.cpp
 //
-//	Author: Nasir Ahmad
-//	Date: 7/12/2015
-//
-//  Adapted from NeuronPopulations by Nasir Ahmad and James Isbister
-//	Date: 6/4/2016
+//	Authors: Nasir Ahmad (7/12/2015), James Isbister (6/4/2016)
 
 #include "Neurons.h"
 #include <stdlib.h>
@@ -15,14 +11,11 @@
 // Neurons Constructor
 Neurons::Neurons() {
 
-	d_last_spike_time = NULL;
 	d_current_injections = NULL;
 
 	// Set totals to zero
 	total_number_of_neurons = 0;
 	total_number_of_groups = 0;
-
-	// neuron_variablesNew = NULL;
 
 	// Initialise pointers
 	group_shapes = NULL;
@@ -53,7 +46,6 @@ int Neurons::AddGroup(neuron_parameters_struct * group_params, int group_shape[2
 	// Update totals
 	total_number_of_neurons += number_of_neurons_in_new_group;
 	++total_number_of_groups;
-	// printf("total_number_of_groups: %d\n", total_number_of_groups); // Temp helper
 
 	// Calculate new group id
 	int new_group_id = total_number_of_groups - 1;
@@ -73,7 +65,7 @@ int Neurons::AddGroup(neuron_parameters_struct * group_params, int group_shape[2
 
 void Neurons::initialise_device_pointers() {
 
-	CudaSafeCall(cudaMalloc((void **)&d_last_spike_time, sizeof(float)*total_number_of_neurons));
+	
 	CudaSafeCall(cudaMalloc((void **)&d_current_injections, sizeof(float)*total_number_of_neurons));
 
 	Neurons::reset_neuron_variables_and_spikes();
@@ -82,7 +74,6 @@ void Neurons::initialise_device_pointers() {
 
 void Neurons::reset_neuron_variables_and_spikes() {
 
-	CudaSafeCall(cudaMemset(d_last_spike_time, -1000.0f, total_number_of_neurons*sizeof(float)));
 }
 
 void Neurons::reset_device_current_injections() {

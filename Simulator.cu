@@ -224,7 +224,7 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_
 				
 				connections->calculate_postsynaptic_current_injection_for_connection_wrapper(neurons->d_current_injections, current_time_in_seconds);
 
-				connections->apply_ltd_to_connection_weights(neurons->d_last_spike_time, current_time_in_seconds);
+				connections->apply_ltd_to_connection_weights(neurons->d_last_spike_times, current_time_in_seconds);
 
 				neurons->update_neuron_states(timestep);
 
@@ -232,9 +232,9 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_
 				neurons->check_for_neuron_spikes_wrapper(current_time_in_seconds);
 				input_neurons->check_for_neuron_spikes_wrapper(current_time_in_seconds);
 								
-				connections->check_for_synapse_spike_arrival(neurons->d_last_spike_time, input_neurons->d_last_spike_time, current_time_in_seconds);
+				connections->check_for_synapse_spike_arrival(neurons->d_last_spike_times, input_neurons->d_last_spike_times, current_time_in_seconds);
 
-				connections->apply_ltp_to_connection_weights(neurons->d_last_spike_time, current_time_in_seconds);
+				connections->apply_ltp_to_connection_weights(neurons->d_last_spike_times, current_time_in_seconds);
 				
 
 				// // Only save the spikes if necessary

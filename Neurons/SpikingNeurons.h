@@ -23,6 +23,8 @@ public:
 	SpikingNeurons();
 	~SpikingNeurons();
 
+	float * d_last_spike_times;
+
 	float * states_v;
 	float * states_u;
 	float * param_c;

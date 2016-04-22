@@ -15,7 +15,7 @@
 using namespace std;
 
 // RecordingElectrodes Constructor
-RecordingElectrodes::RecordingElectrodes(Neurons * neurons_parameter) {
+RecordingElectrodes::RecordingElectrodes(SpikingNeurons * neurons_parameter) {
 	neurons = neurons_parameter;
 
 	h_total_number_of_spikes = 0;
@@ -56,7 +56,7 @@ void RecordingElectrodes::save_spikes_to_host(float current_time_in_seconds, int
 
 	// Storing the spikes that have occurred in this timestep
 
-	spikeCollect<<<neurons->number_of_neuron_blocks_per_grid, neurons->threads_per_block>>>(neurons->d_last_spike_time,
+	spikeCollect<<<neurons->number_of_neuron_blocks_per_grid, neurons->threads_per_block>>>(neurons->d_last_spike_times,
 														d_tempstorenum,
 														d_tempstoreID,
 														d_tempstoretimes,
@@ -141,7 +141,7 @@ void RecordingElectrodes::write_spikes_to_file(Neurons *neurons, int epoch_numbe
 
 
 // Collect Spikes
-__global__ void spikeCollect(float* d_lastspiketime,
+__global__ void spikeCollect(float* d_last_spike_times,
 								int* d_tempstorenum,
 								int* d_tempstoreID,
 								float* d_tempstoretimes,
@@ -151,7 +151,7 @@ __global__ void spikeCollect(float* d_lastspiketime,
 int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	if (idx < total_number_of_neurons) {
 		// If a neuron has fired
-		if (d_lastspiketime[idx] == current_time_in_seconds) {
+		if (d_last_spike_times[idx] == current_time_in_seconds) {
 			// Increase the number of spikes stored
 			int i = atomicAdd(&d_tempstorenum[0], 1);
 			// In the location, add the id and the time
