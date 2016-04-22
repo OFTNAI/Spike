@@ -59,7 +59,7 @@ void IzhikevichSpikingNeurons::reset_neuron_variables_and_spikes() {
 }
 
 
-__global__ void izhikevich_state_update(float *d_states_v,
+__global__ void update_izhikevich_neuron_states(float *d_states_v,
 								float *d_states_u,
 								float *d_param_a,
 								float *d_param_b,
@@ -68,9 +68,9 @@ __global__ void izhikevich_state_update(float *d_states_v,
 								size_t total_number_of_neurons);
 
 
-void IzhikevichSpikingNeurons::state_update_wrapper(float timestep) {
+void IzhikevichSpikingNeurons::update_neuron_states(float timestep) {
 
-	izhikevich_state_update<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_states_v,
+	update_izhikevich_neuron_states<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_states_v,
 																	d_states_u,
 																	d_param_a,
 																	d_param_b,
@@ -83,7 +83,7 @@ void IzhikevichSpikingNeurons::state_update_wrapper(float timestep) {
 
 
 // State Update
-__global__ void izhikevich_state_update(float *d_states_v,
+__global__ void update_izhikevich_neuron_states(float *d_states_v,
 								float *d_states_u,
 								float *d_param_a,
 								float *d_param_b,

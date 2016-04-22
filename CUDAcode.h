@@ -44,6 +44,4 @@ void GPUDeviceComputation (
 					bool present_stimuli_in_random_order
 					);
 
-__global__ void randoms(curandState_t* states, float* numbers, size_t numNeurons);
-
 #endif

@@ -77,7 +77,7 @@ void SpikingNeurons::set_threads_per_block_and_blocks_per_grid(int threads) {
 
 
 
-void SpikingNeurons::state_update_wrapper(float timestep) {
+void SpikingNeurons::update_neuron_states(float timestep) {
 	
 }
 

@@ -40,7 +40,7 @@ public:
 
 	virtual void set_threads_per_block_and_blocks_per_grid(int threads);
 
-	virtual void state_update_wrapper(float timestep);
+	virtual void update_neuron_states(float timestep);
 	virtual void check_for_neuron_spikes_wrapper(float currtime);
 
 };
