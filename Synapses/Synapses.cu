@@ -4,7 +4,7 @@
 //	Author: Nasir Ahmad
 //	Date: 7/12/2015
 
-#include "Connections.h"
+#include "Synapses.h"
 // stdlib allows random numbers
 #include <stdlib.h>
 // Input Output
@@ -23,11 +23,11 @@
 //			sigma = Standard Deviation of the gaussian distribution
 #define GAUS(distance, sigma) ( (1.0f/(sigma*(sqrt(2.0f*M_PI)))) * (exp(-1.0f * (pow((distance),(2.0f))) / (2.0f*(pow(sigma,(2.0f)))))) )
 
-// Connections Constructor
-Connections::Connections() {
+// Synapses Constructor
+Synapses::Synapses() {
 	// Initialise my parameters
 	// Variables;
-	total_number_of_connections = 0;
+	total_number_of_synapses = 0;
 	// Full Matrices
 	presynaptic_neuron_indices = NULL;
 	postsynaptic_neuron_indices = NULL;
@@ -48,8 +48,8 @@ Connections::Connections() {
 	srand(42);	// Seeding the random numbers
 }
 
-// Connections Destructor
-Connections::~Connections() {
+// Synapses Destructor
+Synapses::~Synapses() {
 	// Just need to free up the memory
 	// Full Matrices
 	free(presynaptic_neuron_indices);
@@ -70,7 +70,7 @@ Connections::~Connections() {
 }
 
 // Setting personal STDP parameters
-void Connections::SetSTDP(float w_max_new,
+void Synapses::SetSTDP(float w_max_new,
 				float a_minus_new,
 				float a_plus_new,
 				float tau_minus_new,
@@ -92,8 +92,8 @@ void Connections::SetSTDP(float w_max_new,
 //		2 number float array for weight range
 //		2 number float array for delay range
 //		Boolean value to indicate if population is STDP based
-//		Parameter = either probability for random connections or S.D. for Gaussian
-void Connections::AddGroup(int presynaptic_group_id, 
+//		Parameter = either probability for random synapses or S.D. for Gaussian
+void Synapses::AddGroup(int presynaptic_group_id, 
 						int postsynaptic_group_id, 
 						Neurons * neurons,
 						Neurons * input_neurons,
@@ -173,7 +173,7 @@ void Connections::AddGroup(int presynaptic_group_id,
 	printf("postend: %d\n\n", postend);
 
 
-	int original_number_of_connections = total_number_of_connections;
+	int original_number_of_synapses = total_number_of_synapses;
 
 	// Carry out the creation of the connectivity matrix
 	switch (connectivity_type){
@@ -182,13 +182,13 @@ void Connections::AddGroup(int presynaptic_group_id,
 		{
             
             int increment = (preend-prestart)*(postend-poststart);
-            increment_number_of_connections(increment);
+            increment_number_of_synapses(increment);
             
 			// If the connectivity is all_to_all
 			for (int i = prestart; i < preend; i++){
 				for (int j = poststart; j < postend; j++){
 					// Index
-					int idx = original_number_of_connections + (i-prestart) + (j-poststart)*(preend-prestart);
+					int idx = original_number_of_synapses + (i-prestart) + (j-poststart)*(preend-prestart);
 					// Setup Synapses
 					presynaptic_neuron_indices[idx] = group_type_factor*i + group_type_component;
 					postsynaptic_neuron_indices[idx] = j;
@@ -199,7 +199,7 @@ void Connections::AddGroup(int presynaptic_group_id,
 		case CONNECTIVITY_TYPE_ONE_TO_ONE:
 		{
             int increment = (preend-prestart);
-            increment_number_of_connections(increment);
+            increment_number_of_synapses(increment);
             
 			// If the connectivity is one_to_one
 			if ((preend-prestart) != (postend-poststart)){
@@ -208,8 +208,8 @@ void Connections::AddGroup(int presynaptic_group_id,
 			}
 			// Create the connectivity
 			for (int i = 0; i < (preend-prestart); i++){
-				presynaptic_neuron_indices[original_number_of_connections + i] = group_type_factor*(prestart + i) + group_type_component;
-				postsynaptic_neuron_indices[original_number_of_connections + i] = poststart + i;
+				presynaptic_neuron_indices[original_number_of_synapses + i] = group_type_factor*(prestart + i) + group_type_component;
+				postsynaptic_neuron_indices[original_number_of_synapses + i] = poststart + i;
 			}
 
 			break;
@@ -225,11 +225,11 @@ void Connections::AddGroup(int presynaptic_group_id,
 					// If it is within the probability range, connect!
 					if (prob < parameter){
 						
-						increment_number_of_connections(1);
+						increment_number_of_synapses(1);
 
 						// Setup Synapses
-						presynaptic_neuron_indices[total_number_of_connections - 1] = group_type_factor*i + group_type_component;
-						postsynaptic_neuron_indices[total_number_of_connections - 1] = j;
+						presynaptic_neuron_indices[total_number_of_synapses - 1] = group_type_factor*i + group_type_component;
+						postsynaptic_neuron_indices[total_number_of_synapses - 1] = j;
 					}
 				}
 			}
@@ -256,7 +256,7 @@ void Connections::AddGroup(int presynaptic_group_id,
 						gaussian_scaling_factor += GAUS(distance, parameter);
 					}
 				}
-				// Multiplying the gaussian scaling factor by the number of connections you require:
+				// Multiplying the gaussian scaling factor by the number of synapses you require:
 				gaussian_scaling_factor = gaussian_scaling_factor / parameter_two;
 			}
 			// Running through our neurons
@@ -276,11 +276,11 @@ void Connections::AddGroup(int presynaptic_group_id,
 					// If it is within the probability range, connect!
 					if (prob <= ((GAUS(distance, parameter)) / gaussian_scaling_factor)){
 						
-						increment_number_of_connections(1);
+						increment_number_of_synapses(1);
 
 						// Setup Synapses
-						presynaptic_neuron_indices[total_number_of_connections - 1] = group_type_factor*i + group_type_component;
-						postsynaptic_neuron_indices[total_number_of_connections - 1] = j;
+						presynaptic_neuron_indices[total_number_of_synapses - 1] = group_type_factor*i + group_type_component;
+						postsynaptic_neuron_indices[total_number_of_synapses - 1] = j;
 					}
 				}
 			}
@@ -302,7 +302,7 @@ void Connections::AddGroup(int presynaptic_group_id,
 			}
 			// Irina's version of sigma
 			double sigma = dist*diagonal_width;
-			// Number of connections to form
+			// Number of synapses to form
 			int conn_num = int((sigma/in2out_sparse));
 			int conn_tgts = 0;
 			int temp = 0;
@@ -314,12 +314,12 @@ void Connections::AddGroup(int presynaptic_group_id,
 					temp = int(randn(mu, sigma));
 					if ((temp >= 0) && (temp < out_size)){
 						
-						increment_number_of_connections(1);
+						increment_number_of_synapses(1);
 
 						// Setup the synapses:
 						// Setup Synapses
-						presynaptic_neuron_indices[total_number_of_connections - 1] = group_type_factor*i + group_type_component;
-						postsynaptic_neuron_indices[total_number_of_connections - 1] = poststart + temp;
+						presynaptic_neuron_indices[total_number_of_synapses - 1] = group_type_factor*i + group_type_component;
+						postsynaptic_neuron_indices[total_number_of_synapses - 1] = poststart + temp;
 
 						// Increment conn_tgts
 						++conn_tgts;
@@ -331,11 +331,11 @@ void Connections::AddGroup(int presynaptic_group_id,
 		case CONNECTIVITY_TYPE_SINGLE:
 		{
 			// If we desire a single connection
-			increment_number_of_connections(1);
+			increment_number_of_synapses(1);
 
 			// Setup Synapses
-			presynaptic_neuron_indices[original_number_of_connections] = group_type_factor * (prestart + int(parameter)) + group_type_component;
-			postsynaptic_neuron_indices[original_number_of_connections] = poststart + int(parameter_two);
+			presynaptic_neuron_indices[original_number_of_synapses] = group_type_factor * (prestart + int(parameter)) + group_type_component;
+			postsynaptic_neuron_indices[original_number_of_synapses] = poststart + int(parameter_two);
 
 			break;
 		}
@@ -347,7 +347,7 @@ void Connections::AddGroup(int presynaptic_group_id,
 		}
 	}
 
-	for (int i = original_number_of_connections; i < total_number_of_connections-1; i++){
+	for (int i = original_number_of_synapses; i < total_number_of_synapses-1; i++){
 		// Setup Weights
 		if (weight_range[0] == weight_range[1]) {
 			weights[i] = weight_range[0];
@@ -373,62 +373,62 @@ void Connections::AddGroup(int presynaptic_group_id,
 
 }
 
-void Connections::increment_number_of_connections(int increment) {
+void Synapses::increment_number_of_synapses(int increment) {
 	printf("Increment: %d\n", increment);
-	presynaptic_neuron_indices = (int*)realloc(presynaptic_neuron_indices, (total_number_of_connections + increment)*sizeof(int));
-    postsynaptic_neuron_indices = (int*)realloc(postsynaptic_neuron_indices, (total_number_of_connections + increment)*sizeof(int));
-    weights = (float*)realloc(weights, (total_number_of_connections + increment)*sizeof(float));
-    delays = (int*)realloc(delays, (total_number_of_connections + increment)*sizeof(int));
-    stdp = (int*)realloc(stdp, (total_number_of_connections + increment)*sizeof(int));
+	presynaptic_neuron_indices = (int*)realloc(presynaptic_neuron_indices, (total_number_of_synapses + increment)*sizeof(int));
+    postsynaptic_neuron_indices = (int*)realloc(postsynaptic_neuron_indices, (total_number_of_synapses + increment)*sizeof(int));
+    weights = (float*)realloc(weights, (total_number_of_synapses + increment)*sizeof(float));
+    delays = (int*)realloc(delays, (total_number_of_synapses + increment)*sizeof(int));
+    stdp = (int*)realloc(stdp, (total_number_of_synapses + increment)*sizeof(int));
 
-    total_number_of_connections += increment;
+    total_number_of_synapses += increment;
 }
 
 
-void Connections::initialise_device_pointers() {
-	CudaSafeCall(cudaMalloc((void **)&d_presynaptic_neuron_indices, sizeof(int)*total_number_of_connections));
-	CudaSafeCall(cudaMalloc((void **)&d_postsynaptic_neuron_indices, sizeof(int)*total_number_of_connections));
-	CudaSafeCall(cudaMalloc((void **)&d_delays, sizeof(int)*total_number_of_connections));
-	CudaSafeCall(cudaMalloc((void **)&d_weights, sizeof(float)*total_number_of_connections));
-	CudaSafeCall(cudaMalloc((void **)&d_spikes, sizeof(int)*total_number_of_connections));
-	CudaSafeCall(cudaMalloc((void **)&d_stdp, sizeof(int)*total_number_of_connections));
-	CudaSafeCall(cudaMalloc((void **)&d_lastactive, sizeof(float)*total_number_of_connections));
-	CudaSafeCall(cudaMalloc((void **)&d_spikebuffer, sizeof(int)*total_number_of_connections));
+void Synapses::initialise_device_pointers() {
+	CudaSafeCall(cudaMalloc((void **)&d_presynaptic_neuron_indices, sizeof(int)*total_number_of_synapses));
+	CudaSafeCall(cudaMalloc((void **)&d_postsynaptic_neuron_indices, sizeof(int)*total_number_of_synapses));
+	CudaSafeCall(cudaMalloc((void **)&d_delays, sizeof(int)*total_number_of_synapses));
+	CudaSafeCall(cudaMalloc((void **)&d_weights, sizeof(float)*total_number_of_synapses));
+	CudaSafeCall(cudaMalloc((void **)&d_spikes, sizeof(int)*total_number_of_synapses));
+	CudaSafeCall(cudaMalloc((void **)&d_stdp, sizeof(int)*total_number_of_synapses));
+	CudaSafeCall(cudaMalloc((void **)&d_lastactive, sizeof(float)*total_number_of_synapses));
+	CudaSafeCall(cudaMalloc((void **)&d_spikebuffer, sizeof(int)*total_number_of_synapses));
 
 
-	CudaSafeCall(cudaMemcpy(d_presynaptic_neuron_indices, presynaptic_neuron_indices, sizeof(int)*total_number_of_connections, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemcpy(d_postsynaptic_neuron_indices, postsynaptic_neuron_indices, sizeof(int)*total_number_of_connections, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemcpy(d_delays, delays, sizeof(int)*total_number_of_connections, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemcpy(d_weights, weights, sizeof(float)*total_number_of_connections, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemcpy(d_stdp, stdp, sizeof(int)*total_number_of_connections, cudaMemcpyHostToDevice));
+	CudaSafeCall(cudaMemcpy(d_presynaptic_neuron_indices, presynaptic_neuron_indices, sizeof(int)*total_number_of_synapses, cudaMemcpyHostToDevice));
+	CudaSafeCall(cudaMemcpy(d_postsynaptic_neuron_indices, postsynaptic_neuron_indices, sizeof(int)*total_number_of_synapses, cudaMemcpyHostToDevice));
+	CudaSafeCall(cudaMemcpy(d_delays, delays, sizeof(int)*total_number_of_synapses, cudaMemcpyHostToDevice));
+	CudaSafeCall(cudaMemcpy(d_weights, weights, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
+	CudaSafeCall(cudaMemcpy(d_stdp, stdp, sizeof(int)*total_number_of_synapses, cudaMemcpyHostToDevice));
 
-	reset_connection_spikes();
+	reset_synapse_spikes();
 }
 
-void Connections::reset_connection_spikes() {
-	CudaSafeCall(cudaMemset(d_spikes, 0, sizeof(int)*total_number_of_connections));
-	CudaSafeCall(cudaMemset(d_lastactive, -1000.0f, sizeof(float)*total_number_of_connections));
-	CudaSafeCall(cudaMemset(d_spikebuffer, -1, sizeof(int)*total_number_of_connections));
+void Synapses::reset_synapse_spikes() {
+	CudaSafeCall(cudaMemset(d_spikes, 0, sizeof(int)*total_number_of_synapses));
+	CudaSafeCall(cudaMemset(d_lastactive, -1000.0f, sizeof(float)*total_number_of_synapses));
+	CudaSafeCall(cudaMemset(d_spikebuffer, -1, sizeof(int)*total_number_of_synapses));
 }
 
 
-void Connections::set_threads_per_block_and_blocks_per_grid(int threads) {
+void Synapses::set_threads_per_block_and_blocks_per_grid(int threads) {
 	
 	threads_per_block.x = threads;
 
-	int number_of_connection_blocks = (total_number_of_connections + threads) / threads;
-	number_of_connection_blocks_per_grid.x = number_of_connection_blocks;
+	int number_of_synapse_blocks = (total_number_of_synapses + threads) / threads;
+	number_of_synapse_blocks_per_grid.x = number_of_synapse_blocks;
 }
 
 
 
-__global__ void calculate_postsynaptic_current_injection_for_connection_kernal(int* d_spikes,
+__global__ void calculate_postsynaptic_current_injection_for_synapse_kernal(int* d_spikes,
 							float* d_weights,
 							float* d_lastactive,
 							int* d_postsynaptic_neuron_indices,
 							float* d_neurons_current_injections,
 							float current_time_in_seconds,
-							size_t total_number_of_connections);
+							size_t total_number_of_synapses);
 
 __global__ void check_for_synapse_spike_arrival_kernal(int* d_presynaptic_neuron_indices,
 								int* d_delays,
@@ -437,9 +437,9 @@ __global__ void check_for_synapse_spike_arrival_kernal(int* d_presynaptic_neuron
 								float* d_input_neurons_last_spike_time,
 								int* d_spikebuffer,
 								float currtime,
-								size_t total_number_of_connections);
+								size_t total_number_of_synapses);
 
-__global__ void apply_ltd_to_connection_weights_kernal(float* d_lastactive,
+__global__ void apply_ltd_to_synapse_weights_kernal(float* d_lastactive,
 							float* d_weights,
 							int* d_stdp,
 							float* d_lastspiketime,
@@ -448,7 +448,7 @@ __global__ void apply_ltd_to_connection_weights_kernal(float* d_lastactive,
 							struct stdp_struct stdp_vars,
 							size_t numConns);
 
-__global__ void apply_ltp_to_connection_weights_kernal(int* d_postsyns,
+__global__ void apply_ltp_to_synapse_weights_kernal(int* d_postsyns,
 							float* d_lastspiketime,
 							int* d_stdp,
 							float* d_lastactive,
@@ -459,58 +459,58 @@ __global__ void apply_ltp_to_connection_weights_kernal(int* d_postsyns,
 
 
 
-void Connections::calculate_postsynaptic_current_injection_for_connection(float* d_neurons_current_injections, float current_time_in_seconds) {
+void Synapses::calculate_postsynaptic_current_injection_for_synapse(float* d_neurons_current_injections, float current_time_in_seconds) {
 
-	calculate_postsynaptic_current_injection_for_connection_kernal<<<number_of_connection_blocks_per_grid, threads_per_block>>>(d_spikes,
+	calculate_postsynaptic_current_injection_for_synapse_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_spikes,
 																	d_weights,
 																	d_lastactive,
 																	d_postsynaptic_neuron_indices,
 																	d_neurons_current_injections,
 																	current_time_in_seconds,
-																	total_number_of_connections);
+																	total_number_of_synapses);
 
 	CudaCheckError();
 }
 
-void Connections::check_for_synapse_spike_arrival(float* d_neurons_last_spike_time, float* d_input_neurons_last_spike_time, float current_time_in_seconds) {
+void Synapses::check_for_synapse_spike_arrival(float* d_neurons_last_spike_time, float* d_input_neurons_last_spike_time, float current_time_in_seconds) {
 
-	check_for_synapse_spike_arrival_kernal<<<number_of_connection_blocks_per_grid, threads_per_block>>>(d_presynaptic_neuron_indices,
+	check_for_synapse_spike_arrival_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_presynaptic_neuron_indices,
 																		d_delays,
 																		d_spikes,
 																		d_neurons_last_spike_time,
 																		d_input_neurons_last_spike_time,
 																		d_spikebuffer,
 																		current_time_in_seconds,
-																		total_number_of_connections);
+																		total_number_of_synapses);
 
 	CudaCheckError();
 }
 
-void Connections::apply_ltd_to_connection_weights(float* d_lastspiketime, float current_time_in_seconds) {
+void Synapses::apply_ltd_to_synapse_weights(float* d_lastspiketime, float current_time_in_seconds) {
 
-	apply_ltd_to_connection_weights_kernal<<<number_of_connection_blocks_per_grid, threads_per_block>>>(d_lastactive,
+	apply_ltd_to_synapse_weights_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_lastactive,
 																	d_weights,
 																	d_stdp,
 																	d_lastspiketime,
 																	d_postsynaptic_neuron_indices,
 																	current_time_in_seconds,
 																	stdp_vars, // Should make device copy?
-																	total_number_of_connections);
+																	total_number_of_synapses);
 
 	CudaCheckError();
 }
 
 
-void Connections::apply_ltp_to_connection_weights(float* d_lastspiketime, float current_time_in_seconds) {
+void Synapses::apply_ltp_to_synapse_weights(float* d_lastspiketime, float current_time_in_seconds) {
 	// Carry out the last step, LTP!
-	apply_ltp_to_connection_weights_kernal<<<number_of_connection_blocks_per_grid, threads_per_block>>>(d_postsynaptic_neuron_indices,
+	apply_ltp_to_synapse_weights_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_postsynaptic_neuron_indices,
 																	d_lastspiketime,
 																	d_stdp,
 																	d_lastactive,
 																	d_weights,
 																	stdp_vars, 
 																	current_time_in_seconds,
-																	total_number_of_connections);
+																	total_number_of_synapses);
 
 	CudaCheckError();
 }
@@ -519,16 +519,16 @@ void Connections::apply_ltp_to_connection_weights(float* d_lastspiketime, float 
 
 // If spike has reached synapse add synapse weight to postsyn current injection
 // Was currentcalc
-__global__ void calculate_postsynaptic_current_injection_for_connection_kernal(int* d_spikes,
+__global__ void calculate_postsynaptic_current_injection_for_synapse_kernal(int* d_spikes,
 							float* d_weights,
 							float* d_lastactive,
 							int* d_postsynaptic_neuron_indices,
 							float* d_neurons_current_injections,
 							float current_time_in_seconds,
-							size_t total_number_of_connections){
+							size_t total_number_of_synapses){
 
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	if (idx < (total_number_of_connections)) {
+	if (idx < (total_number_of_synapses)) {
 		// Decrememnt Spikes
 		d_spikes[idx] -= 1;
 		if (d_spikes[idx] == 0) {
@@ -553,9 +553,9 @@ __global__ void check_for_synapse_spike_arrival_kernal(int* d_presynaptic_neuron
 								float* d_input_neurons_last_spike_time,
 								int* d_spikebuffer,
 								float current_time_in_seconds,
-								size_t total_number_of_connections){
+								size_t total_number_of_synapses){
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	if (idx < total_number_of_connections) {
+	if (idx < total_number_of_synapses) {
 		// Reduce the spikebuffer by 1
 		d_spikebuffer[idx] -= 1;
 
@@ -598,7 +598,7 @@ __global__ void check_for_synapse_spike_arrival_kernal(int* d_presynaptic_neuron
 
 
 // LTD of weights
-__global__ void apply_ltd_to_connection_weights_kernal(float* d_lastactive,
+__global__ void apply_ltd_to_synapse_weights_kernal(float* d_lastactive,
 							float* d_weights,
 							int* d_stdp,
 							float* d_lastspiketime,
@@ -623,7 +623,7 @@ __global__ void apply_ltd_to_connection_weights_kernal(float* d_lastactive,
 
 
 // LTP on synapses
-__global__ void apply_ltp_to_connection_weights_kernal(int* d_postsyns,
+__global__ void apply_ltp_to_synapse_weights_kernal(int* d_postsyns,
 							float* d_lastspiketime,
 							int* d_stdp,
 							float* d_lastactive,
@@ -635,7 +635,7 @@ __global__ void apply_ltp_to_connection_weights_kernal(int* d_postsyns,
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	if (idx < numConns) {
 		// Get the synapses upon which we should do LTP
-		// Reversed indexing to check post->pre connections
+		// Reversed indexing to check post->pre synapses
 		if ((d_lastspiketime[d_postsyns[idx]] == currtime) && (d_stdp[idx] == 1)){
 			// Get the last active time / weight of the synapse
 			// Calc time difference and weight change

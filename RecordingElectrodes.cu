@@ -164,22 +164,22 @@ int idx = threadIdx.x + blockIdx.x * blockDim.x;
 
 
 
-void RecordingElectrodes::write_initial_synaptic_weights_to_file(Connections *connections) {
+void RecordingElectrodes::write_initial_synaptic_weights_to_file(Synapses *synapses) {
 	ofstream initweightfile;
 	initweightfile.open("results/NetworkWeights_Initial.bin", ios::out | ios::binary);
-	initweightfile.write((char *)connections->weights, connections->total_number_of_connections*sizeof(float));
+	initweightfile.write((char *)synapses->weights, synapses->total_number_of_synapses*sizeof(float));
 	initweightfile.close();
 }
 
 
-void RecordingElectrodes::save_network_state(Connections *connections) {
+void RecordingElectrodes::save_network_state(Synapses *synapses) {
 
 	#ifndef QUIETSTART
 	printf("Outputting binary files.\n");
 	#endif
 
 	// Copy back the data that we might want:
-	CudaSafeCall(cudaMemcpy(connections->weights, connections->d_weights, sizeof(float)*connections->total_number_of_connections, cudaMemcpyDeviceToHost));
+	CudaSafeCall(cudaMemcpy(synapses->weights, synapses->d_weights, sizeof(float)*synapses->total_number_of_synapses, cudaMemcpyDeviceToHost));
 	// Creating and Opening all the files
 	ofstream synapsepre, synapsepost, weightfile, delayfile;
 	weightfile.open("results/NetworkWeights.bin", ios::out | ios::binary);
@@ -188,10 +188,10 @@ void RecordingElectrodes::save_network_state(Connections *connections) {
 	synapsepost.open("results/NetworkPost.bin", ios::out | ios::binary);
 	
 	// Writing the data
-	weightfile.write((char *)connections->weights, connections->total_number_of_connections*sizeof(float));
-	delayfile.write((char *)connections->delays, connections->total_number_of_connections*sizeof(int));
-	synapsepre.write((char *)connections->presynaptic_neuron_indices, connections->total_number_of_connections*sizeof(int));
-	synapsepost.write((char *)connections->postsynaptic_neuron_indices, connections->total_number_of_connections*sizeof(int));
+	weightfile.write((char *)synapses->weights, synapses->total_number_of_synapses*sizeof(float));
+	delayfile.write((char *)synapses->delays, synapses->total_number_of_synapses*sizeof(int));
+	synapsepre.write((char *)synapses->presynaptic_neuron_indices, synapses->total_number_of_synapses*sizeof(int));
+	synapsepost.write((char *)synapses->postsynaptic_neuron_indices, synapses->total_number_of_synapses*sizeof(int));
 
 	// Close files
 	weightfile.close();

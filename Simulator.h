@@ -23,7 +23,7 @@
 
 // #include "CUDAcode.h"
 #include "Neurons/Neurons.h"
-#include "Connections/Connections.h"
+#include "Synapses/Synapses.h"
 #include "Neurons/PoissonSpikingNeurons.h"
 #include "Neurons/SpikingNeurons.h"
 
@@ -35,7 +35,7 @@ public:
 	~Simulator();
 
 	SpikingNeurons * neurons;
-	Connections * connections;
+	Synapses * synapses;
 	PoissonSpikingNeurons * input_neurons;
 
 	// Spike Generator related Data
@@ -54,7 +54,7 @@ public:
 	int AddNeuronGroup(neuron_parameters_struct * group_params, int shape[2]);
 	int AddInputNeuronGroup(neuron_parameters_struct * group_params, int group_shape[2]);
 	
-	void AddConnectionGroup(int presynaptic_group_id, 
+	void AddSynapseGroup(int presynaptic_group_id, 
 							int postsynaptic_group_id, 
 							int connectivity_type,
 							float weight_range[2], 

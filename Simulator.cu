@@ -31,7 +31,7 @@ Simulator::Simulator(){
 	// Default parameters
 	timestep = 0.001f;
 
-	connections = new Connections();
+	synapses = new Synapses();
 	
 	#ifndef QUIETSTART
 		// Say Hi to the user:
@@ -55,7 +55,7 @@ Simulator::~Simulator(){
 void Simulator::SetTimestep(float timest){
 
 	printf("timest = %f\n\n", timest);
-	if (connections->total_number_of_connections == 0){
+	if (synapses->total_number_of_synapses == 0){
 		timestep = timest;
 	} else {
 		printf("You must set the timestep before creating any synapses. Exiting ...\n\n");
@@ -99,7 +99,7 @@ int Simulator::AddInputNeuronGroup(neuron_parameters_struct * group_params, int 
 }
 
 
-void Simulator::AddConnectionGroup(int presynaptic_group_id, 
+void Simulator::AddSynapseGroup(int presynaptic_group_id, 
 							int postsynaptic_group_id, 
 							int connectivity_type,
 							float weight_range[2], 
@@ -115,7 +115,7 @@ void Simulator::AddConnectionGroup(int presynaptic_group_id,
 		exit(-1);
 	}
 
-	connections->AddGroup(presynaptic_group_id, 
+	synapses->AddGroup(presynaptic_group_id, 
 							postsynaptic_group_id, 
 							neurons,
 							input_neurons,
@@ -136,7 +136,7 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_
 	printf("Simulation Beginning\n");
 	printf("Time Step: %f\nNumber of Stimuli: %d\nNumber of Epochs: %d\n\n", timestep, number_of_stimuli, number_of_epochs);
 	printf("Total Number of Neurons: %d\n", neurons->total_number_of_neurons);
-	printf("Total Number of Synapses: %d\n\n", connections->total_number_of_connections);
+	printf("Total Number of Synapses: %d\n\n", synapses->total_number_of_synapses);
 	if (present_stimuli_in_random_order)
 		printf("Stimuli to be presented in a random order.\n");
 	if (save_spikes)
@@ -162,7 +162,7 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_
 	RecordingElectrodes * input_recording_electrodes = new RecordingElectrodes(input_neurons);
 
 	neurons->initialise_device_pointers();
-	connections->initialise_device_pointers();
+	synapses->initialise_device_pointers();
 	input_neurons->initialise_device_pointers();
 
 	recording_electrodes->initialise_device_pointers();
@@ -172,7 +172,7 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_
 
 
 	int threads_per_block = 128;
-	connections->set_threads_per_block_and_blocks_per_grid(threads_per_block);
+	synapses->set_threads_per_block_and_blocks_per_grid(threads_per_block);
 	neurons->set_threads_per_block_and_blocks_per_grid(threads_per_block);
 	input_neurons->set_threads_per_block_and_blocks_per_grid(threads_per_block);
 
@@ -186,7 +186,7 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_
 	}
 
 
-	recording_electrodes->write_initial_synaptic_weights_to_file(connections);
+	recording_electrodes->write_initial_synaptic_weights_to_file(synapses);
 	
 	input_neurons->generate_random_states();
 
@@ -211,7 +211,7 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_
 			// Reset the variables necessary
 			neurons->reset_neurons();
 			input_neurons->reset_neurons();
-			connections->reset_connection_spikes();
+			synapses->reset_synapse_spikes();
 
 			int number_of_timesteps_per_epoch = total_time_per_epoch / timestep;
 			float current_time_in_seconds = 0.0f;
@@ -230,18 +230,18 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_
 				// 	temp_test_generator->generupdate2_wrapper(current_time_in_seconds, timestep);
 				// } 
 				
-				connections->calculate_postsynaptic_current_injection_for_connection(neurons->d_current_injections, current_time_in_seconds);
+				synapses->calculate_postsynaptic_current_injection_for_synapse(neurons->d_current_injections, current_time_in_seconds);
 
-				connections->apply_ltd_to_connection_weights(neurons->d_last_spike_times, current_time_in_seconds);
+				synapses->apply_ltd_to_synapse_weights(neurons->d_last_spike_times, current_time_in_seconds);
 
 				neurons->update_neuron_states(timestep);
 
 				neurons->check_for_neuron_spikes(current_time_in_seconds);
 				input_neurons->check_for_neuron_spikes(current_time_in_seconds);
 								
-				connections->check_for_synapse_spike_arrival(neurons->d_last_spike_times, input_neurons->d_last_spike_times, current_time_in_seconds);
+				synapses->check_for_synapse_spike_arrival(neurons->d_last_spike_times, input_neurons->d_last_spike_times, current_time_in_seconds);
 
-				connections->apply_ltp_to_connection_weights(neurons->d_last_spike_times, current_time_in_seconds);
+				synapses->apply_ltp_to_synapse_weights(neurons->d_last_spike_times, current_time_in_seconds);
 				
 
 				// // Only save the spikes if necessary
@@ -281,11 +281,11 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_
 	printf("Simulation Complete! Time Elapsed: %f\n\n", timed);
 	#endif
 
-	recording_electrodes->save_network_state(connections);
+	recording_electrodes->save_network_state(synapses);
 
 
 	delete neurons;
-	delete connections;
+	delete synapses;
 	delete recording_electrodes;
 
 	// Free Memory on CPU
@@ -360,7 +360,7 @@ void Simulator::CreateGenerator(int popID, int stimulusid, int spikenumber, int*
 // void Simulator::LoadWeights(int numWeights,
 // 						float* newWeights){
 // 	// Check if you have the correct number of weights
-// 	if (numWeights != synconnects.numconnections){
+// 	if (numWeights != synconnects.numsynapses){
 // 		// Error if not
 // 		printf("The number of weights being loaded is not equivalent to the model. Exiting \n");
 // 		exit(-1);

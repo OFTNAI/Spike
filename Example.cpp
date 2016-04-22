@@ -7,7 +7,7 @@
 
 
 #include "Simulator.h"
-#include "Connections/Connections.h"
+#include "Synapses/Synapses.h"
 #include "Neurons/Neurons.h"
 #include "Neurons/IzhikevichSpikingNeurons.h"
 #include "Neurons/PoissonSpikingNeurons.h"
@@ -53,8 +53,8 @@ int main (int argc, char *argv[]){
 	float LAYER_2_TO_LAYER_3_DELAY_RANGE[] = {time_step, 50.0f*pow(10, -3)};
 
 	//
-	simulator.AddConnectionGroup(POISSON_SPIKING_GROUP_ID_LAYER_1, IZHIKEVICH_SPIKING_GROUP_ID_LAYER_2, CONNECTIVITY_TYPE_ALL_TO_ALL, LAYER_1_TO_LAYER_2_WEIGHTS, LAYER_1_TO_LAYER_2_DELAY_RANGE, false);
-	simulator.AddConnectionGroup(IZHIKEVICH_SPIKING_GROUP_ID_LAYER_2, IZHIKEVICH_SPIKING_GROUP_ID_LAYER_3, CONNECTIVITY_TYPE_ALL_TO_ALL, LAYER_2_TO_LAYER_3_WEIGHTS, LAYER_2_TO_LAYER_3_DELAY_RANGE, true);
+	simulator.AddSynapseGroup(POISSON_SPIKING_GROUP_ID_LAYER_1, IZHIKEVICH_SPIKING_GROUP_ID_LAYER_2, CONNECTIVITY_TYPE_ALL_TO_ALL, LAYER_1_TO_LAYER_2_WEIGHTS, LAYER_1_TO_LAYER_2_DELAY_RANGE, false);
+	simulator.AddSynapseGroup(IZHIKEVICH_SPIKING_GROUP_ID_LAYER_2, IZHIKEVICH_SPIKING_GROUP_ID_LAYER_3, CONNECTIVITY_TYPE_ALL_TO_ALL, LAYER_2_TO_LAYER_3_WEIGHTS, LAYER_2_TO_LAYER_3_DELAY_RANGE, true);
 
 	//
 	float total_time_per_epoch = 1.25f;

@@ -11,7 +11,7 @@
 #include <cuda.h>
 
 #include "Neurons/SpikingNeurons.h"
-#include "Connections/Connections.h"
+#include "Synapses/Synapses.h"
 
 class RecordingElectrodes{
 public:
@@ -40,8 +40,8 @@ public:
 	void save_spikes_to_host(float current_time_in_seconds, int timestep_index, int number_of_timesteps_per_epoch);
 	void write_spikes_to_file(Neurons *neurons, int epoch_number);
 
-	void write_initial_synaptic_weights_to_file(Connections *connections);
-	void save_network_state(Connections *connections);
+	void write_initial_synaptic_weights_to_file(Synapses *synapses);
+	void save_network_state(Synapses *synapses);
 
 };
 

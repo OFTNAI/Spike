@@ -4,8 +4,8 @@
 //	Author: Nasir Ahmad
 //	Date: 7/12/2015
 
-#ifndef Connections_H
-#define Connections_H
+#ifndef SYNAPSES_H
+#define SYNAPSES_H
 
 #include "../Neurons/Neurons.h"
 
@@ -33,13 +33,13 @@ struct stdp_struct {
 };
 
 
-class Connections {
+class Synapses {
 public:
 	// Constructor/Destructor
-	Connections();
-	~Connections();
+	Synapses();
+	~Synapses();
 	// Variables;
-	int total_number_of_connections;
+	int total_number_of_synapses;
 	// STDP
 	struct stdp_struct stdp_vars;
 	void SetSTDP(float w_max_new,
@@ -77,20 +77,20 @@ public:
 						float parameter_two);
 
 	void initialise_device_pointers();
-	void reset_connection_spikes();
+	void reset_synapse_spikes();
 	void set_threads_per_block_and_blocks_per_grid(int threads);
 
-	void calculate_postsynaptic_current_injection_for_connection(float* d_neurons_current_injections, float current_time_in_seconds);
+	void calculate_postsynaptic_current_injection_for_synapse(float* d_neurons_current_injections, float current_time_in_seconds);
 	void check_for_synapse_spike_arrival(float* d_neurons_last_spike_time, float* d_input_neurons_last_spike_time, float current_time_in_seconds);
-	void apply_ltd_to_connection_weights(float* d_lastspiketime, float current_time_in_seconds);
-	void apply_ltp_to_connection_weights(float* d_lastspiketime, float current_time_in_seconds);
+	void apply_ltd_to_synapse_weights(float* d_lastspiketime, float current_time_in_seconds);
+	void apply_ltp_to_synapse_weights(float* d_lastspiketime, float current_time_in_seconds);
 
 
 private:
-	dim3 number_of_connection_blocks_per_grid;
+	dim3 number_of_synapse_blocks_per_grid;
 	dim3 threads_per_block;
 
-	void increment_number_of_connections(int increment);
+	void increment_number_of_synapses(int increment);
 };
 // GAUSS random number generator
 double randn (double mu, double sigma);
