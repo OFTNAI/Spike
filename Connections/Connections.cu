@@ -422,7 +422,7 @@ void Connections::set_threads_per_block_and_blocks_per_grid(int threads) {
 
 
 
-__global__ void calculate_postsynaptic_current_injection_for_connection(int* d_spikes,
+__global__ void calculate_postsynaptic_current_injection_for_connection_kernal(int* d_spikes,
 							float* d_weights,
 							float* d_lastactive,
 							int* d_postsynaptic_neuron_indices,
@@ -459,9 +459,9 @@ __global__ void apply_ltp_to_connection_weights_kernal(int* d_postsyns,
 
 
 
-void Connections::calculate_postsynaptic_current_injection_for_connection_wrapper(float* d_neurons_current_injections, float current_time_in_seconds) {
+void Connections::calculate_postsynaptic_current_injection_for_connection(float* d_neurons_current_injections, float current_time_in_seconds) {
 
-	calculate_postsynaptic_current_injection_for_connection<<<number_of_connection_blocks_per_grid, threads_per_block>>>(d_spikes,
+	calculate_postsynaptic_current_injection_for_connection_kernal<<<number_of_connection_blocks_per_grid, threads_per_block>>>(d_spikes,
 																	d_weights,
 																	d_lastactive,
 																	d_postsynaptic_neuron_indices,
@@ -519,7 +519,7 @@ void Connections::apply_ltp_to_connection_weights(float* d_lastspiketime, float 
 
 // If spike has reached synapse add synapse weight to postsyn current injection
 // Was currentcalc
-__global__ void calculate_postsynaptic_current_injection_for_connection(int* d_spikes,
+__global__ void calculate_postsynaptic_current_injection_for_connection_kernal(int* d_spikes,
 							float* d_weights,
 							float* d_lastactive,
 							int* d_postsynaptic_neuron_indices,

@@ -29,12 +29,9 @@ public:
 	virtual void initialise_device_pointers();
 	virtual void reset_neurons();
 
-	void generate_random_states_wrapper();
-	void update_poisson_state_wrapper(float timestep);
+	void generate_random_states();
+	void update_poisson_states(float timestep);
 
 };
-
-__global__ void init(unsigned int seed, curandState_t* states, size_t numNeurons);
-
 
 #endif

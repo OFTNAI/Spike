@@ -85,7 +85,7 @@ void SpikingNeurons::update_neuron_states(float timestep) {
 
 
 
-__global__ void check_for_neuron_spikes(float *d_states_v,
+__global__ void check_for_neuron_spikes_kernal(float *d_states_v,
 								float *d_states_u,
 								float *d_param_c,
 								float *d_param_d,
@@ -94,9 +94,9 @@ __global__ void check_for_neuron_spikes(float *d_states_v,
 								size_t total_number_of_neurons);
 
 
-void SpikingNeurons::check_for_neuron_spikes_wrapper(float currtime) {
+void SpikingNeurons::check_for_neuron_spikes(float currtime) {
 
-	check_for_neuron_spikes<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_states_v,
+	check_for_neuron_spikes_kernal<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_states_v,
 																	d_states_u,
 																	d_param_c,
 																	d_param_d,
@@ -109,7 +109,7 @@ void SpikingNeurons::check_for_neuron_spikes_wrapper(float currtime) {
 
 
 // Spiking Neurons
-__global__ void check_for_neuron_spikes(float *d_states_v,
+__global__ void check_for_neuron_spikes_kernal(float *d_states_v,
 								float *d_states_u,
 								float *d_param_c,
 								float *d_param_d,

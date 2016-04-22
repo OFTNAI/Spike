@@ -50,10 +50,11 @@ Simulator::~Simulator(){
 }
 
 
+
 // Timestep Setting function
 void Simulator::SetTimestep(float timest){
 
-	printf("timest = %d\n\n", connections->total_number_of_connections);
+	printf("timest = %f\n\n", timest);
 	if (connections->total_number_of_connections == 0){
 		timestep = timest;
 	} else {
@@ -63,6 +64,9 @@ void Simulator::SetTimestep(float timest){
 }
 
 
+
+
+
 void Simulator::SetNeuronType(SpikingNeurons * neurons_parameter) {
 	neurons = neurons_parameter;
 }
@@ -70,6 +74,10 @@ void Simulator::SetNeuronType(SpikingNeurons * neurons_parameter) {
 void Simulator::SetInputNeuronType(PoissonSpikingNeurons * inputs_parameter) {
 	input_neurons = inputs_parameter;
 }
+
+
+
+
 
 int Simulator::AddNeuronGroup(neuron_parameters_struct * group_params, int group_shape[2]) {
 	if (neurons == NULL) {
@@ -180,7 +188,7 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_
 
 	recording_electrodes->write_initial_synaptic_weights_to_file(connections);
 	
-	input_neurons->generate_random_states_wrapper();
+	input_neurons->generate_random_states();
 
 
 	clock_t begin = clock();
@@ -214,7 +222,7 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_
 				
 				neurons->reset_current_injections();
 				
-				input_neurons->update_poisson_state_wrapper(timestep);
+				input_neurons->update_poisson_states(timestep);
 
 				// // If there are any spike generators
 				// if (numEnts > 0) {
@@ -222,14 +230,14 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_
 				// 	temp_test_generator->generupdate2_wrapper(current_time_in_seconds, timestep);
 				// } 
 				
-				connections->calculate_postsynaptic_current_injection_for_connection_wrapper(neurons->d_current_injections, current_time_in_seconds);
+				connections->calculate_postsynaptic_current_injection_for_connection(neurons->d_current_injections, current_time_in_seconds);
 
 				connections->apply_ltd_to_connection_weights(neurons->d_last_spike_times, current_time_in_seconds);
 
 				neurons->update_neuron_states(timestep);
 
-				neurons->check_for_neuron_spikes_wrapper(current_time_in_seconds);
-				input_neurons->check_for_neuron_spikes_wrapper(current_time_in_seconds);
+				neurons->check_for_neuron_spikes(current_time_in_seconds);
+				input_neurons->check_for_neuron_spikes(current_time_in_seconds);
 								
 				connections->check_for_synapse_spike_arrival(neurons->d_last_spike_times, input_neurons->d_last_spike_times, current_time_in_seconds);
 
@@ -285,6 +293,11 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_
 	free(recording_electrodes->h_spikestoreID);
 
 }
+
+
+
+
+
 
 
 // Spike Generator Spike Creation

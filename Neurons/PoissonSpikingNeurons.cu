@@ -57,18 +57,18 @@ void PoissonSpikingNeurons::reset_neurons() {
 
 
 
-__global__ void generate_random_states(unsigned int seed, curandState_t* d_states, size_t total_number_of_neurons);
+__global__ void generate_random_states_kernal(unsigned int seed, curandState_t* d_states, size_t total_number_of_neurons);
 
 
-void PoissonSpikingNeurons::generate_random_states_wrapper() {
+void PoissonSpikingNeurons::generate_random_states() {
 	
-	generate_random_states<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(42, d_states, total_number_of_neurons);
+	generate_random_states_kernal<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(42, d_states, total_number_of_neurons);
 
 	CudaCheckError();
 }
 
 
-__global__ void generate_random_states(unsigned int seed, curandState_t* d_states, size_t total_number_of_neurons) {
+__global__ void generate_random_states_kernal(unsigned int seed, curandState_t* d_states, size_t total_number_of_neurons) {
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	if (idx < total_number_of_neurons) {
 		curand_init(seed, /* the seed can be the same for each core, here we pass the time in from the CPU */
@@ -80,7 +80,7 @@ __global__ void generate_random_states(unsigned int seed, curandState_t* d_state
 }
 
 
-__global__ void update_poisson_state(curandState_t* d_states,
+__global__ void update_poisson_states_kernal(curandState_t* d_states,
 							float *d_rates,
 							float *d_states_v,
 							float *d_states_u,
@@ -88,9 +88,9 @@ __global__ void update_poisson_state(curandState_t* d_states,
 							size_t total_number_of_inputs);
 
 
-void PoissonSpikingNeurons::update_poisson_state_wrapper(float timestep) {
+void PoissonSpikingNeurons::update_poisson_states(float timestep) {
 
-	update_poisson_state<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_states,
+	update_poisson_states_kernal<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_states,
 														d_rates,
 														d_states_v,
 														d_states_u,
@@ -100,7 +100,7 @@ void PoissonSpikingNeurons::update_poisson_state_wrapper(float timestep) {
 }
 
 
-__global__ void update_poisson_state(curandState_t* d_states,
+__global__ void update_poisson_states_kernal(curandState_t* d_states,
 							float *d_rates,
 							float *d_states_v,
 							float *d_states_u,
