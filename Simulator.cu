@@ -133,20 +133,7 @@ void Simulator::AddSynapseGroup(int presynaptic_group_id,
 
 void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_spikes, bool present_stimuli_in_random_order){
 
-	print_message_and_exit("Hello");
-
-	#ifndef QUIETSTART
-	printf("\n\n----------------------------------\n");
-	printf("Simulation Beginning\n");
-	printf("Time Step: %f\nNumber of Stimuli: %d\nNumber of Epochs: %d\n\n", timestep, number_of_stimuli, number_of_epochs);
-	printf("Total Number of Neurons: %d\n", neurons->total_number_of_neurons);
-	printf("Total Number of Synapses: %d\n\n", synapses->total_number_of_synapses);
-	if (present_stimuli_in_random_order)
-		printf("Stimuli to be presented in a random order.\n");
-	if (save_spikes)
-		printf("Spikes shall be saved.\n");
-	printf("----------------------------------\n\nBeginning ...\n\n");
-	#endif
+	begin_simulation_message(timestep, number_of_stimuli, number_of_epochs, save_spikes, present_stimuli_in_random_order, neurons->total_number_of_neurons, synapses->total_number_of_synapses);
 
 	// Check how many stimuli their are and do something about it:
 	if (number_of_stimuli == 0){
@@ -155,10 +142,7 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_
 		numEntries[0] = 0;
 	}
 	// Ensure that there is at least one epoch
-	if (number_of_epochs == 0){
-		printf("Error. There must be at least one epoch. Exiting ...\n\n");
-		exit(-1);
-	}
+	if (number_of_epochs == 0) print_message_and_exit("Error. There must be at least one epoch.");
 
 
 	GeneratorSpikingNeurons * temp_test_generator = new GeneratorSpikingNeurons();
