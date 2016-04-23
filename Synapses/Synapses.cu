@@ -13,7 +13,7 @@
 #include <math.h>
 
 #include <cuda.h>
-#include "../CUDAErrorCheckHelpers.h"
+#include "../Helpers/CUDAErrorCheckHelpers.h"
 
 
 // Macro to get the gaussian prob
@@ -418,6 +418,8 @@ void Synapses::set_threads_per_block_and_blocks_per_grid(int threads) {
 
 	int number_of_synapse_blocks = (total_number_of_synapses + threads) / threads;
 	number_of_synapse_blocks_per_grid.x = number_of_synapse_blocks;
+
+	printf("number_of_synapse_blocks_per_grid.x: %d\n", number_of_synapse_blocks_per_grid.x);
 }
 
 
@@ -646,6 +648,19 @@ __global__ void apply_ltp_to_synapse_weights_kernal(int* d_postsyns,
 		}
 
 	}
+}
+
+
+__device__ int getGlobalIdx_3D_3D()
+{
+	int blockId = blockIdx.x 
+			 + blockIdx.y * gridDim.x 
+			 + gridDim.x * gridDim.y * blockIdx.z; 
+	int threadId = blockId * (blockDim.x * blockDim.y * blockDim.z)
+			  + (threadIdx.z * (blockDim.x * blockDim.y))
+			  + (threadIdx.y * blockDim.x)
+			  + threadIdx.x;
+	return threadId;
 }
 
 

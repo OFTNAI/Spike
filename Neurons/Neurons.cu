@@ -5,7 +5,7 @@
 
 #include "Neurons.h"
 #include <stdlib.h>
-#include "../CUDAErrorCheckHelpers.h"
+#include "../Helpers/CUDAErrorCheckHelpers.h"
 
 
 // Neurons Constructor

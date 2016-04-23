@@ -18,7 +18,7 @@
 #include "RecordingElectrodes.h"
 #include "Neurons/GeneratorSpikingNeurons.h"
 
-#include "CUDAErrorCheckHelpers.h"
+#include "Helpers/CUDAErrorCheckHelpers.h"
 
 
 // Constructor
@@ -171,7 +171,7 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_
 	input_recording_electrodes->initialise_host_pointers();
 
 
-	int threads_per_block = 128;
+	int threads_per_block = 512;
 	synapses->set_threads_per_block_and_blocks_per_grid(threads_per_block);
 	neurons->set_threads_per_block_and_blocks_per_grid(threads_per_block);
 	input_neurons->set_threads_per_block_and_blocks_per_grid(threads_per_block);
@@ -248,7 +248,6 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_
 				if (save_spikes){
 					recording_electrodes->save_spikes_to_host(current_time_in_seconds, timestep_index, number_of_timesteps_per_epoch);
 					input_recording_electrodes->save_spikes_to_host(current_time_in_seconds, timestep_index, number_of_timesteps_per_epoch);
-
 				}
 			}
 			if (numEnts > 0){
@@ -270,6 +269,7 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_
 		// Only save the spikes if necessary
 		if (save_spikes){
 			recording_electrodes->write_spikes_to_file(neurons, epoch_number);
+			input_recording_electrodes->write_spikes_to_file(input_neurons, epoch_number);
 		}
 	}
 	

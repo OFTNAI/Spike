@@ -10,7 +10,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <fstream>
-#include "CUDAErrorCheckHelpers.h"
+#include "Helpers/CUDAErrorCheckHelpers.h"
 
 using namespace std;
 
@@ -71,12 +71,14 @@ void RecordingElectrodes::save_spikes_to_host(float current_time_in_seconds, int
 
 		// Finally, we want to get the spikes back. Every few timesteps check the number of spikes:
 		CudaSafeCall(cudaMemcpy(&(h_temp_total_number_of_spikes[0]), &(d_tempstorenum[0]), (sizeof(int)), cudaMemcpyDeviceToHost));
+
 		// Ensure that we don't have too many
-		if (h_temp_total_number_of_spikes[0] > neurons->total_number_of_neurons){
-			// ERROR!
-			printf("Spike recorder has been overloaded! Reduce threshold. Exiting ...\n");
-			exit(-1);
-		}
+		// if (h_temp_total_number_of_spikes[0] > neurons->total_number_of_neurons){
+		// 	// ERROR!
+		// 	printf("Spike recorder has been overloaded! Reduce threshold. Exiting ...\n");
+		// 	exit(-1);
+		// }
+
 		// Deal with them!
 		if ((h_temp_total_number_of_spikes[0] >= (0.25*neurons->total_number_of_neurons)) ||  (timestep_index == (number_of_timesteps_per_epoch - 1))){
 

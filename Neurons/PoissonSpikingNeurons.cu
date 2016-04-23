@@ -1,7 +1,7 @@
 #include "PoissonSpikingNeurons.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include "../CUDAErrorCheckHelpers.h"
+#include "../Helpers/CUDAErrorCheckHelpers.h"
 #include <algorithm> // For random shuffle
 using namespace std;
 

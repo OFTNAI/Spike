@@ -35,9 +35,9 @@ int main (int argc, char *argv[]){
 	izhhikevich_spiking_group_params->paramd = 6.0f;
 
 	//
-	int LAYER_1_SHAPE[] = {1000, 1};
-	int LAYER_2_SHAPE[] = {1000, 1};
-	int LAYER_3_SHAPE[] = {1000, 1};
+	int LAYER_1_SHAPE[] = {100, 100};
+	int LAYER_2_SHAPE[] = {100, 10};
+	int LAYER_3_SHAPE[] = {10, 10};
 
 	//
 	int POISSON_SPIKING_GROUP_ID_LAYER_1 = simulator.AddInputNeuronGroup(poisson_spiking_group_params, LAYER_1_SHAPE);
@@ -58,8 +58,8 @@ int main (int argc, char *argv[]){
 
 	//
 	float total_time_per_epoch = 1.25f;
-	int number_of_epochs = 1;
-	bool save_spikes = true;
+	int number_of_epochs = 100;
+	bool save_spikes = false;
 
 	//
 	simulator.Run(total_time_per_epoch, number_of_epochs, save_spikes);

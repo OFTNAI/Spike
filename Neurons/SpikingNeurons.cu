@@ -1,6 +1,6 @@
 #include "SpikingNeurons.h"
 #include <stdlib.h>
-#include "../CUDAErrorCheckHelpers.h"
+#include "../Helpers/CUDAErrorCheckHelpers.h"
 
 
 // SpikingNeurons Constructor
