@@ -19,6 +19,7 @@
 #include "Neurons/GeneratorSpikingNeurons.h"
 
 #include "Helpers/CUDAErrorCheckHelpers.h"
+#include "Helpers/TerminalHelpers.h"
 
 
 // Constructor
@@ -131,6 +132,9 @@ void Simulator::AddSynapseGroup(int presynaptic_group_id,
 
 
 void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_spikes, bool present_stimuli_in_random_order){
+
+	print_message_and_exit("Hello");
+
 	#ifndef QUIETSTART
 	printf("\n\n----------------------------------\n");
 	printf("Simulation Beginning\n");
