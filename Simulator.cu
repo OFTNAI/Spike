@@ -52,16 +52,14 @@ Simulator::~Simulator(){
 
 
 
-// Timestep Setting function
 void Simulator::SetTimestep(float timest){
 
-	printf("timest = %f\n\n", timest);
 	if (synapses->total_number_of_synapses == 0){
 		timestep = timest;
 	} else {
-		printf("You must set the timestep before creating any synapses. Exiting ...\n\n");
-		exit(-1);
+		print_message_and_exit("You must set the timestep before creating any synapses.");
 	}
+
 }
 
 
@@ -69,11 +67,15 @@ void Simulator::SetTimestep(float timest){
 
 
 void Simulator::SetNeuronType(SpikingNeurons * neurons_parameter) {
+
 	neurons = neurons_parameter;
+
 }
 
 void Simulator::SetInputNeuronType(PoissonSpikingNeurons * inputs_parameter) {
+
 	input_neurons = inputs_parameter;
+
 }
 
 
@@ -81,22 +83,22 @@ void Simulator::SetInputNeuronType(PoissonSpikingNeurons * inputs_parameter) {
 
 
 int Simulator::AddNeuronGroup(neuron_parameters_struct * group_params, int group_shape[2]) {
-	if (neurons == NULL) {
-		printf("Please call SetNeuronType before adding neuron groups. Exiting ...\n\n");
-		exit(-1);
-	}
+
+	if (neurons == NULL) print_message_and_exit("Please call SetNeuronType before adding neuron groups.");
+
 	int neuron_group_id = neurons->AddGroup(group_params, group_shape);
 	return neuron_group_id;
+
 }
 
 
 int Simulator::AddInputNeuronGroup(neuron_parameters_struct * group_params, int group_shape[2]) {
-	if (input_neurons == NULL) {
-		printf("Please call SetInputNeuronType before adding inputs groups. Exiting ...\n\n");
-		exit(-1);
-	}
+
+	if (input_neurons == NULL) print_message_and_exit("Please call SetInputNeuronType before adding inputs groups.");
+
 	int input_group_id = input_neurons->AddGroup(group_params, group_shape);
 	return input_group_id;
+
 }
 
 
@@ -141,7 +143,7 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_
 		numEntries = (int*)realloc(numEntries, sizeof(int)*number_of_stimuli);
 		numEntries[0] = 0;
 	}
-	// Ensure that there is at least one epoch
+	
 	if (number_of_epochs == 0) print_message_and_exit("Error. There must be at least one epoch.");
 
 
@@ -299,12 +301,10 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_
 void Simulator::CreateGenerator(int popID, int stimulusid, int spikenumber, int* ids, float* spiketimes){
 	// We have to ensure that we have created space for the current stimulus.
 	if ((number_of_stimuli - 1) < stimulusid) {
+
 		// Check what the difference is and quit if it is too high
-		if ((stimulusid - (number_of_stimuli - 1)) > 1){
-			// Error Quit
-			printf("Error: Stimuli not created in order. Exiting ...\n");
-			exit(-1);
-		}
+		if ((stimulusid - (number_of_stimuli - 1)) > 1)	print_message_and_exit("Error: Stimuli not created in order.");
+		
 		// If it isn't greater than 1, make space!
 		++number_of_stimuli;
 		numEntries = (int*)realloc(numEntries, sizeof(int)*number_of_stimuli);

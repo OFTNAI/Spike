@@ -32,14 +32,7 @@ inline void begin_simulation_message(float timestep, int number_of_stimuli, int 
 
 inline void print_message_and_exit(const char * message)
 {
-    
-    // #ifdef PRINT_MESSAGES
-        // printf("JI PRINT MESSAGES\n");
-    // #endif
+    printf("%s\nExiting...\n", message);
 
-	printf("%s\n", message);
-    printf("Exiting...\n");
     exit(-1);
-
-    return;
 }
