@@ -14,6 +14,7 @@
 
 #include <cuda.h>
 #include "../Helpers/CUDAErrorCheckHelpers.h"
+#include "../Helpers/TerminalHelpers.h"
 
 
 // Macro to get the gaussian prob
@@ -127,10 +128,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 	// Also assign presynaptic group shape
 	if (presynaptic_group_id < 0) { // If presynaptic group is Input group
 
-		if (stdp_on == true) {
-			printf("Plasticity between input neurons and model neurons is not currently supported. Exiting...\n");
-			exit(-1);
-		}
+		if (stdp_on == true) print_message_and_exit("Plasticity between input neurons and model neurons is not currently supported.");
 
 		group_type_factor = -1;
 		group_type_component = -1;
@@ -156,8 +154,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 	// Also assign postsynaptic group shape
 	if (postsynaptic_group_id < 0) { // If presynaptic group is Input group EXIT
 
-		printf("Input groups cannot be a postsynaptic neuron group. Exiting...\n");
-		exit(-1);
+		print_message_and_exit("Input groups cannot be a postsynaptic neuron group.");
 
 	} else if (postsynaptic_group_id >= 0){
 		postsynaptic_group_shape = neurons->group_shapes[postsynaptic_group_id];
@@ -202,10 +199,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
             increment_number_of_synapses(increment);
             
 			// If the connectivity is one_to_one
-			if ((preend-prestart) != (postend-poststart)){
-				printf("Unequal populations for one_to_one. Exiting...\n");
-				exit(-1);
-			}
+			if ((preend-prestart) != (postend-poststart)) print_message_and_exit("Unequal populations for one_to_one.");
 			// Create the connectivity
 			for (int i = 0; i < (preend-prestart); i++){
 				presynaptic_neuron_indices[original_number_of_synapses + i] = group_type_factor*(prestart + i) + group_type_component;
@@ -341,8 +335,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 		}
 		default:
 		{
-			printf("\n\nUnknown Connection Type: %d\n\n", connectivity_type);
-			exit(-1);
+			print_message_and_exit("Unknown Connection Type.");
 			break;
 		}
 	}

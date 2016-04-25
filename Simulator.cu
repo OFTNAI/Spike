@@ -113,9 +113,9 @@ void Simulator::AddSynapseGroup(int presynaptic_group_id,
 	
 	// Convert delay range from time to number of timesteps
 	int delay_range_in_timesteps[2] = {int(round(delay_range[0]/timestep)), int(round(delay_range[1]/timestep))};
+
 	if ((delay_range_in_timesteps[0] < 1) || (delay_range_in_timesteps[1] < 1)) {
-		printf("\nDelay range must be at least one timestep. Exiting ...\n\n");
-		exit(-1);
+		print_message_and_exit("Delay range must be at least one timestep.");
 	}
 
 	synapses->AddGroup(presynaptic_group_id, 
@@ -304,7 +304,7 @@ void Simulator::CreateGenerator(int popID, int stimulusid, int spikenumber, int*
 
 		// Check what the difference is and quit if it is too high
 		if ((stimulusid - (number_of_stimuli - 1)) > 1)	print_message_and_exit("Error: Stimuli not created in order.");
-		
+
 		// If it isn't greater than 1, make space!
 		++number_of_stimuli;
 		numEntries = (int*)realloc(numEntries, sizeof(int)*number_of_stimuli);
@@ -349,9 +349,7 @@ void Simulator::CreateGenerator(int popID, int stimulusid, int spikenumber, int*
 // 						float* newWeights){
 // 	// Check if you have the correct number of weights
 // 	if (numWeights != synconnects.numsynapses){
-// 		// Error if not
-// 		printf("The number of weights being loaded is not equivalent to the model. Exiting \n");
-// 		exit(-1);
+// 		print_message_and_exit("The number of weights being loaded is not equivalent to the model.");
 // 	}
 // 	// Continuing and applying the weights
 // 	for (int i=0; i < numWeights; i++){

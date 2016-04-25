@@ -1,11 +1,12 @@
-//	Neurons Class C++
-//	Neurons.cpp
+//	Neurons Class C++/CUDA
+//	Neurons.cu
 //
 //	Authors: Nasir Ahmad (7/12/2015), James Isbister (6/4/2016)
 
 #include "Neurons.h"
 #include <stdlib.h>
 #include "../Helpers/CUDAErrorCheckHelpers.h"
+#include "../Helpers/TerminalHelpers.h"
 
 
 // Neurons Constructor
@@ -39,8 +40,7 @@ int Neurons::AddGroup(neuron_parameters_struct * group_params, int group_shape[2
 	number_of_neurons_in_new_group = group_shape[0]*group_shape[1];
  
 	if (number_of_neurons_in_new_group < 0) {
-		printf("\nError: Group must have at least 1 neuron.\n\n");
-		exit(-1);
+		print_message_and_exit("Error: Group must have at least 1 neuron.");
 	}
 
 	// Update totals
