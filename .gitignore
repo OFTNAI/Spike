@@ -5,3 +5,4 @@ Example
 catch.hpp
 unittests
 /results/*
+/ObjectFiles/*

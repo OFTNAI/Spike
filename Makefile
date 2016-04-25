@@ -25,36 +25,36 @@ model: ${FILE}
 
 
 # Separating out the individual compilations so as not to compilation time
-${FILE}: ${FILE}.o Simulator.o Neurons.o SpikingNeurons.o IzhikevichSpikingNeurons.o PoissonSpikingNeurons.o GeneratorSpikingNeurons.o Synapses.o RecordingElectrodes.o
-	$(CC) ${FILE}.o Simulator.o Neurons.o SpikingNeurons.o IzhikevichSpikingNeurons.o PoissonSpikingNeurons.o GeneratorSpikingNeurons.o Synapses.o RecordingElectrodes.o -o ${FILE}
+${FILE}: ObjectFiles/${FILE}.o ObjectFiles/Simulator.o ObjectFiles/Neurons.o ObjectFiles/SpikingNeurons.o ObjectFiles/IzhikevichSpikingNeurons.o ObjectFiles/PoissonSpikingNeurons.o ObjectFiles/GeneratorSpikingNeurons.o ObjectFiles/Synapses.o ObjectFiles/RecordingElectrodes.o
+	$(CC) ObjectFiles/${FILE}.o ObjectFiles/Simulator.o ObjectFiles/Neurons.o ObjectFiles/SpikingNeurons.o ObjectFiles/IzhikevichSpikingNeurons.o ObjectFiles/PoissonSpikingNeurons.o ObjectFiles/GeneratorSpikingNeurons.o ObjectFiles/Synapses.o ObjectFiles/RecordingElectrodes.o -o ${FILE}
 
 # Compiling the Model file
-${FILE}.o: ${FILE}.cpp
-	$(CC) $(CFLAGS) ${FILE}.cpp
+ObjectFiles/${FILE}.o: ${FILE}.cpp
+	$(CC) $(CFLAGS) ${FILE}.cpp -o $@
 # Compiling the Simulator class
-Simulator.o: Simulator/Simulator.cu
-	$(CC) $(CFLAGS) Simulator/Simulator.cu
+ObjectFiles/Simulator.o: Simulator/Simulator.cu
+	$(CC) $(CFLAGS) Simulator/Simulator.cu -o $@
 # Compiling the Neurons class
-Neurons.o: Neurons/Neurons.cu
-	$(CC) $(CFLAGS) Neurons/Neurons.cu
+ObjectFiles/Neurons.o: Neurons/Neurons.cu
+	$(CC) $(CFLAGS) Neurons/Neurons.cu -o $@
 # Compiling the SpikingNeurons class
-SpikingNeurons.o: Neurons/SpikingNeurons.cu
-	$(CC) $(CFLAGS) Neurons/SpikingNeurons.cu
+ObjectFiles/SpikingNeurons.o: Neurons/SpikingNeurons.cu
+	$(CC) $(CFLAGS) Neurons/SpikingNeurons.cu -o $@
 # Compiling the IzhikevichSpikingNeurons class
-IzhikevichSpikingNeurons.o: Neurons/IzhikevichSpikingNeurons.cu
-	$(CC) $(CFLAGS) Neurons/IzhikevichSpikingNeurons.cu
+ObjectFiles/IzhikevichSpikingNeurons.o: Neurons/IzhikevichSpikingNeurons.cu
+	$(CC) $(CFLAGS) Neurons/IzhikevichSpikingNeurons.cu -o $@
 # Compiling the PoissonSpikingNeurons class
-PoissonSpikingNeurons.o: Neurons/PoissonSpikingNeurons.cu
-	$(CC) $(CFLAGS) Neurons/PoissonSpikingNeurons.cu
+ObjectFiles/PoissonSpikingNeurons.o: Neurons/PoissonSpikingNeurons.cu
+	$(CC) $(CFLAGS) Neurons/PoissonSpikingNeurons.cu -o $@
 # Compiling the GeneratorSpikingNeurons class
-GeneratorSpikingNeurons.o: Neurons/GeneratorSpikingNeurons.cu
-	$(CC) $(CFLAGS) Neurons/GeneratorSpikingNeurons.cu
+ObjectFiles/GeneratorSpikingNeurons.o: Neurons/GeneratorSpikingNeurons.cu
+	$(CC) $(CFLAGS) Neurons/GeneratorSpikingNeurons.cu -o $@
 # Compiling the Synapses class
-Synapses.o: Synapses/Synapses.cu
-	$(CC) $(CFLAGS) Synapses/Synapses.cu
+ObjectFiles/Synapses.o: Synapses/Synapses.cu
+	$(CC) $(CFLAGS) Synapses/Synapses.cu -o $@
 # Compiling RecordingElectrodes class
-RecordingElectrodes.o: RecordingElectrodes.cu
-	$(CC) $(CFLAGS) RecordingElectrodes.cu
+ObjectFiles/RecordingElectrodes.o: RecordingElectrodes.cu
+	$(CC) $(CFLAGS) RecordingElectrodes.cu -o $@
 
 
 # Test script
