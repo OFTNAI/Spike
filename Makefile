@@ -53,8 +53,8 @@ ObjectFiles/GeneratorSpikingNeurons.o: Neurons/GeneratorSpikingNeurons.cu
 ObjectFiles/Synapses.o: Synapses/Synapses.cu
 	$(CC) $(CFLAGS) Synapses/Synapses.cu -o $@
 # Compiling RecordingElectrodes class
-ObjectFiles/RecordingElectrodes.o: RecordingElectrodes.cu
-	$(CC) $(CFLAGS) RecordingElectrodes.cu -o $@
+ObjectFiles/RecordingElectrodes.o: RecordingElectrodes/RecordingElectrodes.cu
+	$(CC) $(CFLAGS) RecordingElectrodes/RecordingElectrodes.cu -o $@
 
 
 # Test script

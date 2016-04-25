@@ -10,7 +10,7 @@
 #include <time.h>
 
 #include "Simulator.h"
-#include "../RecordingElectrodes.h"
+#include "../RecordingElectrodes/RecordingElectrodes.h"
 #include "../Neurons/GeneratorSpikingNeurons.h"
 
 #include "../Helpers/CUDAErrorCheckHelpers.h"

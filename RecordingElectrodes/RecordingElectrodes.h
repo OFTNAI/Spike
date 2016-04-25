@@ -10,8 +10,8 @@
 
 #include <cuda.h>
 
-#include "Neurons/SpikingNeurons.h"
-#include "Synapses/Synapses.h"
+#include "../Neurons/SpikingNeurons.h"
+#include "../Synapses/Synapses.h"
 
 class RecordingElectrodes{
 public:

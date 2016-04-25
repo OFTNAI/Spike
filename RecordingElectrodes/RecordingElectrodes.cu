@@ -10,8 +10,8 @@
 #include <iostream>
 #include <stdio.h>
 #include <fstream>
-#include "Helpers/CUDAErrorCheckHelpers.h"
-#include "Helpers/TerminalHelpers.h"
+#include "../Helpers/CUDAErrorCheckHelpers.h"
+#include "../Helpers/TerminalHelpers.h"
 
 using namespace std;
 
