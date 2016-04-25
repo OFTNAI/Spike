@@ -6,7 +6,7 @@
 // make FILE="Example" model
 
 
-#include "Simulator.h"
+#include "Simulator/Simulator.h"
 #include "Synapses/Synapses.h"
 #include "Neurons/Neurons.h"
 #include "Neurons/IzhikevichSpikingNeurons.h"

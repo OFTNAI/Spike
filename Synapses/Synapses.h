@@ -34,12 +34,15 @@ struct stdp_struct {
 
 
 class Synapses {
+
 public:
+
 	// Constructor/Destructor
 	Synapses();
 	~Synapses();
-	// Variables;
+
 	int total_number_of_synapses;
+
 	// STDP
 	struct stdp_struct stdp_vars;
 	void SetSTDP(float w_max_new,
@@ -47,6 +50,7 @@ public:
 				float a_plus_new,
 				float tau_minus_new,
 				float tau_plus_new);
+
 	// Full Matrices
 	int* presynaptic_neuron_indices; // Previously presyns
 	int* postsynaptic_neuron_indices; // Previously postsyns

@@ -32,8 +32,8 @@ ${FILE}: ${FILE}.o Simulator.o Neurons.o SpikingNeurons.o IzhikevichSpikingNeuro
 ${FILE}.o: ${FILE}.cpp
 	$(CC) $(CFLAGS) ${FILE}.cpp
 # Compiling the Simulator class
-Simulator.o: Simulator.cu
-	$(CC) $(CFLAGS) Simulator.cu
+Simulator.o: Simulator/Simulator.cu
+	$(CC) $(CFLAGS) Simulator/Simulator.cu
 # Compiling the Neurons class
 Neurons.o: Neurons/Neurons.cu
 	$(CC) $(CFLAGS) Neurons/Neurons.cu

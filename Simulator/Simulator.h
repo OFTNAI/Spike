@@ -22,10 +22,10 @@
 #include <cuda.h>
 
 // #include "CUDAcode.h"
-#include "Neurons/Neurons.h"
-#include "Synapses/Synapses.h"
-#include "Neurons/PoissonSpikingNeurons.h"
-#include "Neurons/SpikingNeurons.h"
+#include "../Neurons/Neurons.h"
+#include "../Synapses/Synapses.h"
+#include "../Neurons/PoissonSpikingNeurons.h"
+#include "../Neurons/SpikingNeurons.h"
 
 // Simulator Class for running of the simulations
 class Simulator{

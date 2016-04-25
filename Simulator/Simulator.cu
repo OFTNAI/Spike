@@ -1,12 +1,7 @@
 // 	Simulator Class
-// 	Simulator.cpp
-//
-//	Original Author: Nasir Ahmad
-//	Date: 8/12/2015
-//	Originally Spike.cpp
-// 
-//  Adapted by Nasir Ahmad and James Isbister
-//	Date: 23/3/2016
+// 	Simulator.cu
+
+//	Authors: Nasir Ahmad (7/12/2015), James Isbister (23/3/2016)
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,11 +10,11 @@
 #include <time.h>
 
 #include "Simulator.h"
-#include "RecordingElectrodes.h"
-#include "Neurons/GeneratorSpikingNeurons.h"
+#include "../RecordingElectrodes.h"
+#include "../Neurons/GeneratorSpikingNeurons.h"
 
-#include "Helpers/CUDAErrorCheckHelpers.h"
-#include "Helpers/TerminalHelpers.h"
+#include "../Helpers/CUDAErrorCheckHelpers.h"
+#include "../Helpers/TerminalHelpers.h"
 
 
 // Constructor
