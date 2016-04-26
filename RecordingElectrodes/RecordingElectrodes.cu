@@ -165,7 +165,7 @@ int idx = threadIdx.x + blockIdx.x * blockDim.x;
 
 
 
-void RecordingElectrodes::write_initial_synaptic_weights_to_file(Synapses *synapses) {
+void RecordingElectrodes::write_initial_synaptic_weights_to_file(SpikingSynapses *synapses) {
 	ofstream initweightfile;
 	initweightfile.open("results/NetworkWeights_Initial.bin", ios::out | ios::binary);
 	initweightfile.write((char *)synapses->weights, synapses->total_number_of_synapses*sizeof(float));
@@ -173,7 +173,7 @@ void RecordingElectrodes::write_initial_synaptic_weights_to_file(Synapses *synap
 }
 
 
-void RecordingElectrodes::save_network_state(Synapses *synapses) {
+void RecordingElectrodes::save_network_state(SpikingSynapses *synapses) {
 
 	#ifndef QUIETSTART
 	printf("Outputting binary files.\n");

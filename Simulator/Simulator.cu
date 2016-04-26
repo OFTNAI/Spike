@@ -27,7 +27,7 @@ Simulator::Simulator(){
 	// Default parameters
 	timestep = 0.001f;
 
-	synapses = new Synapses();
+	synapses = new SpikingSynapses();
 	
 	#ifndef QUIETSTART
 		// Say Hi to the user:
@@ -169,7 +169,6 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_
 	for (int i = 0; i < number_of_stimuli; i++){
 		stimuli_presentation_order[i] = i;
 	}
-
 
 	recording_electrodes->write_initial_synaptic_weights_to_file(synapses);
 	

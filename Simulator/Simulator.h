@@ -23,7 +23,7 @@
 
 // #include "CUDAcode.h"
 #include "../Neurons/Neurons.h"
-#include "../Synapses/Synapses.h"
+#include "../Synapses/SpikingSynapses.h"
 #include "../Neurons/PoissonSpikingNeurons.h"
 #include "../Neurons/SpikingNeurons.h"
 
@@ -35,7 +35,7 @@ public:
 	~Simulator();
 
 	SpikingNeurons * neurons;
-	Synapses * synapses;
+	SpikingSynapses * synapses;
 	PoissonSpikingNeurons * input_neurons;
 
 	// Spike Generator related Data
