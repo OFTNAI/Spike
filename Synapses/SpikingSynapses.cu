@@ -87,8 +87,6 @@ void SpikingSynapses::increment_number_of_synapses(int increment) {
 
 	Synapses::increment_number_of_synapses(increment);
 
-	printf("Increment2: %d\n", increment);
-
     delays = (int*)realloc(delays, total_number_of_synapses * sizeof(int));
     stdp = (int*)realloc(stdp, total_number_of_synapses * sizeof(int));
 
@@ -143,24 +141,6 @@ __global__ void check_for_synapse_spike_arrival_kernal(int* d_presynaptic_neuron
 								float currtime,
 								size_t total_number_of_synapses);
 
-__global__ void apply_ltd_to_synapse_weights_kernal(float* d_lastactive,
-							float* d_weights,
-							int* d_stdp,
-							float* d_lastspiketime,
-							int* d_postsyns,
-							float currtime,
-							struct stdp_struct stdp_vars,
-							size_t numConns);
-
-__global__ void apply_ltp_to_synapse_weights_kernal(int* d_postsyns,
-							float* d_lastspiketime,
-							int* d_stdp,
-							float* d_lastactive,
-							float* d_weights,
-							struct stdp_struct stdp_vars,
-							float currtime,
-							size_t numConns);
-
 
 
 void SpikingSynapses::calculate_postsynaptic_current_injection_for_synapse(float* d_neurons_current_injections, float current_time_in_seconds) {
@@ -192,31 +172,11 @@ void SpikingSynapses::check_for_synapse_spike_arrival(float* d_neurons_last_spik
 
 void SpikingSynapses::apply_ltd_to_synapse_weights(float* d_lastspiketime, float current_time_in_seconds) {
 
-	apply_ltd_to_synapse_weights_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_lastactive,
-																	d_weights,
-																	d_stdp,
-																	d_lastspiketime,
-																	d_postsynaptic_neuron_indices,
-																	current_time_in_seconds,
-																	stdp_vars, // Should make device copy?
-																	total_number_of_synapses);
-
-	CudaCheckError();
 }
 
 
 void SpikingSynapses::apply_ltp_to_synapse_weights(float* d_lastspiketime, float current_time_in_seconds) {
-	// Carry out the last step, LTP!
-	apply_ltp_to_synapse_weights_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_postsynaptic_neuron_indices,
-																	d_lastspiketime,
-																	d_stdp,
-																	d_lastactive,
-																	d_weights,
-																	stdp_vars, 
-																	current_time_in_seconds,
-																	total_number_of_synapses);
 
-	CudaCheckError();
 }
 
 
@@ -296,58 +256,5 @@ __global__ void check_for_synapse_spike_arrival_kernal(int* d_presynaptic_neuron
 			d_spikes[idx] = d_spikebuffer[idx];
 			d_spikebuffer[idx] = temp;
 		}
-	}
-}
-
-
-
-// LTD of weights
-__global__ void apply_ltd_to_synapse_weights_kernal(float* d_lastactive,
-							float* d_weights,
-							int* d_stdp,
-							float* d_lastspiketime,
-							int* d_postsyns,
-							float currtime,
-							struct stdp_struct stdp_vars,
-							size_t numConns){
-
-	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	if (idx < (numConns)) {
-		// Get the locations for updating
-		// Get the synapses that are to be LTD'd
-		if ((d_lastactive[idx] == currtime) && (d_stdp[idx] == 1)) {
-			float diff = d_lastspiketime[d_postsyns[idx]] - currtime;
-			// STDP Update Rule
-			float weightscale = stdp_vars.w_max * stdp_vars.a_minus * expf(diff / stdp_vars.tau_minus);
-			// Now scale the weight (using an inverted column/row)
-			d_weights[idx] += weightscale; 
-		}
-	}
-}
-
-
-// LTP on synapses
-__global__ void apply_ltp_to_synapse_weights_kernal(int* d_postsyns,
-							float* d_lastspiketime,
-							int* d_stdp,
-							float* d_lastactive,
-							float* d_weights,
-							struct stdp_struct stdp_vars,
-							float currtime,
-							size_t numConns) {
-
-	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	if (idx < numConns) {
-		// Get the synapses upon which we should do LTP
-		// Reversed indexing to check post->pre synapses
-		if ((d_lastspiketime[d_postsyns[idx]] == currtime) && (d_stdp[idx] == 1)){
-			// Get the last active time / weight of the synapse
-			// Calc time difference and weight change
-			float diff = currtime - d_lastactive[idx];
-			float weightchange = (stdp_vars.w_max - d_weights[idx]) * (stdp_vars.a_plus * expf(-diff / stdp_vars.tau_plus));
-			// Update weights
-			d_weights[idx] += weightchange;
-		}
-
 	}
 }

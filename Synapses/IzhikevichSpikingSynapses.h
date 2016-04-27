@@ -1,28 +1,17 @@
-#ifndef SPIKINGSYNAPSES_H
-#define SPIKINGSYNAPSES_H
+#ifndef IZHIKEVICHSPIKINGSYNAPSES_H
+#define IZHIKEVICHSPIKINGSYNAPSES_H
 
-#include "Synapses.h"
+#include "SpikingSynapses.h"
 #include "../Neurons/Neurons.h"
 
 
-class SpikingSynapses : public Synapses {
+class IzhikevichSpikingSynapses : public SpikingSynapses {
 
 public:
 
 	// Constructor/Destructor
-	SpikingSynapses();
-	~SpikingSynapses();
-
-	// Full Matrices
-	int* delays;
-	int* stdp;
-
-	// Device pointers
-	int* d_delays;
-	int* d_spikes;
-	int* d_stdp;
-	float* d_lastactive;
-	int* d_spikebuffer;
+	IzhikevichSpikingSynapses();
+	~IzhikevichSpikingSynapses();
 
 	// Synapse Functions
 	virtual void AddGroup(int presynaptic_group_id, 
@@ -41,11 +30,10 @@ public:
 	virtual void set_threads_per_block_and_blocks_per_grid(int threads);
 	virtual void increment_number_of_synapses(int increment);
 
-	virtual void calculate_postsynaptic_current_injection_for_synapse(float* d_neurons_current_injections, float current_time_in_seconds);
-	virtual void check_for_synapse_spike_arrival(float* d_neurons_last_spike_time, float* d_input_neurons_last_spike_time, float current_time_in_seconds);
+	// virtual void calculate_postsynaptic_current_injection_for_synapse(float* d_neurons_current_injections, float current_time_in_seconds);
+	// virtual void check_for_synapse_spike_arrival(float* d_neurons_last_spike_time, float* d_input_neurons_last_spike_time, float current_time_in_seconds);
 	virtual void apply_ltd_to_synapse_weights(float* d_lastspiketime, float current_time_in_seconds);
 	virtual void apply_ltp_to_synapse_weights(float* d_lastspiketime, float current_time_in_seconds);
-
 
 };
 

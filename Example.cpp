@@ -7,7 +7,7 @@
 
 
 #include "Simulator/Simulator.h"
-#include "Synapses/Synapses.h"
+#include "Synapses/IzhikevichSpikingSynapses.h"
 #include "Neurons/Neurons.h"
 #include "Neurons/IzhikevichSpikingNeurons.h"
 #include "Neurons/PoissonSpikingNeurons.h"
@@ -22,6 +22,7 @@ int main (int argc, char *argv[]){
 	simulator.SetTimestep(time_step);
 	simulator.SetNeuronType(new IzhikevichSpikingNeurons());
 	simulator.SetInputNeuronType(new PoissonSpikingNeurons());
+	simulator.SetSynapseType(new IzhikevichSpikingSynapses());
 
 	//
 	poisson_spiking_neuron_parameters_struct * poisson_spiking_group_params = new poisson_spiking_neuron_parameters_struct();
@@ -58,8 +59,8 @@ int main (int argc, char *argv[]){
 
 	//
 	float total_time_per_epoch = 1.25f;
-	int number_of_epochs = 100;
-	bool save_spikes = false;
+	int number_of_epochs = 1;
+	bool save_spikes = true;
 
 	//
 	simulator.Run(total_time_per_epoch, number_of_epochs, save_spikes);

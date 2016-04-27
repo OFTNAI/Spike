@@ -20,14 +20,17 @@
 // Constructor
 Simulator::Simulator(){
 	// Spike Generators
+
+	synapses = NULL;
+	neurons = NULL;
+	input_neurons = NULL;
+
 	number_of_stimuli = 0;
 	numEntries = NULL;
 	genids = NULL;
 	gentimes = NULL;
 	// Default parameters
 	timestep = 0.001f;
-
-	synapses = new SpikingSynapses();
 	
 	#ifndef QUIETSTART
 		// Say Hi to the user:
@@ -49,7 +52,7 @@ Simulator::~Simulator(){
 
 void Simulator::SetTimestep(float timest){
 
-	if (synapses->total_number_of_synapses == 0){
+	if ((synapses == NULL) || (synapses->total_number_of_synapses == 0)) {
 		timestep = timest;
 	} else {
 		print_message_and_exit("You must set the timestep before creating any synapses.");
@@ -70,6 +73,12 @@ void Simulator::SetNeuronType(SpikingNeurons * neurons_parameter) {
 void Simulator::SetInputNeuronType(PoissonSpikingNeurons * inputs_parameter) {
 
 	input_neurons = inputs_parameter;
+
+}
+
+void Simulator::SetSynapseType(SpikingSynapses * synapses_parameter) {
+
+	synapses = synapses_parameter;
 
 }
 
@@ -105,6 +114,9 @@ void Simulator::AddSynapseGroup(int presynaptic_group_id,
 							bool stdp_on,
 							float parameter,
 							float parameter_two) {
+
+	if (synapses == NULL) print_message_and_exit("Please call SetSynapseType before adding synapses.");
+
 	
 	// Convert delay range from time to number of timesteps
 	int delay_range_in_timesteps[2] = {int(round(delay_range[0]/timestep)), int(round(delay_range[1]/timestep))};

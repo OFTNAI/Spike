@@ -25,8 +25,8 @@ model: ${FILE}
 
 
 # Separating out the individual compilations so as not to compilation time
-${FILE}: ObjectFiles/${FILE}.o ObjectFiles/Simulator.o ObjectFiles/Neurons.o ObjectFiles/SpikingNeurons.o ObjectFiles/IzhikevichSpikingNeurons.o ObjectFiles/PoissonSpikingNeurons.o ObjectFiles/GeneratorSpikingNeurons.o ObjectFiles/Synapses.o ObjectFiles/SpikingSynapses.o ObjectFiles/RecordingElectrodes.o
-	$(CC) ObjectFiles/${FILE}.o ObjectFiles/Simulator.o ObjectFiles/Neurons.o ObjectFiles/SpikingNeurons.o ObjectFiles/IzhikevichSpikingNeurons.o ObjectFiles/PoissonSpikingNeurons.o ObjectFiles/GeneratorSpikingNeurons.o ObjectFiles/Synapses.o ObjectFiles/SpikingSynapses.o ObjectFiles/RecordingElectrodes.o -o ${FILE}
+${FILE}: ObjectFiles/${FILE}.o ObjectFiles/Simulator.o ObjectFiles/Neurons.o ObjectFiles/SpikingNeurons.o ObjectFiles/IzhikevichSpikingNeurons.o ObjectFiles/PoissonSpikingNeurons.o ObjectFiles/GeneratorSpikingNeurons.o ObjectFiles/Synapses.o ObjectFiles/SpikingSynapses.o ObjectFiles/IzhikevichSpikingSynapses.o ObjectFiles/RecordingElectrodes.o
+	$(CC) ObjectFiles/${FILE}.o ObjectFiles/Simulator.o ObjectFiles/Neurons.o ObjectFiles/SpikingNeurons.o ObjectFiles/IzhikevichSpikingNeurons.o ObjectFiles/PoissonSpikingNeurons.o ObjectFiles/GeneratorSpikingNeurons.o ObjectFiles/Synapses.o ObjectFiles/SpikingSynapses.o ObjectFiles/IzhikevichSpikingSynapses.o ObjectFiles/RecordingElectrodes.o -o ${FILE}
 
 # Compiling the Model file
 ObjectFiles/${FILE}.o: ${FILE}.cpp
@@ -55,6 +55,9 @@ ObjectFiles/Synapses.o: Synapses/Synapses.cu
 # Compiling the SpikingSynapses class
 ObjectFiles/SpikingSynapses.o: Synapses/SpikingSynapses.cu
 	$(CC) $(CFLAGS) Synapses/SpikingSynapses.cu -o $@
+# Compiling the IzhikevichSpikingSynapses class
+ObjectFiles/IzhikevichSpikingSynapses.o: Synapses/IzhikevichSpikingSynapses.cu
+	$(CC) $(CFLAGS) Synapses/IzhikevichSpikingSynapses.cu -o $@
 # Compiling RecordingElectrodes class
 ObjectFiles/RecordingElectrodes.o: RecordingElectrodes/RecordingElectrodes.cu
 	$(CC) $(CFLAGS) RecordingElectrodes/RecordingElectrodes.cu -o $@
@@ -68,4 +71,4 @@ cleantest:
 
 # Removing all created files
 clean:
-	rm *.o run
+	rm ObjectFiles/*.o run
