@@ -17,16 +17,35 @@ using namespace std;
 
 // RecordingElectrodes Constructor
 RecordingElectrodes::RecordingElectrodes(SpikingNeurons * neurons_parameter) {
+
 	neurons = neurons_parameter;
 
-	h_total_number_of_spikes = 0;
+	d_tempstorenum = NULL;
+	d_tempstoreID = NULL;
+	d_tempstoretimes = NULL;
+
+	h_tempstoreID = NULL;
+	h_tempstoretimes = NULL;
+	h_temp_total_number_of_spikes = NULL;
 	h_spikestoreID = NULL;
 	h_spikestoretimes = NULL;
+	h_total_number_of_spikes = 0;
+
 }
 
 
 // RecordingElectrodes Destructor
 RecordingElectrodes::~RecordingElectrodes() {
+
+	CudaSafeCall(cudaFree(d_tempstorenum));
+	CudaSafeCall(cudaFree(d_tempstoreID));
+	CudaSafeCall(cudaFree(d_tempstoretimes));
+
+	free(h_tempstoreID);
+	free(h_tempstoretimes);
+	free(h_temp_total_number_of_spikes);
+	free(h_spikestoreID);
+	free(h_spikestoretimes);
 
 }
 

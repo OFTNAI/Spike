@@ -23,10 +23,9 @@ public:
 	int* h_tempstoreID;
 	float* h_tempstoretimes;
 	int* h_temp_total_number_of_spikes;
-
-	int h_total_number_of_spikes;
 	int* h_spikestoreID;
 	float* h_spikestoretimes;
+	int h_total_number_of_spikes;
 
 	SpikingNeurons * neurons;
 

@@ -43,6 +43,11 @@ Simulator::Simulator(){
 
 // Destructor
 Simulator::~Simulator(){
+
+	free(neurons);
+	free(input_neurons);
+	free(synapses);
+
 	free(numEntries);
 	free(genids);
 	free(gentimes);
@@ -57,12 +62,7 @@ void Simulator::SetTimestep(float timest){
 	} else {
 		print_message_and_exit("You must set the timestep before creating any synapses.");
 	}
-
 }
-
-
-
-
 
 void Simulator::SetNeuronType(SpikingNeurons * neurons_parameter) {
 
@@ -81,8 +81,6 @@ void Simulator::SetSynapseType(SpikingSynapses * synapses_parameter) {
 	synapses = synapses_parameter;
 
 }
-
-
 
 
 
@@ -279,14 +277,8 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_
 
 	recording_electrodes->save_network_state(synapses);
 
-
-	delete neurons;
-	delete synapses;
 	delete recording_electrodes;
-
-	// Free Memory on CPU
-	free(recording_electrodes->h_spikestoretimes);
-	free(recording_electrodes->h_spikestoreID);
+	delete input_recording_electrodes;
 
 }
 
