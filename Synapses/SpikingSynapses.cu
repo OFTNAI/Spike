@@ -12,7 +12,7 @@ SpikingSynapses::SpikingSynapses() {
 	d_delays = NULL;
 	d_spikes = NULL;
 	d_stdp = NULL;
-	d_lastactive = NULL;
+	d_time_of_last_postsynaptic_activation_for_each_synapse = NULL;
 	d_spikebuffer = NULL;
 }
 
@@ -26,7 +26,7 @@ SpikingSynapses::~SpikingSynapses() {
 	CudaSafeCall(cudaFree(d_delays));
 	CudaSafeCall(cudaFree(d_spikes));
 	CudaSafeCall(cudaFree(d_stdp));
-	CudaSafeCall(cudaFree(d_lastactive));
+	CudaSafeCall(cudaFree(d_time_of_last_postsynaptic_activation_for_each_synapse));
 	CudaSafeCall(cudaFree(d_spikebuffer));
 
 }
@@ -100,7 +100,7 @@ void SpikingSynapses::initialise_device_pointers() {
 	CudaSafeCall(cudaMalloc((void **)&d_delays, sizeof(int)*total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&d_spikes, sizeof(int)*total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&d_stdp, sizeof(int)*total_number_of_synapses));
-	CudaSafeCall(cudaMalloc((void **)&d_lastactive, sizeof(float)*total_number_of_synapses));
+	CudaSafeCall(cudaMalloc((void **)&d_time_of_last_postsynaptic_activation_for_each_synapse, sizeof(float)*total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&d_spikebuffer, sizeof(int)*total_number_of_synapses));
 
 	CudaSafeCall(cudaMemcpy(d_delays, delays, sizeof(int)*total_number_of_synapses, cudaMemcpyHostToDevice));
@@ -111,7 +111,7 @@ void SpikingSynapses::initialise_device_pointers() {
 
 void SpikingSynapses::reset_synapse_spikes() {
 	CudaSafeCall(cudaMemset(d_spikes, 0, sizeof(int)*total_number_of_synapses));
-	CudaSafeCall(cudaMemset(d_lastactive, -1000.0f, sizeof(float)*total_number_of_synapses));
+	CudaSafeCall(cudaMemset(d_time_of_last_postsynaptic_activation_for_each_synapse, -1000.0f, sizeof(float)*total_number_of_synapses));
 	CudaSafeCall(cudaMemset(d_spikebuffer, -1, sizeof(int)*total_number_of_synapses));
 }
 
@@ -126,7 +126,7 @@ void SpikingSynapses::set_threads_per_block_and_blocks_per_grid(int threads) {
 
 __global__ void calculate_postsynaptic_current_injection_for_synapse_kernal(int* d_spikes,
 							float* d_weights,
-							float* d_lastactive,
+							float* d_time_of_last_postsynaptic_activation_for_each_synapse,
 							int* d_postsynaptic_neuron_indices,
 							float* d_neurons_current_injections,
 							float current_time_in_seconds,
@@ -147,7 +147,7 @@ void SpikingSynapses::calculate_postsynaptic_current_injection_for_synapse(float
 
 	calculate_postsynaptic_current_injection_for_synapse_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_spikes,
 																	d_weights,
-																	d_lastactive,
+																	d_time_of_last_postsynaptic_activation_for_each_synapse,
 																	d_postsynaptic_neuron_indices,
 																	d_neurons_current_injections,
 																	current_time_in_seconds,
@@ -170,12 +170,12 @@ void SpikingSynapses::check_for_synapse_spike_arrival(float* d_neurons_last_spik
 	CudaCheckError();
 }
 
-void SpikingSynapses::apply_ltd_to_synapse_weights(float* d_lastspiketime, float current_time_in_seconds) {
+void SpikingSynapses::apply_ltd_to_synapse_weights(float* d_neurons_last_spike_time, float current_time_in_seconds) {
 
 }
 
 
-void SpikingSynapses::apply_ltp_to_synapse_weights(float* d_lastspiketime, float current_time_in_seconds) {
+void SpikingSynapses::apply_ltp_to_synapse_weights(float* d_neurons_last_spike_time, float current_time_in_seconds) {
 
 }
 
@@ -185,7 +185,7 @@ void SpikingSynapses::apply_ltp_to_synapse_weights(float* d_lastspiketime, float
 // Was currentcalc
 __global__ void calculate_postsynaptic_current_injection_for_synapse_kernal(int* d_spikes,
 							float* d_weights,
-							float* d_lastactive,
+							float* d_time_of_last_postsynaptic_activation_for_each_synapse,
 							int* d_postsynaptic_neuron_indices,
 							float* d_neurons_current_injections,
 							float current_time_in_seconds,
@@ -199,17 +199,13 @@ __global__ void calculate_postsynaptic_current_injection_for_synapse_kernal(int*
 
 			atomicAdd(&d_neurons_current_injections[d_postsynaptic_neuron_indices[idx]], d_weights[idx]);
 
-			// Change lastactive
-			d_lastactive[idx] = current_time_in_seconds;
-			// Done!
+			d_time_of_last_postsynaptic_activation_for_each_synapse[idx] = current_time_in_seconds;
 		}
 	}
 	__syncthreads();
 }
 
 
-// Synapses carrying spikes
-// JI GIVE A BETTER NAME
 __global__ void check_for_synapse_spike_arrival_kernal(int* d_presynaptic_neuron_indices,
 								int* d_delays,
 								int* d_spikes,
