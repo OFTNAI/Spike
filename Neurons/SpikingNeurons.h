@@ -27,7 +27,7 @@ public:
 	float * thresholds_for_action_potential_spikes;
 
 	//Changing device variables
-	float * d_last_spike_times;
+	float * d_last_spike_time_of_each_neuron;
 	float * d_membrane_potentials_v;
 
 	//Device group-wise parameters

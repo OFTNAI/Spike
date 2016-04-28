@@ -44,7 +44,7 @@ public:
 
 };
 
-__global__ void spikeCollect(float* d_last_spike_times,
+__global__ void spikeCollect(float* d_last_spike_time_of_each_neuron,
 								int* d_tempstorenum,
 								int* d_tempstoreID,
 								float* d_tempstoretimes,
