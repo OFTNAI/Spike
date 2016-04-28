@@ -32,7 +32,7 @@ int main (int argc, char *argv[]){
 	izhikevich_spiking_neuron_parameters_struct * izhhikevich_spiking_group_params = new izhikevich_spiking_neuron_parameters_struct();
 	izhhikevich_spiking_group_params->parama = 0.02f;
 	izhhikevich_spiking_group_params->paramb = -0.01f;
-	izhhikevich_spiking_group_params->paramc = -55.0f;
+	izhhikevich_spiking_group_params->after_spike_reset_membrane_potential_c = -55.0f;
 	izhhikevich_spiking_group_params->paramd = 6.0f;
 
 	//
