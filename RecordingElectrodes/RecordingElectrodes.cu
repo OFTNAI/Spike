@@ -189,7 +189,7 @@ int idx = threadIdx.x + blockIdx.x * blockDim.x;
 void RecordingElectrodes::write_initial_synaptic_weights_to_file(SpikingSynapses *synapses) {
 	ofstream initweightfile;
 	initweightfile.open(RESULTS_DIRECTORY + "NetworkWeights_Initial.bin", ios::out | ios::binary);
-	initweightfile.write((char *)synapses->weights, synapses->total_number_of_synapses*sizeof(float));
+	initweightfile.write((char *)synapses->synaptic_efficacies_or_weights, synapses->total_number_of_synapses*sizeof(float));
 	initweightfile.close();
 }
 
@@ -201,7 +201,7 @@ void RecordingElectrodes::save_network_state(SpikingSynapses *synapses) {
 	#endif
 
 	// Copy back the data that we might want:
-	CudaSafeCall(cudaMemcpy(synapses->weights, synapses->d_weights, sizeof(float)*synapses->total_number_of_synapses, cudaMemcpyDeviceToHost));
+	CudaSafeCall(cudaMemcpy(synapses->synaptic_efficacies_or_weights, synapses->d_synaptic_efficacies_or_weights, sizeof(float)*synapses->total_number_of_synapses, cudaMemcpyDeviceToHost));
 	// Creating and Opening all the files
 	ofstream synapsepre, synapsepost, weightfile, delayfile;
 	weightfile.open(RESULTS_DIRECTORY + "NetworkWeights.bin", ios::out | ios::binary);
@@ -210,7 +210,7 @@ void RecordingElectrodes::save_network_state(SpikingSynapses *synapses) {
 	synapsepost.open(RESULTS_DIRECTORY + "NetworkPost.bin", ios::out | ios::binary);
 	
 	// Writing the data
-	weightfile.write((char *)synapses->weights, synapses->total_number_of_synapses*sizeof(float));
+	weightfile.write((char *)synapses->synaptic_efficacies_or_weights, synapses->total_number_of_synapses*sizeof(float));
 	delayfile.write((char *)synapses->delays, synapses->total_number_of_synapses*sizeof(int));
 	synapsepre.write((char *)synapses->presynaptic_neuron_indices, synapses->total_number_of_synapses*sizeof(int));
 	synapsepost.write((char *)synapses->postsynaptic_neuron_indices, synapses->total_number_of_synapses*sizeof(int));

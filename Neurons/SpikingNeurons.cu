@@ -39,6 +39,8 @@ int SpikingNeurons::AddGroup(neuron_parameters_struct * group_params, int group_
 	for (int i = total_number_of_neurons - number_of_neurons_in_new_group; i < total_number_of_neurons; i++) {
 		after_spike_reset_membrane_potentials_c[i] = spiking_group_params->after_spike_reset_membrane_potential_c;
 		thresholds_for_action_potential_spikes[i] = spiking_group_params->threshold_for_action_potential_spike;
+
+		//Izhikevich extra
 		param_d[i] = spiking_group_params->paramd;
 	}
 

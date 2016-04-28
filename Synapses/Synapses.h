@@ -66,12 +66,12 @@ public:
 	// Full Matrices
 	int* presynaptic_neuron_indices; // Previously presyns
 	int* postsynaptic_neuron_indices; // Previously postsyns
-	float* weights;
+	float* synaptic_efficacies_or_weights;
 
 	// Device pointers
 	int* d_presynaptic_neuron_indices;
 	int* d_postsynaptic_neuron_indices;
-	float* d_weights;
+	float* d_synaptic_efficacies_or_weights;
 
 	int temp_number_of_synapses_in_last_group;
 

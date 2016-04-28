@@ -125,7 +125,7 @@ void SpikingSynapses::set_threads_per_block_and_blocks_per_grid(int threads) {
 
 
 __global__ void calculate_postsynaptic_current_injection_for_synapse_kernal(int* d_spikes,
-							float* d_weights,
+							float* d_synaptic_efficacies_or_weights,
 							float* d_time_of_last_postsynaptic_activation_for_each_synapse,
 							int* d_postsynaptic_neuron_indices,
 							float* d_neurons_current_injections,
@@ -146,7 +146,7 @@ __global__ void check_for_synapse_spike_arrival_kernal(int* d_presynaptic_neuron
 void SpikingSynapses::calculate_postsynaptic_current_injection_for_synapse(float* d_neurons_current_injections, float current_time_in_seconds) {
 
 	calculate_postsynaptic_current_injection_for_synapse_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_spikes,
-																	d_weights,
+																	d_synaptic_efficacies_or_weights,
 																	d_time_of_last_postsynaptic_activation_for_each_synapse,
 																	d_postsynaptic_neuron_indices,
 																	d_neurons_current_injections,
@@ -184,7 +184,7 @@ void SpikingSynapses::apply_ltp_to_synapse_weights(float* d_neurons_last_spike_t
 // If spike has reached synapse add synapse weight to postsyn current injection
 // Was currentcalc
 __global__ void calculate_postsynaptic_current_injection_for_synapse_kernal(int* d_spikes,
-							float* d_weights,
+							float* d_synaptic_efficacies_or_weights,
 							float* d_time_of_last_postsynaptic_activation_for_each_synapse,
 							int* d_postsynaptic_neuron_indices,
 							float* d_neurons_current_injections,
@@ -197,7 +197,7 @@ __global__ void calculate_postsynaptic_current_injection_for_synapse_kernal(int*
 		d_spikes[idx] -= 1;
 		if (d_spikes[idx] == 0) {
 
-			atomicAdd(&d_neurons_current_injections[d_postsynaptic_neuron_indices[idx]], d_weights[idx]);
+			atomicAdd(&d_neurons_current_injections[d_postsynaptic_neuron_indices[idx]], d_synaptic_efficacies_or_weights[idx]);
 
 			d_time_of_last_postsynaptic_activation_for_each_synapse[idx] = current_time_in_seconds;
 		}
