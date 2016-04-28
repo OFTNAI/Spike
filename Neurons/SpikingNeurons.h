@@ -8,9 +8,10 @@
 
 
 struct spiking_neuron_parameters_struct : neuron_parameters_struct {
-	spiking_neuron_parameters_struct(): after_spike_reset_membrane_potential_c(-70.0f), paramd(0.0f) { neuron_parameters_struct(); }
+	spiking_neuron_parameters_struct(): after_spike_reset_membrane_potential_c(-70.0f), threshold_for_action_potential_spike(30.0f), paramd(0.0f) { neuron_parameters_struct(); }
 
 	float after_spike_reset_membrane_potential_c;
+	float threshold_for_action_potential_spike;
 	float paramd;
 };
 
@@ -21,14 +22,21 @@ public:
 	SpikingNeurons();
 	~SpikingNeurons();
 
-	float * d_last_spike_times;
-
+	//Group-wise parameters
 	float * after_spike_reset_membrane_potentials_c;
-	float * param_d;
+	float * thresholds_for_action_potential_spikes;
 
+	//Changing device variables
+	float * d_last_spike_times;
 	float * d_membrane_potentials_v;
-	float * d_states_u;
+
+	//Device group-wise parameters
+	float * d_thresholds_for_action_potential_spikes;
 	float * d_after_spike_reset_membrane_potentials_c;
+
+	//Izhikevich extra
+	float * d_states_u;
+	float * param_d;
 	float * d_param_d;
 
 	// Functions
