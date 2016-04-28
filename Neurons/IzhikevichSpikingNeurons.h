@@ -30,7 +30,7 @@ public:
 	virtual void initialise_device_pointers();
 	virtual void reset_neurons();
 
-	virtual void update_neuron_states(float timestep);
+	virtual void update_membrane_potentials(float timestep);
 
 };
 

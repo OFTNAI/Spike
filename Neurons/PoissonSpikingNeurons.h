@@ -30,7 +30,7 @@ public:
 	virtual void reset_neurons();
 
 	void generate_random_states();
-	void update_poisson_states(float timestep);
+	void update_membrane_potentials(float timestep);
 
 };
 

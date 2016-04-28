@@ -46,7 +46,7 @@ public:
 
 	virtual void set_threads_per_block_and_blocks_per_grid(int threads);
 
-	virtual void update_neuron_states(float timestep);
+	virtual void update_membrane_potentials(float timestep);
 	virtual void check_for_neuron_spikes(float currtime);
 
 };

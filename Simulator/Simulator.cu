@@ -215,8 +215,6 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_
 				current_time_in_seconds = float(timestep_index)*float(timestep);
 				
 				neurons->reset_current_injections();
-				
-				input_neurons->update_poisson_states(timestep);
 
 				// // If there are any spike generators
 				// if (numEnts > 0) {
@@ -228,7 +226,8 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_
 
 				synapses->apply_ltd_to_synapse_weights(neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds);
 
-				neurons->update_neuron_states(timestep);
+				neurons->update_membrane_potentials(timestep);
+				input_neurons->update_membrane_potentials(timestep);
 
 				neurons->check_for_neuron_spikes(current_time_in_seconds);
 				input_neurons->check_for_neuron_spikes(current_time_in_seconds);
