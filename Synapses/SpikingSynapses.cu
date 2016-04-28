@@ -156,12 +156,12 @@ void SpikingSynapses::calculate_postsynaptic_current_injection_for_synapse(float
 	CudaCheckError();
 }
 
-void SpikingSynapses::check_for_synapse_spike_arrival(float* d_neurons_last_spike_time, float* d_input_neurons_last_spike_time, float current_time_in_seconds) {
+void SpikingSynapses::check_for_synapse_spike_arrival(float* d_last_spike_time_of_each_neuron, float* d_input_neurons_last_spike_time, float current_time_in_seconds) {
 
 	check_for_synapse_spike_arrival_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_presynaptic_neuron_indices,
 																		d_delays,
 																		d_spikes_travelling_to_synapse,
-																		d_neurons_last_spike_time,
+																		d_last_spike_time_of_each_neuron,
 																		d_input_neurons_last_spike_time,
 																		d_spikes_travelling_to_synapse_buffer,
 																		current_time_in_seconds,
@@ -170,12 +170,12 @@ void SpikingSynapses::check_for_synapse_spike_arrival(float* d_neurons_last_spik
 	CudaCheckError();
 }
 
-void SpikingSynapses::apply_ltd_to_synapse_weights(float* d_neurons_last_spike_time, float current_time_in_seconds) {
+void SpikingSynapses::apply_ltd_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds) {
 
 }
 
 
-void SpikingSynapses::apply_ltp_to_synapse_weights(float* d_neurons_last_spike_time, float current_time_in_seconds) {
+void SpikingSynapses::apply_ltp_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds) {
 
 }
 
@@ -209,7 +209,7 @@ __global__ void calculate_postsynaptic_current_injection_for_synapse_kernal(int*
 __global__ void check_for_synapse_spike_arrival_kernal(int* d_presynaptic_neuron_indices,
 								int* d_delays,
 								int* d_spikes_travelling_to_synapse,
-								float* d_neurons_last_spike_time,
+								float* d_last_spike_time_of_each_neuron,
 								float* d_input_neurons_last_spike_time,
 								int* d_spikes_travelling_to_synapse_buffer,
 								float current_time_in_seconds,
@@ -224,7 +224,7 @@ __global__ void check_for_synapse_spike_arrival_kernal(int* d_presynaptic_neuron
 		if (presynaptic_neuron_index < 0) {
 			presynaptic_neurons_last_spike_time = d_input_neurons_last_spike_time[-1*presynaptic_neuron_index - 1];
 		} else {
-			presynaptic_neurons_last_spike_time = d_neurons_last_spike_time[presynaptic_neuron_index];
+			presynaptic_neurons_last_spike_time = d_last_spike_time_of_each_neuron[presynaptic_neuron_index];
 		}
 
 		// Check if the neuron PRE has just fired and if the synapse exists
