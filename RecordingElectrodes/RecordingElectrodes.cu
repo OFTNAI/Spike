@@ -12,8 +12,10 @@
 #include <fstream>
 #include "../Helpers/CUDAErrorCheckHelpers.h"
 #include "../Helpers/TerminalHelpers.h"
-
 using namespace std;
+
+const string RESULTS_DIRECTORY ("Results/");
+
 
 // RecordingElectrodes Constructor
 RecordingElectrodes::RecordingElectrodes(SpikingNeurons * neurons_parameter) {
@@ -131,7 +133,7 @@ void RecordingElectrodes::save_spikes_to_host(float current_time_in_seconds, int
 
 void RecordingElectrodes::write_spikes_to_file(Neurons *neurons, int epoch_number) {
 	// Get the names
-	string file = "results/Epoch" + to_string(epoch_number) + "_";
+	string file = RESULTS_DIRECTORY + "Epoch" + to_string(epoch_number) + "_";
 	// Open the files
 	ofstream spikeidfile, spiketimesfile;
 	spikeidfile.open((file + "SpikeIDs.bin"), ios::out | ios::binary);
@@ -186,7 +188,7 @@ int idx = threadIdx.x + blockIdx.x * blockDim.x;
 
 void RecordingElectrodes::write_initial_synaptic_weights_to_file(SpikingSynapses *synapses) {
 	ofstream initweightfile;
-	initweightfile.open("results/NetworkWeights_Initial.bin", ios::out | ios::binary);
+	initweightfile.open(RESULTS_DIRECTORY + "NetworkWeights_Initial.bin", ios::out | ios::binary);
 	initweightfile.write((char *)synapses->weights, synapses->total_number_of_synapses*sizeof(float));
 	initweightfile.close();
 }
@@ -202,10 +204,10 @@ void RecordingElectrodes::save_network_state(SpikingSynapses *synapses) {
 	CudaSafeCall(cudaMemcpy(synapses->weights, synapses->d_weights, sizeof(float)*synapses->total_number_of_synapses, cudaMemcpyDeviceToHost));
 	// Creating and Opening all the files
 	ofstream synapsepre, synapsepost, weightfile, delayfile;
-	weightfile.open("results/NetworkWeights.bin", ios::out | ios::binary);
-	delayfile.open("results/NetworkDelays.bin", ios::out | ios::binary);
-	synapsepre.open("results/NetworkPre.bin", ios::out | ios::binary);
-	synapsepost.open("results/NetworkPost.bin", ios::out | ios::binary);
+	weightfile.open(RESULTS_DIRECTORY + "NetworkWeights.bin", ios::out | ios::binary);
+	delayfile.open(RESULTS_DIRECTORY + "NetworkDelays.bin", ios::out | ios::binary);
+	synapsepre.open(RESULTS_DIRECTORY + "NetworkPre.bin", ios::out | ios::binary);
+	synapsepost.open(RESULTS_DIRECTORY + "NetworkPost.bin", ios::out | ios::binary);
 	
 	// Writing the data
 	weightfile.write((char *)synapses->weights, synapses->total_number_of_synapses*sizeof(float));
