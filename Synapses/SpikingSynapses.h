@@ -19,10 +19,10 @@ public:
 
 	// Device pointers
 	int* d_delays;
-	int* d_spikes;
+	int* d_spikes_travelling_to_synapse;
 	int* d_stdp;
 	float* d_time_of_last_postsynaptic_activation_for_each_synapse;
-	int* d_spikebuffer;
+	int* d_spikes_travelling_to_synapse_buffer;
 
 	// Synapse Functions
 	virtual void AddGroup(int presynaptic_group_id, 

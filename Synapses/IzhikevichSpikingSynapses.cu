@@ -94,29 +94,29 @@ void IzhikevichSpikingSynapses::set_threads_per_block_and_blocks_per_grid(int th
 __global__ void apply_ltd_to_synapse_weights_kernal(float* d_time_of_last_postsynaptic_activation_for_each_synapse,
 							float* d_synaptic_efficacies_or_weights,
 							int* d_stdp,
-							float* d_neurons_last_spike_time,
+							float* d_last_spike_time_of_each_neuron,
 							int* d_postsyns,
 							float currtime,
 							struct stdp_struct stdp_vars,
-							size_t numConns);
+							size_t total_number_of_synapse);
 
 __global__ void apply_ltp_to_synapse_weights_kernal(int* d_postsyns,
-							float* d_neurons_last_spike_time,
+							float* d_last_spike_time_of_each_neuron,
 							int* d_stdp,
 							float* d_time_of_last_postsynaptic_activation_for_each_synapse,
 							float* d_synaptic_efficacies_or_weights,
 							struct stdp_struct stdp_vars,
 							float currtime,
-							size_t numConns);
+							size_t total_number_of_synapse);
 
 
 
-void IzhikevichSpikingSynapses::apply_ltd_to_synapse_weights(float* d_neurons_last_spike_time, float current_time_in_seconds) {
+void IzhikevichSpikingSynapses::apply_ltd_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds) {
 
 	apply_ltd_to_synapse_weights_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_time_of_last_postsynaptic_activation_for_each_synapse,
 																	d_synaptic_efficacies_or_weights,
 																	d_stdp,
-																	d_neurons_last_spike_time,
+																	d_last_spike_time_of_each_neuron,
 																	d_postsynaptic_neuron_indices,
 																	current_time_in_seconds,
 																	stdp_vars, // Should make device copy?
@@ -126,10 +126,10 @@ void IzhikevichSpikingSynapses::apply_ltd_to_synapse_weights(float* d_neurons_la
 }
 
 
-void IzhikevichSpikingSynapses::apply_ltp_to_synapse_weights(float* d_neurons_last_spike_time, float current_time_in_seconds) {
+void IzhikevichSpikingSynapses::apply_ltp_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds) {
 	// Carry out the last step, LTP!
 	apply_ltp_to_synapse_weights_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_postsynaptic_neuron_indices,
-																	d_neurons_last_spike_time,
+																	d_last_spike_time_of_each_neuron,
 																	d_stdp,
 																	d_time_of_last_postsynaptic_activation_for_each_synapse,
 																	d_synaptic_efficacies_or_weights,
@@ -144,18 +144,19 @@ void IzhikevichSpikingSynapses::apply_ltp_to_synapse_weights(float* d_neurons_la
 __global__ void apply_ltd_to_synapse_weights_kernal(float* d_time_of_last_postsynaptic_activation_for_each_synapse,
 							float* d_synaptic_efficacies_or_weights,
 							int* d_stdp,
-							float* d_neurons_last_spike_time,
+							float* d_last_spike_time_of_each_neuron,
 							int* d_postsyns,
 							float currtime,
 							struct stdp_struct stdp_vars,
-							size_t numConns){
+							size_t total_number_of_synapse){
 
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	if (idx < (numConns)) {
+	if (idx < total_number_of_synapse) {
+
 		// Get the locations for updating
 		// Get the synapses that are to be LTD'd
 		if ((d_time_of_last_postsynaptic_activation_for_each_synapse[idx] == currtime) && (d_stdp[idx] == 1)) {
-			float diff = d_neurons_last_spike_time[d_postsyns[idx]] - currtime;
+			float diff = d_last_spike_time_of_each_neuron[d_postsyns[idx]] - currtime;
 			// STDP Update Rule
 			float weightscale = stdp_vars.w_max * stdp_vars.a_minus * expf(diff / stdp_vars.tau_minus);
 			// Now scale the weight (using an inverted column/row)
@@ -167,19 +168,19 @@ __global__ void apply_ltd_to_synapse_weights_kernal(float* d_time_of_last_postsy
 
 // LTP on synapses
 __global__ void apply_ltp_to_synapse_weights_kernal(int* d_postsyns,
-							float* d_neurons_last_spike_time,
+							float* d_last_spike_time_of_each_neuron,
 							int* d_stdp,
 							float* d_time_of_last_postsynaptic_activation_for_each_synapse,
 							float* d_synaptic_efficacies_or_weights,
 							struct stdp_struct stdp_vars,
 							float currtime,
-							size_t numConns) {
+							size_t total_number_of_synapse) {
 
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	if (idx < numConns) {
+	if (idx < total_number_of_synapse) {
 		// Get the synapses upon which we should do LTP
 		// Reversed indexing to check post->pre synapses
-		if ((d_neurons_last_spike_time[d_postsyns[idx]] == currtime) && (d_stdp[idx] == 1)){
+		if ((d_last_spike_time_of_each_neuron[d_postsyns[idx]] == currtime) && (d_stdp[idx] == 1)){
 			// Get the last active time / weight of the synapse
 			// Calc time difference and weight change
 			float diff = currtime - d_time_of_last_postsynaptic_activation_for_each_synapse[idx];
