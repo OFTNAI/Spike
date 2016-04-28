@@ -82,7 +82,7 @@ __global__ void generate_random_states_kernal(unsigned int seed, curandState_t* 
 
 __global__ void update_poisson_states_kernal(curandState_t* d_states,
 							float *d_rates,
-							float *d_states_v,
+							float *d_membrane_potentials_v,
 							float *d_states_u,
 							float timestep,
 							size_t total_number_of_inputs);
@@ -92,7 +92,7 @@ void PoissonSpikingNeurons::update_poisson_states(float timestep) {
 
 	update_poisson_states_kernal<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_states,
 														d_rates,
-														d_states_v,
+														d_membrane_potentials_v,
 														d_states_u,
 														timestep,
 														total_number_of_neurons);
@@ -102,7 +102,7 @@ void PoissonSpikingNeurons::update_poisson_states(float timestep) {
 
 __global__ void update_poisson_states_kernal(curandState_t* d_states,
 							float *d_rates,
-							float *d_states_v,
+							float *d_membrane_potentials_v,
 							float *d_states_u,
 							float timestep,
 							size_t total_number_of_inputs){
@@ -115,10 +115,10 @@ __global__ void update_poisson_states_kernal(curandState_t* d_states,
 
 		// if the randomnumber is LT the rate
 		if (random_float < (d_rates[idx]*timestep)){
-			d_states_v[idx] = 35.0f;
+			d_membrane_potentials_v[idx] = 35.0f;
 			d_states_u[idx] = 0.0f;
 		} else if (d_rates[idx] != 0.0f) {
-			d_states_v[idx] = -70.0f;
+			d_membrane_potentials_v[idx] = -70.0f;
 			d_states_u[idx] = 0.0f;
 		}
 

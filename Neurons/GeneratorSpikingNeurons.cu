@@ -61,7 +61,7 @@ void GeneratorSpikingNeurons::set_threads_per_block_and_blocks_per_grid(int thre
 
 
 
-__global__ void genupdate2(float *d_states_v,
+__global__ void genupdate2(float *d_membrane_potentials_v,
 							float *d_states_u,
 							int* genids,
 							float* gentimes,
@@ -73,7 +73,7 @@ __global__ void genupdate2(float *d_states_v,
 void GeneratorSpikingNeurons::generupdate2_wrapper(float currtime,
 							float timestep) {
 
-	genupdate2<<<genblocksPerGrid, threads_per_block>>> (d_states_v,
+	genupdate2<<<genblocksPerGrid, threads_per_block>>> (d_membrane_potentials_v,
 														d_states_u,
 														d_genids,
 														d_gentimes,
@@ -86,7 +86,7 @@ void GeneratorSpikingNeurons::generupdate2_wrapper(float currtime,
 
 
 // Spike Generator Updating Kernel
-__global__ void genupdate2(float *d_states_v,
+__global__ void genupdate2(float *d_membrane_potentials_v,
 							float *d_states_u,
 							int* genids,
 							float* gentimes,
@@ -99,11 +99,11 @@ __global__ void genupdate2(float *d_states_v,
 		if (fabs(currtime - gentimes[idx]) > 0.5*timestep) {
 			// This sync seems absolutely necessary for when I spike inputs ... weird.
 			d_states_u[idx] = 0.0f;
-			d_states_v[idx] = -70.0f;
+			d_membrane_potentials_v[idx] = -70.0f;
 		} else {
 			__syncthreads();
 			d_states_u[idx] = 0.0f;
-			d_states_v[idx] = 35.0f;
+			d_membrane_potentials_v[idx] = 35.0f;
 		}
 	}
 }

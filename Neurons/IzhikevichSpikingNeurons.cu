@@ -56,7 +56,7 @@ void IzhikevichSpikingNeurons::reset_neurons() {
 }
 
 
-__global__ void update_izhikevich_neuron_states(float *d_states_v,
+__global__ void update_izhikevich_neuron_states(float *d_membrane_potentials_v,
 								float *d_states_u,
 								float *d_param_a,
 								float *d_param_b,
@@ -67,7 +67,7 @@ __global__ void update_izhikevich_neuron_states(float *d_states_v,
 
 void IzhikevichSpikingNeurons::update_neuron_states(float timestep) {
 
-	update_izhikevich_neuron_states<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_states_v,
+	update_izhikevich_neuron_states<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_membrane_potentials_v,
 																	d_states_u,
 																	d_param_a,
 																	d_param_b,
@@ -80,7 +80,7 @@ void IzhikevichSpikingNeurons::update_neuron_states(float timestep) {
 
 
 // State Update
-__global__ void update_izhikevich_neuron_states(float *d_states_v,
+__global__ void update_izhikevich_neuron_states(float *d_membrane_potentials_v,
 								float *d_states_u,
 								float *d_param_a,
 								float *d_param_b,
@@ -94,14 +94,14 @@ __global__ void update_izhikevich_neuron_states(float *d_states_v,
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	if (idx < total_number_of_neurons) {
 		// Update the neuron states according to the Izhikevich equations
-		float v_update = 0.04f*d_states_v[idx]*d_states_v[idx] 
-							+ 5.0f*d_states_v[idx]
+		float v_update = 0.04f*d_membrane_potentials_v[idx]*d_membrane_potentials_v[idx] 
+							+ 5.0f*d_membrane_potentials_v[idx]
 							+ 140 
 							- d_states_u[idx]
 							+ currentinj[idx];
 
-		d_states_v[idx] += eqtimestep*v_update;
-		d_states_u[idx] += eqtimestep*(d_param_a[idx] * (d_param_b[idx] * d_states_v[idx] - 
+		d_membrane_potentials_v[idx] += eqtimestep*v_update;
+		d_states_u[idx] += eqtimestep*(d_param_a[idx] * (d_param_b[idx] * d_membrane_potentials_v[idx] - 
 							d_states_u[idx]));
 	}
 	__syncthreads();
