@@ -8,11 +8,9 @@
 
 
 struct spiking_neuron_parameters_struct : neuron_parameters_struct {
-	spiking_neuron_parameters_struct(): state_v(-70.0f), state_u(0.0f), paramc(0.0f), paramd(0.0f) { neuron_parameters_struct(); }
+	spiking_neuron_parameters_struct(): after_spike_reset_membrane_potential_c(-70.0f), paramd(0.0f) { neuron_parameters_struct(); }
 
-	float state_v;
-	float state_u;
-	float paramc;
+	float after_spike_reset_membrane_potential_c;
 	float paramd;
 };
 
@@ -25,14 +23,12 @@ public:
 
 	float * d_last_spike_times;
 
-	float * states_v;
-	float * states_u;
-	float * param_c;
+	float * after_spike_reset_membrane_potentials_c;
 	float * param_d;
 
-	float * d_states_v;
+	float * d_membrane_potentials_v;
 	float * d_states_u;
-	float * d_param_c;
+	float * d_after_spike_reset_membrane_potentials_c;
 	float * d_param_d;
 
 	// Functions
