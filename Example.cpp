@@ -37,7 +37,7 @@ int main (int argc, char *argv[]){
 
 	//
 	int LAYER_1_SHAPE[] = {100, 100};
-	int LAYER_2_SHAPE[] = {100, 10};
+	int LAYER_2_SHAPE[] = {101, 10};
 	int LAYER_3_SHAPE[] = {10, 10};
 
 	//
@@ -46,8 +46,10 @@ int main (int argc, char *argv[]){
 	int IZHIKEVICH_SPIKING_GROUP_ID_LAYER_3 = simulator.AddNeuronGroup(izhhikevich_spiking_group_params, LAYER_3_SHAPE);
 	
 	//
-	float LAYER_1_TO_LAYER_2_WEIGHTS[] = {2.50f, 5.0f};
-	float LAYER_2_TO_LAYER_3_WEIGHTS[] = {2.50f, 5.0f};
+	// float LAYER_1_TO_LAYER_2_WEIGHTS[] = {2.50f, 5.0f};
+	// float LAYER_2_TO_LAYER_3_WEIGHTS[] = {2.50f, 5.0f};
+	float LAYER_1_TO_LAYER_2_WEIGHTS[] = {0.02, 0.20f};
+	float LAYER_2_TO_LAYER_3_WEIGHTS[] = {0.02, 0.20f};
 
 	//
 	float LAYER_1_TO_LAYER_2_DELAY_RANGE[] = {time_step, time_step};
