@@ -19,10 +19,12 @@ public:
 
 	// Device pointers
 	int* d_delays;
-	int* d_spikes_travelling_to_synapse;
 	int* d_stdp;
-	float* d_time_of_last_postsynaptic_activation_for_each_synapse;
+	
+	int* d_spikes_travelling_to_synapse;
 	int* d_spikes_travelling_to_synapse_buffer;
+	float* d_time_of_last_postsynaptic_activation_for_each_synapse;
+	
 
 	// Synapse Functions
 	virtual void AddGroup(int presynaptic_group_id, 
@@ -41,8 +43,8 @@ public:
 	virtual void set_threads_per_block_and_blocks_per_grid(int threads);
 	virtual void increment_number_of_synapses(int increment);
 
-	virtual void calculate_postsynaptic_current_injection_for_synapse(float* d_neurons_current_injections, float current_time_in_seconds);
-	virtual void check_for_synapse_spike_arrival(float* d_last_spike_time_of_each_neuron, float* d_input_neurons_last_spike_time, float current_time_in_seconds);
+	virtual void check_for_synapse_spike_arrival_and_calculate_postsynaptic_current_injection(float* d_neurons_current_injections, float current_time_in_seconds);
+	virtual void move_spikes_towards_synapses(float* d_last_spike_time_of_each_neuron, float* d_input_neurons_last_spike_time, float current_time_in_seconds);
 	virtual void apply_ltd_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds);
 	virtual void apply_ltp_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds);
 

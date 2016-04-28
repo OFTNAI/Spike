@@ -224,7 +224,7 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_
 				// 	temp_test_generator->generupdate2_wrapper(current_time_in_seconds, timestep);
 				// } 
 				
-				synapses->calculate_postsynaptic_current_injection_for_synapse(neurons->d_current_injections, current_time_in_seconds);
+				synapses->check_for_synapse_spike_arrival_and_calculate_postsynaptic_current_injection(neurons->d_current_injections, current_time_in_seconds);
 
 				synapses->apply_ltd_to_synapse_weights(neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds);
 
@@ -233,7 +233,7 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, bool save_
 				neurons->check_for_neuron_spikes(current_time_in_seconds);
 				input_neurons->check_for_neuron_spikes(current_time_in_seconds);
 								
-				synapses->check_for_synapse_spike_arrival(neurons->d_last_spike_time_of_each_neuron, input_neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds);
+				synapses->move_spikes_towards_synapses(neurons->d_last_spike_time_of_each_neuron, input_neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds);
 
 				synapses->apply_ltp_to_synapse_weights(neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds);
 				
