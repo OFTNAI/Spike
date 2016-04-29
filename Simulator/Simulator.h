@@ -74,6 +74,7 @@ public:
 
 protected: 
 	void temp_izhikevich_per_timestep_instructions(float current_time_in_seconds);
+	void temp_lif_per_timestep_instructions(float current_time_in_seconds);
 
 };
 #endif
