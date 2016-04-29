@@ -102,10 +102,6 @@ __global__ void lif_apply_ltp_to_synapse_weights_kernal(int* d_postsyns,
 							size_t total_number_of_synapse);
 
 
-// void LIFSpikingSynapses::check_for_synapse_spike_arrival_and_calculate_postsynaptic_current_injection(float* d_neurons_current_injections, float current_time_in_seconds) {
-
-// }
-
 
 void LIFSpikingSynapses::apply_ltd_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds) {
 
