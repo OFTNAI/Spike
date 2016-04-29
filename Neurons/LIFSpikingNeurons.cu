@@ -84,18 +84,23 @@ __global__ void lif_update_membrane_potentials(float *d_membrane_potentials_v,
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	if (idx < total_number_of_neurons) {
 
-		// We require the equation timestep in ms:
-		float eqtimestep = timestep*1000.0f;
+		float membrane_time_constant_in_seconds = 0.02;
+		float equation_constant = timestep / membrane_time_constant_in_seconds;
 
 		float membrane_potential_Vi = d_membrane_potentials_v[idx];
 		float current_injection_Ii = d_current_injections[idx];
 		float temp_resting_potential_V0 = -74.0; // Same as after_spike_reset_membrane_potential ???
 		float temp_membrane_resistance_R = 40000000.0f;
-		float new_membrane_potential = eqtimestep * (temp_resting_potential_V0 - temp_membrane_resistance_R * current_injection_Ii) + (1 - eqtimestep) * membrane_potential_Vi;
 
-		// if (idx == 10) {
-		// 	printf("%f\n", new_membrane_potential);
-		// }
+		float new_membrane_potential = equation_constant * (temp_resting_potential_V0 + temp_membrane_resistance_R * current_injection_Ii) + (1 - equation_constant) * membrane_potential_Vi;
+
+		if (idx == 1000) {
+			// printf("eqtimestep: %1.20f\n", eqtimestep);
+			// printf("equation_constant: %1.20f\n", equation_constant);
+			// printf("current_injection_Ii: %1.20f\n", current_injection_Ii);
+			// printf("new_membrane_potential: %1.20f\n", new_membrane_potential);
+			printf("%1.20f\n", new_membrane_potential);
+		}
 
 		d_membrane_potentials_v[idx] = new_membrane_potential;
 

@@ -46,8 +46,8 @@ int main (int argc, char *argv[]){
 	//
 	// float LAYER_1_TO_LAYER_2_WEIGHTS[] = {2.50f, 5.0f};
 	// float LAYER_2_TO_LAYER_3_WEIGHTS[] = {2.50f, 5.0f};
-	float LAYER_1_TO_LAYER_2_WEIGHTS[] = {0.02, 0.20f};
-	float LAYER_2_TO_LAYER_3_WEIGHTS[] = {0.02, 0.20f};
+	float LAYER_1_TO_LAYER_2_WEIGHTS[] = {0.0, 18.0f*pow(10, -9)};
+	float LAYER_2_TO_LAYER_3_WEIGHTS[] = {0.0, 18.0f*pow(10, -9)};
 
 	//
 	float LAYER_1_TO_LAYER_2_DELAY_RANGE[] = {time_step, time_step};

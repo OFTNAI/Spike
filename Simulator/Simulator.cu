@@ -214,6 +214,8 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_m
 				
 				current_time_in_seconds = float(timestep_index)*float(timestep);
 				
+				neurons->reset_current_injections();
+
 				// Temporary seperation of izhikevich and LIF per timestep instructions. Eventually hope to share as much execuation as possible between both models for generality
 				if (temp_model_type == 0) temp_izhikevich_per_timestep_instructions(current_time_in_seconds);
 				if (temp_model_type == 1) temp_lif_per_timestep_instructions(current_time_in_seconds);
@@ -266,8 +268,6 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_m
 // Temporary seperation of izhikevich and LIF per timestep instructions. Eventually hope to share as much execuation as possible between both models for generality
 void Simulator::temp_izhikevich_per_timestep_instructions(float current_time_in_seconds) {
 
-	neurons->reset_current_injections();
-
 	// // If there are any spike generators
 	// 	temp_test_generator->generupdate2_wrapper(current_time_in_seconds, timestep);
 	
@@ -289,14 +289,12 @@ void Simulator::temp_izhikevich_per_timestep_instructions(float current_time_in_
 
 void Simulator::temp_lif_per_timestep_instructions(float current_time_in_seconds) {
 
-	neurons->reset_current_injections();
-
 	// // If there are any spike generators
 	// 	temp_test_generator->generupdate2_wrapper(current_time_in_seconds, timestep);
 	
 	synapses->check_for_synapse_spike_arrival_and_calculate_postsynaptic_current_injection(neurons->d_current_injections, current_time_in_seconds);
 
-	synapses->apply_ltd_to_synapse_weights(neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds);
+	// synapses->apply_ltd_to_synapse_weights(neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds);
 
 	neurons->update_membrane_potentials(timestep);
 	input_neurons->update_membrane_potentials(timestep);
@@ -306,7 +304,7 @@ void Simulator::temp_lif_per_timestep_instructions(float current_time_in_seconds
 					
 	synapses->move_spikes_towards_synapses(neurons->d_last_spike_time_of_each_neuron, input_neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds);
 
-	synapses->apply_ltp_to_synapse_weights(neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds);
+	// synapses->apply_ltp_to_synapse_weights(neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds);
 
 }
 

@@ -192,7 +192,7 @@ __global__ void check_for_synapse_spike_arrival_and_calculate_postsynaptic_curre
 							size_t total_number_of_synapses){
 
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	if (idx < (total_number_of_synapses)) {
+	if (idx < total_number_of_synapses) {
 		// Decrememnt Spikes
 		d_spikes_travelling_to_synapse[idx] -= 1;
 		if (d_spikes_travelling_to_synapse[idx] == 0) {
