@@ -3,11 +3,11 @@
 // Authors: Nasir Ahmad (16/03/2016), James Isbister (23/3/2016)
 
 // To create the executable for this network, run:
-// make FILE="Example" model
+// make FILE="ExampleLIF" model
 
 
 #include "Simulator/Simulator.h"
-#include "Synapses/IzhikevichSpikingSynapses.h"
+#include "Synapses/LIFSpikingSynapses.h"
 #include "Neurons/Neurons.h"
 #include "Neurons/LIFSpikingNeurons.h"
 #include "Neurons/PoissonSpikingNeurons.h"
@@ -20,20 +20,18 @@ int main (int argc, char *argv[]){
 	Simulator simulator;
 	float time_step = 0.001;
 	simulator.SetTimestep(time_step);
-	simulator.SetNeuronType(new IzhikevichSpikingNeurons());
+	simulator.SetNeuronType(new LIFSpikingNeurons());
 	simulator.SetInputNeuronType(new PoissonSpikingNeurons());
-	simulator.SetSynapseType(new IzhikevichSpikingSynapses());
+	simulator.SetSynapseType(new LIFSpikingSynapses());
 
 	//
 	poisson_spiking_neuron_parameters_struct * poisson_spiking_group_params = new poisson_spiking_neuron_parameters_struct();
 	poisson_spiking_group_params->rate = 30.0f;
 
 	//
-	izhikevich_spiking_neuron_parameters_struct * izhhikevich_spiking_group_params = new izhikevich_spiking_neuron_parameters_struct();
-	izhhikevich_spiking_group_params->parama = 0.02f;
-	izhhikevich_spiking_group_params->paramb = -0.01f;
-	izhhikevich_spiking_group_params->after_spike_reset_membrane_potential_c = -55.0f;
-	izhhikevich_spiking_group_params->paramd = 6.0f;
+	lif_spiking_neuron_parameters_struct * lif_spiking_group_params = new lif_spiking_neuron_parameters_struct();
+	lif_spiking_group_params->after_spike_reset_membrane_potential_c = -55.0f;
+	lif_spiking_group_params->paramd = 6.0f; //Old Izhikevich parameter. Leaving temporarily so spikes
 
 	//
 	int LAYER_1_SHAPE[] = {100, 100};
@@ -42,8 +40,8 @@ int main (int argc, char *argv[]){
 
 	//
 	int POISSON_SPIKING_GROUP_ID_LAYER_1 = simulator.AddInputNeuronGroup(poisson_spiking_group_params, LAYER_1_SHAPE);
-	int IZHIKEVICH_SPIKING_GROUP_ID_LAYER_2 = simulator.AddNeuronGroup(izhhikevich_spiking_group_params, LAYER_2_SHAPE);
-	int IZHIKEVICH_SPIKING_GROUP_ID_LAYER_3 = simulator.AddNeuronGroup(izhhikevich_spiking_group_params, LAYER_3_SHAPE);
+	int LIF_SPIKING_GROUP_ID_LAYER_2 = simulator.AddNeuronGroup(lif_spiking_group_params, LAYER_2_SHAPE);
+	int LIF_SPIKING_GROUP_ID_LAYER_3 = simulator.AddNeuronGroup(lif_spiking_group_params, LAYER_3_SHAPE);
 	
 	//
 	// float LAYER_1_TO_LAYER_2_WEIGHTS[] = {2.50f, 5.0f};
@@ -56,8 +54,8 @@ int main (int argc, char *argv[]){
 	float LAYER_2_TO_LAYER_3_DELAY_RANGE[] = {time_step, 50.0f*pow(10, -3)};
 
 	//
-	simulator.AddSynapseGroup(POISSON_SPIKING_GROUP_ID_LAYER_1, IZHIKEVICH_SPIKING_GROUP_ID_LAYER_2, CONNECTIVITY_TYPE_ALL_TO_ALL, LAYER_1_TO_LAYER_2_WEIGHTS, LAYER_1_TO_LAYER_2_DELAY_RANGE, false);
-	simulator.AddSynapseGroup(IZHIKEVICH_SPIKING_GROUP_ID_LAYER_2, IZHIKEVICH_SPIKING_GROUP_ID_LAYER_3, CONNECTIVITY_TYPE_ALL_TO_ALL, LAYER_2_TO_LAYER_3_WEIGHTS, LAYER_2_TO_LAYER_3_DELAY_RANGE, true);
+	simulator.AddSynapseGroup(POISSON_SPIKING_GROUP_ID_LAYER_1, LIF_SPIKING_GROUP_ID_LAYER_2, CONNECTIVITY_TYPE_ALL_TO_ALL, LAYER_1_TO_LAYER_2_WEIGHTS, LAYER_1_TO_LAYER_2_DELAY_RANGE, false);
+	simulator.AddSynapseGroup(LIF_SPIKING_GROUP_ID_LAYER_2, LIF_SPIKING_GROUP_ID_LAYER_3, CONNECTIVITY_TYPE_ALL_TO_ALL, LAYER_2_TO_LAYER_3_WEIGHTS, LAYER_2_TO_LAYER_3_DELAY_RANGE, true);
 
 	//
 	float total_time_per_epoch = 1.25f;
