@@ -65,7 +65,7 @@ int main (int argc, char *argv[]){
 	bool save_spikes = true;
 
 	//
-	simulator.Run(total_time_per_epoch, number_of_epochs, save_spikes);
+	simulator.Run(total_time_per_epoch, number_of_epochs, 0, save_spikes);
 
 
 	return 1;
