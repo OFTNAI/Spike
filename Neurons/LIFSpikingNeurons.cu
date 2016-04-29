@@ -57,23 +57,17 @@ void LIFSpikingNeurons::reset_neurons() {
 
 
 __global__ void lif_update_membrane_potentials(float *d_membrane_potentials_v,
-								float *d_states_u,
-								float *d_param_a,
-								float *d_param_b,
-								float* currentinj,
+								float* d_current_injections,
 								float timestep,
 								size_t total_number_of_neurons);
 
 
 void LIFSpikingNeurons::update_membrane_potentials(float timestep) {
 
-	// lif_update_membrane_potentials<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_membrane_potentials_v,
-	// 																d_states_u,
-	// 																d_param_a,
-	// 																d_param_b,
-	// 																d_current_injections,
-	// 																timestep,
-	// 																total_number_of_neurons);
+	lif_update_membrane_potentials<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_membrane_potentials_v,
+																	d_current_injections,
+																	timestep,
+																	total_number_of_neurons);
 
 	CudaCheckError();
 }
@@ -81,29 +75,31 @@ void LIFSpikingNeurons::update_membrane_potentials(float timestep) {
 
 // State Update
 __global__ void lif_update_membrane_potentials(float *d_membrane_potentials_v,
-								float *d_states_u,
-								float *d_param_a,
-								float *d_param_b,
-								float* currentinj,
+								float* d_current_injections,
 								float timestep,
 								size_t total_number_of_neurons){
 
-	// // We require the equation timestep in ms:
-	// float eqtimestep = timestep*1000.0f;
+	
 	// // Get thread IDs
-	// int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	// if (idx < total_number_of_neurons) {
-	// 	// Update the neuron states according to the Izhikevich equations
-	// 	float v_update = 0.04f*d_membrane_potentials_v[idx]*d_membrane_potentials_v[idx] 
-	// 						+ 5.0f*d_membrane_potentials_v[idx]
-	// 						+ 140 
-	// 						- d_states_u[idx]
-	// 						+ currentinj[idx];
+	int idx = threadIdx.x + blockIdx.x * blockDim.x;
+	if (idx < total_number_of_neurons) {
 
-	// 	d_membrane_potentials_v[idx] += eqtimestep*v_update;
-	// 	d_states_u[idx] += eqtimestep*(d_param_a[idx] * (d_param_b[idx] * d_membrane_potentials_v[idx] - 
-	// 						d_states_u[idx]));
-	// }
+		// We require the equation timestep in ms:
+		float eqtimestep = timestep*1000.0f;
+
+		float membrane_potential_Vi = d_membrane_potentials_v[idx];
+		float current_injection_Ii = d_current_injections[idx];
+		float temp_resting_potential_V0 = -74.0; // Same as after_spike_reset_membrane_potential ???
+		float temp_membrane_resistance_R = 40000000.0f;
+		float new_membrane_potential = eqtimestep * (temp_resting_potential_V0 - temp_membrane_resistance_R * current_injection_Ii) + (1 - eqtimestep) * membrane_potential_Vi;
+
+		// if (idx == 10) {
+		// 	printf("%f\n", new_membrane_potential);
+		// }
+
+		d_membrane_potentials_v[idx] = new_membrane_potential;
+
+	}
 	__syncthreads();
 }
 
