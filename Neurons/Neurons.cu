@@ -63,7 +63,7 @@ int Neurons::AddGroup(neuron_parameters_struct * group_params, int group_shape[2
 }
 
 
-void Neurons::initialise_device_pointers() {
+void Neurons::allocate_device_pointers() {
 
 	CudaSafeCall(cudaMalloc((void **)&d_current_injections, sizeof(float)*total_number_of_neurons));
 }

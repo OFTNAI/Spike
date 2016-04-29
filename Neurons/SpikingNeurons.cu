@@ -48,9 +48,9 @@ int SpikingNeurons::AddGroup(neuron_parameters_struct * group_params, int group_
 }
 
 
-void SpikingNeurons::initialise_device_pointers() {
+void SpikingNeurons::allocate_device_pointers() {
 
-	Neurons::initialise_device_pointers();
+	Neurons::allocate_device_pointers();
 
 	CudaSafeCall(cudaMalloc((void **)&d_last_spike_time_of_each_neuron, sizeof(float)*total_number_of_neurons));
 

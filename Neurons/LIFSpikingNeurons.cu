@@ -38,9 +38,9 @@ int LIFSpikingNeurons::AddGroup(neuron_parameters_struct * group_params, int gro
 }
 
 
-void LIFSpikingNeurons::initialise_device_pointers() {
+void LIFSpikingNeurons::allocate_device_pointers() {
  	
- 	SpikingNeurons::initialise_device_pointers();
+ 	SpikingNeurons::allocate_device_pointers();
 
  	// CudaSafeCall(cudaMalloc((void **)&d_param_a, sizeof(float)*total_number_of_neurons));
  	// CudaSafeCall(cudaMalloc((void **)&d_param_b, sizeof(float)*total_number_of_neurons));

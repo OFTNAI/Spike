@@ -40,7 +40,7 @@ public:
 
 	virtual int AddGroup(neuron_parameters_struct * group_params, int group_shape[2]);
 	virtual void set_threads_per_block_and_blocks_per_grid(int threads);
-	virtual void initialise_device_pointers();
+	virtual void allocate_device_pointers();
 	
 	virtual void reset_neurons();
 	void reset_current_injections();

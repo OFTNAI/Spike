@@ -37,9 +37,9 @@ int PoissonSpikingNeurons::AddGroup(neuron_parameters_struct * group_params, int
 
 }
 
-void PoissonSpikingNeurons::initialise_device_pointers() {
+void PoissonSpikingNeurons::allocate_device_pointers() {
 
-	SpikingNeurons::initialise_device_pointers();
+	SpikingNeurons::allocate_device_pointers();
 
 	CudaSafeCall(cudaMalloc((void **)&d_rates, sizeof(float)*total_number_of_neurons));
 	CudaSafeCall(cudaMalloc((void**) &d_states, sizeof(curandState_t)*total_number_of_neurons));

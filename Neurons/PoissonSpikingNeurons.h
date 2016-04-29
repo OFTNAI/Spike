@@ -26,7 +26,7 @@ public:
 	curandState_t* d_states;
 
 	virtual int AddGroup(neuron_parameters_struct * group_params, int group_shape[2]);
-	virtual void initialise_device_pointers();
+	virtual void allocate_device_pointers();
 	virtual void reset_neurons();
 
 	void generate_random_states();

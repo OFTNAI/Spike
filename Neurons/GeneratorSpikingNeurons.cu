@@ -34,7 +34,7 @@ int GeneratorSpikingNeurons::AddGroup(neuron_parameters_struct * group_params, i
 
 void GeneratorSpikingNeurons::initialise_device_pointers_for_ents(int numEntsParam, int present) {
 
-	SpikingNeurons::initialise_device_pointers();
+	SpikingNeurons::allocate_device_pointers();
 
 	numEnts = numEntsParam;
 
