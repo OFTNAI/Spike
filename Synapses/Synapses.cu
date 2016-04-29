@@ -347,7 +347,7 @@ void Synapses::increment_number_of_synapses(int increment) {
 }
 
 
-void Synapses::initialise_device_pointers() {
+void Synapses::allocate_device_pointers() {
 	CudaSafeCall(cudaMalloc((void **)&d_presynaptic_neuron_indices, sizeof(int)*total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&d_postsynaptic_neuron_indices, sizeof(int)*total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&d_synaptic_efficacies_or_weights, sizeof(float)*total_number_of_synapses));

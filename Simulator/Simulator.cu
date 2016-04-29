@@ -157,7 +157,7 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_m
 	RecordingElectrodes * input_recording_electrodes = new RecordingElectrodes(input_neurons);
 
 	neurons->initialise_device_pointers();
-	synapses->initialise_device_pointers();
+	synapses->allocate_device_pointers();
 	input_neurons->initialise_device_pointers();
 
 	recording_electrodes->initialise_device_pointers();

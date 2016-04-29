@@ -5,12 +5,14 @@
 
 // LIFSpikingSynapses Constructor
 LIFSpikingSynapses::LIFSpikingSynapses() {
-
+	// synaptic_conductances = NULL;
+	d_synaptic_conductances_g = NULL;
 }
 
 // LIFSpikingSynapses Destructor
 LIFSpikingSynapses::~LIFSpikingSynapses() {
-	// Just need to free up the memory
+	// free(synaptic_conductances);
+	CudaSafeCall(cudaFree(d_synaptic_conductances_g));
 }
 
 // Connection Detail implementation
@@ -46,22 +48,9 @@ void LIFSpikingSynapses::AddGroup(int presynaptic_group_id,
 							parameter,
 							parameter_two);
 
-	for (int i = (total_number_of_synapses - temp_number_of_synapses_in_last_group); i < total_number_of_synapses-1; i++){
-		// Setup Delays
-		// Get the randoms
-		if (delay_range[0] == delay_range[1]) {
-			delays[i] = delay_range[0];
-		} else {
-			float rnddelay = delay_range[0] + (delay_range[1] - delay_range[0])*((float)rand() / (RAND_MAX));
-			delays[i] = round(rnddelay);
-		}
-		// Setup STDP
-		if (stdp_on){
-			stdp[i] = 1;
-		} else {
-			stdp[i] = 0;
-		}
-	}
+	// for (int i = (total_number_of_synapses - temp_number_of_synapses_in_last_group); i < total_number_of_synapses-1; i++){
+		
+	// }
 
 }
 
@@ -72,15 +61,18 @@ void LIFSpikingSynapses::increment_number_of_synapses(int increment) {
 }
 
 
-void LIFSpikingSynapses::initialise_device_pointers() {
+void LIFSpikingSynapses::allocate_device_pointers() {
 
-	SpikingSynapses::initialise_device_pointers();
+	SpikingSynapses::allocate_device_pointers();
 
-	reset_synapse_spikes();
+	CudaSafeCall(cudaMalloc((void **)&d_synaptic_conductances_g, sizeof(float)*total_number_of_synapses));
 }
 
 void LIFSpikingSynapses::reset_synapse_spikes() {
 
+	SpikingSynapses::reset_synapse_spikes();
+
+	CudaSafeCall(cudaMemset(d_synaptic_conductances_g, 0.0f, sizeof(float)*total_number_of_synapses));
 }
 
 
@@ -109,6 +101,10 @@ __global__ void lif_apply_ltp_to_synapse_weights_kernal(int* d_postsyns,
 							float currtime,
 							size_t total_number_of_synapse);
 
+
+// void LIFSpikingSynapses::check_for_synapse_spike_arrival_and_calculate_postsynaptic_current_injection(float* d_neurons_current_injections, float current_time_in_seconds) {
+
+// }
 
 
 void LIFSpikingSynapses::apply_ltd_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds) {

@@ -93,9 +93,9 @@ void SpikingSynapses::increment_number_of_synapses(int increment) {
 }
 
 
-void SpikingSynapses::initialise_device_pointers() {
+void SpikingSynapses::allocate_device_pointers() {
 
-	Synapses::initialise_device_pointers();
+	Synapses::allocate_device_pointers();
 
 	CudaSafeCall(cudaMalloc((void **)&d_delays, sizeof(int)*total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&d_spikes_travelling_to_synapse, sizeof(int)*total_number_of_synapses));
@@ -106,10 +106,10 @@ void SpikingSynapses::initialise_device_pointers() {
 	CudaSafeCall(cudaMemcpy(d_delays, delays, sizeof(int)*total_number_of_synapses, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_stdp, stdp, sizeof(int)*total_number_of_synapses, cudaMemcpyHostToDevice));
 
-	reset_synapse_spikes();
 }
 
 void SpikingSynapses::reset_synapse_spikes() {
+	
 	CudaSafeCall(cudaMemset(d_spikes_travelling_to_synapse, 0, sizeof(int)*total_number_of_synapses));
 	CudaSafeCall(cudaMemset(d_time_of_last_postsynaptic_activation_for_each_synapse, -1000.0f, sizeof(float)*total_number_of_synapses));
 	CudaSafeCall(cudaMemset(d_spikes_travelling_to_synapse_buffer, -1, sizeof(int)*total_number_of_synapses));

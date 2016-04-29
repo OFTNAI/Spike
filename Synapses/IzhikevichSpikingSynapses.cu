@@ -72,9 +72,9 @@ void IzhikevichSpikingSynapses::increment_number_of_synapses(int increment) {
 }
 
 
-void IzhikevichSpikingSynapses::initialise_device_pointers() {
+void IzhikevichSpikingSynapses::allocate_device_pointers() {
 
-	SpikingSynapses::initialise_device_pointers();
+	SpikingSynapses::allocate_device_pointers();
 
 	reset_synapse_spikes();
 }

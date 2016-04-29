@@ -38,7 +38,7 @@ public:
 						float parameter,
 						float parameter_two);
 
-	virtual void initialise_device_pointers();
+	virtual void allocate_device_pointers();
 	virtual void reset_synapse_spikes();
 	virtual void set_threads_per_block_and_blocks_per_grid(int threads);
 	virtual void increment_number_of_synapses(int increment);
