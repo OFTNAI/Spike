@@ -25,8 +25,8 @@ model: ${FILE}
 
 
 # Separating out the individual compilations so as not to compilation time
-${FILE}: ObjectFiles/${FILE}.o ObjectFiles/Simulator.o ObjectFiles/Neurons.o ObjectFiles/SpikingNeurons.o ObjectFiles/IzhikevichSpikingNeurons.o ObjectFiles/PoissonSpikingNeurons.o ObjectFiles/GeneratorSpikingNeurons.o ObjectFiles/Synapses.o ObjectFiles/SpikingSynapses.o ObjectFiles/IzhikevichSpikingSynapses.o ObjectFiles/RecordingElectrodes.o
-	$(CC) ObjectFiles/${FILE}.o ObjectFiles/Simulator.o ObjectFiles/Neurons.o ObjectFiles/SpikingNeurons.o ObjectFiles/IzhikevichSpikingNeurons.o ObjectFiles/PoissonSpikingNeurons.o ObjectFiles/GeneratorSpikingNeurons.o ObjectFiles/Synapses.o ObjectFiles/SpikingSynapses.o ObjectFiles/IzhikevichSpikingSynapses.o ObjectFiles/RecordingElectrodes.o -o ${FILE}
+${FILE}: ObjectFiles/${FILE}.o ObjectFiles/Simulator.o ObjectFiles/Neurons.o ObjectFiles/SpikingNeurons.o ObjectFiles/IzhikevichSpikingNeurons.o ObjectFiles/LIFSpikingNeurons.o ObjectFiles/PoissonSpikingNeurons.o ObjectFiles/GeneratorSpikingNeurons.o ObjectFiles/Synapses.o ObjectFiles/SpikingSynapses.o ObjectFiles/IzhikevichSpikingSynapses.o ObjectFiles/RecordingElectrodes.o
+	$(CC) ObjectFiles/${FILE}.o ObjectFiles/Simulator.o ObjectFiles/Neurons.o ObjectFiles/SpikingNeurons.o ObjectFiles/IzhikevichSpikingNeurons.o ObjectFiles/LIFSpikingNeurons.o ObjectFiles/PoissonSpikingNeurons.o ObjectFiles/GeneratorSpikingNeurons.o ObjectFiles/Synapses.o ObjectFiles/SpikingSynapses.o ObjectFiles/IzhikevichSpikingSynapses.o ObjectFiles/RecordingElectrodes.o -o ${FILE}
 
 # Compiling the Model file
 ObjectFiles/${FILE}.o: ${FILE}.cpp
@@ -43,6 +43,9 @@ ObjectFiles/SpikingNeurons.o: Neurons/SpikingNeurons.cu
 # Compiling the IzhikevichSpikingNeurons class
 ObjectFiles/IzhikevichSpikingNeurons.o: Neurons/IzhikevichSpikingNeurons.cu
 	$(CC) $(CFLAGS) Neurons/IzhikevichSpikingNeurons.cu -o $@
+# Compiling the LIFSpikingNeurons class
+ObjectFiles/LIFSpikingNeurons.o: Neurons/LIFSpikingNeurons.cu
+	$(CC) $(CFLAGS) Neurons/LIFSpikingNeurons.cu -o $@
 # Compiling the PoissonSpikingNeurons class
 ObjectFiles/PoissonSpikingNeurons.o: Neurons/PoissonSpikingNeurons.cu
 	$(CC) $(CFLAGS) Neurons/PoissonSpikingNeurons.cu -o $@
