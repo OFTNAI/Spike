@@ -1,15 +1,15 @@
-#include "IzhikevichSpikingSynapses.h"
+#include "LIFSpikingSynapses.h"
 
 #include "../Helpers/CUDAErrorCheckHelpers.h"
 #include "../Helpers/TerminalHelpers.h"
 
-// IzhikevichSpikingSynapses Constructor
-IzhikevichSpikingSynapses::IzhikevichSpikingSynapses() {
+// LIFSpikingSynapses Constructor
+LIFSpikingSynapses::LIFSpikingSynapses() {
 
 }
 
-// IzhikevichSpikingSynapses Destructor
-IzhikevichSpikingSynapses::~IzhikevichSpikingSynapses() {
+// LIFSpikingSynapses Destructor
+LIFSpikingSynapses::~LIFSpikingSynapses() {
 	// Just need to free up the memory
 }
 
@@ -23,7 +23,7 @@ IzhikevichSpikingSynapses::~IzhikevichSpikingSynapses() {
 //		2 number float array for delay range
 //		Boolean value to indicate if population is STDP based
 //		Parameter = either probability for random synapses or S.D. for Gaussian
-void IzhikevichSpikingSynapses::AddGroup(int presynaptic_group_id, 
+void LIFSpikingSynapses::AddGroup(int presynaptic_group_id, 
 						int postsynaptic_group_id, 
 						Neurons * neurons,
 						Neurons * input_neurons,
@@ -65,33 +65,33 @@ void IzhikevichSpikingSynapses::AddGroup(int presynaptic_group_id,
 
 }
 
-void IzhikevichSpikingSynapses::increment_number_of_synapses(int increment) {
+void LIFSpikingSynapses::increment_number_of_synapses(int increment) {
 
 	SpikingSynapses::increment_number_of_synapses(increment);
 
 }
 
 
-void IzhikevichSpikingSynapses::initialise_device_pointers() {
+void LIFSpikingSynapses::initialise_device_pointers() {
 
 	SpikingSynapses::initialise_device_pointers();
 
 	reset_synapse_spikes();
 }
 
-void IzhikevichSpikingSynapses::reset_synapse_spikes() {
+void LIFSpikingSynapses::reset_synapse_spikes() {
 
 }
 
 
-void IzhikevichSpikingSynapses::set_threads_per_block_and_blocks_per_grid(int threads) {
+void LIFSpikingSynapses::set_threads_per_block_and_blocks_per_grid(int threads) {
 	
 	SpikingSynapses::set_threads_per_block_and_blocks_per_grid(threads);
 	
 }
 
 
-__global__ void izhikevich_apply_ltd_to_synapse_weights_kernal(float* d_time_of_last_postsynaptic_activation_for_each_synapse,
+__global__ void lif_apply_ltd_to_synapse_weights_kernal(float* d_time_of_last_postsynaptic_activation_for_each_synapse,
 							float* d_synaptic_efficacies_or_weights,
 							int* d_stdp,
 							float* d_last_spike_time_of_each_neuron,
@@ -100,7 +100,7 @@ __global__ void izhikevich_apply_ltd_to_synapse_weights_kernal(float* d_time_of_
 							struct stdp_struct stdp_vars,
 							size_t total_number_of_synapse);
 
-__global__ void izhikevich_apply_ltp_to_synapse_weights_kernal(int* d_postsyns,
+__global__ void lif_apply_ltp_to_synapse_weights_kernal(int* d_postsyns,
 							float* d_last_spike_time_of_each_neuron,
 							int* d_stdp,
 							float* d_time_of_last_postsynaptic_activation_for_each_synapse,
@@ -111,9 +111,9 @@ __global__ void izhikevich_apply_ltp_to_synapse_weights_kernal(int* d_postsyns,
 
 
 
-void IzhikevichSpikingSynapses::apply_ltd_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds) {
+void LIFSpikingSynapses::apply_ltd_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds) {
 
-	izhikevich_apply_ltd_to_synapse_weights_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_time_of_last_postsynaptic_activation_for_each_synapse,
+	lif_apply_ltd_to_synapse_weights_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_time_of_last_postsynaptic_activation_for_each_synapse,
 																	d_synaptic_efficacies_or_weights,
 																	d_stdp,
 																	d_last_spike_time_of_each_neuron,
@@ -126,9 +126,9 @@ void IzhikevichSpikingSynapses::apply_ltd_to_synapse_weights(float* d_last_spike
 }
 
 
-void IzhikevichSpikingSynapses::apply_ltp_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds) {
+void LIFSpikingSynapses::apply_ltp_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds) {
 	// Carry out the last step, LTP!
-	izhikevich_apply_ltp_to_synapse_weights_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_postsynaptic_neuron_indices,
+	lif_apply_ltp_to_synapse_weights_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_postsynaptic_neuron_indices,
 																	d_last_spike_time_of_each_neuron,
 																	d_stdp,
 																	d_time_of_last_postsynaptic_activation_for_each_synapse,
@@ -141,7 +141,7 @@ void IzhikevichSpikingSynapses::apply_ltp_to_synapse_weights(float* d_last_spike
 }
 
 
-__global__ void izhikevich_apply_ltd_to_synapse_weights_kernal(float* d_time_of_last_postsynaptic_activation_for_each_synapse,
+__global__ void lif_apply_ltd_to_synapse_weights_kernal(float* d_time_of_last_postsynaptic_activation_for_each_synapse,
 							float* d_synaptic_efficacies_or_weights,
 							int* d_stdp,
 							float* d_last_spike_time_of_each_neuron,
@@ -167,7 +167,7 @@ __global__ void izhikevich_apply_ltd_to_synapse_weights_kernal(float* d_time_of_
 
 
 // LTP on synapses
-__global__ void izhikevich_apply_ltp_to_synapse_weights_kernal(int* d_postsyns,
+__global__ void lif_apply_ltp_to_synapse_weights_kernal(int* d_postsyns,
 							float* d_last_spike_time_of_each_neuron,
 							int* d_stdp,
 							float* d_time_of_last_postsynaptic_activation_for_each_synapse,
