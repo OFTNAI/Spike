@@ -272,7 +272,7 @@ void Simulator::temp_izhikevich_per_timestep_instructions(float current_time_in_
 	// 	temp_test_generator->generupdate2_wrapper(current_time_in_seconds, timestep);
 	
 	synapses->check_for_synapse_spike_arrival(current_time_in_seconds);
-	synapses->calculate_postsynaptic_current_injection(neurons->d_current_injections, current_time_in_seconds);
+	synapses->calculate_postsynaptic_current_injection(neurons, current_time_in_seconds);
 
 	synapses->apply_ltd_to_synapse_weights(neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds);
 
@@ -294,7 +294,9 @@ void Simulator::temp_lif_per_timestep_instructions(float current_time_in_seconds
 	// 	temp_test_generator->generupdate2_wrapper(current_time_in_seconds, timestep);
 	
 	synapses->check_for_synapse_spike_arrival(current_time_in_seconds);
-	synapses->calculate_postsynaptic_current_injection(neurons->d_current_injections, current_time_in_seconds);
+	synapses->calculate_postsynaptic_current_injection(neurons, current_time_in_seconds);
+	synapses->update_synaptic_conductances(timestep, current_time_in_seconds);
+
 
 	// synapses->apply_ltd_to_synapse_weights(neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds);
 

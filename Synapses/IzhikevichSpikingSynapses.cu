@@ -118,12 +118,12 @@ __global__ void izhikevich_apply_ltp_to_synapse_weights_kernal(int* d_postsyns,
 
 
 
-void IzhikevichSpikingSynapses::calculate_postsynaptic_current_injection(float* d_neurons_current_injections, float current_time_in_seconds) {
+void IzhikevichSpikingSynapses::calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds) {
 
 	izhikevich_calculate_postsynaptic_current_injection_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_synaptic_efficacies_or_weights,
 																	d_time_of_last_postsynaptic_activation_for_each_synapse,
 																	d_postsynaptic_neuron_indices,
-																	d_neurons_current_injections,
+																	neurons->d_current_injections,
 																	current_time_in_seconds,
 																	total_number_of_synapses);
 

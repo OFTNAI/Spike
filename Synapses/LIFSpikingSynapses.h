@@ -2,7 +2,7 @@
 #define LIFSPIKINGSYNAPSES_H
 
 #include "SpikingSynapses.h"
-#include "../Neurons/Neurons.h"
+#include "../Neurons/SpikingNeurons.h"
 
 
 class LIFSpikingSynapses : public SpikingSynapses {
@@ -13,7 +13,7 @@ public:
 	LIFSpikingSynapses();
 	~LIFSpikingSynapses();
 
-	// float * synaptic_conductances;
+	float * synaptic_conductances_g;
 	float * d_synaptic_conductances_g;
 
 	// Synapse Functions
@@ -33,7 +33,8 @@ public:
 	virtual void set_threads_per_block_and_blocks_per_grid(int threads);
 	virtual void increment_number_of_synapses(int increment);
 
-	virtual void calculate_postsynaptic_current_injection(float* d_neurons_current_injections, float current_time_in_seconds);
+	virtual void calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds);
+	virtual void update_synaptic_conductances(float timestep, float current_time_in_seconds);
 	virtual void apply_ltd_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds);
 	virtual void apply_ltp_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds);
 

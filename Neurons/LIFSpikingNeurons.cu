@@ -95,7 +95,6 @@ __global__ void lif_update_membrane_potentials(float *d_membrane_potentials_v,
 		float new_membrane_potential = equation_constant * (temp_resting_potential_V0 + temp_membrane_resistance_R * current_injection_Ii) + (1 - equation_constant) * membrane_potential_Vi;
 
 		if (idx == 1000) {
-			// printf("eqtimestep: %1.20f\n", eqtimestep);
 			// printf("equation_constant: %1.20f\n", equation_constant);
 			// printf("current_injection_Ii: %1.20f\n", current_injection_Ii);
 			// printf("new_membrane_potential: %1.20f\n", new_membrane_potential);

@@ -5,13 +5,13 @@
 
 // LIFSpikingSynapses Constructor
 LIFSpikingSynapses::LIFSpikingSynapses() {
-	// synaptic_conductances = NULL;
+	synaptic_conductances_g = NULL;
 	d_synaptic_conductances_g = NULL;
 }
 
 // LIFSpikingSynapses Destructor
 LIFSpikingSynapses::~LIFSpikingSynapses() {
-	// free(synaptic_conductances);
+	free(synaptic_conductances_g);
 	CudaSafeCall(cudaFree(d_synaptic_conductances_g));
 }
 
@@ -48,15 +48,17 @@ void LIFSpikingSynapses::AddGroup(int presynaptic_group_id,
 							parameter,
 							parameter_two);
 
-	// for (int i = (total_number_of_synapses - temp_number_of_synapses_in_last_group); i < total_number_of_synapses-1; i++){
-		
-	// }
+	for (int i = (total_number_of_synapses - temp_number_of_synapses_in_last_group); i < total_number_of_synapses-1; i++){
+		synaptic_conductances_g[i] = 0.001;
+	}
 
 }
 
 void LIFSpikingSynapses::increment_number_of_synapses(int increment) {
 
 	SpikingSynapses::increment_number_of_synapses(increment);
+
+	synaptic_conductances_g = (float*)realloc(synaptic_conductances_g, total_number_of_synapses * sizeof(float));
 
 }
 
@@ -72,7 +74,8 @@ void LIFSpikingSynapses::reset_synapse_spikes() {
 
 	SpikingSynapses::reset_synapse_spikes();
 
-	CudaSafeCall(cudaMemset(d_synaptic_conductances_g, 0.0f, sizeof(float)*total_number_of_synapses));
+	// CudaSafeCall(cudaMemset(d_synaptic_conductances_g, 0.0f, sizeof(float)*total_number_of_synapses));
+	CudaSafeCall(cudaMemcpy(d_synaptic_conductances_g, synaptic_conductances_g, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
 }
 
 
@@ -88,7 +91,16 @@ __global__ void lif_calculate_postsynaptic_current_injection_kernal(float* d_syn
 							int* d_postsynaptic_neuron_indices,
 							float* d_neurons_current_injections,
 							float current_time_in_seconds,
-							size_t total_number_of_synapses);
+							size_t total_number_of_synapses,
+							float * d_membrane_potentials_v,
+							float * d_synaptic_conductances_g);
+
+__global__ void lif_update_synaptic_conductances_kernal(float timestep, 
+													float * d_synaptic_conductances_g, 
+													float * d_synaptic_efficacies_or_weights, 
+													float * d_time_of_last_postsynaptic_activation_for_each_synapse,
+													int total_number_of_synapses,
+													float current_time_in_seconds);
 
 __global__ void lif_apply_ltd_to_synapse_weights_kernal(float* d_time_of_last_postsynaptic_activation_for_each_synapse,
 							float* d_synaptic_efficacies_or_weights,
@@ -108,16 +120,30 @@ __global__ void lif_apply_ltp_to_synapse_weights_kernal(int* d_postsyns,
 							float currtime,
 							size_t total_number_of_synapse);
 
-void LIFSpikingSynapses::calculate_postsynaptic_current_injection(float* d_neurons_current_injections, float current_time_in_seconds) {
+
+void LIFSpikingSynapses::calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds) {
 
 	lif_calculate_postsynaptic_current_injection_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_synaptic_efficacies_or_weights,
 																	d_time_of_last_postsynaptic_activation_for_each_synapse,
 																	d_postsynaptic_neuron_indices,
-																	d_neurons_current_injections,
+																	neurons->d_current_injections,
 																	current_time_in_seconds,
-																	total_number_of_synapses);
+																	total_number_of_synapses,
+																	neurons->d_membrane_potentials_v, 
+																	d_synaptic_conductances_g);
 
 	CudaCheckError();
+}
+
+void LIFSpikingSynapses::update_synaptic_conductances(float timestep, float current_time_in_seconds) {
+
+	lif_update_synaptic_conductances_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(timestep, 
+											d_synaptic_conductances_g, 
+											d_synaptic_efficacies_or_weights, 
+											d_time_of_last_postsynaptic_activation_for_each_synapse,
+											total_number_of_synapses,
+											current_time_in_seconds);
+
 }
 
 
@@ -156,18 +182,54 @@ __global__ void lif_calculate_postsynaptic_current_injection_kernal(float* d_syn
 							int* d_postsynaptic_neuron_indices,
 							float* d_neurons_current_injections,
 							float current_time_in_seconds,
-							size_t total_number_of_synapses){
+							size_t total_number_of_synapses,
+							float * d_membrane_potentials_v,
+							float * d_synaptic_conductances_g){
 
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	if (idx < total_number_of_synapses) {
 
-		if (d_time_of_last_postsynaptic_activation_for_each_synapse[idx] == current_time_in_seconds) {
+		float temp_reversal_potential_Vhat = 0.0;
+		float membrane_potential_v = d_membrane_potentials_v[idx];
+		float synaptic_conductance_g = d_synaptic_conductances_g[idx];
 
-			atomicAdd(&d_neurons_current_injections[d_postsynaptic_neuron_indices[idx]], d_synaptic_efficacies_or_weights[idx]);
-
+		float component_for_sum = synaptic_conductance_g * (temp_reversal_potential_Vhat - membrane_potential_v);
+		if (idx == 5) {
+			printf("synaptic_conductance_g: %f\n", synaptic_conductance_g);
+			printf("component_for_sum: %f\n", component_for_sum);
+			printf("membrane_potential_v: %f\n", membrane_potential_v);
+			printf("temp_reversal_potential_Vhat: %f\n", temp_reversal_potential_Vhat);
 		}
+
+		atomicAdd(&d_neurons_current_injections[d_postsynaptic_neuron_indices[idx]], component_for_sum);
+
 	}
 	__syncthreads();
+}
+
+
+__global__ void lif_update_synaptic_conductances_kernal(float timestep, 
+														float * d_synaptic_conductances_g, 
+														float * d_synaptic_efficacies_or_weights, 
+														float * d_time_of_last_postsynaptic_activation_for_each_synapse, 
+														int total_number_of_synapses,
+														float current_time_in_seconds) {
+
+	int idx = threadIdx.x + blockIdx.x * blockDim.x;
+	if (idx < total_number_of_synapses) {
+
+		float synaptic_conductance_g = d_synaptic_conductances_g[idx];
+		float decay_term_tau_g = 0.01; // Is this the synaptic time constant?
+
+		float new_conductance = (1 - (timestep/decay_term_tau_g)) * synaptic_conductance_g;
+		if (d_time_of_last_postsynaptic_activation_for_each_synapse[idx] == current_time_in_seconds) {
+			new_conductance += timestep * d_synaptic_efficacies_or_weights[idx];
+		}
+
+		d_synaptic_conductances_g[idx] = new_conductance;
+
+	}
+
 }
 
 

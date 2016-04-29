@@ -150,7 +150,7 @@ void SpikingSynapses::check_for_synapse_spike_arrival(float current_time_in_seco
 	CudaCheckError();
 }
 
-void SpikingSynapses::calculate_postsynaptic_current_injection(float* d_neurons_current_injections, float current_time_in_seconds) {
+void SpikingSynapses::calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds) {
 
 }
 
@@ -196,7 +196,9 @@ __global__ void check_for_synapse_spike_arrival_kernal(int* d_spikes_travelling_
 	__syncthreads();
 }
 
+void SpikingSynapses::update_synaptic_conductances(float timestep, float current_time_in_seconds) {
 
+}
 
 __global__ void move_spikes_towards_synapses_kernal(int* d_presynaptic_neuron_indices,
 								int* d_delays,
