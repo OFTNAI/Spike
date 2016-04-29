@@ -123,14 +123,6 @@ void SpikingSynapses::set_threads_per_block_and_blocks_per_grid(int threads) {
 }
 
 
-__global__ void calculate_postsynaptic_current_injection_kernal(int* d_spikes_travelling_to_synapse,
-							float* d_synaptic_efficacies_or_weights,
-							float* d_time_of_last_postsynaptic_activation_for_each_synapse,
-							int* d_postsynaptic_neuron_indices,
-							float* d_neurons_current_injections,
-							float current_time_in_seconds,
-							size_t total_number_of_synapses);
-
 __global__ void check_for_synapse_spike_arrival_kernal(int* d_spikes_travelling_to_synapse,
 							float* d_synaptic_efficacies_or_weights,
 							float* d_time_of_last_postsynaptic_activation_for_each_synapse,
@@ -166,15 +158,6 @@ void SpikingSynapses::check_for_synapse_spike_arrival(float* d_neurons_current_i
 
 void SpikingSynapses::calculate_postsynaptic_current_injection(float* d_neurons_current_injections, float current_time_in_seconds) {
 
-	calculate_postsynaptic_current_injection_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_spikes_travelling_to_synapse,
-																	d_synaptic_efficacies_or_weights,
-																	d_time_of_last_postsynaptic_activation_for_each_synapse,
-																	d_postsynaptic_neuron_indices,
-																	d_neurons_current_injections,
-																	current_time_in_seconds,
-																	total_number_of_synapses);
-
-	CudaCheckError();
 }
 
 
@@ -222,26 +205,6 @@ __global__ void check_for_synapse_spike_arrival_kernal(int* d_spikes_travelling_
 	__syncthreads();
 }
 
-
-__global__ void calculate_postsynaptic_current_injection_kernal(int* d_spikes_travelling_to_synapse,
-							float* d_synaptic_efficacies_or_weights,
-							float* d_time_of_last_postsynaptic_activation_for_each_synapse,
-							int* d_postsynaptic_neuron_indices,
-							float* d_neurons_current_injections,
-							float current_time_in_seconds,
-							size_t total_number_of_synapses){
-
-	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	if (idx < total_number_of_synapses) {
-
-		if (d_time_of_last_postsynaptic_activation_for_each_synapse[idx] == current_time_in_seconds) {
-
-			atomicAdd(&d_neurons_current_injections[d_postsynaptic_neuron_indices[idx]], d_synaptic_efficacies_or_weights[idx]);
-
-		}
-	}
-	__syncthreads();
-}
 
 
 __global__ void move_spikes_towards_synapses_kernal(int* d_presynaptic_neuron_indices,
