@@ -79,6 +79,11 @@ void LIFSpikingSynapses::reset_synapse_spikes() {
 }
 
 
+void LIFSpikingSynapses::sort_synapses_by_postsynaptic_neuron_indices() {
+	SpikingSynapses::sort_synapses_by_postsynaptic_neuron_indices();
+}
+
+
 void LIFSpikingSynapses::set_threads_per_block_and_blocks_per_grid(int threads) {
 	
 	SpikingSynapses::set_threads_per_block_and_blocks_per_grid(threads);

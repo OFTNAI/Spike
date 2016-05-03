@@ -38,6 +38,9 @@ int main (int argc, char *argv[]){
 	int LAYER_1_SHAPE[] = {100, 100};
 	int LAYER_2_SHAPE[] = {101, 10};
 	int LAYER_3_SHAPE[] = {10, 10};
+	// int LAYER_1_SHAPE[] = {5, 5};
+	// int LAYER_2_SHAPE[] = {5, 5};
+	// int LAYER_3_SHAPE[] = {5, 5};
 
 	//
 	int POISSON_SPIKING_GROUP_ID_LAYER_1 = simulator.AddInputNeuronGroup(poisson_spiking_group_params, LAYER_1_SHAPE);

@@ -46,48 +46,28 @@ void IzhikevichSpikingSynapses::AddGroup(int presynaptic_group_id,
 							parameter,
 							parameter_two);
 
-	for (int i = (total_number_of_synapses - temp_number_of_synapses_in_last_group); i < total_number_of_synapses-1; i++){
-		// Setup Delays
-		// Get the randoms
-		if (delay_range[0] == delay_range[1]) {
-			delays[i] = delay_range[0];
-		} else {
-			float rnddelay = delay_range[0] + (delay_range[1] - delay_range[0])*((float)rand() / (RAND_MAX));
-			delays[i] = round(rnddelay);
-		}
-		// Setup STDP
-		if (stdp_on){
-			stdp[i] = 1;
-		} else {
-			stdp[i] = 0;
-		}
-	}
-
 }
 
 void IzhikevichSpikingSynapses::increment_number_of_synapses(int increment) {
-
 	SpikingSynapses::increment_number_of_synapses(increment);
-
 }
 
 
 void IzhikevichSpikingSynapses::allocate_device_pointers() {
-
 	SpikingSynapses::allocate_device_pointers();
-
-	reset_synapse_spikes();
 }
 
 void IzhikevichSpikingSynapses::reset_synapse_spikes() {
+	SpikingSynapses::reset_synapse_spikes();
+}
 
+void IzhikevichSpikingSynapses::sort_synapses_by_postsynaptic_neuron_indices() {
+ 	SpikingSynapses::sort_synapses_by_postsynaptic_neuron_indices();
 }
 
 
 void IzhikevichSpikingSynapses::set_threads_per_block_and_blocks_per_grid(int threads) {
-	
 	SpikingSynapses::set_threads_per_block_and_blocks_per_grid(threads);
-	
 }
 
 

@@ -151,10 +151,16 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_m
 	
 	if (number_of_epochs == 0) print_message_and_exit("Error. There must be at least one epoch.");
 
-
 	GeneratorSpikingNeurons * temp_test_generator = new GeneratorSpikingNeurons();
 	RecordingElectrodes * recording_electrodes = new RecordingElectrodes(neurons);
 	RecordingElectrodes * input_recording_electrodes = new RecordingElectrodes(input_neurons);
+
+	int threads_per_block = 512;
+	synapses->set_threads_per_block_and_blocks_per_grid(threads_per_block);
+	neurons->set_threads_per_block_and_blocks_per_grid(threads_per_block);
+	input_neurons->set_threads_per_block_and_blocks_per_grid(threads_per_block);
+
+	synapses->sort_synapses_by_postsynaptic_neuron_indices();
 
 	neurons->allocate_device_pointers();
 	synapses->allocate_device_pointers();
@@ -164,12 +170,6 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_m
 	recording_electrodes->initialise_host_pointers();
 	input_recording_electrodes->initialise_device_pointers();
 	input_recording_electrodes->initialise_host_pointers();
-
-
-	int threads_per_block = 512;
-	synapses->set_threads_per_block_and_blocks_per_grid(threads_per_block);
-	neurons->set_threads_per_block_and_blocks_per_grid(threads_per_block);
-	input_neurons->set_threads_per_block_and_blocks_per_grid(threads_per_block);
 
 	// SEEDING
 	srand(42);

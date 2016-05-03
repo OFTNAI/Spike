@@ -18,6 +18,10 @@
 
 #include <cuda.h>
 
+#include <thrust/device_ptr.h>
+#include <thrust/device_vector.h>
+#include <thrust/sort.h>
+
 
 
 enum CONNECTIVITY_TYPE
@@ -68,6 +72,8 @@ public:
 	int* postsynaptic_neuron_indices; // Previously postsyns
 	float* synaptic_efficacies_or_weights;
 
+	int *original_synapse_indices;
+
 	// Device pointers
 	int* d_presynaptic_neuron_indices;
 	int* d_postsynaptic_neuron_indices;
@@ -90,6 +96,7 @@ public:
 	virtual void allocate_device_pointers();
 	virtual void set_threads_per_block_and_blocks_per_grid(int threads);
 	virtual void increment_number_of_synapses(int increment);
+	virtual void sort_synapses_by_postsynaptic_neuron_indices();
 
 	dim3 number_of_synapse_blocks_per_grid;
 	dim3 threads_per_block;

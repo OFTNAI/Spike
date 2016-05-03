@@ -116,11 +116,32 @@ void SpikingSynapses::reset_synapse_spikes() {
 }
 
 
+void SpikingSynapses::sort_synapses_by_postsynaptic_neuron_indices() {
+	
+	Synapses::sort_synapses_by_postsynaptic_neuron_indices();
+
+	int * temp_delays = (int *)malloc(total_number_of_synapses*sizeof(int));
+	int * temp_stdp = (int *)malloc(total_number_of_synapses*sizeof(int));
+	for(int i = 0; i < total_number_of_synapses; i++) {
+
+		temp_delays[i] = delays[original_synapse_indices[i]];
+		temp_stdp[i] = stdp[original_synapse_indices[i]];
+
+	}
+
+	delays = temp_delays;
+	stdp = temp_stdp;
+
+}
+
+
 void SpikingSynapses::set_threads_per_block_and_blocks_per_grid(int threads) {
 	
 	Synapses::set_threads_per_block_and_blocks_per_grid(threads);
 	
 }
+
+
 
 
 __global__ void check_for_synapse_spike_arrival_kernal(int* d_spikes_travelling_to_synapse,

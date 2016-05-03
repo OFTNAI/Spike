@@ -24,9 +24,12 @@ Synapses::Synapses() {
 	total_number_of_synapses = 0;
 	temp_number_of_synapses_in_last_group = 0;
 
+	original_synapse_indices = NULL;
+
 	// Full Matrices
 	presynaptic_neuron_indices = NULL;
 	postsynaptic_neuron_indices = NULL;
+
 	synaptic_efficacies_or_weights = NULL;
 
 	d_presynaptic_neuron_indices = NULL;
@@ -330,6 +333,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 			float rndweight = weight_range[0] + (weight_range[1] - weight_range[0])*((float)rand() / (RAND_MAX));
 			synaptic_efficacies_or_weights[i] = rndweight;
 		}
+
 	}
 
 
@@ -344,20 +348,70 @@ void Synapses::increment_number_of_synapses(int increment) {
 	presynaptic_neuron_indices = (int*)realloc(presynaptic_neuron_indices, total_number_of_synapses * sizeof(int));
     postsynaptic_neuron_indices = (int*)realloc(postsynaptic_neuron_indices, total_number_of_synapses * sizeof(int));
     synaptic_efficacies_or_weights = (float*)realloc(synaptic_efficacies_or_weights, total_number_of_synapses * sizeof(float));
+    original_synapse_indices = (int*)realloc(original_synapse_indices, total_number_of_synapses * sizeof(int));
 }
 
 
 void Synapses::allocate_device_pointers() {
+
 	CudaSafeCall(cudaMalloc((void **)&d_presynaptic_neuron_indices, sizeof(int)*total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&d_postsynaptic_neuron_indices, sizeof(int)*total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&d_synaptic_efficacies_or_weights, sizeof(float)*total_number_of_synapses));
-
 
 	CudaSafeCall(cudaMemcpy(d_presynaptic_neuron_indices, presynaptic_neuron_indices, sizeof(int)*total_number_of_synapses, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_postsynaptic_neuron_indices, postsynaptic_neuron_indices, sizeof(int)*total_number_of_synapses, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_synaptic_efficacies_or_weights, synaptic_efficacies_or_weights, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
 
 }
+
+
+void Synapses::sort_synapses_by_postsynaptic_neuron_indices() {
+
+	printf("Sorting synapses by postsynaptic neuorn ids...\n");
+
+	clock_t begin = clock();
+
+	thrust::host_vector<int> host_vector_synapse_indices(total_number_of_synapses);
+	thrust::host_vector<int> host_vector_postsynaptic_neuron_indices(total_number_of_synapses);
+	for(int i = 0; i < total_number_of_synapses; i++) {
+		host_vector_synapse_indices[i] = i;
+		host_vector_postsynaptic_neuron_indices[i] = postsynaptic_neuron_indices[i];
+	}
+
+	thrust::device_vector<int> device_vector_synapse_indices = host_vector_synapse_indices;
+	thrust::device_vector<int> device_vector_postsynaptic_neuron_indices = host_vector_postsynaptic_neuron_indices;
+
+	thrust::stable_sort_by_key(device_vector_postsynaptic_neuron_indices.begin(), device_vector_postsynaptic_neuron_indices.end(), device_vector_synapse_indices.begin());
+
+	host_vector_synapse_indices = device_vector_synapse_indices;
+
+	clock_t end = clock();
+	float timed = float(end-begin) / CLOCKS_PER_SEC;
+	printf("Synapse Sort Complete. Time Elapsed: %f\n\n", timed);
+	
+
+	int * temp_presynaptic_neuron_indices = (int *)malloc(total_number_of_synapses*sizeof(int));
+	int * temp_postsynaptic_neuron_indices = (int *)malloc(total_number_of_synapses*sizeof(int));
+	float * temp_synaptic_efficacies_or_weights = (float *)malloc(total_number_of_synapses*sizeof(float));
+	for(int i = 0; i < total_number_of_synapses; i++) {
+
+		original_synapse_indices[i] = host_vector_synapse_indices[i];
+
+		temp_presynaptic_neuron_indices[i] = presynaptic_neuron_indices[original_synapse_indices[i]];
+		temp_postsynaptic_neuron_indices[i] = postsynaptic_neuron_indices[original_synapse_indices[i]];
+		temp_synaptic_efficacies_or_weights[i] = synaptic_efficacies_or_weights[original_synapse_indices[i]];
+
+	}
+	presynaptic_neuron_indices = temp_presynaptic_neuron_indices;
+	postsynaptic_neuron_indices = temp_postsynaptic_neuron_indices;
+	synaptic_efficacies_or_weights = temp_synaptic_efficacies_or_weights;
+
+	// for(int i = 0; i < total_number_of_synapses; i++) {
+
+	// 	printf("postsynaptic_neuron_indices[i]: %d\n", postsynaptic_neuron_indices[i]);
+	// }
+}
+
 
 
 
@@ -368,7 +422,7 @@ void Synapses::set_threads_per_block_and_blocks_per_grid(int threads) {
 	int number_of_synapse_blocks = (total_number_of_synapses + threads) / threads;
 	number_of_synapse_blocks_per_grid.x = number_of_synapse_blocks;
 
-	printf("number_of_synapse_blocks_per_grid.x: %d\n", number_of_synapse_blocks_per_grid.x);
+	printf("number_of_synapse_blocks_per_grid.x: %d\n\n", number_of_synapse_blocks_per_grid.x);
 }
 
 
