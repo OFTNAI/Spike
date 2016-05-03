@@ -155,13 +155,17 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_m
 	RecordingElectrodes * recording_electrodes = new RecordingElectrodes(neurons);
 	RecordingElectrodes * input_recording_electrodes = new RecordingElectrodes(input_neurons);
 
-	int threads_per_block = 512;
-	synapses->set_threads_per_block_and_blocks_per_grid(threads_per_block);
-	neurons->set_threads_per_block_and_blocks_per_grid(threads_per_block);
-	input_neurons->set_threads_per_block_and_blocks_per_grid(threads_per_block);
+	int threads_per_block_neurons = 512;
+	int threads_per_block_synapses = 512;
+	synapses->set_threads_per_block_and_blocks_per_grid(threads_per_block_synapses);
+	neurons->set_threads_per_block_and_blocks_per_grid(threads_per_block_neurons);
+	input_neurons->set_threads_per_block_and_blocks_per_grid(threads_per_block_neurons);
 
-	//Currently only useful for leaky integrate and fire (LIF) but may provide speedup to izhikevich if izhikevich_calculate_postsynaptic_current_injection_kernal changed
-	if (temp_model_type == 1) synapses->sort_synapses_by_postsynaptic_neuron_indices();
+	// Provides order of magnitude speedup for LIF (All to all atleast). 
+	// Because all synapses contribute to current_injection on every iteration, having all threads in a block accessing only 1 or 2 positions in memory causing massive slowdown.
+	// Randomising order of synapses means that each block is accessing a larger number of points in memory.
+	if (temp_model_type == 1) synapses->shuffle_synapses();
+	// synapses->shuffle_synapses();
 
 	neurons->allocate_device_pointers();
 	synapses->allocate_device_pointers();
@@ -201,7 +205,7 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_m
 			size_t numEnts = numEntries[present];
 			if (numEnts > 0){
 				temp_test_generator->initialise_device_pointers_for_ents(numEnts, present);
-				temp_test_generator->set_threads_per_block_and_blocks_per_grid(threads_per_block);
+				temp_test_generator->set_threads_per_block_and_blocks_per_grid(threads_per_block_neurons);
 			}
 			// Reset the variables necessary
 			neurons->reset_neurons();

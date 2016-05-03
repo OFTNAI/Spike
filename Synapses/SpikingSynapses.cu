@@ -116,9 +116,9 @@ void SpikingSynapses::reset_synapse_spikes() {
 }
 
 
-void SpikingSynapses::sort_synapses_by_postsynaptic_neuron_indices() {
+void SpikingSynapses::shuffle_synapses() {
 	
-	Synapses::sort_synapses_by_postsynaptic_neuron_indices();
+	Synapses::shuffle_synapses();
 
 	int * temp_delays = (int *)malloc(total_number_of_synapses*sizeof(int));
 	int * temp_stdp = (int *)malloc(total_number_of_synapses*sizeof(int));

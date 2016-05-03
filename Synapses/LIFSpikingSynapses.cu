@@ -79,8 +79,8 @@ void LIFSpikingSynapses::reset_synapse_spikes() {
 }
 
 
-void LIFSpikingSynapses::sort_synapses_by_postsynaptic_neuron_indices() {
-	SpikingSynapses::sort_synapses_by_postsynaptic_neuron_indices();
+void LIFSpikingSynapses::shuffle_synapses() {
+	SpikingSynapses::shuffle_synapses();
 }
 
 
@@ -99,6 +99,7 @@ __global__ void lif_calculate_postsynaptic_current_injection_kernal(float* d_syn
 							size_t total_number_of_synapses,
 							float * d_membrane_potentials_v,
 							float * d_synaptic_conductances_g);
+
 
 __global__ void lif_update_synaptic_conductances_kernal(float timestep, 
 													float * d_synaptic_conductances_g, 
@@ -184,6 +185,7 @@ void LIFSpikingSynapses::apply_ltp_to_synapse_weights(float* d_last_spike_time_o
 }
 
 
+
 __global__ void lif_calculate_postsynaptic_current_injection_kernal(float* d_synaptic_efficacies_or_weights,
 							float* d_time_of_last_postsynaptic_activation_for_each_synapse,
 							int* d_postsynaptic_neuron_indices,
@@ -193,19 +195,8 @@ __global__ void lif_calculate_postsynaptic_current_injection_kernal(float* d_syn
 							float * d_membrane_potentials_v,
 							float * d_synaptic_conductances_g){
 
-	__shared__ float temp[512];
-	int first_postsynaptic_index_for_block = d_postsynaptic_neuron_indices[blockIdx.x * blockDim.x];
-
-	int last_synapse_index_for_block = min(blockIdx.x * blockDim.x + blockDim.x - 1, total_number_of_synapses - 1);
-	int last_postsynaptic_index_for_block = d_postsynaptic_neuron_indices[last_synapse_index_for_block];
-
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	if (idx < total_number_of_synapses) {
-
-		temp[threadIdx.x] = 0.0;
-		__syncthreads();
-
-		
 
 		float temp_reversal_potential_Vhat = 0.0;
 		float membrane_potential_v = d_membrane_potentials_v[d_postsynaptic_neuron_indices[idx]];
@@ -213,16 +204,12 @@ __global__ void lif_calculate_postsynaptic_current_injection_kernal(float* d_syn
 
 		float component_for_sum = synaptic_conductance_g * (temp_reversal_potential_Vhat - membrane_potential_v);
 
-		atomicAdd(&temp[d_postsynaptic_neuron_indices[idx] - first_postsynaptic_index_for_block], component_for_sum);
-			// d_neurons_current_injections[d_postsynaptic_neuron_indices[idx]], component_for_sum);
+		atomicAdd(&d_neurons_current_injections[d_postsynaptic_neuron_indices[idx]], component_for_sum);
 
 	}
 	__syncthreads();
-
-	number_of_postsynaptic_indices_for_block = last_postsynaptic_index_for_block - first_postsynaptic_index_for_block + 1;
-	if (idx <  number_of_postsynaptic_indices_for_block)
-		atomicAdd(&d_neurons_current_injections[d_postsynaptic_neuron_indices[first_postsynaptic_index_for_block + idx]], temp[idx]);
 }
+
 
 
 __global__ void lif_update_synaptic_conductances_kernal(float timestep, 

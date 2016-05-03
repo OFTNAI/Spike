@@ -42,7 +42,7 @@ public:
 	virtual void reset_synapse_spikes();
 	virtual void set_threads_per_block_and_blocks_per_grid(int threads);
 	virtual void increment_number_of_synapses(int increment);
-	virtual void sort_synapses_by_postsynaptic_neuron_indices();
+	virtual void shuffle_synapses();
 
 	virtual void check_for_synapse_spike_arrival(float current_time_in_seconds);
 	virtual void update_synaptic_conductances(float timestep, float current_time_in_seconds);

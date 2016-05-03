@@ -8,6 +8,8 @@
 #include "../Helpers/CUDAErrorCheckHelpers.h"
 #include "../Helpers/TerminalHelpers.h"
 
+#include <algorithm> // for random shuffle
+
 
 // Macro to get the gaussian prob
 //	INPUT:
@@ -334,8 +336,9 @@ void Synapses::AddGroup(int presynaptic_group_id,
 			synaptic_efficacies_or_weights[i] = rndweight;
 		}
 
-	}
+		original_synapse_indices[i] = i;
 
+	}
 
 
 }
@@ -365,51 +368,26 @@ void Synapses::allocate_device_pointers() {
 }
 
 
-void Synapses::sort_synapses_by_postsynaptic_neuron_indices() {
+void Synapses::shuffle_synapses() {
 
-	printf("Sorting synapses by postsynaptic neuorn ids...\n");
-
-	clock_t begin = clock();
-
-	thrust::host_vector<int> host_vector_synapse_indices(total_number_of_synapses);
-	thrust::host_vector<int> host_vector_postsynaptic_neuron_indices(total_number_of_synapses);
-	for(int i = 0; i < total_number_of_synapses; i++) {
-		host_vector_synapse_indices[i] = i;
-		host_vector_postsynaptic_neuron_indices[i] = postsynaptic_neuron_indices[i];
-	}
-
-	thrust::device_vector<int> device_vector_synapse_indices = host_vector_synapse_indices;
-	thrust::device_vector<int> device_vector_postsynaptic_neuron_indices = host_vector_postsynaptic_neuron_indices;
-
-	thrust::stable_sort_by_key(device_vector_postsynaptic_neuron_indices.begin(), device_vector_postsynaptic_neuron_indices.end(), device_vector_synapse_indices.begin());
-
-	host_vector_synapse_indices = device_vector_synapse_indices;
-
-	clock_t end = clock();
-	float timed = float(end-begin) / CLOCKS_PER_SEC;
-	printf("Synapse Sort Complete. Time Elapsed: %f\n\n", timed);
-	
+	std::random_shuffle(&original_synapse_indices[0], &original_synapse_indices[total_number_of_synapses]);
 
 	int * temp_presynaptic_neuron_indices = (int *)malloc(total_number_of_synapses*sizeof(int));
 	int * temp_postsynaptic_neuron_indices = (int *)malloc(total_number_of_synapses*sizeof(int));
 	float * temp_synaptic_efficacies_or_weights = (float *)malloc(total_number_of_synapses*sizeof(float));
+	
 	for(int i = 0; i < total_number_of_synapses; i++) {
-
-		original_synapse_indices[i] = host_vector_synapse_indices[i];
 
 		temp_presynaptic_neuron_indices[i] = presynaptic_neuron_indices[original_synapse_indices[i]];
 		temp_postsynaptic_neuron_indices[i] = postsynaptic_neuron_indices[original_synapse_indices[i]];
 		temp_synaptic_efficacies_or_weights[i] = synaptic_efficacies_or_weights[original_synapse_indices[i]];
 
 	}
+	
 	presynaptic_neuron_indices = temp_presynaptic_neuron_indices;
 	postsynaptic_neuron_indices = temp_postsynaptic_neuron_indices;
 	synaptic_efficacies_or_weights = temp_synaptic_efficacies_or_weights;
 
-	// for(int i = 0; i < total_number_of_synapses; i++) {
-
-	// 	printf("postsynaptic_neuron_indices[i]: %d\n", postsynaptic_neuron_indices[i]);
-	// }
 }
 
 

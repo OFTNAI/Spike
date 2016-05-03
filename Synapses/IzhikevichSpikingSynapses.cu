@@ -61,8 +61,8 @@ void IzhikevichSpikingSynapses::reset_synapse_spikes() {
 	SpikingSynapses::reset_synapse_spikes();
 }
 
-void IzhikevichSpikingSynapses::sort_synapses_by_postsynaptic_neuron_indices() {
- 	SpikingSynapses::sort_synapses_by_postsynaptic_neuron_indices();
+void IzhikevichSpikingSynapses::shuffle_synapses() {
+ 	SpikingSynapses::shuffle_synapses();
 }
 
 
