@@ -160,7 +160,8 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_m
 	neurons->set_threads_per_block_and_blocks_per_grid(threads_per_block);
 	input_neurons->set_threads_per_block_and_blocks_per_grid(threads_per_block);
 
-	synapses->sort_synapses_by_postsynaptic_neuron_indices();
+	//Currently only useful for leaky integrate and fire (LIF) but may provide speedup to izhikevich if izhikevich_calculate_postsynaptic_current_injection_kernal changed
+	if (temp_model_type == 1) synapses->sort_synapses_by_postsynaptic_neuron_indices();
 
 	neurons->allocate_device_pointers();
 	synapses->allocate_device_pointers();
