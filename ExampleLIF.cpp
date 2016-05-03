@@ -30,7 +30,8 @@ int main (int argc, char *argv[]){
 
 	//
 	lif_spiking_neuron_parameters_struct * lif_spiking_group_params = new lif_spiking_neuron_parameters_struct();
-	lif_spiking_group_params->after_spike_reset_membrane_potential_c = -55.0f;
+	lif_spiking_group_params->after_spike_reset_membrane_potential_c = -74.0f;
+	lif_spiking_group_params->threshold_for_action_potential_spike = -53.0f;
 	lif_spiking_group_params->paramd = 6.0f; //Old Izhikevich parameter. Leaving temporarily so spikes
 
 	//

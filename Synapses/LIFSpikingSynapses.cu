@@ -49,7 +49,7 @@ void LIFSpikingSynapses::AddGroup(int presynaptic_group_id,
 							parameter_two);
 
 	for (int i = (total_number_of_synapses - temp_number_of_synapses_in_last_group); i < total_number_of_synapses-1; i++){
-		synaptic_conductances_g[i] = 0.001;
+		synaptic_conductances_g[i] = 0.0f;
 	}
 
 }
@@ -144,6 +144,8 @@ void LIFSpikingSynapses::update_synaptic_conductances(float timestep, float curr
 											total_number_of_synapses,
 											current_time_in_seconds);
 
+	CudaCheckError();
+
 }
 
 
@@ -190,16 +192,10 @@ __global__ void lif_calculate_postsynaptic_current_injection_kernal(float* d_syn
 	if (idx < total_number_of_synapses) {
 
 		float temp_reversal_potential_Vhat = 0.0;
-		float membrane_potential_v = d_membrane_potentials_v[idx];
+		float membrane_potential_v = d_membrane_potentials_v[d_postsynaptic_neuron_indices[idx]];
 		float synaptic_conductance_g = d_synaptic_conductances_g[idx];
 
 		float component_for_sum = synaptic_conductance_g * (temp_reversal_potential_Vhat - membrane_potential_v);
-		if (idx == 5) {
-			printf("synaptic_conductance_g: %f\n", synaptic_conductance_g);
-			printf("component_for_sum: %f\n", component_for_sum);
-			printf("membrane_potential_v: %f\n", membrane_potential_v);
-			printf("temp_reversal_potential_Vhat: %f\n", temp_reversal_potential_Vhat);
-		}
 
 		atomicAdd(&d_neurons_current_injections[d_postsynaptic_neuron_indices[idx]], component_for_sum);
 
