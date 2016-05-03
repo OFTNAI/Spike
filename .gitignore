@@ -1,7 +1,8 @@
 *~
 *.DS_Store
 *.o
-Example
+ExampleLIF
+ExampleIzhikevich
 catch.hpp
 unittests
 /results/*
