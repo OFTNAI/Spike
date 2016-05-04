@@ -179,6 +179,10 @@ void SpikingSynapses::update_presynaptic_activities(float timestep, float curren
 
 }
 
+void SpikingSynapses::update_synaptic_efficacies_or_weights(float * d_recent_postsynaptic_activities_D, float timestep, float current_time_in_seconds, float * d_last_spike_time_of_each_neuron) {
+	
+}
+
 
 void SpikingSynapses::move_spikes_towards_synapses(float* d_last_spike_time_of_each_neuron, float* d_input_neurons_last_spike_time, float current_time_in_seconds) {
 

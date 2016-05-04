@@ -128,6 +128,17 @@ __global__ void lif_update_presynaptic_activities_C_kernal(float* d_recent_presy
 							float current_time_in_seconds,
 							size_t total_number_of_synapses);
 
+__global__ void lif_update_synaptic_efficacies_or_weights_kernal(float * d_recent_presynaptic_activities_C,
+																float * d_recent_postsynaptic_activities_D,
+																float timestep,
+																int* d_postsynaptic_neuron_indices,
+																float* d_synaptic_efficacies_or_weights,
+																float current_time_in_seconds,
+																float * d_time_of_last_spike_to_reach_synapse,
+																float * d_last_spike_time_of_each_neuron,
+																int* d_stdp,
+																size_t total_number_of_synapses);
+
 
 
 //OLD
@@ -187,6 +198,21 @@ void LIFSpikingSynapses::update_presynaptic_activities(float timestep, float cur
 							total_number_of_synapses);
 
 	CudaCheckError();
+}
+
+void LIFSpikingSynapses::update_synaptic_efficacies_or_weights(float * d_recent_postsynaptic_activities_D, float timestep, float current_time_in_seconds, float * d_last_spike_time_of_each_neuron) {
+
+	lif_update_synaptic_efficacies_or_weights_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_recent_presynaptic_activities_C,
+																d_recent_postsynaptic_activities_D,
+																timestep,
+																d_postsynaptic_neuron_indices,
+																d_synaptic_efficacies_or_weights,
+																current_time_in_seconds,
+																d_time_of_last_spike_to_reach_synapse,
+																d_last_spike_time_of_each_neuron,
+																d_stdp,
+																total_number_of_synapses);
+
 }
 
 
@@ -299,6 +325,53 @@ __global__ void lif_update_presynaptic_activities_C_kernal(float* d_recent_presy
 
 	}
 
+
+}
+
+
+__global__ void lif_update_synaptic_efficacies_or_weights_kernal(float * d_recent_presynaptic_activities_C,
+																float * d_recent_postsynaptic_activities_D,
+																float timestep,
+																int* d_postsynaptic_neuron_indices,
+																float* d_synaptic_efficacies_or_weights,
+																float current_time_in_seconds,
+																float * d_time_of_last_spike_to_reach_synapse,
+																float * d_last_spike_time_of_each_neuron,
+																int* d_stdp,
+																size_t total_number_of_synapses) {
+
+	int idx = threadIdx.x + blockIdx.x * blockDim.x;
+	if (idx < total_number_of_synapses) {
+
+		if (d_stdp[idx] == 1) {
+
+			float synaptic_efficacy_delta_g = d_synaptic_efficacies_or_weights[idx];
+			float new_synaptic_efficacy = synaptic_efficacy_delta_g;
+
+			float new_componet = 0.0;
+
+			if (d_last_spike_time_of_each_neuron[idx] == current_time_in_seconds) {
+				float recent_presynaptic_activity_C = d_recent_presynaptic_activities_C[idx];
+				new_componet += ((1 - synaptic_efficacy_delta_g) * recent_presynaptic_activity_C);
+			}
+
+			if (d_time_of_last_spike_to_reach_synapse[idx] == current_time_in_seconds) {
+				int postsynaptic_neuron_index = d_postsynaptic_neuron_indices[idx];
+				float recent_postsynaptic_activity_D = d_recent_postsynaptic_activities_D[postsynaptic_neuron_index];
+				new_componet -= (synaptic_efficacy_delta_g * recent_postsynaptic_activity_D);
+			}
+
+			float decay_term_tau_delta_g = 0.01; // Can't find value in paper
+			if (new_componet != 0.0) {
+				new_componet = (timestep/decay_term_tau_delta_g) * new_componet;
+				new_synaptic_efficacy += new_componet;
+			}
+
+			d_synaptic_efficacies_or_weights[idx] = new_synaptic_efficacy;
+
+		}
+
+	}
 
 }
 

@@ -301,9 +301,8 @@ void Simulator::temp_lif_per_timestep_instructions(float current_time_in_seconds
 	synapses->calculate_postsynaptic_current_injection(neurons, current_time_in_seconds);
 	synapses->update_synaptic_conductances(timestep, current_time_in_seconds);
 	
-	// 1.
-	//synapses->UPDATE SYNAPTIC WEIGHTS W(t+dt) from C(t) and D(t)
-	// can use synapse->d_time_of_last_spike_to_reach_synapse and neurons->d_last_spike_time_of_each_neuron
+	// Calculate W(t+dt) from C(t) and D(t)
+	synapses->update_synaptic_efficacies_or_weights(neurons->d_recent_postsynaptic_activities_D, timestep, current_time_in_seconds, neurons->d_last_spike_time_of_each_neuron);
 
 	// Calculate C(t+delta_t)
 	synapses->update_presynaptic_activities(timestep, current_time_in_seconds);

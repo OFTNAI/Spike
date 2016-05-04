@@ -40,6 +40,7 @@ public:
 	virtual void calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds);
 	virtual void update_synaptic_conductances(float timestep, float current_time_in_seconds);
 	virtual void update_presynaptic_activities(float timestep, float current_time_in_seconds);
+	virtual void update_synaptic_efficacies_or_weights(float * d_recent_postsynaptic_activities_D, float timestep, float current_time_in_seconds, float * d_last_spike_time_of_each_neuron);
 	virtual void apply_ltd_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds);
 	virtual void apply_ltp_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds);
 

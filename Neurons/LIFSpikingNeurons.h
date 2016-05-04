@@ -24,9 +24,6 @@ public:
 	LIFSpikingNeurons();
 	~LIFSpikingNeurons();
 
-	float * recent_postsynaptic_activities_D;
-	float * d_recent_postsynaptic_activities_D;
-
 	virtual int AddGroup(neuron_parameters_struct * group_params, int shape[2]);
 	virtual void allocate_device_pointers();
 	virtual void reset_neurons();

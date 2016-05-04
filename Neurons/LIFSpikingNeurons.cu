@@ -7,16 +7,14 @@
 // LIFSpikingNeurons Constructor
 LIFSpikingNeurons::LIFSpikingNeurons() {
 	
-	recent_postsynaptic_activities_D = NULL;
-	d_recent_postsynaptic_activities_D = NULL;
+	
 
 }
 
 
 // LIFSpikingNeurons Destructor
 LIFSpikingNeurons::~LIFSpikingNeurons() {
-	free(recent_postsynaptic_activities_D);
-	CudaSafeCall(cudaFree(d_recent_postsynaptic_activities_D));
+	
 }
 
 
@@ -26,11 +24,8 @@ int LIFSpikingNeurons::AddGroup(neuron_parameters_struct * group_params, int gro
 
 	lif_spiking_neuron_parameters_struct * lif_spiking_group_params = (lif_spiking_neuron_parameters_struct*)group_params;
 
-	recent_postsynaptic_activities_D = (float*)realloc(recent_postsynaptic_activities_D, (total_number_of_neurons*sizeof(float)));
-
-	for (int i = total_number_of_neurons - number_of_neurons_in_new_group; i < total_number_of_neurons; i++) {
-		recent_postsynaptic_activities_D[i] = 0.0f;
-	}
+	// for (int i = total_number_of_neurons - number_of_neurons_in_new_group; i < total_number_of_neurons; i++) {
+	// }
 
 	return new_group_id;
 }
@@ -40,16 +35,12 @@ void LIFSpikingNeurons::allocate_device_pointers() {
  	
  	SpikingNeurons::allocate_device_pointers();
 
- 	CudaSafeCall(cudaMalloc((void **)&d_recent_postsynaptic_activities_D, sizeof(float)*total_number_of_neurons));
 
 }
 
 void LIFSpikingNeurons::reset_neurons() {
 
 	SpikingNeurons::reset_neurons();	
-
-	CudaSafeCall(cudaMemcpy(d_recent_postsynaptic_activities_D, recent_postsynaptic_activities_D, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
-
 }
 
 

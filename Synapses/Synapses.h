@@ -64,8 +64,8 @@ public:
 				float tau_plus_new);
 
 	// Full Matrices
-	int* presynaptic_neuron_indices; // Previously presyns
-	int* postsynaptic_neuron_indices; // Previously postsyns
+	int* presynaptic_neuron_indices;
+	int* postsynaptic_neuron_indices; 
 	float* synaptic_efficacies_or_weights;
 
 	int *original_synapse_indices;

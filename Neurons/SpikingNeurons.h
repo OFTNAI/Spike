@@ -39,6 +39,11 @@ public:
 	float * param_d;
 	float * d_param_d;
 
+	//LIF extra
+	float * recent_postsynaptic_activities_D;
+	float * d_recent_postsynaptic_activities_D;
+
+
 	// Functions
 	virtual int AddGroup(neuron_parameters_struct * group_params, int group_shape[2]);
 	virtual void allocate_device_pointers();
