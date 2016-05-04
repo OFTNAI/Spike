@@ -308,6 +308,8 @@ void Simulator::temp_lif_per_timestep_instructions(float current_time_in_seconds
 	// 2.
 	//synapses->UPDATE PRESYNAPTIC ACTIVITY C(t+dt)
 	// can use synapse->d_time_of_last_spike_to_reach_synapse
+	synapses->update_presynaptic_activities(timestep, current_time_in_seconds);
+
 	// 3. 
 	//synapses->UPDATE POSTSYNAPTIC ACTIVITY D(t+dt)
 	// can use neurons->d_last_spike_time_of_each_neuron

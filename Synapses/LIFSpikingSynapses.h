@@ -16,6 +16,9 @@ public:
 	float * synaptic_conductances_g;
 	float * d_synaptic_conductances_g;
 
+	float * recent_presynaptic_activities_C;
+	float * d_recent_presynaptic_activities_C;
+
 	// Synapse Functions
 	virtual void AddGroup(int presynaptic_group_id, 
 						int postsynaptic_group_id, 
@@ -36,6 +39,7 @@ public:
 
 	virtual void calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds);
 	virtual void update_synaptic_conductances(float timestep, float current_time_in_seconds);
+	virtual void update_presynaptic_activities(float timestep, float current_time_in_seconds);
 	virtual void apply_ltd_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds);
 	virtual void apply_ltp_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds);
 

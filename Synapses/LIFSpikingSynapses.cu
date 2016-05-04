@@ -7,12 +7,18 @@
 LIFSpikingSynapses::LIFSpikingSynapses() {
 	synaptic_conductances_g = NULL;
 	d_synaptic_conductances_g = NULL;
+
+	recent_presynaptic_activities_C = NULL;
+	d_recent_presynaptic_activities_C = NULL;
 }
 
 // LIFSpikingSynapses Destructor
 LIFSpikingSynapses::~LIFSpikingSynapses() {
 	free(synaptic_conductances_g);
 	CudaSafeCall(cudaFree(d_synaptic_conductances_g));
+
+	free(recent_presynaptic_activities_C);
+	CudaSafeCall(cudaFree(d_recent_presynaptic_activities_C));
 }
 
 // Connection Detail implementation
@@ -50,6 +56,7 @@ void LIFSpikingSynapses::AddGroup(int presynaptic_group_id,
 
 	for (int i = (total_number_of_synapses - temp_number_of_synapses_in_last_group); i < total_number_of_synapses-1; i++){
 		synaptic_conductances_g[i] = 0.0f;
+		recent_presynaptic_activities_C[i] = 0.0f;
 	}
 
 }
@@ -59,6 +66,7 @@ void LIFSpikingSynapses::increment_number_of_synapses(int increment) {
 	SpikingSynapses::increment_number_of_synapses(increment);
 
 	synaptic_conductances_g = (float*)realloc(synaptic_conductances_g, total_number_of_synapses * sizeof(float));
+	recent_presynaptic_activities_C = (float*)realloc(recent_presynaptic_activities_C, total_number_of_synapses * sizeof(float));
 
 }
 
@@ -68,6 +76,8 @@ void LIFSpikingSynapses::allocate_device_pointers() {
 	SpikingSynapses::allocate_device_pointers();
 
 	CudaSafeCall(cudaMalloc((void **)&d_synaptic_conductances_g, sizeof(float)*total_number_of_synapses));
+	CudaSafeCall(cudaMalloc((void **)&d_recent_presynaptic_activities_C, sizeof(float)*total_number_of_synapses));
+
 }
 
 void LIFSpikingSynapses::reset_synapse_spikes() {
@@ -76,6 +86,8 @@ void LIFSpikingSynapses::reset_synapse_spikes() {
 
 	// CudaSafeCall(cudaMemset(d_synaptic_conductances_g, 0.0f, sizeof(float)*total_number_of_synapses));
 	CudaSafeCall(cudaMemcpy(d_synaptic_conductances_g, synaptic_conductances_g, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
+	CudaSafeCall(cudaMemcpy(d_recent_presynaptic_activities_C, recent_presynaptic_activities_C, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
+
 }
 
 
@@ -108,6 +120,17 @@ __global__ void lif_update_synaptic_conductances_kernal(float timestep,
 													int total_number_of_synapses,
 													float current_time_in_seconds);
 
+
+__global__ void lif_update_presynaptic_activities_C_kernal(float* d_recent_presynaptic_activities_C,
+							float* d_time_of_last_spike_to_reach_synapse,
+							int* d_stdp,
+							float timestep,
+							float current_time_in_seconds,
+							size_t total_number_of_synapses);
+
+
+
+//OLD
 __global__ void lif_apply_ltd_to_synapse_weights_kernal(float* d_time_of_last_spike_to_reach_synapse,
 							float* d_synaptic_efficacies_or_weights,
 							int* d_stdp,
@@ -152,6 +175,18 @@ void LIFSpikingSynapses::update_synaptic_conductances(float timestep, float curr
 
 	CudaCheckError();
 
+}
+
+void LIFSpikingSynapses::update_presynaptic_activities(float timestep, float current_time_in_seconds) {
+	
+	lif_update_presynaptic_activities_C_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_recent_presynaptic_activities_C,
+							d_time_of_last_spike_to_reach_synapse,
+							d_stdp,
+							timestep,
+							current_time_in_seconds,
+							total_number_of_synapses);
+
+	CudaCheckError();
 }
 
 
@@ -235,6 +270,39 @@ __global__ void lif_update_synaptic_conductances_kernal(float timestep,
 	}
 
 }
+
+
+__global__ void lif_update_presynaptic_activities_C_kernal(float* d_recent_presynaptic_activities_C,
+							float* d_time_of_last_spike_to_reach_synapse,
+							int* d_stdp,
+							float timestep, 
+							float current_time_in_seconds,
+							size_t total_number_of_synapses) {
+
+	int idx = threadIdx.x + blockIdx.x * blockDim.x;
+	if (idx < total_number_of_synapses) {
+
+		if (d_stdp[idx] == 1) {
+
+			float recent_presynaptic_activity_C = d_recent_presynaptic_activities_C[idx];
+			float decay_term_tau_C = 0.01; // Should be variable between 0.003 and 0.075
+
+			float new_recent_presynaptic_activity_C = (1 - (timestep/decay_term_tau_C)) * recent_presynaptic_activity_C;
+			if (d_time_of_last_spike_to_reach_synapse[idx] == current_time_in_seconds) {
+				float model_parameter_alpha_c = 0.5;
+				new_recent_presynaptic_activity_C += timestep * model_parameter_alpha_c * (1 - recent_presynaptic_activity_C);
+			}
+
+			d_recent_presynaptic_activities_C[idx] = new_recent_presynaptic_activity_C;
+
+		}
+
+	}
+
+
+}
+
+
 
 
 __global__ void lif_apply_ltd_to_synapse_weights_kernal(float* d_time_of_last_spike_to_reach_synapse,
