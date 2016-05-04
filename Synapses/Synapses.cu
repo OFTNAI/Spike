@@ -367,7 +367,9 @@ void Synapses::allocate_device_pointers() {
 
 }
 
-
+// Provides order of magnitude speedup for LIF (All to all atleast). 
+// Because all synapses contribute to current_injection on every iteration, having all threads in a block accessing only 1 or 2 positions in memory causing massive slowdown.
+// Randomising order of synapses means that each block is accessing a larger number of points in memory.
 void Synapses::shuffle_synapses() {
 
 	std::random_shuffle(&original_synapse_indices[0], &original_synapse_indices[total_number_of_synapses]);
@@ -383,7 +385,7 @@ void Synapses::shuffle_synapses() {
 		temp_synaptic_efficacies_or_weights[i] = synaptic_efficacies_or_weights[original_synapse_indices[i]];
 
 	}
-	
+
 	presynaptic_neuron_indices = temp_presynaptic_neuron_indices;
 	postsynaptic_neuron_indices = temp_postsynaptic_neuron_indices;
 	synaptic_efficacies_or_weights = temp_synaptic_efficacies_or_weights;

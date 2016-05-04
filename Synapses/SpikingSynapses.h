@@ -23,7 +23,7 @@ public:
 	
 	int* d_spikes_travelling_to_synapse;
 	int* d_spikes_travelling_to_synapse_buffer;
-	float* d_time_of_last_postsynaptic_activation_for_each_synapse;
+	float* d_time_of_last_spike_to_reach_synapse;
 	
 
 	// Synapse Functions

@@ -92,7 +92,7 @@ void LIFSpikingSynapses::set_threads_per_block_and_blocks_per_grid(int threads) 
 
 
 __global__ void lif_calculate_postsynaptic_current_injection_kernal(float* d_synaptic_efficacies_or_weights,
-							float* d_time_of_last_postsynaptic_activation_for_each_synapse,
+							float* d_time_of_last_spike_to_reach_synapse,
 							int* d_postsynaptic_neuron_indices,
 							float* d_neurons_current_injections,
 							float current_time_in_seconds,
@@ -104,11 +104,11 @@ __global__ void lif_calculate_postsynaptic_current_injection_kernal(float* d_syn
 __global__ void lif_update_synaptic_conductances_kernal(float timestep, 
 													float * d_synaptic_conductances_g, 
 													float * d_synaptic_efficacies_or_weights, 
-													float * d_time_of_last_postsynaptic_activation_for_each_synapse,
+													float * d_time_of_last_spike_to_reach_synapse,
 													int total_number_of_synapses,
 													float current_time_in_seconds);
 
-__global__ void lif_apply_ltd_to_synapse_weights_kernal(float* d_time_of_last_postsynaptic_activation_for_each_synapse,
+__global__ void lif_apply_ltd_to_synapse_weights_kernal(float* d_time_of_last_spike_to_reach_synapse,
 							float* d_synaptic_efficacies_or_weights,
 							int* d_stdp,
 							float* d_last_spike_time_of_each_neuron,
@@ -120,7 +120,7 @@ __global__ void lif_apply_ltd_to_synapse_weights_kernal(float* d_time_of_last_po
 __global__ void lif_apply_ltp_to_synapse_weights_kernal(int* d_postsyns,
 							float* d_last_spike_time_of_each_neuron,
 							int* d_stdp,
-							float* d_time_of_last_postsynaptic_activation_for_each_synapse,
+							float* d_time_of_last_spike_to_reach_synapse,
 							float* d_synaptic_efficacies_or_weights,
 							struct stdp_struct stdp_vars,
 							float currtime,
@@ -130,7 +130,7 @@ __global__ void lif_apply_ltp_to_synapse_weights_kernal(int* d_postsyns,
 void LIFSpikingSynapses::calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds) {
 
 	lif_calculate_postsynaptic_current_injection_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_synaptic_efficacies_or_weights,
-																	d_time_of_last_postsynaptic_activation_for_each_synapse,
+																	d_time_of_last_spike_to_reach_synapse,
 																	d_postsynaptic_neuron_indices,
 																	neurons->d_current_injections,
 																	current_time_in_seconds,
@@ -146,7 +146,7 @@ void LIFSpikingSynapses::update_synaptic_conductances(float timestep, float curr
 	lif_update_synaptic_conductances_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(timestep, 
 											d_synaptic_conductances_g, 
 											d_synaptic_efficacies_or_weights, 
-											d_time_of_last_postsynaptic_activation_for_each_synapse,
+											d_time_of_last_spike_to_reach_synapse,
 											total_number_of_synapses,
 											current_time_in_seconds);
 
@@ -157,7 +157,7 @@ void LIFSpikingSynapses::update_synaptic_conductances(float timestep, float curr
 
 void LIFSpikingSynapses::apply_ltd_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds) {
 
-	lif_apply_ltd_to_synapse_weights_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_time_of_last_postsynaptic_activation_for_each_synapse,
+	lif_apply_ltd_to_synapse_weights_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_time_of_last_spike_to_reach_synapse,
 																	d_synaptic_efficacies_or_weights,
 																	d_stdp,
 																	d_last_spike_time_of_each_neuron,
@@ -175,7 +175,7 @@ void LIFSpikingSynapses::apply_ltp_to_synapse_weights(float* d_last_spike_time_o
 	lif_apply_ltp_to_synapse_weights_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_postsynaptic_neuron_indices,
 																	d_last_spike_time_of_each_neuron,
 																	d_stdp,
-																	d_time_of_last_postsynaptic_activation_for_each_synapse,
+																	d_time_of_last_spike_to_reach_synapse,
 																	d_synaptic_efficacies_or_weights,
 																	stdp_vars, 
 																	current_time_in_seconds,
@@ -187,7 +187,7 @@ void LIFSpikingSynapses::apply_ltp_to_synapse_weights(float* d_last_spike_time_o
 
 
 __global__ void lif_calculate_postsynaptic_current_injection_kernal(float* d_synaptic_efficacies_or_weights,
-							float* d_time_of_last_postsynaptic_activation_for_each_synapse,
+							float* d_time_of_last_spike_to_reach_synapse,
 							int* d_postsynaptic_neuron_indices,
 							float* d_neurons_current_injections,
 							float current_time_in_seconds,
@@ -215,7 +215,7 @@ __global__ void lif_calculate_postsynaptic_current_injection_kernal(float* d_syn
 __global__ void lif_update_synaptic_conductances_kernal(float timestep, 
 														float * d_synaptic_conductances_g, 
 														float * d_synaptic_efficacies_or_weights, 
-														float * d_time_of_last_postsynaptic_activation_for_each_synapse, 
+														float * d_time_of_last_spike_to_reach_synapse, 
 														int total_number_of_synapses,
 														float current_time_in_seconds) {
 
@@ -226,7 +226,7 @@ __global__ void lif_update_synaptic_conductances_kernal(float timestep,
 		float decay_term_tau_g = 0.01; // Is this the synaptic time constant?
 
 		float new_conductance = (1 - (timestep/decay_term_tau_g)) * synaptic_conductance_g;
-		if (d_time_of_last_postsynaptic_activation_for_each_synapse[idx] == current_time_in_seconds) {
+		if (d_time_of_last_spike_to_reach_synapse[idx] == current_time_in_seconds) {
 			new_conductance += timestep * d_synaptic_efficacies_or_weights[idx];
 		}
 
@@ -237,7 +237,7 @@ __global__ void lif_update_synaptic_conductances_kernal(float timestep,
 }
 
 
-__global__ void lif_apply_ltd_to_synapse_weights_kernal(float* d_time_of_last_postsynaptic_activation_for_each_synapse,
+__global__ void lif_apply_ltd_to_synapse_weights_kernal(float* d_time_of_last_spike_to_reach_synapse,
 							float* d_synaptic_efficacies_or_weights,
 							int* d_stdp,
 							float* d_last_spike_time_of_each_neuron,
@@ -251,7 +251,7 @@ __global__ void lif_apply_ltd_to_synapse_weights_kernal(float* d_time_of_last_po
 
 		// Get the locations for updating
 		// Get the synapses that are to be LTD'd
-		if ((d_time_of_last_postsynaptic_activation_for_each_synapse[idx] == currtime) && (d_stdp[idx] == 1)) {
+		if ((d_time_of_last_spike_to_reach_synapse[idx] == currtime) && (d_stdp[idx] == 1)) {
 			float diff = d_last_spike_time_of_each_neuron[d_postsyns[idx]] - currtime;
 			// STDP Update Rule
 			float weightscale = stdp_vars.w_max * stdp_vars.a_minus * expf(diff / stdp_vars.tau_minus);
@@ -266,7 +266,7 @@ __global__ void lif_apply_ltd_to_synapse_weights_kernal(float* d_time_of_last_po
 __global__ void lif_apply_ltp_to_synapse_weights_kernal(int* d_postsyns,
 							float* d_last_spike_time_of_each_neuron,
 							int* d_stdp,
-							float* d_time_of_last_postsynaptic_activation_for_each_synapse,
+							float* d_time_of_last_spike_to_reach_synapse,
 							float* d_synaptic_efficacies_or_weights,
 							struct stdp_struct stdp_vars,
 							float currtime,
@@ -279,7 +279,7 @@ __global__ void lif_apply_ltp_to_synapse_weights_kernal(int* d_postsyns,
 		if ((d_last_spike_time_of_each_neuron[d_postsyns[idx]] == currtime) && (d_stdp[idx] == 1)){
 			// Get the last active time / weight of the synapse
 			// Calc time difference and weight change
-			float diff = currtime - d_time_of_last_postsynaptic_activation_for_each_synapse[idx];
+			float diff = currtime - d_time_of_last_spike_to_reach_synapse[idx];
 			float weightchange = (stdp_vars.w_max - d_synaptic_efficacies_or_weights[idx]) * (stdp_vars.a_plus * expf(-diff / stdp_vars.tau_plus));
 			// Update weights
 			d_synaptic_efficacies_or_weights[idx] += weightchange;

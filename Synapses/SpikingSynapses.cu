@@ -12,7 +12,7 @@ SpikingSynapses::SpikingSynapses() {
 	d_delays = NULL;
 	d_spikes_travelling_to_synapse = NULL;
 	d_stdp = NULL;
-	d_time_of_last_postsynaptic_activation_for_each_synapse = NULL;
+	d_time_of_last_spike_to_reach_synapse = NULL;
 	d_spikes_travelling_to_synapse_buffer = NULL;
 }
 
@@ -26,7 +26,7 @@ SpikingSynapses::~SpikingSynapses() {
 	CudaSafeCall(cudaFree(d_delays));
 	CudaSafeCall(cudaFree(d_spikes_travelling_to_synapse));
 	CudaSafeCall(cudaFree(d_stdp));
-	CudaSafeCall(cudaFree(d_time_of_last_postsynaptic_activation_for_each_synapse));
+	CudaSafeCall(cudaFree(d_time_of_last_spike_to_reach_synapse));
 	CudaSafeCall(cudaFree(d_spikes_travelling_to_synapse_buffer));
 
 }
@@ -100,7 +100,7 @@ void SpikingSynapses::allocate_device_pointers() {
 	CudaSafeCall(cudaMalloc((void **)&d_delays, sizeof(int)*total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&d_spikes_travelling_to_synapse, sizeof(int)*total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&d_stdp, sizeof(int)*total_number_of_synapses));
-	CudaSafeCall(cudaMalloc((void **)&d_time_of_last_postsynaptic_activation_for_each_synapse, sizeof(float)*total_number_of_synapses));
+	CudaSafeCall(cudaMalloc((void **)&d_time_of_last_spike_to_reach_synapse, sizeof(float)*total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&d_spikes_travelling_to_synapse_buffer, sizeof(int)*total_number_of_synapses));
 
 	CudaSafeCall(cudaMemcpy(d_delays, delays, sizeof(int)*total_number_of_synapses, cudaMemcpyHostToDevice));
@@ -111,7 +111,7 @@ void SpikingSynapses::allocate_device_pointers() {
 void SpikingSynapses::reset_synapse_spikes() {
 	
 	CudaSafeCall(cudaMemset(d_spikes_travelling_to_synapse, 0, sizeof(int)*total_number_of_synapses));
-	CudaSafeCall(cudaMemset(d_time_of_last_postsynaptic_activation_for_each_synapse, -1000.0f, sizeof(float)*total_number_of_synapses));
+	CudaSafeCall(cudaMemset(d_time_of_last_spike_to_reach_synapse, -1000.0f, sizeof(float)*total_number_of_synapses));
 	CudaSafeCall(cudaMemset(d_spikes_travelling_to_synapse_buffer, -1, sizeof(int)*total_number_of_synapses));
 }
 
@@ -145,7 +145,7 @@ void SpikingSynapses::set_threads_per_block_and_blocks_per_grid(int threads) {
 
 
 __global__ void check_for_synapse_spike_arrival_kernal(int* d_spikes_travelling_to_synapse,
-							float* d_time_of_last_postsynaptic_activation_for_each_synapse,
+							float* d_time_of_last_spike_to_reach_synapse,
 							float current_time_in_seconds,
 							size_t total_number_of_synapses);
 
@@ -164,7 +164,7 @@ __global__ void move_spikes_towards_synapses_kernal(int* d_presynaptic_neuron_in
 void SpikingSynapses::check_for_synapse_spike_arrival(float current_time_in_seconds) {
 
 	check_for_synapse_spike_arrival_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_spikes_travelling_to_synapse,
-																	d_time_of_last_postsynaptic_activation_for_each_synapse,
+																	d_time_of_last_spike_to_reach_synapse,
 																	current_time_in_seconds,
 																	total_number_of_synapses);
 
@@ -201,7 +201,7 @@ void SpikingSynapses::apply_ltp_to_synapse_weights(float* d_last_spike_time_of_e
 
 
 __global__ void check_for_synapse_spike_arrival_kernal(int* d_spikes_travelling_to_synapse,
-							float* d_time_of_last_postsynaptic_activation_for_each_synapse,
+							float* d_time_of_last_spike_to_reach_synapse,
 							float current_time_in_seconds,
 							size_t total_number_of_synapses){
 
@@ -211,7 +211,7 @@ __global__ void check_for_synapse_spike_arrival_kernal(int* d_spikes_travelling_
 		d_spikes_travelling_to_synapse[idx] -= 1;
 		if (d_spikes_travelling_to_synapse[idx] == 0) {
 
-			d_time_of_last_postsynaptic_activation_for_each_synapse[idx] = current_time_in_seconds;
+			d_time_of_last_spike_to_reach_synapse[idx] = current_time_in_seconds;
 		}
 	}
 	__syncthreads();

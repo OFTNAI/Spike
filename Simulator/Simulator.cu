@@ -162,10 +162,9 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_m
 	input_neurons->set_threads_per_block_and_blocks_per_grid(threads_per_block_neurons);
 
 	// Provides order of magnitude speedup for LIF (All to all atleast). 
-	// Because all synapses contribute to current_injection on every iteration, having all threads in a block accessing only 1 or 2 positions in memory causing massive slowdown.
+	// Because all synapses contribute to current_injection on every iteration, having all threads in a block accessing only 1 or 2 positions in memory causes massive slowdown.
 	// Randomising order of synapses means that each block is accessing a larger number of points in memory.
 	if (temp_model_type == 1) synapses->shuffle_synapses();
-	// synapses->shuffle_synapses();
 
 	neurons->allocate_device_pointers();
 	synapses->allocate_device_pointers();
@@ -301,8 +300,19 @@ void Simulator::temp_lif_per_timestep_instructions(float current_time_in_seconds
 	synapses->check_for_synapse_spike_arrival(current_time_in_seconds);
 	synapses->calculate_postsynaptic_current_injection(neurons, current_time_in_seconds);
 	synapses->update_synaptic_conductances(timestep, current_time_in_seconds);
+	
+	// 1.
+	//synapses->UPDATE SYNAPTIC WEIGHTS W(t+dt) from C(t) and D(t)
+	// can use synapse->d_time_of_last_spike_to_reach_synapse and neurons->d_last_spike_time_of_each_neuron
 
+	// 2.
+	//synapses->UPDATE PRESYNAPTIC ACTIVITY C(t+dt)
+	// can use synapse->d_time_of_last_spike_to_reach_synapse
+	// 3. 
+	//synapses->UPDATE POSTSYNAPTIC ACTIVITY D(t+dt)
+	// can use neurons->d_last_spike_time_of_each_neuron
 
+	//OLD
 	// synapses->apply_ltd_to_synapse_weights(neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds);
 
 	neurons->update_membrane_potentials(timestep);
