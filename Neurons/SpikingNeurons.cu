@@ -91,6 +91,9 @@ void SpikingNeurons::update_membrane_potentials(float timestep) {
 	
 }
 
+void SpikingNeurons::update_postsynaptic_activities(float timestep, float current_time_in_seconds) {
+	
+}
 
 
 __global__ void check_for_neuron_spikes_kernal(float *d_membrane_potentials_v,

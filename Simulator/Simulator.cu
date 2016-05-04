@@ -305,14 +305,11 @@ void Simulator::temp_lif_per_timestep_instructions(float current_time_in_seconds
 	//synapses->UPDATE SYNAPTIC WEIGHTS W(t+dt) from C(t) and D(t)
 	// can use synapse->d_time_of_last_spike_to_reach_synapse and neurons->d_last_spike_time_of_each_neuron
 
-	// 2.
-	//synapses->UPDATE PRESYNAPTIC ACTIVITY C(t+dt)
-	// can use synapse->d_time_of_last_spike_to_reach_synapse
+	// Calculate C(t+delta_t)
 	synapses->update_presynaptic_activities(timestep, current_time_in_seconds);
 
-	// 3. 
-	//synapses->UPDATE POSTSYNAPTIC ACTIVITY D(t+dt)
-	// can use neurons->d_last_spike_time_of_each_neuron
+	// Calculate D(t+delta_t)
+	neurons->update_postsynaptic_activities(timestep, current_time_in_seconds);
 
 	//OLD
 	// synapses->apply_ltd_to_synapse_weights(neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds);

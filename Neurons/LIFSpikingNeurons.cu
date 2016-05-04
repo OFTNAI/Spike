@@ -6,17 +6,17 @@
 
 // LIFSpikingNeurons Constructor
 LIFSpikingNeurons::LIFSpikingNeurons() {
-	// param_a = NULL;
-	// param_b = NULL;
+	
+	recent_postsynaptic_activities_D = NULL;
+	d_recent_postsynaptic_activities_D = NULL;
 
-	// d_param_a = NULL;
-	// d_param_b = NULL;
 }
 
 
 // LIFSpikingNeurons Destructor
 LIFSpikingNeurons::~LIFSpikingNeurons() {
-
+	free(recent_postsynaptic_activities_D);
+	CudaSafeCall(cudaFree(d_recent_postsynaptic_activities_D));
 }
 
 
@@ -26,12 +26,10 @@ int LIFSpikingNeurons::AddGroup(neuron_parameters_struct * group_params, int gro
 
 	lif_spiking_neuron_parameters_struct * lif_spiking_group_params = (lif_spiking_neuron_parameters_struct*)group_params;
 
-	// param_a = (float*)realloc(param_a, (total_number_of_neurons*sizeof(float)));
-	// param_b = (float*)realloc(param_b, (total_number_of_neurons*sizeof(float)));
+	recent_postsynaptic_activities_D = (float*)realloc(recent_postsynaptic_activities_D, (total_number_of_neurons*sizeof(float)));
 
 	for (int i = total_number_of_neurons - number_of_neurons_in_new_group; i < total_number_of_neurons; i++) {
-		// param_a[i] = izhikevich_spiking_group_params->parama;
-		// param_b[i] = izhikevich_spiking_group_params->paramb;
+		recent_postsynaptic_activities_D[i] = 0.0f;
 	}
 
 	return new_group_id;
@@ -42,17 +40,16 @@ void LIFSpikingNeurons::allocate_device_pointers() {
  	
  	SpikingNeurons::allocate_device_pointers();
 
- 	// CudaSafeCall(cudaMalloc((void **)&d_param_a, sizeof(float)*total_number_of_neurons));
- 	// CudaSafeCall(cudaMalloc((void **)&d_param_b, sizeof(float)*total_number_of_neurons));
- 	
+ 	CudaSafeCall(cudaMalloc((void **)&d_recent_postsynaptic_activities_D, sizeof(float)*total_number_of_neurons));
+
 }
 
 void LIFSpikingNeurons::reset_neurons() {
 
 	SpikingNeurons::reset_neurons();	
 
-	// CudaSafeCall(cudaMemcpy(d_param_a, param_a, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
-	// CudaSafeCall(cudaMemcpy(d_param_b, param_b, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
+	CudaSafeCall(cudaMemcpy(d_recent_postsynaptic_activities_D, recent_postsynaptic_activities_D, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
+
 }
 
 
@@ -60,6 +57,12 @@ __global__ void lif_update_membrane_potentials(float *d_membrane_potentials_v,
 								float* d_current_injections,
 								float timestep,
 								size_t total_number_of_neurons);
+
+__global__ void lif_update_postsynaptic_activities_kernal(float timestep,
+								size_t total_number_of_neurons,
+								float * d_recent_postsynaptic_activities_D,
+								float * d_last_spike_time_of_each_neuron,
+								float current_time_in_seconds);
 
 
 void LIFSpikingNeurons::update_membrane_potentials(float timestep) {
@@ -70,6 +73,16 @@ void LIFSpikingNeurons::update_membrane_potentials(float timestep) {
 																	total_number_of_neurons);
 
 	CudaCheckError();
+}
+
+void LIFSpikingNeurons::update_postsynaptic_activities(float timestep, float current_time_in_seconds) {
+
+	lif_update_postsynaptic_activities_kernal<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(timestep,
+								total_number_of_neurons,
+								d_recent_postsynaptic_activities_D,
+								d_last_spike_time_of_each_neuron,
+								current_time_in_seconds);
+
 }
 
 
@@ -98,6 +111,34 @@ __global__ void lif_update_membrane_potentials(float *d_membrane_potentials_v,
 
 	}
 	__syncthreads();
+}
+
+__global__ void lif_update_postsynaptic_activities_kernal(float timestep,
+								size_t total_number_of_neurons,
+								float * d_recent_postsynaptic_activities_D,
+								float * d_last_spike_time_of_each_neuron,
+								float current_time_in_seconds) {
+
+	int idx = threadIdx.x + blockIdx.x * blockDim.x;
+	if (idx < total_number_of_neurons) {
+
+		// if (d_stdp[idx] == 1) {
+
+			float recent_postsynaptic_activity_D = d_recent_postsynaptic_activities_D[idx];
+			float decay_term_tau_D = 0.03; // Should be variable between 0.005 and 0.125
+
+			float new_recent_postsynaptic_activity_D = (1 - (timestep/decay_term_tau_D)) * recent_postsynaptic_activity_D;
+
+			if (d_last_spike_time_of_each_neuron[idx] == current_time_in_seconds) {
+				float model_parameter_alpha_D = 0.5;
+				new_recent_postsynaptic_activity_D += timestep * model_parameter_alpha_D * (1 - recent_postsynaptic_activity_D);
+			}
+
+			d_recent_postsynaptic_activities_D[idx] = new_recent_postsynaptic_activity_D;
+
+		// }
+
+	}
 }
 
 
