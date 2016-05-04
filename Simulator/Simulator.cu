@@ -294,34 +294,38 @@ void Simulator::temp_izhikevich_per_timestep_instructions(float current_time_in_
 
 void Simulator::temp_lif_per_timestep_instructions(float current_time_in_seconds) {
 
-	// // If there are any spike generators
-	// 	temp_test_generator->generupdate2_wrapper(current_time_in_seconds, timestep);
+	// Where generator->generupdate2_wrapper used to be
 	
 	synapses->check_for_synapse_spike_arrival(current_time_in_seconds);
+
+	// Calculate I(t) from delta_g(t) and V(t)
 	synapses->calculate_postsynaptic_current_injection(neurons, current_time_in_seconds);
+
+	// Calculate g(t+delta_t) and delta_g(t)
 	synapses->update_synaptic_conductances(timestep, current_time_in_seconds);
 	
-	// Calculate W(t+dt) from C(t) and D(t)
+	// Calculate delta_g(t+delta_t) from C(t) and D(t)
 	synapses->update_synaptic_efficacies_or_weights(neurons->d_recent_postsynaptic_activities_D, timestep, current_time_in_seconds, neurons->d_last_spike_time_of_each_neuron);
 
-	// Calculate C(t+delta_t)
+	// Calculate C(t+delta_t) from C(t)
 	synapses->update_presynaptic_activities(timestep, current_time_in_seconds);
 
-	// Calculate D(t+delta_t)
+	// Calculate D(t+delta_t) from D(t)
 	neurons->update_postsynaptic_activities(timestep, current_time_in_seconds);
 
-	//OLD
-	// synapses->apply_ltd_to_synapse_weights(neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds);
+	// Where synapses->LTD used to be
 
+	// Caculate V(t+delta_t) from V(t) and I(t)
 	neurons->update_membrane_potentials(timestep);
 	input_neurons->update_membrane_potentials(timestep);
 
+	// Check for NEURON_SPIKES(t+delta_t) from V(t+delta_t) and if so reset V(t+delta_t)
 	neurons->check_for_neuron_spikes(current_time_in_seconds);
 	input_neurons->check_for_neuron_spikes(current_time_in_seconds);
 					
 	synapses->move_spikes_towards_synapses(neurons->d_last_spike_time_of_each_neuron, input_neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds);
 
-	// synapses->apply_ltp_to_synapse_weights(neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds);
+	// Where synapses->LTP used to be
 
 }
 

@@ -63,8 +63,8 @@ int main (int argc, char *argv[]){
 	simulator.AddSynapseGroup(IZHIKEVICH_SPIKING_GROUP_ID_LAYER_2, IZHIKEVICH_SPIKING_GROUP_ID_LAYER_3, CONNECTIVITY_TYPE_ALL_TO_ALL, LAYER_2_TO_LAYER_3_WEIGHTS, LAYER_2_TO_LAYER_3_DELAY_RANGE, true);
 
 	//
-	float total_time_per_epoch = 1.25f;
-	int number_of_epochs = 1;
+	float total_time_per_epoch = 5.0f;
+	int number_of_epochs = 5;
 	bool save_spikes = true;
 
 	//
