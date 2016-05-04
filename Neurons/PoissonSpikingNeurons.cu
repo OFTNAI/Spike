@@ -56,6 +56,11 @@ void PoissonSpikingNeurons::reset_neurons() {
 }
 
 
+// void PoissonSpikingNeurons::set_custom_possion_rates() {
+	
+// }
+
+
 
 __global__ void generate_random_states_kernal(unsigned int seed, curandState_t* d_states, size_t total_number_of_neurons);
 
@@ -83,7 +88,6 @@ __global__ void generate_random_states_kernal(unsigned int seed, curandState_t* 
 __global__ void poisson_update_membrane_potentials_kernal(curandState_t* d_states,
 							float *d_rates,
 							float *d_membrane_potentials_v,
-							float *d_states_u,
 							float timestep,
 							size_t total_number_of_inputs);
 
@@ -93,7 +97,6 @@ void PoissonSpikingNeurons::update_membrane_potentials(float timestep) {
 	poisson_update_membrane_potentials_kernal<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_states,
 														d_rates,
 														d_membrane_potentials_v,
-														d_states_u,
 														timestep,
 														total_number_of_neurons);
 	CudaCheckError();
@@ -103,7 +106,6 @@ void PoissonSpikingNeurons::update_membrane_potentials(float timestep) {
 __global__ void poisson_update_membrane_potentials_kernal(curandState_t* d_states,
 							float *d_rates,
 							float *d_membrane_potentials_v,
-							float *d_states_u,
 							float timestep,
 							size_t total_number_of_inputs){
 
@@ -111,18 +113,18 @@ __global__ void poisson_update_membrane_potentials_kernal(curandState_t* d_state
 
 	if (idx < total_number_of_inputs){
 
-		float random_float = curand_uniform(&d_states[idx]);;
+		// Creates random float between 0 and 1 from uniform distribution
+		// d_states effectively provides a different seed for each thread
+		// curand_uniform produces different float every time you call it
+		float random_float = curand_uniform(&d_states[idx]);
 
-		// if the randomnumber is LT the rate
-		if (random_float < (d_rates[idx]*timestep)){
+		// if the randomnumber is less than the rate
+		if (random_float < (d_rates[idx] * timestep)){
 
+			// Puts membrane potential above default spiking threshold
 			d_membrane_potentials_v[idx] = 35.0f;
 
-		} else if (d_rates[idx] != 0.0f) {
-
-			d_membrane_potentials_v[idx] = -70.0f;
-			
-		}
+		} 
 
 	}
 	__syncthreads();

@@ -10,7 +10,7 @@
 #include "Synapses/LIFSpikingSynapses.h"
 #include "Neurons/Neurons.h"
 #include "Neurons/LIFSpikingNeurons.h"
-#include "Neurons/PoissonSpikingNeurons.h"
+#include "Neurons/ImagePoissonSpikingNeurons.h"
 
 // The function which will autorun when the executable is created
 int main (int argc, char *argv[]){
@@ -21,7 +21,7 @@ int main (int argc, char *argv[]){
 	float time_step = 0.001;
 	simulator.SetTimestep(time_step);
 	simulator.SetNeuronType(new LIFSpikingNeurons());
-	simulator.SetInputNeuronType(new PoissonSpikingNeurons());
+	simulator.SetInputNeuronType(new ImagePoissonSpikingNeurons());
 	simulator.SetSynapseType(new LIFSpikingSynapses());
 
 	//
@@ -62,8 +62,8 @@ int main (int argc, char *argv[]){
 	simulator.AddSynapseGroup(LIF_SPIKING_GROUP_ID_LAYER_2, LIF_SPIKING_GROUP_ID_LAYER_3, CONNECTIVITY_TYPE_ALL_TO_ALL, LAYER_2_TO_LAYER_3_WEIGHTS, LAYER_2_TO_LAYER_3_DELAY_RANGE, true);
 
 	//
-	float total_time_per_epoch = 5.0f;
-	int number_of_epochs = 5;
+	float total_time_per_epoch = 1.25f;
+	int number_of_epochs = 1;
 	bool save_spikes = true;
 
 	//
