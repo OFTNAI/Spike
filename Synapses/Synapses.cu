@@ -18,6 +18,8 @@
 //			sigma = Standard Deviation of the gaussian distribution
 #define GAUS(distance, sigma) ( (1.0f/(sigma*(sqrt(2.0f*M_PI)))) * (exp(-1.0f * (pow((distance),(2.0f))) / (2.0f*(pow(sigma,(2.0f)))))) )
 
+__global__ void compute_yes_no_connection_matrix_for_groups(bool * d_yes_no_connection_matrix, int prestart, int preend, int poststart, int postend, int pre_width, int post_width, float sigma, int total_number_of_neuron_pairs);
+
 // Synapses Constructor
 Synapses::Synapses() {
 
@@ -104,7 +106,6 @@ void Synapses::AddGroup(int presynaptic_group_id,
 
 	int* last_neuron_indices_for_neuron_groups = neurons->last_neuron_indices_for_each_group;
 	int* last_neuron_indices_for_input_neuron_groups = input_neurons->last_neuron_indices_for_each_group;
-	int** neuron_group_shapes = neurons->group_shapes; //OLD
 
 	int * presynaptic_group_shape;
 	int * postsynaptic_group_shape;
@@ -236,10 +237,10 @@ void Synapses::AddGroup(int presynaptic_group_id,
 			float gaussian_scaling_factor = 1.0f;
 			if (parameter_two != 0.0f){
 				gaussian_scaling_factor = 0.0f;
-				int pre_x = neuron_group_shapes[presynaptic_group_id][0] / 2;
-				int pre_y = neuron_group_shapes[presynaptic_group_id][1] / 2;
-				for (int i = 0; i < neuron_group_shapes[postsynaptic_group_id][0]; i++){
-					for (int j = 0; j < neuron_group_shapes[postsynaptic_group_id][1]; j++){
+				int pre_x = presynaptic_group_shape[0] / 2;
+				int pre_y = presynaptic_group_shape[1] / 2;
+				for (int i = 0; i < postsynaptic_group_shape[0]; i++){
+					for (int j = 0; j < postsynaptic_group_shape[1]; j++){
 						// Post XY
 						int post_x = i;
 						int post_y = j;
@@ -252,8 +253,21 @@ void Synapses::AddGroup(int presynaptic_group_id,
 				// Multiplying the gaussian scaling factor by the number of synapses you require:
 				gaussian_scaling_factor = gaussian_scaling_factor / parameter_two;
 			}
+
+			int threads = 512;
+			dim3 threads_per_block = dim3(threads);
+			int total_number_of_neuron_pairs = (preend - prestart) * (postend - poststart);
+			int number_of_neuron_pair_blocks = (total_number_of_neuron_pairs + threads) / threads;
+			dim3 number_of_neuron_pair_blocks_per_grid = dim3(number_of_neuron_pair_blocks);
+
+			bool * d_yes_no_connection_matrix;
+			CudaSafeCall(cudaMalloc((void **)&d_yes_no_connection_matrix, sizeof(int)*total_number_of_neuron_pairs));
+			compute_yes_no_connection_matrix_for_groups<<<number_of_neuron_pair_blocks_per_grid, threads_per_block>>>(d_yes_no_connection_matrix, prestart, preend, poststart, postend, presynaptic_group_shape[0], postsynaptic_group_shape[0], sigma, total_number_of_neuron_pairs);
+			bool * yes_no_connection_matrix = (bool *)malloc(total_number_of_neuron_pairs*sizeof(bool));
+			CudaSafeCall(cudaMemcpy(yes_no_connection_matrix, d_yes_no_connection_matrix, sizeof(bool)*total_number_of_neuron_pairs, cudaMemcpyDeviceToHost));
+
 			// Running through our neurons
-			
+			//CUDARISE THIS!! VERY SLOW!!!
 			for (int k = 0; k < connectivity_params->max_number_of_connections_per_pair; k++){
 				for (int i = prestart; i < preend; i++){
 					for (int j = poststart; j < postend; j++){
@@ -423,6 +437,15 @@ void Synapses::set_threads_per_block_and_blocks_per_grid(int threads) {
 
 	printf("number_of_synapse_blocks_per_grid.x: %d\n\n", number_of_synapse_blocks_per_grid.x);
 }
+
+
+__global__ void compute_yes_no_connection_matrix_for_groups(bool * d_yes_no_connection_matrix, int prestart, int preend, int poststart, int postend, int pre_width, int post_width, float sigma, int total_number_of_neuron_pairs) {
+	int idx = threadIdx.x + blockIdx.x * blockDim.x;
+	if (idx < total_number_of_neuron_pairs) {
+		d_yes_no_connection_matrix[idx] = false;
+	}
+}
+
 
 
 // An implementation of the polar gaussian random number generator which I need

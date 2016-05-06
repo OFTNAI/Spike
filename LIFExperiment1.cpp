@@ -36,10 +36,10 @@ int main (int argc, char *argv[]){
 
 	//
 	int INPUT_LAYER_SHAPE[] = {20, 20};
-	int EXCITATORY_LAYER_SHAPE[] = {10, 10};
-	int INHIBITORY_LAYER_SHAPE[] = {5, 5};
+	int EXCITATORY_LAYER_SHAPE[] = {100, 100};
+	int INHIBITORY_LAYER_SHAPE[] = {50, 50};
 
-	float CONNECTIVITY_SIGMA = 0.3;
+	float CONNECTIVITY_SIGMA = 5;
 
 	connectivity_parameters_struct * connectivity_parameters = new connectivity_parameters_struct();
 	connectivity_parameters->max_number_of_connections_per_pair = 5;
