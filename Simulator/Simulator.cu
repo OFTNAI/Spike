@@ -35,7 +35,7 @@ Simulator::Simulator(){
 	#ifndef QUIETSTART
 		// Say Hi to the user:
 		printf("\nWelcome to the SPIKE.\n\n");
-		printf("Setting up Populations and Synapses: \n\n");
+		printf("Setting up Neurons and Synapses: \n\n");
 		fflush(stdout);
 	#endif
 }

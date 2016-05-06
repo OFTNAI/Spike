@@ -94,6 +94,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 	// Find the right set of indices
 	// Take everything in 2D
 
+	printf("Adding synapse group...\n");
 	printf("presynaptic_group_id: %d\n", presynaptic_group_id);
 	printf("postsynaptic_group_id: %d\n", postsynaptic_group_id);
 
@@ -145,15 +146,20 @@ void Synapses::AddGroup(int presynaptic_group_id,
 	} else if (postsynaptic_group_id >= 0){
 		postsynaptic_group_shape = neurons->group_shapes[postsynaptic_group_id];
 
-		poststart = last_neuron_indices_for_neuron_groups[postsynaptic_group_id-1];
+		if (postsynaptic_group_id == 0) {
+			poststart = 0;
+		} else {
+			poststart = last_neuron_indices_for_neuron_groups[postsynaptic_group_id - 1];
+		}
+		
 	}
 	int postend = last_neuron_indices_for_neuron_groups[postsynaptic_group_id];
 
-
-	printf("prestart: %d\n", prestart);
-	printf("preend: %d\n", preend);
-	printf("poststart: %d\n", poststart);
-	printf("postend: %d\n\n", postend);
+	const char * presynaptic_group_type_string = (presynaptic_group_id < 0) ? "input_neurons" : "neurons";
+	printf("Presynaptic neurons start index: %d (%s)\n", prestart, presynaptic_group_type_string);
+	printf("Presynaptic neurons end index: %d (%s)\n", preend, presynaptic_group_type_string);
+	printf("Postsynaptic neurons start index: %d (neurons)\n", poststart);
+	printf("Postsynaptic neurons end index: %d (neurons)\n", postend);
 
 
 	int original_number_of_synapses = total_number_of_synapses;
@@ -344,7 +350,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 }
 
 void Synapses::increment_number_of_synapses(int increment) {
-	printf("Increment: %d\n", increment);
+	printf("Increment: %d\n\n", increment);
 
 	total_number_of_synapses += increment;
 

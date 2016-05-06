@@ -10,7 +10,7 @@ inline void begin_simulation_message(float timestep, int number_of_stimuli, int 
 {
 	#ifndef QUIETSTART
 
-		printf("\n\n----------------------------------\n");
+		printf("\n----------------------------------\n");
 
 		printf("Simulation Beginning\n");
 
