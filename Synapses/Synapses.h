@@ -44,6 +44,14 @@ struct stdp_struct {
 };
 
 
+struct connectivity_parameters_struct {
+	connectivity_parameters_struct(): max_number_of_connections_per_pair(1) {}
+
+	int max_number_of_connections_per_pair;
+
+};
+
+
 class Synapses {
 
 public:
@@ -68,6 +76,10 @@ public:
 	int* postsynaptic_neuron_indices; 
 	float* synaptic_efficacies_or_weights;
 
+	int * temp_presynaptic_neuron_indices;
+	int* temp_postsynaptic_neuron_indices; 
+	float* temp_synaptic_efficacies_or_weights;
+
 	int *original_synapse_indices;
 
 	// Device pointers
@@ -86,6 +98,7 @@ public:
 						float weight_range[2],
 						int delay_range[2],
 						bool stdp_on,
+						connectivity_parameters_struct * connectivity_params,
 						float parameter,
 						float parameter_two);
 

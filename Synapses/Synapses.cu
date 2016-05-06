@@ -31,8 +31,11 @@ Synapses::Synapses() {
 	// Full Matrices
 	presynaptic_neuron_indices = NULL;
 	postsynaptic_neuron_indices = NULL;
-
 	synaptic_efficacies_or_weights = NULL;
+
+	temp_presynaptic_neuron_indices = NULL;
+	temp_postsynaptic_neuron_indices = NULL;
+	temp_synaptic_efficacies_or_weights = NULL;
 
 	d_presynaptic_neuron_indices = NULL;
 	d_postsynaptic_neuron_indices = NULL;
@@ -88,6 +91,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 						float weight_range[2],
 						int delay_range[2],
 						bool stdp_on,
+						connectivity_parameters_struct * connectivity_params,
 						float parameter,
 						float parameter_two) {
 	
@@ -224,6 +228,9 @@ void Synapses::AddGroup(int presynaptic_group_id,
 		
 		case CONNECTIVITY_TYPE_GAUSSIAN: // 1-D or 2-D
 		{
+
+			float sigma = parameter;
+
 			// For gaussian connectivity, the shape of the layers matters.
 			// If we desire a given number of neurons, we must scale the gaussian
 			float gaussian_scaling_factor = 1.0f;
@@ -239,34 +246,38 @@ void Synapses::AddGroup(int presynaptic_group_id,
 						// Distance
 						float distance = pow((pow((float)(pre_x - post_x), 2.0f) + pow((float)(pre_y - post_y), 2.0f)), 0.5f);
 						// Gaussian Probability
-						gaussian_scaling_factor += GAUS(distance, parameter);
+						gaussian_scaling_factor += GAUS(distance, sigma);
 					}
 				}
 				// Multiplying the gaussian scaling factor by the number of synapses you require:
 				gaussian_scaling_factor = gaussian_scaling_factor / parameter_two;
 			}
 			// Running through our neurons
-			for (int i = prestart; i < preend; i++){
-				for (int j = poststart; j < postend; j++){
-					// Probability of connection
-					float prob = ((float) rand() / (RAND_MAX));
-					// Get the relative distance from the two neurons
-					// Pre XY
-					int pre_x = (i-prestart) % neuron_group_shapes[presynaptic_group_id][0];
-					int pre_y = floor((float)(i-prestart) / neuron_group_shapes[presynaptic_group_id][0]);
-					// Post XY
-					int post_x = (j-poststart) % neuron_group_shapes[postsynaptic_group_id][0];
-					int post_y = floor((float)(j-poststart) / neuron_group_shapes[postsynaptic_group_id][0]);
-					// Distance
-					float distance = sqrt((pow((float)(pre_x - post_x), 2.0f) + pow((float)(pre_y - post_y), 2.0f)));
-					// If it is within the probability range, connect!
-					if (prob <= ((GAUS(distance, parameter)) / gaussian_scaling_factor)){
-						
-						this->increment_number_of_synapses(1);
+			
+			for (int k = 0; k < connectivity_params->max_number_of_connections_per_pair; k++){
+				for (int i = prestart; i < preend; i++){
+					for (int j = poststart; j < postend; j++){
+						// Probability of connection
+						float prob = ((float) rand() / (RAND_MAX));
+						// Get the relative distance from the two neurons
+						// Pre XY
+						int pre_x = (i-prestart) % presynaptic_group_shape[0];
+						int pre_y = floor((float)(i-prestart) / presynaptic_group_shape[0]);
+						// Post XY
+						int post_x = (j-poststart) % postsynaptic_group_shape[0];
+						int post_y = floor((float)(j-poststart) / postsynaptic_group_shape[0]);
 
-						// Setup Synapses
-						presynaptic_neuron_indices[total_number_of_synapses - 1] = group_type_factor*i + group_type_component;
-						postsynaptic_neuron_indices[total_number_of_synapses - 1] = j;
+						// Distance
+						float distance = sqrt((pow((float)(pre_x - post_x), 2.0f) + pow((float)(pre_y - post_y), 2.0f)));
+						// If it is within the probability range, connect!
+						if (prob <= ((GAUS(distance, sigma)) / gaussian_scaling_factor)){
+							
+							this->increment_number_of_synapses(1);
+
+							// Setup Synapses
+							presynaptic_neuron_indices[total_number_of_synapses - 1] = group_type_factor*i + group_type_component;
+							postsynaptic_neuron_indices[total_number_of_synapses - 1] = j;
+						}
 					}
 				}
 			}
@@ -333,7 +344,10 @@ void Synapses::AddGroup(int presynaptic_group_id,
 	}
 
 	temp_number_of_synapses_in_last_group = total_number_of_synapses - original_number_of_synapses;
-	for (int i = original_number_of_synapses; i < total_number_of_synapses-1; i++){
+
+	printf("%d new synapses added.\n\n", temp_number_of_synapses_in_last_group);
+
+	for (int i = original_number_of_synapses; i < total_number_of_synapses; i++){
 		// Setup Weights
 		if (weight_range[0] == weight_range[1]) {
 			synaptic_efficacies_or_weights[i] = weight_range[0];
@@ -350,7 +364,6 @@ void Synapses::AddGroup(int presynaptic_group_id,
 }
 
 void Synapses::increment_number_of_synapses(int increment) {
-	printf("Increment: %d\n\n", increment);
 
 	total_number_of_synapses += increment;
 
@@ -380,9 +393,9 @@ void Synapses::shuffle_synapses() {
 
 	std::random_shuffle(&original_synapse_indices[0], &original_synapse_indices[total_number_of_synapses]);
 
-	int * temp_presynaptic_neuron_indices = (int *)malloc(total_number_of_synapses*sizeof(int));
-	int * temp_postsynaptic_neuron_indices = (int *)malloc(total_number_of_synapses*sizeof(int));
-	float * temp_synaptic_efficacies_or_weights = (float *)malloc(total_number_of_synapses*sizeof(float));
+	temp_presynaptic_neuron_indices = (int *)malloc(total_number_of_synapses*sizeof(int));
+	temp_postsynaptic_neuron_indices = (int *)malloc(total_number_of_synapses*sizeof(int));
+	temp_synaptic_efficacies_or_weights = (float *)malloc(total_number_of_synapses*sizeof(float));
 	
 	for(int i = 0; i < total_number_of_synapses; i++) {
 

@@ -61,6 +61,7 @@ public:
 							float weight_range[2], 
 							float delay_range[2],
 							bool stdp_on,
+							connectivity_parameters_struct * connectivity_params,
 							float parameter = 0.0f,
 							float parameter_two = 0.0f);
 

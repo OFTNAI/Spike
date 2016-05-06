@@ -110,6 +110,7 @@ void Simulator::AddSynapseGroup(int presynaptic_group_id,
 							float weight_range[2], 
 							float delay_range[2],
 							bool stdp_on,
+							connectivity_parameters_struct * connectivity_params,
 							float parameter,
 							float parameter_two) {
 
@@ -131,6 +132,7 @@ void Simulator::AddSynapseGroup(int presynaptic_group_id,
 							weight_range,
 							delay_range_in_timesteps,
 							stdp_on,
+							connectivity_params,
 							parameter,
 							parameter_two);
 }

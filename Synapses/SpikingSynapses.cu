@@ -49,6 +49,7 @@ void SpikingSynapses::AddGroup(int presynaptic_group_id,
 						float weight_range[2],
 						int delay_range[2],
 						bool stdp_on,
+						connectivity_parameters_struct * connectivity_params,
 						float parameter,
 						float parameter_two) {
 	
@@ -61,6 +62,7 @@ void SpikingSynapses::AddGroup(int presynaptic_group_id,
 							weight_range,
 							delay_range,
 							stdp_on,
+							connectivity_params,
 							parameter,
 							parameter_two);
 
