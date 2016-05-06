@@ -9,6 +9,8 @@
 #include "../Helpers/TerminalHelpers.h"
 
 #include <algorithm> // for random shuffle
+#include <curand.h>
+#include <curand_kernel.h>
 
 
 // Macro to get the gaussian prob
@@ -18,7 +20,7 @@
 //			sigma = Standard Deviation of the gaussian distribution
 #define GAUS(distance, sigma) ( (1.0f/(sigma*(sqrt(2.0f*M_PI)))) * (exp(-1.0f * (pow((distance),(2.0f))) / (2.0f*(pow(sigma,(2.0f)))))) )
 
-__global__ void compute_yes_no_connection_matrix_for_groups(bool * d_yes_no_connection_matrix, int prestart, int preend, int poststart, int postend, int pre_width, int post_width, float sigma, int total_number_of_neuron_pairs);
+__global__ void compute_yes_no_connection_matrix_for_groups(bool * d_yes_no_connection_matrix, int prestart, int preend, int poststart, int postend, int pre_width, int post_width, float sigma, int total_pre_neurons, int total_post_neurons);
 
 // Synapses Constructor
 Synapses::Synapses() {
@@ -260,9 +262,13 @@ void Synapses::AddGroup(int presynaptic_group_id,
 			int number_of_neuron_pair_blocks = (total_number_of_neuron_pairs + threads) / threads;
 			dim3 number_of_neuron_pair_blocks_per_grid = dim3(number_of_neuron_pair_blocks);
 
+			int total_pre_neurons = preend - prestart;
+			int total_post_neurons = postend - poststart;
+			dim3 neuron_pair_block_dimensions = dim3((total_pre_neurons + threads)/threads, (total_post_neurons + threads)/threads);
+
 			bool * d_yes_no_connection_matrix;
 			CudaSafeCall(cudaMalloc((void **)&d_yes_no_connection_matrix, sizeof(int)*total_number_of_neuron_pairs));
-			compute_yes_no_connection_matrix_for_groups<<<number_of_neuron_pair_blocks_per_grid, threads_per_block>>>(d_yes_no_connection_matrix, prestart, preend, poststart, postend, presynaptic_group_shape[0], postsynaptic_group_shape[0], sigma, total_number_of_neuron_pairs);
+			compute_yes_no_connection_matrix_for_groups<<<neuron_pair_block_dimensions, threads_per_block>>>(d_yes_no_connection_matrix, prestart, preend, poststart, postend, presynaptic_group_shape[0], postsynaptic_group_shape[0], sigma, total_pre_neurons, total_post_neurons);
 			bool * yes_no_connection_matrix = (bool *)malloc(total_number_of_neuron_pairs*sizeof(bool));
 			CudaSafeCall(cudaMemcpy(yes_no_connection_matrix, d_yes_no_connection_matrix, sizeof(bool)*total_number_of_neuron_pairs, cudaMemcpyDeviceToHost));
 
@@ -271,20 +277,21 @@ void Synapses::AddGroup(int presynaptic_group_id,
 			for (int k = 0; k < connectivity_params->max_number_of_connections_per_pair; k++){
 				for (int i = prestart; i < preend; i++){
 					for (int j = poststart; j < postend; j++){
-						// Probability of connection
-						float prob = ((float) rand() / (RAND_MAX));
-						// Get the relative distance from the two neurons
-						// Pre XY
-						int pre_x = (i-prestart) % presynaptic_group_shape[0];
-						int pre_y = floor((float)(i-prestart) / presynaptic_group_shape[0]);
-						// Post XY
-						int post_x = (j-poststart) % postsynaptic_group_shape[0];
-						int post_y = floor((float)(j-poststart) / postsynaptic_group_shape[0]);
+						// // Probability of connection
+						// float prob = ((float) rand() / (RAND_MAX));
+						// // Get the relative distance from the two neurons
+						// // Pre XY
+						// int pre_x = (i-prestart) % presynaptic_group_shape[0];
+						// int pre_y = floor((float)(i-prestart) / presynaptic_group_shape[0]);
+						// // Post XY
+						// int post_x = (j-poststart) % postsynaptic_group_shape[0];
+						// int post_y = floor((float)(j-poststart) / postsynaptic_group_shape[0]);
 
-						// Distance
-						float distance = sqrt((pow((float)(pre_x - post_x), 2.0f) + pow((float)(pre_y - post_y), 2.0f)));
-						// If it is within the probability range, connect!
-						if (prob <= ((GAUS(distance, sigma)) / gaussian_scaling_factor)){
+						// // Distance
+						// float distance = sqrt((pow((float)(pre_x - post_x), 2.0f) + pow((float)(pre_y - post_y), 2.0f)));
+						// // If it is within the probability range, connect!
+						// if (prob <= ((GAUS(distance, sigma)) / gaussian_scaling_factor)){
+						if (yes_no_connection_matrix[i*total_pre_neurons + j]) {
 							
 							this->increment_number_of_synapses(1);
 
@@ -439,10 +446,42 @@ void Synapses::set_threads_per_block_and_blocks_per_grid(int threads) {
 }
 
 
-__global__ void compute_yes_no_connection_matrix_for_groups(bool * d_yes_no_connection_matrix, int prestart, int preend, int poststart, int postend, int pre_width, int post_width, float sigma, int total_number_of_neuron_pairs) {
-	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	if (idx < total_number_of_neuron_pairs) {
-		d_yes_no_connection_matrix[idx] = false;
+__global__ void compute_yes_no_connection_matrix_for_groups(bool * d_yes_no_connection_matrix, int prestart, int preend, int poststart, int postend, int pre_width, int post_width, float sigma, int total_pre_neurons, int total_post_neurons) {
+	
+	int idx_pre = threadIdx.x + blockIdx.x * blockDim.x;
+	int idx_post = threadIdx.y + blockIdx.y * blockDim.y;
+
+	if ((idx_pre < total_pre_neurons) && (idx_post < total_post_neurons)) {
+
+		unsigned int seed = 9;
+		curandState_t state;
+		curand_init(seed, /* the seed can be the same for each core, here we pass the time in from the CPU */
+					idx_pre * total_pre_neurons + idx_post, /* the sequence number should be different for each core (unless you want all
+							cores to get the same sequence of numbers for some reason - use thread id! */
+ 					0, /* the offset is how much extra we advance in the sequence for each call, can be 0 */
+					&state);
+
+		float prob = curand_uniform(&state);
+
+		// Get the relative distance from the two neurons
+		// Pre XY
+		int pre_x = idx_pre % pre_width;
+		int pre_y = floor((float)(idx_pre) / pre_width);
+		// Post XY
+		int post_x = idx_post % post_width;
+		int post_y = floor((float)(idx_post) / post_width);
+
+		// float distance = sqrt((pow((float)(pre_x - post_x), 2.0f) + pow((float)(pre_y - post_y), 2.0f)));
+		float distance = norm3df((float)(pre_x - post_x), (float)(pre_y - post_y), 0);
+
+		float gaussian_value = (1.0f/(sigma*(sqrtf(2.0f*M_PI)))) * (expf(-1.0f * (powf((distance),(2.0f))) / (2.0f*(powf(sigma,(2.0f))))));
+
+		if (prob < gaussian_value) {
+			d_yes_no_connection_matrix[idx_pre * total_pre_neurons + idx_post] = false;
+		} else {
+			d_yes_no_connection_matrix[idx_pre * total_pre_neurons + idx_post] = true;
+		}
+
 	}
 }
 
