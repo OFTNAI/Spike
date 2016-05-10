@@ -9,8 +9,6 @@
 #include "../Helpers/TerminalHelpers.h"
 
 #include <algorithm> // for random shuffle
-#include <curand.h>
-#include <curand_kernel.h>
 
 #include <thrust/device_vector.h>
 #include <thrust/host_vector.h>
@@ -25,8 +23,8 @@
 
 __global__ void compute_yes_no_connection_matrix_for_groups(bool * d_yes_no_connection_vector, int pre_width, int post_width, int post_height, float sigma, int total_pre_neurons, int total_post_neurons);
 __global__ void set_up_neuron_indices_and_weights_for_yes_no_connection_matrix(bool * d_yes_no_connection_vector, int pre_width, int post_width, int post_height, int total_pre_neurons, int total_post_neurons, int * d_presynaptic_neuron_indices, int * d_postsynaptic_neuron_indices);
-__global__ void set_neuron_indices_by_sampling_from_normal_distribution(int total_number_of_new_synapses, int postsynaptic_group_id, int number_of_new_synapses_per_postsynaptic_neuron, int number_of_postsynaptic_neurons_in_group, int * d_presynaptic_neuron_indices, int * d_postsynaptic_neuron_indices, float * d_synaptic_efficacies_or_weights, float standard_deviation_sigma);
-
+__global__ void set_neuron_indices_by_sampling_from_normal_distribution(int total_number_of_new_synapses, int postsynaptic_group_id, int poststart, int prestart, int post_width, int post_height, int pre_width, int pre_height, int number_of_new_synapses_per_postsynaptic_neuron, int number_of_postsynaptic_neurons_in_group, int * d_presynaptic_neuron_indices, int * d_postsynaptic_neuron_indices, float * d_synaptic_efficacies_or_weights, float standard_deviation_sigma, int group_type_factor, int group_type_component, curandState_t* d_states);
+__global__ void generate_random_states2_kernal(unsigned int seed, curandState_t* d_states, size_t total_number);
 
 
 // Synapses Constructor
@@ -36,6 +34,10 @@ Synapses::Synapses() {
 	// Variables;
 	total_number_of_synapses = 0;
 	temp_number_of_synapses_in_last_group = 0;
+
+	largest_synapse_group_size = 0;
+
+	neuron_indices_set_up_on_device = false;
 
 	original_synapse_indices = NULL;
 
@@ -51,6 +53,8 @@ Synapses::Synapses() {
 	d_presynaptic_neuron_indices = NULL;
 	d_postsynaptic_neuron_indices = NULL;
 	d_synaptic_efficacies_or_weights = NULL;
+
+	d_synapse_states_for_random_number_generation = NULL;
 
 	// On construction, seed
 	srand(42);	// Seeding the random numbers
@@ -239,7 +243,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 		case CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE:
 		{
 
-			// unsigned int seed = 9;
+			// neuron_indices_set_up_on_device = true; //Temp (Would introduce bugs if mixing connectivity type)
 
 			float standard_deviation_sigma = parameter;
 
@@ -251,15 +255,36 @@ void Synapses::AddGroup(int presynaptic_group_id,
 
 			this->increment_number_of_synapses(total_number_of_new_synapses);
 
-			int threads = 512;
+			int threads = 128;
 			dim3 threads_per_block = dim3(threads);
 			dim3 new_synapses_block_dimensions = dim3((total_number_of_new_synapses + threads)/threads);
 
-			CudaSafeCall(cudaMalloc((void **)&d_presynaptic_neuron_indices, sizeof(int)*total_number_of_synapses));
-			CudaSafeCall(cudaMalloc((void **)&d_postsynaptic_neuron_indices, sizeof(int)*total_number_of_synapses));
-			CudaSafeCall(cudaMalloc((void **)&d_synaptic_efficacies_or_weights, sizeof(float)*total_number_of_synapses));
+			// CudaSafeCall(cudaMalloc((void **)&d_presynaptic_neuron_indices, sizeof(int)*total_number_of_synapses));
+			// CudaSafeCall(cudaMalloc((void **)&d_postsynaptic_neuron_indices, sizeof(int)*total_number_of_synapses));
+			// CudaSafeCall(cudaMalloc((void **)&d_synaptic_efficacies_or_weights, sizeof(float)*total_number_of_synapses));
 
-			set_neuron_indices_by_sampling_from_normal_distribution<<<new_synapses_block_dimensions, threads_per_block>>>(total_number_of_new_synapses, postsynaptic_group_id, number_of_new_synapses_per_postsynaptic_neuron, number_of_postsynaptic_neurons_in_group, d_presynaptic_neuron_indices, d_postsynaptic_neuron_indices, d_synaptic_efficacies_or_weights, standard_deviation_sigma);
+			
+			// CudaSafeCall(cudaMalloc((void **)&d_synaptic_efficacies_or_weights, sizeof(float)*total_number_of_new_synapses));
+
+			if (total_number_of_new_synapses > largest_synapse_group_size) {
+
+				largest_synapse_group_size = total_number_of_new_synapses;
+
+				CudaSafeCall(cudaMalloc((void **)&d_presynaptic_neuron_indices, sizeof(int)*total_number_of_new_synapses));
+				CudaSafeCall(cudaMalloc((void **)&d_postsynaptic_neuron_indices, sizeof(int)*total_number_of_new_synapses));
+				CudaSafeCall(cudaMalloc((void**) &d_synapse_states_for_random_number_generation, sizeof(curandState_t)*total_number_of_new_synapses));
+
+				generate_random_states2_kernal<<<new_synapses_block_dimensions, threads_per_block>>>(9, d_synapse_states_for_random_number_generation, total_number_of_new_synapses);
+				CudaCheckError();
+			}
+
+			// CudaSafeCall(cudaFree(d_states));
+
+			set_neuron_indices_by_sampling_from_normal_distribution<<<new_synapses_block_dimensions, threads_per_block>>>(total_number_of_new_synapses, postsynaptic_group_id, poststart, prestart, postsynaptic_group_shape[0], postsynaptic_group_shape[1], presynaptic_group_shape[0], presynaptic_group_shape[1], number_of_new_synapses_per_postsynaptic_neuron, number_of_postsynaptic_neurons_in_group, d_presynaptic_neuron_indices, d_postsynaptic_neuron_indices, d_synaptic_efficacies_or_weights, standard_deviation_sigma, group_type_factor, group_type_component, d_synapse_states_for_random_number_generation);
+			CudaCheckError();
+
+			CudaSafeCall(cudaMemcpy(&presynaptic_neuron_indices[prestart], d_presynaptic_neuron_indices, sizeof(int)*total_number_of_new_synapses, cudaMemcpyDeviceToHost));
+			CudaSafeCall(cudaMemcpy(&postsynaptic_neuron_indices[poststart], d_postsynaptic_neuron_indices, sizeof(int)*total_number_of_new_synapses, cudaMemcpyDeviceToHost));
 
 			break;
 		}
@@ -426,7 +451,6 @@ void Synapses::AddGroup(int presynaptic_group_id,
 
 	}
 
-
 }
 
 void Synapses::increment_number_of_synapses(int increment) {
@@ -474,6 +498,12 @@ void Synapses::shuffle_synapses() {
 	presynaptic_neuron_indices = temp_presynaptic_neuron_indices;
 	postsynaptic_neuron_indices = temp_postsynaptic_neuron_indices;
 	synaptic_efficacies_or_weights = temp_synaptic_efficacies_or_weights;
+
+	for(int i = 0; i < total_number_of_synapses; i++) {
+
+		printf("postsynaptic_neuron_indices[i]: %d\n", postsynaptic_neuron_indices[i]);
+
+	}
 
 }
 
@@ -528,35 +558,96 @@ __global__ void compute_yes_no_connection_matrix_for_groups(bool * d_yes_no_conn
 }
 
 
-__global__ void set_neuron_indices_by_sampling_from_normal_distribution(int total_number_of_new_synapses, int postsynaptic_group_id, int number_of_new_synapses_per_postsynaptic_neuron, int number_of_postsynaptic_neurons_in_group, int * d_presynaptic_neuron_indices, int * d_postsynaptic_neuron_indices, float * d_synaptic_efficacies_or_weights, float standard_deviation_sigma) {
+__global__ void set_neuron_indices_by_sampling_from_normal_distribution(int total_number_of_new_synapses, int postsynaptic_group_id, int poststart, int prestart, int post_width, int post_height, int pre_width, int pre_height, int number_of_new_synapses_per_postsynaptic_neuron, int number_of_postsynaptic_neurons_in_group, int * d_presynaptic_neuron_indices, int * d_postsynaptic_neuron_indices, float * d_synaptic_efficacies_or_weights, float standard_deviation_sigma, int group_type_factor, int group_type_component, curandState_t* d_states) {
 
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	if (idx < total_number_of_new_synapses) {
 		
 		int postsynaptic_neuron_id = idx / number_of_new_synapses_per_postsynaptic_neuron;
+		// d_postsynaptic_neuron_indices[poststart + idx] = postsynaptic_neuron_id;
+		d_postsynaptic_neuron_indices[idx] = poststart + postsynaptic_neuron_id;
 
-		curandState_t state;
-		curand_init((unsigned long long)clock() + idx + postsynaptic_group_id + 1, /* the seed can be the same for each core, here we pass the time in from the CPU */
-					idx, /* the sequence number should be different for each core (unless you want all
-							cores to get the same sequence of numbers for some reason - use thread id! */
- 					1,/* the offset is how much extra we advance in the sequence for each call, can be 0 */
-					&state);
 
-		float value_from_normal_distribution = curand_normal(&state);
-		float scaled_value_from_normal_distribution = standard_deviation_sigma * value_from_normal_distribution;
-		int rounded_scaled_value_from_normal_distribution = round(scaled_value_from_normal_distribution);
+		int postsynaptic_x = postsynaptic_neuron_id % post_width; 
+		int postsynaptic_y = floor((float)(postsynaptic_neuron_id) / post_width);
+		int fractional_x = postsynaptic_x / post_width;
+		int fractional_y = postsynaptic_y / post_height;
 
-		if (idx == 100) {
-			printf("scaled_value_from_normal_distribution: %f\n", scaled_value_from_normal_distribution);
-			printf("rounded_scaled_value_from_normal_distribution: %d\n", rounded_scaled_value_from_normal_distribution);
-		}
+		int corresponding_presynaptic_centre_x = pre_width * fractional_x; 
+		int corresponding_presynaptic_centre_y = pre_height * fractional_y;
+
+		// curandState_t state;
+		// curand_init((unsigned long long)clock() + idx + poststart + 1, /* the seed can be the same for each core, here we pass the time in from the CPU */
+		// 			idx,  // the sequence number should be different for each core (unless you want all
+		// 					// cores to get the same sequence of numbers for some reason - use thread id! 
+ 	// 				1,/* the offset is how much extra we advance in the sequence for each call, can be 0 */
+		// 			&state);
+
+		bool presynaptic_x_set = false;
+		bool presynaptic_y_set = false;
+		int presynaptic_x = -1;
+		int presynaptic_y = -1; 
+
+		while (true) {
+
+			if (presynaptic_x_set == false) {
+				float value_from_normal_distribution_for_x = curand_normal(&d_states[idx]);
+				// float value_from_normal_distribution_for_x = curand_normal(state);
+				float scaled_value_from_normal_distribution_for_x = standard_deviation_sigma * value_from_normal_distribution_for_x;
+				int rounded_scaled_value_from_normal_distribution_for_x = round(scaled_value_from_normal_distribution_for_x);
+				presynaptic_x = corresponding_presynaptic_centre_x + rounded_scaled_value_from_normal_distribution_for_x;
+				if ((presynaptic_x > -1) && (presynaptic_x < pre_width)) {
+					presynaptic_x_set = true;
+				}
+
+			}
+
+			if (presynaptic_y_set == false) {
+			
+				float value_from_normal_distribution_for_y = curand_normal(&d_states[idx]);
+				// float value_from_normal_distribution_for_y = curand_normal(state);
+				float scaled_value_from_normal_distribution_for_y = standard_deviation_sigma * value_from_normal_distribution_for_y;
+				int rounded_scaled_value_from_normal_distribution_for_y = round(scaled_value_from_normal_distribution_for_y);
+				presynaptic_y = corresponding_presynaptic_centre_y + rounded_scaled_value_from_normal_distribution_for_y;
+				if ((presynaptic_y > -1) && (presynaptic_y < pre_width)) {
+					presynaptic_y_set = true;
+				}
+
+			}
+
+			if (presynaptic_x_set && presynaptic_y_set) {
+
+				// d_presynaptic_neuron_indices[prestart+idx] = group_type_factor * (presynaptic_x + presynaptic_y*pre_width) + group_type_component;
+				d_presynaptic_neuron_indices[idx] = group_type_factor * (prestart + presynaptic_x + presynaptic_y*pre_width) + group_type_component;
+
+				break;
+			}
+			
+
+		}	
+
+		
+
+		// if (idx == 100) {
+		// 	printf("scaled_value_from_normal_distribution: %f\n", scaled_value_from_normal_distribution);
+		// 	printf("rounded_scaled_value_from_normal_distribution: %d\n", rounded_scaled_value_from_normal_distribution);
+		// }
 
 	}
 
 }
 
 
-
+__global__ void generate_random_states2_kernal(unsigned int seed, curandState_t* d_states, size_t total_number) {
+	int idx = threadIdx.x + blockIdx.x * blockDim.x;
+	if (idx < total_number) {
+		curand_init(seed, /* the seed can be the same for each core, here we pass the time in from the CPU */
+					idx, /* the sequence number should be different for each core (unless you want all
+							cores to get the same sequence of numbers for some reason - use thread id! */
+ 					0, /* the offset is how much extra we advance in the sequence for each call, can be 0 */
+					&d_states[idx]);
+	}
+}
 
 __global__ void set_up_neuron_indices_and_weights_for_yes_no_connection_matrix(bool * d_yes_no_connection_vector, int pre_width, int post_width, int post_height, int total_pre_neurons, int total_post_neurons, int * d_presynaptic_neuron_indices, int * d_postsynaptic_neuron_indices) {
 

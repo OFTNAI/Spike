@@ -17,6 +17,8 @@
 #include <math.h>
 
 #include <cuda.h>
+#include <curand.h>
+#include <curand_kernel.h>
 
 
 
@@ -63,6 +65,8 @@ public:
 
 	int total_number_of_synapses;
 
+	curandState_t* d_synapse_states_for_random_number_generation;
+
 	// STDP
 	// Temporarily Synapse members (should move to SpikingNeurons)
 	struct stdp_struct stdp_vars;
@@ -89,6 +93,9 @@ public:
 	float* d_synaptic_efficacies_or_weights;
 
 	int temp_number_of_synapses_in_last_group;
+	int largest_synapse_group_size;
+
+	bool neuron_indices_set_up_on_device;
 
 	// Synapse Functions
 	virtual void AddGroup(int presynaptic_group_id, 

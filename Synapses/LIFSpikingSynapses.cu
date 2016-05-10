@@ -61,6 +61,8 @@ void LIFSpikingSynapses::AddGroup(int presynaptic_group_id,
 		recent_presynaptic_activities_C[i] = 0.0f;
 	}
 
+	// printf("HYE4\n");
+
 }
 
 void LIFSpikingSynapses::increment_number_of_synapses(int increment) {
