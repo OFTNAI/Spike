@@ -12,6 +12,9 @@
 #include <curand.h>
 #include <curand_kernel.h>
 
+#include <thrust/device_vector.h>
+#include <thrust/host_vector.h>
+#include <thrust/count.h>
 
 // Macro to get the gaussian prob
 //	INPUT:
@@ -20,7 +23,11 @@
 //			sigma = Standard Deviation of the gaussian distribution
 #define GAUS(distance, sigma) ( (1.0f/(sigma*(sqrt(2.0f*M_PI)))) * (exp(-1.0f * (pow((distance),(2.0f))) / (2.0f*(pow(sigma,(2.0f)))))) )
 
-__global__ void compute_yes_no_connection_matrix_for_groups(bool * d_yes_no_connection_matrix, int prestart, int preend, int poststart, int postend, int pre_width, int post_width, float sigma, int total_pre_neurons, int total_post_neurons);
+__global__ void compute_yes_no_connection_matrix_for_groups(bool * d_yes_no_connection_vector, int pre_width, int post_width, int post_height, float sigma, int total_pre_neurons, int total_post_neurons);
+__global__ void set_up_neuron_indices_and_weights_for_yes_no_connection_matrix(bool * d_yes_no_connection_vector, int pre_width, int post_width, int post_height, int total_pre_neurons, int total_post_neurons, int * d_presynaptic_neuron_indices, int * d_postsynaptic_neuron_indices);
+__global__ void set_neuron_indices_by_sampling_from_normal_distribution(int total_number_of_new_synapses, int postsynaptic_group_id, int number_of_new_synapses_per_postsynaptic_neuron, int number_of_postsynaptic_neurons_in_group, int * d_presynaptic_neuron_indices, int * d_postsynaptic_neuron_indices, float * d_synaptic_efficacies_or_weights, float standard_deviation_sigma);
+
+
 
 // Synapses Constructor
 Synapses::Synapses() {
@@ -229,6 +236,34 @@ void Synapses::AddGroup(int presynaptic_group_id,
 			break;
 		}
 		
+		case CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE:
+		{
+
+			// unsigned int seed = 9;
+
+			float standard_deviation_sigma = parameter;
+
+			int number_of_new_synapses_per_postsynaptic_neuron = 10;
+
+			int number_of_postsynaptic_neurons_in_group = postend - poststart;
+
+			int total_number_of_new_synapses = number_of_new_synapses_per_postsynaptic_neuron * number_of_postsynaptic_neurons_in_group;
+
+			this->increment_number_of_synapses(total_number_of_new_synapses);
+
+			int threads = 512;
+			dim3 threads_per_block = dim3(threads);
+			dim3 new_synapses_block_dimensions = dim3((total_number_of_new_synapses + threads)/threads);
+
+			CudaSafeCall(cudaMalloc((void **)&d_presynaptic_neuron_indices, sizeof(int)*total_number_of_synapses));
+			CudaSafeCall(cudaMalloc((void **)&d_postsynaptic_neuron_indices, sizeof(int)*total_number_of_synapses));
+			CudaSafeCall(cudaMalloc((void **)&d_synaptic_efficacies_or_weights, sizeof(float)*total_number_of_synapses));
+
+			set_neuron_indices_by_sampling_from_normal_distribution<<<new_synapses_block_dimensions, threads_per_block>>>(total_number_of_new_synapses, postsynaptic_group_id, number_of_new_synapses_per_postsynaptic_neuron, number_of_postsynaptic_neurons_in_group, d_presynaptic_neuron_indices, d_postsynaptic_neuron_indices, d_synaptic_efficacies_or_weights, standard_deviation_sigma);
+
+			break;
+		}
+
 		case CONNECTIVITY_TYPE_GAUSSIAN: // 1-D or 2-D
 		{
 
@@ -259,48 +294,58 @@ void Synapses::AddGroup(int presynaptic_group_id,
 			int threads = 512;
 			dim3 threads_per_block = dim3(threads);
 			int total_number_of_neuron_pairs = (preend - prestart) * (postend - poststart);
-			int number_of_neuron_pair_blocks = (total_number_of_neuron_pairs + threads) / threads;
-			dim3 number_of_neuron_pair_blocks_per_grid = dim3(number_of_neuron_pair_blocks);
-
 			int total_pre_neurons = preend - prestart;
 			int total_post_neurons = postend - poststart;
 			dim3 neuron_pair_block_dimensions = dim3((total_pre_neurons + threads)/threads, (total_post_neurons + threads)/threads);
 
-			bool * d_yes_no_connection_matrix;
-			CudaSafeCall(cudaMalloc((void **)&d_yes_no_connection_matrix, sizeof(int)*total_number_of_neuron_pairs));
-			compute_yes_no_connection_matrix_for_groups<<<neuron_pair_block_dimensions, threads_per_block>>>(d_yes_no_connection_matrix, prestart, preend, poststart, postend, presynaptic_group_shape[0], postsynaptic_group_shape[0], sigma, total_pre_neurons, total_post_neurons);
-			bool * yes_no_connection_matrix = (bool *)malloc(total_number_of_neuron_pairs*sizeof(bool));
-			CudaSafeCall(cudaMemcpy(yes_no_connection_matrix, d_yes_no_connection_matrix, sizeof(bool)*total_number_of_neuron_pairs, cudaMemcpyDeviceToHost));
+			// bool * d_yes_no_connection_matrix;
+			// CudaSafeCall(cudaMalloc((void **)&d_yes_no_connection_matrix, sizeof(int)*total_number_of_neuron_pairs));
 
-			// Running through our neurons
-			//CUDARISE THIS!! VERY SLOW!!!
 			for (int k = 0; k < connectivity_params->max_number_of_connections_per_pair; k++){
+
+				thrust::device_vector<bool> d_yes_no_connection_vector(total_number_of_neuron_pairs);
+				bool * d_yes_no_connection_vector_pointer = thrust::raw_pointer_cast(&d_yes_no_connection_vector[0]);
+
+				compute_yes_no_connection_matrix_for_groups<<<neuron_pair_block_dimensions, threads_per_block>>>(d_yes_no_connection_vector_pointer, presynaptic_group_shape[0], postsynaptic_group_shape[0], postsynaptic_group_shape[1], sigma, total_pre_neurons, total_post_neurons);
+				CudaCheckError();
+				
+				int total_number_of_new_synapses = thrust::count(d_yes_no_connection_vector.begin(), d_yes_no_connection_vector.end(), true);
+				printf("total_number_of_new_synapses: %d\n", total_number_of_new_synapses);
+
+				this->increment_number_of_synapses(total_number_of_new_synapses);
+
+				bool * yes_no_connection_matrix = (bool *)malloc(total_number_of_neuron_pairs*sizeof(bool));
+				CudaSafeCall(cudaMemcpy(yes_no_connection_matrix, d_yes_no_connection_vector_pointer, sizeof(bool)*total_number_of_neuron_pairs, cudaMemcpyDeviceToHost));
+
+				int pre_width = presynaptic_group_shape[0];
+				int post_width = postsynaptic_group_shape[0];
+				int post_height = postsynaptic_group_shape[1];
+
+				int true_count = 0;
 				for (int i = prestart; i < preend; i++){
 					for (int j = poststart; j < postend; j++){
-						// // Probability of connection
-						// float prob = ((float) rand() / (RAND_MAX));
-						// // Get the relative distance from the two neurons
-						// // Pre XY
-						// int pre_x = (i-prestart) % presynaptic_group_shape[0];
-						// int pre_y = floor((float)(i-prestart) / presynaptic_group_shape[0]);
-						// // Post XY
-						// int post_x = (j-poststart) % postsynaptic_group_shape[0];
-						// int post_y = floor((float)(j-poststart) / postsynaptic_group_shape[0]);
 
-						// // Distance
-						// float distance = sqrt((pow((float)(pre_x - post_x), 2.0f) + pow((float)(pre_y - post_y), 2.0f)));
-						// // If it is within the probability range, connect!
-						// if (prob <= ((GAUS(distance, sigma)) / gaussian_scaling_factor)){
-						if (yes_no_connection_matrix[i*total_pre_neurons + j]) {
-							
-							this->increment_number_of_synapses(1);
+						int zeroed_pre = i - prestart;
+						int zeroed_post = j - poststart;
 
+						int pre_x = zeroed_pre % pre_width;
+						int pre_y = floor((float)(zeroed_pre) / pre_width);
+						// Post XY
+						int post_x = zeroed_post % post_width;
+						int post_y = floor((float)(zeroed_post) / post_width);
+
+						int vector_index = pre_x + (pre_width * pre_y) + (post_y * total_pre_neurons) + (post_x * post_height * total_pre_neurons);
+
+						if (yes_no_connection_matrix[vector_index] == true) {
 							// Setup Synapses
-							presynaptic_neuron_indices[total_number_of_synapses - 1] = group_type_factor*i + group_type_component;
-							postsynaptic_neuron_indices[total_number_of_synapses - 1] = j;
+							presynaptic_neuron_indices[total_number_of_synapses - total_number_of_new_synapses - 1 + true_count] = group_type_factor*i + group_type_component;
+							postsynaptic_neuron_indices[total_number_of_synapses - total_number_of_new_synapses - 1 + true_count] = j;
+
+							true_count++;
 						}
 					}
 				}
+
 			}
 			break;
 		}
@@ -446,7 +491,7 @@ void Synapses::set_threads_per_block_and_blocks_per_grid(int threads) {
 }
 
 
-__global__ void compute_yes_no_connection_matrix_for_groups(bool * d_yes_no_connection_matrix, int prestart, int preend, int poststart, int postend, int pre_width, int post_width, float sigma, int total_pre_neurons, int total_post_neurons) {
+__global__ void compute_yes_no_connection_matrix_for_groups(bool * d_yes_no_connection_vector, int pre_width, int post_width, int post_height, float sigma, int total_pre_neurons, int total_post_neurons) {
 	
 	int idx_pre = threadIdx.x + blockIdx.x * blockDim.x;
 	int idx_post = threadIdx.y + blockIdx.y * blockDim.y;
@@ -471,21 +516,63 @@ __global__ void compute_yes_no_connection_matrix_for_groups(bool * d_yes_no_conn
 		int post_x = idx_post % post_width;
 		int post_y = floor((float)(idx_post) / post_width);
 
-		// float distance = sqrt((pow((float)(pre_x - post_x), 2.0f) + pow((float)(pre_y - post_y), 2.0f)));
 		float distance = norm3df((float)(pre_x - post_x), (float)(pre_y - post_y), 0);
 
 		float gaussian_value = (1.0f/(sigma*(sqrtf(2.0f*M_PI)))) * (expf(-1.0f * (powf((distance),(2.0f))) / (2.0f*(powf(sigma,(2.0f))))));
 
-		if (prob < gaussian_value) {
-			d_yes_no_connection_matrix[idx_pre * total_pre_neurons + idx_post] = false;
-		} else {
-			d_yes_no_connection_matrix[idx_pre * total_pre_neurons + idx_post] = true;
-		}
+		int vector_index = pre_x + (pre_width * pre_y) + (post_y * total_pre_neurons) + (post_x * post_height * total_pre_neurons);
+		
+		d_yes_no_connection_vector[vector_index] = (prob < gaussian_value) ? false : true;
 
 	}
 }
 
 
+__global__ void set_neuron_indices_by_sampling_from_normal_distribution(int total_number_of_new_synapses, int postsynaptic_group_id, int number_of_new_synapses_per_postsynaptic_neuron, int number_of_postsynaptic_neurons_in_group, int * d_presynaptic_neuron_indices, int * d_postsynaptic_neuron_indices, float * d_synaptic_efficacies_or_weights, float standard_deviation_sigma) {
+
+	int idx = threadIdx.x + blockIdx.x * blockDim.x;
+	if (idx < total_number_of_new_synapses) {
+		
+		int postsynaptic_neuron_id = idx / number_of_new_synapses_per_postsynaptic_neuron;
+
+		curandState_t state;
+		curand_init((unsigned long long)clock() + idx + postsynaptic_group_id + 1, /* the seed can be the same for each core, here we pass the time in from the CPU */
+					idx, /* the sequence number should be different for each core (unless you want all
+							cores to get the same sequence of numbers for some reason - use thread id! */
+ 					1,/* the offset is how much extra we advance in the sequence for each call, can be 0 */
+					&state);
+
+		float value_from_normal_distribution = curand_normal(&state);
+		float scaled_value_from_normal_distribution = standard_deviation_sigma * value_from_normal_distribution;
+		int rounded_scaled_value_from_normal_distribution = round(scaled_value_from_normal_distribution);
+
+		if (idx == 100) {
+			printf("scaled_value_from_normal_distribution: %f\n", scaled_value_from_normal_distribution);
+			printf("rounded_scaled_value_from_normal_distribution: %d\n", rounded_scaled_value_from_normal_distribution);
+		}
+
+	}
+
+}
+
+
+
+
+__global__ void set_up_neuron_indices_and_weights_for_yes_no_connection_matrix(bool * d_yes_no_connection_vector, int pre_width, int post_width, int post_height, int total_pre_neurons, int total_post_neurons, int * d_presynaptic_neuron_indices, int * d_postsynaptic_neuron_indices) {
+
+	// int idx_pre = threadIdx.x + blockIdx.x * blockDim.x;
+	// int idx_post = threadIdx.y + blockIdx.y * blockDim.y;
+
+	// if ((idx_pre < total_pre_neurons) && (idx_post < total_post_neurons)) {
+	// 	int vector_index = pre_x + (pre_width * pre_y) + (post_y * total_pre_neurons) + (post_x * post_height * total_pre_neurons);
+
+	// 	if (d_yes_no_connection_vector[vector_index] == true) {
+
+	// 	}
+	// }
+
+
+}
 
 // An implementation of the polar gaussian random number generator which I need
 double randn (double mu, double sigma)
