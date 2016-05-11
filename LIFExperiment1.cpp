@@ -19,7 +19,7 @@ int main (int argc, char *argv[]){
 	
 	// Create an instance of the Simulator and set the time_step
 	Simulator simulator;
-	float time_step = 0.0001;
+	float time_step = 0.001;
 	simulator.SetTimestep(time_step);
 	simulator.SetNeuronType(new LIFSpikingNeurons());
 	simulator.SetInputNeuronType(new PoissonSpikingNeurons());
@@ -37,8 +37,8 @@ int main (int argc, char *argv[]){
 
 	//
 	int INPUT_LAYER_SHAPE[] = {20, 20};
-	int EXCITATORY_LAYER_SHAPE[] = {10, 10};
-	int INHIBITORY_LAYER_SHAPE[] = {5, 5};
+	int EXCITATORY_LAYER_SHAPE[] = {100, 100};
+	int INHIBITORY_LAYER_SHAPE[] = {50, 50};
 
 	float CONNECTIVITY_STANDARD_DEVIATION_SIGMA = 5.0;
 
@@ -100,7 +100,7 @@ int main (int argc, char *argv[]){
 	printf("Synapses set up! Time Elapsed: %f\n\n", timed);
 
 	//
-	float total_time_per_epoch = 0.8f;
+	float total_time_per_epoch = 1.0f;
 	int number_of_epochs = 1;
 	bool save_spikes = true;
 

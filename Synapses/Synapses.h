@@ -65,7 +65,7 @@ public:
 
 	int total_number_of_synapses;
 
-	curandState_t* d_synapse_states_for_random_number_generation;
+	curandState_t* d_states_for_random_number_generation;
 
 	// STDP
 	// Temporarily Synapse members (should move to SpikingNeurons)
@@ -81,9 +81,9 @@ public:
 	int* postsynaptic_neuron_indices; 
 	float* synaptic_efficacies_or_weights;
 
-	int * temp_presynaptic_neuron_indices;
-	int* temp_postsynaptic_neuron_indices; 
-	float* temp_synaptic_efficacies_or_weights;
+	int * d_temp_presynaptic_neuron_indices;
+	int* d_temp_postsynaptic_neuron_indices; 
+	float* d_temp_synaptic_efficacies_or_weights;
 
 	int *original_synapse_indices;
 
