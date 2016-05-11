@@ -167,6 +167,9 @@ __global__ void lif_apply_ltp_to_synapse_weights_kernal(int* d_postsyns,
 
 void LIFSpikingSynapses::calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds) {
 
+	// printf("lif_calculate_postsynaptic_current_injection. number_of_synapse_blocks_per_grid.x: %d. threads_per_block.x: %d\n", number_of_synapse_blocks_per_grid.x, threads_per_block.x);
+
+
 	lif_calculate_postsynaptic_current_injection_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_synaptic_efficacies_or_weights,
 																	d_time_of_last_spike_to_reach_synapse,
 																	d_postsynaptic_neuron_indices,

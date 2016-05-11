@@ -19,7 +19,7 @@ int main (int argc, char *argv[]){
 	
 	// Create an instance of the Simulator and set the time_step
 	Simulator simulator;
-	float time_step = 0.001;
+	float time_step = 0.0001;
 	simulator.SetTimestep(time_step);
 	simulator.SetNeuronType(new LIFSpikingNeurons());
 	simulator.SetInputNeuronType(new PoissonSpikingNeurons());
@@ -36,9 +36,9 @@ int main (int argc, char *argv[]){
 	lif_spiking_group_params->paramd = 6.0f; //Old Izhikevich parameter. Leaving temporarily so spikes
 
 	//
-	int INPUT_LAYER_SHAPE[] = {20, 20};
-	int EXCITATORY_LAYER_SHAPE[] = {100, 100};
-	int INHIBITORY_LAYER_SHAPE[] = {50, 50};
+	int INPUT_LAYER_SHAPE[] = {64, 64};
+	int EXCITATORY_LAYER_SHAPE[] = {64, 64};
+	int INHIBITORY_LAYER_SHAPE[] = {32, 32};
 
 	float CONNECTIVITY_STANDARD_DEVIATION_SIGMA = 5.0;
 

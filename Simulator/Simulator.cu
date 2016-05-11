@@ -195,6 +195,8 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_m
 
 	for (int epoch_number = 0; epoch_number < number_of_epochs; epoch_number++) {
 
+		printf("\nStarting Epoch: %d\n", epoch_number);
+
 		if (present_stimuli_in_random_order) {
 			std::random_shuffle(&stimuli_presentation_order[0], &stimuli_presentation_order[number_of_stimuli]);
 		}
@@ -219,6 +221,8 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_m
 			for (int timestep_index = 0; timestep_index < number_of_timesteps_per_epoch; timestep_index++){
 				
 				current_time_in_seconds = float(timestep_index)*float(timestep);
+
+				if (timestep_index % 10000 == 0) printf("current_time_in_seconds: %f\n", current_time_in_seconds);
 				
 				neurons->reset_current_injections();
 

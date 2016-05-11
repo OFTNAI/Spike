@@ -36,6 +36,7 @@ Synapses::Synapses() {
 	temp_number_of_synapses_in_last_group = 0;
 
 	largest_synapse_group_size = 0;
+	old_largest_number_of_blocks_x = 0;
 
 	neuron_indices_set_up_on_device = false;
 
@@ -255,9 +256,11 @@ void Synapses::AddGroup(int presynaptic_group_id,
 
 			this->increment_number_of_synapses(total_number_of_new_synapses);
 
-			int threads = 128;
+			int threads = 512;
 			dim3 threads_per_block = dim3(threads);
-			dim3 new_synapses_block_dimensions = dim3((total_number_of_new_synapses + threads)/threads);
+			int number_of_blocks_x = min((total_number_of_new_synapses + threads)/threads, 65535);
+			int old_largest_number_of_blocks_x = min((largest_synapse_group_size + threads)/threads, 65535);
+			dim3 new_synapses_block_dimensions = dim3(number_of_blocks_x);
 
 			if (total_number_of_new_synapses > largest_synapse_group_size) {
 
@@ -265,10 +268,22 @@ void Synapses::AddGroup(int presynaptic_group_id,
 
 				CudaSafeCall(cudaMalloc((void **)&d_temp_presynaptic_neuron_indices, sizeof(int)*total_number_of_new_synapses));
 				CudaSafeCall(cudaMalloc((void **)&d_temp_postsynaptic_neuron_indices, sizeof(int)*total_number_of_new_synapses));
-				CudaSafeCall(cudaMalloc((void**) &d_states_for_random_number_generation, sizeof(curandState_t)*total_number_of_new_synapses));
+				// CudaSafeCall(cudaMalloc((void**) &d_states_for_random_number_generation, sizeof(curandState_t)*total_number_of_new_synapses));
+				
+			}
 
-				generate_random_states2_kernal<<<new_synapses_block_dimensions, threads_per_block>>>(9, d_states_for_random_number_generation, total_number_of_new_synapses);
+			if (old_largest_number_of_blocks_x < number_of_blocks_x) {
+				CudaSafeCall(cudaMalloc((void**) &d_states_for_random_number_generation, sizeof(curandState_t)*threads*new_synapses_block_dimensions.x));
+
+				printf("new_synapses_block_dimensions.x: %d\n", new_synapses_block_dimensions.x);
+
+				printf("Setting up random states...\n");
+
+				// generate_random_states2_kernal<<<new_synapses_block_dimensions, threads_per_block>>>(9, d_states_for_random_number_generation, total_number_of_new_synapses);
+				generate_random_states2_kernal<<<new_synapses_block_dimensions, threads_per_block>>>(9, d_states_for_random_number_generation, threads*new_synapses_block_dimensions.x);
 				CudaCheckError();
+
+				printf("Random states set.\n");
 			}
 
 
@@ -458,6 +473,8 @@ void Synapses::increment_number_of_synapses(int increment) {
 
 void Synapses::allocate_device_pointers() {
 
+	printf("Allocating synapse device pointers...\n");
+
 	CudaSafeCall(cudaMalloc((void **)&d_presynaptic_neuron_indices, sizeof(int)*total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&d_postsynaptic_neuron_indices, sizeof(int)*total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&d_synaptic_efficacies_or_weights, sizeof(float)*total_number_of_synapses));
@@ -472,6 +489,8 @@ void Synapses::allocate_device_pointers() {
 // Because all synapses contribute to current_injection on every iteration, having all threads in a block accessing only 1 or 2 positions in memory causing massive slowdown.
 // Randomising order of synapses means that each block is accessing a larger number of points in memory.
 void Synapses::shuffle_synapses() {
+
+	printf("Shuffling synapses...\n");
 
 	std::random_shuffle(&original_synapse_indices[0], &original_synapse_indices[total_number_of_synapses]);
 
@@ -550,7 +569,8 @@ __global__ void compute_yes_no_connection_matrix_for_groups(bool * d_yes_no_conn
 __global__ void set_neuron_indices_by_sampling_from_normal_distribution(int total_number_of_new_synapses, int postsynaptic_group_id, int poststart, int prestart, int post_width, int post_height, int pre_width, int pre_height, int number_of_new_synapses_per_postsynaptic_neuron, int number_of_postsynaptic_neurons_in_group, int * d_presynaptic_neuron_indices, int * d_postsynaptic_neuron_indices, float * d_synaptic_efficacies_or_weights, float standard_deviation_sigma, int group_type_factor, int group_type_component, curandState_t* d_states) {
 
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	if (idx < total_number_of_new_synapses) {
+	int t_idx = idx;
+	while (idx < total_number_of_new_synapses) {
 		
 		int postsynaptic_neuron_id = idx / number_of_new_synapses_per_postsynaptic_neuron;
 		d_postsynaptic_neuron_indices[idx] = poststart + postsynaptic_neuron_id;
@@ -571,7 +591,7 @@ __global__ void set_neuron_indices_by_sampling_from_normal_distribution(int tota
 		while (true) {
 
 			if (presynaptic_x_set == false) {
-				float value_from_normal_distribution_for_x = curand_normal(&d_states[idx]);
+				float value_from_normal_distribution_for_x = curand_normal(&d_states[t_idx]);
 				float scaled_value_from_normal_distribution_for_x = standard_deviation_sigma * value_from_normal_distribution_for_x;
 				int rounded_scaled_value_from_normal_distribution_for_x = round(scaled_value_from_normal_distribution_for_x);
 				presynaptic_x = corresponding_presynaptic_centre_x + rounded_scaled_value_from_normal_distribution_for_x;
@@ -583,7 +603,7 @@ __global__ void set_neuron_indices_by_sampling_from_normal_distribution(int tota
 
 			if (presynaptic_y_set == false) {
 			
-				float value_from_normal_distribution_for_y = curand_normal(&d_states[idx]);
+				float value_from_normal_distribution_for_y = curand_normal(&d_states[t_idx]);
 				float scaled_value_from_normal_distribution_for_y = standard_deviation_sigma * value_from_normal_distribution_for_y;
 				int rounded_scaled_value_from_normal_distribution_for_y = round(scaled_value_from_normal_distribution_for_y);
 				presynaptic_y = corresponding_presynaptic_centre_y + rounded_scaled_value_from_normal_distribution_for_y;
@@ -601,19 +621,29 @@ __global__ void set_neuron_indices_by_sampling_from_normal_distribution(int tota
 
 		}	
 
+		__syncthreads();
+
+		idx += blockDim.x * gridDim.x;
+
 	}
+
+	
 
 }
 
 
 __global__ void generate_random_states2_kernal(unsigned int seed, curandState_t* d_states, size_t total_number) {
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
+	// int idx_g = idx;
 	if (idx < total_number) {
 		curand_init(seed, /* the seed can be the same for each core, here we pass the time in from the CPU */
 					idx, /* the sequence number should be different for each core (unless you want all
 							cores to get the same sequence of numbers for some reason - use thread id! */
  					0, /* the offset is how much extra we advance in the sequence for each call, can be 0 */
 					&d_states[idx]);
+
+		__syncthreads();
+		// idx_g += blockDim.x * gridDim.x;
 	}
 }
 

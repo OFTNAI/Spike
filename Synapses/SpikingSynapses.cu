@@ -165,6 +165,8 @@ __global__ void move_spikes_towards_synapses_kernal(int* d_presynaptic_neuron_in
 
 void SpikingSynapses::check_for_synapse_spike_arrival(float current_time_in_seconds) {
 
+	// printf("check_for_synapse_spike_arrival. number_of_synapse_blocks_per_grid.x: %d. threads_per_block.x: %d\n", number_of_synapse_blocks_per_grid.x, threads_per_block.x);
+
 	check_for_synapse_spike_arrival_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_spikes_travelling_to_synapse,
 																	d_time_of_last_spike_to_reach_synapse,
 																	current_time_in_seconds,

@@ -67,6 +67,8 @@ __global__ void generate_random_states_kernal(unsigned int seed, curandState_t* 
 
 void PoissonSpikingNeurons::generate_random_states() {
 	
+	printf("Generating input neuron random states\n");
+
 	generate_random_states_kernal<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(42, d_states, total_number_of_neurons);
 
 	CudaCheckError();

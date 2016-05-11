@@ -94,6 +94,7 @@ public:
 
 	int temp_number_of_synapses_in_last_group;
 	int largest_synapse_group_size;
+	int old_largest_number_of_blocks_x;
 
 	bool neuron_indices_set_up_on_device;
 
