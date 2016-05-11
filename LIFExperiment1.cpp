@@ -22,7 +22,7 @@ int main (int argc, char *argv[]){
 	float time_step = 0.0001;
 	simulator.SetTimestep(time_step);
 	simulator.SetNeuronType(new LIFSpikingNeurons());
-	simulator.SetInputNeuronType(new PoissonSpikingNeurons());
+	simulator.SetInputNeuronType(new ImagePoissonSpikingNeurons());
 	simulator.SetSynapseType(new LIFSpikingSynapses());
 
 	//

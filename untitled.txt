@@ -1,0 +1,6 @@
+test1.png
+test2.png
+*
+test1.png
+test2.png
+*
