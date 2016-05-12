@@ -15,7 +15,8 @@ ImagePoissonSpikingNeurons::ImagePoissonSpikingNeurons(const char * fileList, co
 
 	filterPhases = new vector<float>();
 	filterWavelengths = new vector<int>();
-	filterOrientations = new std::vector<float>();
+	filterOrientations = new vector<float>();
+	buffer = new vector<vector<vector<vector<float> > > >();
 	nrOfTransformations = 0;
 	nrOfObjects = 0;
 
@@ -63,6 +64,7 @@ void ImagePoissonSpikingNeurons::set_images_from_file_list_and_directory(const c
 	loadFileList(fileList, inputDirectory);
 	load_filter_parameters(filterParameters, inputDirectory);
 	loadInput(inputDirectory);
+	copy_buffer_to_device();
 
 	printf("\n");
 }
@@ -200,7 +202,7 @@ void ImagePoissonSpikingNeurons::load_filter_parameters(const char * filterParam
 void ImagePoissonSpikingNeurons::loadInput(const char * inputDirectory) {
 
 	vector<vector<vector<vector<float> > > > tmp2(nrOfObjects * nrOfTransformations, vector<vector<vector<float> > >(depth, vector<vector<float> >(dimension, vector<float>(dimension)))); 
-	buffer = tmp2;
+	*buffer = tmp2;
 	
 	cout << "inputNames.size: " << inputNames.size() << endl;
 
@@ -239,8 +241,10 @@ void ImagePoissonSpikingNeurons::loadInput(const char * inputDirectory) {
 									cerr << "Negative firing loaded from filter!!!" << endl;
 									exit(EXIT_FAILURE);
 								}
+
+								// printf("firing: %f\n", firing);
 								
-								buffer[f][d][i][j] = firing;
+								(*buffer)[f][d][i][j] = firing;
 							}
 						
 					} catch (fstream::failure e) {
@@ -253,6 +257,11 @@ void ImagePoissonSpikingNeurons::loadInput(const char * inputDirectory) {
 			}
 		}
 	}
+}
+
+void ImagePoissonSpikingNeurons::copy_buffer_to_device() {
+	printf("HEYOO\n");
+	CudaSafeCall(cudaMalloc((void **)&d_buffer, sizeof(float)*100));
 }
 
 

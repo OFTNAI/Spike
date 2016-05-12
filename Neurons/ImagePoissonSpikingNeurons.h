@@ -36,6 +36,7 @@ public:
 	void loadFileList(const char * fileList, const char * inputDirectory);
 	void load_filter_parameters(const char * filterParameters, const char * inputDirectory);
 	void loadInput(const char * inputDirectory);
+	void copy_buffer_to_device();
 	u_short mapToV1Depth(u_short orientationIndex, u_short wavelengthIndex, u_short phaseIndex);
 
 	vector<string> inputNames;
@@ -44,7 +45,8 @@ public:
 	vector<int>  * filterWavelengths;
 	vector<float> * filterOrientations;
 
-	vector<vector<vector<vector<float> > > > buffer; // buffer[fileNr][depth][row][col]
+	vector<vector<vector<vector<float> > > > * buffer; // buffer[fileNr(image_number)][depth(gabor_number)][row][col]
+	vector<vector<vector<vector<float> > > > * d_buffer;
 
 	u_short dimension, depth;
 	u_short nrOfTransformations;
