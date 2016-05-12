@@ -25,7 +25,8 @@ ImagePoissonSpikingNeurons::ImagePoissonSpikingNeurons(const char * fileList, co
 
 	image_width = 0;
 
-	total_number_of_elements_in_buffer = 0;
+	total_number_of_rates = 0;
+	total_number_of_rates_per_image = 0;
 
 
 	//OLD VARIABLES
@@ -215,14 +216,17 @@ void ImagePoissonSpikingNeurons::load_filter_parameters(const char * filterParam
 	total_number_of_orientations = filterOrientations->size();
 	total_number_of_gabor_types = total_number_of_phases*total_number_of_wavelengths*total_number_of_orientations;
 
-	total_number_of_elements_in_buffer = total_number_of_gabor_types * total_number_of_input_images * image_width * image_width;
+	total_number_of_rates_per_image = total_number_of_gabor_types * image_width * image_width;
+	total_number_of_rates = total_number_of_input_images * total_number_of_rates_per_image;
+
+	printf("total_number_of_rates: %d\n", total_number_of_rates);
 }
 
 
 void ImagePoissonSpikingNeurons::loadInput(const char * inputDirectory) {
 
 
-	input_rates = (float *)malloc(total_number_of_elements_in_buffer*sizeof(float));
+	input_rates = (float *)malloc(total_number_of_rates*sizeof(float));
 
 	for(int image_index = 0; image_index < total_number_of_input_images; image_index++) {
 		
@@ -251,7 +255,7 @@ void ImagePoissonSpikingNeurons::loadInput(const char * inputDirectory) {
 						gaborStream.open(t.c_str(), std::ios_base::in | std::ios_base::binary);
 						
 						// Read flat buffer into 2d slice of V1
-						u_short d = mapToV1total_number_of_gabor_types(orientation_index,wavelength_index,phase_index);
+						int gabor_index = mapToV1total_number_of_gabor_types(orientation_index,wavelength_index,phase_index);
 
 						int total_number_of_activation_matrices = (int)inputNames.size() * (int)total_number_of_gabor_types;
 						printf("total_number_of_activation_matrices: %d\n", total_number_of_activation_matrices);
@@ -261,8 +265,8 @@ void ImagePoissonSpikingNeurons::loadInput(const char * inputDirectory) {
 
 
 
-						for(u_short i = 0;i < image_width;i++)
-							for(u_short j = 0;j < image_width;j++) {
+						for(int image_x = 0; image_x < image_width; image_x++)
+							for(int image_y = 0; image_y < image_width; image_y++) {
 								
 								gaborStream >> firing;
 								
@@ -277,7 +281,7 @@ void ImagePoissonSpikingNeurons::loadInput(const char * inputDirectory) {
 								
 								// input_rates[f*total_number_of_gabor_types + d + ] = firing;
 
-								// (*buffer)[image_index][d][i][j] = firing;
+								// (*buffer)[image_index][gabor_index][image_x][image_y] = firing;
 							}
 						
 					} catch (fstream::failure e) {
@@ -298,9 +302,9 @@ void ImagePoissonSpikingNeurons::copy_buffer_to_device() {
 }
 
 
-u_short ImagePoissonSpikingNeurons::mapToV1total_number_of_gabor_types(u_short orientationIndex, u_short wavelengthIndex, u_short phaseIndex) {
+int ImagePoissonSpikingNeurons::mapToV1total_number_of_gabor_types(int orientationIndex, int wavelengthIndex, int phaseIndex) {
 	
-	return orientationIndex * (filterWavelengths->size() * filterPhases->size()) + wavelengthIndex * filterPhases->size() + phaseIndex;
+	return orientationIndex * (total_number_of_wavelengths * total_number_of_phases) + wavelengthIndex * total_number_of_phases + phaseIndex;
 }
 
 

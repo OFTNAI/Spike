@@ -37,7 +37,7 @@ public:
 	void load_filter_parameters(const char * filterParameters, const char * inputDirectory);
 	void loadInput(const char * inputDirectory);
 	void copy_buffer_to_device();
-	u_short mapToV1total_number_of_gabor_types(u_short orientationIndex, u_short wavelengthIndex, u_short phaseIndex);
+	int mapToV1total_number_of_gabor_types(int orientationIndex, int wavelengthIndex, int phaseIndex);
 
 	//JI VARIABLES
 	float * input_rates;
@@ -48,7 +48,8 @@ public:
 	int total_number_of_orientations;
 	int image_width;
 
-	int total_number_of_elements_in_buffer;
+	int total_number_of_rates;
+	int total_number_of_rates_per_image;
 
 	u_short total_number_of_gabor_types;
 	u_short total_number_of_input_images;
