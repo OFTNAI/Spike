@@ -7,10 +7,13 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include "FstreamWrapper.h"
 
 
 // ImagePoissonSpikingNeurons Constructor
-ImagePoissonSpikingNeurons::ImagePoissonSpikingNeurons() {
+ImagePoissonSpikingNeurons::ImagePoissonSpikingNeurons(const char * fileList, const char * filterParameters, const char * inputDirectory) {
+
+	set_images_from_file_list_and_directory(fileList, filterParameters, inputDirectory);
 
 }
 
@@ -24,8 +27,6 @@ ImagePoissonSpikingNeurons::~ImagePoissonSpikingNeurons() {
 int ImagePoissonSpikingNeurons::AddGroup(neuron_parameters_struct * group_params, int group_shape[2]){
 
 	int new_group_id = PoissonSpikingNeurons::AddGroup(group_params, group_shape);
-
-	image_test();
 
 	image_poisson_spiking_neuron_parameters_struct * image_poisson_spiking_group_params = (image_poisson_spiking_neuron_parameters_struct*)group_params;
 
@@ -50,32 +51,30 @@ void ImagePoissonSpikingNeurons::reset_neurons() {
 
 }
 
-void ImagePoissonSpikingNeurons::image_test() {
-	printf("image_test\n");
+void ImagePoissonSpikingNeurons::set_images_from_file_list_and_directory(const char * fileList, const char * filterParameters, const char * inputDirectory) {
+	// printf("Set images from file list: %s and directory: %s\n", fileList, inputDirectory);
 
-	loadFileList("untitled.txt");
+	loadFileList(fileList, inputDirectory);
+	load_filter_parameters(filterParameters, inputDirectory);
+	loadInput(inputDirectory);
 
 	printf("\n");
 }
 
 
-void ImagePoissonSpikingNeurons::loadFileList(const char * fileList) {
+void ImagePoissonSpikingNeurons::loadFileList(const char * fileList, const char * inputDirectory) {
     
 	// Open file list
-	//string f(inputDirectory);
-	//f.append("FileList.txt");
-	ifstream fileListStream;
+	stringstream path;
+	path << inputDirectory << '/' << fileList;
+	string path_string = path.str();
 	
-	// By using this mask we get exception if there is \n as
-	// last charachter, I do not understand why, but I've wasted
-	// enough time looking into it.
-	//fileListStream.exceptions ( ifstream::failbit | ifstream::badbit );
-
-	fileListStream.open(fileList);
+	ifstream fileListStream;
+	fileListStream.open(path_string);
 
 	if(fileListStream.fail()) {
 		stringstream s;
-		s << "Unable to open " << fileList << " for input." << endl;
+		s << "Unable to open " << path_string << " for input." << endl;
 		cerr << s.str();
 		exit(EXIT_FAILURE);
 	}
@@ -113,7 +112,7 @@ void ImagePoissonSpikingNeurons::loadFileList(const char * fileList) {
 			nrOfTransformations++;
 		}
 		
-		//cout << "#" << filesLoaded << " Loading: " << dirNameBase << endl;
+		cout << "#" << filesLoaded << " Loading: " << dirNameBase << endl;
 		
 		inputNames.push_back(dirNameBase);
 	}
@@ -127,54 +126,85 @@ void ImagePoissonSpikingNeurons::loadFileList(const char * fileList) {
 }
 
 
+void ImagePoissonSpikingNeurons::load_filter_parameters(const char * filterParameters, const char * inputDirectory) {
+
+	// Open filterParameters
+	stringstream path;
+	path << inputDirectory << '/' << filterParameters;
+	string path_string = path.str();
+	
+	ifstream filterParametersStream;
+	filterParametersStream.open(path_string);
+
+	if(filterParametersStream.fail()) {
+		stringstream s;
+		s << "Unable to open " << path_string << " for input." << endl;
+		cerr << s.str();
+		exit(EXIT_FAILURE);
+	}
+
+	string dirNameBase;
+	while(getline(filterParametersStream, dirNameBase)) {
+
+		cout << "JI READING: " << dirNameBase << endl;
+
+	}
+
+
+}
+
 
 void ImagePoissonSpikingNeurons::loadInput(const char * inputDirectory) {
 	
+	cout << "inputNames.size: " << inputNames.size() << endl;
+
 	for(unsigned f = 0;f < inputNames.size();f++) {
 		
 		cout << "Loading Stimuli #" << f << endl;
 		
-// 		for(u_short orientation = 0;orientation < filterOrientations.size();orientation++)	// Orientations
-// 			for(u_short wavelength = 0;wavelength < filterWavelengths.size();wavelength++)	// Wavelengths
-// 				for(u_short phase = 0;phase < filterPhases.size();phase++) {				// Phases
+		// for(u_short orientation = 0;orientation < filterOrientations.size();orientation++)	// Orientations
+		// 	for(u_short wavelength = 0;wavelength < filterWavelengths.size();wavelength++)	// Wavelengths
+		// 		for(u_short phase = 0;phase < filterPhases.size();phase++) {				// Phases
 					
-// 					// Read input to network
-// 					ostringstream dirStream;
-// 					dirStream << inputDirectory << inputNames[f] << ".flt" << "/" 
-// 					<< inputNames[f] << '.' << filterWavelengths[wavelength] << '.' 
-// 					<< filterOrientations[orientation] << '.' << filterPhases[phase] << ".gbo";
+		// 			// Read input to network
+		// 			ostringstream dirStream;
+
+		// 			// Old
+		// 			dirStream << inputDirectory << inputNames[f] << ".flt" << "/" 
+		// 			<< inputNames[f] << '.' << filterWavelengths[wavelength] << '.' 
+		// 			<< filterOrientations[orientation] << '.' << filterPhases[phase] << ".gbo";
 					
-// 					string t = dirStream.str();
+		// 			string t = dirStream.str();
 					
-// 					// Open&Read gabor filter file
-// 					fstreamWrapper gaborStream;
+		// 			// Open&Read gabor filter file
+		// 			fstreamWrapper gaborStream;
 					
-// 					try {
-// 						float firing;
-// 						gaborStream.open(t.c_str(), std::ios_base::in | std::ios_base::binary);
+		// 			try {
+		// 				float firing;
+		// 				gaborStream.open(t.c_str(), std::ios_base::in | std::ios_base::binary);
 						
-// 						// Read flat buffer into 2d slice of V1
-// 						u_short d = mapToV1Depth(orientation,wavelength,phase);
-// 						for(u_short i = 0;i < dimension;i++)
-// 							for(u_short j = 0;j < dimension;j++) {
+						// // Read flat buffer into 2d slice of V1
+						// u_short d = mapToV1Depth(orientation,wavelength,phase);
+						// for(u_short i = 0;i < dimension;i++)
+						// 	for(u_short j = 0;j < dimension;j++) {
 								
-// 								gaborStream >> firing;
+						// 		gaborStream >> firing;
 								
-// 								if(firing < 0) {
-// 									cerr << "Negative firing loaded from filter!!!" << endl;
-// 									exit(EXIT_FAILURE);
-// 								}
+						// 		if(firing < 0) {
+						// 			cerr << "Negative firing loaded from filter!!!" << endl;
+						// 			exit(EXIT_FAILURE);
+						// 		}
 								
-// 								buffer[f][d][i][j] = firing;
-// 							}
+						// 		buffer[f][d][i][j] = firing;
+						// 	}
 						
-// 					} catch (fstream::failure e) {
-// 						stringstream s;
-// 						s << "Unable to open/read from " << t << " for gabor input: " << e.what();
-// 						cerr << s.str();
-// 						exit(EXIT_FAILURE);
-// 					}
-// 				}
+		// 			} catch (fstream::failure e) {
+		// 				stringstream s;
+		// 				s << "Unable to open/read from " << t << " for gabor input: " << e.what();
+		// 				cerr << s.str();
+		// 				exit(EXIT_FAILURE);
+		// 			}
+		// 		}
 		// 	}
 		// }
 	}
