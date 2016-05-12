@@ -13,6 +13,10 @@
 // ImagePoissonSpikingNeurons Constructor
 ImagePoissonSpikingNeurons::ImagePoissonSpikingNeurons(const char * fileList, const char * filterParameters, const char * inputDirectory) {
 
+	filterPhases = new vector<float>();
+	filterWavelengths = new vector<int>();
+	filterOrientations = new std::vector<float>();
+
 	set_images_from_file_list_and_directory(fileList, filterParameters, inputDirectory);
 
 }
@@ -120,13 +124,16 @@ void ImagePoissonSpikingNeurons::loadFileList(const char * fileList, const char 
 	//JI
 	nrOfTransformations = lastNrOfTransformsFound;
 	
-	cout << "Objects: " << nrOfObjects << ", Transforms: " << nrOfTransformations << endl;
+	cout << "Objects: " << nrOfObjects << ", Transforms: " << nrOfTransformations << endl << endl;
 	
 	nrOfFiles = nrOfObjects * nrOfTransformations;
 }
 
 
 void ImagePoissonSpikingNeurons::load_filter_parameters(const char * filterParameters, const char * inputDirectory) {
+
+
+	cout << "Reading filter parameters:" << endl;
 
 	// Open filterParameters
 	stringstream path;
@@ -144,13 +151,44 @@ void ImagePoissonSpikingNeurons::load_filter_parameters(const char * filterParam
 	}
 
 	string dirNameBase;
+
+	int line_index = 0;
 	while(getline(filterParametersStream, dirNameBase)) {
 
-		cout << "JI READING: " << dirNameBase << endl;
+		cout << "READING: " << dirNameBase << endl;
+
+		stringstream lineStream(dirNameBase);
+
+		int num;
+		while (true) {
+			if ((lineStream.peek() == ',') || (lineStream.peek() == '[') || (lineStream.peek() == ' ')) {
+				lineStream.ignore();
+			} else if (lineStream.peek() == ']') {
+				break;
+			} else {
+
+				lineStream >> num;
+
+				switch (line_index) {
+					case 0:
+						filterPhases->push_back((float)num);
+						break;
+
+					case 1:
+						filterWavelengths->push_back(num);
+						break;
+
+					case 2:
+						filterOrientations->push_back((float)num);
+						break;	
+				}
+
+			}	
+		} 
+
+		line_index++;
 
 	}
-
-
 }
 
 
@@ -162,9 +200,9 @@ void ImagePoissonSpikingNeurons::loadInput(const char * inputDirectory) {
 		
 		cout << "Loading Stimuli #" << f << endl;
 		
-		// for(u_short orientation = 0;orientation < filterOrientations.size();orientation++)	// Orientations
-		// 	for(u_short wavelength = 0;wavelength < filterWavelengths.size();wavelength++)	// Wavelengths
-		// 		for(u_short phase = 0;phase < filterPhases.size();phase++) {				// Phases
+		for(u_short orientation = 0;orientation < filterOrientations->size();orientation++)	{ // Orientations
+			for(u_short wavelength = 0;wavelength < filterWavelengths->size();wavelength++) {	// Wavelengths
+				for(u_short phase = 0;phase < filterPhases->size();phase++) {				// Phases
 					
 		// 			// Read input to network
 		// 			ostringstream dirStream;
@@ -204,9 +242,9 @@ void ImagePoissonSpikingNeurons::loadInput(const char * inputDirectory) {
 		// 				cerr << s.str();
 		// 				exit(EXIT_FAILURE);
 		// 			}
-		// 		}
-		// 	}
-		// }
+				}
+			}
+		}
 	}
 }
 

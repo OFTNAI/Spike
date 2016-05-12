@@ -37,6 +37,11 @@ public:
 
 	vector<string> inputNames;
 
+	vector<float> * filterPhases;
+	vector<int>  * filterWavelengths;
+	vector<float> * filterOrientations;
+	
+
 };
 
 #endif
