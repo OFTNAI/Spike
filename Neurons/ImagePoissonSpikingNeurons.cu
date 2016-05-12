@@ -13,12 +13,29 @@
 // ImagePoissonSpikingNeurons Constructor
 ImagePoissonSpikingNeurons::ImagePoissonSpikingNeurons(const char * fileList, const char * filterParameters, const char * inputDirectory) {
 
+	//JI
+	total_number_of_input_images = 0;
+	total_number_of_transformations = 0;
+	total_number_of_objects = 0;
+
+	total_number_of_phases = 0;
+	total_number_of_wavelengths = 0;
+	total_number_of_orientations = 0;
+	total_number_of_gabor_types = 0;
+
+	image_width = 0;
+
+	total_number_of_elements_in_buffer = 0;
+
+
+	//OLD VARIABLES
+
+
 	filterPhases = new vector<float>();
 	filterWavelengths = new vector<int>();
 	filterOrientations = new vector<float>();
-	buffer = new vector<vector<vector<vector<float> > > >();
-	nrOfTransformations = 0;
-	nrOfObjects = 0;
+	// buffer = new vector<vector<vector<vector<float> > > >();
+	
 
 	set_images_from_file_list_and_directory(fileList, filterParameters, inputDirectory);
 
@@ -92,43 +109,40 @@ void ImagePoissonSpikingNeurons::loadFileList(const char * fileList, const char 
 	u_short lastNrOfTransformsFound = 0; // For validation of file list
 	
 	cout << "Reading file list:" << endl;
-
-
-	//JI TEMP
-	int nrOfFiles = 0;
-
 	
 	while(getline(fileListStream, dirNameBase)) { 	// Read line from file list
+
+		printf("total_number_of_transformations: %d\n", total_number_of_transformations);
 		
 		if(dirNameBase.compare("") == 0) {
 			continue; // Last line may just be empty bcs of matlab script, should be break; really, but what the hell		
-		} else if(dirNameBase.compare("*") == 0) {	
-			if(lastNrOfTransformsFound != 0 && lastNrOfTransformsFound != nrOfTransformations) {
+		} else if(dirNameBase.compare("*") == 0) {
+			printf("*\n");	
+			if(lastNrOfTransformsFound != 0 && lastNrOfTransformsFound != total_number_of_transformations) {
 				cerr << "Number of transforms varied in file list" << endl;
 				exit(EXIT_FAILURE);
 			}
 				
-			nrOfObjects++;
-			lastNrOfTransformsFound = nrOfTransformations;
-			nrOfTransformations = 0;
+			total_number_of_objects++;
+			lastNrOfTransformsFound = total_number_of_transformations;
+			total_number_of_transformations = 0;
 			
 			continue;
 		} else {
 			filesLoaded++;
-			nrOfTransformations++;
+			total_number_of_transformations++;
 		}
 		
-		cout << "#" << filesLoaded << " Loading: " << dirNameBase << endl;
+		// cout << "#" << filesLoaded << " Loading: " << dirNameBase << endl;
 		
 		inputNames.push_back(dirNameBase);
 	}
 	
-	//JI
-	nrOfTransformations = lastNrOfTransformsFound;
+	total_number_of_transformations = lastNrOfTransformsFound;
 	
-	cout << "Objects: " << nrOfObjects << ", Transforms: " << nrOfTransformations << endl << endl;
+	cout << "Objects: " << total_number_of_objects << ", Transforms: " << total_number_of_transformations << endl << endl;
 	
-	nrOfFiles = nrOfObjects * nrOfTransformations;
+	total_number_of_input_images = total_number_of_objects * total_number_of_transformations;
 }
 
 
@@ -163,6 +177,7 @@ void ImagePoissonSpikingNeurons::load_filter_parameters(const char * filterParam
 
 		int num;
 		while (lineStream.str().size() != 0) {
+
 			if ((lineStream.peek() == ',') || (lineStream.peek() == '[') || (lineStream.peek() == ' ')) {
 				lineStream.ignore();
 			} else if (lineStream.peek() == ']') {
@@ -184,7 +199,7 @@ void ImagePoissonSpikingNeurons::load_filter_parameters(const char * filterParam
 						filterOrientations->push_back((float)num);
 						break;	
 					case 3:
-						dimension = num;
+						image_width = num;
 						break; 
 				}
 
@@ -195,31 +210,36 @@ void ImagePoissonSpikingNeurons::load_filter_parameters(const char * filterParam
 
 	}
 
-	depth = filterWavelengths->size()*filterPhases->size()*filterOrientations->size();
+	total_number_of_phases = filterPhases->size();
+	total_number_of_wavelengths = filterWavelengths->size();
+	total_number_of_orientations = filterOrientations->size();
+	total_number_of_gabor_types = total_number_of_phases*total_number_of_wavelengths*total_number_of_orientations;
+
+	total_number_of_elements_in_buffer = total_number_of_gabor_types * total_number_of_input_images * image_width * image_width;
 }
 
 
 void ImagePoissonSpikingNeurons::loadInput(const char * inputDirectory) {
 
-	vector<vector<vector<vector<float> > > > tmp2(nrOfObjects * nrOfTransformations, vector<vector<vector<float> > >(depth, vector<vector<float> >(dimension, vector<float>(dimension)))); 
-	*buffer = tmp2;
-	
-	cout << "inputNames.size: " << inputNames.size() << endl;
 
-	for(unsigned f = 0;f < inputNames.size();f++) {
+	input_rates = (float *)malloc(total_number_of_elements_in_buffer*sizeof(float));
+
+	for(int image_index = 0; image_index < total_number_of_input_images; image_index++) {
 		
-		cout << "Loading Stimuli #" << f << endl;
+		cout << "\nLoading Stimuli #" << image_index << endl;
 		
-		for(u_short orientation = 0;orientation < filterOrientations->size();orientation++)	{ // Orientations
-			for(u_short wavelength = 0;wavelength < filterWavelengths->size();wavelength++) {	// Wavelengths
-				for(u_short phase = 0;phase < filterPhases->size();phase++) {				// Phases
+		for(int orientation_index = 0; orientation_index < total_number_of_orientations; orientation_index++) {
+
+			for(int wavelength_index = 0; wavelength_index < total_number_of_wavelengths; wavelength_index++) {
+
+				for(int phase_index = 0; phase_index < total_number_of_phases; phase_index++) {
 					
 					// Read input to network
 					ostringstream dirStream;
 
-					dirStream << inputDirectory << "Filtered/" << inputNames[f] << ".flt" << "/"
-					<< inputNames[f] << '.' << filterWavelengths->at(wavelength) << '.' 
-					<< filterOrientations->at(orientation) << '.' << filterPhases->at(phase) << ".gbo";
+					dirStream << inputDirectory << "Filtered/" << inputNames[image_index] << ".flt" << "/"
+					<< inputNames[image_index] << '.' << filterWavelengths->at(wavelength_index) << '.' 
+					<< filterOrientations->at(orientation_index) << '.' << filterPhases->at(phase_index) << ".gbo";
 					
 					string t = dirStream.str();
 					
@@ -231,9 +251,18 @@ void ImagePoissonSpikingNeurons::loadInput(const char * inputDirectory) {
 						gaborStream.open(t.c_str(), std::ios_base::in | std::ios_base::binary);
 						
 						// Read flat buffer into 2d slice of V1
-						u_short d = mapToV1Depth(orientation,wavelength,phase);
-						for(u_short i = 0;i < dimension;i++)
-							for(u_short j = 0;j < dimension;j++) {
+						u_short d = mapToV1total_number_of_gabor_types(orientation_index,wavelength_index,phase_index);
+
+						int total_number_of_activation_matrices = (int)inputNames.size() * (int)total_number_of_gabor_types;
+						printf("total_number_of_activation_matrices: %d\n", total_number_of_activation_matrices);
+						printf("ORIENTATION: %d\n", orientation_index);
+						printf("WAVELENGTH: %d\n", wavelength_index);
+						printf("PHASE: %d\n\n", phase_index);
+
+
+
+						for(u_short i = 0;i < image_width;i++)
+							for(u_short j = 0;j < image_width;j++) {
 								
 								gaborStream >> firing;
 								
@@ -242,9 +271,13 @@ void ImagePoissonSpikingNeurons::loadInput(const char * inputDirectory) {
 									exit(EXIT_FAILURE);
 								}
 
+								
+
 								// printf("firing: %f\n", firing);
 								
-								(*buffer)[f][d][i][j] = firing;
+								// input_rates[f*total_number_of_gabor_types + d + ] = firing;
+
+								// (*buffer)[image_index][d][i][j] = firing;
 							}
 						
 					} catch (fstream::failure e) {
@@ -260,12 +293,12 @@ void ImagePoissonSpikingNeurons::loadInput(const char * inputDirectory) {
 }
 
 void ImagePoissonSpikingNeurons::copy_buffer_to_device() {
-	printf("HEYOO\n");
-	CudaSafeCall(cudaMalloc((void **)&d_buffer, sizeof(float)*100));
+	// CudaSafeCall(cudaMalloc((void **)&d_buffer, sizeof(float)*total_number_of_gabor_types*inputNames.size()));
+	// CudaSafeCall(cudaMemcpy(d_buffer, buffer, sizeof(float)*total_number_of_gabor_types*inputNames.size(), cudaMemcpyHostToDevice));
 }
 
 
-u_short ImagePoissonSpikingNeurons::mapToV1Depth(u_short orientationIndex, u_short wavelengthIndex, u_short phaseIndex) {
+u_short ImagePoissonSpikingNeurons::mapToV1total_number_of_gabor_types(u_short orientationIndex, u_short wavelengthIndex, u_short phaseIndex) {
 	
 	return orientationIndex * (filterWavelengths->size() * filterPhases->size()) + wavelengthIndex * filterPhases->size() + phaseIndex;
 }

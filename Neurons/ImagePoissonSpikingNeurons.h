@@ -37,20 +37,37 @@ public:
 	void load_filter_parameters(const char * filterParameters, const char * inputDirectory);
 	void loadInput(const char * inputDirectory);
 	void copy_buffer_to_device();
-	u_short mapToV1Depth(u_short orientationIndex, u_short wavelengthIndex, u_short phaseIndex);
+	u_short mapToV1total_number_of_gabor_types(u_short orientationIndex, u_short wavelengthIndex, u_short phaseIndex);
 
+	//JI VARIABLES
+	float * input_rates;
+	float * d_input_rates;
+
+	int total_number_of_phases;
+	int total_number_of_wavelengths;
+	int total_number_of_orientations;
+	int image_width;
+
+	int total_number_of_elements_in_buffer;
+
+	u_short total_number_of_gabor_types;
+	u_short total_number_of_input_images;
+	u_short total_number_of_objects;
+
+	//OLD VARIABLES
 	vector<string> inputNames;
 
 	vector<float> * filterPhases;
 	vector<int>  * filterWavelengths;
 	vector<float> * filterOrientations;
 
-	vector<vector<vector<vector<float> > > > * buffer; // buffer[fileNr(image_number)][depth(gabor_number)][row][col]
+	vector<vector<vector<vector<float> > > > * buffer; // buffer[fileNr(image_number)][total_number_of_gabor_types(gabor_number)][row][col]
 	vector<vector<vector<vector<float> > > > * d_buffer;
 
-	u_short dimension, depth;
-	u_short nrOfTransformations;
-	u_short nrOfObjects;
+	
+
+	u_short total_number_of_transformations;
+	
 	
 
 };
