@@ -9,7 +9,7 @@
 
 #include <vector>
 
-#include "Utilities.h"
+// #include "Utilities.h"
 
 using namespace std;
 
@@ -32,12 +32,13 @@ public:
 	virtual void allocate_device_pointers();
 	virtual void reset_neurons();
 
-	void set_images_from_file_list_and_directory(const char * fileList, const char * filterParameters, const char * inputDirectory);
-	void loadFileList(const char * fileList, const char * inputDirectory);
-	void load_filter_parameters(const char * filterParameters, const char * inputDirectory);
-	void loadInput(const char * inputDirectory);
-	void copy_buffer_to_device();
-	int mapToV1total_number_of_gabor_types(int orientationIndex, int wavelengthIndex, int phaseIndex);
+	void set_up_rates(const char * fileList, const char * filterParameters, const char * inputDirectory);
+
+	void load_image_names_from_file_list(const char * fileList, const char * inputDirectory);
+	void load_gabor_filter_parameters(const char * filterParameters, const char * inputDirectory);
+	void load_rates_from_files(const char * inputDirectory);
+	void copy_rates_to_device();
+	int calculate_gabor_index(int orientationIndex, int wavelengthIndex, int phaseIndex);
 
 	//JI VARIABLES
 	float * input_rates;
@@ -51,9 +52,9 @@ public:
 	int total_number_of_rates;
 	int total_number_of_rates_per_image;
 
-	u_short total_number_of_gabor_types;
-	u_short total_number_of_input_images;
-	u_short total_number_of_objects;
+	int total_number_of_gabor_types;
+	int total_number_of_input_images;
+	int total_number_of_objects;
 
 	//OLD VARIABLES
 	vector<string> inputNames;
@@ -67,7 +68,7 @@ public:
 
 	
 
-	u_short total_number_of_transformations;
+	int total_number_of_transformations_per_object;
 	
 	
 

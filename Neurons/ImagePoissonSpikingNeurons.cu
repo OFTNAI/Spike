@@ -15,7 +15,7 @@ ImagePoissonSpikingNeurons::ImagePoissonSpikingNeurons(const char * fileList, co
 
 	//JI
 	total_number_of_input_images = 0;
-	total_number_of_transformations = 0;
+	total_number_of_transformations_per_object = 0;
 	total_number_of_objects = 0;
 
 	total_number_of_phases = 0;
@@ -38,7 +38,7 @@ ImagePoissonSpikingNeurons::ImagePoissonSpikingNeurons(const char * fileList, co
 	// buffer = new vector<vector<vector<vector<float> > > >();
 	
 
-	set_images_from_file_list_and_directory(fileList, filterParameters, inputDirectory);
+	set_up_rates(fileList, filterParameters, inputDirectory);
 
 }
 
@@ -76,19 +76,19 @@ void ImagePoissonSpikingNeurons::reset_neurons() {
 
 }
 
-void ImagePoissonSpikingNeurons::set_images_from_file_list_and_directory(const char * fileList, const char * filterParameters, const char * inputDirectory) {
-	// printf("Set images from file list: %s and directory: %s\n", fileList, inputDirectory);
+void ImagePoissonSpikingNeurons::set_up_rates(const char * fileList, const char * filterParameters, const char * inputDirectory) {
+	printf("Setting up Input Neuron Rates from gbo files...\n");
 
-	loadFileList(fileList, inputDirectory);
-	load_filter_parameters(filterParameters, inputDirectory);
-	loadInput(inputDirectory);
-	copy_buffer_to_device();
+	load_image_names_from_file_list(fileList, inputDirectory);
+	load_gabor_filter_parameters(filterParameters, inputDirectory);
+	load_rates_from_files(inputDirectory);
+	copy_rates_to_device();
 
 	printf("\n");
 }
 
 
-void ImagePoissonSpikingNeurons::loadFileList(const char * fileList, const char * inputDirectory) {
+void ImagePoissonSpikingNeurons::load_image_names_from_file_list(const char * fileList, const char * inputDirectory) {
     
 	// Open file list
 	stringstream path;
@@ -106,32 +106,31 @@ void ImagePoissonSpikingNeurons::loadFileList(const char * fileList, const char 
 	}
 	
 	string dirNameBase;						// The "shapeS1T2" part of "shapeS1T2.png"
-	u_short filesLoaded = 0;
-	u_short lastNrOfTransformsFound = 0; // For validation of file list
+	int filesLoaded = 0;
+	int lastNrOfTransformsFound = 0; // For validation of file list
 	
-	cout << "Reading file list:" << endl;
+	// cout << "Reading file list:" << endl;
 	
 	while(getline(fileListStream, dirNameBase)) { 	// Read line from file list
 
-		printf("total_number_of_transformations: %d\n", total_number_of_transformations);
+		// printf("total_number_of_transformations_per_object: %d\n", total_number_of_transformations_per_object);
 		
 		if(dirNameBase.compare("") == 0) {
 			continue; // Last line may just be empty bcs of matlab script, should be break; really, but what the hell		
-		} else if(dirNameBase.compare("*") == 0) {
-			printf("*\n");	
-			if(lastNrOfTransformsFound != 0 && lastNrOfTransformsFound != total_number_of_transformations) {
+		} else if(dirNameBase.compare("*") == 0) {	
+			if(lastNrOfTransformsFound != 0 && lastNrOfTransformsFound != total_number_of_transformations_per_object) {
 				cerr << "Number of transforms varied in file list" << endl;
 				exit(EXIT_FAILURE);
 			}
 				
 			total_number_of_objects++;
-			lastNrOfTransformsFound = total_number_of_transformations;
-			total_number_of_transformations = 0;
+			lastNrOfTransformsFound = total_number_of_transformations_per_object;
+			total_number_of_transformations_per_object = 0;
 			
 			continue;
 		} else {
 			filesLoaded++;
-			total_number_of_transformations++;
+			total_number_of_transformations_per_object++;
 		}
 		
 		// cout << "#" << filesLoaded << " Loading: " << dirNameBase << endl;
@@ -139,18 +138,18 @@ void ImagePoissonSpikingNeurons::loadFileList(const char * fileList, const char 
 		inputNames.push_back(dirNameBase);
 	}
 	
-	total_number_of_transformations = lastNrOfTransformsFound;
+	total_number_of_transformations_per_object = lastNrOfTransformsFound;
 	
-	cout << "Objects: " << total_number_of_objects << ", Transforms: " << total_number_of_transformations << endl << endl;
+	cout << "Objects: " << total_number_of_objects << ", Transforms per Object: " << total_number_of_transformations_per_object << "..." << endl << endl;
 	
-	total_number_of_input_images = total_number_of_objects * total_number_of_transformations;
+	total_number_of_input_images = total_number_of_objects * total_number_of_transformations_per_object;
 }
 
 
-void ImagePoissonSpikingNeurons::load_filter_parameters(const char * filterParameters, const char * inputDirectory) {
+void ImagePoissonSpikingNeurons::load_gabor_filter_parameters(const char * filterParameters, const char * inputDirectory) {
 
 
-	cout << "Reading filter parameters:" << endl;
+	// cout << "Reading filter parameters:" << endl;
 
 	// Open filterParameters
 	stringstream path;
@@ -172,7 +171,7 @@ void ImagePoissonSpikingNeurons::load_filter_parameters(const char * filterParam
 	int line_index = 0;
 	while(getline(filterParametersStream, dirNameBase)) {
 
-		cout << "READING: " << dirNameBase << endl;
+		cout << dirNameBase << endl;
 
 		stringstream lineStream(dirNameBase);
 
@@ -219,24 +218,34 @@ void ImagePoissonSpikingNeurons::load_filter_parameters(const char * filterParam
 	total_number_of_rates_per_image = total_number_of_gabor_types * image_width * image_width;
 	total_number_of_rates = total_number_of_input_images * total_number_of_rates_per_image;
 
-	printf("total_number_of_rates: %d\n", total_number_of_rates);
+	printf("\ntotal_number_of_rates: %d\n\n", total_number_of_rates);
 }
 
 
-void ImagePoissonSpikingNeurons::loadInput(const char * inputDirectory) {
+void ImagePoissonSpikingNeurons::load_rates_from_files(const char * inputDirectory) {
 
 
 	input_rates = (float *)malloc(total_number_of_rates*sizeof(float));
 
 	for(int image_index = 0; image_index < total_number_of_input_images; image_index++) {
+
+		int image_starting_index = image_index * total_number_of_rates_per_image;
 		
-		cout << "\nLoading Stimuli #" << image_index << endl;
+		cout << "Loading Rates for Image #" << image_index << endl;
 		
 		for(int orientation_index = 0; orientation_index < total_number_of_orientations; orientation_index++) {
 
 			for(int wavelength_index = 0; wavelength_index < total_number_of_wavelengths; wavelength_index++) {
 
 				for(int phase_index = 0; phase_index < total_number_of_phases; phase_index++) {
+
+					int gabor_index = calculate_gabor_index(orientation_index,wavelength_index,phase_index);
+					int start_index_for_current_gabor_image = image_starting_index + gabor_index * image_width * image_width;
+
+					// printf("ORIENTATION: %d\n", orientation_index);
+					// printf("WAVELENGTH: %d\n", wavelength_index);
+					// printf("PHASE: %d\n\n", phase_index);
+					// printf("GABOR_INDEX: %d\n", gabor_index);
 					
 					// Read input to network
 					ostringstream dirStream;
@@ -251,37 +260,22 @@ void ImagePoissonSpikingNeurons::loadInput(const char * inputDirectory) {
 					fstreamWrapper gaborStream;
 					
 					try {
-						float firing;
-						gaborStream.open(t.c_str(), std::ios_base::in | std::ios_base::binary);
 						
-						// Read flat buffer into 2d slice of V1
-						int gabor_index = mapToV1total_number_of_gabor_types(orientation_index,wavelength_index,phase_index);
-
-						int total_number_of_activation_matrices = (int)inputNames.size() * (int)total_number_of_gabor_types;
-						printf("total_number_of_activation_matrices: %d\n", total_number_of_activation_matrices);
-						printf("ORIENTATION: %d\n", orientation_index);
-						printf("WAVELENGTH: %d\n", wavelength_index);
-						printf("PHASE: %d\n\n", phase_index);
-
-
+						gaborStream.open(t.c_str(), std::ios_base::in | std::ios_base::binary);
 
 						for(int image_x = 0; image_x < image_width; image_x++)
 							for(int image_y = 0; image_y < image_width; image_y++) {
 								
-								gaborStream >> firing;
-								
-								if(firing < 0) {
+								float rate;
+								gaborStream >> rate;
+								if(rate < 0) {
 									cerr << "Negative firing loaded from filter!!!" << endl;
 									exit(EXIT_FAILURE);
 								}
 
+								int element_index = start_index_for_current_gabor_image + image_x + image_y * image_width;
 								
-
-								// printf("firing: %f\n", firing);
-								
-								// input_rates[f*total_number_of_gabor_types + d + ] = firing;
-
-								// (*buffer)[image_index][gabor_index][image_x][image_y] = firing;
+								input_rates[element_index] = rate;
 							}
 						
 					} catch (fstream::failure e) {
@@ -296,13 +290,13 @@ void ImagePoissonSpikingNeurons::loadInput(const char * inputDirectory) {
 	}
 }
 
-void ImagePoissonSpikingNeurons::copy_buffer_to_device() {
-	// CudaSafeCall(cudaMalloc((void **)&d_buffer, sizeof(float)*total_number_of_gabor_types*inputNames.size()));
-	// CudaSafeCall(cudaMemcpy(d_buffer, buffer, sizeof(float)*total_number_of_gabor_types*inputNames.size(), cudaMemcpyHostToDevice));
+void ImagePoissonSpikingNeurons::copy_rates_to_device() {
+	CudaSafeCall(cudaMalloc((void **)&d_input_rates, sizeof(float)*total_number_of_rates));
+	CudaSafeCall(cudaMemcpy(d_input_rates, input_rates, sizeof(float)*total_number_of_gabor_types*inputNames.size(), cudaMemcpyHostToDevice));
 }
 
 
-int ImagePoissonSpikingNeurons::mapToV1total_number_of_gabor_types(int orientationIndex, int wavelengthIndex, int phaseIndex) {
+int ImagePoissonSpikingNeurons::calculate_gabor_index(int orientationIndex, int wavelengthIndex, int phaseIndex) {
 	
 	return orientationIndex * (total_number_of_wavelengths * total_number_of_phases) + wavelengthIndex * total_number_of_phases + phaseIndex;
 }

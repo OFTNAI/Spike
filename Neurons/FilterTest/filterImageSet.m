@@ -47,10 +47,10 @@ end
 vOrients = [vOrients ']'];
 
 iParams = fopen([inputDirectory,'/',imageParamFile],'w+');
-fprintf(iParams, [vPhases ' // Phases\n'] );
-fprintf(iParams, [vScales ' // Scales\n'] );
-fprintf(iParams, [vOrients ' // Orientations\n'] );
-fprintf(iParams, '[' imageSize ']' '//Dimension\n'] );
+fprintf(iParams, [vPhases ' Phases\n'] );
+fprintf(iParams, [vScales ' Scales\n'] );
+fprintf(iParams, [vOrients ' Orientations\n'] );
+fprintf(iParams, '[' imageSize ']' ' Dimension\n'] );
 
 code = fclose(iParams);
 
