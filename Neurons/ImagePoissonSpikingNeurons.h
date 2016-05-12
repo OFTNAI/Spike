@@ -9,6 +9,8 @@
 
 #include <vector>
 
+#include "Utilities.h"
+
 using namespace std;
 
 struct image_poisson_spiking_neuron_parameters_struct : poisson_spiking_neuron_parameters_struct {
@@ -34,12 +36,19 @@ public:
 	void loadFileList(const char * fileList, const char * inputDirectory);
 	void load_filter_parameters(const char * filterParameters, const char * inputDirectory);
 	void loadInput(const char * inputDirectory);
+	u_short mapToV1Depth(u_short orientationIndex, u_short wavelengthIndex, u_short phaseIndex);
 
 	vector<string> inputNames;
 
 	vector<float> * filterPhases;
 	vector<int>  * filterWavelengths;
 	vector<float> * filterOrientations;
+
+	vector<vector<vector<vector<float> > > > buffer; // buffer[fileNr][depth][row][col]
+
+	u_short dimension, depth;
+	u_short nrOfTransformations;
+	u_short nrOfObjects;
 	
 
 };

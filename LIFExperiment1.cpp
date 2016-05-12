@@ -22,7 +22,7 @@ int main (int argc, char *argv[]){
 	float time_step = 0.0001;
 	simulator.SetTimestep(time_step);
 	simulator.SetNeuronType(new LIFSpikingNeurons());
-	simulator.SetInputNeuronType(new ImagePoissonSpikingNeurons("FileList.txt", "FilterParameters.txt", "Neurons/FilterTest/Inputs"));
+	simulator.SetInputNeuronType(new ImagePoissonSpikingNeurons("FileList.txt", "FilterParameters.txt", "Neurons/FilterTest/Inputs/"));
 	simulator.SetSynapseType(new LIFSpikingSynapses());
 
 	// simulator.input_neurons.set_images_from_file_list_and_directory("untitled.txt", "");

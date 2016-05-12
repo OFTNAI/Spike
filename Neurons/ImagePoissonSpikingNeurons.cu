@@ -16,6 +16,8 @@ ImagePoissonSpikingNeurons::ImagePoissonSpikingNeurons(const char * fileList, co
 	filterPhases = new vector<float>();
 	filterWavelengths = new vector<int>();
 	filterOrientations = new std::vector<float>();
+	nrOfTransformations = 0;
+	nrOfObjects = 0;
 
 	set_images_from_file_list_and_directory(fileList, filterParameters, inputDirectory);
 
@@ -91,8 +93,6 @@ void ImagePoissonSpikingNeurons::loadFileList(const char * fileList, const char 
 
 
 	//JI TEMP
-	int nrOfTransformations = 0;
-	int nrOfObjects = 0;
 	int nrOfFiles = 0;
 
 	
@@ -160,7 +160,7 @@ void ImagePoissonSpikingNeurons::load_filter_parameters(const char * filterParam
 		stringstream lineStream(dirNameBase);
 
 		int num;
-		while (true) {
+		while (lineStream.str().size() != 0) {
 			if ((lineStream.peek() == ',') || (lineStream.peek() == '[') || (lineStream.peek() == ' ')) {
 				lineStream.ignore();
 			} else if (lineStream.peek() == ']') {
@@ -181,6 +181,9 @@ void ImagePoissonSpikingNeurons::load_filter_parameters(const char * filterParam
 					case 2:
 						filterOrientations->push_back((float)num);
 						break;	
+					case 3:
+						dimension = num;
+						break; 
 				}
 
 			}	
@@ -189,10 +192,15 @@ void ImagePoissonSpikingNeurons::load_filter_parameters(const char * filterParam
 		line_index++;
 
 	}
+
+	depth = filterWavelengths->size()*filterPhases->size()*filterOrientations->size();
 }
 
 
 void ImagePoissonSpikingNeurons::loadInput(const char * inputDirectory) {
+
+	vector<vector<vector<vector<float> > > > tmp2(nrOfObjects * nrOfTransformations, vector<vector<vector<float> > >(depth, vector<vector<float> >(dimension, vector<float>(dimension)))); 
+	buffer = tmp2;
 	
 	cout << "inputNames.size: " << inputNames.size() << endl;
 
@@ -204,49 +212,53 @@ void ImagePoissonSpikingNeurons::loadInput(const char * inputDirectory) {
 			for(u_short wavelength = 0;wavelength < filterWavelengths->size();wavelength++) {	// Wavelengths
 				for(u_short phase = 0;phase < filterPhases->size();phase++) {				// Phases
 					
-		// 			// Read input to network
-		// 			ostringstream dirStream;
+					// Read input to network
+					ostringstream dirStream;
 
-		// 			// Old
-		// 			dirStream << inputDirectory << inputNames[f] << ".flt" << "/" 
-		// 			<< inputNames[f] << '.' << filterWavelengths[wavelength] << '.' 
-		// 			<< filterOrientations[orientation] << '.' << filterPhases[phase] << ".gbo";
+					dirStream << inputDirectory << "Filtered/" << inputNames[f] << ".flt" << "/"
+					<< inputNames[f] << '.' << filterWavelengths->at(wavelength) << '.' 
+					<< filterOrientations->at(orientation) << '.' << filterPhases->at(phase) << ".gbo";
 					
-		// 			string t = dirStream.str();
+					string t = dirStream.str();
 					
-		// 			// Open&Read gabor filter file
-		// 			fstreamWrapper gaborStream;
+					// Open&Read gabor filter file
+					fstreamWrapper gaborStream;
 					
-		// 			try {
-		// 				float firing;
-		// 				gaborStream.open(t.c_str(), std::ios_base::in | std::ios_base::binary);
+					try {
+						float firing;
+						gaborStream.open(t.c_str(), std::ios_base::in | std::ios_base::binary);
 						
-						// // Read flat buffer into 2d slice of V1
-						// u_short d = mapToV1Depth(orientation,wavelength,phase);
-						// for(u_short i = 0;i < dimension;i++)
-						// 	for(u_short j = 0;j < dimension;j++) {
+						// Read flat buffer into 2d slice of V1
+						u_short d = mapToV1Depth(orientation,wavelength,phase);
+						for(u_short i = 0;i < dimension;i++)
+							for(u_short j = 0;j < dimension;j++) {
 								
-						// 		gaborStream >> firing;
+								gaborStream >> firing;
 								
-						// 		if(firing < 0) {
-						// 			cerr << "Negative firing loaded from filter!!!" << endl;
-						// 			exit(EXIT_FAILURE);
-						// 		}
+								if(firing < 0) {
+									cerr << "Negative firing loaded from filter!!!" << endl;
+									exit(EXIT_FAILURE);
+								}
 								
-						// 		buffer[f][d][i][j] = firing;
-						// 	}
+								buffer[f][d][i][j] = firing;
+							}
 						
-		// 			} catch (fstream::failure e) {
-		// 				stringstream s;
-		// 				s << "Unable to open/read from " << t << " for gabor input: " << e.what();
-		// 				cerr << s.str();
-		// 				exit(EXIT_FAILURE);
-		// 			}
+					} catch (fstream::failure e) {
+						stringstream s;
+						s << "Unable to open/read from " << t << " for gabor input: " << e.what();
+						cerr << s.str();
+						exit(EXIT_FAILURE);
+					}
 				}
 			}
 		}
 	}
 }
 
+
+u_short ImagePoissonSpikingNeurons::mapToV1Depth(u_short orientationIndex, u_short wavelengthIndex, u_short phaseIndex) {
+	
+	return orientationIndex * (filterWavelengths->size() * filterPhases->size()) + wavelengthIndex * filterPhases->size() + phaseIndex;
+}
 
 
