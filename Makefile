@@ -25,8 +25,8 @@ model: ${FILE}
 
 
 # Separating out the individual compilations so as not to compilation time
-${FILE}: ObjectFiles/${FILE}.o ObjectFiles/Simulator.o ObjectFiles/Neurons.o ObjectFiles/SpikingNeurons.o ObjectFiles/IzhikevichSpikingNeurons.o ObjectFiles/LIFSpikingNeurons.o ObjectFiles/PoissonSpikingNeurons.o ObjectFiles/ImagePoissonSpikingNeurons.o ObjectFiles/FstreamWrapper.o ObjectFiles/GeneratorSpikingNeurons.o ObjectFiles/Synapses.o ObjectFiles/SpikingSynapses.o ObjectFiles/IzhikevichSpikingSynapses.o ObjectFiles/LIFSpikingSynapses.o ObjectFiles/RecordingElectrodes.o
-	$(CC) ObjectFiles/${FILE}.o ObjectFiles/Simulator.o ObjectFiles/Neurons.o ObjectFiles/SpikingNeurons.o ObjectFiles/IzhikevichSpikingNeurons.o ObjectFiles/LIFSpikingNeurons.o ObjectFiles/PoissonSpikingNeurons.o ObjectFiles/ImagePoissonSpikingNeurons.o ObjectFiles/FstreamWrapper.o ObjectFiles/GeneratorSpikingNeurons.o ObjectFiles/Synapses.o ObjectFiles/SpikingSynapses.o ObjectFiles/IzhikevichSpikingSynapses.o ObjectFiles/LIFSpikingSynapses.o ObjectFiles/RecordingElectrodes.o -o ${FILE}
+${FILE}: ObjectFiles/${FILE}.o ObjectFiles/Simulator.o ObjectFiles/Neurons.o ObjectFiles/SpikingNeurons.o ObjectFiles/IzhikevichSpikingNeurons.o ObjectFiles/LIFSpikingNeurons.o ObjectFiles/PoissonSpikingNeurons.o ObjectFiles/ImagePoissonSpikingNeurons.o ObjectFiles/FstreamWrapper.o ObjectFiles/GeneratorSpikingNeurons.o ObjectFiles/Synapses.o ObjectFiles/SpikingSynapses.o ObjectFiles/IzhikevichSpikingSynapses.o ObjectFiles/LIFSpikingSynapses.o ObjectFiles/RecordingElectrodes.o ObjectFiles/RandomStateManager.o
+	$(CC) ObjectFiles/${FILE}.o ObjectFiles/Simulator.o ObjectFiles/Neurons.o ObjectFiles/SpikingNeurons.o ObjectFiles/IzhikevichSpikingNeurons.o ObjectFiles/LIFSpikingNeurons.o ObjectFiles/PoissonSpikingNeurons.o ObjectFiles/ImagePoissonSpikingNeurons.o ObjectFiles/FstreamWrapper.o ObjectFiles/GeneratorSpikingNeurons.o ObjectFiles/Synapses.o ObjectFiles/SpikingSynapses.o ObjectFiles/IzhikevichSpikingSynapses.o ObjectFiles/LIFSpikingSynapses.o ObjectFiles/RecordingElectrodes.o ObjectFiles/RandomStateManager.o -o ${FILE}
 
 # Compiling the Model file
 ObjectFiles/${FILE}.o: ${FILE}.cpp
@@ -73,11 +73,14 @@ ObjectFiles/LIFSpikingSynapses.o: Synapses/LIFSpikingSynapses.cu
 # Compiling RecordingElectrodes class
 ObjectFiles/RecordingElectrodes.o: RecordingElectrodes/RecordingElectrodes.cu
 	$(CC) $(CFLAGS) RecordingElectrodes/RecordingElectrodes.cu -o $@
+# Compiling RandomStateManager class
+ObjectFiles/RandomStateManager.o: Helpers/RandomStateManager.cu
+	$(CC) $(CFLAGS) Helpers/RandomStateManager.cu -o $@
 
 
 # Test script
-test: Simulator.o Neurons.o SpikingNeurons.o IzhikevichSpikingNeurons.o PoissonSpikingNeurons.o ImagePoissonSpikingNeurons.o FstreamWrapper.o GeneratorSpikingNeurons.o Synapses.o RecordingElectrodes.o
-	$(CC) Tests.cu Simulator.o Neurons.o SpikingNeurons.o IzhikevichSpikingNeurons.o PoissonSpikingNeurons.o ImagePoissonSpikingNeurons.o FstreamWrapper.o GeneratorSpikingNeurons.o Synapses.o RecordingElectrodes.o -o unittests
+test: Simulator.o Neurons.o SpikingNeurons.o IzhikevichSpikingNeurons.o PoissonSpikingNeurons.o ImagePoissonSpikingNeurons.o FstreamWrapper.o GeneratorSpikingNeurons.o Synapses.o RecordingElectrodes.o RandomStateManager.o
+	$(CC) Tests.cu Simulator.o Neurons.o SpikingNeurons.o IzhikevichSpikingNeurons.o PoissonSpikingNeurons.o ImagePoissonSpikingNeurons.o FstreamWrapper.o GeneratorSpikingNeurons.o Synapses.o RecordingElectrodes.o RandomStateManager.o -o unittests
 cleantest:
 	rm *.o unittests
 

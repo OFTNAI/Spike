@@ -11,6 +11,8 @@ PoissonSpikingNeurons::PoissonSpikingNeurons() {
 	rates = NULL;
 	d_rates = NULL;
 	d_states = NULL;
+
+	random_state_manager = NULL;
 }
 
 
@@ -60,6 +62,12 @@ void PoissonSpikingNeurons::reset_neurons() {
 	
 // }
 
+void PoissonSpikingNeurons::set_threads_per_block_and_blocks_per_grid(int threads) {
+	
+	SpikingNeurons::set_threads_per_block_and_blocks_per_grid(threads);
+
+}
+
 
 
 __global__ void generate_random_states_kernal(unsigned int seed, curandState_t* d_states, size_t total_number_of_neurons);
@@ -69,9 +77,14 @@ void PoissonSpikingNeurons::generate_random_states() {
 	
 	printf("Generating input neuron random states\n");
 
-	generate_random_states_kernal<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(42, d_states, total_number_of_neurons);
+	// generate_random_states_kernal<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(42, d_states, total_number_of_neurons);
 
-	CudaCheckError();
+	// CudaCheckError();
+
+	if (random_state_manager == NULL) {
+		random_state_manager = new RandomStateManager();
+		random_state_manager->set_up_random_states(512, 128, 9);
+	}
 }
 
 
@@ -96,11 +109,18 @@ __global__ void poisson_update_membrane_potentials_kernal(curandState_t* d_state
 
 void PoissonSpikingNeurons::update_membrane_potentials(float timestep) {
 
-	poisson_update_membrane_potentials_kernal<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_states,
+	// poisson_update_membrane_potentials_kernal<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_states,
+	// 													random_state_manager->d_rates,
+	// 													d_membrane_potentials_v,
+	// 													timestep,
+	// 													total_number_of_neurons);
+
+	poisson_update_membrane_potentials_kernal<<<random_state_manager->block_dimensions, random_state_manager->threads_per_block>>>(random_state_manager->d_states,
 														d_rates,
 														d_membrane_potentials_v,
 														timestep,
 														total_number_of_neurons);
+
 	CudaCheckError();
 }
 
@@ -111,14 +131,15 @@ __global__ void poisson_update_membrane_potentials_kernal(curandState_t* d_state
 							float timestep,
 							size_t total_number_of_inputs){
 
-	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-
-	if (idx < total_number_of_inputs){
+	 
+	int t_idx = threadIdx.x + blockIdx.x * blockDim.x;
+	int idx = t_idx;
+	while (idx < total_number_of_inputs){
 
 		// Creates random float between 0 and 1 from uniform distribution
 		// d_states effectively provides a different seed for each thread
 		// curand_uniform produces different float every time you call it
-		float random_float = curand_uniform(&d_states[idx]);
+		float random_float = curand_uniform(&d_states[t_idx]);
 
 		// if the randomnumber is less than the rate
 		if (random_float < (d_rates[idx] * timestep)){
@@ -127,6 +148,8 @@ __global__ void poisson_update_membrane_potentials_kernal(curandState_t* d_state
 			d_membrane_potentials_v[idx] = 35.0f;
 
 		} 
+
+		idx += blockDim.x * gridDim.x;
 
 	}
 	__syncthreads();

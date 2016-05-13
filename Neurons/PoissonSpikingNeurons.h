@@ -7,6 +7,8 @@
 
 #include "SpikingNeurons.h"
 
+#include "../Helpers/RandomStateManager.h"
+
 struct poisson_spiking_neuron_parameters_struct : spiking_neuron_parameters_struct {
 	poisson_spiking_neuron_parameters_struct(): rate(0.0f) { spiking_neuron_parameters_struct(); }
 
@@ -25,9 +27,12 @@ public:
 
 	curandState_t* d_states;
 
+	RandomStateManager * random_state_manager;
+
 	virtual int AddGroup(neuron_parameters_struct * group_params, int group_shape[2]);
 	virtual void allocate_device_pointers();
 	virtual void reset_neurons();
+	virtual void set_threads_per_block_and_blocks_per_grid(int threads);
 
 	void generate_random_states();
 	void update_membrane_potentials(float timestep);
