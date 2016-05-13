@@ -15,11 +15,11 @@ public:
 
 	// Full Matrices
 	int* delays;
-	int* stdp;
+	bool* stdp;
 
 	// Device pointers
 	int* d_delays;
-	int* d_stdp;
+	bool* d_stdp;
 	
 	int* d_spikes_travelling_to_synapse;
 	int* d_spikes_travelling_to_synapse_buffer;

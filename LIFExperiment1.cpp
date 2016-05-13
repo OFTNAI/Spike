@@ -33,7 +33,7 @@ int main (int argc, char *argv[]){
 
 	//
 	int EXCITATORY_LAYER_SHAPE[] = {64, 64};
-	int INHIBITORY_LAYER_SHAPE[] = {32, 32};
+	int INHIBITORY_LAYER_SHAPE[] = {16, 16};
 
 	ImagePoissonSpikingNeurons* input_neurons = (ImagePoissonSpikingNeurons*)simulator.input_neurons;
 	input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "MatlabGaborFilter/Inputs/");
@@ -60,7 +60,7 @@ int main (int argc, char *argv[]){
 	connectivity_parameters->max_number_of_connections_per_pair = 5;
 
 	//
-	float INPUT_TO_EXCITATORY_WEIGHT_RANGE[] = {0.0, 18.0f*pow(10, -9)};
+	float INPUT_TO_EXCITATORY_WEIGHT_RANGE[] = {0.0, 18.0f*pow(10, -7)};
 	float EXCITATORY_TO_EXCITATORY_WEIGHT_RANGE[] = {0.0, 18.0f*pow(10, -9)};
 	float EXCITATORY_TO_INHIBITORY_WEIGHT_RANGE[] = {0.0, 18.0f*pow(10, -9)};
 	float INHIBITORY_TO_EXCITATORY_WEIGHT_RANGE[] = {0.0, 18.0f*pow(10, -9)};

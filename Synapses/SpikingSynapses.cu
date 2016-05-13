@@ -75,12 +75,7 @@ void SpikingSynapses::AddGroup(int presynaptic_group_id,
 			float rnddelay = delay_range[0] + (delay_range[1] - delay_range[0])*((float)rand() / (RAND_MAX));
 			delays[i] = round(rnddelay);
 		}
-		// Setup STDP
-		if (stdp_on){
-			stdp[i] = 1;
-		} else {
-			stdp[i] = 0;
-		}
+		stdp[i] = stdp_on;
 	}
 
 }
@@ -90,7 +85,7 @@ void SpikingSynapses::increment_number_of_synapses(int increment) {
 	Synapses::increment_number_of_synapses(increment);
 
     delays = (int*)realloc(delays, total_number_of_synapses * sizeof(int));
-    stdp = (int*)realloc(stdp, total_number_of_synapses * sizeof(int));
+    stdp = (bool*)realloc(stdp, total_number_of_synapses * sizeof(bool));
 
 }
 
@@ -101,12 +96,12 @@ void SpikingSynapses::allocate_device_pointers() {
 
 	CudaSafeCall(cudaMalloc((void **)&d_delays, sizeof(int)*total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&d_spikes_travelling_to_synapse, sizeof(int)*total_number_of_synapses));
-	CudaSafeCall(cudaMalloc((void **)&d_stdp, sizeof(int)*total_number_of_synapses));
+	CudaSafeCall(cudaMalloc((void **)&d_stdp, sizeof(bool)*total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&d_time_of_last_spike_to_reach_synapse, sizeof(float)*total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&d_spikes_travelling_to_synapse_buffer, sizeof(int)*total_number_of_synapses));
 
 	CudaSafeCall(cudaMemcpy(d_delays, delays, sizeof(int)*total_number_of_synapses, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemcpy(d_stdp, stdp, sizeof(int)*total_number_of_synapses, cudaMemcpyHostToDevice));
+	CudaSafeCall(cudaMemcpy(d_stdp, stdp, sizeof(bool)*total_number_of_synapses, cudaMemcpyHostToDevice));
 
 }
 
@@ -123,7 +118,7 @@ void SpikingSynapses::shuffle_synapses() {
 	Synapses::shuffle_synapses();
 
 	int * temp_delays = (int *)malloc(total_number_of_synapses*sizeof(int));
-	int * temp_stdp = (int *)malloc(total_number_of_synapses*sizeof(int));
+	bool * temp_stdp = (bool *)malloc(total_number_of_synapses*sizeof(bool));
 	for(int i = 0; i < total_number_of_synapses; i++) {
 
 		temp_delays[i] = delays[original_synapse_indices[i]];

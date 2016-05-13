@@ -124,7 +124,7 @@ __global__ void lif_update_postsynaptic_activities_kernal(float timestep,
 				float model_parameter_alpha_D = 0.5;
 				new_recent_postsynaptic_activity_D += timestep * model_parameter_alpha_D * (1 - recent_postsynaptic_activity_D);
 			}
-
+			
 			d_recent_postsynaptic_activities_D[idx] = new_recent_postsynaptic_activity_D;
 
 		// }

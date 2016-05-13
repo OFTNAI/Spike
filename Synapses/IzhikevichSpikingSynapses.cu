@@ -82,7 +82,7 @@ __global__ void izhikevich_calculate_postsynaptic_current_injection_kernal(float
 
 __global__ void izhikevich_apply_ltd_to_synapse_weights_kernal(float* d_time_of_last_spike_to_reach_synapse,
 							float* d_synaptic_efficacies_or_weights,
-							int* d_stdp,
+							bool* d_stdp,
 							float* d_last_spike_time_of_each_neuron,
 							int* d_postsyns,
 							float currtime,
@@ -91,7 +91,7 @@ __global__ void izhikevich_apply_ltd_to_synapse_weights_kernal(float* d_time_of_
 
 __global__ void izhikevich_apply_ltp_to_synapse_weights_kernal(int* d_postsyns,
 							float* d_last_spike_time_of_each_neuron,
-							int* d_stdp,
+							bool* d_stdp,
 							float* d_time_of_last_spike_to_reach_synapse,
 							float* d_synaptic_efficacies_or_weights,
 							struct stdp_struct stdp_vars,
@@ -164,7 +164,7 @@ __global__ void izhikevich_calculate_postsynaptic_current_injection_kernal(float
 
 __global__ void izhikevich_apply_ltd_to_synapse_weights_kernal(float* d_time_of_last_spike_to_reach_synapse,
 							float* d_synaptic_efficacies_or_weights,
-							int* d_stdp,
+							bool* d_stdp,
 							float* d_last_spike_time_of_each_neuron,
 							int* d_postsyns,
 							float currtime,
@@ -190,7 +190,7 @@ __global__ void izhikevich_apply_ltd_to_synapse_weights_kernal(float* d_time_of_
 // LTP on synapses
 __global__ void izhikevich_apply_ltp_to_synapse_weights_kernal(int* d_postsyns,
 							float* d_last_spike_time_of_each_neuron,
-							int* d_stdp,
+							bool* d_stdp,
 							float* d_time_of_last_spike_to_reach_synapse,
 							float* d_synaptic_efficacies_or_weights,
 							struct stdp_struct stdp_vars,
@@ -201,7 +201,7 @@ __global__ void izhikevich_apply_ltp_to_synapse_weights_kernal(int* d_postsyns,
 	if (idx < total_number_of_synapse) {
 		// Get the synapses upon which we should do LTP
 		// Reversed indexing to check post->pre synapses
-		if ((d_last_spike_time_of_each_neuron[d_postsyns[idx]] == currtime) && (d_stdp[idx] == 1)){
+		if ((d_last_spike_time_of_each_neuron[d_postsyns[idx]] == currtime) && (d_stdp[idx] == true)){
 			// Get the last active time / weight of the synapse
 			// Calc time difference and weight change
 			float diff = currtime - d_time_of_last_spike_to_reach_synapse[idx];

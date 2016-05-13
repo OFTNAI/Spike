@@ -289,7 +289,7 @@ void ImagePoissonSpikingNeurons::load_rates_from_files(const char * inputDirecto
 
 								int element_index = start_index_for_current_gabor_image + image_x + image_y * image_width;
 								
-								gabor_input_rates[element_index] = rate;
+								gabor_input_rates[element_index] = rate*100.0f;
 							}
 						
 					} catch (fstream::failure e) {
@@ -351,6 +351,7 @@ __global__ void image_poisson_update_membrane_potentials_kernal(curandState_t* d
 		float rate = d_gabor_input_rates[idx];
 
 		if (rate > 0.000001) {
+			// rate = rate * 10.0f;
 
 			// Creates random float between 0 and 1 from uniform distribution
 			// d_states effectively provides a different seed for each thread
