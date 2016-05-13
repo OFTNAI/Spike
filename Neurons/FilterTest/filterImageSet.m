@@ -46,11 +46,13 @@ for o = 2:length(orient)
 end
 vOrients = [vOrients ']'];
 
+imageSizeInBrackets = ['[' num2str(imageSize) ']'];
+
 iParams = fopen([inputDirectory,'/',imageParamFile],'w+');
 fprintf(iParams, [vPhases ' Phases\n'] );
 fprintf(iParams, [vScales ' Scales\n'] );
 fprintf(iParams, [vOrients ' Orientations\n'] );
-fprintf(iParams, '[' imageSize ']' ' Dimension\n'] );
+fprintf(iParams, [imageSizeInBrackets ' Dimension\n'] );
 
 code = fclose(iParams);
 

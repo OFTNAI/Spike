@@ -83,7 +83,7 @@ void PoissonSpikingNeurons::generate_random_states() {
 
 	if (random_state_manager == NULL) {
 		random_state_manager = new RandomStateManager();
-		random_state_manager->set_up_random_states(512, 128, 9);
+		random_state_manager->set_up_random_states(128, 64, 9);
 	}
 }
 
