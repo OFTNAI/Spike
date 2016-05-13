@@ -23,7 +23,7 @@ struct image_poisson_spiking_neuron_parameters_struct : poisson_spiking_neuron_p
 class ImagePoissonSpikingNeurons : public PoissonSpikingNeurons {
 public:
 	// Constructor/Destructor
-	ImagePoissonSpikingNeurons(const char * fileList, const char * filterParameters, const char * inputDirectory);
+	ImagePoissonSpikingNeurons();
 	~ImagePoissonSpikingNeurons();
 
 	virtual int AddGroup(neuron_parameters_struct * group_params, int group_shape[2]);
@@ -62,10 +62,6 @@ public:
 	vector<float> * filterPhases;
 	vector<int>  * filterWavelengths;
 	vector<float> * filterOrientations;
-
-	vector<vector<vector<vector<float> > > > * buffer; // buffer[fileNr(image_number)][total_number_of_gabor_types(gabor_number)][row][col]
-	vector<vector<vector<vector<float> > > > * d_buffer;
-
 	
 
 	int total_number_of_transformations_per_object;

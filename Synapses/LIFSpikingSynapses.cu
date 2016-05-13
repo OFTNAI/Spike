@@ -271,8 +271,9 @@ __global__ void lif_calculate_postsynaptic_current_injection_kernal(float* d_syn
 		float synaptic_conductance_g = d_synaptic_conductances_g[idx];
 
 		float component_for_sum = synaptic_conductance_g * (temp_reversal_potential_Vhat - membrane_potential_v);
-
-		atomicAdd(&d_neurons_current_injections[d_postsynaptic_neuron_indices[idx]], component_for_sum);
+		if (component_for_sum != 0.0) {
+			atomicAdd(&d_neurons_current_injections[d_postsynaptic_neuron_indices[idx]], component_for_sum);
+		}
 
 	}
 	__syncthreads();

@@ -22,7 +22,7 @@ int main (int argc, char *argv[]){
 	float time_step = 0.0001;
 	simulator.SetTimestep(time_step);
 	simulator.SetNeuronType(new LIFSpikingNeurons());
-	simulator.SetInputNeuronType(new ImagePoissonSpikingNeurons("FileList.txt", "FilterParameters.txt", "Neurons/FilterTest/Inputs/"));
+	simulator.SetInputNeuronType(new ImagePoissonSpikingNeurons());
 	simulator.SetSynapseType(new LIFSpikingSynapses());
 
 	//
@@ -36,7 +36,7 @@ int main (int argc, char *argv[]){
 	int INHIBITORY_LAYER_SHAPE[] = {32, 32};
 
 	ImagePoissonSpikingNeurons* input_neurons = (ImagePoissonSpikingNeurons*)simulator.input_neurons;
-	input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "Neurons/FilterTest/Inputs/");
+	input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "MatlabGaborFilter/Inputs/");
 	image_poisson_spiking_neuron_parameters_struct * image_poisson_spiking_group_params = new image_poisson_spiking_neuron_parameters_struct();
 	image_poisson_spiking_group_params->rate = 30.0f;
 	input_neurons->AddGroupForEachGaborType(image_poisson_spiking_group_params);

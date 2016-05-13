@@ -11,7 +11,7 @@
 
 
 // ImagePoissonSpikingNeurons Constructor
-ImagePoissonSpikingNeurons::ImagePoissonSpikingNeurons(const char * fileList, const char * filterParameters, const char * inputDirectory) {
+ImagePoissonSpikingNeurons::ImagePoissonSpikingNeurons() {
 
 	//JI
 	total_number_of_input_images = 0;
@@ -35,8 +35,6 @@ ImagePoissonSpikingNeurons::ImagePoissonSpikingNeurons(const char * fileList, co
 	filterPhases = new vector<float>();
 	filterWavelengths = new vector<int>();
 	filterOrientations = new vector<float>();
-	// buffer = new vector<vector<vector<vector<float> > > >();
-	
 
 }
 
