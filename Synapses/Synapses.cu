@@ -57,6 +57,8 @@ Synapses::Synapses() {
 
 	d_states_for_random_number_generation = NULL;
 
+	states_set_up = false;
+
 	// On construction, seed
 	srand(42);	// Seeding the random numbers
 }
@@ -256,11 +258,21 @@ void Synapses::AddGroup(int presynaptic_group_id,
 
 			this->increment_number_of_synapses(total_number_of_new_synapses);
 
+
+
+
+			//Setting up random states
 			int threads = 512;
 			dim3 threads_per_block = dim3(threads);
-			int number_of_blocks_x = min((total_number_of_new_synapses + threads)/threads, 65535);
-			int old_largest_number_of_blocks_x = min((largest_synapse_group_size + threads)/threads, 65535);
+			int number_of_blocks_x = 128;
 			dim3 new_synapses_block_dimensions = dim3(number_of_blocks_x);
+
+			if (states_set_up == false) {
+				states_set_up = true;
+				CudaSafeCall(cudaMalloc((void**) &d_states_for_random_number_generation, sizeof(curandState_t)*threads*new_synapses_block_dimensions.x));
+				generate_random_states2_kernal<<<new_synapses_block_dimensions, threads_per_block>>>(9, d_states_for_random_number_generation, threads*new_synapses_block_dimensions.x);
+				CudaCheckError();
+			}
 
 			if (total_number_of_new_synapses > largest_synapse_group_size) {
 
@@ -268,25 +280,10 @@ void Synapses::AddGroup(int presynaptic_group_id,
 
 				CudaSafeCall(cudaMalloc((void **)&d_temp_presynaptic_neuron_indices, sizeof(int)*total_number_of_new_synapses));
 				CudaSafeCall(cudaMalloc((void **)&d_temp_postsynaptic_neuron_indices, sizeof(int)*total_number_of_new_synapses));
-				// CudaSafeCall(cudaMalloc((void**) &d_states_for_random_number_generation, sizeof(curandState_t)*total_number_of_new_synapses));
-				
+
 			}
 
-			if (old_largest_number_of_blocks_x < number_of_blocks_x) {
-				CudaSafeCall(cudaMalloc((void**) &d_states_for_random_number_generation, sizeof(curandState_t)*threads*new_synapses_block_dimensions.x));
-
-				printf("new_synapses_block_dimensions.x: %d\n", new_synapses_block_dimensions.x);
-
-				printf("Setting up random states...\n");
-
-				// generate_random_states2_kernal<<<new_synapses_block_dimensions, threads_per_block>>>(9, d_states_for_random_number_generation, total_number_of_new_synapses);
-				generate_random_states2_kernal<<<new_synapses_block_dimensions, threads_per_block>>>(9, d_states_for_random_number_generation, threads*new_synapses_block_dimensions.x);
-				CudaCheckError();
-
-				printf("Random states set.\n");
-			}
-
-
+			printf("total_number_of_new_synapses: %d\n", total_number_of_new_synapses);
 			set_neuron_indices_by_sampling_from_normal_distribution<<<new_synapses_block_dimensions, threads_per_block>>>(total_number_of_new_synapses, postsynaptic_group_id, poststart, prestart, postsynaptic_group_shape[0], postsynaptic_group_shape[1], presynaptic_group_shape[0], presynaptic_group_shape[1], number_of_new_synapses_per_postsynaptic_neuron, number_of_postsynaptic_neurons_in_group, d_temp_presynaptic_neuron_indices, d_temp_postsynaptic_neuron_indices, d_temp_synaptic_efficacies_or_weights, standard_deviation_sigma, group_type_factor, group_type_component, d_states_for_random_number_generation);
 			CudaCheckError();
 

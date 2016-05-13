@@ -98,6 +98,8 @@ public:
 
 	bool neuron_indices_set_up_on_device;
 
+	bool states_set_up;
+
 	// Synapse Functions
 	virtual void AddGroup(int presynaptic_group_id, 
 						int postsynaptic_group_id, 

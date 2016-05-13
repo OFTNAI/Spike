@@ -25,8 +25,6 @@ int main (int argc, char *argv[]){
 	simulator.SetInputNeuronType(new ImagePoissonSpikingNeurons("FileList.txt", "FilterParameters.txt", "Neurons/FilterTest/Inputs/"));
 	simulator.SetSynapseType(new LIFSpikingSynapses());
 
-	// simulator.input_neurons.set_images_from_file_list_and_directory("untitled.txt", "");
-
 	//
 	poisson_spiking_neuron_parameters_struct * poisson_spiking_group_params = new poisson_spiking_neuron_parameters_struct();
 	poisson_spiking_group_params->rate = 30.0f;
@@ -38,20 +36,15 @@ int main (int argc, char *argv[]){
 	lif_spiking_group_params->paramd = 6.0f; //Old Izhikevich parameter. Leaving temporarily so spikes
 
 	//
-	int INPUT_LAYER_SHAPE[] = {64, 64};
 	int EXCITATORY_LAYER_SHAPE[] = {64, 64};
 	int INHIBITORY_LAYER_SHAPE[] = {32, 32};
 
-	float CONNECTIVITY_STANDARD_DEVIATION_SIGMA = 5.0;
+	ImagePoissonSpikingNeurons* input_neurons = (ImagePoissonSpikingNeurons*)simulator.input_neurons;
+	input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "Neurons/FilterTest/Inputs/");
+	image_poisson_spiking_neuron_parameters_struct * image_poisson_spiking_group_params = new image_poisson_spiking_neuron_parameters_struct();
+	image_poisson_spiking_group_params->rate = 30.0f;
+	input_neurons->AddGroupForEachInputImage(image_poisson_spiking_group_params);
 
-	connectivity_parameters_struct * connectivity_parameters = new connectivity_parameters_struct();
-	connectivity_parameters->max_number_of_connections_per_pair = 5;
-
-	//
-	int INPUT_NEURONS_GROUP_1 = simulator.AddInputNeuronGroup(poisson_spiking_group_params, INPUT_LAYER_SHAPE);
-	int INPUT_NEURONS_GROUP_2 = simulator.AddInputNeuronGroup(poisson_spiking_group_params, INPUT_LAYER_SHAPE);
-	int INPUT_NEURONS_GROUP_3 = simulator.AddInputNeuronGroup(poisson_spiking_group_params, INPUT_LAYER_SHAPE);
-	int INPUT_NEURONS_GROUP_4 = simulator.AddInputNeuronGroup(poisson_spiking_group_params, INPUT_LAYER_SHAPE);
 	int EXCITATORY_NEURONS_LAYER_1 = simulator.AddNeuronGroup(lif_spiking_group_params, EXCITATORY_LAYER_SHAPE);
 	int EXCITATORY_NEURONS_LAYER_2 = simulator.AddNeuronGroup(lif_spiking_group_params, EXCITATORY_LAYER_SHAPE);
 	int EXCITATORY_NEURONS_LAYER_3 = simulator.AddNeuronGroup(lif_spiking_group_params, EXCITATORY_LAYER_SHAPE);
@@ -60,7 +53,16 @@ int main (int argc, char *argv[]){
 	int INHIBITORY_NEURONS_LAYER_2 = simulator.AddNeuronGroup(lif_spiking_group_params, INHIBITORY_LAYER_SHAPE);
 	int INHIBITORY_NEURONS_LAYER_3 = simulator.AddNeuronGroup(lif_spiking_group_params, INHIBITORY_LAYER_SHAPE);
 	int INHIBITORY_NEURONS_LAYER_4 = simulator.AddNeuronGroup(lif_spiking_group_params, INHIBITORY_LAYER_SHAPE);
-	
+
+
+	printf("Setting up synapses...\n");
+	clock_t begin = clock();
+
+	float CONNECTIVITY_STANDARD_DEVIATION_SIGMA = 5.0;
+
+	connectivity_parameters_struct * connectivity_parameters = new connectivity_parameters_struct();
+	connectivity_parameters->max_number_of_connections_per_pair = 5;
+
 	//
 	float INPUT_TO_EXCITATORY_WEIGHT_RANGE[] = {0.0, 18.0f*pow(10, -6)};
 	float EXCITATORY_TO_EXCITATORY_WEIGHT_RANGE[] = {0.0, 18.0f*pow(10, -9)};
@@ -73,16 +75,9 @@ int main (int argc, char *argv[]){
 	float EXCITATORY_TO_INHIBITORY_DELAY_RANGE[] = {time_step, 50.0f*pow(10, -3)};
 	float INHIBITORY_TO_EXCITATORY_DELAY_RANGE[] = {time_step, 50.0f*pow(10, -3)};
 
-	printf("Setting up synapses...\n");
-	clock_t begin = clock();
-
-	simulator.AddSynapseGroupsForNeuronGroupAndEachInputGroups(EXCITATORY_NEURONS_LAYER_1, CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE, INPUT_TO_EXCITATORY_WEIGHT_RANGE, INPUT_TO_EXCITATORY_DELAY_RANGE, false, connectivity_parameters, CONNECTIVITY_STANDARD_DEVIATION_SIGMA);
-
 	//
-	// simulator.AddSynapseGroup(INPUT_NEURONS_GROUP_1, EXCITATORY_NEURONS_LAYER_1, CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE, INPUT_TO_EXCITATORY_WEIGHT_RANGE, INPUT_TO_EXCITATORY_DELAY_RANGE, false, connectivity_parameters, CONNECTIVITY_STANDARD_DEVIATION_SIGMA);
-	// simulator.AddSynapseGroup(INPUT_NEURONS_GROUP_2, EXCITATORY_NEURONS_LAYER_1, CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE, INPUT_TO_EXCITATORY_WEIGHT_RANGE, INPUT_TO_EXCITATORY_DELAY_RANGE, false, connectivity_parameters, CONNECTIVITY_STANDARD_DEVIATION_SIGMA);
-	// simulator.AddSynapseGroup(INPUT_NEURONS_GROUP_3, EXCITATORY_NEURONS_LAYER_1, CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE, INPUT_TO_EXCITATORY_WEIGHT_RANGE, INPUT_TO_EXCITATORY_DELAY_RANGE, false, connectivity_parameters, CONNECTIVITY_STANDARD_DEVIATION_SIGMA);
-	// simulator.AddSynapseGroup(INPUT_NEURONS_GROUP_4, EXCITATORY_NEURONS_LAYER_1, CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE, INPUT_TO_EXCITATORY_WEIGHT_RANGE, INPUT_TO_EXCITATORY_DELAY_RANGE, false, connectivity_parameters, CONNECTIVITY_STANDARD_DEVIATION_SIGMA);
+
+	simulator.AddSynapseGroupsForNeuronGroupAndEachInputGroup(EXCITATORY_NEURONS_LAYER_1, CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE, INPUT_TO_EXCITATORY_WEIGHT_RANGE, INPUT_TO_EXCITATORY_DELAY_RANGE, false, connectivity_parameters, CONNECTIVITY_STANDARD_DEVIATION_SIGMA);
 	
 	simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_1, EXCITATORY_NEURONS_LAYER_2, CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE, EXCITATORY_TO_EXCITATORY_WEIGHT_RANGE, EXCITATORY_TO_EXCITATORY_DELAY_RANGE, true, connectivity_parameters, CONNECTIVITY_STANDARD_DEVIATION_SIGMA);
 	simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_2, EXCITATORY_NEURONS_LAYER_3, CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE, EXCITATORY_TO_EXCITATORY_WEIGHT_RANGE, EXCITATORY_TO_EXCITATORY_DELAY_RANGE, true, connectivity_parameters, CONNECTIVITY_STANDARD_DEVIATION_SIGMA);

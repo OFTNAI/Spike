@@ -65,7 +65,7 @@ public:
 							float parameter = 0.0f,
 							float parameter_two = 0.0f);
 
-	void AddSynapseGroupsForNeuronGroupAndEachInputGroups(int postsynaptic_group_id, 
+	void AddSynapseGroupsForNeuronGroupAndEachInputGroup(int postsynaptic_group_id, 
 							int connectivity_type,
 							float weight_range[2], 
 							float delay_range[2],

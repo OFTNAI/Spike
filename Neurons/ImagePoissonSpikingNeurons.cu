@@ -38,15 +38,6 @@ ImagePoissonSpikingNeurons::ImagePoissonSpikingNeurons(const char * fileList, co
 	// buffer = new vector<vector<vector<vector<float> > > >();
 	
 
-	set_up_rates(fileList, filterParameters, inputDirectory);
-
-	image_poisson_spiking_neuron_parameters_struct * image_poisson_spiking_group_params = new image_poisson_spiking_neuron_parameters_struct();
-	image_poisson_spiking_group_params->rate = 30.0f;
-
-	AddGroupForEachInputImage(image_poisson_spiking_group_params);
-
-
-
 }
 
 
