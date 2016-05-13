@@ -14,9 +14,9 @@
 using namespace std;
 
 struct image_poisson_spiking_neuron_parameters_struct : poisson_spiking_neuron_parameters_struct {
-	image_poisson_spiking_neuron_parameters_struct(): input_image_index(-1) { poisson_spiking_neuron_parameters_struct(); }
+	image_poisson_spiking_neuron_parameters_struct(): gabor_index(-1) { poisson_spiking_neuron_parameters_struct(); }
 
-	int input_image_index;
+	int gabor_index;
 };
 
 
@@ -27,9 +27,10 @@ public:
 	~ImagePoissonSpikingNeurons();
 
 	virtual int AddGroup(neuron_parameters_struct * group_params, int group_shape[2]);
-	void AddGroupForEachInputImage(neuron_parameters_struct * group_params);
+	void AddGroupForEachGaborType(neuron_parameters_struct * group_params);
 	virtual void allocate_device_pointers();
 	virtual void reset_neurons();
+	virtual void update_membrane_potentials(float timestep);
 
 	void set_up_rates(const char * fileList, const char * filterParameters, const char * inputDirectory);
 
@@ -40,8 +41,8 @@ public:
 	int calculate_gabor_index(int orientationIndex, int wavelengthIndex, int phaseIndex);
 
 	//JI VARIABLES
-	float * input_rates;
-	float * d_input_rates;
+	float * gabor_input_rates;
+	float * d_gabor_input_rates;
 
 	int total_number_of_phases;
 	int total_number_of_wavelengths;

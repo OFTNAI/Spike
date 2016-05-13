@@ -109,8 +109,8 @@ __global__ void poisson_update_membrane_potentials_kernal(curandState_t* d_state
 
 void PoissonSpikingNeurons::update_membrane_potentials(float timestep) {
 
-	// poisson_update_membrane_potentials_kernal<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_states,
-	// 													random_state_manager->d_rates,
+	// poisson_update_membrane_potentials_kernal<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(random_state_manager->d_states,
+	// 													d_rates,
 	// 													d_membrane_potentials_v,
 	// 													timestep,
 	// 													total_number_of_neurons);

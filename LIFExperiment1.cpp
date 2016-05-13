@@ -26,10 +26,6 @@ int main (int argc, char *argv[]){
 	simulator.SetSynapseType(new LIFSpikingSynapses());
 
 	//
-	poisson_spiking_neuron_parameters_struct * poisson_spiking_group_params = new poisson_spiking_neuron_parameters_struct();
-	poisson_spiking_group_params->rate = 30.0f;
-
-	//
 	lif_spiking_neuron_parameters_struct * lif_spiking_group_params = new lif_spiking_neuron_parameters_struct();
 	lif_spiking_group_params->after_spike_reset_membrane_potential_c = -74.0f;
 	lif_spiking_group_params->threshold_for_action_potential_spike = -53.0f;
@@ -43,7 +39,7 @@ int main (int argc, char *argv[]){
 	input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "Neurons/FilterTest/Inputs/");
 	image_poisson_spiking_neuron_parameters_struct * image_poisson_spiking_group_params = new image_poisson_spiking_neuron_parameters_struct();
 	image_poisson_spiking_group_params->rate = 30.0f;
-	input_neurons->AddGroupForEachInputImage(image_poisson_spiking_group_params);
+	input_neurons->AddGroupForEachGaborType(image_poisson_spiking_group_params);
 
 	int EXCITATORY_NEURONS_LAYER_1 = simulator.AddNeuronGroup(lif_spiking_group_params, EXCITATORY_LAYER_SHAPE);
 	int EXCITATORY_NEURONS_LAYER_2 = simulator.AddNeuronGroup(lif_spiking_group_params, EXCITATORY_LAYER_SHAPE);
@@ -64,7 +60,7 @@ int main (int argc, char *argv[]){
 	connectivity_parameters->max_number_of_connections_per_pair = 5;
 
 	//
-	float INPUT_TO_EXCITATORY_WEIGHT_RANGE[] = {0.0, 18.0f*pow(10, -6)};
+	float INPUT_TO_EXCITATORY_WEIGHT_RANGE[] = {0.0, 18.0f*pow(10, -9)};
 	float EXCITATORY_TO_EXCITATORY_WEIGHT_RANGE[] = {0.0, 18.0f*pow(10, -9)};
 	float EXCITATORY_TO_INHIBITORY_WEIGHT_RANGE[] = {0.0, 18.0f*pow(10, -9)};
 	float INHIBITORY_TO_EXCITATORY_WEIGHT_RANGE[] = {0.0, 18.0f*pow(10, -9)};

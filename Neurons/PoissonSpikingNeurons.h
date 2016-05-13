@@ -35,7 +35,7 @@ public:
 	virtual void set_threads_per_block_and_blocks_per_grid(int threads);
 
 	void generate_random_states();
-	void update_membrane_potentials(float timestep);
+	virtual void update_membrane_potentials(float timestep);
 
 };
 

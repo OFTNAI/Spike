@@ -62,14 +62,14 @@ int ImagePoissonSpikingNeurons::AddGroup(neuron_parameters_struct * group_params
 }
 
 
-void ImagePoissonSpikingNeurons::AddGroupForEachInputImage(neuron_parameters_struct * group_params) {
+void ImagePoissonSpikingNeurons::AddGroupForEachGaborType(neuron_parameters_struct * group_params) {
 
 	int group_shape[] = {image_width, image_width};
 
 	image_poisson_spiking_neuron_parameters_struct * image_poisson_spiking_group_params = (image_poisson_spiking_neuron_parameters_struct*)group_params;
 
-	for (int input_image_index = 0; input_image_index < total_number_of_input_images; input_image_index++) {
-		image_poisson_spiking_group_params->input_image_index = input_image_index;
+	for (int gabor_index = 0; gabor_index < total_number_of_gabor_types; gabor_index++) {
+		image_poisson_spiking_group_params->gabor_index = gabor_index;
 		int new_group_id = this->AddGroup(image_poisson_spiking_group_params, group_shape);
 	}
 
@@ -238,7 +238,8 @@ void ImagePoissonSpikingNeurons::load_gabor_filter_parameters(const char * filte
 void ImagePoissonSpikingNeurons::load_rates_from_files(const char * inputDirectory) {
 
 
-	input_rates = (float *)malloc(total_number_of_rates*sizeof(float));
+	gabor_input_rates = (float *)malloc(total_number_of_rates*sizeof(float));
+	int zero_count = 0;
 
 	for(int image_index = 0; image_index < total_number_of_input_images; image_index++) {
 
@@ -281,6 +282,8 @@ void ImagePoissonSpikingNeurons::load_rates_from_files(const char * inputDirecto
 								
 								float rate;
 								gaborStream >> rate;
+								// printf("rate: %f\n", rate);
+								if (rate < 0.000001) zero_count++;
 								if(rate < 0) {
 									cerr << "Negative firing loaded from filter!!!" << endl;
 									exit(EXIT_FAILURE);
@@ -288,7 +291,7 @@ void ImagePoissonSpikingNeurons::load_rates_from_files(const char * inputDirecto
 
 								int element_index = start_index_for_current_gabor_image + image_x + image_y * image_width;
 								
-								input_rates[element_index] = rate;
+								gabor_input_rates[element_index] = rate;
 							}
 						
 					} catch (fstream::failure e) {
@@ -301,11 +304,13 @@ void ImagePoissonSpikingNeurons::load_rates_from_files(const char * inputDirecto
 			}
 		}
 	}
+
+	printf("ZERO COUNT: %d\n", zero_count);
 }
 
 void ImagePoissonSpikingNeurons::copy_rates_to_device() {
-	CudaSafeCall(cudaMalloc((void **)&d_input_rates, sizeof(float)*total_number_of_rates));
-	CudaSafeCall(cudaMemcpy(d_input_rates, input_rates, sizeof(float)*total_number_of_gabor_types*inputNames.size(), cudaMemcpyHostToDevice));
+	CudaSafeCall(cudaMalloc((void **)&d_gabor_input_rates, sizeof(float)*total_number_of_rates));
+	CudaSafeCall(cudaMemcpy(d_gabor_input_rates, gabor_input_rates, sizeof(float)*total_number_of_rates, cudaMemcpyHostToDevice));
 }
 
 
@@ -314,4 +319,61 @@ int ImagePoissonSpikingNeurons::calculate_gabor_index(int orientationIndex, int 
 	return orientationIndex * (total_number_of_wavelengths * total_number_of_phases) + wavelengthIndex * total_number_of_phases + phaseIndex;
 }
 
+
+__global__ void image_poisson_update_membrane_potentials_kernal(curandState_t* d_states,
+							float *d_gabor_input_rates,
+							float *d_membrane_potentials_v,
+							float timestep,
+							size_t total_number_of_inputs);
+
+
+void ImagePoissonSpikingNeurons::update_membrane_potentials(float timestep) {
+
+	image_poisson_update_membrane_potentials_kernal<<<random_state_manager->block_dimensions, random_state_manager->threads_per_block>>>(random_state_manager->d_states,
+														d_gabor_input_rates,
+														d_membrane_potentials_v,
+														timestep,
+														total_number_of_neurons);
+
+	CudaCheckError();
+}
+
+
+__global__ void image_poisson_update_membrane_potentials_kernal(curandState_t* d_states,
+							float *d_gabor_input_rates,
+							float *d_membrane_potentials_v,
+							float timestep,
+							size_t total_number_of_inputs){
+
+	 
+	int t_idx = threadIdx.x + blockIdx.x * blockDim.x;
+	int idx = t_idx;
+	while (idx < total_number_of_inputs){
+
+		float rate = d_gabor_input_rates[idx];
+
+		if (rate > 0.000001) {
+
+			// Creates random float between 0 and 1 from uniform distribution
+			// d_states effectively provides a different seed for each thread
+			// curand_uniform produces different float every time you call it
+			float random_float = curand_uniform(&d_states[t_idx]);
+
+			// if (idx == 400) printf("rate: %f, random_float: %f\n", rate, random_float);
+
+			// if the randomnumber is less than the rate
+			if (random_float < (rate * timestep)){
+
+				// Puts membrane potential above default spiking threshold
+				d_membrane_potentials_v[idx] = 35.0f;
+
+			} 
+
+		}
+
+		idx += blockDim.x * gridDim.x;
+
+	}
+	__syncthreads();
+}
 

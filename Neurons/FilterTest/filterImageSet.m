@@ -20,7 +20,8 @@ ext='.png';
 token = '*';
 
 % READ: http://www.cs.rug.nl/~imaging/simplecell.html 
-psi   = [0, pi, -pi/2, pi/2];       % phase, [0, pi, -pi/2, pi/2]
+% psi   = [0, pi, -pi/2, pi/2];       % phase, [0, pi, -pi/2, pi/2]
+psi   = [0, pi];       % phase, [0, pi, -pi/2, pi/2]
 scale = filterScale;                % wavelength (pixels)
 orient= [0, pi/4, pi/2, 3*pi/4];    % orientation
 bw    = 1.5;                        % bandwidth

@@ -146,6 +146,8 @@ void Simulator::AddSynapseGroupsForNeuronGroupAndEachInputGroup(int postsynaptic
 							float parameter,
 							float parameter_two) {
 
+	printf("input_neurons->total_number_of_groups: %d\n", input_neurons->total_number_of_groups);
+
 	for (int i = 0; i < input_neurons->total_number_of_groups; i++) {
 
 		AddSynapseGroup(-1 * i - 1, 
