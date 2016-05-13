@@ -28,8 +28,6 @@ ImagePoissonSpikingNeurons::ImagePoissonSpikingNeurons(const char * fileList, co
 	total_number_of_rates = 0;
 	total_number_of_rates_per_image = 0;
 
-	group_ids = NULL;
-
 
 	//OLD VARIABLES
 
@@ -77,14 +75,11 @@ void ImagePoissonSpikingNeurons::AddGroupForEachInputImage(neuron_parameters_str
 
 	int group_shape[] = {image_width, image_width};
 
-	group_ids = (int *)malloc(total_number_of_input_images*sizeof(int));
-
 	image_poisson_spiking_neuron_parameters_struct * image_poisson_spiking_group_params = (image_poisson_spiking_neuron_parameters_struct*)group_params;
 
 	for (int input_image_index = 0; input_image_index < total_number_of_input_images; input_image_index++) {
 		image_poisson_spiking_group_params->input_image_index = input_image_index;
 		int new_group_id = this->AddGroup(image_poisson_spiking_group_params, group_shape);
-		group_ids[input_image_index] = new_group_id;
 	}
 
 }

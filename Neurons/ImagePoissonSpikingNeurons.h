@@ -39,8 +39,6 @@ public:
 	void copy_rates_to_device();
 	int calculate_gabor_index(int orientationIndex, int wavelengthIndex, int phaseIndex);
 
-	int * group_ids;
-
 	//JI VARIABLES
 	float * input_rates;
 	float * d_input_rates;

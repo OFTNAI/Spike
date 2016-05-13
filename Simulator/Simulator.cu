@@ -137,6 +137,31 @@ void Simulator::AddSynapseGroup(int presynaptic_group_id,
 							parameter_two);
 }
 
+void Simulator::AddSynapseGroupsForNeuronGroupAndEachInputGroups(int postsynaptic_group_id, 
+							int connectivity_type,
+							float weight_range[2], 
+							float delay_range[2],
+							bool stdp_on,
+							connectivity_parameters_struct * connectivity_params,
+							float parameter,
+							float parameter_two) {
+
+	for (int i = 0; i < input_neurons->total_number_of_groups; i++) {
+
+		AddSynapseGroup(-1 * i - 1, 
+							postsynaptic_group_id, 
+							connectivity_type,
+							weight_range, 
+							delay_range,
+							stdp_on,
+							connectivity_params,
+							parameter,
+							parameter_two);
+
+	}
+
+}
+
 
 
 
