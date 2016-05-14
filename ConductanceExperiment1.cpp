@@ -3,13 +3,13 @@
 // Authors: Nasir Ahmad (16/03/2016), James Isbister (23/3/2016)
 
 // To create the executable for this network, run:
-// make FILE="LIFExperiment1" model
+// make FILE="ConductanceExperiment1" model
 
 
 #include "Simulator/Simulator.h"
-#include "Synapses/LIFSpikingSynapses.h"
+#include "Synapses/ConductanceSpikingSynapses.h"
 #include "Neurons/Neurons.h"
-#include "Neurons/LIFSpikingNeurons.h"
+#include "Neurons/ConductanceSpikingNeurons.h"
 #include "Neurons/ImagePoissonSpikingNeurons.h"
 #include <time.h>
 
@@ -21,15 +21,15 @@ int main (int argc, char *argv[]){
 	Simulator simulator;
 	float time_step = 0.0001;
 	simulator.SetTimestep(time_step);
-	simulator.SetNeuronType(new LIFSpikingNeurons());
+	simulator.SetNeuronType(new ConductanceSpikingNeurons());
 	simulator.SetInputNeuronType(new ImagePoissonSpikingNeurons());
-	simulator.SetSynapseType(new LIFSpikingSynapses());
+	simulator.SetSynapseType(new ConductanceSpikingSynapses());
 
 	//
-	lif_spiking_neuron_parameters_struct * lif_spiking_group_params = new lif_spiking_neuron_parameters_struct();
-	lif_spiking_group_params->after_spike_reset_membrane_potential_c = -74.0f;
-	lif_spiking_group_params->threshold_for_action_potential_spike = -53.0f;
-	lif_spiking_group_params->paramd = 6.0f; //Old Izhikevich parameter. Leaving temporarily so spikes
+	conductance_spiking_neuron_parameters_struct * conductance_spiking_group_params = new conductance_spiking_neuron_parameters_struct();
+	conductance_spiking_group_params->after_spike_reset_membrane_potential_c = -74.0f;
+	conductance_spiking_group_params->threshold_for_action_potential_spike = -53.0f;
+	conductance_spiking_group_params->paramd = 6.0f; //Old Izhikevich parameter. Leaving temporarily so spikes
 
 	//
 	int EXCITATORY_LAYER_SHAPE[] = {64, 64};
@@ -41,14 +41,14 @@ int main (int argc, char *argv[]){
 	image_poisson_spiking_group_params->rate = 30.0f;
 	input_neurons->AddGroupForEachGaborType(image_poisson_spiking_group_params);
 
-	int EXCITATORY_NEURONS_LAYER_1 = simulator.AddNeuronGroup(lif_spiking_group_params, EXCITATORY_LAYER_SHAPE);
-	int EXCITATORY_NEURONS_LAYER_2 = simulator.AddNeuronGroup(lif_spiking_group_params, EXCITATORY_LAYER_SHAPE);
-	int EXCITATORY_NEURONS_LAYER_3 = simulator.AddNeuronGroup(lif_spiking_group_params, EXCITATORY_LAYER_SHAPE);
-	int EXCITATORY_NEURONS_LAYER_4 = simulator.AddNeuronGroup(lif_spiking_group_params, EXCITATORY_LAYER_SHAPE);
-	int INHIBITORY_NEURONS_LAYER_1 = simulator.AddNeuronGroup(lif_spiking_group_params, INHIBITORY_LAYER_SHAPE);
-	int INHIBITORY_NEURONS_LAYER_2 = simulator.AddNeuronGroup(lif_spiking_group_params, INHIBITORY_LAYER_SHAPE);
-	int INHIBITORY_NEURONS_LAYER_3 = simulator.AddNeuronGroup(lif_spiking_group_params, INHIBITORY_LAYER_SHAPE);
-	int INHIBITORY_NEURONS_LAYER_4 = simulator.AddNeuronGroup(lif_spiking_group_params, INHIBITORY_LAYER_SHAPE);
+	int EXCITATORY_NEURONS_LAYER_1 = simulator.AddNeuronGroup(conductance_spiking_group_params, EXCITATORY_LAYER_SHAPE);
+	int EXCITATORY_NEURONS_LAYER_2 = simulator.AddNeuronGroup(conductance_spiking_group_params, EXCITATORY_LAYER_SHAPE);
+	int EXCITATORY_NEURONS_LAYER_3 = simulator.AddNeuronGroup(conductance_spiking_group_params, EXCITATORY_LAYER_SHAPE);
+	int EXCITATORY_NEURONS_LAYER_4 = simulator.AddNeuronGroup(conductance_spiking_group_params, EXCITATORY_LAYER_SHAPE);
+	int INHIBITORY_NEURONS_LAYER_1 = simulator.AddNeuronGroup(conductance_spiking_group_params, INHIBITORY_LAYER_SHAPE);
+	int INHIBITORY_NEURONS_LAYER_2 = simulator.AddNeuronGroup(conductance_spiking_group_params, INHIBITORY_LAYER_SHAPE);
+	int INHIBITORY_NEURONS_LAYER_3 = simulator.AddNeuronGroup(conductance_spiking_group_params, INHIBITORY_LAYER_SHAPE);
+	int INHIBITORY_NEURONS_LAYER_4 = simulator.AddNeuronGroup(conductance_spiking_group_params, INHIBITORY_LAYER_SHAPE);
 
 
 	printf("Setting up synapses...\n");

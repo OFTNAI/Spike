@@ -1,28 +1,28 @@
-#include "LIFSpikingNeurons.h"
+#include "ConductanceSpikingNeurons.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include "../Helpers/CUDAErrorCheckHelpers.h"
 
 
-// LIFSpikingNeurons Constructor
-LIFSpikingNeurons::LIFSpikingNeurons() {
+// ConductanceSpikingNeurons Constructor
+ConductanceSpikingNeurons::ConductanceSpikingNeurons() {
 	
 	
 
 }
 
 
-// LIFSpikingNeurons Destructor
-LIFSpikingNeurons::~LIFSpikingNeurons() {
+// ConductanceSpikingNeurons Destructor
+ConductanceSpikingNeurons::~ConductanceSpikingNeurons() {
 	
 }
 
 
-int LIFSpikingNeurons::AddGroup(neuron_parameters_struct * group_params, int group_shape[2]){
+int ConductanceSpikingNeurons::AddGroup(neuron_parameters_struct * group_params, int group_shape[2]){
 
 	int new_group_id = SpikingNeurons::AddGroup(group_params, group_shape);
 
-	lif_spiking_neuron_parameters_struct * lif_spiking_group_params = (lif_spiking_neuron_parameters_struct*)group_params;
+	conductance_spiking_neuron_parameters_struct * conductance_spiking_group_params = (conductance_spiking_neuron_parameters_struct*)group_params;
 
 	// for (int i = total_number_of_neurons - number_of_neurons_in_new_group; i < total_number_of_neurons; i++) {
 	// }
@@ -31,34 +31,34 @@ int LIFSpikingNeurons::AddGroup(neuron_parameters_struct * group_params, int gro
 }
 
 
-void LIFSpikingNeurons::allocate_device_pointers() {
+void ConductanceSpikingNeurons::allocate_device_pointers() {
  	
  	SpikingNeurons::allocate_device_pointers();
 
 
 }
 
-void LIFSpikingNeurons::reset_neurons() {
+void ConductanceSpikingNeurons::reset_neurons() {
 
 	SpikingNeurons::reset_neurons();	
 }
 
 
-__global__ void lif_update_membrane_potentials(float *d_membrane_potentials_v,
+__global__ void conductance_update_membrane_potentials(float *d_membrane_potentials_v,
 								float* d_current_injections,
 								float timestep,
 								size_t total_number_of_neurons);
 
-__global__ void lif_update_postsynaptic_activities_kernal(float timestep,
+__global__ void conductance_update_postsynaptic_activities_kernal(float timestep,
 								size_t total_number_of_neurons,
 								float * d_recent_postsynaptic_activities_D,
 								float * d_last_spike_time_of_each_neuron,
 								float current_time_in_seconds);
 
 
-void LIFSpikingNeurons::update_membrane_potentials(float timestep) {
+void ConductanceSpikingNeurons::update_membrane_potentials(float timestep) {
 
-	lif_update_membrane_potentials<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_membrane_potentials_v,
+	conductance_update_membrane_potentials<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_membrane_potentials_v,
 																	d_current_injections,
 																	timestep,
 																	total_number_of_neurons);
@@ -66,9 +66,9 @@ void LIFSpikingNeurons::update_membrane_potentials(float timestep) {
 	CudaCheckError();
 }
 
-void LIFSpikingNeurons::update_postsynaptic_activities(float timestep, float current_time_in_seconds) {
+void ConductanceSpikingNeurons::update_postsynaptic_activities(float timestep, float current_time_in_seconds) {
 
-	lif_update_postsynaptic_activities_kernal<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(timestep,
+	conductance_update_postsynaptic_activities_kernal<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(timestep,
 								total_number_of_neurons,
 								d_recent_postsynaptic_activities_D,
 								d_last_spike_time_of_each_neuron,
@@ -78,7 +78,7 @@ void LIFSpikingNeurons::update_postsynaptic_activities(float timestep, float cur
 
 
 // State Update
-__global__ void lif_update_membrane_potentials(float *d_membrane_potentials_v,
+__global__ void conductance_update_membrane_potentials(float *d_membrane_potentials_v,
 								float* d_current_injections,
 								float timestep,
 								size_t total_number_of_neurons){
@@ -104,7 +104,7 @@ __global__ void lif_update_membrane_potentials(float *d_membrane_potentials_v,
 	__syncthreads();
 }
 
-__global__ void lif_update_postsynaptic_activities_kernal(float timestep,
+__global__ void conductance_update_postsynaptic_activities_kernal(float timestep,
 								size_t total_number_of_neurons,
 								float * d_recent_postsynaptic_activities_D,
 								float * d_last_spike_time_of_each_neuron,

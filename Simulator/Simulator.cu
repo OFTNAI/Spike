@@ -190,7 +190,7 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_m
 	neurons->set_threads_per_block_and_blocks_per_grid(threads_per_block_neurons);
 	input_neurons->set_threads_per_block_and_blocks_per_grid(threads_per_block_neurons);
 
-	// Provides order of magnitude speedup for LIF (All to all atleast). 
+	// Provides order of magnitude speedup for Conductance (All to all atleast). 
 	// Because all synapses contribute to current_injection on every iteration, having all threads in a block accessing only 1 or 2 positions in memory causes massive slowdown.
 	// Randomising order of synapses means that each block is accessing a larger number of points in memory.
 	if (temp_model_type == 1) synapses->shuffle_synapses();
@@ -253,9 +253,9 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_m
 				
 				neurons->reset_current_injections();
 
-				// Temporary seperation of izhikevich and LIF per timestep instructions. Eventually hope to share as much execuation as possible between both models for generality
+				// Temporary seperation of izhikevich and Conductance per timestep instructions. Eventually hope to share as much execuation as possible between both models for generality
 				if (temp_model_type == 0) temp_izhikevich_per_timestep_instructions(current_time_in_seconds);
-				if (temp_model_type == 1) temp_lif_per_timestep_instructions(current_time_in_seconds);
+				if (temp_model_type == 1) temp_conductance_per_timestep_instructions(current_time_in_seconds);
 
 				// // Only save the spikes if necessary
 				if (save_spikes){
@@ -302,7 +302,7 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_m
 }
 
 
-// Temporary seperation of izhikevich and LIF per timestep instructions. Eventually hope to share as much execuation as possible between both models for generality
+// Temporary seperation of izhikevich and Conductance per timestep instructions. Eventually hope to share as much execuation as possible between both models for generality
 void Simulator::temp_izhikevich_per_timestep_instructions(float current_time_in_seconds) {
 
 	// // If there are any spike generators
@@ -325,7 +325,7 @@ void Simulator::temp_izhikevich_per_timestep_instructions(float current_time_in_
 
 }
 
-void Simulator::temp_lif_per_timestep_instructions(float current_time_in_seconds) {
+void Simulator::temp_conductance_per_timestep_instructions(float current_time_in_seconds) {
 
 	// Where generator->generupdate2_wrapper used to be
 	

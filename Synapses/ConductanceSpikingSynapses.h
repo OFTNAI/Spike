@@ -1,17 +1,17 @@
-#ifndef LIFSPIKINGSYNAPSES_H
-#define LIFSPIKINGSYNAPSES_H
+#ifndef ConductanceSPIKINGSYNAPSES_H
+#define ConductanceSPIKINGSYNAPSES_H
 
 #include "SpikingSynapses.h"
 #include "../Neurons/SpikingNeurons.h"
 
 
-class LIFSpikingSynapses : public SpikingSynapses {
+class ConductanceSpikingSynapses : public SpikingSynapses {
 
 public:
 
 	// Constructor/Destructor
-	LIFSpikingSynapses();
-	~LIFSpikingSynapses();
+	ConductanceSpikingSynapses();
+	~ConductanceSpikingSynapses();
 
 	float * synaptic_conductances_g;
 	float * d_synaptic_conductances_g;

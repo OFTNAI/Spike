@@ -25,8 +25,8 @@ model: ${FILE}
 
 
 # Separating out the individual compilations so as not to compilation time
-${FILE}: ObjectFiles/${FILE}.o ObjectFiles/Simulator.o ObjectFiles/Neurons.o ObjectFiles/SpikingNeurons.o ObjectFiles/IzhikevichSpikingNeurons.o ObjectFiles/LIFSpikingNeurons.o ObjectFiles/PoissonSpikingNeurons.o ObjectFiles/ImagePoissonSpikingNeurons.o ObjectFiles/FstreamWrapper.o ObjectFiles/GeneratorSpikingNeurons.o ObjectFiles/Synapses.o ObjectFiles/SpikingSynapses.o ObjectFiles/IzhikevichSpikingSynapses.o ObjectFiles/LIFSpikingSynapses.o ObjectFiles/RecordingElectrodes.o ObjectFiles/RandomStateManager.o
-	$(CC) ObjectFiles/${FILE}.o ObjectFiles/Simulator.o ObjectFiles/Neurons.o ObjectFiles/SpikingNeurons.o ObjectFiles/IzhikevichSpikingNeurons.o ObjectFiles/LIFSpikingNeurons.o ObjectFiles/PoissonSpikingNeurons.o ObjectFiles/ImagePoissonSpikingNeurons.o ObjectFiles/FstreamWrapper.o ObjectFiles/GeneratorSpikingNeurons.o ObjectFiles/Synapses.o ObjectFiles/SpikingSynapses.o ObjectFiles/IzhikevichSpikingSynapses.o ObjectFiles/LIFSpikingSynapses.o ObjectFiles/RecordingElectrodes.o ObjectFiles/RandomStateManager.o -o ${FILE}
+${FILE}: ObjectFiles/${FILE}.o ObjectFiles/Simulator.o ObjectFiles/Neurons.o ObjectFiles/SpikingNeurons.o ObjectFiles/IzhikevichSpikingNeurons.o ObjectFiles/ConductanceSpikingNeurons.o ObjectFiles/PoissonSpikingNeurons.o ObjectFiles/ImagePoissonSpikingNeurons.o ObjectFiles/FstreamWrapper.o ObjectFiles/GeneratorSpikingNeurons.o ObjectFiles/Synapses.o ObjectFiles/SpikingSynapses.o ObjectFiles/IzhikevichSpikingSynapses.o ObjectFiles/ConductanceSpikingSynapses.o ObjectFiles/RecordingElectrodes.o ObjectFiles/RandomStateManager.o
+	$(CC) ObjectFiles/${FILE}.o ObjectFiles/Simulator.o ObjectFiles/Neurons.o ObjectFiles/SpikingNeurons.o ObjectFiles/IzhikevichSpikingNeurons.o ObjectFiles/ConductanceSpikingNeurons.o ObjectFiles/PoissonSpikingNeurons.o ObjectFiles/ImagePoissonSpikingNeurons.o ObjectFiles/FstreamWrapper.o ObjectFiles/GeneratorSpikingNeurons.o ObjectFiles/Synapses.o ObjectFiles/SpikingSynapses.o ObjectFiles/IzhikevichSpikingSynapses.o ObjectFiles/ConductanceSpikingSynapses.o ObjectFiles/RecordingElectrodes.o ObjectFiles/RandomStateManager.o -o ${FILE}
 
 # Compiling the Model file
 ObjectFiles/${FILE}.o: ${FILE}.cpp
@@ -43,9 +43,9 @@ ObjectFiles/SpikingNeurons.o: Neurons/SpikingNeurons.cu
 # Compiling the IzhikevichSpikingNeurons class
 ObjectFiles/IzhikevichSpikingNeurons.o: Neurons/IzhikevichSpikingNeurons.cu
 	$(CC) $(CFLAGS) Neurons/IzhikevichSpikingNeurons.cu -o $@
-# Compiling the LIFSpikingNeurons class
-ObjectFiles/LIFSpikingNeurons.o: Neurons/LIFSpikingNeurons.cu
-	$(CC) $(CFLAGS) Neurons/LIFSpikingNeurons.cu -o $@
+# Compiling the ConductanceSpikingNeurons class
+ObjectFiles/ConductanceSpikingNeurons.o: Neurons/ConductanceSpikingNeurons.cu
+	$(CC) $(CFLAGS) Neurons/ConductanceSpikingNeurons.cu -o $@
 # Compiling the PoissonSpikingNeurons class
 ObjectFiles/PoissonSpikingNeurons.o: Neurons/PoissonSpikingNeurons.cu
 	$(CC) $(CFLAGS) Neurons/PoissonSpikingNeurons.cu -o $@
@@ -67,9 +67,9 @@ ObjectFiles/SpikingSynapses.o: Synapses/SpikingSynapses.cu
 # Compiling the IzhikevichSpikingSynapses class
 ObjectFiles/IzhikevichSpikingSynapses.o: Synapses/IzhikevichSpikingSynapses.cu
 	$(CC) $(CFLAGS) Synapses/IzhikevichSpikingSynapses.cu -o $@
-# Compiling the LIFSpikingSynapses class
-ObjectFiles/LIFSpikingSynapses.o: Synapses/LIFSpikingSynapses.cu
-	$(CC) $(CFLAGS) Synapses/LIFSpikingSynapses.cu -o $@
+# Compiling the ConductanceSpikingSynapses class
+ObjectFiles/ConductanceSpikingSynapses.o: Synapses/ConductanceSpikingSynapses.cu
+	$(CC) $(CFLAGS) Synapses/ConductanceSpikingSynapses.cu -o $@
 # Compiling RecordingElectrodes class
 ObjectFiles/RecordingElectrodes.o: RecordingElectrodes/RecordingElectrodes.cu
 	$(CC) $(CFLAGS) RecordingElectrodes/RecordingElectrodes.cu -o $@

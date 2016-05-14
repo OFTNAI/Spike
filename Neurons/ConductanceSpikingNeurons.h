@@ -1,13 +1,13 @@
-#ifndef LIFSpikingNeurons_H
-#define LIFSpikingNeurons_H
+#ifndef ConductanceSpikingNeurons_H
+#define ConductanceSpikingNeurons_H
 
 #include <cuda.h>
 
 #include "SpikingNeurons.h"
 
 
-struct lif_spiking_neuron_parameters_struct : spiking_neuron_parameters_struct {
-	lif_spiking_neuron_parameters_struct()
+struct conductance_spiking_neuron_parameters_struct : spiking_neuron_parameters_struct {
+	conductance_spiking_neuron_parameters_struct()
 	// : parama(0.0f), paramb(0.0f) 
 	{ 
 		spiking_neuron_parameters_struct(); 
@@ -18,11 +18,11 @@ struct lif_spiking_neuron_parameters_struct : spiking_neuron_parameters_struct {
 };
 
 
-class LIFSpikingNeurons : public SpikingNeurons {
+class ConductanceSpikingNeurons : public SpikingNeurons {
 public:
 	// Constructor/Destructor
-	LIFSpikingNeurons();
-	~LIFSpikingNeurons();
+	ConductanceSpikingNeurons();
+	~ConductanceSpikingNeurons();
 
 	virtual int AddGroup(neuron_parameters_struct * group_params, int shape[2]);
 	virtual void allocate_device_pointers();

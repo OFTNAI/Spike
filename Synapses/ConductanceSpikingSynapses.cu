@@ -1,10 +1,10 @@
-#include "LIFSpikingSynapses.h"
+#include "ConductanceSpikingSynapses.h"
 
 #include "../Helpers/CUDAErrorCheckHelpers.h"
 #include "../Helpers/TerminalHelpers.h"
 
-// LIFSpikingSynapses Constructor
-LIFSpikingSynapses::LIFSpikingSynapses() {
+// ConductanceSpikingSynapses Constructor
+ConductanceSpikingSynapses::ConductanceSpikingSynapses() {
 	synaptic_conductances_g = NULL;
 	d_synaptic_conductances_g = NULL;
 
@@ -12,8 +12,8 @@ LIFSpikingSynapses::LIFSpikingSynapses() {
 	d_recent_presynaptic_activities_C = NULL;
 }
 
-// LIFSpikingSynapses Destructor
-LIFSpikingSynapses::~LIFSpikingSynapses() {
+// ConductanceSpikingSynapses Destructor
+ConductanceSpikingSynapses::~ConductanceSpikingSynapses() {
 	free(synaptic_conductances_g);
 	CudaSafeCall(cudaFree(d_synaptic_conductances_g));
 
@@ -31,7 +31,7 @@ LIFSpikingSynapses::~LIFSpikingSynapses() {
 //		2 number float array for delay range
 //		Boolean value to indicate if population is STDP based
 //		Parameter = either probability for random synapses or S.D. for Gaussian
-void LIFSpikingSynapses::AddGroup(int presynaptic_group_id, 
+void ConductanceSpikingSynapses::AddGroup(int presynaptic_group_id, 
 						int postsynaptic_group_id, 
 						Neurons * neurons,
 						Neurons * input_neurons,
@@ -65,7 +65,7 @@ void LIFSpikingSynapses::AddGroup(int presynaptic_group_id,
 
 }
 
-void LIFSpikingSynapses::increment_number_of_synapses(int increment) {
+void ConductanceSpikingSynapses::increment_number_of_synapses(int increment) {
 
 	SpikingSynapses::increment_number_of_synapses(increment);
 
@@ -75,7 +75,7 @@ void LIFSpikingSynapses::increment_number_of_synapses(int increment) {
 }
 
 
-void LIFSpikingSynapses::allocate_device_pointers() {
+void ConductanceSpikingSynapses::allocate_device_pointers() {
 
 	SpikingSynapses::allocate_device_pointers();
 
@@ -84,7 +84,7 @@ void LIFSpikingSynapses::allocate_device_pointers() {
 
 }
 
-void LIFSpikingSynapses::reset_synapse_spikes() {
+void ConductanceSpikingSynapses::reset_synapse_spikes() {
 
 	SpikingSynapses::reset_synapse_spikes();
 
@@ -95,19 +95,19 @@ void LIFSpikingSynapses::reset_synapse_spikes() {
 }
 
 
-void LIFSpikingSynapses::shuffle_synapses() {
+void ConductanceSpikingSynapses::shuffle_synapses() {
 	SpikingSynapses::shuffle_synapses();
 }
 
 
-void LIFSpikingSynapses::set_threads_per_block_and_blocks_per_grid(int threads) {
+void ConductanceSpikingSynapses::set_threads_per_block_and_blocks_per_grid(int threads) {
 	
 	SpikingSynapses::set_threads_per_block_and_blocks_per_grid(threads);
 	
 }
 
 
-__global__ void lif_calculate_postsynaptic_current_injection_kernal(float* d_synaptic_efficacies_or_weights,
+__global__ void conductance_calculate_postsynaptic_current_injection_kernal(float* d_synaptic_efficacies_or_weights,
 							float* d_time_of_last_spike_to_reach_synapse,
 							int* d_postsynaptic_neuron_indices,
 							float* d_neurons_current_injections,
@@ -117,7 +117,7 @@ __global__ void lif_calculate_postsynaptic_current_injection_kernal(float* d_syn
 							float * d_synaptic_conductances_g);
 
 
-__global__ void lif_update_synaptic_conductances_kernal(float timestep, 
+__global__ void conductance_update_synaptic_conductances_kernal(float timestep, 
 													float * d_synaptic_conductances_g, 
 													float * d_synaptic_efficacies_or_weights, 
 													float * d_time_of_last_spike_to_reach_synapse,
@@ -125,14 +125,14 @@ __global__ void lif_update_synaptic_conductances_kernal(float timestep,
 													float current_time_in_seconds);
 
 
-__global__ void lif_update_presynaptic_activities_C_kernal(float* d_recent_presynaptic_activities_C,
+__global__ void conductance_update_presynaptic_activities_C_kernal(float* d_recent_presynaptic_activities_C,
 							float* d_time_of_last_spike_to_reach_synapse,
 							bool* d_stdp,
 							float timestep,
 							float current_time_in_seconds,
 							size_t total_number_of_synapses);
 
-__global__ void lif_update_synaptic_efficacies_or_weights_kernal(float * d_recent_presynaptic_activities_C,
+__global__ void conductance_update_synaptic_efficacies_or_weights_kernal(float * d_recent_presynaptic_activities_C,
 																float * d_recent_postsynaptic_activities_D,
 																float timestep,
 																int* d_postsynaptic_neuron_indices,
@@ -145,12 +145,12 @@ __global__ void lif_update_synaptic_efficacies_or_weights_kernal(float * d_recen
 
 
 
-void LIFSpikingSynapses::calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds) {
+void ConductanceSpikingSynapses::calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds) {
 
-	// printf("lif_calculate_postsynaptic_current_injection. number_of_synapse_blocks_per_grid.x: %d. threads_per_block.x: %d\n", number_of_synapse_blocks_per_grid.x, threads_per_block.x);
+	// printf("conductance_calculate_postsynaptic_current_injection. number_of_synapse_blocks_per_grid.x: %d. threads_per_block.x: %d\n", number_of_synapse_blocks_per_grid.x, threads_per_block.x);
 
 
-	lif_calculate_postsynaptic_current_injection_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_synaptic_efficacies_or_weights,
+	conductance_calculate_postsynaptic_current_injection_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_synaptic_efficacies_or_weights,
 																	d_time_of_last_spike_to_reach_synapse,
 																	d_postsynaptic_neuron_indices,
 																	neurons->d_current_injections,
@@ -162,9 +162,9 @@ void LIFSpikingSynapses::calculate_postsynaptic_current_injection(SpikingNeurons
 	CudaCheckError();
 }
 
-void LIFSpikingSynapses::update_synaptic_conductances(float timestep, float current_time_in_seconds) {
+void ConductanceSpikingSynapses::update_synaptic_conductances(float timestep, float current_time_in_seconds) {
 
-	lif_update_synaptic_conductances_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(timestep, 
+	conductance_update_synaptic_conductances_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(timestep, 
 											d_synaptic_conductances_g, 
 											d_synaptic_efficacies_or_weights, 
 											d_time_of_last_spike_to_reach_synapse,
@@ -175,9 +175,9 @@ void LIFSpikingSynapses::update_synaptic_conductances(float timestep, float curr
 
 }
 
-void LIFSpikingSynapses::update_presynaptic_activities(float timestep, float current_time_in_seconds) {
+void ConductanceSpikingSynapses::update_presynaptic_activities(float timestep, float current_time_in_seconds) {
 	
-	lif_update_presynaptic_activities_C_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_recent_presynaptic_activities_C,
+	conductance_update_presynaptic_activities_C_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_recent_presynaptic_activities_C,
 							d_time_of_last_spike_to_reach_synapse,
 							d_stdp,
 							timestep,
@@ -187,9 +187,9 @@ void LIFSpikingSynapses::update_presynaptic_activities(float timestep, float cur
 	CudaCheckError();
 }
 
-void LIFSpikingSynapses::update_synaptic_efficacies_or_weights(float * d_recent_postsynaptic_activities_D, float timestep, float current_time_in_seconds, float * d_last_spike_time_of_each_neuron) {
+void ConductanceSpikingSynapses::update_synaptic_efficacies_or_weights(float * d_recent_postsynaptic_activities_D, float timestep, float current_time_in_seconds, float * d_last_spike_time_of_each_neuron) {
 
-	lif_update_synaptic_efficacies_or_weights_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_recent_presynaptic_activities_C,
+	conductance_update_synaptic_efficacies_or_weights_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_recent_presynaptic_activities_C,
 																d_recent_postsynaptic_activities_D,
 																timestep,
 																d_postsynaptic_neuron_indices,
@@ -203,7 +203,7 @@ void LIFSpikingSynapses::update_synaptic_efficacies_or_weights(float * d_recent_
 }
 
 
-__global__ void lif_calculate_postsynaptic_current_injection_kernal(float* d_synaptic_efficacies_or_weights,
+__global__ void conductance_calculate_postsynaptic_current_injection_kernal(float* d_synaptic_efficacies_or_weights,
 							float* d_time_of_last_spike_to_reach_synapse,
 							int* d_postsynaptic_neuron_indices,
 							float* d_neurons_current_injections,
@@ -230,7 +230,7 @@ __global__ void lif_calculate_postsynaptic_current_injection_kernal(float* d_syn
 
 
 
-__global__ void lif_update_synaptic_conductances_kernal(float timestep, 
+__global__ void conductance_update_synaptic_conductances_kernal(float timestep, 
 														float * d_synaptic_conductances_g, 
 														float * d_synaptic_efficacies_or_weights, 
 														float * d_time_of_last_spike_to_reach_synapse, 
@@ -257,7 +257,7 @@ __global__ void lif_update_synaptic_conductances_kernal(float timestep,
 }
 
 
-__global__ void lif_update_presynaptic_activities_C_kernal(float* d_recent_presynaptic_activities_C,
+__global__ void conductance_update_presynaptic_activities_C_kernal(float* d_recent_presynaptic_activities_C,
 							float* d_time_of_last_spike_to_reach_synapse,
 							bool* d_stdp,
 							float timestep, 
@@ -290,7 +290,7 @@ __global__ void lif_update_presynaptic_activities_C_kernal(float* d_recent_presy
 }
 
 
-__global__ void lif_update_synaptic_efficacies_or_weights_kernal(float * d_recent_presynaptic_activities_C,
+__global__ void conductance_update_synaptic_efficacies_or_weights_kernal(float * d_recent_presynaptic_activities_C,
 																float * d_recent_postsynaptic_activities_D,
 																float timestep,
 																int* d_postsynaptic_neuron_indices,
