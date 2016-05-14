@@ -239,7 +239,7 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_m
 	recording_electrodes->write_initial_synaptic_weights_to_file(synapses);
 
 
-	begin_simulation_message(timestep, number_of_stimuli, number_of_epochs, save_spikes, present_stimuli_in_random_order, neurons->total_number_of_neurons, synapses->total_number_of_synapses);
+	begin_simulation_message(timestep, number_of_stimuli, number_of_epochs, save_spikes, present_stimuli_in_random_order, neurons->total_number_of_neurons, input_neurons->total_number_of_neurons, synapses->total_number_of_synapses);
 	clock_t simulation_begin = clock();
 
 	for (int epoch_number = 0; epoch_number < number_of_epochs; epoch_number++) {
