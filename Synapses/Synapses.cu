@@ -51,9 +51,9 @@ Synapses::Synapses() {
 
 	d_states_for_random_number_generation = NULL;
 
-	states_set_up = false;
-
 	random_state_manager = NULL;
+
+	print_synapse_group_details = false;
 
 	// On construction, seed
 	srand(42);	// Seeding the random numbers
@@ -112,9 +112,11 @@ void Synapses::AddGroup(int presynaptic_group_id,
 	// Find the right set of indices
 	// Take everything in 2D
 
-	printf("Adding synapse group...\n");
-	printf("presynaptic_group_id: %d\n", presynaptic_group_id);
-	printf("postsynaptic_group_id: %d\n", postsynaptic_group_id);
+	if (print_synapse_group_details == true) {
+		printf("Adding synapse group...\n");
+		printf("presynaptic_group_id: %d\n", presynaptic_group_id);
+		printf("postsynaptic_group_id: %d\n", postsynaptic_group_id);
+	}
 
 	int* last_neuron_indices_for_neuron_groups = neurons->last_neuron_indices_for_each_group;
 	int* last_neuron_indices_for_input_neuron_groups = input_neurons->last_neuron_indices_for_each_group;
@@ -172,11 +174,13 @@ void Synapses::AddGroup(int presynaptic_group_id,
 	}
 	int postend = last_neuron_indices_for_neuron_groups[postsynaptic_group_id];
 
-	const char * presynaptic_group_type_string = (presynaptic_group_id < 0) ? "input_neurons" : "neurons";
-	printf("Presynaptic neurons start index: %d (%s)\n", prestart, presynaptic_group_type_string);
-	printf("Presynaptic neurons end index: %d (%s)\n", preend, presynaptic_group_type_string);
-	printf("Postsynaptic neurons start index: %d (neurons)\n", poststart);
-	printf("Postsynaptic neurons end index: %d (neurons)\n", postend);
+	if (print_synapse_group_details == true) {
+		const char * presynaptic_group_type_string = (presynaptic_group_id < 0) ? "input_neurons" : "neurons";
+		printf("Presynaptic neurons start index: %d (%s)\n", prestart, presynaptic_group_type_string);
+		printf("Presynaptic neurons end index: %d (%s)\n", preend, presynaptic_group_type_string);
+		printf("Postsynaptic neurons start index: %d (neurons)\n", poststart);
+		printf("Postsynaptic neurons end index: %d (neurons)\n", postend);
+	}
 
 
 	int original_number_of_synapses = total_number_of_synapses;
@@ -277,7 +281,6 @@ void Synapses::AddGroup(int presynaptic_group_id,
 
 			}
 
-			printf("total_number_of_new_synapses: %d\n", total_number_of_new_synapses);
 			set_neuron_indices_by_sampling_from_normal_distribution<<<random_state_manager->block_dimensions, random_state_manager->threads_per_block>>>(total_number_of_new_synapses, postsynaptic_group_id, poststart, prestart, postsynaptic_group_shape[0], postsynaptic_group_shape[1], presynaptic_group_shape[0], presynaptic_group_shape[1], number_of_new_synapses_per_postsynaptic_neuron, number_of_postsynaptic_neurons_in_group, d_temp_presynaptic_neuron_indices, d_temp_postsynaptic_neuron_indices, d_temp_synaptic_efficacies_or_weights, standard_deviation_sigma, group_type_factor, group_type_component, random_state_manager->d_states);
 			CudaCheckError();
 
@@ -333,7 +336,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 				CudaCheckError();
 				
 				int total_number_of_new_synapses = thrust::count(d_yes_no_connection_vector.begin(), d_yes_no_connection_vector.end(), true);
-				printf("total_number_of_new_synapses: %d\n", total_number_of_new_synapses);
+				// printf("total_number_of_new_synapses: %d\n", total_number_of_new_synapses);
 
 				this->increment_number_of_synapses(total_number_of_new_synapses);
 
@@ -434,7 +437,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 
 	temp_number_of_synapses_in_last_group = total_number_of_synapses - original_number_of_synapses;
 
-	printf("%d new synapses added.\n\n", temp_number_of_synapses_in_last_group);
+	if (print_synapse_group_details == true) printf("%d new synapses added.\n\n", temp_number_of_synapses_in_last_group);
 
 	for (int i = original_number_of_synapses; i < total_number_of_synapses; i++){
 		// Setup Weights

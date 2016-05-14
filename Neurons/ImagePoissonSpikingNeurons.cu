@@ -28,10 +28,6 @@ ImagePoissonSpikingNeurons::ImagePoissonSpikingNeurons() {
 	total_number_of_rates = 0;
 	total_number_of_rates_per_image = 0;
 
-
-	//OLD VARIABLES
-
-
 	filterPhases = new vector<float>();
 	filterWavelengths = new vector<int>();
 	filterOrientations = new vector<float>();
@@ -88,14 +84,14 @@ void ImagePoissonSpikingNeurons::reset_neurons() {
 }
 
 void ImagePoissonSpikingNeurons::set_up_rates(const char * fileList, const char * filterParameters, const char * inputDirectory) {
-	printf("Setting up Input Neuron Rates from gbo files...\n");
+	printf("--- Setting up Input Neuron Rates from Gabor files...\n");
 
 	load_image_names_from_file_list(fileList, inputDirectory);
 	load_gabor_filter_parameters(filterParameters, inputDirectory);
 	load_rates_from_files(inputDirectory);
 	copy_rates_to_device();
 
-	printf("\n");
+	// printf("\n");
 }
 
 
@@ -151,7 +147,7 @@ void ImagePoissonSpikingNeurons::load_image_names_from_file_list(const char * fi
 	
 	total_number_of_transformations_per_object = lastNrOfTransformsFound;
 	
-	cout << "Objects: " << total_number_of_objects << ", Transforms per Object: " << total_number_of_transformations_per_object << "..." << endl << endl;
+	cout << "--- --- Objects: " << total_number_of_objects << ", Transforms per Object: " << total_number_of_transformations_per_object << endl;
 	
 	total_number_of_input_images = total_number_of_objects * total_number_of_transformations_per_object;
 }
@@ -179,10 +175,12 @@ void ImagePoissonSpikingNeurons::load_gabor_filter_parameters(const char * filte
 
 	string dirNameBase;
 
+	cout << "--- --- Gabor Parameters:" << endl;
+
 	int line_index = 0;
 	while(getline(filterParametersStream, dirNameBase)) {
 
-		cout << dirNameBase << endl;
+		cout << "--- --- --- " << dirNameBase << endl;
 
 		stringstream lineStream(dirNameBase);
 
@@ -229,7 +227,7 @@ void ImagePoissonSpikingNeurons::load_gabor_filter_parameters(const char * filte
 	total_number_of_rates_per_image = total_number_of_gabor_types * image_width * image_width;
 	total_number_of_rates = total_number_of_input_images * total_number_of_rates_per_image;
 
-	printf("\ntotal_number_of_rates: %d\n\n", total_number_of_rates);
+	// printf("\ntotal_number_of_rates: %d\n", total_number_of_rates);
 }
 
 
@@ -243,7 +241,7 @@ void ImagePoissonSpikingNeurons::load_rates_from_files(const char * inputDirecto
 
 		int image_starting_index = image_index * total_number_of_rates_per_image;
 		
-		cout << "Loading Rates for Image #" << image_index << endl;
+		// cout << "Loading Rates for Image #" << image_index << endl;
 		
 		for(int orientation_index = 0; orientation_index < total_number_of_orientations; orientation_index++) {
 
@@ -303,7 +301,7 @@ void ImagePoissonSpikingNeurons::load_rates_from_files(const char * inputDirecto
 		}
 	}
 
-	printf("ZERO COUNT: %d\n", zero_count);
+	printf("--- --- Proportion of input rates 0.0: %f\n", (float)zero_count/(float)total_number_of_rates);
 }
 
 void ImagePoissonSpikingNeurons::copy_rates_to_device() {

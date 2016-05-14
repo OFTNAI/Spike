@@ -15,6 +15,8 @@
 
 // The function which will autorun when the executable is created
 int main (int argc, char *argv[]){
+	clock_t begin_entire_experiment = clock();
+
 	// Set the time_stepep of the simulation as required (time_stepep is measure in seconds)
 	
 	// Create an instance of the Simulator and set the time_step
@@ -24,6 +26,11 @@ int main (int argc, char *argv[]){
 	simulator.SetNeuronType(new ConductanceSpikingNeurons());
 	simulator.SetInputNeuronType(new ImagePoissonSpikingNeurons());
 	simulator.SetSynapseType(new ConductanceSpikingSynapses());
+
+
+	/////////// ADD NEURONS ///////////
+	printf("Adding Neurons...\n");
+	clock_t adding_neurons_start = clock();
 
 	//
 	conductance_spiking_neuron_parameters_struct * conductance_spiking_group_params = new conductance_spiking_neuron_parameters_struct();
@@ -50,9 +57,14 @@ int main (int argc, char *argv[]){
 	int INHIBITORY_NEURONS_LAYER_3 = simulator.AddNeuronGroup(conductance_spiking_group_params, INHIBITORY_LAYER_SHAPE);
 	int INHIBITORY_NEURONS_LAYER_4 = simulator.AddNeuronGroup(conductance_spiking_group_params, INHIBITORY_LAYER_SHAPE);
 
+	clock_t adding_neurons_end = clock();
+	float adding_neurons_total_time = float(adding_neurons_end - adding_neurons_start) / CLOCKS_PER_SEC;
+	printf("Neurons added. Time taken: %f\n\n", adding_neurons_total_time);
 
-	printf("Setting up synapses...\n");
-	clock_t begin = clock();
+
+	/////////// ADD SYNAPSES ///////////
+	printf("Adding Synapses...\n");
+	clock_t adding_synapses_start = clock();
 
 	float CONNECTIVITY_STANDARD_DEVIATION_SIGMA = 5.0;
 
@@ -72,7 +84,6 @@ int main (int argc, char *argv[]){
 	float INHIBITORY_TO_EXCITATORY_DELAY_RANGE[] = {time_step, 50.0f*pow(10, -3)};
 
 	//
-
 	simulator.AddSynapseGroupsForNeuronGroupAndEachInputGroup(EXCITATORY_NEURONS_LAYER_1, CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE, INPUT_TO_EXCITATORY_WEIGHT_RANGE, INPUT_TO_EXCITATORY_DELAY_RANGE, false, connectivity_parameters, CONNECTIVITY_STANDARD_DEVIATION_SIGMA);
 	
 	simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_1, EXCITATORY_NEURONS_LAYER_2, CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE, EXCITATORY_TO_EXCITATORY_WEIGHT_RANGE, EXCITATORY_TO_EXCITATORY_DELAY_RANGE, true, connectivity_parameters, CONNECTIVITY_STANDARD_DEVIATION_SIGMA);
@@ -90,9 +101,9 @@ int main (int argc, char *argv[]){
 	simulator.AddSynapseGroup(INHIBITORY_NEURONS_LAYER_4, EXCITATORY_NEURONS_LAYER_4, CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE, INHIBITORY_TO_EXCITATORY_WEIGHT_RANGE, INHIBITORY_TO_EXCITATORY_DELAY_RANGE, true, connectivity_parameters, CONNECTIVITY_STANDARD_DEVIATION_SIGMA);
 
 
-	clock_t end = clock();
-	float timed = float(end-begin) / CLOCKS_PER_SEC;
-	printf("Synapses set up! Time Elapsed: %f\n\n", timed);
+	clock_t adding_synapses_end = clock();
+	float adding_synapses_total_time = float(adding_synapses_end - adding_synapses_start) / CLOCKS_PER_SEC;
+	printf("Synapses added. Time taken: %f\n\n", adding_synapses_total_time);
 
 	//
 	float total_time_per_epoch = 1.0f;
@@ -101,6 +112,10 @@ int main (int argc, char *argv[]){
 
 	//
 	simulator.Run(total_time_per_epoch, number_of_epochs, save_spikes, 1);
+
+	clock_t end_entire_experiment = clock();
+	float timed_entire_experiment = float(end_entire_experiment - begin_entire_experiment) / CLOCKS_PER_SEC;
+	printf("Entire Experiment Time: %f\n", timed_entire_experiment);
 
 
 	return 1;

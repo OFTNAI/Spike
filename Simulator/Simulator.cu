@@ -146,8 +146,6 @@ void Simulator::AddSynapseGroupsForNeuronGroupAndEachInputGroup(int postsynaptic
 							float parameter,
 							float parameter_two) {
 
-	printf("input_neurons->total_number_of_groups: %d\n", input_neurons->total_number_of_groups);
-
 	for (int i = 0; i < input_neurons->total_number_of_groups; i++) {
 
 		AddSynapseGroup(-1 * i - 1, 
@@ -165,11 +163,7 @@ void Simulator::AddSynapseGroupsForNeuronGroupAndEachInputGroup(int postsynaptic
 }
 
 
-
-
 void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_model_type, bool save_spikes, bool present_stimuli_in_random_order){
-
-	begin_simulation_message(timestep, number_of_stimuli, number_of_epochs, save_spikes, present_stimuli_in_random_order, neurons->total_number_of_neurons, synapses->total_number_of_synapses);
 
 	// Check how many stimuli their are and do something about it:
 	if (number_of_stimuli == 0){
@@ -218,7 +212,8 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_m
 	input_neurons->generate_random_states();
 
 
-	clock_t begin = clock();
+	begin_simulation_message(timestep, number_of_stimuli, number_of_epochs, save_spikes, present_stimuli_in_random_order, neurons->total_number_of_neurons, synapses->total_number_of_synapses);
+	clock_t simulation_begin = clock();
 
 	for (int epoch_number = 0; epoch_number < number_of_epochs; epoch_number++) {
 
@@ -269,13 +264,13 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_m
 			}
 		}
 		#ifndef QUIETSTART
-		clock_t mid = clock();
+		clock_t simulation_mid = clock();
 		if (save_spikes) {
-			printf("Epoch %d, Complete.\n Running Time: %f\n Number of Spikes: %d\n\n", epoch_number, (float(mid-begin) / CLOCKS_PER_SEC), recording_electrodes->h_total_number_of_spikes);
+			printf("Epoch %d, Complete.\n Running Time: %f\n Number of Spikes: %d\n\n", epoch_number, (float(simulation_mid-simulation_begin) / CLOCKS_PER_SEC), recording_electrodes->h_total_number_of_spikes);
 			printf("Number of Input Spikes: %d\n\n", input_recording_electrodes->h_total_number_of_spikes);
 		
 		} else {
-			printf("Epoch %d, Complete.\n Running Time: %f\n\n", epoch_number, (float(mid-begin) / CLOCKS_PER_SEC));
+			printf("Epoch %d, Complete.\n Running Time: %f\n\n", epoch_number, (float(simulation_mid-simulation_begin) / CLOCKS_PER_SEC));
 		}
 		#endif
 		// Output Spikes list after each epoch:
@@ -289,9 +284,9 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_m
 	// SIMULATION COMPLETE!
 	#ifndef QUIETSTART
 	// Finish the simulation and check time
-	clock_t end = clock();
-	float timed = float(end-begin) / CLOCKS_PER_SEC;
-	printf("Simulation Complete! Time Elapsed: %f\n\n", timed);
+	clock_t simulation_end = clock();
+	float simulation_timed = float(simulation_end-simulation_begin) / CLOCKS_PER_SEC;
+	printf("Simulation Complete! Time Elapsed: %f\n\n", simulation_timed);
 	#endif
 
 	recording_electrodes->save_network_state(synapses);
