@@ -107,40 +107,6 @@ void ConductanceSpikingSynapses::set_threads_per_block_and_blocks_per_grid(int t
 }
 
 
-__global__ void conductance_calculate_postsynaptic_current_injection_kernal(int* d_postsynaptic_neuron_indices,
-							float* d_neurons_current_injections,
-							size_t total_number_of_synapses,
-							float * d_membrane_potentials_v,
-							float * d_synaptic_conductances_g);
-
-
-__global__ void conductance_update_synaptic_conductances_kernal(float timestep, 
-													float * d_synaptic_conductances_g, 
-													float * d_synaptic_efficacies_or_weights, 
-													float * d_time_of_last_spike_to_reach_synapse,
-													int total_number_of_synapses,
-													float current_time_in_seconds);
-
-
-__global__ void conductance_update_presynaptic_activities_C_kernal(float* d_recent_presynaptic_activities_C,
-							float* d_time_of_last_spike_to_reach_synapse,
-							bool* d_stdp,
-							float timestep,
-							float current_time_in_seconds,
-							size_t total_number_of_synapses);
-
-__global__ void conductance_update_synaptic_efficacies_or_weights_kernal(float * d_recent_presynaptic_activities_C,
-																float * d_recent_postsynaptic_activities_D,
-																float timestep,
-																int* d_postsynaptic_neuron_indices,
-																float* d_synaptic_efficacies_or_weights,
-																float current_time_in_seconds,
-																float * d_time_of_last_spike_to_reach_synapse,
-																float * d_last_spike_time_of_each_neuron,
-																bool* d_stdp,
-																size_t total_number_of_synapses);
-
-
 
 void ConductanceSpikingSynapses::calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds) {
 

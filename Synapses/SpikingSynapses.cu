@@ -140,24 +140,6 @@ void SpikingSynapses::set_threads_per_block_and_blocks_per_grid(int threads) {
 
 
 
-
-__global__ void check_for_synapse_spike_arrival_kernal(int* d_spikes_travelling_to_synapse,
-							float* d_time_of_last_spike_to_reach_synapse,
-							float current_time_in_seconds,
-							size_t total_number_of_synapses);
-
-
-__global__ void move_spikes_towards_synapses_kernal(int* d_presynaptic_neuron_indices,
-								int* d_delays,
-								int* d_spikes_travelling_to_synapse,
-								float* d_neurons_last_spike_time,
-								float* d_input_neurons_last_spike_time,
-								int* d_spikes_travelling_to_synapse_buffer,
-								float currtime,
-								size_t total_number_of_synapses);
-
-
-
 void SpikingSynapses::check_for_synapse_spike_arrival(float current_time_in_seconds) {
 
 	// printf("check_for_synapse_spike_arrival. number_of_synapse_blocks_per_grid.x: %d. threads_per_block.x: %d\n", number_of_synapse_blocks_per_grid.x, threads_per_block.x);

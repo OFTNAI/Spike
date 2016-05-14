@@ -21,12 +21,6 @@
 //			sigma = Standard Deviation of the gaussian distribution
 #define GAUS(distance, sigma) ( (1.0f/(sigma*(sqrt(2.0f*M_PI)))) * (exp(-1.0f * (pow((distance),(2.0f))) / (2.0f*(pow(sigma,(2.0f)))))) )
 
-__global__ void compute_yes_no_connection_matrix_for_groups(bool * d_yes_no_connection_vector, int pre_width, int post_width, int post_height, float sigma, int total_pre_neurons, int total_post_neurons);
-__global__ void set_up_neuron_indices_and_weights_for_yes_no_connection_matrix(bool * d_yes_no_connection_vector, int pre_width, int post_width, int post_height, int total_pre_neurons, int total_post_neurons, int * d_presynaptic_neuron_indices, int * d_postsynaptic_neuron_indices);
-__global__ void set_neuron_indices_by_sampling_from_normal_distribution(int total_number_of_new_synapses, int postsynaptic_group_id, int poststart, int prestart, int post_width, int post_height, int pre_width, int pre_height, int number_of_new_synapses_per_postsynaptic_neuron, int number_of_postsynaptic_neurons_in_group, int * d_presynaptic_neuron_indices, int * d_postsynaptic_neuron_indices, float * d_synaptic_efficacies_or_weights, float standard_deviation_sigma, int group_type_factor, int group_type_component, curandState_t* d_states);
-__global__ void generate_random_states2_kernal(unsigned int seed, curandState_t* d_states, size_t total_number);
-
-
 // Synapses Constructor
 Synapses::Synapses() {
 
