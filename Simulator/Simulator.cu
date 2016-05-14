@@ -10,7 +10,6 @@
 #include <time.h>
 
 #include "Simulator.h"
-#include "../RecordingElectrodes/RecordingElectrodes.h"
 #include "../Neurons/GeneratorSpikingNeurons.h"
 
 #include "../Helpers/CUDAErrorCheckHelpers.h"
@@ -31,6 +30,9 @@ Simulator::Simulator(){
 	gentimes = NULL;
 	// Default parameters
 	timestep = 0.001f;
+
+	recording_electrodes = NULL;
+	input_recording_electrodes = NULL;
 	
 	#ifndef QUIETSTART
 		// Say Hi to the user:
@@ -163,20 +165,7 @@ void Simulator::AddSynapseGroupsForNeuronGroupAndEachInputGroup(int postsynaptic
 }
 
 
-void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_model_type, bool save_spikes, bool present_stimuli_in_random_order){
-
-	// Check how many stimuli their are and do something about it:
-	if (number_of_stimuli == 0){
-		++number_of_stimuli;
-		numEntries = (int*)realloc(numEntries, sizeof(int)*number_of_stimuli);
-		numEntries[0] = 0;
-	}
-	
-	if (number_of_epochs == 0) print_message_and_exit("Error. There must be at least one epoch.");
-
-	GeneratorSpikingNeurons * temp_test_generator = new GeneratorSpikingNeurons();
-	RecordingElectrodes * recording_electrodes = new RecordingElectrodes(neurons);
-	RecordingElectrodes * input_recording_electrodes = new RecordingElectrodes(input_neurons);
+void Simulator::initialise_network(bool temp_model_type) {
 
 	int threads_per_block_neurons = 512;
 	int threads_per_block_synapses = 512;
@@ -193,10 +182,31 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_m
 	synapses->allocate_device_pointers();
 	input_neurons->allocate_device_pointers();
 
+	input_neurons->generate_random_states();
+
+}
+
+void Simulator::initialise_recording_electrodes() {
+	recording_electrodes = new RecordingElectrodes(neurons);
+	input_recording_electrodes = new RecordingElectrodes(input_neurons);
 	recording_electrodes->initialise_device_pointers();
 	recording_electrodes->initialise_host_pointers();
 	input_recording_electrodes->initialise_device_pointers();
 	input_recording_electrodes->initialise_host_pointers();
+
+}
+
+
+void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_model_type, bool save_spikes, bool present_stimuli_in_random_order){
+
+	// Check how many stimuli their are and do something about it:
+	if (number_of_stimuli == 0){
+		++number_of_stimuli;
+		numEntries = (int*)realloc(numEntries, sizeof(int)*number_of_stimuli);
+		numEntries[0] = 0;
+	}
+	
+	if (number_of_epochs == 0) print_message_and_exit("Error. There must be at least one epoch.");
 
 	// SEEDING
 	srand(42);
@@ -208,8 +218,6 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_m
 	}
 
 	recording_electrodes->write_initial_synaptic_weights_to_file(synapses);
-	
-	input_neurons->generate_random_states();
 
 
 	begin_simulation_message(timestep, number_of_stimuli, number_of_epochs, save_spikes, present_stimuli_in_random_order, neurons->total_number_of_neurons, synapses->total_number_of_synapses);
@@ -224,14 +232,7 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_m
 		}
 		// Running through every Stimulus
 		for (int stimulus_index = 0; stimulus_index < number_of_stimuli; stimulus_index++){
-			// Get the presentation position:
-			int present = stimuli_presentation_order[stimulus_index];
-			// Get the number of entries for this specific stimulus
-			size_t numEnts = numEntries[present];
-			if (numEnts > 0){
-				temp_test_generator->initialise_device_pointers_for_ents(numEnts, present);
-				temp_test_generator->set_threads_per_block_and_blocks_per_grid(threads_per_block_neurons);
-			}
+
 			// Reset the variables necessary
 			neurons->reset_neurons();
 			input_neurons->reset_neurons();
@@ -257,10 +258,6 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_m
 					recording_electrodes->save_spikes_to_host(current_time_in_seconds, timestep_index, number_of_timesteps_per_epoch);
 					input_recording_electrodes->save_spikes_to_host(current_time_in_seconds, timestep_index, number_of_timesteps_per_epoch);
 				}
-			}
-			if (numEnts > 0){
-				// CudaSafeCall(cudaFree(d_genids));
-				// CudaSafeCall(cudaFree(d_gentimes));
 			}
 		}
 		#ifndef QUIETSTART

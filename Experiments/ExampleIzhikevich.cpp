@@ -67,8 +67,12 @@ int main (int argc, char *argv[]){
 	int number_of_epochs = 5;
 	bool save_spikes = true;
 
+	int temp_model_type = 0;
+	simulator.initialise_network(temp_model_type);
+	simulator.initialise_recording_electrodes();
+
 	//
-	simulator.Run(total_time_per_epoch, number_of_epochs, 0, save_spikes);
+	simulator.Run(total_time_per_epoch, number_of_epochs, temp_model_type, save_spikes);
 
 
 	return 1;

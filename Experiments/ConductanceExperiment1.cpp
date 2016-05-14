@@ -114,12 +114,15 @@ int main (int argc, char *argv[]){
 	printf("Synapses Added. Time taken: %f\n\n", adding_synapses_total_time);
 
 	//
+	int temp_model_type = 1;
+	simulator.initialise_network(temp_model_type);
+	simulator.initialise_recording_electrodes();
+
+	//
 	float total_time_per_epoch = 1.0f;
 	int number_of_epochs = 1;
 	bool save_spikes = true;
-
-	//
-	simulator.Run(total_time_per_epoch, number_of_epochs, save_spikes, 1);
+	simulator.Run(total_time_per_epoch, number_of_epochs, temp_model_type, save_spikes);
 
 	clock_t end_entire_experiment = clock();
 	float timed_entire_experiment = float(end_entire_experiment - begin_entire_experiment) / CLOCKS_PER_SEC;

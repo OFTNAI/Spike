@@ -26,6 +26,7 @@
 #include "../Synapses/SpikingSynapses.h"
 #include "../Neurons/PoissonSpikingNeurons.h"
 #include "../Neurons/SpikingNeurons.h"
+#include "../RecordingElectrodes/RecordingElectrodes.h"
 
 // Simulator Class for running of the simulations
 class Simulator{
@@ -37,6 +38,9 @@ public:
 	SpikingNeurons * neurons;
 	SpikingSynapses * synapses;
 	PoissonSpikingNeurons * input_neurons;
+
+	RecordingElectrodes * recording_electrodes;
+	RecordingElectrodes * input_recording_electrodes;
 
 	// Spike Generator related Data
 	int number_of_stimuli;
@@ -79,6 +83,9 @@ public:
 
 	void LoadWeights(int numWeights,
 						float* newWeights);
+
+	void initialise_network(bool temp_model_type);
+	void initialise_recording_electrodes();
 
 	void Run(float total_time_per_epoch, int number_of_epochs, int temp_model_type, bool save_spikes = false, bool present_stimuli_in_random_order = false);
 
