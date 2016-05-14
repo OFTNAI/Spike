@@ -3,14 +3,14 @@
 // Authors: Nasir Ahmad (16/03/2016), James Isbister (23/3/2016)
 
 // To create the executable for this network, run:
-// make FILE="ConductanceExperiment1" model
+// make FILE="Experiments/ConductanceExperiment1" model
 
 
-#include "Simulator/Simulator.h"
-#include "Synapses/ConductanceSpikingSynapses.h"
-#include "Neurons/Neurons.h"
-#include "Neurons/ConductanceSpikingNeurons.h"
-#include "Neurons/ImagePoissonSpikingNeurons.h"
+#include "../Simulator/Simulator.h"
+#include "../Synapses/ConductanceSpikingSynapses.h"
+#include "../Neurons/Neurons.h"
+#include "../Neurons/ConductanceSpikingNeurons.h"
+#include "../Neurons/ImagePoissonSpikingNeurons.h"
 #include <time.h>
 
 // The function which will autorun when the executable is created

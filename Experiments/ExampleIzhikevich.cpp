@@ -6,11 +6,11 @@
 // make FILE="Example" model
 
 
-#include "Simulator/Simulator.h"
-#include "Synapses/IzhikevichSpikingSynapses.h"
-#include "Neurons/Neurons.h"
-#include "Neurons/IzhikevichSpikingNeurons.h"
-#include "Neurons/PoissonSpikingNeurons.h"
+#include "../Simulator/Simulator.h"
+#include "../Synapses/IzhikevichSpikingSynapses.h"
+#include "../Neurons/Neurons.h"
+#include "../Neurons/IzhikevichSpikingNeurons.h"
+#include "../Neurons/PoissonSpikingNeurons.h"
 
 // The function which will autorun when the executable is created
 int main (int argc, char *argv[]){
