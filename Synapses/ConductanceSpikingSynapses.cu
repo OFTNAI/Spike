@@ -107,11 +107,8 @@ void ConductanceSpikingSynapses::set_threads_per_block_and_blocks_per_grid(int t
 }
 
 
-__global__ void conductance_calculate_postsynaptic_current_injection_kernal(float* d_synaptic_efficacies_or_weights,
-							float* d_time_of_last_spike_to_reach_synapse,
-							int* d_postsynaptic_neuron_indices,
+__global__ void conductance_calculate_postsynaptic_current_injection_kernal(int* d_postsynaptic_neuron_indices,
 							float* d_neurons_current_injections,
-							float current_time_in_seconds,
 							size_t total_number_of_synapses,
 							float * d_membrane_potentials_v,
 							float * d_synaptic_conductances_g);
@@ -147,14 +144,8 @@ __global__ void conductance_update_synaptic_efficacies_or_weights_kernal(float *
 
 void ConductanceSpikingSynapses::calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds) {
 
-	// printf("conductance_calculate_postsynaptic_current_injection. number_of_synapse_blocks_per_grid.x: %d. threads_per_block.x: %d\n", number_of_synapse_blocks_per_grid.x, threads_per_block.x);
-
-
-	conductance_calculate_postsynaptic_current_injection_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_synaptic_efficacies_or_weights,
-																	d_time_of_last_spike_to_reach_synapse,
-																	d_postsynaptic_neuron_indices,
+	conductance_calculate_postsynaptic_current_injection_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_postsynaptic_neuron_indices,
 																	neurons->d_current_injections,
-																	current_time_in_seconds,
 																	total_number_of_synapses,
 																	neurons->d_membrane_potentials_v, 
 																	d_synaptic_conductances_g);
@@ -203,11 +194,8 @@ void ConductanceSpikingSynapses::update_synaptic_efficacies_or_weights(float * d
 }
 
 
-__global__ void conductance_calculate_postsynaptic_current_injection_kernal(float* d_synaptic_efficacies_or_weights,
-							float* d_time_of_last_spike_to_reach_synapse,
-							int* d_postsynaptic_neuron_indices,
+__global__ void conductance_calculate_postsynaptic_current_injection_kernal(int* d_postsynaptic_neuron_indices,
 							float* d_neurons_current_injections,
-							float current_time_in_seconds,
 							size_t total_number_of_synapses,
 							float * d_membrane_potentials_v,
 							float * d_synaptic_conductances_g){
