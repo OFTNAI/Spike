@@ -27,6 +27,20 @@ int main (int argc, char *argv[]){
 	simulator.SetInputNeuronType(new ImagePoissonSpikingNeurons());
 	simulator.SetSynapseType(new ConductanceSpikingSynapses());
 
+	/////////// ADD INPUT NEURONS ///////////
+	printf("Adding Input Neurons...\n");
+	clock_t adding_input_neurons_start = clock();
+
+	ImagePoissonSpikingNeurons* input_neurons = (ImagePoissonSpikingNeurons*)simulator.input_neurons;
+	input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "MatlabGaborFilter/Inputs/");
+	image_poisson_spiking_neuron_parameters_struct * image_poisson_spiking_group_params = new image_poisson_spiking_neuron_parameters_struct();
+	image_poisson_spiking_group_params->rate = 30.0f;
+	input_neurons->AddGroupForEachGaborType(image_poisson_spiking_group_params);
+
+	clock_t adding_input_neurons_end = clock();
+	float adding_input_neurons_total_time = float(adding_input_neurons_end - adding_input_neurons_start) / CLOCKS_PER_SEC;
+	printf("Input Neurons Added. Time Taken: %f\n\n", adding_input_neurons_total_time);
+
 
 	/////////// ADD NEURONS ///////////
 	printf("Adding Neurons...\n");
@@ -42,12 +56,6 @@ int main (int argc, char *argv[]){
 	int EXCITATORY_LAYER_SHAPE[] = {64, 64};
 	int INHIBITORY_LAYER_SHAPE[] = {16, 16};
 
-	ImagePoissonSpikingNeurons* input_neurons = (ImagePoissonSpikingNeurons*)simulator.input_neurons;
-	input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "MatlabGaborFilter/Inputs/");
-	image_poisson_spiking_neuron_parameters_struct * image_poisson_spiking_group_params = new image_poisson_spiking_neuron_parameters_struct();
-	image_poisson_spiking_group_params->rate = 30.0f;
-	input_neurons->AddGroupForEachGaborType(image_poisson_spiking_group_params);
-
 	int EXCITATORY_NEURONS_LAYER_1 = simulator.AddNeuronGroup(conductance_spiking_group_params, EXCITATORY_LAYER_SHAPE);
 	int EXCITATORY_NEURONS_LAYER_2 = simulator.AddNeuronGroup(conductance_spiking_group_params, EXCITATORY_LAYER_SHAPE);
 	int EXCITATORY_NEURONS_LAYER_3 = simulator.AddNeuronGroup(conductance_spiking_group_params, EXCITATORY_LAYER_SHAPE);
@@ -59,7 +67,7 @@ int main (int argc, char *argv[]){
 
 	clock_t adding_neurons_end = clock();
 	float adding_neurons_total_time = float(adding_neurons_end - adding_neurons_start) / CLOCKS_PER_SEC;
-	printf("Neurons added. Time taken: %f\n\n", adding_neurons_total_time);
+	printf("Neurons Added. Time taken: %f\n\n", adding_neurons_total_time);
 
 
 	/////////// ADD SYNAPSES ///////////
@@ -103,7 +111,7 @@ int main (int argc, char *argv[]){
 
 	clock_t adding_synapses_end = clock();
 	float adding_synapses_total_time = float(adding_synapses_end - adding_synapses_start) / CLOCKS_PER_SEC;
-	printf("Synapses added. Time taken: %f\n\n", adding_synapses_total_time);
+	printf("Synapses Added. Time taken: %f\n\n", adding_synapses_total_time);
 
 	//
 	float total_time_per_epoch = 1.0f;

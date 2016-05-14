@@ -519,7 +519,7 @@ void Synapses::set_threads_per_block_and_blocks_per_grid(int threads) {
 	int number_of_synapse_blocks = (total_number_of_synapses + threads) / threads;
 	number_of_synapse_blocks_per_grid.x = number_of_synapse_blocks;
 
-	printf("number_of_synapse_blocks_per_grid.x: %d\n\n", number_of_synapse_blocks_per_grid.x);
+	// printf("number_of_synapse_blocks_per_grid.x: %d\n\n", number_of_synapse_blocks_per_grid.x);
 }
 
 
