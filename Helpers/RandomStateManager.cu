@@ -14,6 +14,7 @@ __global__ void generate_random_states3_kernal(unsigned int seed, curandState_t*
 // RandomStateManager Constructor
 RandomStateManager::RandomStateManager() {
 
+	total_number_of_states = 0;
 
 }
 
@@ -27,6 +28,7 @@ void RandomStateManager::set_up_random_states(int threads_per_blocks_x, int numb
 
 	threads_per_block = dim3(threads_per_blocks_x);
 	block_dimensions = dim3(number_of_blocks_x);
+	total_number_of_states = threads_per_blocks_x * number_of_blocks_x;
 
 	CudaSafeCall(cudaMalloc((void**) &d_states, sizeof(curandState_t)*threads_per_blocks_x*number_of_blocks_x));
 	generate_random_states3_kernal<<<block_dimensions, threads_per_block>>>(seed, d_states, threads_per_blocks_x * number_of_blocks_x);
@@ -47,6 +49,5 @@ __global__ void generate_random_states3_kernal(unsigned int seed, curandState_t*
 					&d_states[idx]);
 
 		__syncthreads();
-		// idx_g += blockDim.x * gridDim.x;
 	}
 }

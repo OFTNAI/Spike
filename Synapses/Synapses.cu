@@ -53,6 +53,8 @@ Synapses::Synapses() {
 
 	states_set_up = false;
 
+	random_state_manager = NULL;
+
 	// On construction, seed
 	srand(42);	// Seeding the random numbers
 }
@@ -256,16 +258,14 @@ void Synapses::AddGroup(int presynaptic_group_id,
 
 
 			//Setting up random states
-			int threads = 512;
-			dim3 threads_per_block = dim3(threads);
-			int number_of_blocks_x = 128;
-			dim3 new_synapses_block_dimensions = dim3(number_of_blocks_x);
 
-			if (states_set_up == false) {
-				states_set_up = true;
-				CudaSafeCall(cudaMalloc((void**) &d_states_for_random_number_generation, sizeof(curandState_t)*threads*new_synapses_block_dimensions.x));
-				generate_random_states2_kernal<<<new_synapses_block_dimensions, threads_per_block>>>(9, d_states_for_random_number_generation, threads*new_synapses_block_dimensions.x);
-				CudaCheckError();
+			if (random_state_manager == NULL) {
+
+				random_state_manager = new RandomStateManager();
+				int threads_per_block_x = 128;
+				int number_of_blocks_x = 64;
+				random_state_manager->set_up_random_states(threads_per_block_x, number_of_blocks_x, 9);
+
 			}
 
 			if (total_number_of_new_synapses > largest_synapse_group_size) {
@@ -278,7 +278,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 			}
 
 			printf("total_number_of_new_synapses: %d\n", total_number_of_new_synapses);
-			set_neuron_indices_by_sampling_from_normal_distribution<<<new_synapses_block_dimensions, threads_per_block>>>(total_number_of_new_synapses, postsynaptic_group_id, poststart, prestart, postsynaptic_group_shape[0], postsynaptic_group_shape[1], presynaptic_group_shape[0], presynaptic_group_shape[1], number_of_new_synapses_per_postsynaptic_neuron, number_of_postsynaptic_neurons_in_group, d_temp_presynaptic_neuron_indices, d_temp_postsynaptic_neuron_indices, d_temp_synaptic_efficacies_or_weights, standard_deviation_sigma, group_type_factor, group_type_component, d_states_for_random_number_generation);
+			set_neuron_indices_by_sampling_from_normal_distribution<<<random_state_manager->block_dimensions, random_state_manager->threads_per_block>>>(total_number_of_new_synapses, postsynaptic_group_id, poststart, prestart, postsynaptic_group_shape[0], postsynaptic_group_shape[1], presynaptic_group_shape[0], presynaptic_group_shape[1], number_of_new_synapses_per_postsynaptic_neuron, number_of_postsynaptic_neurons_in_group, d_temp_presynaptic_neuron_indices, d_temp_postsynaptic_neuron_indices, d_temp_synaptic_efficacies_or_weights, standard_deviation_sigma, group_type_factor, group_type_component, random_state_manager->d_states);
 			CudaCheckError();
 
 			CudaSafeCall(cudaMemcpy(&presynaptic_neuron_indices[original_number_of_synapses], d_temp_presynaptic_neuron_indices, sizeof(int)*total_number_of_new_synapses, cudaMemcpyDeviceToHost));
@@ -616,43 +616,11 @@ __global__ void set_neuron_indices_by_sampling_from_normal_distribution(int tota
 
 		idx += blockDim.x * gridDim.x;
 
-	}
-
-	
+	}	
 
 }
 
 
-__global__ void generate_random_states2_kernal(unsigned int seed, curandState_t* d_states, size_t total_number) {
-	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	// int idx_g = idx;
-	if (idx < total_number) {
-		curand_init(seed, /* the seed can be the same for each core, here we pass the time in from the CPU */
-					idx, /* the sequence number should be different for each core (unless you want all
-							cores to get the same sequence of numbers for some reason - use thread id! */
- 					0, /* the offset is how much extra we advance in the sequence for each call, can be 0 */
-					&d_states[idx]);
-
-		__syncthreads();
-		// idx_g += blockDim.x * gridDim.x;
-	}
-}
-
-__global__ void set_up_neuron_indices_and_weights_for_yes_no_connection_matrix(bool * d_yes_no_connection_vector, int pre_width, int post_width, int post_height, int total_pre_neurons, int total_post_neurons, int * d_presynaptic_neuron_indices, int * d_postsynaptic_neuron_indices) {
-
-	// int idx_pre = threadIdx.x + blockIdx.x * blockDim.x;
-	// int idx_post = threadIdx.y + blockIdx.y * blockDim.y;
-
-	// if ((idx_pre < total_pre_neurons) && (idx_post < total_post_neurons)) {
-	// 	int vector_index = pre_x + (pre_width * pre_y) + (post_y * total_pre_neurons) + (post_x * post_height * total_pre_neurons);
-
-	// 	if (d_yes_no_connection_vector[vector_index] == true) {
-
-	// 	}
-	// }
-
-
-}
 
 // An implementation of the polar gaussian random number generator which I need
 double randn (double mu, double sigma)

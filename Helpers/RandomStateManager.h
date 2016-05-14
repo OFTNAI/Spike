@@ -22,6 +22,8 @@ public:
 	dim3 threads_per_block;
 	dim3 block_dimensions;
 
+	int total_number_of_states;
+
 	void set_up_random_states(int threads_per_blocks_x, int number_of_blocks_x, int seed);
 
 	

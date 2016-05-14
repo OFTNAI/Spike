@@ -20,6 +20,8 @@
 #include <curand.h>
 #include <curand_kernel.h>
 
+#include "../Helpers/RandomStateManager.h"
+
 
 
 enum CONNECTIVITY_TYPE
@@ -66,6 +68,8 @@ public:
 	int total_number_of_synapses;
 
 	curandState_t* d_states_for_random_number_generation;
+
+	RandomStateManager * random_state_manager;
 
 	// STDP
 	// Temporarily Synapse members (should move to SpikingNeurons)
@@ -156,10 +160,6 @@ __global__ void set_neuron_indices_by_sampling_from_normal_distribution(int tota
 																		int group_type_factor, 
 																		int group_type_component, 
 																		curandState_t* d_states);
-
-__global__ void generate_random_states2_kernal(unsigned int seed, 
-												curandState_t* d_states, 
-												size_t total_number);
 
 // GAUSS random number generator
 double randn (double mu, double sigma);
