@@ -8,4 +8,4 @@ unittests
 /results/*
 /ObjectFiles/*
 /MatlabGaborFilter/Inputs/*
-/Experiments/!.cpp
+/Experiments/bin/*
