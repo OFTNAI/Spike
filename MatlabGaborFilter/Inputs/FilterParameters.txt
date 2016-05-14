@@ -1,4 +1,0 @@
-[0, 180] Phases
-[2] Scales
-[0, 45, 90, 135] Orientations
-[128] Dimension
