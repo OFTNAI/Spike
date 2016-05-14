@@ -7,7 +7,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
-#include "FstreamWrapper.h"
+#include "../Helpers/FstreamWrapper.h"
 
 
 // ImagePoissonSpikingNeurons Constructor

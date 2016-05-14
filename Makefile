@@ -54,8 +54,8 @@ ObjectFiles/PoissonSpikingNeurons.o: Neurons/PoissonSpikingNeurons.cu
 ObjectFiles/ImagePoissonSpikingNeurons.o: Neurons/ImagePoissonSpikingNeurons.cu
 	$(CC) $(CFLAGS) Neurons/ImagePoissonSpikingNeurons.cu -o $@
 # Compiling the FstreamWrapper class
-ObjectFiles/FstreamWrapper.o: Neurons/FstreamWrapper.cpp
-	$(CC) $(CFLAGS) Neurons/FstreamWrapper.cpp -o $@
+ObjectFiles/FstreamWrapper.o: Helpers/FstreamWrapper.cpp
+	$(CC) $(CFLAGS) Helpers/FstreamWrapper.cpp -o $@
 # Compiling the GeneratorSpikingNeurons class
 ObjectFiles/GeneratorSpikingNeurons.o: Neurons/GeneratorSpikingNeurons.cu
 	$(CC) $(CFLAGS) Neurons/GeneratorSpikingNeurons.cu -o $@

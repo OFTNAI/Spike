@@ -9,8 +9,6 @@
 
 #include <vector>
 
-// #include "Utilities.h"
-
 using namespace std;
 
 struct image_poisson_spiking_neuron_parameters_struct : poisson_spiking_neuron_parameters_struct {
