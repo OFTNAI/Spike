@@ -151,8 +151,6 @@ __global__ void check_for_neuron_spikes_kernal(float *d_membrane_potentials_v,
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	if (idx < total_number_of_neurons) {
 
-		// if ((idx == 25) && (total_number_of_neurons != 10000)) printf("%f\n", d_membrane_potentials_v[idx]);
-
 		// First checking if neuron has spiked:
 		if (d_membrane_potentials_v[idx] >= d_thresholds_for_action_potential_spikes[idx]){
 

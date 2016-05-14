@@ -7,3 +7,4 @@ catch.hpp
 unittests
 /results/*
 /ObjectFiles/*
+/MatlabGaborFilter/Inputs/*
