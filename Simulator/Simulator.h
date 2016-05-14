@@ -84,8 +84,8 @@ public:
 	void LoadWeights(int numWeights,
 						float* newWeights);
 
-	void initialise_network(bool temp_model_type);
-	void initialise_recording_electrodes();
+	void setup_network(bool temp_model_type);
+	void setup_recording_electrodes();
 
 	void Run(float total_time_per_epoch, int number_of_epochs, int temp_model_type, bool save_spikes = false, bool present_stimuli_in_random_order = false);
 

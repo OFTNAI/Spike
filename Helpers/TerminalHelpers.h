@@ -36,3 +36,8 @@ inline void print_message_and_exit(const char * message)
 
     exit(-1);
 }
+
+
+inline void print_line_of_dashes_with_blank_lines_either_side(){
+	printf("\n----------------------------------\n\n");
+}

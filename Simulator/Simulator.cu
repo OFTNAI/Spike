@@ -36,8 +36,10 @@ Simulator::Simulator(){
 	
 	#ifndef QUIETSTART
 		// Say Hi to the user:
-		printf("\nWelcome to the SPIKE.\n\n");
-		printf("Setting up Neurons and Synapses: \n\n");
+		printf("\nWelcome to the SPIKE.\n");
+		print_line_of_dashes_with_blank_lines_either_side();
+		printf("Setting up Neurons and Synapses:\n");
+		print_line_of_dashes_with_blank_lines_either_side();
 		fflush(stdout);
 	#endif
 }
@@ -165,7 +167,10 @@ void Simulator::AddSynapseGroupsForNeuronGroupAndEachInputGroup(int postsynaptic
 }
 
 
-void Simulator::initialise_network(bool temp_model_type) {
+void Simulator::setup_network(bool temp_model_type) {
+
+	printf("Setting Up Network...\n");
+	clock_t initialise_network_start = clock();
 
 	int threads_per_block_neurons = 512;
 	int threads_per_block_synapses = 512;
@@ -184,15 +189,29 @@ void Simulator::initialise_network(bool temp_model_type) {
 
 	input_neurons->generate_random_states();
 
+	clock_t initialise_network_end = clock();
+	float initialise_network_total_time = float(initialise_network_end - initialise_network_start) / CLOCKS_PER_SEC;
+	printf("Network Setup. Time taken: %f\n", initialise_network_total_time);
+	print_line_of_dashes_with_blank_lines_either_side();
+
 }
 
-void Simulator::initialise_recording_electrodes() {
+void Simulator::setup_recording_electrodes() {
+
+	printf("Setting Up Recording Electrodes...\n");
+	clock_t setup_recording_electrodes_start = clock();
+
 	recording_electrodes = new RecordingElectrodes(neurons);
 	input_recording_electrodes = new RecordingElectrodes(input_neurons);
 	recording_electrodes->initialise_device_pointers();
 	recording_electrodes->initialise_host_pointers();
 	input_recording_electrodes->initialise_device_pointers();
 	input_recording_electrodes->initialise_host_pointers();
+
+	clock_t setup_recording_electrodes_end = clock();
+	float setup_recording_electrodes_total_time = float(setup_recording_electrodes_end - setup_recording_electrodes_start) / CLOCKS_PER_SEC;
+	printf("Recording Electrodes Setup. Time taken: %f\n", setup_recording_electrodes_total_time);
+	print_line_of_dashes_with_blank_lines_either_side();
 
 }
 

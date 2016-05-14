@@ -11,6 +11,7 @@
 #include "../Neurons/Neurons.h"
 #include "../Neurons/ConductanceSpikingNeurons.h"
 #include "../Neurons/ImagePoissonSpikingNeurons.h"
+#include "../Helpers/TerminalHelpers.h"
 #include <time.h>
 
 // The function which will autorun when the executable is created
@@ -39,7 +40,8 @@ int main (int argc, char *argv[]){
 
 	clock_t adding_input_neurons_end = clock();
 	float adding_input_neurons_total_time = float(adding_input_neurons_end - adding_input_neurons_start) / CLOCKS_PER_SEC;
-	printf("Input Neurons Added. Time Taken: %f\n\n", adding_input_neurons_total_time);
+	printf("Input Neurons Added. Time Taken: %f\n", adding_input_neurons_total_time);
+	print_line_of_dashes_with_blank_lines_either_side();
 
 
 	/////////// ADD NEURONS ///////////
@@ -67,7 +69,8 @@ int main (int argc, char *argv[]){
 
 	clock_t adding_neurons_end = clock();
 	float adding_neurons_total_time = float(adding_neurons_end - adding_neurons_start) / CLOCKS_PER_SEC;
-	printf("Neurons Added. Time taken: %f\n\n", adding_neurons_total_time);
+	printf("Neurons Added. Time taken: %f\n", adding_neurons_total_time);
+	print_line_of_dashes_with_blank_lines_either_side();
 
 
 	/////////// ADD SYNAPSES ///////////
@@ -111,12 +114,13 @@ int main (int argc, char *argv[]){
 
 	clock_t adding_synapses_end = clock();
 	float adding_synapses_total_time = float(adding_synapses_end - adding_synapses_start) / CLOCKS_PER_SEC;
-	printf("Synapses Added. Time taken: %f\n\n", adding_synapses_total_time);
+	printf("Synapses Added. Time taken: %f\n", adding_synapses_total_time);
+	print_line_of_dashes_with_blank_lines_either_side();
 
 	//
 	int temp_model_type = 1;
-	simulator.initialise_network(temp_model_type);
-	simulator.initialise_recording_electrodes();
+	simulator.setup_network(temp_model_type);
+	simulator.setup_recording_electrodes();
 
 	//
 	float total_time_per_epoch = 1.0f;
