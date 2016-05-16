@@ -145,7 +145,7 @@ __global__ void izhikevich_apply_ltd_to_synapse_weights_kernal(float* d_time_of_
 							size_t total_number_of_synapse){
 
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	if (idx < total_number_of_synapse) {
+	while (idx < total_number_of_synapse) {
 
 		// Get the locations for updating
 		// Get the synapses that are to be LTD'd
@@ -156,6 +156,7 @@ __global__ void izhikevich_apply_ltd_to_synapse_weights_kernal(float* d_time_of_
 			// Now scale the weight (using an inverted column/row)
 			d_synaptic_efficacies_or_weights[idx] += weightscale; 
 		}
+		idx += blockDim.x + gridDim.x;
 	}
 }
 
@@ -171,7 +172,7 @@ __global__ void izhikevich_apply_ltp_to_synapse_weights_kernal(int* d_postsyns,
 							size_t total_number_of_synapse) {
 
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	if (idx < total_number_of_synapse) {
+	while (idx < total_number_of_synapse) {
 		// Get the synapses upon which we should do LTP
 		// Reversed indexing to check post->pre synapses
 		if ((d_last_spike_time_of_each_neuron[d_postsyns[idx]] == currtime) && (d_stdp[idx] == true)){
@@ -182,6 +183,7 @@ __global__ void izhikevich_apply_ltp_to_synapse_weights_kernal(int* d_postsyns,
 			// Update weights
 			d_synaptic_efficacies_or_weights[idx] += weightchange;
 		}
+		idx += blockDim.x + gridDim.x;
 
 	}
 }

@@ -195,13 +195,14 @@ __global__ void check_for_synapse_spike_arrival_kernal(int* d_spikes_travelling_
 							size_t total_number_of_synapses){
 
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	if (idx < total_number_of_synapses) {
+	while (idx < total_number_of_synapses) {
 		// Decrememnt Spikes
 		d_spikes_travelling_to_synapse[idx] -= 1;
 		if (d_spikes_travelling_to_synapse[idx] == 0) {
 
 			d_time_of_last_spike_to_reach_synapse[idx] = current_time_in_seconds;
 		}
+		idx += blockDim.x * gridDim.x;
 	}
 	__syncthreads();
 }
@@ -219,7 +220,7 @@ __global__ void move_spikes_towards_synapses_kernal(int* d_presynaptic_neuron_in
 								float current_time_in_seconds,
 								size_t total_number_of_synapses){
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	if (idx < total_number_of_synapses) {
+	while (idx < total_number_of_synapses) {
 
 		// Reduce the spikebuffer by 1
 		d_spikes_travelling_to_synapse_buffer[idx] -= 1;
@@ -262,5 +263,7 @@ __global__ void move_spikes_towards_synapses_kernal(int* d_presynaptic_neuron_in
 			d_spikes_travelling_to_synapse_buffer[idx] = temp;
 
 		}
+
+		idx += blockDim.x * gridDim.x;
 	}
 }

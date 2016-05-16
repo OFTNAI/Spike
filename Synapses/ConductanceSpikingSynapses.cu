@@ -167,7 +167,7 @@ __global__ void conductance_calculate_postsynaptic_current_injection_kernal(int*
 							float * d_synaptic_conductances_g){
 
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	if (idx < total_number_of_synapses) {
+	while (idx < total_number_of_synapses) {
 
 		float temp_reversal_potential_Vhat = 0.0;
 		float membrane_potential_v = d_membrane_potentials_v[d_postsynaptic_neuron_indices[idx]];
@@ -177,6 +177,8 @@ __global__ void conductance_calculate_postsynaptic_current_injection_kernal(int*
 		if (component_for_sum != 0.0) {
 			atomicAdd(&d_neurons_current_injections[d_postsynaptic_neuron_indices[idx]], component_for_sum);
 		}
+
+		idx += blockDim.x * gridDim.x;
 
 	}
 	__syncthreads();
@@ -192,7 +194,7 @@ __global__ void conductance_update_synaptic_conductances_kernal(float timestep,
 														float current_time_in_seconds) {
 
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	if (idx < total_number_of_synapses) {
+	while (idx < total_number_of_synapses) {
 
 		float synaptic_conductance_g = d_synaptic_conductances_g[idx];
 		float decay_term_tau_g = 0.01; // Is this the synaptic time constant?
@@ -206,6 +208,7 @@ __global__ void conductance_update_synaptic_conductances_kernal(float timestep,
 			d_synaptic_conductances_g[idx] = new_conductance;
 		}
 
+		idx += blockDim.x * gridDim.x;
 	}
 
 }
@@ -219,7 +222,7 @@ __global__ void conductance_update_presynaptic_activities_C_kernal(float* d_rece
 							size_t total_number_of_synapses) {
 
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	if (idx < total_number_of_synapses) {
+	while (idx < total_number_of_synapses) {
 
 		if (d_stdp[idx] == true) {
 
@@ -238,8 +241,9 @@ __global__ void conductance_update_presynaptic_activities_C_kernal(float* d_rece
 
 		}
 
-	}
+		idx += blockDim.x * gridDim.x;
 
+	}
 
 }
 
@@ -256,7 +260,7 @@ __global__ void conductance_update_synaptic_efficacies_or_weights_kernal(float *
 																size_t total_number_of_synapses) {
 
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	if (idx < total_number_of_synapses) {
+	while (idx < total_number_of_synapses) {
 
 		if (d_stdp[idx] == true) {
 
@@ -287,6 +291,8 @@ __global__ void conductance_update_synaptic_efficacies_or_weights_kernal(float *
 			}
 
 		}
+
+		idx += blockDim.x * gridDim.x;
 
 	}
 

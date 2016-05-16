@@ -173,7 +173,7 @@ void Simulator::setup_network(bool temp_model_type) {
 	clock_t initialise_network_start = clock();
 
 	int threads_per_block_neurons = 512;
-	int threads_per_block_synapses = 512;
+	int threads_per_block_synapses = 128;
 	synapses->set_threads_per_block_and_blocks_per_grid(threads_per_block_synapses);
 	neurons->set_threads_per_block_and_blocks_per_grid(threads_per_block_neurons);
 	input_neurons->set_threads_per_block_and_blocks_per_grid(threads_per_block_neurons);
@@ -181,7 +181,7 @@ void Simulator::setup_network(bool temp_model_type) {
 	// Provides order of magnitude speedup for Conductance (All to all atleast). 
 	// Because all synapses contribute to current_injection on every iteration, having all threads in a block accessing only 1 or 2 positions in memory causes massive slowdown.
 	// Randomising order of synapses means that each block is accessing a larger number of points in memory.
-	if (temp_model_type == 1) synapses->shuffle_synapses();
+	// if (temp_model_type == 1) synapses->shuffle_synapses();
 
 	neurons->allocate_device_pointers();
 	synapses->allocate_device_pointers();

@@ -250,7 +250,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 
 			float standard_deviation_sigma = parameter;
 
-			int number_of_new_synapses_per_postsynaptic_neuron = 20;
+			int number_of_new_synapses_per_postsynaptic_neuron = 1000;
 
 			int number_of_postsynaptic_neurons_in_group = postend - poststart;
 
@@ -513,13 +513,10 @@ void Synapses::shuffle_synapses() {
 
 
 void Synapses::set_threads_per_block_and_blocks_per_grid(int threads) {
-	
+
 	threads_per_block.x = threads;
+	number_of_synapse_blocks_per_grid.x = 1024;
 
-	int number_of_synapse_blocks = (total_number_of_synapses + threads) / threads;
-	number_of_synapse_blocks_per_grid.x = number_of_synapse_blocks;
-
-	// printf("number_of_synapse_blocks_per_grid.x: %d\n\n", number_of_synapse_blocks_per_grid.x);
 }
 
 

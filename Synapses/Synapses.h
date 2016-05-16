@@ -124,6 +124,8 @@ public:
 
 	dim3 number_of_synapse_blocks_per_grid;
 	dim3 threads_per_block;
+
+	
 };
 
 __global__ void compute_yes_no_connection_matrix_for_groups(bool * d_yes_no_connection_vector, 
