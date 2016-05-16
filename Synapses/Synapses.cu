@@ -250,7 +250,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 
 			float standard_deviation_sigma = parameter;
 
-			int number_of_new_synapses_per_postsynaptic_neuron = 1000;
+			int number_of_new_synapses_per_postsynaptic_neuron = 20;
 
 			int number_of_postsynaptic_neurons_in_group = postend - poststart;
 
@@ -269,6 +269,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 				int threads_per_block_x = 128;
 				int number_of_blocks_x = 64;
 				random_state_manager->set_up_random_states(threads_per_block_x, number_of_blocks_x, 9);
+				CudaCheckError();
 
 			}
 
@@ -440,6 +441,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 	if (print_synapse_group_details == true) printf("%d new synapses added.\n\n", temp_number_of_synapses_in_last_group);
 
 	for (int i = original_number_of_synapses; i < total_number_of_synapses; i++){
+		// printf("i: %d\n", i);
 		// Setup Weights
 		if (weight_range[0] == weight_range[1]) {
 			synaptic_efficacies_or_weights[i] = weight_range[0];
@@ -461,7 +463,9 @@ void Synapses::increment_number_of_synapses(int increment) {
 	presynaptic_neuron_indices = (int*)realloc(presynaptic_neuron_indices, total_number_of_synapses * sizeof(int));
     postsynaptic_neuron_indices = (int*)realloc(postsynaptic_neuron_indices, total_number_of_synapses * sizeof(int));
     synaptic_efficacies_or_weights = (float*)realloc(synaptic_efficacies_or_weights, total_number_of_synapses * sizeof(float));
+    // CudaSafeCall(cudaHostAlloc((void**)&synaptic_efficacies_or_weights, total_number_of_synapses * sizeof(float), cudaHostAllocDefault));
     original_synapse_indices = (int*)realloc(original_synapse_indices, total_number_of_synapses * sizeof(int));
+    
 }
 
 
@@ -476,7 +480,6 @@ void Synapses::allocate_device_pointers() {
 	CudaSafeCall(cudaMemcpy(d_presynaptic_neuron_indices, presynaptic_neuron_indices, sizeof(int)*total_number_of_synapses, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_postsynaptic_neuron_indices, postsynaptic_neuron_indices, sizeof(int)*total_number_of_synapses, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_synaptic_efficacies_or_weights, synaptic_efficacies_or_weights, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
-
 }
 
 // Provides order of magnitude speedup for LIF (All to all atleast). 
@@ -515,7 +518,7 @@ void Synapses::shuffle_synapses() {
 void Synapses::set_threads_per_block_and_blocks_per_grid(int threads) {
 
 	threads_per_block.x = threads;
-	number_of_synapse_blocks_per_grid.x = 1024;
+	number_of_synapse_blocks_per_grid = dim3(1000);
 
 }
 
@@ -612,11 +615,11 @@ __global__ void set_neuron_indices_by_sampling_from_normal_distribution(int tota
 
 		}	
 
-		__syncthreads();
-
 		idx += blockDim.x * gridDim.x;
 
 	}	
+
+	__syncthreads();
 
 }
 

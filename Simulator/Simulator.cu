@@ -173,7 +173,7 @@ void Simulator::setup_network(bool temp_model_type) {
 	clock_t initialise_network_start = clock();
 
 	int threads_per_block_neurons = 512;
-	int threads_per_block_synapses = 128;
+	int threads_per_block_synapses = 512;
 	synapses->set_threads_per_block_and_blocks_per_grid(threads_per_block_synapses);
 	neurons->set_threads_per_block_and_blocks_per_grid(threads_per_block_neurons);
 	input_neurons->set_threads_per_block_and_blocks_per_grid(threads_per_block_neurons);
@@ -216,7 +216,7 @@ void Simulator::setup_recording_electrodes() {
 }
 
 
-void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_model_type, bool save_spikes, bool present_stimuli_in_random_order){
+void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_model_type, bool save_spikes, bool apply_stdp_to_relevant_synapses, bool present_stimuli_in_random_order){
 
 	// Check how many stimuli their are and do something about it:
 	if (number_of_stimuli == 0){
@@ -270,7 +270,7 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_m
 
 				// Temporary seperation of izhikevich and Conductance per timestep instructions. Eventually hope to share as much execuation as possible between both models for generality
 				if (temp_model_type == 0) temp_izhikevich_per_timestep_instructions(current_time_in_seconds);
-				if (temp_model_type == 1) temp_conductance_per_timestep_instructions(current_time_in_seconds);
+				if (temp_model_type == 1) temp_conductance_per_timestep_instructions(current_time_in_seconds, apply_stdp_to_relevant_synapses);
 
 				// // Only save the spikes if necessary
 				if (save_spikes){
@@ -307,8 +307,8 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_m
 
 	recording_electrodes->save_network_state(synapses);
 
-	delete recording_electrodes;
-	delete input_recording_electrodes;
+	// delete recording_electrodes;
+	// delete input_recording_electrodes;
 
 }
 
@@ -336,10 +336,10 @@ void Simulator::temp_izhikevich_per_timestep_instructions(float current_time_in_
 
 }
 
-void Simulator::temp_conductance_per_timestep_instructions(float current_time_in_seconds) {
+void Simulator::temp_conductance_per_timestep_instructions(float current_time_in_seconds, bool apply_stdp_to_relevant_synapses) {
 
 	// Where generator->generupdate2_wrapper used to be
-	
+
 	synapses->check_for_synapse_spike_arrival(current_time_in_seconds);
 
 	// Calculate I(t) from delta_g(t) and V(t)
@@ -348,14 +348,16 @@ void Simulator::temp_conductance_per_timestep_instructions(float current_time_in
 	// Calculate g(t+delta_t) and delta_g(t)
 	synapses->update_synaptic_conductances(timestep, current_time_in_seconds);
 	
-	// Calculate delta_g(t+delta_t) from C(t) and D(t)
-	synapses->update_synaptic_efficacies_or_weights(neurons->d_recent_postsynaptic_activities_D, timestep, current_time_in_seconds, neurons->d_last_spike_time_of_each_neuron);
+	if (apply_stdp_to_relevant_synapses) {
+		// Calculate delta_g(t+delta_t) from C(t) and D(t)
+		synapses->update_synaptic_efficacies_or_weights(neurons->d_recent_postsynaptic_activities_D, timestep, current_time_in_seconds, neurons->d_last_spike_time_of_each_neuron);
 
-	// Calculate C(t+delta_t) from C(t)
-	synapses->update_presynaptic_activities(timestep, current_time_in_seconds);
+		// Calculate C(t+delta_t) from C(t)
+		synapses->update_presynaptic_activities(timestep, current_time_in_seconds);
 
-	// Calculate D(t+delta_t) from D(t)
-	neurons->update_postsynaptic_activities(timestep, current_time_in_seconds);
+		// Calculate D(t+delta_t) from D(t)
+		neurons->update_postsynaptic_activities(timestep, current_time_in_seconds);
+	}
 
 	// Where synapses->LTD used to be
 

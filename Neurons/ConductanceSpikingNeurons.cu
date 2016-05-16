@@ -74,6 +74,8 @@ void ConductanceSpikingNeurons::update_postsynaptic_activities(float timestep, f
 								d_last_spike_time_of_each_neuron,
 								current_time_in_seconds);
 
+	CudaCheckError();
+
 }
 
 
@@ -86,7 +88,7 @@ __global__ void conductance_update_membrane_potentials(float *d_membrane_potenti
 	
 	// // Get thread IDs
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	if (idx < total_number_of_neurons) {
+	while (idx < total_number_of_neurons) {
 
 		float membrane_time_constant_in_seconds = 0.02;
 		float equation_constant = timestep / membrane_time_constant_in_seconds;
@@ -100,6 +102,8 @@ __global__ void conductance_update_membrane_potentials(float *d_membrane_potenti
 
 		d_membrane_potentials_v[idx] = new_membrane_potential;
 
+		idx += blockDim.x * gridDim.x;
+
 	}
 	__syncthreads();
 }
@@ -111,7 +115,7 @@ __global__ void conductance_update_postsynaptic_activities_kernal(float timestep
 								float current_time_in_seconds) {
 
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	if (idx < total_number_of_neurons) {
+	while (idx < total_number_of_neurons) {
 
 		// if (d_stdp[idx] == 1) {
 
@@ -128,6 +132,8 @@ __global__ void conductance_update_postsynaptic_activities_kernal(float timestep
 			d_recent_postsynaptic_activities_D[idx] = new_recent_postsynaptic_activity_D;
 
 		// }
+
+		idx += blockDim.x * gridDim.x;
 
 	}
 }

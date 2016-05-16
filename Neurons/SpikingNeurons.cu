@@ -149,7 +149,7 @@ __global__ void check_for_neuron_spikes_kernal(float *d_membrane_potentials_v,
 
 	// Get thread IDs
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	if (idx < total_number_of_neurons) {
+	while (idx < total_number_of_neurons) {
 
 		// First checking if neuron has spiked:
 		if (d_membrane_potentials_v[idx] >= d_thresholds_for_action_potential_spikes[idx]){
@@ -164,6 +164,8 @@ __global__ void check_for_neuron_spikes_kernal(float *d_membrane_potentials_v,
 			d_states_u[idx] += d_param_d[idx];
 			
 		}
+
+		idx += blockDim.x * gridDim.x;
 	}
 	__syncthreads();
 

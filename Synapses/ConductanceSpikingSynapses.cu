@@ -110,6 +110,8 @@ void ConductanceSpikingSynapses::set_threads_per_block_and_blocks_per_grid(int t
 
 void ConductanceSpikingSynapses::calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds) {
 
+	// printf("calculate_postsynaptic_current_injection. number_of_synapse_blocks_per_grid.x: %d. threads_per_block.x: %d\n", number_of_synapse_blocks_per_grid.x, threads_per_block.x);
+
 	conductance_calculate_postsynaptic_current_injection_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_postsynaptic_neuron_indices,
 																	neurons->d_current_injections,
 																	total_number_of_synapses,
@@ -133,7 +135,7 @@ void ConductanceSpikingSynapses::update_synaptic_conductances(float timestep, fl
 }
 
 void ConductanceSpikingSynapses::update_presynaptic_activities(float timestep, float current_time_in_seconds) {
-	
+
 	conductance_update_presynaptic_activities_C_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_recent_presynaptic_activities_C,
 							d_time_of_last_spike_to_reach_synapse,
 							d_stdp,
@@ -146,6 +148,8 @@ void ConductanceSpikingSynapses::update_presynaptic_activities(float timestep, f
 
 void ConductanceSpikingSynapses::update_synaptic_efficacies_or_weights(float * d_recent_postsynaptic_activities_D, float timestep, float current_time_in_seconds, float * d_last_spike_time_of_each_neuron) {
 
+	// printf("total_number_of_synapses: %d\n", total_number_of_synapses);
+
 	conductance_update_synaptic_efficacies_or_weights_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_recent_presynaptic_activities_C,
 																d_recent_postsynaptic_activities_D,
 																timestep,
@@ -156,6 +160,8 @@ void ConductanceSpikingSynapses::update_synaptic_efficacies_or_weights(float * d
 																d_last_spike_time_of_each_neuron,
 																d_stdp,
 																total_number_of_synapses);
+
+	CudaCheckError();
 
 }
 
@@ -210,6 +216,7 @@ __global__ void conductance_update_synaptic_conductances_kernal(float timestep,
 
 		idx += blockDim.x * gridDim.x;
 	}
+	__syncthreads();
 
 }
 
@@ -221,7 +228,8 @@ __global__ void conductance_update_presynaptic_activities_C_kernal(float* d_rece
 							float current_time_in_seconds,
 							size_t total_number_of_synapses) {
 
-	int idx = threadIdx.x + blockIdx.x * blockDim.x;
+	int t_idx = threadIdx.x + blockIdx.x * blockDim.x;
+	int idx = t_idx;
 	while (idx < total_number_of_synapses) {
 
 		if (d_stdp[idx] == true) {
@@ -260,6 +268,7 @@ __global__ void conductance_update_synaptic_efficacies_or_weights_kernal(float *
 																size_t total_number_of_synapses) {
 
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
+
 	while (idx < total_number_of_synapses) {
 
 		if (d_stdp[idx] == true) {
@@ -269,16 +278,16 @@ __global__ void conductance_update_synaptic_efficacies_or_weights_kernal(float *
 
 			float new_componet = 0.0;
 
-			if (d_last_spike_time_of_each_neuron[idx] == current_time_in_seconds) {
+			int postsynaptic_neuron_index = d_postsynaptic_neuron_indices[idx];
+			if (d_last_spike_time_of_each_neuron[postsynaptic_neuron_index] == current_time_in_seconds) {
 				float recent_presynaptic_activity_C = d_recent_presynaptic_activities_C[idx];
 				new_componet += ((1 - synaptic_efficacy_delta_g) * recent_presynaptic_activity_C);
 			}
 
 			if (d_time_of_last_spike_to_reach_synapse[idx] == current_time_in_seconds) {
-				int postsynaptic_neuron_index = d_postsynaptic_neuron_indices[idx];
 				float recent_postsynaptic_activity_D = d_recent_postsynaptic_activities_D[postsynaptic_neuron_index];
 				new_componet -= (synaptic_efficacy_delta_g * recent_postsynaptic_activity_D);
-			}
+			}			
 
 			float decay_term_tau_delta_g = 0.01; // Can't find value in paper
 			if (new_componet != 0.0) {
@@ -293,7 +302,6 @@ __global__ void conductance_update_synaptic_efficacies_or_weights_kernal(float *
 		}
 
 		idx += blockDim.x * gridDim.x;
-
 	}
 
 }
