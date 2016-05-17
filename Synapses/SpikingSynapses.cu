@@ -226,15 +226,8 @@ __global__ void move_spikes_towards_synapses_kernal(int* d_presynaptic_neuron_in
 
 		// Get presynaptic neurons last spike time
 		int presynaptic_neuron_index = d_presynaptic_neuron_indices[idx];
-		// if (presynaptic_neuron_index < 0)
-
-
-		float presynaptic_neurons_last_spike_time;
-		if (presynaptic_neuron_index < 0) {
-			presynaptic_neurons_last_spike_time = d_input_neurons_last_spike_time[-1*presynaptic_neuron_index - 1];
-		} else {
-			presynaptic_neurons_last_spike_time = d_last_spike_time_of_each_neuron[presynaptic_neuron_index];
-		}
+		bool presynaptic_is_input = PRESYNAPTIC_IS_INPUT(presynaptic_neuron_index);
+		float presynaptic_neurons_last_spike_time = presynaptic_is_input ? d_input_neurons_last_spike_time[CORRECTED_PRESYNAPTIC_ID(presynaptic_neuron_index, presynaptic_is_input)] : d_last_spike_time_of_each_neuron[presynaptic_neuron_index];
 
 		// If the presynaptic neuron has JUST fired, add spike to spikes_travelling_to_synapse or buffer, with delay time
 		if (presynaptic_neurons_last_spike_time == current_time_in_seconds){

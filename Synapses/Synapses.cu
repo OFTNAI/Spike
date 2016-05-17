@@ -21,9 +21,6 @@
 //			sigma = Standard Deviation of the gaussian distribution
 #define GAUS(distance, sigma) ( (1.0f/(sigma*(sqrt(2.0f*M_PI)))) * (exp(-1.0f * (pow((distance),(2.0f))) / (2.0f*(pow(sigma,(2.0f)))))) )
 
-#define PRESYNAPTIC_GROUP_IS_INPUT( id ) (id < 0 ? true : false)
-#define CORRECTED_PRESYNAPTIC_ID(id, is_input) (is_input ? -1 * (id) - 1 : id) 
-
 
 // Synapses Constructor
 Synapses::Synapses() {
@@ -134,7 +131,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 
 	// Calculate presynaptic group start and end indices
 	// Also assign presynaptic group shape
-	bool presynaptic_group_is_input = PRESYNAPTIC_GROUP_IS_INPUT(presynaptic_group_id);
+	bool presynaptic_group_is_input = PRESYNAPTIC_IS_INPUT(presynaptic_group_id);
 
 	if (presynaptic_group_is_input) {
 

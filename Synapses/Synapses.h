@@ -56,6 +56,9 @@ struct connectivity_parameters_struct {
 
 };
 
+#define PRESYNAPTIC_IS_INPUT( id ) (id < 0 ? true : false)
+#define CORRECTED_PRESYNAPTIC_ID(id, is_input) (is_input ? -1 * (id) - 1 : id) 
+
 
 class Synapses {
 
