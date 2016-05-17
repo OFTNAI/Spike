@@ -21,6 +21,9 @@
 //			sigma = Standard Deviation of the gaussian distribution
 #define GAUS(distance, sigma) ( (1.0f/(sigma*(sqrt(2.0f*M_PI)))) * (exp(-1.0f * (pow((distance),(2.0f))) / (2.0f*(pow(sigma,(2.0f)))))) )
 
+#define CORRECTED_PRESYNAPTIC_ID(id, is_input) (is_input ? -1 * (id) - 1 : id) 
+
+
 // Synapses Constructor
 Synapses::Synapses() {
 
@@ -124,26 +127,25 @@ void Synapses::AddGroup(int presynaptic_group_id,
 	int * presynaptic_group_shape;
 	int * postsynaptic_group_shape;
 
-	int group_type_factor = 1;
-	int group_type_component = 0;
 	int prestart = 0;
 	int preend = 0;
 	int poststart = 0;
 
 	// Calculate presynaptic group start and end indices
 	// Also assign presynaptic group shape
+	bool presynaptic_group_is_input = false;
 	if (presynaptic_group_id < 0) { // If presynaptic group is Input group
 
 		if (stdp_on == true) print_message_and_exit("Plasticity between input neurons and model neurons is not currently supported.");
 
-		group_type_factor = -1;
-		group_type_component = -1;
-		presynaptic_group_shape = input_neurons->group_shapes[-1*presynaptic_group_id - 1];
+		presynaptic_group_is_input = true;
+
+		presynaptic_group_shape = input_neurons->group_shapes[CORRECTED_PRESYNAPTIC_ID(presynaptic_group_id, presynaptic_group_is_input)];
 
 		if (presynaptic_group_id < -1){
-			prestart = last_neuron_indices_for_input_neuron_groups[-1*presynaptic_group_id - 2];
+			prestart = last_neuron_indices_for_input_neuron_groups[CORRECTED_PRESYNAPTIC_ID(presynaptic_group_id, presynaptic_group_is_input) - 1];
 		}
-		preend = last_neuron_indices_for_input_neuron_groups[-1*presynaptic_group_id - 1];
+		preend = last_neuron_indices_for_input_neuron_groups[CORRECTED_PRESYNAPTIC_ID(presynaptic_group_id, presynaptic_group_is_input)];
 
 	} else {
 
@@ -200,7 +202,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 					// Index
 					int idx = original_number_of_synapses + (i-prestart) + (j-poststart)*(preend-prestart);
 					// Setup Synapses
-					presynaptic_neuron_indices[idx] = group_type_factor*i + group_type_component;
+					presynaptic_neuron_indices[idx] = CORRECTED_PRESYNAPTIC_ID(i, presynaptic_group_is_input);
 					postsynaptic_neuron_indices[idx] = j;
 				}
 			}
@@ -215,7 +217,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 			if ((preend-prestart) != (postend-poststart)) print_message_and_exit("Unequal populations for one_to_one.");
 			// Create the connectivity
 			for (int i = 0; i < (preend-prestart); i++){
-				presynaptic_neuron_indices[original_number_of_synapses + i] = group_type_factor*(prestart + i) + group_type_component;
+				presynaptic_neuron_indices[original_number_of_synapses + i] = CORRECTED_PRESYNAPTIC_ID(prestart + i, presynaptic_group_is_input);
 				postsynaptic_neuron_indices[original_number_of_synapses + i] = poststart + i;
 			}
 
@@ -235,7 +237,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 						this->increment_number_of_synapses(1);
 
 						// Setup Synapses
-						presynaptic_neuron_indices[total_number_of_synapses - 1] = group_type_factor*i + group_type_component;
+						presynaptic_neuron_indices[total_number_of_synapses - 1] = CORRECTED_PRESYNAPTIC_ID(i, presynaptic_group_is_input);
 						postsynaptic_neuron_indices[total_number_of_synapses - 1] = j;
 					}
 				}
@@ -282,7 +284,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 
 			}
 
-			set_neuron_indices_by_sampling_from_normal_distribution<<<random_state_manager->block_dimensions, random_state_manager->threads_per_block>>>(total_number_of_new_synapses, postsynaptic_group_id, poststart, prestart, postsynaptic_group_shape[0], postsynaptic_group_shape[1], presynaptic_group_shape[0], presynaptic_group_shape[1], number_of_new_synapses_per_postsynaptic_neuron, number_of_postsynaptic_neurons_in_group, d_temp_presynaptic_neuron_indices, d_temp_postsynaptic_neuron_indices, d_temp_synaptic_efficacies_or_weights, standard_deviation_sigma, group_type_factor, group_type_component, random_state_manager->d_states);
+			set_neuron_indices_by_sampling_from_normal_distribution<<<random_state_manager->block_dimensions, random_state_manager->threads_per_block>>>(total_number_of_new_synapses, postsynaptic_group_id, poststart, prestart, postsynaptic_group_shape[0], postsynaptic_group_shape[1], presynaptic_group_shape[0], presynaptic_group_shape[1], number_of_new_synapses_per_postsynaptic_neuron, number_of_postsynaptic_neurons_in_group, d_temp_presynaptic_neuron_indices, d_temp_postsynaptic_neuron_indices, d_temp_synaptic_efficacies_or_weights, standard_deviation_sigma, presynaptic_group_is_input, random_state_manager->d_states);
 			CudaCheckError();
 
 			CudaSafeCall(cudaMemcpy(&presynaptic_neuron_indices[original_number_of_synapses], d_temp_presynaptic_neuron_indices, sizeof(int)*total_number_of_new_synapses, cudaMemcpyDeviceToHost));
@@ -365,7 +367,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 
 						if (yes_no_connection_matrix[vector_index] == true) {
 							// Setup Synapses
-							presynaptic_neuron_indices[total_number_of_synapses - total_number_of_new_synapses - 1 + true_count] = group_type_factor*i + group_type_component;
+							presynaptic_neuron_indices[total_number_of_synapses - total_number_of_new_synapses - 1 + true_count] = CORRECTED_PRESYNAPTIC_ID(i, presynaptic_group_is_input);
 							postsynaptic_neuron_indices[total_number_of_synapses - total_number_of_new_synapses - 1 + true_count] = j;
 
 							true_count++;
@@ -408,7 +410,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 
 						// Setup the synapses:
 						// Setup Synapses
-						presynaptic_neuron_indices[total_number_of_synapses - 1] = group_type_factor*i + group_type_component;
+						presynaptic_neuron_indices[total_number_of_synapses - 1] = CORRECTED_PRESYNAPTIC_ID(i, presynaptic_group_is_input);
 						postsynaptic_neuron_indices[total_number_of_synapses - 1] = poststart + temp;
 
 						// Increment conn_tgts
@@ -424,7 +426,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 			this->increment_number_of_synapses(1);
 
 			// Setup Synapses
-			presynaptic_neuron_indices[original_number_of_synapses] = group_type_factor * (prestart + int(parameter)) + group_type_component;
+			presynaptic_neuron_indices[original_number_of_synapses] = CORRECTED_PRESYNAPTIC_ID(prestart + int(parameter), presynaptic_group_is_input);
 			postsynaptic_neuron_indices[original_number_of_synapses] = poststart + int(parameter_two);
 
 			break;
@@ -560,7 +562,7 @@ __global__ void compute_yes_no_connection_matrix_for_groups(bool * d_yes_no_conn
 }
 
 
-__global__ void set_neuron_indices_by_sampling_from_normal_distribution(int total_number_of_new_synapses, int postsynaptic_group_id, int poststart, int prestart, int post_width, int post_height, int pre_width, int pre_height, int number_of_new_synapses_per_postsynaptic_neuron, int number_of_postsynaptic_neurons_in_group, int * d_presynaptic_neuron_indices, int * d_postsynaptic_neuron_indices, float * d_synaptic_efficacies_or_weights, float standard_deviation_sigma, int group_type_factor, int group_type_component, curandState_t* d_states) {
+__global__ void set_neuron_indices_by_sampling_from_normal_distribution(int total_number_of_new_synapses, int postsynaptic_group_id, int poststart, int prestart, int post_width, int post_height, int pre_width, int pre_height, int number_of_new_synapses_per_postsynaptic_neuron, int number_of_postsynaptic_neurons_in_group, int * d_presynaptic_neuron_indices, int * d_postsynaptic_neuron_indices, float * d_synaptic_efficacies_or_weights, float standard_deviation_sigma, bool presynaptic_group_is_input, curandState_t* d_states) {
 
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	int t_idx = idx;
@@ -608,7 +610,7 @@ __global__ void set_neuron_indices_by_sampling_from_normal_distribution(int tota
 			}
 
 			if (presynaptic_x_set && presynaptic_y_set) {
-				d_presynaptic_neuron_indices[idx] = group_type_factor * (prestart + presynaptic_x + presynaptic_y*pre_width) + group_type_component;
+				d_presynaptic_neuron_indices[idx] = CORRECTED_PRESYNAPTIC_ID(prestart + presynaptic_x + presynaptic_y*pre_width, presynaptic_group_is_input);
 				break;
 			}
 			

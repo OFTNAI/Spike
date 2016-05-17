@@ -29,7 +29,7 @@ int main (int argc, char *argv[]){
 	simulator.SetInputNeuronType(new ImagePoissonSpikingNeurons());
 	simulator.SetSynapseType(new ConductanceSpikingSynapses());
 
-	simulator.synapses->print_synapse_group_details = false;
+	simulator.synapses->print_synapse_group_details = true;
 
 	/////////// ADD INPUT NEURONS ///////////
 	printf("Adding Input Neurons...\n");

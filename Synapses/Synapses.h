@@ -159,8 +159,7 @@ __global__ void set_neuron_indices_by_sampling_from_normal_distribution(int tota
 																		int * d_postsynaptic_neuron_indices, 
 																		float * d_synaptic_efficacies_or_weights, 
 																		float standard_deviation_sigma, 
-																		int group_type_factor, 
-																		int group_type_component, 
+																		bool presynaptic_group_is_input,
 																		curandState_t* d_states);
 
 // GAUSS random number generator
