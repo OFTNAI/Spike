@@ -175,13 +175,15 @@ __global__ void conductance_calculate_postsynaptic_current_injection_kernal(int*
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	while (idx < total_number_of_synapses) {
 
+		int postsynaptic_neuron_index = d_postsynaptic_neuron_indices[idx];
+
 		float temp_reversal_potential_Vhat = 0.0;
-		float membrane_potential_v = d_membrane_potentials_v[d_postsynaptic_neuron_indices[idx]];
+		float membrane_potential_v = d_membrane_potentials_v[postsynaptic_neuron_index];
 		float synaptic_conductance_g = d_synaptic_conductances_g[idx];
 
 		float component_for_sum = synaptic_conductance_g * (temp_reversal_potential_Vhat - membrane_potential_v);
 		if (component_for_sum != 0.0) {
-			atomicAdd(&d_neurons_current_injections[d_postsynaptic_neuron_indices[idx]], component_for_sum);
+			atomicAdd(&d_neurons_current_injections[postsynaptic_neuron_index], component_for_sum);
 		}
 
 		idx += blockDim.x * gridDim.x;
@@ -205,10 +207,32 @@ __global__ void conductance_update_synaptic_conductances_kernal(float timestep,
 		float synaptic_conductance_g = d_synaptic_conductances_g[idx];
 		float decay_term_tau_g = 0.01; // Is this the synaptic time constant?
 
-		float new_conductance = (1 - (timestep/decay_term_tau_g)) * synaptic_conductance_g;
+		// float new_conductance = (1 - (timestep/decay_term_tau_g)) * synaptic_conductance_g;
+		float new_conductance = synaptic_conductance_g;
+		// if (new_conductance != 0.0) {
+		// if (idx == 10000) {
+		// 	printf("synaptic_conductance_g: %1.16f\n", synaptic_conductance_g);
+		// 	printf("new_conductance: %1.16f\n", new_conductance);
+		// }
+		
 		if (d_time_of_last_spike_to_reach_synapse[idx] == current_time_in_seconds) {
-			new_conductance += timestep * d_synaptic_efficacies_or_weights[idx];
+			float timestep_times_synaptic_efficacy = timestep * d_synaptic_efficacies_or_weights[idx];
+			float timestep_times_synaptic_efficacy_times_scaling_constant = timestep_times_synaptic_efficacy * 7.9 * pow(10, -8);
+			new_conductance += timestep_times_synaptic_efficacy_times_scaling_constant;
+			// if (idx < 3000) {
+				// printf("SPIKE ARRIVED! new_conductance: %1.16f\n", new_conductance);
+				// printf("SPIKE ARRIVED! timestep_times_synaptic_efficacy_times_scaling_constant: %1.16f\n", timestep_times_synaptic_efficacy_times_scaling_constant);
+				// printf("SPIKE ARRIVED! timestep_times_synaptic_efficacy: %1.12f\n", timestep_times_synaptic_efficacy);
+				// printf("SPIKE ARRIVED! timestep: %1.12f\n", timestep);
+				// printf("SPIKE ARRIVED! synaptic_efficacy: %1.12f\n", d_synaptic_efficacies_or_weights[idx]);
+			// }
 		}
+
+		// if (idx == 10000) {
+		// 	printf("timestep: %1.12f\n", timestep);
+		// 	printf("d_synaptic_efficacies_or_weights[idx]: %1.12f\n", d_synaptic_efficacies_or_weights[idx]);
+		// 	printf("new_conductance: %1.12f\n", new_conductance);
+		// }
 
 		if (synaptic_conductance_g != new_conductance) {
 			d_synaptic_conductances_g[idx] = new_conductance;
@@ -235,7 +259,7 @@ __global__ void conductance_update_presynaptic_activities_C_kernal(float* d_rece
 		if (d_stdp[idx] == true) {
 
 			float recent_presynaptic_activity_C = d_recent_presynaptic_activities_C[idx];
-			float decay_term_tau_C = 0.01; // Should be variable between 0.003 and 0.075
+			float decay_term_tau_C = 0.04; // Should be variable between 0.003 and 0.075
 
 			float new_recent_presynaptic_activity_C = (1 - (timestep/decay_term_tau_C)) * recent_presynaptic_activity_C;
 			if (d_time_of_last_spike_to_reach_synapse[idx] == current_time_in_seconds) {
@@ -289,13 +313,17 @@ __global__ void conductance_update_synaptic_efficacies_or_weights_kernal(float *
 				new_componet -= (synaptic_efficacy_delta_g * recent_postsynaptic_activity_D);
 			}			
 
-			float decay_term_tau_delta_g = 0.01; // Can't find value in paper
+			float decay_term_tau_delta_g = timestep / 0.1;
 			if (new_componet != 0.0) {
 				new_componet = (timestep/decay_term_tau_delta_g) * new_componet;
 				new_synaptic_efficacy += new_componet;
 			}
 
 			if (synaptic_efficacy_delta_g != new_synaptic_efficacy) {
+
+				new_synaptic_efficacy = max(new_synaptic_efficacy, 0.0);
+				new_synaptic_efficacy = min(new_synaptic_efficacy, 1.0);
+
 				d_synaptic_efficacies_or_weights[idx] = new_synaptic_efficacy;
 			}
 

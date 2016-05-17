@@ -8,7 +8,7 @@
 
 
 struct spiking_neuron_parameters_struct : neuron_parameters_struct {
-	spiking_neuron_parameters_struct(): after_spike_reset_membrane_potential_c(-70.0f), threshold_for_action_potential_spike(30.0f), paramd(0.0f) { neuron_parameters_struct(); }
+	spiking_neuron_parameters_struct(): after_spike_reset_membrane_potential_c(-0.074f), threshold_for_action_potential_spike(0.03f), paramd(0.0f) { neuron_parameters_struct(); }
 
 	float after_spike_reset_membrane_potential_c;
 	float threshold_for_action_potential_spike;

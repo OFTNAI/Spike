@@ -95,10 +95,13 @@ __global__ void conductance_update_membrane_potentials(float *d_membrane_potenti
 
 		float membrane_potential_Vi = d_membrane_potentials_v[idx];
 		float current_injection_Ii = d_current_injections[idx];
-		float temp_resting_potential_V0 = -74.0; // Same as after_spike_reset_membrane_potential ???
+		float temp_resting_potential_V0 = -0.074; // Same as after_spike_reset_membrane_potential ???
 		float temp_membrane_resistance_R = 40000000.0f;
 
 		float new_membrane_potential = equation_constant * (temp_resting_potential_V0 + temp_membrane_resistance_R * current_injection_Ii) + (1 - equation_constant) * membrane_potential_Vi;
+
+		// if ((idx == 1008) && (new_membrane_potential != -74.0) && (new_membrane_potential != -70.0)) printf("%f\n", new_membrane_potential);
+		// if (idx == 1008) printf("%f\n", new_membrane_potential);
 
 		d_membrane_potentials_v[idx] = new_membrane_potential;
 
@@ -120,7 +123,7 @@ __global__ void conductance_update_postsynaptic_activities_kernal(float timestep
 		// if (d_stdp[idx] == 1) {
 
 			float recent_postsynaptic_activity_D = d_recent_postsynaptic_activities_D[idx];
-			float decay_term_tau_D = 0.03; // Should be variable between 0.005 and 0.125
+			float decay_term_tau_D = 0.04; // Should be variable between 0.005 and 0.125
 
 			float new_recent_postsynaptic_activity_D = (1 - (timestep/decay_term_tau_D)) * recent_postsynaptic_activity_D;
 

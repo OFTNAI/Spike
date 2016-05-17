@@ -199,7 +199,6 @@ __global__ void check_for_synapse_spike_arrival_kernal(int* d_spikes_travelling_
 		// Decrememnt Spikes
 		d_spikes_travelling_to_synapse[idx] -= 1;
 		if (d_spikes_travelling_to_synapse[idx] == 0) {
-
 			d_time_of_last_spike_to_reach_synapse[idx] = current_time_in_seconds;
 		}
 		idx += blockDim.x * gridDim.x;

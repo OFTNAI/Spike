@@ -287,7 +287,7 @@ void ImagePoissonSpikingNeurons::load_rates_from_files(const char * inputDirecto
 
 								int element_index = start_index_for_current_gabor_image + image_x + image_y * image_width;
 								
-								gabor_input_rates[element_index] = rate*100.0f;
+								gabor_input_rates[element_index] = rate*10000.0f;
 							}
 						
 					} catch (fstream::failure e) {
@@ -348,8 +348,10 @@ __global__ void image_poisson_update_membrane_potentials_kernal(curandState_t* d
 
 		float rate = d_gabor_input_rates[idx];
 
-		if (rate > 0.000001) {
-			rate = 1.0 - rate;
+		if (rate > 0.0001) {
+			// rate = 1.0 - rate;
+			// if (rate > 0.5) printf("rate: %f\n", rate);
+			// printf("rate: %f\n", rate);
 
 			// Creates random float between 0 and 1 from uniform distribution
 			// d_states effectively provides a different seed for each thread
@@ -362,7 +364,7 @@ __global__ void image_poisson_update_membrane_potentials_kernal(curandState_t* d
 			if (random_float < (rate * timestep)){
 
 				// Puts membrane potential above default spiking threshold
-				d_membrane_potentials_v[idx] = 35.0f;
+				d_membrane_potentials_v[idx] = 0.035f;
 
 			} 
 

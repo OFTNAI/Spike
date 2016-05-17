@@ -152,6 +152,10 @@ __global__ void check_for_neuron_spikes_kernal(float *d_membrane_potentials_v,
 	while (idx < total_number_of_neurons) {
 
 		// First checking if neuron has spiked:
+		// float mp = d_membrane_potentials_v[idx];
+		// if ((mp != -74.0) && (mp != -70.0)) printf("%f\n", mp);
+		// if (idx == 1000) printf("d_thresholds_for_action_potential_spikes[idx]: %f\n", d_thresholds_for_action_potential_spikes[idx]);
+		// if (idx == 1000) printf("d_membrane_potentials_v[idx]: %f\n", d_membrane_potentials_v[idx]);
 		if (d_membrane_potentials_v[idx] >= d_thresholds_for_action_potential_spikes[idx]){
 
 			// Set current time as last spike time of neuron
