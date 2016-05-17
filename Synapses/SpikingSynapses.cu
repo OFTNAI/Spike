@@ -226,6 +226,9 @@ __global__ void move_spikes_towards_synapses_kernal(int* d_presynaptic_neuron_in
 
 		// Get presynaptic neurons last spike time
 		int presynaptic_neuron_index = d_presynaptic_neuron_indices[idx];
+		// if (presynaptic_neuron_index < 0)
+
+
 		float presynaptic_neurons_last_spike_time;
 		if (presynaptic_neuron_index < 0) {
 			presynaptic_neurons_last_spike_time = d_input_neurons_last_spike_time[-1*presynaptic_neuron_index - 1];
