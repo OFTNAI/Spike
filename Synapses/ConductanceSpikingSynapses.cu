@@ -11,6 +11,9 @@ ConductanceSpikingSynapses::ConductanceSpikingSynapses() {
 
 	recent_presynaptic_activities_C = NULL;
 	d_recent_presynaptic_activities_C = NULL;
+
+	biological_conductance_scaling_constants_lambda = NULL;
+	d_biological_conductance_scaling_constants_lambda = NULL;
 }
 
 // ConductanceSpikingSynapses Destructor
@@ -57,9 +60,12 @@ void ConductanceSpikingSynapses::AddGroup(int presynaptic_group_id,
 							parameter,
 							parameter_two);
 
+	conductance_spiking_synapse_parameters_struct * conductance_spiking_synapse_group_params = (conductance_spiking_synapse_parameters_struct*)synapse_params;
+
 	for (int i = (total_number_of_synapses - temp_number_of_synapses_in_last_group); i < total_number_of_synapses-1; i++){
 		synaptic_conductances_g[i] = 0.0f;
 		recent_presynaptic_activities_C[i] = 0.0f;
+		biological_conductance_scaling_constants_lambda[i] = conductance_spiking_synapse_group_params->biological_conductance_scaling_constant_lambda;
 	}
 
 	// printf("HYE4\n");
@@ -72,6 +78,7 @@ void ConductanceSpikingSynapses::increment_number_of_synapses(int increment) {
 
 	synaptic_conductances_g = (float*)realloc(synaptic_conductances_g, total_number_of_synapses * sizeof(float));
 	recent_presynaptic_activities_C = (float*)realloc(recent_presynaptic_activities_C, total_number_of_synapses * sizeof(float));
+	biological_conductance_scaling_constants_lambda = (float*)realloc(biological_conductance_scaling_constants_lambda, total_number_of_synapses * sizeof(float));
 
 }
 
@@ -82,6 +89,7 @@ void ConductanceSpikingSynapses::allocate_device_pointers() {
 
 	CudaSafeCall(cudaMalloc((void **)&d_synaptic_conductances_g, sizeof(float)*total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&d_recent_presynaptic_activities_C, sizeof(float)*total_number_of_synapses));
+	CudaSafeCall(cudaMalloc((void **)&d_biological_conductance_scaling_constants_lambda, sizeof(float)*total_number_of_synapses));
 
 }
 
@@ -92,6 +100,7 @@ void ConductanceSpikingSynapses::reset_synapse_spikes() {
 	// CudaSafeCall(cudaMemset(d_synaptic_conductances_g, 0.0f, sizeof(float)*total_number_of_synapses));
 	CudaSafeCall(cudaMemcpy(d_synaptic_conductances_g, synaptic_conductances_g, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_recent_presynaptic_activities_C, recent_presynaptic_activities_C, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
+	CudaSafeCall(cudaMemcpy(d_biological_conductance_scaling_constants_lambda, biological_conductance_scaling_constants_lambda, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
 
 }
 
@@ -129,6 +138,7 @@ void ConductanceSpikingSynapses::update_synaptic_conductances(float timestep, fl
 											d_synaptic_conductances_g, 
 											d_synaptic_efficacies_or_weights, 
 											d_time_of_last_spike_to_reach_synapse,
+											d_biological_conductance_scaling_constants_lambda,
 											total_number_of_synapses,
 											current_time_in_seconds);
 
@@ -200,7 +210,8 @@ __global__ void conductance_calculate_postsynaptic_current_injection_kernal(int*
 __global__ void conductance_update_synaptic_conductances_kernal(float timestep, 
 														float * d_synaptic_conductances_g, 
 														float * d_synaptic_efficacies_or_weights, 
-														float * d_time_of_last_spike_to_reach_synapse, 
+														float * d_time_of_last_spike_to_reach_synapse,
+														float * d_biological_conductance_scaling_constants_lambda,
 														int total_number_of_synapses,
 														float current_time_in_seconds) {
 
@@ -220,14 +231,15 @@ __global__ void conductance_update_synaptic_conductances_kernal(float timestep,
 		
 		if (d_time_of_last_spike_to_reach_synapse[idx] == current_time_in_seconds) {
 			float timestep_times_synaptic_efficacy = timestep * d_synaptic_efficacies_or_weights[idx];
-			float timestep_times_synaptic_efficacy_times_scaling_constant = timestep_times_synaptic_efficacy * 1.0 * pow(10, -6);
+			float biological_conductance_scaling_constant_lambda = d_biological_conductance_scaling_constants_lambda[idx];
+			float timestep_times_synaptic_efficacy_times_scaling_constant = timestep_times_synaptic_efficacy * biological_conductance_scaling_constant_lambda;
 			new_conductance += timestep_times_synaptic_efficacy_times_scaling_constant;
-			// if (idx < 3000) {
-				// printf("SPIKE ARRIVED! new_conductance: %1.16f\n", new_conductance);
-				// printf("SPIKE ARRIVED! timestep_times_synaptic_efficacy_times_scaling_constant: %1.16f\n", timestep_times_synaptic_efficacy_times_scaling_constant);
-				// printf("SPIKE ARRIVED! timestep_times_synaptic_efficacy: %1.12f\n", timestep_times_synaptic_efficacy);
-				// printf("SPIKE ARRIVED! timestep: %1.12f\n", timestep);
-				// printf("SPIKE ARRIVED! synaptic_efficacy: %1.12f\n", d_synaptic_efficacies_or_weights[idx]);
+			// if (idx == 93000) {
+			// 	printf("SPIKE ARRIVED! new_conductance: %1.16f\n", new_conductance);
+			// 	// printf("SPIKE ARRIVED! timestep_times_synaptic_efficacy_times_scaling_constant: %1.16f\n", timestep_times_synaptic_efficacy_times_scaling_constant);
+			// 	// printf("SPIKE ARRIVED! timestep_times_synaptic_efficacy: %1.12f\n", timestep_times_synaptic_efficacy);
+			// 	// printf("SPIKE ARRIVED! timestep: %1.12f\n", timestep);
+			// 	// printf("SPIKE ARRIVED! synaptic_efficacy: %1.12f\n", d_synaptic_efficacies_or_weights[idx]);
 			// }
 		}
 

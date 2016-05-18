@@ -249,8 +249,8 @@ void Synapses::AddGroup(int presynaptic_group_id,
 
 			float standard_deviation_sigma = parameter;
 
-			int number_of_new_synapses_per_postsynaptic_neuron = 50;
-
+			int number_of_new_synapses_per_postsynaptic_neuron = synapse_params->gaussian_synapses_per_postsynaptic_neuron;
+			
 			int number_of_postsynaptic_neurons_in_group = postend - poststart;
 
 			int total_number_of_new_synapses = number_of_new_synapses_per_postsynaptic_neuron * number_of_postsynaptic_neurons_in_group;

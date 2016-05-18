@@ -50,9 +50,10 @@ struct stdp_struct {
 
 
 struct synapse_parameters_struct {
-	synapse_parameters_struct(): max_number_of_connections_per_pair(1) {}
+	synapse_parameters_struct(): max_number_of_connections_per_pair(1), gaussian_synapses_per_postsynaptic_neuron(10) {}
 
 	int max_number_of_connections_per_pair;
+	int gaussian_synapses_per_postsynaptic_neuron;
 
 };
 

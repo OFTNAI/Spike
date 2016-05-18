@@ -5,8 +5,9 @@
 #include "../Neurons/SpikingNeurons.h"
 
 struct conductance_spiking_synapse_parameters_struct : spiking_synapse_parameters_struct {
-	conductance_spiking_synapse_parameters_struct() { spiking_synapse_parameters_struct(); }
+	conductance_spiking_synapse_parameters_struct(): biological_conductance_scaling_constant_lambda(1.0) { spiking_synapse_parameters_struct(); }
 
+	float biological_conductance_scaling_constant_lambda;
 };
 
 class ConductanceSpikingSynapses : public SpikingSynapses {
@@ -22,6 +23,9 @@ public:
 
 	float * recent_presynaptic_activities_C;
 	float * d_recent_presynaptic_activities_C;
+
+	float * biological_conductance_scaling_constants_lambda;
+	float * d_biological_conductance_scaling_constants_lambda;
 
 	// Synapse Functions
 	virtual void AddGroup(int presynaptic_group_id, 
@@ -61,6 +65,7 @@ __global__ void conductance_update_synaptic_conductances_kernal(float timestep,
 													float * d_synaptic_conductances_g, 
 													float * d_synaptic_efficacies_or_weights, 
 													float * d_time_of_last_spike_to_reach_synapse,
+													float * d_biological_conductance_scaling_constants_lambda,
 													int total_number_of_synapses,
 													float current_time_in_seconds);
 
