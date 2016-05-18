@@ -205,10 +205,10 @@ __global__ void conductance_update_synaptic_conductances_kernal(float timestep,
 	while (idx < total_number_of_synapses) {
 
 		float synaptic_conductance_g = d_synaptic_conductances_g[idx];
-		float decay_term_tau_g = 0.01; // Is this the synaptic time constant?
+		float decay_term_tau_g = 0.004; // Is this the synaptic time constant?
 
-		// float new_conductance = (1 - (timestep/decay_term_tau_g)) * synaptic_conductance_g;
-		float new_conductance = synaptic_conductance_g;
+		float new_conductance = (1.0 - (timestep/decay_term_tau_g)) * synaptic_conductance_g;
+		// float new_conductance = synaptic_conductance_g;
 		// if (new_conductance != 0.0) {
 		// if (idx == 10000) {
 		// 	printf("synaptic_conductance_g: %1.16f\n", synaptic_conductance_g);
@@ -217,7 +217,7 @@ __global__ void conductance_update_synaptic_conductances_kernal(float timestep,
 		
 		if (d_time_of_last_spike_to_reach_synapse[idx] == current_time_in_seconds) {
 			float timestep_times_synaptic_efficacy = timestep * d_synaptic_efficacies_or_weights[idx];
-			float timestep_times_synaptic_efficacy_times_scaling_constant = timestep_times_synaptic_efficacy * 7.9 * pow(10, -8);
+			float timestep_times_synaptic_efficacy_times_scaling_constant = timestep_times_synaptic_efficacy * 7.9 * pow(10, -7);
 			new_conductance += timestep_times_synaptic_efficacy_times_scaling_constant;
 			// if (idx < 3000) {
 				// printf("SPIKE ARRIVED! new_conductance: %1.16f\n", new_conductance);
@@ -227,12 +227,6 @@ __global__ void conductance_update_synaptic_conductances_kernal(float timestep,
 				// printf("SPIKE ARRIVED! synaptic_efficacy: %1.12f\n", d_synaptic_efficacies_or_weights[idx]);
 			// }
 		}
-
-		// if (idx == 10000) {
-		// 	printf("timestep: %1.12f\n", timestep);
-		// 	printf("d_synaptic_efficacies_or_weights[idx]: %1.12f\n", d_synaptic_efficacies_or_weights[idx]);
-		// 	printf("new_conductance: %1.12f\n", new_conductance);
-		// }
 
 		if (synaptic_conductance_g != new_conductance) {
 			d_synaptic_conductances_g[idx] = new_conductance;

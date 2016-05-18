@@ -33,9 +33,7 @@ int PoissonSpikingNeurons::AddGroup(neuron_parameters_struct * group_params, int
 		rates[i] = poisson_spiking_group_params->rate;
 	}
 
-
-	// printf("POISSON  GROUP ID: %d\n", new_group_id);
-	return -1 * new_group_id - 1;
+	return CORRECTED_PRESYNAPTIC_ID(new_group_id, true);
 
 }
 
@@ -58,10 +56,6 @@ void PoissonSpikingNeurons::reset_neurons() {
 }
 
 
-// void PoissonSpikingNeurons::set_custom_possion_rates() {
-	
-// }
-
 void PoissonSpikingNeurons::set_threads_per_block_and_blocks_per_grid(int threads) {
 	
 	SpikingNeurons::set_threads_per_block_and_blocks_per_grid(threads);
@@ -69,33 +63,13 @@ void PoissonSpikingNeurons::set_threads_per_block_and_blocks_per_grid(int thread
 }
 
 
-
-__global__ void generate_random_states_kernal(unsigned int seed, curandState_t* d_states, size_t total_number_of_neurons);
-
-
 void PoissonSpikingNeurons::generate_random_states() {
 	
 	printf("Generating input neuron random states\n");
 
-	// generate_random_states_kernal<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(42, d_states, total_number_of_neurons);
-
-	// CudaCheckError();
-
 	if (random_state_manager == NULL) {
 		random_state_manager = new RandomStateManager();
 		random_state_manager->set_up_random_states(128, 64, 9);
-	}
-}
-
-
-__global__ void generate_random_states_kernal(unsigned int seed, curandState_t* d_states, size_t total_number_of_neurons) {
-	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	if (idx < total_number_of_neurons) {
-		curand_init(seed, /* the seed can be the same for each core, here we pass the time in from the CPU */
-					idx, /* the sequence number should be different for each core (unless you want all
-							cores to get the same sequence of numbers for some reason - use thread id! */
- 					0, /* the offset is how much extra we advance in the sequence for each call, can be 0 */
-					&d_states[idx]);
 	}
 }
 
@@ -108,12 +82,6 @@ __global__ void poisson_update_membrane_potentials_kernal(curandState_t* d_state
 
 
 void PoissonSpikingNeurons::update_membrane_potentials(float timestep) {
-
-	// poisson_update_membrane_potentials_kernal<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(random_state_manager->d_states,
-	// 													d_rates,
-	// 													d_membrane_potentials_v,
-	// 													timestep,
-	// 													total_number_of_neurons);
 
 	poisson_update_membrane_potentials_kernal<<<random_state_manager->block_dimensions, random_state_manager->threads_per_block>>>(random_state_manager->d_states,
 														d_rates,

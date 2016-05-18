@@ -135,7 +135,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 
 	if (presynaptic_group_is_input) {
 
-		if (stdp_on == true) print_message_and_exit("Plasticity between input neurons and model neurons is not currently supported.");
+		// if (stdp_on == true) print_message_and_exit("Plasticity between input neurons and model neurons is not currently supported.");
 
 		presynaptic_group_shape = input_neurons->group_shapes[CORRECTED_PRESYNAPTIC_ID(presynaptic_group_id, presynaptic_group_is_input)];
 
