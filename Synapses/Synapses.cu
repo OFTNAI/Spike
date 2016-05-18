@@ -103,7 +103,6 @@ void Synapses::AddGroup(int presynaptic_group_id,
 						Neurons * neurons,
 						Neurons * input_neurons,
 						int connectivity_type,
-						float weight_range[2],
 						int delay_range[2],
 						bool stdp_on,
 						synapse_parameters_struct * synapse_params,
@@ -440,13 +439,16 @@ void Synapses::AddGroup(int presynaptic_group_id,
 	if (print_synapse_group_details == true) printf("%d new synapses added.\n\n", temp_number_of_synapses_in_last_group);
 
 	for (int i = original_number_of_synapses; i < total_number_of_synapses; i++){
-		// printf("i: %d\n", i);
-		// Setup Weights
-		if (weight_range[0] == weight_range[1]) {
-			synaptic_efficacies_or_weights[i] = weight_range[0];
+		
+		float weight_range_bottom = synapse_params->weight_range_bottom;
+		float weight_range_top = synapse_params->weight_range_top;
+
+		if (weight_range_bottom == weight_range_top) {
+			synaptic_efficacies_or_weights[i] = weight_range_bottom;
 		} else {
-			float rndweight = weight_range[0] + (weight_range[1] - weight_range[0])*((float)rand() / (RAND_MAX));
-			synaptic_efficacies_or_weights[i] = rndweight;
+			float weight = weight_range_bottom + (weight_range_top - weight_range_bottom)*((float)rand() / (RAND_MAX));
+			
+			synaptic_efficacies_or_weights[i] = weight;
 		}
 
 		original_synapse_indices[i] = i;

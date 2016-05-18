@@ -37,7 +37,6 @@ public:
 						Neurons * neurons,
 						Neurons * input_neurons,
 						int connectivity_type,
-						float weight_range[2],
 						int delay_range[2],
 						bool stdp_on,
 						synapse_parameters_struct * connectivity_params,
