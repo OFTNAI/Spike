@@ -30,7 +30,6 @@ enum CONNECTIVITY_TYPE
     CONNECTIVITY_TYPE_ONE_TO_ONE,
     CONNECTIVITY_TYPE_RANDOM,
     CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE,
-    CONNECTIVITY_TYPE_GAUSSIAN,
     CONNECTIVITY_TYPE_IRINA_GAUSSIAN,
     CONNECTIVITY_TYPE_SINGLE
 };
@@ -50,10 +49,11 @@ struct stdp_struct {
 
 
 struct synapse_parameters_struct {
-	synapse_parameters_struct(): max_number_of_connections_per_pair(1), gaussian_synapses_per_postsynaptic_neuron(10), weight_range_bottom(0.0), weight_range_top(1.0), connectivity_type(CONNECTIVITY_TYPE_ALL_TO_ALL)  {}
+	synapse_parameters_struct(): max_number_of_connections_per_pair(1), gaussian_synapses_per_postsynaptic_neuron(10), gaussian_synapses_standard_deviation(10.0), weight_range_bottom(0.0), weight_range_top(1.0), connectivity_type(CONNECTIVITY_TYPE_ALL_TO_ALL)  {}
 
 	int max_number_of_connections_per_pair;
 	int gaussian_synapses_per_postsynaptic_neuron;
+	float gaussian_synapses_standard_deviation;
 	float weight_range_bottom;
 	float weight_range_top;
 	int connectivity_type;
