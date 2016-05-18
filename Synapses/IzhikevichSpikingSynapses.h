@@ -22,7 +22,7 @@ public:
 						float weight_range[2],
 						int delay_range[2],
 						bool stdp_on,
-						connectivity_parameters_struct * connectivity_params,
+						synapse_parameters_struct * synapse_params,
 						float parameter,
 						float parameter_two);
 

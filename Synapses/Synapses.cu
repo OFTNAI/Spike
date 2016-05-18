@@ -106,7 +106,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 						float weight_range[2],
 						int delay_range[2],
 						bool stdp_on,
-						connectivity_parameters_struct * connectivity_params,
+						synapse_parameters_struct * synapse_params,
 						float parameter,
 						float parameter_two) {
 	
@@ -327,7 +327,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 			// bool * d_yes_no_connection_matrix;
 			// CudaSafeCall(cudaMalloc((void **)&d_yes_no_connection_matrix, sizeof(int)*total_number_of_neuron_pairs));
 
-			for (int k = 0; k < connectivity_params->max_number_of_connections_per_pair; k++){
+			for (int k = 0; k < synapse_params->max_number_of_connections_per_pair; k++){
 
 				thrust::device_vector<bool> d_yes_no_connection_vector(total_number_of_neuron_pairs);
 				bool * d_yes_no_connection_vector_pointer = thrust::raw_pointer_cast(&d_yes_no_connection_vector[0]);

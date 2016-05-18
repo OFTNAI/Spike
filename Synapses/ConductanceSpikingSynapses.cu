@@ -5,6 +5,7 @@
 
 // ConductanceSpikingSynapses Constructor
 ConductanceSpikingSynapses::ConductanceSpikingSynapses() {
+
 	synaptic_conductances_g = NULL;
 	d_synaptic_conductances_g = NULL;
 
@@ -39,7 +40,7 @@ void ConductanceSpikingSynapses::AddGroup(int presynaptic_group_id,
 						float weight_range[2],
 						int delay_range[2],
 						bool stdp_on,
-						connectivity_parameters_struct * connectivity_params,
+						synapse_parameters_struct * synapse_params,
 						float parameter,
 						float parameter_two) {
 	
@@ -52,7 +53,7 @@ void ConductanceSpikingSynapses::AddGroup(int presynaptic_group_id,
 							weight_range,
 							delay_range,
 							stdp_on,
-							connectivity_params,
+							synapse_params,
 							parameter,
 							parameter_two);
 
@@ -113,6 +114,7 @@ void ConductanceSpikingSynapses::calculate_postsynaptic_current_injection(Spikin
 	// printf("calculate_postsynaptic_current_injection. number_of_synapse_blocks_per_grid.x: %d. threads_per_block.x: %d\n", number_of_synapse_blocks_per_grid.x, threads_per_block.x);
 
 	conductance_calculate_postsynaptic_current_injection_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_postsynaptic_neuron_indices,
+																	neurons->d_reversal_potentials_Vhat,
 																	neurons->d_current_injections,
 																	total_number_of_synapses,
 																	neurons->d_membrane_potentials_v, 
@@ -167,6 +169,7 @@ void ConductanceSpikingSynapses::update_synaptic_efficacies_or_weights(float * d
 
 
 __global__ void conductance_calculate_postsynaptic_current_injection_kernal(int* d_postsynaptic_neuron_indices,
+							float* d_neuron_reversal_potentials_Vhat,
 							float* d_neurons_current_injections,
 							size_t total_number_of_synapses,
 							float * d_membrane_potentials_v,
@@ -177,7 +180,7 @@ __global__ void conductance_calculate_postsynaptic_current_injection_kernal(int*
 
 		int postsynaptic_neuron_index = d_postsynaptic_neuron_indices[idx];
 
-		float temp_reversal_potential_Vhat = 0.0;
+		float temp_reversal_potential_Vhat = d_neuron_reversal_potentials_Vhat[postsynaptic_neuron_index ];
 		float membrane_potential_v = d_membrane_potentials_v[postsynaptic_neuron_index];
 		float synaptic_conductance_g = d_synaptic_conductances_g[idx];
 
@@ -217,7 +220,7 @@ __global__ void conductance_update_synaptic_conductances_kernal(float timestep,
 		
 		if (d_time_of_last_spike_to_reach_synapse[idx] == current_time_in_seconds) {
 			float timestep_times_synaptic_efficacy = timestep * d_synaptic_efficacies_or_weights[idx];
-			float timestep_times_synaptic_efficacy_times_scaling_constant = timestep_times_synaptic_efficacy * 2.0 * pow(10, -6);
+			float timestep_times_synaptic_efficacy_times_scaling_constant = timestep_times_synaptic_efficacy * 1.0 * pow(10, -6);
 			new_conductance += timestep_times_synaptic_efficacy_times_scaling_constant;
 			// if (idx < 3000) {
 				// printf("SPIKE ARRIVED! new_conductance: %1.16f\n", new_conductance);

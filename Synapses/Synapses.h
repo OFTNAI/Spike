@@ -49,8 +49,8 @@ struct stdp_struct {
 };
 
 
-struct connectivity_parameters_struct {
-	connectivity_parameters_struct(): max_number_of_connections_per_pair(1) {}
+struct synapse_parameters_struct {
+	synapse_parameters_struct(): max_number_of_connections_per_pair(1) {}
 
 	int max_number_of_connections_per_pair;
 
@@ -113,7 +113,7 @@ public:
 						float weight_range[2],
 						int delay_range[2],
 						bool stdp_on,
-						connectivity_parameters_struct * connectivity_params,
+						synapse_parameters_struct * synapse_params,
 						float parameter,
 						float parameter_two);
 

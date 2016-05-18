@@ -31,7 +31,7 @@ void IzhikevichSpikingSynapses::AddGroup(int presynaptic_group_id,
 						float weight_range[2],
 						int delay_range[2],
 						bool stdp_on,
-						connectivity_parameters_struct * connectivity_params,
+						synapse_parameters_struct * synapse_params,
 						float parameter,
 						float parameter_two) {
 	
@@ -44,7 +44,7 @@ void IzhikevichSpikingSynapses::AddGroup(int presynaptic_group_id,
 							weight_range,
 							delay_range,
 							stdp_on,
-							connectivity_params,
+							synapse_params,
 							parameter,
 							parameter_two);
 

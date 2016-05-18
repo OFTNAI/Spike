@@ -4,6 +4,10 @@
 #include "SpikingSynapses.h"
 #include "../Neurons/SpikingNeurons.h"
 
+struct conductance_spiking_synapse_parameters_struct : spiking_synapse_parameters_struct {
+	conductance_spiking_synapse_parameters_struct() { spiking_synapse_parameters_struct(); }
+
+};
 
 class ConductanceSpikingSynapses : public SpikingSynapses {
 
@@ -28,7 +32,7 @@ public:
 						float weight_range[2],
 						int delay_range[2],
 						bool stdp_on,
-						connectivity_parameters_struct * connectivity_params,
+						synapse_parameters_struct * synapse_params,
 						float parameter,
 						float parameter_two);
 
@@ -46,6 +50,7 @@ public:
 };
 
 __global__ void conductance_calculate_postsynaptic_current_injection_kernal(int* d_postsynaptic_neuron_indices,
+							float* d_neuron_reversal_potentials_Vhat,
 							float* d_neurons_current_injections,
 							size_t total_number_of_synapses,
 							float * d_membrane_potentials_v,
