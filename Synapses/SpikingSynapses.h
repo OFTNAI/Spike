@@ -6,7 +6,9 @@
 
 
 struct spiking_synapse_parameters_struct : synapse_parameters_struct {
-	spiking_synapse_parameters_struct() { synapse_parameters_struct(); }
+	spiking_synapse_parameters_struct(): stdp_on(true) { synapse_parameters_struct(); }
+
+	bool stdp_on;
 
 };
 
@@ -36,10 +38,8 @@ public:
 						int postsynaptic_group_id, 
 						Neurons * neurons,
 						Neurons * input_neurons,
-						int connectivity_type,
 						int delay_range[2],
-						bool stdp_on,
-						synapse_parameters_struct * connectivity_params,
+						synapse_parameters_struct * synapse_params,
 						float parameter,
 						float parameter_two);
 

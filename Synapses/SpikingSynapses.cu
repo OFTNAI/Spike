@@ -45,9 +45,7 @@ void SpikingSynapses::AddGroup(int presynaptic_group_id,
 						int postsynaptic_group_id, 
 						Neurons * neurons,
 						Neurons * input_neurons,
-						int connectivity_type,
 						int delay_range[2],
-						bool stdp_on,
 						synapse_parameters_struct * synapse_params,
 						float parameter,
 						float parameter_two) {
@@ -57,12 +55,12 @@ void SpikingSynapses::AddGroup(int presynaptic_group_id,
 							postsynaptic_group_id, 
 							neurons,
 							input_neurons,
-							connectivity_type, 
 							delay_range,
-							stdp_on,
 							synapse_params,
 							parameter,
 							parameter_two);
+
+	spiking_synapse_parameters_struct * spiking_synapse_group_params = (spiking_synapse_parameters_struct*)synapse_params;
 
 	for (int i = (total_number_of_synapses - temp_number_of_synapses_in_last_group); i < total_number_of_synapses-1; i++){
 		// Setup Delays
@@ -73,7 +71,7 @@ void SpikingSynapses::AddGroup(int presynaptic_group_id,
 			float rnddelay = delay_range[0] + (delay_range[1] - delay_range[0])*((float)rand() / (RAND_MAX));
 			delays[i] = round(rnddelay);
 		}
-		stdp[i] = stdp_on;
+		stdp[i] = spiking_synapse_group_params->stdp_on;
 	}
 
 }

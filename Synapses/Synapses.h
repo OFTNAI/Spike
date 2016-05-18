@@ -50,12 +50,13 @@ struct stdp_struct {
 
 
 struct synapse_parameters_struct {
-	synapse_parameters_struct(): max_number_of_connections_per_pair(1), gaussian_synapses_per_postsynaptic_neuron(10), weight_range_bottom(0.0), weight_range_top(1.0)  {}
+	synapse_parameters_struct(): max_number_of_connections_per_pair(1), gaussian_synapses_per_postsynaptic_neuron(10), weight_range_bottom(0.0), weight_range_top(1.0), connectivity_type(CONNECTIVITY_TYPE_ALL_TO_ALL)  {}
 
 	int max_number_of_connections_per_pair;
 	int gaussian_synapses_per_postsynaptic_neuron;
 	float weight_range_bottom;
 	float weight_range_top;
+	int connectivity_type;
 
 };
 
@@ -112,9 +113,7 @@ public:
 						int postsynaptic_group_id, 
 						Neurons * neurons,
 						Neurons * input_neurons,
-						int connectivity_type,
 						int delay_range[2],
-						bool stdp_on,
 						synapse_parameters_struct * synapse_params,
 						float parameter,
 						float parameter_two);

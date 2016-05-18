@@ -61,17 +61,13 @@ public:
 	
 	void AddSynapseGroup(int presynaptic_group_id, 
 							int postsynaptic_group_id, 
-							int connectivity_type,
 							float delay_range[2],
-							bool stdp_on,
 							synapse_parameters_struct * synapse_params,
 							float parameter = 0.0f,
 							float parameter_two = 0.0f);
 
 	void AddSynapseGroupsForNeuronGroupAndEachInputGroup(int postsynaptic_group_id, 
-							int connectivity_type, 
 							float delay_range[2],
-							bool stdp_on,
 							synapse_parameters_struct * synapse_params,
 							float parameter = 0.0f,
 							float parameter_two = 0.0f);

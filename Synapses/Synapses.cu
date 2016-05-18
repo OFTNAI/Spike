@@ -102,9 +102,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 						int postsynaptic_group_id, 
 						Neurons * neurons,
 						Neurons * input_neurons,
-						int connectivity_type,
 						int delay_range[2],
-						bool stdp_on,
 						synapse_parameters_struct * synapse_params,
 						float parameter,
 						float parameter_two) {
@@ -184,7 +182,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 	int original_number_of_synapses = total_number_of_synapses;
 
 	// Carry out the creation of the connectivity matrix
-	switch (connectivity_type){
+	switch (synapse_params->connectivity_type){
             
 		case CONNECTIVITY_TYPE_ALL_TO_ALL:
 		{
