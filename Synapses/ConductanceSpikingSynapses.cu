@@ -217,7 +217,7 @@ __global__ void conductance_update_synaptic_conductances_kernal(float timestep,
 		
 		if (d_time_of_last_spike_to_reach_synapse[idx] == current_time_in_seconds) {
 			float timestep_times_synaptic_efficacy = timestep * d_synaptic_efficacies_or_weights[idx];
-			float timestep_times_synaptic_efficacy_times_scaling_constant = timestep_times_synaptic_efficacy * 7.9 * pow(10, -7);
+			float timestep_times_synaptic_efficacy_times_scaling_constant = timestep_times_synaptic_efficacy * 2.0 * pow(10, -6);
 			new_conductance += timestep_times_synaptic_efficacy_times_scaling_constant;
 			// if (idx < 3000) {
 				// printf("SPIKE ARRIVED! new_conductance: %1.16f\n", new_conductance);
@@ -253,9 +253,10 @@ __global__ void conductance_update_presynaptic_activities_C_kernal(float* d_rece
 		if (d_stdp[idx] == true) {
 
 			float recent_presynaptic_activity_C = d_recent_presynaptic_activities_C[idx];
-			float decay_term_tau_C = 0.04; // Should be variable between 0.003 and 0.075
+			float decay_term_tau_C = 0.004; // Should be variable between 0.003 and 0.075
 
 			float new_recent_presynaptic_activity_C = (1 - (timestep/decay_term_tau_C)) * recent_presynaptic_activity_C;
+
 			if (d_time_of_last_spike_to_reach_synapse[idx] == current_time_in_seconds) {
 				float model_parameter_alpha_c = 0.5;
 				new_recent_presynaptic_activity_C += timestep * model_parameter_alpha_c * (1 - recent_presynaptic_activity_C);
@@ -297,23 +298,42 @@ __global__ void conductance_update_synaptic_efficacies_or_weights_kernal(float *
 			float new_componet = 0.0;
 
 			int postsynaptic_neuron_index = d_postsynaptic_neuron_indices[idx];
+			
+			// if (idx == 1000) printf("d_last_spike_time_of_each_neuron[postsynaptic_neuron_index]: %f, current_time_in_seconds: %f\n", d_last_spike_time_of_each_neuron[postsynaptic_neuron_index], current_time_in_seconds);
+
+			// if (idx == 1000) {
+			// 	printf("d_recent_presynaptic_activities_C: %1.12f\n", d_recent_presynaptic_activities_C[idx]);
+			// 	printf("d_recent_postsynaptic_activities_D: %1.12f\n\n", d_recent_postsynaptic_activities_D[postsynaptic_neuron_index]);
+			// }
+
 			if (d_last_spike_time_of_each_neuron[postsynaptic_neuron_index] == current_time_in_seconds) {
 				float recent_presynaptic_activity_C = d_recent_presynaptic_activities_C[idx];
-				new_componet += ((1 - synaptic_efficacy_delta_g) * recent_presynaptic_activity_C);
+				float new_componet_addition = ((1 - synaptic_efficacy_delta_g) * recent_presynaptic_activity_C);
+				new_componet += new_componet_addition;
+				// if (idx == 1000) printf("SPIKE AT POSTSYN: current_time_in_seconds: %f\n", current_time_in_seconds);
 			}
 
 			if (d_time_of_last_spike_to_reach_synapse[idx] == current_time_in_seconds) {
+				// if (idx == 1000) printf("SPIKE AT PRESYN: current_time_in_seconds: %f\n", current_time_in_seconds);
 				float recent_postsynaptic_activity_D = d_recent_postsynaptic_activities_D[postsynaptic_neuron_index];
 				new_componet -= (synaptic_efficacy_delta_g * recent_postsynaptic_activity_D);
 			}			
 
-			float decay_term_tau_delta_g = timestep / 0.1;
 			if (new_componet != 0.0) {
-				new_componet = (timestep/decay_term_tau_delta_g) * new_componet;
+				// float decay_term_tau_delta_g = timestep / 0.1;
+				// float learning_rate_rho = timestep/decay_term_tau_delta_g;
+				// printf("learning_rate_rho: %f\n", learning_rate_rho);
+				float learning_rate_rho = 0.1;
+				new_componet = learning_rate_rho * new_componet;
 				new_synaptic_efficacy += new_componet;
 			}
 
+			
 			if (synaptic_efficacy_delta_g != new_synaptic_efficacy) {
+				// if (idx == 1000) {
+				// 	printf("synaptic_efficacy_delta_g: %1.12f\n", synaptic_efficacy_delta_g);
+				// 	printf("new_synaptic_efficacy: %1.12f\n", new_synaptic_efficacy);
+				// }
 
 				new_synaptic_efficacy = max(new_synaptic_efficacy, 0.0);
 				new_synaptic_efficacy = min(new_synaptic_efficacy, 1.0);

@@ -123,7 +123,7 @@ __global__ void conductance_update_postsynaptic_activities_kernal(float timestep
 		// if (d_stdp[idx] == 1) {
 
 			float recent_postsynaptic_activity_D = d_recent_postsynaptic_activities_D[idx];
-			float decay_term_tau_D = 0.04; // Should be variable between 0.005 and 0.125
+			float decay_term_tau_D = 0.07; // Should be variable between 0.005 and 0.125
 
 			float new_recent_postsynaptic_activity_D = (1 - (timestep/decay_term_tau_D)) * recent_postsynaptic_activity_D;
 

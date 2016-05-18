@@ -12,15 +12,17 @@
 #include <fstream>
 #include "../Helpers/CUDAErrorCheckHelpers.h"
 #include "../Helpers/TerminalHelpers.h"
+#include <string>
 using namespace std;
 
 const string RESULTS_DIRECTORY ("Results/");
 
 
 // RecordingElectrodes Constructor
-RecordingElectrodes::RecordingElectrodes(SpikingNeurons * neurons_parameter) {
+RecordingElectrodes::RecordingElectrodes(SpikingNeurons * neurons_parameter, const char * prefix_string_param) {
 
 	neurons = neurons_parameter;
+	prefix_string = prefix_string_param;
 
 	d_tempstorenum = NULL;
 	d_tempstoreID = NULL;
@@ -133,14 +135,23 @@ void RecordingElectrodes::save_spikes_to_host(float current_time_in_seconds, int
 
 void RecordingElectrodes::write_spikes_to_file(Neurons *neurons, int epoch_number) {
 	// Get the names
-	string file = RESULTS_DIRECTORY + "Epoch" + to_string(epoch_number) + "_";
+	string file = RESULTS_DIRECTORY + prefix_string + "_Epoch" + to_string(epoch_number) + "_";
+
 	// Open the files
 	ofstream spikeidfile, spiketimesfile;
 	spikeidfile.open((file + "SpikeIDs.bin"), ios::out | ios::binary);
 	spiketimesfile.open((file + "SpikeTimes.bin"), ios::out | ios::binary);
+	
+
 	// Send the data
-	spikeidfile.write((char *)h_spikestoreID, h_total_number_of_spikes*sizeof(int));
-	spiketimesfile.write((char *)h_spikestoretimes, h_total_number_of_spikes*sizeof(float));
+	// spikeidfile.write((char *)h_spikestoreID, h_total_number_of_spikes*sizeof(int));
+	// spiketimesfile.write((char *)h_spikestoretimes, h_total_number_of_spikes*sizeof(float));
+
+	for (int i = 0; i < h_total_number_of_spikes; i++) {
+		spikeidfile << to_string(h_spikestoreID[i]) << endl;
+		spiketimesfile << to_string(h_spikestoretimes[i]) << endl;
+	}
+
 	// Close the files
 	spikeidfile.close();
 	spiketimesfile.close();
@@ -188,7 +199,7 @@ int idx = threadIdx.x + blockIdx.x * blockDim.x;
 
 void RecordingElectrodes::write_initial_synaptic_weights_to_file(SpikingSynapses *synapses) {
 	ofstream initweightfile;
-	initweightfile.open(RESULTS_DIRECTORY + "NetworkWeights_Initial.bin", ios::out | ios::binary);
+	initweightfile.open(RESULTS_DIRECTORY + prefix_string + "_NetworkWeights_Initial.bin", ios::out | ios::binary);
 	initweightfile.write((char *)synapses->synaptic_efficacies_or_weights, synapses->total_number_of_synapses*sizeof(float));
 	initweightfile.close();
 }
@@ -204,10 +215,10 @@ void RecordingElectrodes::save_network_state(SpikingSynapses *synapses) {
 	CudaSafeCall(cudaMemcpy(synapses->synaptic_efficacies_or_weights, synapses->d_synaptic_efficacies_or_weights, sizeof(float)*synapses->total_number_of_synapses, cudaMemcpyDeviceToHost));
 	// Creating and Opening all the files
 	ofstream synapsepre, synapsepost, weightfile, delayfile;
-	weightfile.open(RESULTS_DIRECTORY + "NetworkWeights.bin", ios::out | ios::binary);
-	delayfile.open(RESULTS_DIRECTORY + "NetworkDelays.bin", ios::out | ios::binary);
-	synapsepre.open(RESULTS_DIRECTORY + "NetworkPre.bin", ios::out | ios::binary);
-	synapsepost.open(RESULTS_DIRECTORY + "NetworkPost.bin", ios::out | ios::binary);
+	weightfile.open(RESULTS_DIRECTORY + prefix_string + "_NetworkWeights.bin", ios::out | ios::binary);
+	delayfile.open(RESULTS_DIRECTORY + prefix_string + "_NetworkDelays.bin", ios::out | ios::binary);
+	synapsepre.open(RESULTS_DIRECTORY + prefix_string + "_NetworkPre.bin", ios::out | ios::binary);
+	synapsepost.open(RESULTS_DIRECTORY + prefix_string + "_NetworkPost.bin", ios::out | ios::binary);
 	
 	// Writing the data
 	weightfile.write((char *)synapses->synaptic_efficacies_or_weights, synapses->total_number_of_synapses*sizeof(float));

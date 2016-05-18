@@ -201,8 +201,8 @@ void Simulator::setup_recording_electrodes() {
 	printf("Setting Up Recording Electrodes...\n");
 	clock_t setup_recording_electrodes_start = clock();
 
-	recording_electrodes = new RecordingElectrodes(neurons);
-	input_recording_electrodes = new RecordingElectrodes(input_neurons);
+	recording_electrodes = new RecordingElectrodes(neurons, "Neurons");
+	input_recording_electrodes = new RecordingElectrodes(input_neurons, "Input_Neurons");
 	recording_electrodes->initialise_device_pointers();
 	recording_electrodes->initialise_host_pointers();
 	input_recording_electrodes->initialise_device_pointers();
@@ -275,7 +275,7 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_m
 				// // Only save the spikes if necessary
 				if (save_spikes){
 					recording_electrodes->save_spikes_to_host(current_time_in_seconds, timestep_index, number_of_timesteps_per_epoch);
-					input_recording_electrodes->save_spikes_to_host(current_time_in_seconds, timestep_index, number_of_timesteps_per_epoch);
+					// input_recording_electrodes->save_spikes_to_host(current_time_in_seconds, timestep_index, number_of_timesteps_per_epoch);
 				}
 			}
 		}
@@ -293,7 +293,7 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_m
 		// Only save the spikes if necessary
 		if (save_spikes){
 			recording_electrodes->write_spikes_to_file(neurons, epoch_number);
-			input_recording_electrodes->write_spikes_to_file(input_neurons, epoch_number);
+			// input_recording_electrodes->write_spikes_to_file(input_neurons, epoch_number);
 		}
 	}
 	
@@ -316,14 +316,17 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_m
 // Temporary seperation of izhikevich and Conductance per timestep instructions. Eventually hope to share as much execuation as possible between both models for generality
 void Simulator::temp_izhikevich_per_timestep_instructions(float current_time_in_seconds) {
 
-	// // If there are any spike generators
-	// 	temp_test_generator->generupdate2_wrapper(current_time_in_seconds, timestep);
-	
+
+	// --------------- SAME ---------------
 	synapses->check_for_synapse_spike_arrival(current_time_in_seconds);
 	synapses->calculate_postsynaptic_current_injection(neurons, current_time_in_seconds);
+	// --------------- SAME ---------------
 
 	synapses->apply_ltd_to_synapse_weights(neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds);
 
+
+
+	// --------------- SAME ---------------
 	neurons->update_membrane_potentials(timestep);
 	input_neurons->update_membrane_potentials(timestep);
 
@@ -331,6 +334,8 @@ void Simulator::temp_izhikevich_per_timestep_instructions(float current_time_in_
 	input_neurons->check_for_neuron_spikes(current_time_in_seconds);
 					
 	synapses->move_spikes_towards_synapses(neurons->d_last_spike_time_of_each_neuron, input_neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds);
+	// --------------- SAME ---------------
+
 
 	synapses->apply_ltp_to_synapse_weights(neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds);
 
@@ -338,12 +343,19 @@ void Simulator::temp_izhikevich_per_timestep_instructions(float current_time_in_
 
 void Simulator::temp_conductance_per_timestep_instructions(float current_time_in_seconds, bool apply_stdp_to_relevant_synapses) {
 
-	// Where generator->generupdate2_wrapper used to be
 
+	// Check for NEURON_SPIKES(t+delta_t) from V(t+delta_t) and if so reset V(t+delta_t)
+	neurons->check_for_neuron_spikes(current_time_in_seconds);
+	input_neurons->check_for_neuron_spikes(current_time_in_seconds);
+					
+	synapses->move_spikes_towards_synapses(neurons->d_last_spike_time_of_each_neuron, input_neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds);
+
+	// --------------- SAME ---------------
 	synapses->check_for_synapse_spike_arrival(current_time_in_seconds);
 
 	// Calculate I(t) from delta_g(t) and V(t)
 	synapses->calculate_postsynaptic_current_injection(neurons, current_time_in_seconds);
+	// --------------- SAME ---------------
 
 	// Calculate g(t+delta_t) and delta_g(t)
 	synapses->update_synaptic_conductances(timestep, current_time_in_seconds);
@@ -359,19 +371,14 @@ void Simulator::temp_conductance_per_timestep_instructions(float current_time_in
 		neurons->update_postsynaptic_activities(timestep, current_time_in_seconds);
 	}
 
-	// Where synapses->LTD used to be
-
+	// --------------- SAME ---------------
 	// Caculate V(t+delta_t) from V(t) and I(t)
 	neurons->update_membrane_potentials(timestep);
 	input_neurons->update_membrane_potentials(timestep);
 
-	// Check for NEURON_SPIKES(t+delta_t) from V(t+delta_t) and if so reset V(t+delta_t)
-	neurons->check_for_neuron_spikes(current_time_in_seconds);
-	input_neurons->check_for_neuron_spikes(current_time_in_seconds);
-					
-	synapses->move_spikes_towards_synapses(neurons->d_last_spike_time_of_each_neuron, input_neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds);
+	
+	// --------------- SAME ---------------
 
-	// Where synapses->LTP used to be
 
 }
 

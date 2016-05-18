@@ -27,10 +27,12 @@ public:
 	float* h_spikestoretimes;
 	int h_total_number_of_spikes;
 
+	const char * prefix_string;
+
 	SpikingNeurons * neurons;
 
 	// Constructor/Destructor
-	RecordingElectrodes(SpikingNeurons * neurons_parameter);
+	RecordingElectrodes(SpikingNeurons * neurons_parameter, const char * prefix_string_param);
 	~RecordingElectrodes();
 
 	void initialise_device_pointers();
