@@ -277,8 +277,8 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_m
 		#ifndef QUIETSTART
 		clock_t simulation_mid = clock();
 		if (save_spikes) {
-			printf("Epoch %d, Complete.\n Running Time: %f\n Number of Spikes: %d\n\n", epoch_number, (float(simulation_mid-simulation_begin) / CLOCKS_PER_SEC), recording_electrodes->h_total_number_of_spikes);
-			printf("Number of Input Spikes: %d\n\n", input_recording_electrodes->h_total_number_of_spikes);
+			printf("Epoch %d, Complete.\n Running Time: %f\n Number of Spikes: %d\n\n", epoch_number, (float(simulation_mid-simulation_begin) / CLOCKS_PER_SEC), recording_electrodes->h_total_number_of_spikes_stored_on_host);
+			printf("Number of Input Spikes: %d\n\n", input_recording_electrodes->h_total_number_of_spikes_stored_on_host);
 		
 		} else {
 			printf("Epoch %d, Complete.\n Running Time: %f\n\n", epoch_number, (float(simulation_mid-simulation_begin) / CLOCKS_PER_SEC));
