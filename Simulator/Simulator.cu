@@ -260,15 +260,18 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_m
 				if (temp_model_type == 0) temp_izhikevich_per_timestep_instructions(current_time_in_seconds);
 				if (temp_model_type == 1) temp_conductance_per_timestep_instructions(current_time_in_seconds, apply_stdp_to_relevant_synapses);
 
+
+				if (count_spikes_per_neuron) {
+					recording_electrodes->add_spikes_to_per_neuron_spike_count(current_time_in_seconds);
+				}
+
 				// // Only save the spikes if necessary
 				if (save_spikes){
 					recording_electrodes->save_spikes_to_host(current_time_in_seconds, timestep_index, number_of_timesteps_per_epoch);
 					// input_recording_electrodes->save_spikes_to_host(current_time_in_seconds, timestep_index, number_of_timesteps_per_epoch);
 				}
 
-				if (count_spikes_per_neuron) {
 
-				}
 			}
 		}
 		#ifndef QUIETSTART

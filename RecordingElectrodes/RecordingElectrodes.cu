@@ -24,6 +24,8 @@ RecordingElectrodes::RecordingElectrodes(SpikingNeurons * neurons_parameter, con
 	neurons = neurons_parameter;
 	prefix_string = prefix_string_param;
 
+	d_per_neuron_spike_counts = NULL;
+
 	d_tempstorenum = NULL;
 	d_tempstoreID = NULL;
 	d_tempstoretimes = NULL;
@@ -55,6 +57,11 @@ RecordingElectrodes::~RecordingElectrodes() {
 
 
 void RecordingElectrodes::initialise_device_pointers() {
+
+	//For counting spikes
+	CudaSafeCall(cudaMalloc((void **)&d_per_neuron_spike_counts, sizeof(int) * neurons->total_number_of_neurons));
+	CudaSafeCall(cudaMemset(d_per_neuron_spike_counts, 0, sizeof(int) * neurons->total_number_of_neurons));
+
 	// For saving spikes (Make seperate class)
 	CudaSafeCall(cudaMalloc((void **)&d_tempstoreID, sizeof(int)*(neurons->total_number_of_neurons)));
 	CudaSafeCall(cudaMalloc((void **)&d_tempstoretimes, sizeof(float)*(neurons->total_number_of_neurons)));
@@ -67,6 +74,7 @@ void RecordingElectrodes::initialise_device_pointers() {
 }
 
 void RecordingElectrodes::initialise_host_pointers() {
+
 	h_tempstoreID = (int*)malloc(sizeof(int)*(neurons->total_number_of_neurons));
 	h_tempstoretimes = (float*)malloc(sizeof(float)*(neurons->total_number_of_neurons));
 
@@ -133,6 +141,16 @@ void RecordingElectrodes::save_spikes_to_host(float current_time_in_seconds, int
 }
 
 
+void RecordingElectrodes::add_spikes_to_per_neuron_spike_count(float current_time_in_seconds) {
+	add_spikes_to_per_neuron_spike_count_kernal<<<neurons->number_of_neuron_blocks_per_grid, neurons->threads_per_block>>>(neurons->d_last_spike_time_of_each_neuron,
+														d_per_neuron_spike_counts,
+														current_time_in_seconds,
+														neurons->total_number_of_neurons);
+}
+
+
+
+
 void RecordingElectrodes::write_spikes_to_file(Neurons *neurons, int epoch_number) {
 	// Get the names
 	string file = RESULTS_DIRECTORY + prefix_string + "_Epoch" + to_string(epoch_number) + "_";
@@ -173,6 +191,26 @@ void RecordingElectrodes::write_spikes_to_file(Neurons *neurons, int epoch_numbe
 }
 
 
+
+__global__ void add_spikes_to_per_neuron_spike_count_kernal(float* d_last_spike_time_of_each_neuron,
+								int* d_per_neuron_spike_counts,
+								float current_time_in_seconds,
+								size_t total_number_of_neurons) {
+
+	int idx = threadIdx.x + blockIdx.x * blockDim.x;
+	while (idx < total_number_of_neurons) {
+
+		if (d_last_spike_time_of_each_neuron[idx] == current_time_in_seconds) {
+			atomicAdd(&d_per_neuron_spike_counts[idx], 1);
+		}
+
+		// if (idx == 1000) printf("d_per_neuron_spike_counts[idx]: %d\n", d_per_neuron_spike_counts[idx]);
+		idx = blockDim.x * gridDim.x;
+	}
+
+
+}
+
 // Collect Spikes
 __global__ void spikeCollect(float* d_last_spike_time_of_each_neuron,
 								int* d_tempstorenum,
@@ -181,8 +219,9 @@ __global__ void spikeCollect(float* d_last_spike_time_of_each_neuron,
 								float current_time_in_seconds,
 								size_t total_number_of_neurons){
 
-int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	if (idx < total_number_of_neurons) {
+	int idx = threadIdx.x + blockIdx.x * blockDim.x;
+	while (idx < total_number_of_neurons) {
+
 		// If a neuron has fired
 		if (d_last_spike_time_of_each_neuron[idx] == current_time_in_seconds) {
 			// Increase the number of spikes stored
@@ -191,6 +230,8 @@ int idx = threadIdx.x + blockIdx.x * blockDim.x;
 			d_tempstoreID[i] = idx;
 			d_tempstoretimes[i] = current_time_in_seconds;
 		}
+		idx = blockDim.x * gridDim.x;
+
 	}
 	__syncthreads();
 }

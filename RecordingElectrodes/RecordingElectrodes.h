@@ -16,6 +16,8 @@
 class RecordingElectrodes{
 public:
 
+	int * d_per_neuron_spike_counts;
+
 	int* d_tempstorenum;
 	int* d_tempstoreID;
 	float* d_tempstoretimes;
@@ -44,7 +46,14 @@ public:
 	void write_initial_synaptic_weights_to_file(SpikingSynapses *synapses);
 	void save_network_state(SpikingSynapses *synapses);
 
+	void add_spikes_to_per_neuron_spike_count(float current_time_in_seconds);
+
 };
+
+__global__ void add_spikes_to_per_neuron_spike_count_kernal(float* d_last_spike_time_of_each_neuron,
+								int* d_per_neuron_spike_counts,
+								float current_time_in_seconds,
+								size_t total_number_of_neurons);
 
 __global__ void spikeCollect(float* d_last_spike_time_of_each_neuron,
 								int* d_tempstorenum,
