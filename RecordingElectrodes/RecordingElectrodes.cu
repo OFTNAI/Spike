@@ -26,15 +26,18 @@ RecordingElectrodes::RecordingElectrodes(SpikingNeurons * neurons_parameter, con
 
 	d_per_neuron_spike_counts = NULL;
 
-	d_total_number_of_spikes_stored_on_device = NULL;
+	
 	d_tempstoreID = NULL;
 	d_tempstoretimes = NULL;
 
 	h_tempstoreID = NULL;
 	h_tempstoretimes = NULL;
-	h_total_number_of_spikes_stored_on_device = NULL;
+	
 	h_spikestoreID = NULL;
 	h_spikestoretimes = NULL;
+
+	d_total_number_of_spikes_stored_on_device = NULL;
+	h_total_number_of_spikes_stored_on_device = NULL;
 	h_total_number_of_spikes_stored_on_host = 0;
 
 }

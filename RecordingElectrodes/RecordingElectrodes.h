@@ -28,6 +28,7 @@ public:
 	int* h_spikestoreID;
 	float* h_spikestoretimes;
 
+	// Various spikes stored totals
 	int* d_total_number_of_spikes_stored_on_device;
 	int* h_total_number_of_spikes_stored_on_device;
 	int h_total_number_of_spikes_stored_on_host;
