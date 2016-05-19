@@ -31,16 +31,12 @@ int ConductanceSpikingNeurons::AddGroup(neuron_parameters_struct * group_params,
 
 	membrane_time_constants_tau_m = (float*)realloc(membrane_time_constants_tau_m, total_number_of_neurons*sizeof(float));
 	membrane_resistances_R = (float*)realloc(membrane_resistances_R, total_number_of_neurons*sizeof(float));
-	reversal_potentials_Vhat = (float*)realloc(reversal_potentials_Vhat, total_number_of_neurons*sizeof(float));
-
 	float membrane_time_constant_tau_m = conductance_spiking_group_params->somatic_capcitance_Cm / conductance_spiking_group_params->somatic_leakage_conductance_g0;
 	float membrane_resistance_R = 1 / conductance_spiking_group_params->somatic_leakage_conductance_g0;
-	float reversal_potential_Vhat = conductance_spiking_group_params->reversal_potential_Vhat;
-
+	
 	for (int i = total_number_of_neurons - number_of_neurons_in_new_group; i < total_number_of_neurons; i++) {
 		membrane_time_constants_tau_m[i] = membrane_time_constant_tau_m;
 		membrane_resistances_R[i] = membrane_resistance_R;
-		reversal_potentials_Vhat[i] = reversal_potential_Vhat;
 	}
 
 	return new_group_id;
@@ -53,8 +49,6 @@ void ConductanceSpikingNeurons::allocate_device_pointers() {
 
  	CudaSafeCall(cudaMalloc((void **)&d_membrane_time_constants_tau_m, sizeof(float)*total_number_of_neurons));
  	CudaSafeCall(cudaMalloc((void **)&d_membrane_resistances_R, sizeof(float)*total_number_of_neurons));
- 	CudaSafeCall(cudaMalloc((void **)&d_reversal_potentials_Vhat, sizeof(float)*total_number_of_neurons));
-
 }
 
 void ConductanceSpikingNeurons::reset_neurons() {
@@ -62,9 +56,7 @@ void ConductanceSpikingNeurons::reset_neurons() {
 	SpikingNeurons::reset_neurons();	
 
 	CudaSafeCall(cudaMemcpy(d_membrane_time_constants_tau_m, membrane_time_constants_tau_m, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemcpy(d_membrane_resistances_R, membrane_resistances_R, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemcpy(d_reversal_potentials_Vhat, reversal_potentials_Vhat, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
-}
+	CudaSafeCall(cudaMemcpy(d_membrane_resistances_R, membrane_resistances_R, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));}
 
 
 
@@ -110,6 +102,8 @@ __global__ void conductance_update_membrane_potentials(float *d_membrane_potenti
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	while (idx < total_number_of_neurons) {
 
+		// printf("d_membrane_time_constants_tau_m: %f\n", d_membrane_time_constants_tau_m[idx]);
+
 		float equation_constant = timestep / d_membrane_time_constants_tau_m[idx];
 		float membrane_potential_Vi = d_membrane_potentials_v[idx];
 		float current_injection_Ii = d_current_injections[idx];
@@ -117,6 +111,7 @@ __global__ void conductance_update_membrane_potentials(float *d_membrane_potenti
 		float temp_membrane_resistance_R = d_membrane_resistances_R[idx];
 
 		float new_membrane_potential = equation_constant * (resting_potential_V0 + temp_membrane_resistance_R * current_injection_Ii) + (1 - equation_constant) * membrane_potential_Vi;
+		// if (idx == 1000) printf("new_membrane_potential: %f\n", new_membrane_potential);
 
 		d_membrane_potentials_v[idx] = new_membrane_potential;
 

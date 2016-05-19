@@ -14,6 +14,7 @@ ConductanceSpikingSynapses::ConductanceSpikingSynapses() {
 
 	biological_conductance_scaling_constants_lambda = NULL;
 	d_biological_conductance_scaling_constants_lambda = NULL;
+
 }
 
 // ConductanceSpikingSynapses Destructor
@@ -112,12 +113,14 @@ void ConductanceSpikingSynapses::set_threads_per_block_and_blocks_per_grid(int t
 
 
 
-void ConductanceSpikingSynapses::calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds) {
+void ConductanceSpikingSynapses::calculate_postsynaptic_current_injection(SpikingNeurons * neurons, SpikingNeurons * input_neurons, float current_time_in_seconds) {
 
 	// printf("calculate_postsynaptic_current_injection. number_of_synapse_blocks_per_grid.x: %d. threads_per_block.x: %d\n", number_of_synapse_blocks_per_grid.x, threads_per_block.x);
 
-	conductance_calculate_postsynaptic_current_injection_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_postsynaptic_neuron_indices,
+	conductance_calculate_postsynaptic_current_injection_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_presynaptic_neuron_indices,
+																	d_postsynaptic_neuron_indices,
 																	neurons->d_reversal_potentials_Vhat,
+																	input_neurons->d_reversal_potentials_Vhat,
 																	neurons->d_current_injections,
 																	total_number_of_synapses,
 																	neurons->d_membrane_potentials_v, 
@@ -172,8 +175,10 @@ void ConductanceSpikingSynapses::update_synaptic_efficacies_or_weights(float * d
 }
 
 
-__global__ void conductance_calculate_postsynaptic_current_injection_kernal(int* d_postsynaptic_neuron_indices,
+__global__ void conductance_calculate_postsynaptic_current_injection_kernal(int * d_presynaptic_neuron_indices,
+							int* d_postsynaptic_neuron_indices,
 							float* d_neuron_reversal_potentials_Vhat,
+							float* d_input_neuron_reversal_potentials_Vhat,
 							float* d_neurons_current_injections,
 							size_t total_number_of_synapses,
 							float * d_membrane_potentials_v,
@@ -182,14 +187,25 @@ __global__ void conductance_calculate_postsynaptic_current_injection_kernal(int*
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	while (idx < total_number_of_synapses) {
 
+		int presynaptic_neuron_index = d_presynaptic_neuron_indices[idx];
+		bool presynaptic_neuron_is_input = PRESYNAPTIC_IS_INPUT(presynaptic_neuron_index);
+		float reversal_potential_Vhat = presynaptic_neuron_is_input ? d_input_neuron_reversal_potentials_Vhat[CORRECTED_PRESYNAPTIC_ID(presynaptic_neuron_index, presynaptic_neuron_is_input)] : d_neuron_reversal_potentials_Vhat[presynaptic_neuron_index];
+
 		int postsynaptic_neuron_index = d_postsynaptic_neuron_indices[idx];
 
-		float temp_reversal_potential_Vhat = d_neuron_reversal_potentials_Vhat[postsynaptic_neuron_index ];
+
+		// if (idx == 1000) printf("reversal_potential_Vhat: %f\n", reversal_potential_Vhat);
+
 		float membrane_potential_v = d_membrane_potentials_v[postsynaptic_neuron_index];
 		float synaptic_conductance_g = d_synaptic_conductances_g[idx];
 
-		float component_for_sum = synaptic_conductance_g * (temp_reversal_potential_Vhat - membrane_potential_v);
+		float component_for_sum = synaptic_conductance_g * (reversal_potential_Vhat - membrane_potential_v);
 		if (component_for_sum != 0.0) {
+			// if (idx == 1000) {
+			// 	printf("membrane_potential_v: %1.12f\n", membrane_potential_v);
+			// 	printf("synaptic_conductance_g: %1.12f\n", synaptic_conductance_g);
+			// 	printf("component_for_sum, %1.12f\n", component_for_sum);
+			// }
 			atomicAdd(&d_neurons_current_injections[postsynaptic_neuron_index], component_for_sum);
 		}
 
@@ -217,9 +233,8 @@ __global__ void conductance_update_synaptic_conductances_kernal(float timestep,
 
 		float new_conductance = (1.0 - (timestep/decay_term_tau_g)) * synaptic_conductance_g;
 		// float new_conductance = synaptic_conductance_g;
-		// if (new_conductance != 0.0) {
 		// if (idx == 10000) {
-		// 	printf("synaptic_conductance_g: %1.16f\n", synaptic_conductance_g);
+		// 	// printf("synaptic_conductance_g: %1.16f\n", synaptic_conductance_g);
 		// 	printf("new_conductance: %1.16f\n", new_conductance);
 		// }
 		
@@ -228,6 +243,11 @@ __global__ void conductance_update_synaptic_conductances_kernal(float timestep,
 			float biological_conductance_scaling_constant_lambda = d_biological_conductance_scaling_constants_lambda[idx];
 			float timestep_times_synaptic_efficacy_times_scaling_constant = timestep_times_synaptic_efficacy * biological_conductance_scaling_constant_lambda;
 			new_conductance += timestep_times_synaptic_efficacy_times_scaling_constant;
+			// if (idx == 10000) {
+			// 	// printf("synaptic_conductance_g: %1.16f\n", synaptic_conductance_g);
+			// 	printf("new_conductance: %1.16f\n", new_conductance);
+			// }	
+
 			// if (idx == 93000) {
 			// 	printf("SPIKE ARRIVED! new_conductance: %1.16f\n", new_conductance);
 			// 	// printf("SPIKE ARRIVED! timestep_times_synaptic_efficacy_times_scaling_constant: %1.16f\n", timestep_times_synaptic_efficacy_times_scaling_constant);
@@ -238,6 +258,7 @@ __global__ void conductance_update_synaptic_conductances_kernal(float timestep,
 		}
 
 		if (synaptic_conductance_g != new_conductance) {
+			// printf("NEW CONDUCTANCE: %f\n", new_conductance);
 			d_synaptic_conductances_g[idx] = new_conductance;
 		}
 

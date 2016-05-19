@@ -287,7 +287,7 @@ void ImagePoissonSpikingNeurons::load_rates_from_files(const char * inputDirecto
 
 								int element_index = start_index_for_current_gabor_image + image_x + image_y * image_width;
 								
-								gabor_input_rates[element_index] = rate*10000.0f;
+								gabor_input_rates[element_index] = rate*1000.0f;
 							}
 						
 					} catch (fstream::failure e) {

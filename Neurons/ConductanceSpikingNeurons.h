@@ -7,11 +7,10 @@
 
 
 struct conductance_spiking_neuron_parameters_struct : spiking_neuron_parameters_struct {
-	conductance_spiking_neuron_parameters_struct() : somatic_capcitance_Cm(0.0f), somatic_leakage_conductance_g0(0.0f), reversal_potential_Vhat(0.0f)  { spiking_neuron_parameters_struct(); }
+	conductance_spiking_neuron_parameters_struct() : somatic_capcitance_Cm(0.0f), somatic_leakage_conductance_g0(0.0f)  { spiking_neuron_parameters_struct(); }
 
 	float somatic_capcitance_Cm;
 	float somatic_leakage_conductance_g0;
-	float reversal_potential_Vhat;
 
 };
 

@@ -148,7 +148,7 @@ void SpikingSynapses::check_for_synapse_spike_arrival(float current_time_in_seco
 	CudaCheckError();
 }
 
-void SpikingSynapses::calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds) {
+void SpikingSynapses::calculate_postsynaptic_current_injection(SpikingNeurons * neurons, SpikingNeurons * input_neurons, float current_time_in_seconds) {
 
 }
 
