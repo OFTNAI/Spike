@@ -176,14 +176,15 @@ int main (int argc, char *argv[]){
 	simulator.setup_recording_electrodes();
 
 	// TRAINING
-	float total_time_per_epoch = 0.5f;
+	float total_time_per_epoch = 1.0f;
 	int number_of_epochs = 1;
-	bool save_spikes = true;
-	bool apply_stdp_to_relevant_synapses = true;
-	simulator.Run(total_time_per_epoch, number_of_epochs, temp_model_type, save_spikes, apply_stdp_to_relevant_synapses);
+	bool save_spikes = false;
+	bool apply_stdp_to_relevant_synapses = false;
+	bool count_spikes_per_neuron = true;
+	simulator.Run(total_time_per_epoch, number_of_epochs, temp_model_type, save_spikes, apply_stdp_to_relevant_synapses, count_spikes_per_neuron);
 
 	// TESTING
-	// total_time_per_epoch = 1.0f;
+	// total_time_per_epoch = 2.0f;
 	// number_of_epochs = 1;
 	// save_spikes = true;
 	// apply_stdp_to_relevant_synapses = false;

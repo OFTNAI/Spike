@@ -204,7 +204,7 @@ void Simulator::setup_recording_electrodes() {
 }
 
 
-void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_model_type, bool save_spikes, bool apply_stdp_to_relevant_synapses, bool present_stimuli_in_random_order){
+void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_model_type, bool save_spikes, bool apply_stdp_to_relevant_synapses, bool count_spikes_per_neuron, bool present_stimuli_in_random_order){
 
 	// Check how many stimuli their are and do something about it:
 	if (number_of_stimuli == 0){
@@ -264,6 +264,10 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_m
 				if (save_spikes){
 					recording_electrodes->save_spikes_to_host(current_time_in_seconds, timestep_index, number_of_timesteps_per_epoch);
 					// input_recording_electrodes->save_spikes_to_host(current_time_in_seconds, timestep_index, number_of_timesteps_per_epoch);
+				}
+
+				if (count_spikes_per_neuron) {
+
 				}
 			}
 		}

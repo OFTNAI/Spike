@@ -81,7 +81,7 @@ public:
 	void setup_network(bool temp_model_type);
 	void setup_recording_electrodes();
 
-	void Run(float total_time_per_epoch, int number_of_epochs, int temp_model_type, bool save_spikes, bool apply_stdp_to_relevant_synapses, bool present_stimuli_in_random_order = false);
+	void Run(float total_time_per_epoch, int number_of_epochs, int temp_model_type, bool save_spikes, bool apply_stdp_to_relevant_synapses, bool count_spikes_per_neuron, bool present_stimuli_in_random_order = false);
 
 protected: 
 	void temp_izhikevich_per_timestep_instructions(float current_time_in_seconds);
