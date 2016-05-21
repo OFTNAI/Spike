@@ -19,14 +19,13 @@ public:
 	int * d_per_neuron_spike_counts;
 
 	
-	int* d_tempstoreID;
-	float* d_tempstoretimes;
+	int* d_neuron_ids_of_stored_spikes_on_device;
+	int* h_neuron_ids_of_stored_spikes_on_device;
+	int* h_neuron_ids_of_stored_spikes_on_host;
 
-	int* h_tempstoreID;
-	float* h_tempstoretimes;
-	
-	int* h_spikestoreID;
-	float* h_spikestoretimes;
+	float* d_time_in_seconds_of_stored_spikes_on_device;
+	float* h_time_in_seconds_of_stored_spikes_on_device;
+	float* h_time_in_seconds_of_stored_spikes_on_host;
 
 	// Various spikes stored totals
 	int* d_total_number_of_spikes_stored_on_device;
@@ -61,8 +60,8 @@ __global__ void add_spikes_to_per_neuron_spike_count_kernal(float* d_last_spike_
 
 __global__ void spikeCollect(float* d_last_spike_time_of_each_neuron,
 								int* d_total_number_of_spikes_stored_on_device,
-								int* d_tempstoreID,
-								float* d_tempstoretimes,
+								int* d_neuron_ids_of_stored_spikes_on_device,
+								float* d_time_in_seconds_of_stored_spikes_on_device,
 								float current_time_in_seconds,
 								size_t total_number_of_neurons);
 

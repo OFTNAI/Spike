@@ -25,16 +25,14 @@ RecordingElectrodes::RecordingElectrodes(SpikingNeurons * neurons_parameter, con
 	prefix_string = prefix_string_param;
 
 	d_per_neuron_spike_counts = NULL;
-
 	
-	d_tempstoreID = NULL;
-	d_tempstoretimes = NULL;
-
-	h_tempstoreID = NULL;
-	h_tempstoretimes = NULL;
+	d_neuron_ids_of_stored_spikes_on_device = NULL;
+	h_neuron_ids_of_stored_spikes_on_device = NULL;
+	h_neuron_ids_of_stored_spikes_on_host = NULL;
 	
-	h_spikestoreID = NULL;
-	h_spikestoretimes = NULL;
+	d_time_in_seconds_of_stored_spikes_on_device= NULL;
+	h_time_in_seconds_of_stored_spikes_on_device = NULL;
+	h_time_in_seconds_of_stored_spikes_on_host = NULL;
 
 	d_total_number_of_spikes_stored_on_device = NULL;
 	h_total_number_of_spikes_stored_on_device = NULL;
@@ -47,14 +45,18 @@ RecordingElectrodes::RecordingElectrodes(SpikingNeurons * neurons_parameter, con
 RecordingElectrodes::~RecordingElectrodes() {
 
 	CudaSafeCall(cudaFree(d_total_number_of_spikes_stored_on_device));
-	CudaSafeCall(cudaFree(d_tempstoreID));
-	CudaSafeCall(cudaFree(d_tempstoretimes));
+	CudaSafeCall(cudaFree(d_neuron_ids_of_stored_spikes_on_device));
+	CudaSafeCall(cudaFree(d_time_in_seconds_of_stored_spikes_on_device));
 
-	free(h_tempstoreID);
-	free(h_tempstoretimes);
+	free(h_neuron_ids_of_stored_spikes_on_device);
+	free(h_neuron_ids_of_stored_spikes_on_host);
+
+	free(h_time_in_seconds_of_stored_spikes_on_device);
+	free(h_time_in_seconds_of_stored_spikes_on_host);
+
 	free(h_total_number_of_spikes_stored_on_device);
-	free(h_spikestoreID);
-	free(h_spikestoretimes);
+	
+	
 
 }
 
@@ -66,20 +68,20 @@ void RecordingElectrodes::initialise_device_pointers() {
 	CudaSafeCall(cudaMemset(d_per_neuron_spike_counts, 0, sizeof(int) * neurons->total_number_of_neurons));
 
 	// For saving spikes (Make seperate class)
-	CudaSafeCall(cudaMalloc((void **)&d_tempstoreID, sizeof(int)*(neurons->total_number_of_neurons)));
-	CudaSafeCall(cudaMalloc((void **)&d_tempstoretimes, sizeof(float)*(neurons->total_number_of_neurons)));
+	CudaSafeCall(cudaMalloc((void **)&d_neuron_ids_of_stored_spikes_on_device, sizeof(int)*(neurons->total_number_of_neurons)));
+	CudaSafeCall(cudaMalloc((void **)&d_time_in_seconds_of_stored_spikes_on_device, sizeof(float)*(neurons->total_number_of_neurons)));
 	CudaSafeCall(cudaMalloc((void **)&d_total_number_of_spikes_stored_on_device, sizeof(int)));
 
 	// Send data to device: data for saving spikes
-	CudaSafeCall(cudaMemset(d_tempstoreID, -1, sizeof(int)*(neurons->total_number_of_neurons)));
-	CudaSafeCall(cudaMemset(d_tempstoretimes, -1.0f, sizeof(float)*(neurons->total_number_of_neurons)));
+	CudaSafeCall(cudaMemset(d_neuron_ids_of_stored_spikes_on_device, -1, sizeof(int)*(neurons->total_number_of_neurons)));
+	CudaSafeCall(cudaMemset(d_time_in_seconds_of_stored_spikes_on_device, -1.0f, sizeof(float)*(neurons->total_number_of_neurons)));
 	CudaSafeCall(cudaMemset(d_total_number_of_spikes_stored_on_device, 0, sizeof(int)));
 }
 
 void RecordingElectrodes::initialise_host_pointers() {
 
-	h_tempstoreID = (int*)malloc(sizeof(int)*(neurons->total_number_of_neurons));
-	h_tempstoretimes = (float*)malloc(sizeof(float)*(neurons->total_number_of_neurons));
+	h_neuron_ids_of_stored_spikes_on_device = (int*)malloc(sizeof(int)*(neurons->total_number_of_neurons));
+	h_time_in_seconds_of_stored_spikes_on_device = (float*)malloc(sizeof(float)*(neurons->total_number_of_neurons));
 
 	h_total_number_of_spikes_stored_on_device = (int*)malloc(sizeof(int));
 	h_total_number_of_spikes_stored_on_device[0] = 0;
@@ -93,8 +95,8 @@ void RecordingElectrodes::save_spikes_to_host(float current_time_in_seconds, int
 
 	spikeCollect<<<neurons->number_of_neuron_blocks_per_grid, neurons->threads_per_block>>>(neurons->d_last_spike_time_of_each_neuron,
 														d_total_number_of_spikes_stored_on_device,
-														d_tempstoreID,
-														d_tempstoretimes,
+														d_neuron_ids_of_stored_spikes_on_device,
+														d_time_in_seconds_of_stored_spikes_on_device,
 														current_time_in_seconds,
 														neurons->total_number_of_neurons);
 
@@ -116,26 +118,26 @@ void RecordingElectrodes::save_spikes_to_host(float current_time_in_seconds, int
 		if ((h_total_number_of_spikes_stored_on_device[0] >= (0.25*neurons->total_number_of_neurons)) ||  (timestep_index == (number_of_timesteps_per_epoch - 1))){
 
 			// Allocate some memory for them:
-			h_spikestoreID = (int*)realloc(h_spikestoreID, sizeof(int)*(h_total_number_of_spikes_stored_on_host + h_total_number_of_spikes_stored_on_device[0]));
-			h_spikestoretimes = (float*)realloc(h_spikestoretimes, sizeof(float)*(h_total_number_of_spikes_stored_on_host + h_total_number_of_spikes_stored_on_device[0]));
+			h_neuron_ids_of_stored_spikes_on_host = (int*)realloc(h_neuron_ids_of_stored_spikes_on_host, sizeof(int)*(h_total_number_of_spikes_stored_on_host + h_total_number_of_spikes_stored_on_device[0]));
+			h_time_in_seconds_of_stored_spikes_on_host = (float*)realloc(h_time_in_seconds_of_stored_spikes_on_host, sizeof(float)*(h_total_number_of_spikes_stored_on_host + h_total_number_of_spikes_stored_on_device[0]));
 			// Copy the data from device to host
-			CudaSafeCall(cudaMemcpy(h_tempstoreID, 
-									d_tempstoreID, 
+			CudaSafeCall(cudaMemcpy(h_neuron_ids_of_stored_spikes_on_device, 
+									d_neuron_ids_of_stored_spikes_on_device, 
 									(sizeof(int)*(neurons->total_number_of_neurons)), 
 									cudaMemcpyDeviceToHost));
-			CudaSafeCall(cudaMemcpy(h_tempstoretimes, 
-									d_tempstoretimes, 
+			CudaSafeCall(cudaMemcpy(h_time_in_seconds_of_stored_spikes_on_device, 
+									d_time_in_seconds_of_stored_spikes_on_device, 
 									sizeof(float)*(neurons->total_number_of_neurons), 
 									cudaMemcpyDeviceToHost));
 			// Pop all of the times where they need to be:
 			for (int l = 0; l < h_total_number_of_spikes_stored_on_device[0]; l++){
-				h_spikestoreID[h_total_number_of_spikes_stored_on_host + l] = h_tempstoreID[l];
-				h_spikestoretimes[h_total_number_of_spikes_stored_on_host + l] = h_tempstoretimes[l];
+				h_neuron_ids_of_stored_spikes_on_host[h_total_number_of_spikes_stored_on_host + l] = h_neuron_ids_of_stored_spikes_on_device[l];
+				h_time_in_seconds_of_stored_spikes_on_host[h_total_number_of_spikes_stored_on_host + l] = h_time_in_seconds_of_stored_spikes_on_device[l];
 			}
 			// Reset the number on the device
 			CudaSafeCall(cudaMemset(&(d_total_number_of_spikes_stored_on_device[0]), 0, sizeof(int)));
-			CudaSafeCall(cudaMemset(d_tempstoreID, -1, sizeof(int)*neurons->total_number_of_neurons));
-			CudaSafeCall(cudaMemset(d_tempstoretimes, -1.0f, sizeof(float)*neurons->total_number_of_neurons));
+			CudaSafeCall(cudaMemset(d_neuron_ids_of_stored_spikes_on_device, -1, sizeof(int)*neurons->total_number_of_neurons));
+			CudaSafeCall(cudaMemset(d_time_in_seconds_of_stored_spikes_on_device, -1.0f, sizeof(float)*neurons->total_number_of_neurons));
 			// Increase the number on host
 			h_total_number_of_spikes_stored_on_host += h_total_number_of_spikes_stored_on_device[0];
 			h_total_number_of_spikes_stored_on_device[0] = 0;
@@ -165,12 +167,12 @@ void RecordingElectrodes::write_spikes_to_file(Neurons *neurons, int epoch_numbe
 	
 
 	// Send the data
-	// spikeidfile.write((char *)h_spikestoreID, h_total_number_of_spikes*sizeof(int));
-	// spiketimesfile.write((char *)h_spikestoretimes, h_total_number_of_spikes*sizeof(float));
+	// spikeidfile.write((char *)h_neuron_ids_of_stored_spikes_on_host, h_total_number_of_spikes*sizeof(int));
+	// spiketimesfile.write((char *)h_time_in_seconds_of_stored_spikes_on_host, h_total_number_of_spikes*sizeof(float));
 
 	for (int i = 0; i < h_total_number_of_spikes_stored_on_host; i++) {
-		spikeidfile << to_string(h_spikestoreID[i]) << endl;
-		spiketimesfile << to_string(h_spikestoretimes[i]) << endl;
+		spikeidfile << to_string(h_neuron_ids_of_stored_spikes_on_host[i]) << endl;
+		spiketimesfile << to_string(h_time_in_seconds_of_stored_spikes_on_host[i]) << endl;
 	}
 
 	// Close the files
@@ -184,13 +186,13 @@ void RecordingElectrodes::write_spikes_to_file(Neurons *neurons, int epoch_numbe
 	// Free/Clear Device stuff
 	// Reset the number on the device
 	CudaSafeCall(cudaMemset(&(d_total_number_of_spikes_stored_on_device[0]), 0, sizeof(int)));
-	CudaSafeCall(cudaMemset(d_tempstoreID, -1, sizeof(int)*neurons->total_number_of_neurons));
-	CudaSafeCall(cudaMemset(d_tempstoretimes, -1.0f, sizeof(float)*neurons->total_number_of_neurons));
+	CudaSafeCall(cudaMemset(d_neuron_ids_of_stored_spikes_on_device, -1, sizeof(int)*neurons->total_number_of_neurons));
+	CudaSafeCall(cudaMemset(d_time_in_seconds_of_stored_spikes_on_device, -1.0f, sizeof(float)*neurons->total_number_of_neurons));
 	// Free malloced host stuff
-	free(h_spikestoreID);
-	free(h_spikestoretimes);
-	h_spikestoreID = NULL;
-	h_spikestoretimes = NULL;
+	free(h_neuron_ids_of_stored_spikes_on_host);
+	free(h_time_in_seconds_of_stored_spikes_on_host);
+	h_neuron_ids_of_stored_spikes_on_host = NULL;
+	h_time_in_seconds_of_stored_spikes_on_host = NULL;
 }
 
 
@@ -217,8 +219,8 @@ __global__ void add_spikes_to_per_neuron_spike_count_kernal(float* d_last_spike_
 // Collect Spikes
 __global__ void spikeCollect(float* d_last_spike_time_of_each_neuron,
 								int* d_total_number_of_spikes_stored_on_device,
-								int* d_tempstoreID,
-								float* d_tempstoretimes,
+								int* d_neuron_ids_of_stored_spikes_on_device,
+								float* d_time_in_seconds_of_stored_spikes_on_device,
 								float current_time_in_seconds,
 								size_t total_number_of_neurons){
 
@@ -230,8 +232,8 @@ __global__ void spikeCollect(float* d_last_spike_time_of_each_neuron,
 			// Increase the number of spikes stored
 			int i = atomicAdd(&d_total_number_of_spikes_stored_on_device[0], 1);
 			// In the location, add the id and the time
-			d_tempstoreID[i] = idx;
-			d_tempstoretimes[i] = current_time_in_seconds;
+			d_neuron_ids_of_stored_spikes_on_device[i] = idx;
+			d_time_in_seconds_of_stored_spikes_on_device[i] = current_time_in_seconds;
 		}
 		idx = blockDim.x * gridDim.x;
 
