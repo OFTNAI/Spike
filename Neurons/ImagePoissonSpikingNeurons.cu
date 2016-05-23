@@ -14,9 +14,9 @@
 ImagePoissonSpikingNeurons::ImagePoissonSpikingNeurons() {
 
 	//JI
-	total_number_of_input_images = 0;
 	total_number_of_transformations_per_object = 0;
 	total_number_of_objects = 0;
+	total_number_of_input_images = 0;
 
 	total_number_of_phases = 0;
 	total_number_of_wavelengths = 0;

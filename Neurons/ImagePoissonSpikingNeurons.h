@@ -51,7 +51,6 @@ public:
 	int total_number_of_rates_per_image;
 
 	int total_number_of_gabor_types;
-	int total_number_of_input_images;
 	int total_number_of_objects;
 
 	//OLD VARIABLES

@@ -180,19 +180,23 @@ int main (int argc, char *argv[]){
 
 
 	// TRAINING
-	float total_time_per_epoch = 1.0f;
-	int number_of_epochs = 1;
+	float presentation_time_per_stimulus_per_epoch = 0.25f;
+	int number_of_epochs = 5;
 	bool save_spikes = true;
 	bool apply_stdp_to_relevant_synapses = true;
 	bool count_spikes_per_neuron = false;
-	simulator.Run(total_time_per_epoch, number_of_epochs, temp_model_type, save_spikes, apply_stdp_to_relevant_synapses, count_spikes_per_neuron);
+	bool present_stimuli_in_random_order = true;
+	simulator.Run(presentation_time_per_stimulus_per_epoch, number_of_epochs, temp_model_type, save_spikes, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, present_stimuli_in_random_order);
 
 	// TESTING
-	// total_time_per_epoch = 2.0f;
+	// presentation_time_per_stimulus_per_epoch = 1.0f;
 	// number_of_epochs = 1;
-	// save_spikes = true;
+	// save_spikes = false;
 	// apply_stdp_to_relevant_synapses = false;
-	// simulator.Run(total_time_per_epoch, number_of_epochs, temp_model_type, save_spikes, apply_stdp_to_relevant_synapses);
+	// count_spikes_per_neuron = true;
+	// present_stimuli_in_random_order = false;
+	// simulator.Run(presentation_time_per_stimulus_per_epoch, number_of_epochs, temp_model_type, save_spikes, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, present_stimuli_in_random_order);
+
 
 	clock_t end_entire_experiment = clock();
 	float timed_entire_experiment = float(end_entire_experiment - begin_entire_experiment) / CLOCKS_PER_SEC;

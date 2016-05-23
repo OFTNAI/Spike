@@ -12,6 +12,8 @@ PoissonSpikingNeurons::PoissonSpikingNeurons() {
 	d_rates = NULL;
 	d_states = NULL;
 
+	total_number_of_input_images = 1;
+
 	random_state_manager = NULL;
 }
 

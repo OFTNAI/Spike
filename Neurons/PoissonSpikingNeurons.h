@@ -25,6 +25,8 @@ public:
 	float * rates;
 	float * d_rates;
 
+	int total_number_of_input_images;
+
 	curandState_t* d_states;
 
 	RandomStateManager * random_state_manager;

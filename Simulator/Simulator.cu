@@ -217,14 +217,7 @@ void Simulator::setup_recording_electrodes_for_input_neurons(int number_of_times
 }
 
 
-void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_model_type, bool save_spikes, bool apply_stdp_to_relevant_synapses, bool count_spikes_per_neuron, bool present_stimuli_in_random_order){
-
-	// Check how many stimuli their are and do something about it:
-	if (number_of_stimuli == 0){
-		++number_of_stimuli;
-		numEntries = (int*)realloc(numEntries, sizeof(int)*number_of_stimuli);
-		numEntries[0] = 0;
-	}
+void Simulator::Run(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, int temp_model_type, bool save_spikes, bool apply_stdp_to_relevant_synapses, bool count_spikes_per_neuron, bool present_stimuli_in_random_order){
 	
 	if (number_of_epochs == 0) print_message_and_exit("Error. There must be at least one epoch.");
 
@@ -232,6 +225,7 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_m
 	srand(42);
 
 	// STIMULUS ORDER (Put into function + variable)
+	int number_of_stimuli = input_neurons->total_number_of_input_images;
 	int stimuli_presentation_order[number_of_stimuli];
 	for (int i = 0; i < number_of_stimuli; i++){
 		stimuli_presentation_order[i] = i;
@@ -258,14 +252,13 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_m
 			input_neurons->reset_neurons();
 			synapses->reset_synapse_spikes();
 
-			int number_of_timesteps_per_epoch = total_time_per_epoch / timestep;
+			int number_of_timesteps_per_stimulus_per_epoch = presentation_time_per_stimulus_per_epoch / timestep;
 			float current_time_in_seconds = 0.0f;
 		
-			for (int timestep_index = 0; timestep_index < number_of_timesteps_per_epoch; timestep_index++){
+			for (int timestep_index = 0; timestep_index < number_of_timesteps_per_stimulus_per_epoch; timestep_index++){
 				
 				current_time_in_seconds = float(timestep_index)*float(timestep);
-
-				if (timestep_index % 10000 == 0) printf("Seconds: %.0f\n", current_time_in_seconds);
+				if (timestep_index % 10000 == 0) printf("Stimulus: %d, Seconds: %.0f\n", stimuli_presentation_order[stimulus_index], current_time_in_seconds);
 				
 				neurons->reset_current_injections();
 
@@ -273,23 +266,19 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_m
 				if (temp_model_type == 0) temp_izhikevich_per_timestep_instructions(current_time_in_seconds);
 				if (temp_model_type == 1) temp_conductance_per_timestep_instructions(current_time_in_seconds, apply_stdp_to_relevant_synapses);
 
-
-				if (count_spikes_per_neuron) {
-					recording_electrodes->add_spikes_to_per_neuron_spike_count(current_time_in_seconds);
-				}
+				if (count_spikes_per_neuron) recording_electrodes->add_spikes_to_per_neuron_spike_count(current_time_in_seconds);
 
 				// // Only save the spikes if necessary
 				if (save_spikes){
 					if (recording_electrodes) {
 						recording_electrodes->collect_spikes_for_timestep(current_time_in_seconds);
-						recording_electrodes->copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(current_time_in_seconds, timestep_index, number_of_timesteps_per_epoch);
+						recording_electrodes->copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(current_time_in_seconds, timestep_index, number_of_timesteps_per_stimulus_per_epoch );
 					}
 					if (input_recording_electrodes) {
 						input_recording_electrodes->collect_spikes_for_timestep(current_time_in_seconds);
-						input_recording_electrodes->copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(current_time_in_seconds, timestep_index, number_of_timesteps_per_epoch);
+						input_recording_electrodes->copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(current_time_in_seconds, timestep_index, number_of_timesteps_per_stimulus_per_epoch );
 					}
 				}
-
 
 			}
 		}
