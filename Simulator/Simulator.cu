@@ -244,21 +244,22 @@ void Simulator::Run(float presentation_time_per_stimulus_per_epoch, int number_o
 		if (present_stimuli_in_random_order) {
 			std::random_shuffle(&stimuli_presentation_order[0], &stimuli_presentation_order[number_of_stimuli]);
 		}
+
+		neurons->reset_neurons();
+		synapses->reset_synapse_spikes();
+
+		float current_time_in_seconds = 0.0f;
+
 		// Running through every Stimulus
 		for (int stimulus_index = 0; stimulus_index < number_of_stimuli; stimulus_index++){
 
-			// Reset the variables necessary
-			neurons->reset_neurons();
+			printf("Stimulus: %d, Current time in seconds: %1.2f\n", stimuli_presentation_order[stimulus_index], current_time_in_seconds);
+
 			input_neurons->reset_neurons();
-			synapses->reset_synapse_spikes();
 
 			int number_of_timesteps_per_stimulus_per_epoch = presentation_time_per_stimulus_per_epoch / timestep;
-			float current_time_in_seconds = 0.0f;
 		
 			for (int timestep_index = 0; timestep_index < number_of_timesteps_per_stimulus_per_epoch; timestep_index++){
-				
-				current_time_in_seconds = float(timestep_index)*float(timestep);
-				if (timestep_index % 10000 == 0) printf("Stimulus: %d, Seconds: %.0f\n", stimuli_presentation_order[stimulus_index], current_time_in_seconds);
 				
 				neurons->reset_current_injections();
 
@@ -279,6 +280,8 @@ void Simulator::Run(float presentation_time_per_stimulus_per_epoch, int number_o
 						input_recording_electrodes->copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(current_time_in_seconds, timestep_index, number_of_timesteps_per_stimulus_per_epoch );
 					}
 				}
+
+				current_time_in_seconds += float(timestep);
 
 			}
 		}
