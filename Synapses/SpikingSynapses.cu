@@ -148,19 +148,6 @@ void SpikingSynapses::check_for_synapse_spike_arrival(float current_time_in_seco
 	CudaCheckError();
 }
 
-void SpikingSynapses::calculate_postsynaptic_current_injection(SpikingNeurons * neurons, SpikingNeurons * input_neurons, float current_time_in_seconds) {
-
-}
-
-void SpikingSynapses::update_presynaptic_activities(float timestep, float current_time_in_seconds) {
-
-}
-
-void SpikingSynapses::update_synaptic_efficacies_or_weights(float * d_recent_postsynaptic_activities_D, float timestep, float current_time_in_seconds, float * d_last_spike_time_of_each_neuron) {
-	
-}
-
-
 void SpikingSynapses::move_spikes_towards_synapses(float* d_last_spike_time_of_each_neuron, float* d_input_neurons_last_spike_time, float current_time_in_seconds) {
 
 	move_spikes_towards_synapses_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_presynaptic_neuron_indices,
@@ -173,6 +160,20 @@ void SpikingSynapses::move_spikes_towards_synapses(float* d_last_spike_time_of_e
 																		total_number_of_synapses);
 
 	CudaCheckError();
+}
+
+
+
+void SpikingSynapses::calculate_postsynaptic_current_injection(SpikingNeurons * neurons, SpikingNeurons * input_neurons, float current_time_in_seconds) {
+
+}
+
+void SpikingSynapses::update_presynaptic_activities(float timestep, float current_time_in_seconds) {
+
+}
+
+void SpikingSynapses::update_synaptic_efficacies_or_weights(float * d_recent_postsynaptic_activities_D, float timestep, float current_time_in_seconds, float * d_last_spike_time_of_each_neuron) {
+	
 }
 
 void SpikingSynapses::apply_ltd_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds) {

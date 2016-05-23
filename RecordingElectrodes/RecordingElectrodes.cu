@@ -55,8 +55,6 @@ RecordingElectrodes::~RecordingElectrodes() {
 	free(h_time_in_seconds_of_stored_spikes_on_host);
 
 	free(h_total_number_of_spikes_stored_on_device);
-	
-	
 
 }
 
@@ -104,15 +102,17 @@ void RecordingElectrodes::save_spikes_to_host(float current_time_in_seconds, int
 
 
 
-	if (((timestep_index % 1) == 0) || (timestep_index == (number_of_timesteps_per_epoch-1))){
+	if (((timestep_index % 50) == 0) || (timestep_index == (number_of_timesteps_per_epoch-1))){
+
+		// printf("timestep_index: %d\n", timestep_index);
 
 		// Finally, we want to get the spikes back. Every few timesteps check the number of spikes:
 		CudaSafeCall(cudaMemcpy(&(h_total_number_of_spikes_stored_on_device[0]), &(d_total_number_of_spikes_stored_on_device[0]), (sizeof(int)), cudaMemcpyDeviceToHost));
 
 		// Ensure that we don't have too many
-		// if (h_total_number_of_spikes_stored_on_device[0] > neurons->total_number_of_neurons){
-		// 	print_message_and_exit("Spike recorder has been overloaded! Reduce threshold.");
-		// }
+		if (h_total_number_of_spikes_stored_on_device[0] > neurons->total_number_of_neurons){
+			print_message_and_exit("Spike recorder has been overloaded! Reduce threshold.");
+		}
 
 		// Deal with them!
 		if ((h_total_number_of_spikes_stored_on_device[0] >= (0.25*neurons->total_number_of_neurons)) ||  (timestep_index == (number_of_timesteps_per_epoch - 1))){
@@ -134,6 +134,7 @@ void RecordingElectrodes::save_spikes_to_host(float current_time_in_seconds, int
 				h_neuron_ids_of_stored_spikes_on_host[h_total_number_of_spikes_stored_on_host + l] = h_neuron_ids_of_stored_spikes_on_device[l];
 				h_time_in_seconds_of_stored_spikes_on_host[h_total_number_of_spikes_stored_on_host + l] = h_time_in_seconds_of_stored_spikes_on_device[l];
 			}
+			
 			// Reset the number on the device
 			CudaSafeCall(cudaMemset(&(d_total_number_of_spikes_stored_on_device[0]), 0, sizeof(int)));
 			CudaSafeCall(cudaMemset(d_neuron_ids_of_stored_spikes_on_device, -1, sizeof(int)*neurons->total_number_of_neurons));
@@ -167,13 +168,13 @@ void RecordingElectrodes::write_spikes_to_file(Neurons *neurons, int epoch_numbe
 	
 
 	// Send the data
-	// spikeidfile.write((char *)h_neuron_ids_of_stored_spikes_on_host, h_total_number_of_spikes*sizeof(int));
-	// spiketimesfile.write((char *)h_time_in_seconds_of_stored_spikes_on_host, h_total_number_of_spikes*sizeof(float));
+	spikeidfile.write((char *)h_neuron_ids_of_stored_spikes_on_host, h_total_number_of_spikes_stored_on_host*sizeof(int));
+	spiketimesfile.write((char *)h_time_in_seconds_of_stored_spikes_on_host, h_total_number_of_spikes_stored_on_host*sizeof(float));
 
-	for (int i = 0; i < h_total_number_of_spikes_stored_on_host; i++) {
-		spikeidfile << to_string(h_neuron_ids_of_stored_spikes_on_host[i]) << endl;
-		spiketimesfile << to_string(h_time_in_seconds_of_stored_spikes_on_host[i]) << endl;
-	}
+	// for (int i = 0; i < h_total_number_of_spikes_stored_on_host; i++) {
+	// 	spikeidfile << to_string(h_neuron_ids_of_stored_spikes_on_host[i]) << endl;
+	// 	spiketimesfile << to_string(h_time_in_seconds_of_stored_spikes_on_host[i]) << endl;
+	// }
 
 	// Close the files
 	spikeidfile.close();
