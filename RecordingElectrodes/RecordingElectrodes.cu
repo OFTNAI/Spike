@@ -85,13 +85,10 @@ void RecordingElectrodes::initialise_host_pointers() {
 	h_total_number_of_spikes_stored_on_device[0] = 0;
 }
 
-void RecordingElectrodes::save_spikes_to_host(float current_time_in_seconds, int timestep_index, int number_of_timesteps_per_epoch) {
 
-	// printf("Save spikes to host. total_number_of_neurons = %d.\n", neurons->total_number_of_neurons);
 
-	// Storing the spikes that have occurred in this timestep
-
-	spikeCollect<<<neurons->number_of_neuron_blocks_per_grid, neurons->threads_per_block>>>(neurons->d_last_spike_time_of_each_neuron,
+void RecordingElectrodes::collect_spikes_for_timestep(float current_time_in_seconds) {
+	collect_spikes_for_timestep_kernel<<<neurons->number_of_neuron_blocks_per_grid, neurons->threads_per_block>>>(neurons->d_last_spike_time_of_each_neuron,
 														d_total_number_of_spikes_stored_on_device,
 														d_neuron_ids_of_stored_spikes_on_device,
 														d_time_in_seconds_of_stored_spikes_on_device,
@@ -99,7 +96,13 @@ void RecordingElectrodes::save_spikes_to_host(float current_time_in_seconds, int
 														neurons->total_number_of_neurons);
 
 	CudaCheckError();
+}
 
+void RecordingElectrodes::copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(float current_time_in_seconds, int timestep_index, int number_of_timesteps_per_epoch) {
+
+	// printf("Save spikes to host. total_number_of_neurons = %d.\n", neurons->total_number_of_neurons);
+
+	// Storing the spikes that have occurred in this timestep
 
 
 	if (((timestep_index % 50) == 0) || (timestep_index == (number_of_timesteps_per_epoch-1))){
@@ -148,7 +151,7 @@ void RecordingElectrodes::save_spikes_to_host(float current_time_in_seconds, int
 
 
 void RecordingElectrodes::add_spikes_to_per_neuron_spike_count(float current_time_in_seconds) {
-	add_spikes_to_per_neuron_spike_count_kernal<<<neurons->number_of_neuron_blocks_per_grid, neurons->threads_per_block>>>(neurons->d_last_spike_time_of_each_neuron,
+	add_spikes_to_per_neuron_spike_count_kernel<<<neurons->number_of_neuron_blocks_per_grid, neurons->threads_per_block>>>(neurons->d_last_spike_time_of_each_neuron,
 														d_per_neuron_spike_counts,
 														current_time_in_seconds,
 														neurons->total_number_of_neurons);
@@ -198,7 +201,7 @@ void RecordingElectrodes::write_spikes_to_file(Neurons *neurons, int epoch_numbe
 
 
 
-__global__ void add_spikes_to_per_neuron_spike_count_kernal(float* d_last_spike_time_of_each_neuron,
+__global__ void add_spikes_to_per_neuron_spike_count_kernel(float* d_last_spike_time_of_each_neuron,
 								int* d_per_neuron_spike_counts,
 								float current_time_in_seconds,
 								size_t total_number_of_neurons) {
@@ -218,7 +221,7 @@ __global__ void add_spikes_to_per_neuron_spike_count_kernal(float* d_last_spike_
 }
 
 // Collect Spikes
-__global__ void spikeCollect(float* d_last_spike_time_of_each_neuron,
+__global__ void collect_spikes_for_timestep_kernel(float* d_last_spike_time_of_each_neuron,
 								int* d_total_number_of_spikes_stored_on_device,
 								int* d_neuron_ids_of_stored_spikes_on_device,
 								float* d_time_in_seconds_of_stored_spikes_on_device,

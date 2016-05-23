@@ -176,7 +176,7 @@ int main (int argc, char *argv[]){
 	// TRAINING
 	float total_time_per_epoch = 1.0f;
 	int number_of_epochs = 1;
-	bool save_spikes = false;
+	bool save_spikes = true;
 	bool apply_stdp_to_relevant_synapses = true;
 	bool count_spikes_per_neuron = false;
 	simulator.Run(total_time_per_epoch, number_of_epochs, temp_model_type, save_spikes, apply_stdp_to_relevant_synapses, count_spikes_per_neuron);

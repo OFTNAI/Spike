@@ -267,7 +267,8 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_m
 
 				// // Only save the spikes if necessary
 				if (save_spikes){
-					recording_electrodes->save_spikes_to_host(current_time_in_seconds, timestep_index, number_of_timesteps_per_epoch);
+					recording_electrodes->collect_spikes_for_timestep(current_time_in_seconds);
+					recording_electrodes->copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(current_time_in_seconds, timestep_index, number_of_timesteps_per_epoch);
 					// input_recording_electrodes->save_spikes_to_host(current_time_in_seconds, timestep_index, number_of_timesteps_per_epoch);
 				}
 
