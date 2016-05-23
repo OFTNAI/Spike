@@ -79,7 +79,8 @@ public:
 						float* newWeights);
 
 	void setup_network(bool temp_model_type);
-	void setup_recording_electrodes();
+	void setup_recording_electrodes_for_neurons(int number_of_timesteps_per_device_spike_copy_check_param, int device_spike_store_size_multiple_of_total_neurons_param, float proportion_of_device_spike_store_full_before_copy_param);
+	void setup_recording_electrodes_for_input_neurons(int number_of_timesteps_per_device_spike_copy_check_param, int device_spike_store_size_multiple_of_total_neurons_param, float proportion_of_device_spike_store_full_before_copy_param);
 
 	void Run(float total_time_per_epoch, int number_of_epochs, int temp_model_type, bool save_spikes, bool apply_stdp_to_relevant_synapses, bool count_spikes_per_neuron, bool present_stimuli_in_random_order = false);
 

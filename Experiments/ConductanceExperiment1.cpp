@@ -171,7 +171,13 @@ int main (int argc, char *argv[]){
 	//
 	int temp_model_type = 1;
 	simulator.setup_network(temp_model_type);
-	simulator.setup_recording_electrodes();
+
+	int number_of_timesteps_per_device_spike_copy_check = 50;
+	int device_spike_store_size_multiple_of_total_neurons = 10;
+	float proportion_of_device_spike_store_full_before_copy = 0.9;
+	simulator.setup_recording_electrodes_for_neurons(number_of_timesteps_per_device_spike_copy_check, device_spike_store_size_multiple_of_total_neurons, proportion_of_device_spike_store_full_before_copy);
+	// simulator.setup_recording_electrodes_for_input_neurons(number_of_timesteps_per_device_spike_copy_check, device_spike_store_size_multiple_of_total_neurons, proportion_of_device_spike_store_full_before_copy);
+
 
 	// TRAINING
 	float total_time_per_epoch = 1.0f;
