@@ -22,7 +22,7 @@ inline void begin_simulation_message(float timestep, int number_of_stimuli, int 
 		
 		if (save_spikes) printf("Spikes shall be saved.\n");
 		
-		printf("----------------------------------\n\nBeginning ...\n\n");
+		printf("----------------------------------\n\nBeginning Simulation...\n");
 
 	#endif
 }

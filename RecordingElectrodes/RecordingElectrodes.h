@@ -51,7 +51,7 @@ public:
 
 	void collect_spikes_for_timestep(float current_time_in_seconds);
 	void copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(float current_time_in_seconds, int timestep_index, int number_of_timesteps_per_epoch);
-	void write_spikes_to_file(Neurons *neurons, int epoch_number);
+	void write_spikes_to_file(int epoch_number);
 
 	void write_initial_synaptic_weights_to_file(SpikingSynapses *synapses);
 	void save_network_state(SpikingSynapses *synapses);

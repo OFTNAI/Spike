@@ -265,7 +265,7 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_m
 				
 				current_time_in_seconds = float(timestep_index)*float(timestep);
 
-				if (timestep_index % 10000 == 0) printf("current_time_in_seconds: %f\n", current_time_in_seconds);
+				if (timestep_index % 10000 == 0) printf("Seconds: %.0f\n", current_time_in_seconds);
 				
 				neurons->reset_current_injections();
 
@@ -280,9 +280,14 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_m
 
 				// // Only save the spikes if necessary
 				if (save_spikes){
-					recording_electrodes->collect_spikes_for_timestep(current_time_in_seconds);
-					recording_electrodes->copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(current_time_in_seconds, timestep_index, number_of_timesteps_per_epoch);
-					// input_recording_electrodes->save_spikes_to_host(current_time_in_seconds, timestep_index, number_of_timesteps_per_epoch);
+					if (recording_electrodes) {
+						recording_electrodes->collect_spikes_for_timestep(current_time_in_seconds);
+						recording_electrodes->copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(current_time_in_seconds, timestep_index, number_of_timesteps_per_epoch);
+					}
+					if (input_recording_electrodes) {
+						input_recording_electrodes->collect_spikes_for_timestep(current_time_in_seconds);
+						input_recording_electrodes->copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(current_time_in_seconds, timestep_index, number_of_timesteps_per_epoch);
+					}
 				}
 
 
@@ -290,19 +295,19 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_m
 		}
 		#ifndef QUIETSTART
 		clock_t simulation_mid = clock();
-		if (save_spikes) {
-			printf("Epoch %d, Complete.\n Running Time: %f\n Number of Spikes: %d\n\n", epoch_number, (float(simulation_mid-simulation_begin) / CLOCKS_PER_SEC), recording_electrodes->h_total_number_of_spikes_stored_on_host);
-			// printf("Number of Input Spikes: %d\n\n", input_recording_electrodes->h_total_number_of_spikes_stored_on_host);
+		printf("Epoch %d, Complete.\n Running Time: %f\n", epoch_number, (float(simulation_mid-simulation_begin) / CLOCKS_PER_SEC));
 		
-		} else {
-			printf("Epoch %d, Complete.\n Running Time: %f\n\n", epoch_number, (float(simulation_mid-simulation_begin) / CLOCKS_PER_SEC));
+		if (save_spikes) {
+			if (recording_electrodes) printf(" Number of Spikes: %d\n", recording_electrodes->h_total_number_of_spikes_stored_on_host);
+			if (input_recording_electrodes) printf(" Number of Input Spikes: %d\n", input_recording_electrodes->h_total_number_of_spikes_stored_on_host);
 		}
+
 		#endif
 		// Output Spikes list after each epoch:
 		// Only save the spikes if necessary
 		if (save_spikes){
-			recording_electrodes->write_spikes_to_file(neurons, epoch_number);
-			// input_recording_electrodes->write_spikes_to_file(input_neurons, epoch_number);
+			if (recording_electrodes) recording_electrodes->write_spikes_to_file(epoch_number);
+			if (input_recording_electrodes) input_recording_electrodes->write_spikes_to_file(epoch_number);
 		}
 	}
 	
@@ -311,7 +316,8 @@ void Simulator::Run(float total_time_per_epoch, int number_of_epochs, int temp_m
 	// Finish the simulation and check time
 	clock_t simulation_end = clock();
 	float simulation_timed = float(simulation_end-simulation_begin) / CLOCKS_PER_SEC;
-	printf("Simulation Complete! Time Elapsed: %f\n\n", simulation_timed);
+	print_line_of_dashes_with_blank_lines_either_side();
+	printf("Simulation Complete! Time Elapsed: %f\n", simulation_timed);
 	#endif
 
 	recording_electrodes->save_network_state(synapses);

@@ -13,6 +13,7 @@
 #include "../Helpers/CUDAErrorCheckHelpers.h"
 #include "../Helpers/TerminalHelpers.h"
 #include <string>
+#include <time.h>
 using namespace std;
 
 const string RESULTS_DIRECTORY ("Results/");
@@ -158,7 +159,10 @@ void RecordingElectrodes::add_spikes_to_per_neuron_spike_count(float current_tim
 
 
 
-void RecordingElectrodes::write_spikes_to_file(Neurons *neurons, int epoch_number) {
+void RecordingElectrodes::write_spikes_to_file(int epoch_number) {
+
+	clock_t write_spikes_to_file_start = clock();
+
 	// Get the names
 	string file = RESULTS_DIRECTORY + prefix_string + "_Epoch" + to_string(epoch_number) + "_";
 
@@ -195,6 +199,10 @@ void RecordingElectrodes::write_spikes_to_file(Neurons *neurons, int epoch_numbe
 	free(h_time_in_seconds_of_stored_spikes_on_host);
 	h_neuron_ids_of_stored_spikes_on_host = NULL;
 	h_time_in_seconds_of_stored_spikes_on_host = NULL;
+
+	clock_t write_spikes_to_file_end = clock();
+	float write_spikes_to_file_total_time = float(write_spikes_to_file_end - write_spikes_to_file_start) / CLOCKS_PER_SEC;
+	printf("Spikes written to file.\n Time taken: %f\n", write_spikes_to_file_total_time);
 }
 
 
@@ -255,9 +263,7 @@ void RecordingElectrodes::write_initial_synaptic_weights_to_file(SpikingSynapses
 
 void RecordingElectrodes::save_network_state(SpikingSynapses *synapses) {
 
-	#ifndef QUIETSTART
-	printf("Outputting binary files.\n");
-	#endif
+	clock_t save_network_state_start = clock();
 
 	// Copy back the data that we might want:
 	CudaSafeCall(cudaMemcpy(synapses->synaptic_efficacies_or_weights, synapses->d_synaptic_efficacies_or_weights, sizeof(float)*synapses->total_number_of_synapses, cudaMemcpyDeviceToHost));
@@ -279,6 +285,14 @@ void RecordingElectrodes::save_network_state(SpikingSynapses *synapses) {
 	delayfile.close();
 	synapsepre.close();
 	synapsepost.close();
+
+	#ifndef QUIETSTART
+	clock_t save_network_state_end = clock();
+	float save_network_state_total_time = float(save_network_state_end - save_network_state_start) / CLOCKS_PER_SEC;
+	printf("Network state saved to file.\n Time taken: %f\n", save_network_state_total_time);
+	print_line_of_dashes_with_blank_lines_either_side();
+	#endif
+
 }
 
 

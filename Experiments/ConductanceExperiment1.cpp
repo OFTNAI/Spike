@@ -197,6 +197,8 @@ int main (int argc, char *argv[]){
 	clock_t end_entire_experiment = clock();
 	float timed_entire_experiment = float(end_entire_experiment - begin_entire_experiment) / CLOCKS_PER_SEC;
 	printf("Entire Experiment Time: %f\n", timed_entire_experiment);
+	print_line_of_dashes_with_blank_lines_either_side();
+
 
 
 	return 1;
