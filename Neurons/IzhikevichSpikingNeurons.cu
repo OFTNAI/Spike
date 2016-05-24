@@ -126,7 +126,7 @@ __global__ void izhikevich_update_membrane_potentials_kernel(float *d_membrane_p
 								float *d_param_b,
 								float* d_current_injections,
 								float timestep,
-								size_t total_number_of_neurons){
+								size_t total_number_of_neurons) {
 
 	// We require the equation timestep in ms:
 	float eqtimestep = timestep*1000.0f;

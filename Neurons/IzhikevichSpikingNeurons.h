@@ -47,7 +47,7 @@ __global__ void reset_states_u_after_spikes_kernel(float *d_states_u,
 								float current_time_in_seconds,
 								size_t total_number_of_neurons);
 
-__global__ void izhikevich_update_membrane_potentials_kernal(float *d_membrane_potentials_v,
+__global__ void izhikevich_update_membrane_potentials_kernel(float *d_membrane_potentials_v,
 								float *d_states_u,
 								float *d_param_a,
 								float *d_param_b,

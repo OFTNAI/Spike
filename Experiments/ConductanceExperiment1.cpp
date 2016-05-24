@@ -9,7 +9,7 @@
 #include "../Simulator/Simulator.h"
 #include "../Synapses/ConductanceSpikingSynapses.h"
 #include "../Neurons/Neurons.h"
-#include "../Neurons/ConductanceSpikingNeurons.h"
+#include "../Neurons/LIFSpikingNeurons.h"
 #include "../Neurons/ImagePoissonSpikingNeurons.h"
 #include "../Helpers/TerminalHelpers.h"
 #include <time.h>
@@ -24,7 +24,7 @@ int main (int argc, char *argv[]){
 	Simulator simulator;
 	float time_step = 0.0001;
 	simulator.SetTimestep(time_step);
-	simulator.SetNeuronType(new ConductanceSpikingNeurons());
+	simulator.SetNeuronType(new LIFSpikingNeurons());
 	// simulator.SetInputNeuronType(new PoissonSpikingNeurons());
 	simulator.SetInputNeuronType(new ImagePoissonSpikingNeurons());
 	simulator.SetSynapseType(new ConductanceSpikingSynapses());
@@ -55,19 +55,19 @@ int main (int argc, char *argv[]){
 	clock_t adding_neurons_start = clock();
 
 	//
-	conductance_spiking_neuron_parameters_struct * EXCITATORY_CONDUCTANCE_SPIKING_NUERON_GROUP_PARAMS = new conductance_spiking_neuron_parameters_struct();
-	EXCITATORY_CONDUCTANCE_SPIKING_NUERON_GROUP_PARAMS->resting_potential_v0 = -0.074f;
-	EXCITATORY_CONDUCTANCE_SPIKING_NUERON_GROUP_PARAMS->threshold_for_action_potential_spike = -0.053f;
-	EXCITATORY_CONDUCTANCE_SPIKING_NUERON_GROUP_PARAMS->somatic_capcitance_Cm = 500.0*pow(10, -12);
-	EXCITATORY_CONDUCTANCE_SPIKING_NUERON_GROUP_PARAMS->somatic_leakage_conductance_g0 = 25.0*pow(10, -9);
-	EXCITATORY_CONDUCTANCE_SPIKING_NUERON_GROUP_PARAMS->reversal_potential_Vhat = 0.0;
+	lif_spiking_neuron_parameters_struct * EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS = new lif_spiking_neuron_parameters_struct();
+	EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS->resting_potential_v0 = -0.074f;
+	EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS->threshold_for_action_potential_spike = -0.053f;
+	EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS->somatic_capcitance_Cm = 500.0*pow(10, -12);
+	EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS->somatic_leakage_conductance_g0 = 25.0*pow(10, -9);
+	EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS->reversal_potential_Vhat = 0.0;
 
-	conductance_spiking_neuron_parameters_struct * INHIBITORY_CONDUCTANCE_SPIKING_NUERON_GROUP_PARAMS = new conductance_spiking_neuron_parameters_struct();
-	INHIBITORY_CONDUCTANCE_SPIKING_NUERON_GROUP_PARAMS->resting_potential_v0 = -0.082f;
-	INHIBITORY_CONDUCTANCE_SPIKING_NUERON_GROUP_PARAMS->threshold_for_action_potential_spike = -0.053f;
-	INHIBITORY_CONDUCTANCE_SPIKING_NUERON_GROUP_PARAMS->somatic_capcitance_Cm = 214.0*pow(10, -12);
-	INHIBITORY_CONDUCTANCE_SPIKING_NUERON_GROUP_PARAMS->somatic_leakage_conductance_g0 = 18.0*pow(10, -9);
-	INHIBITORY_CONDUCTANCE_SPIKING_NUERON_GROUP_PARAMS->reversal_potential_Vhat = -70.0*pow(10, -3);
+	lif_spiking_neuron_parameters_struct * INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS = new lif_spiking_neuron_parameters_struct();
+	INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS->resting_potential_v0 = -0.082f;
+	INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS->threshold_for_action_potential_spike = -0.053f;
+	INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS->somatic_capcitance_Cm = 214.0*pow(10, -12);
+	INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS->somatic_leakage_conductance_g0 = 18.0*pow(10, -9);
+	INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS->reversal_potential_Vhat = -70.0*pow(10, -3);
 
 	//
 	int EXCITATORY_LAYER_SHAPE[] = {32, 32};
@@ -75,14 +75,14 @@ int main (int argc, char *argv[]){
 
 	// int temp_poisson_input_layer = simulator.AddInputNeuronGroup(poisson_spiking_group_params, EXCITATORY_LAYER_SHAPE);
 
-	int EXCITATORY_NEURONS_LAYER_1 = simulator.AddNeuronGroup(EXCITATORY_CONDUCTANCE_SPIKING_NUERON_GROUP_PARAMS, EXCITATORY_LAYER_SHAPE);
-	// int EXCITATORY_NEURONS_LAYER_2 = simulator.AddNeuronGroup(EXCITATORY_CONDUCTANCE_SPIKING_NUERON_GROUP_PARAMS, EXCITATORY_LAYER_SHAPE);
-	// int EXCITATORY_NEURONS_LAYER_3 = simulator.AddNeuronGroup(EXCITATORY_CONDUCTANCE_SPIKING_NUERON_GROUP_PARAMS, EXCITATORY_LAYER_SHAPE);
-	// int EXCITATORY_NEURONS_LAYER_4 = simulator.AddNeuronGroup(EXCITATORY_CONDUCTANCE_SPIKING_NUERON_GROUP_PARAMS, EXCITATORY_LAYER_SHAPE);
-	int INHIBITORY_NEURONS_LAYER_1 = simulator.AddNeuronGroup(INHIBITORY_CONDUCTANCE_SPIKING_NUERON_GROUP_PARAMS, INHIBITORY_LAYER_SHAPE);
-	// int INHIBITORY_NEURONS_LAYER_2 = simulator.AddNeuronGroup(INHIBITORY_CONDUCTANCE_SPIKING_NUERON_GROUP_PARAMS, INHIBITORY_LAYER_SHAPE);
-	// int INHIBITORY_NEURONS_LAYER_3 = simulator.AddNeuronGroup(INHIBITORY_CONDUCTANCE_SPIKING_NUERON_GROUP_PARAMS, INHIBITORY_LAYER_SHAPE);
-	// int INHIBITORY_NEURONS_LAYER_4 = simulator.AddNeuronGroup(INHIBITORY_CONDUCTANCE_SPIKING_NUERON_GROUP_PARAMS, INHIBITORY_LAYER_SHAPE);
+	int EXCITATORY_NEURONS_LAYER_1 = simulator.AddNeuronGroup(EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS, EXCITATORY_LAYER_SHAPE);
+	// int EXCITATORY_NEURONS_LAYER_2 = simulator.AddNeuronGroup(EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS, EXCITATORY_LAYER_SHAPE);
+	// int EXCITATORY_NEURONS_LAYER_3 = simulator.AddNeuronGroup(EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS, EXCITATORY_LAYER_SHAPE);
+	// int EXCITATORY_NEURONS_LAYER_4 = simulator.AddNeuronGroup(EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS, EXCITATORY_LAYER_SHAPE);
+	int INHIBITORY_NEURONS_LAYER_1 = simulator.AddNeuronGroup(INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS, INHIBITORY_LAYER_SHAPE);
+	// int INHIBITORY_NEURONS_LAYER_2 = simulator.AddNeuronGroup(INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS, INHIBITORY_LAYER_SHAPE);
+	// int INHIBITORY_NEURONS_LAYER_3 = simulator.AddNeuronGroup(INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS, INHIBITORY_LAYER_SHAPE);
+	// int INHIBITORY_NEURONS_LAYER_4 = simulator.AddNeuronGroup(INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS, INHIBITORY_LAYER_SHAPE);
 
 	clock_t adding_neurons_end = clock();
 	float adding_neurons_total_time = float(adding_neurons_end - adding_neurons_start) / CLOCKS_PER_SEC;

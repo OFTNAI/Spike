@@ -166,7 +166,7 @@ void Simulator::setup_network(bool temp_model_type) {
 	neurons->set_threads_per_block_and_blocks_per_grid(threads_per_block_neurons);
 	input_neurons->set_threads_per_block_and_blocks_per_grid(threads_per_block_neurons);
 
-	// Provides order of magnitude speedup for Conductance (All to all atleast). 
+	// Provides order of magnitude speedup for LIF (All to all atleast). 
 	// Because all synapses contribute to current_injection on every iteration, having all threads in a block accessing only 1 or 2 positions in memory causes massive slowdown.
 	// Randomising order of synapses means that each block is accessing a larger number of points in memory.
 	// if (temp_model_type == 1) synapses->shuffle_synapses();
@@ -263,9 +263,9 @@ void Simulator::Run(float presentation_time_per_stimulus_per_epoch, int number_o
 				
 				neurons->reset_current_injections();
 
-				// Temporary seperation of izhikevich and Conductance per timestep instructions. Eventually hope to share as much execuation as possible between both models for generality
+				// Temporary seperation of izhikevich and lif per timestep instructions. Eventually hope to share as much execuation as possible between both models for generality
 				if (temp_model_type == 0) temp_izhikevich_per_timestep_instructions(current_time_in_seconds);
-				if (temp_model_type == 1) temp_conductance_per_timestep_instructions(current_time_in_seconds, apply_stdp_to_relevant_synapses);
+				if (temp_model_type == 1) temp_lif_per_timestep_instructions(current_time_in_seconds, apply_stdp_to_relevant_synapses);
 
 				if (count_spikes_per_neuron) recording_electrodes->add_spikes_to_per_neuron_spike_count(current_time_in_seconds);
 
@@ -320,7 +320,7 @@ void Simulator::Run(float presentation_time_per_stimulus_per_epoch, int number_o
 }
 
 
-// Temporary seperation of izhikevich and Conductance per timestep instructions. Eventually hope to share as much execuation as possible between both models for generality
+// Temporary seperation of izhikevich and lif per timestep instructions. Eventually hope to share as much execuation as possible between both models for generality
 void Simulator::temp_izhikevich_per_timestep_instructions(float current_time_in_seconds) {
 
 
@@ -348,7 +348,7 @@ void Simulator::temp_izhikevich_per_timestep_instructions(float current_time_in_
 
 }
 
-void Simulator::temp_conductance_per_timestep_instructions(float current_time_in_seconds, bool apply_stdp_to_relevant_synapses) {
+void Simulator::temp_lif_per_timestep_instructions(float current_time_in_seconds, bool apply_stdp_to_relevant_synapses) {
 
 
 	// Check for NEURON_SPIKES(t+delta_t) from V(t+delta_t) and if so reset V(t+delta_t)

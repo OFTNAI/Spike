@@ -1,11 +1,11 @@
-#include "ConductanceSpikingNeurons.h"
+#include "LIFSpikingNeurons.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include "../Helpers/CUDAErrorCheckHelpers.h"
 
 
-// ConductanceSpikingNeurons Constructor
-ConductanceSpikingNeurons::ConductanceSpikingNeurons() {
+// LIFSpikingNeurons Constructor
+LIFSpikingNeurons::LIFSpikingNeurons() {
 	
 	membrane_time_constants_tau_m = NULL;
 	membrane_resistances_R = NULL;
@@ -17,22 +17,22 @@ ConductanceSpikingNeurons::ConductanceSpikingNeurons() {
 }
 
 
-// ConductanceSpikingNeurons Destructor
-ConductanceSpikingNeurons::~ConductanceSpikingNeurons() {
+// LIFSpikingNeurons Destructor
+LIFSpikingNeurons::~LIFSpikingNeurons() {
 	
 }
 
 
-int ConductanceSpikingNeurons::AddGroup(neuron_parameters_struct * group_params, int group_shape[2]){
+int LIFSpikingNeurons::AddGroup(neuron_parameters_struct * group_params, int group_shape[2]){
 
 	int new_group_id = SpikingNeurons::AddGroup(group_params, group_shape);
 
-	conductance_spiking_neuron_parameters_struct * conductance_spiking_group_params = (conductance_spiking_neuron_parameters_struct*)group_params;
+	lif_spiking_neuron_parameters_struct * lif_spiking_group_params = (lif_spiking_neuron_parameters_struct*)group_params;
 
 	membrane_time_constants_tau_m = (float*)realloc(membrane_time_constants_tau_m, total_number_of_neurons*sizeof(float));
 	membrane_resistances_R = (float*)realloc(membrane_resistances_R, total_number_of_neurons*sizeof(float));
-	float membrane_time_constant_tau_m = conductance_spiking_group_params->somatic_capcitance_Cm / conductance_spiking_group_params->somatic_leakage_conductance_g0;
-	float membrane_resistance_R = 1 / conductance_spiking_group_params->somatic_leakage_conductance_g0;
+	float membrane_time_constant_tau_m = lif_spiking_group_params->somatic_capcitance_Cm / lif_spiking_group_params->somatic_leakage_conductance_g0;
+	float membrane_resistance_R = 1 / lif_spiking_group_params->somatic_leakage_conductance_g0;
 	
 	for (int i = total_number_of_neurons - number_of_neurons_in_new_group; i < total_number_of_neurons; i++) {
 		membrane_time_constants_tau_m[i] = membrane_time_constant_tau_m;
@@ -43,7 +43,7 @@ int ConductanceSpikingNeurons::AddGroup(neuron_parameters_struct * group_params,
 }
 
 
-void ConductanceSpikingNeurons::allocate_device_pointers() {
+void LIFSpikingNeurons::allocate_device_pointers() {
  	
  	SpikingNeurons::allocate_device_pointers();
 
@@ -51,7 +51,7 @@ void ConductanceSpikingNeurons::allocate_device_pointers() {
  	CudaSafeCall(cudaMalloc((void **)&d_membrane_resistances_R, sizeof(float)*total_number_of_neurons));
 }
 
-void ConductanceSpikingNeurons::reset_neurons() {
+void LIFSpikingNeurons::reset_neurons() {
 
 	SpikingNeurons::reset_neurons();	
 
@@ -62,9 +62,9 @@ void ConductanceSpikingNeurons::reset_neurons() {
 
 
 
-void ConductanceSpikingNeurons::update_membrane_potentials(float timestep) {
+void LIFSpikingNeurons::update_membrane_potentials(float timestep) {
 
-	conductance_update_membrane_potentials<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_membrane_potentials_v,
+	lif_update_membrane_potentials<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_membrane_potentials_v,
 																	d_membrane_resistances_R,
 																	d_membrane_time_constants_tau_m,
 																	d_resting_potentials,
@@ -75,9 +75,9 @@ void ConductanceSpikingNeurons::update_membrane_potentials(float timestep) {
 	CudaCheckError();
 }
 
-void ConductanceSpikingNeurons::update_postsynaptic_activities(float timestep, float current_time_in_seconds) {
+void LIFSpikingNeurons::update_postsynaptic_activities(float timestep, float current_time_in_seconds) {
 
-	conductance_update_postsynaptic_activities_kernal<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(timestep,
+	lif_update_postsynaptic_activities_kernal<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(timestep,
 								total_number_of_neurons,
 								d_recent_postsynaptic_activities_D,
 								d_last_spike_time_of_each_neuron,
@@ -89,7 +89,7 @@ void ConductanceSpikingNeurons::update_postsynaptic_activities(float timestep, f
 
 
 // State Update
-__global__ void conductance_update_membrane_potentials(float *d_membrane_potentials_v,
+__global__ void lif_update_membrane_potentials(float *d_membrane_potentials_v,
 								float * d_membrane_resistances_R,
 								float * d_membrane_time_constants_tau_m,
 								float * d_resting_potentials,
@@ -121,7 +121,7 @@ __global__ void conductance_update_membrane_potentials(float *d_membrane_potenti
 	__syncthreads();
 }
 
-__global__ void conductance_update_postsynaptic_activities_kernal(float timestep,
+__global__ void lif_update_postsynaptic_activities_kernal(float timestep,
 								size_t total_number_of_neurons,
 								float * d_recent_postsynaptic_activities_D,
 								float * d_last_spike_time_of_each_neuron,
