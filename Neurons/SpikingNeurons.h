@@ -37,8 +37,6 @@ public:
 	//LIF extra
 	float * recent_postsynaptic_activities_D;
 	float * d_recent_postsynaptic_activities_D;
-	float * reversal_potentials_Vhat;
-	float * d_reversal_potentials_Vhat;
 
 
 	// Functions

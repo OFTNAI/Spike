@@ -27,6 +27,9 @@ public:
 	float * d_membrane_time_constants_tau_m;
 	float * d_membrane_resistances_R;
 
+	float * reversal_potentials_Vhat;
+	float * d_reversal_potentials_Vhat;
+
 
 	virtual int AddGroup(neuron_parameters_struct * group_params, int shape[2]);
 	virtual void allocate_device_pointers();

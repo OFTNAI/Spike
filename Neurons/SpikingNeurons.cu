@@ -17,8 +17,6 @@ SpikingNeurons::SpikingNeurons() {
 	recent_postsynaptic_activities_D = NULL;
 	d_recent_postsynaptic_activities_D = NULL;
 
-	reversal_potentials_Vhat = NULL;
-	d_reversal_potentials_Vhat = NULL;
 }
 
 
@@ -38,7 +36,6 @@ int SpikingNeurons::AddGroup(neuron_parameters_struct * group_params, int group_
 	after_spike_reset_membrane_potentials_c = (float*)realloc(after_spike_reset_membrane_potentials_c, (total_number_of_neurons*sizeof(float)));
 	thresholds_for_action_potential_spikes = (float*)realloc(thresholds_for_action_potential_spikes, (total_number_of_neurons*sizeof(float)));
 	recent_postsynaptic_activities_D = (float*)realloc(recent_postsynaptic_activities_D, (total_number_of_neurons*sizeof(float)));
-	reversal_potentials_Vhat = (float*)realloc(reversal_potentials_Vhat, total_number_of_neurons*sizeof(float));
 
 	for (int i = total_number_of_neurons - number_of_neurons_in_new_group; i < total_number_of_neurons; i++) {
 		after_spike_reset_membrane_potentials_c[i] = spiking_group_params->resting_potential_v0;
@@ -46,7 +43,6 @@ int SpikingNeurons::AddGroup(neuron_parameters_struct * group_params, int group_
 
 		//LIF extra
 		recent_postsynaptic_activities_D[i] = 0.0f;
-		reversal_potentials_Vhat[i] = spiking_group_params->reversal_potential_Vhat; //Currently needs to be at SpikingNeuron level so that poisson spiking neurons can have reversal potential
 	}
 
 	return new_group_id;
@@ -65,8 +61,6 @@ void SpikingNeurons::allocate_device_pointers() {
 
  	//LIF extra
  	CudaSafeCall(cudaMalloc((void **)&d_recent_postsynaptic_activities_D, sizeof(float)*total_number_of_neurons));
- 	CudaSafeCall(cudaMalloc((void **)&d_reversal_potentials_Vhat, sizeof(float)*total_number_of_neurons));
-
 }
 
 void SpikingNeurons::reset_neurons() {
@@ -81,8 +75,6 @@ void SpikingNeurons::reset_neurons() {
 
 	//LIF extra
 	CudaSafeCall(cudaMemcpy(d_recent_postsynaptic_activities_D, recent_postsynaptic_activities_D, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemcpy(d_reversal_potentials_Vhat, reversal_potentials_Vhat, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
-
 }
 
 

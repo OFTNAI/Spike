@@ -8,11 +8,12 @@
 LIFSpikingNeurons::LIFSpikingNeurons() {
 	
 	membrane_time_constants_tau_m = NULL;
+	reversal_potentials_Vhat = NULL;
 	membrane_resistances_R = NULL;
 
 	d_membrane_time_constants_tau_m = NULL;
+	d_reversal_potentials_Vhat = NULL;
 	d_membrane_resistances_R = NULL;
-	
 
 }
 
@@ -31,12 +32,16 @@ int LIFSpikingNeurons::AddGroup(neuron_parameters_struct * group_params, int gro
 
 	membrane_time_constants_tau_m = (float*)realloc(membrane_time_constants_tau_m, total_number_of_neurons*sizeof(float));
 	membrane_resistances_R = (float*)realloc(membrane_resistances_R, total_number_of_neurons*sizeof(float));
+	reversal_potentials_Vhat = (float*)realloc(reversal_potentials_Vhat, total_number_of_neurons*sizeof(float));
+
 	float membrane_time_constant_tau_m = lif_spiking_group_params->somatic_capcitance_Cm / lif_spiking_group_params->somatic_leakage_conductance_g0;
 	float membrane_resistance_R = 1 / lif_spiking_group_params->somatic_leakage_conductance_g0;
 	
 	for (int i = total_number_of_neurons - number_of_neurons_in_new_group; i < total_number_of_neurons; i++) {
 		membrane_time_constants_tau_m[i] = membrane_time_constant_tau_m;
 		membrane_resistances_R[i] = membrane_resistance_R;
+		reversal_potentials_Vhat[i] = spiking_group_params->reversal_potential_Vhat; //Currently needs to be at SpikingNeuron level so that poisson spiking neurons can have reversal potential
+
 	}
 
 	return new_group_id;
@@ -49,6 +54,8 @@ void LIFSpikingNeurons::allocate_device_pointers() {
 
  	CudaSafeCall(cudaMalloc((void **)&d_membrane_time_constants_tau_m, sizeof(float)*total_number_of_neurons));
  	CudaSafeCall(cudaMalloc((void **)&d_membrane_resistances_R, sizeof(float)*total_number_of_neurons));
+ 	CudaSafeCall(cudaMalloc((void **)&d_reversal_potentials_Vhat, sizeof(float)*total_number_of_neurons));
+
 }
 
 void LIFSpikingNeurons::reset_neurons() {
@@ -56,7 +63,10 @@ void LIFSpikingNeurons::reset_neurons() {
 	SpikingNeurons::reset_neurons();	
 
 	CudaSafeCall(cudaMemcpy(d_membrane_time_constants_tau_m, membrane_time_constants_tau_m, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemcpy(d_membrane_resistances_R, membrane_resistances_R, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));}
+	CudaSafeCall(cudaMemcpy(d_membrane_resistances_R, membrane_resistances_R, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
+	CudaSafeCall(cudaMemcpy(d_reversal_potentials_Vhat, reversal_potentials_Vhat, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
+}
+
 
 
 
