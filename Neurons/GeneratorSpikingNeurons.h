@@ -29,8 +29,7 @@ public:
 
 	virtual void set_threads_per_block_and_blocks_per_grid(int threads);
 
-	void generupdate2_wrapper(float currtime,
-							float timestep);
+	// void generupdate2_wrapper(float currtime, float timestep);
 
 };
 

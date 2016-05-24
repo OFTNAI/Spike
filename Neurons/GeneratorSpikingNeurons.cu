@@ -61,49 +61,49 @@ void GeneratorSpikingNeurons::set_threads_per_block_and_blocks_per_grid(int thre
 
 
 
-__global__ void genupdate2(float *d_membrane_potentials_v,
-							float *d_states_u,
-							int* genids,
-							float* gentimes,
-							float currtime,
-							float timestep,
-							size_t numEntries);
+// __global__ void genupdate2(float *d_membrane_potentials_v,
+// 							float *d_states_u,
+// 							int* genids,
+// 							float* gentimes,
+// 							float currtime,
+// 							float timestep,
+// 							size_t numEntries);
 
 
-void GeneratorSpikingNeurons::generupdate2_wrapper(float currtime,
-							float timestep) {
+// void GeneratorSpikingNeurons::generupdate2_wrapper(float currtime,
+// 							float timestep) {
 
-	genupdate2<<<genblocksPerGrid, threads_per_block>>> (d_membrane_potentials_v,
-														d_states_u,
-														d_genids,
-														d_gentimes,
-														currtime,
-														timestep,
-														numEnts);
+// 	genupdate2<<<genblocksPerGrid, threads_per_block>>> (d_membrane_potentials_v,
+// 														d_states_u,
+// 														d_genids,
+// 														d_gentimes,
+// 														currtime,
+// 														timestep,
+// 														numEnts);
 
-	CudaCheckError();
-}
+// 	CudaCheckError();
+// }
 
 
-// Spike Generator Updating Kernel
-__global__ void genupdate2(float *d_membrane_potentials_v,
-							float *d_states_u,
-							int* genids,
-							float* gentimes,
-							float currtime,
-							float timestep,
-							size_t numEntries){
-	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	if (idx < numEntries){
-		// Check if the current time is one of the gen times
-		if (fabs(currtime - gentimes[idx]) > 0.5*timestep) {
-			// This sync seems absolutely necessary for when I spike inputs ... weird.
-			d_states_u[idx] = 0.0f;
-			d_membrane_potentials_v[idx] = -70.0f;
-		} else {
-			__syncthreads();
-			d_states_u[idx] = 0.0f;
-			d_membrane_potentials_v[idx] = 35.0f;
-		}
-	}
-}
+// // Spike Generator Updating Kernel
+// __global__ void genupdate2(float *d_membrane_potentials_v,
+// 							float *d_states_u,
+// 							int* genids,
+// 							float* gentimes,
+// 							float currtime,
+// 							float timestep,
+// 							size_t numEntries){
+// 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
+// 	if (idx < numEntries){
+// 		// Check if the current time is one of the gen times
+// 		if (fabs(currtime - gentimes[idx]) > 0.5*timestep) {
+// 			// This sync seems absolutely necessary for when I spike inputs ... weird.
+// 			d_states_u[idx] = 0.0f;
+// 			d_membrane_potentials_v[idx] = -70.0f;
+// 		} else {
+// 			__syncthreads();
+// 			d_states_u[idx] = 0.0f;
+// 			d_membrane_potentials_v[idx] = 35.0f;
+// 		}
+// 	}
+// }

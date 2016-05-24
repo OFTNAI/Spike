@@ -8,11 +8,10 @@
 
 
 struct spiking_neuron_parameters_struct : neuron_parameters_struct {
-	spiking_neuron_parameters_struct(): resting_potential_v0(-0.074f), threshold_for_action_potential_spike(0.03f), paramd(6.0f), reversal_potential_Vhat(0.0f) { neuron_parameters_struct(); }
+	spiking_neuron_parameters_struct(): resting_potential_v0(-0.074f), threshold_for_action_potential_spike(0.03f), reversal_potential_Vhat(0.0f) { neuron_parameters_struct(); }
 
 	float resting_potential_v0;
 	float threshold_for_action_potential_spike;
-	float paramd;
 	float reversal_potential_Vhat;
 };
 
@@ -35,11 +34,6 @@ public:
 	float * d_thresholds_for_action_potential_spikes;
 	float * d_resting_potentials;
 
-	//Izhikevich extra
-	float * d_states_u;
-	float * param_d;
-	float * d_param_d;
-
 	//LIF extra
 	float * recent_postsynaptic_activities_D;
 	float * d_recent_postsynaptic_activities_D;
@@ -53,11 +47,18 @@ public:
 	virtual void reset_neurons();
 
 	virtual void update_membrane_potentials(float timestep);
-	virtual void check_for_neuron_spikes(float currtime);
+	virtual void check_for_neuron_spikes(float current_time_in_seconds);
 	virtual void update_postsynaptic_activities(float timestep, float current_time_in_seconds);
 
 };
 
+
+__global__ void check_for_neuron_spikes_kernal(float *d_membrane_potentials_v,
+								float *d_thresholds_for_action_potential_spikes,
+								float *d_resting_potentials,
+								float* d_last_spike_time_of_each_neuron,
+								float current_time_in_seconds,
+								size_t total_number_of_neurons);
 
 
 #endif

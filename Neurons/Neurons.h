@@ -40,14 +40,14 @@ public:
 	dim3 number_of_neuron_blocks_per_grid;
 	dim3 threads_per_block;
 
-	void set_threads_per_block_and_blocks_per_grid(int threads);
+	
 
 	virtual int AddGroup(neuron_parameters_struct * group_params, int group_shape[2]);
-	
 	virtual void allocate_device_pointers();
-	
 	virtual void reset_neurons();
+	
 	void reset_current_injections();
+	void set_threads_per_block_and_blocks_per_grid(int threads);
 };
 
 #endif
