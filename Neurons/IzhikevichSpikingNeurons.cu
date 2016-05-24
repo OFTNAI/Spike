@@ -72,6 +72,9 @@ void IzhikevichSpikingNeurons::reset_neurons() {
 
 }
 
+
+// GPU Kernel Class Wrappers
+
 void IzhikevichSpikingNeurons::check_for_neuron_spikes(float current_time_in_seconds) {
 	SpikingNeurons::check_for_neuron_spikes(current_time_in_seconds);
 
@@ -82,6 +85,21 @@ void IzhikevichSpikingNeurons::check_for_neuron_spikes(float current_time_in_sec
 								total_number_of_neurons);
 }
 
+void IzhikevichSpikingNeurons::update_membrane_potentials(float timestep) {
+
+	izhikevich_update_membrane_potentials_kernel<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_membrane_potentials_v,
+																	d_states_u,
+																	d_param_a,
+																	d_param_b,
+																	d_current_injections,
+																	timestep,
+																	total_number_of_neurons);
+
+	CudaCheckError();
+}
+
+
+// GPU Kernels
 
 __global__ void reset_states_u_after_spikes_kernel(float *d_states_u,
 								float * d_param_d,
@@ -102,25 +120,7 @@ __global__ void reset_states_u_after_spikes_kernel(float *d_states_u,
 }
 
 
-
-
-
-void IzhikevichSpikingNeurons::update_membrane_potentials(float timestep) {
-
-	izhikevich_update_membrane_potentials<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_membrane_potentials_v,
-																	d_states_u,
-																	d_param_a,
-																	d_param_b,
-																	d_current_injections,
-																	timestep,
-																	total_number_of_neurons);
-
-	CudaCheckError();
-}
-
-
-// State Update
-__global__ void izhikevich_update_membrane_potentials(float *d_membrane_potentials_v,
+__global__ void izhikevich_update_membrane_potentials_kernel(float *d_membrane_potentials_v,
 								float *d_states_u,
 								float *d_param_a,
 								float *d_param_b,
