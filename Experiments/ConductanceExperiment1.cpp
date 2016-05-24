@@ -181,7 +181,7 @@ int main (int argc, char *argv[]){
 
 	// TRAINING
 	float presentation_time_per_stimulus_per_epoch = 0.5f;
-	int number_of_epochs = 5;
+	int number_of_epochs = 1;
 	bool save_spikes = true;
 	bool apply_stdp_to_relevant_synapses = true;
 	bool count_spikes_per_neuron = false;

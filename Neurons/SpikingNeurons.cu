@@ -102,14 +102,6 @@ void SpikingNeurons::reset_neurons() {
 }
 
 
-void SpikingNeurons::set_threads_per_block_and_blocks_per_grid(int threads) {
-	
-	Neurons::set_threads_per_block_and_blocks_per_grid(threads);
-
-}
-
-
-
 void SpikingNeurons::update_membrane_potentials(float timestep) {
 	
 }
