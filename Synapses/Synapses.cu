@@ -243,29 +243,22 @@ void Synapses::AddGroup(int presynaptic_group_id,
 		{
 
 			float standard_deviation_sigma = synapse_params->gaussian_synapses_standard_deviation;
-
 			int number_of_new_synapses_per_postsynaptic_neuron = synapse_params->gaussian_synapses_per_postsynaptic_neuron;
 			
 			int number_of_postsynaptic_neurons_in_group = postend - poststart;
-
 			int total_number_of_new_synapses = number_of_new_synapses_per_postsynaptic_neuron * number_of_postsynaptic_neurons_in_group;
-
 			this->increment_number_of_synapses(total_number_of_new_synapses);
 
 
-
-
 			//Setting up random states
-
 			if (random_state_manager == NULL) {
-
 				random_state_manager = new RandomStateManager();
 				int threads_per_block_x = 128;
 				int number_of_blocks_x = 64;
 				random_state_manager->set_up_random_states(threads_per_block_x, number_of_blocks_x, 9);
 				CudaCheckError();
-
 			}
+
 
 			if (total_number_of_new_synapses > largest_synapse_group_size) {
 
@@ -407,9 +400,6 @@ void Synapses::shuffle_synapses() {
 	float* new_synaptic_efficacies_or_weights = (float *)malloc(total_number_of_synapses*sizeof(float));
 	
 	for(int i = 0; i < total_number_of_synapses; i++) {
-
-		// printf("i: %d, postsynaptic_neuron_indices[i]: %d\n", i, postsynaptic_neuron_indices[i]);
-		// printf("i: %d, original_synapse_indices[i]: %d\n", i, original_synapse_indices[i]);
 
 		new_presynaptic_neuron_indices[i] = presynaptic_neuron_indices[original_synapse_indices[i]];
 		new_postsynaptic_neuron_indices[i] = postsynaptic_neuron_indices[original_synapse_indices[i]];

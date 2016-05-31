@@ -91,7 +91,6 @@ void LIFSpikingNeurons::update_postsynaptic_activities(float timestep, float cur
 }
 
 
-// State Update
 __global__ void lif_update_membrane_potentials(float *d_membrane_potentials_v,
 								float * d_membrane_resistances_R,
 								float * d_membrane_time_constants_tau_m,
@@ -105,8 +104,6 @@ __global__ void lif_update_membrane_potentials(float *d_membrane_potentials_v,
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	while (idx < total_number_of_neurons) {
 
-		// printf("d_membrane_time_constants_tau_m: %f\n", d_membrane_time_constants_tau_m[idx]);
-
 		float equation_constant = timestep / d_membrane_time_constants_tau_m[idx];
 		float membrane_potential_Vi = d_membrane_potentials_v[idx];
 		float current_injection_Ii = d_current_injections[idx];
@@ -114,7 +111,6 @@ __global__ void lif_update_membrane_potentials(float *d_membrane_potentials_v,
 		float temp_membrane_resistance_R = d_membrane_resistances_R[idx];
 
 		float new_membrane_potential = equation_constant * (resting_potential_V0 + temp_membrane_resistance_R * current_injection_Ii) + (1 - equation_constant) * membrane_potential_Vi;
-		// if (idx == 1000) printf("new_membrane_potential: %f\n", new_membrane_potential);
 
 		d_membrane_potentials_v[idx] = new_membrane_potential;
 
