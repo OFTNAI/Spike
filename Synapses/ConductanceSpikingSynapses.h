@@ -31,6 +31,9 @@ public:
 	float * reversal_potentials_Vhat;
 	float * d_reversal_potentials_Vhat;
 
+	//Configurable constants
+	float decay_term_tau_g;
+	float decay_term_tau_C;
 	float synaptic_neurotransmitter_concentration_alpha_C;
 
 	// Synapse Functions
@@ -71,7 +74,8 @@ __global__ void conductance_update_synaptic_conductances_kernal(float timestep,
 													float * d_time_of_last_spike_to_reach_synapse,
 													float * d_biological_conductance_scaling_constants_lambda,
 													int total_number_of_synapses,
-													float current_time_in_seconds);
+													float current_time_in_seconds,
+													float decay_term_tau_g);
 
 
 __global__ void conductance_update_presynaptic_activities_C_kernal(float* d_recent_presynaptic_activities_C,
@@ -80,7 +84,8 @@ __global__ void conductance_update_presynaptic_activities_C_kernal(float* d_rece
 							float timestep,
 							float current_time_in_seconds,
 							size_t total_number_of_synapses,
-							float synaptic_neurotransmitter_concentration_alpha_C);
+							float synaptic_neurotransmitter_concentration_alpha_C,
+							float decay_term_tau_C);
 
 __global__ void conductance_update_synaptic_efficacies_or_weights_kernal(float * d_recent_presynaptic_activities_C,
 																float * d_recent_postsynaptic_activities_D,
