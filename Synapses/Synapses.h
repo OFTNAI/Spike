@@ -84,6 +84,8 @@ public:
 				float tau_minus_new,
 				float tau_plus_new);
 
+	float learning_rate_rho;
+
 	// Full Matrices
 	int* presynaptic_neuron_indices;
 	int* postsynaptic_neuron_indices; 

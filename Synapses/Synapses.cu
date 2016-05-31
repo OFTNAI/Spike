@@ -25,8 +25,8 @@
 // Synapses Constructor
 Synapses::Synapses() {
 
-	// Initialise my parameters
-	// Variables;
+	learning_rate_rho = 0.1;
+
 	total_number_of_synapses = 0;
 	temp_number_of_synapses_in_last_group = 0;
 

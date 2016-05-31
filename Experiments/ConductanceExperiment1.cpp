@@ -29,6 +29,7 @@ int main (int argc, char *argv[]){
 	simulator.SetSynapseType(new ConductanceSpikingSynapses());
 
 	simulator.synapses->print_synapse_group_details = false;
+	simulator.synapses->learning_rate_rho = 0.1;
 
 	/////////// ADD INPUT NEURONS ///////////
 	printf("Adding Input Neurons...\n");

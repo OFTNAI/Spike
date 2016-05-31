@@ -87,6 +87,7 @@ __global__ void conductance_update_synaptic_efficacies_or_weights_kernal(float *
 																float * d_time_of_last_spike_to_reach_synapse,
 																float * d_last_spike_time_of_each_neuron,
 																bool* d_stdp,
-																size_t total_number_of_synapses);
+																size_t total_number_of_synapses,
+																float learning_rate_rho);
 
 #endif

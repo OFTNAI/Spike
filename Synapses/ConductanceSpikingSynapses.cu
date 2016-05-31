@@ -171,7 +171,8 @@ void ConductanceSpikingSynapses::update_synaptic_efficacies_or_weights(float * d
 																d_time_of_last_spike_to_reach_synapse,
 																d_last_spike_time_of_each_neuron,
 																d_stdp,
-																total_number_of_synapses);
+																total_number_of_synapses,
+																learning_rate_rho); // Here learning_rate_rho represents timestep/tau_delta_g in finite difference equation
 
 	CudaCheckError();
 
@@ -288,7 +289,8 @@ __global__ void conductance_update_synaptic_efficacies_or_weights_kernal(float *
 																float * d_time_of_last_spike_to_reach_synapse,
 																float * d_last_spike_time_of_each_neuron,
 																bool* d_stdp,
-																size_t total_number_of_synapses) {
+																size_t total_number_of_synapses,
+																float learning_rate_rho) {
 
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
 
@@ -315,7 +317,6 @@ __global__ void conductance_update_synaptic_efficacies_or_weights_kernal(float *
 			}			
 
 			if (new_componet != 0.0) {
-				float learning_rate_rho = 0.1; //Represents timestep/tau_delta_g in finite difference equation
 				new_componet = learning_rate_rho * new_componet;
 				new_synaptic_efficacy += new_componet;
 			}
