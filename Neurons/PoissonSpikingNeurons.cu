@@ -76,19 +76,13 @@ void PoissonSpikingNeurons::generate_random_states() {
 }
 
 
-__global__ void poisson_update_membrane_potentials_kernal(curandState_t* d_states,
-							float *d_rates,
-							float *d_membrane_potentials_v,
-							float timestep,
-							size_t total_number_of_inputs);
-
-
 void PoissonSpikingNeurons::update_membrane_potentials(float timestep) {
 
 	poisson_update_membrane_potentials_kernal<<<random_state_manager->block_dimensions, random_state_manager->threads_per_block>>>(random_state_manager->d_states,
 														d_rates,
 														d_membrane_potentials_v,
 														timestep,
+														d_thresholds_for_action_potential_spikes,
 														total_number_of_neurons);
 
 	CudaCheckError();
@@ -99,6 +93,7 @@ __global__ void poisson_update_membrane_potentials_kernal(curandState_t* d_state
 							float *d_rates,
 							float *d_membrane_potentials_v,
 							float timestep,
+							float * d_thresholds_for_action_potential_spikes,
 							size_t total_number_of_inputs){
 
 	 
@@ -115,7 +110,7 @@ __global__ void poisson_update_membrane_potentials_kernal(curandState_t* d_state
 		if (random_float < (d_rates[idx] * timestep)){
 
 			// Puts membrane potential above default spiking threshold
-			d_membrane_potentials_v[idx] = 35.0f;
+			d_membrane_potentials_v[idx] = d_thresholds_for_action_potential_spikes[idx] + 0.02;
 
 		} 
 
