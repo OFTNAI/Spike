@@ -15,6 +15,9 @@ ConductanceSpikingSynapses::ConductanceSpikingSynapses() {
 	biological_conductance_scaling_constants_lambda = NULL;
 	d_biological_conductance_scaling_constants_lambda = NULL;
 
+	reversal_potentials_Vhat = NULL;
+	d_reversal_potentials_Vhat = NULL;
+
 }
 
 // ConductanceSpikingSynapses Destructor
@@ -61,9 +64,8 @@ void ConductanceSpikingSynapses::AddGroup(int presynaptic_group_id,
 		synaptic_conductances_g[i] = 0.0f;
 		recent_presynaptic_activities_C[i] = 0.0f;
 		biological_conductance_scaling_constants_lambda[i] = conductance_spiking_synapse_group_params->biological_conductance_scaling_constant_lambda;
+		reversal_potentials_Vhat[i] = conductance_spiking_synapse_group_params->reversal_potential_Vhat;
 	}
-
-	// printf("HYE4\n");
 
 }
 
@@ -74,6 +76,7 @@ void ConductanceSpikingSynapses::increment_number_of_synapses(int increment) {
 	synaptic_conductances_g = (float*)realloc(synaptic_conductances_g, total_number_of_synapses * sizeof(float));
 	recent_presynaptic_activities_C = (float*)realloc(recent_presynaptic_activities_C, total_number_of_synapses * sizeof(float));
 	biological_conductance_scaling_constants_lambda = (float*)realloc(biological_conductance_scaling_constants_lambda, total_number_of_synapses * sizeof(float));
+	reversal_potentials_Vhat = (float*)realloc(reversal_potentials_Vhat, total_number_of_synapses * sizeof(float));
 
 }
 
@@ -85,6 +88,7 @@ void ConductanceSpikingSynapses::allocate_device_pointers() {
 	CudaSafeCall(cudaMalloc((void **)&d_synaptic_conductances_g, sizeof(float)*total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&d_recent_presynaptic_activities_C, sizeof(float)*total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&d_biological_conductance_scaling_constants_lambda, sizeof(float)*total_number_of_synapses));
+	CudaSafeCall(cudaMalloc((void **)&d_reversal_potentials_Vhat, sizeof(float)*total_number_of_synapses));
 
 }
 
@@ -96,6 +100,7 @@ void ConductanceSpikingSynapses::reset_synapse_spikes() {
 	CudaSafeCall(cudaMemcpy(d_synaptic_conductances_g, synaptic_conductances_g, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_recent_presynaptic_activities_C, recent_presynaptic_activities_C, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_biological_conductance_scaling_constants_lambda, biological_conductance_scaling_constants_lambda, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
+	CudaSafeCall(cudaMemcpy(d_reversal_potentials_Vhat, reversal_potentials_Vhat, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
 
 }
 
@@ -119,8 +124,7 @@ void ConductanceSpikingSynapses::calculate_postsynaptic_current_injection(Spikin
 
 	conductance_calculate_postsynaptic_current_injection_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_presynaptic_neuron_indices,
 																	d_postsynaptic_neuron_indices,
-																	neurons->d_reversal_potentials_Vhat,
-																	input_neurons->d_reversal_potentials_Vhat,
+																	d_reversal_potentials_Vhat,
 																	neurons->d_current_injections,
 																	total_number_of_synapses,
 																	neurons->d_membrane_potentials_v, 
@@ -177,8 +181,7 @@ void ConductanceSpikingSynapses::update_synaptic_efficacies_or_weights(float * d
 
 __global__ void conductance_calculate_postsynaptic_current_injection_kernal(int * d_presynaptic_neuron_indices,
 							int* d_postsynaptic_neuron_indices,
-							float* d_neuron_reversal_potentials_Vhat,
-							float* d_input_neuron_reversal_potentials_Vhat,
+							float* d_reversal_potentials_Vhat,
 							float* d_neurons_current_injections,
 							size_t total_number_of_synapses,
 							float * d_membrane_potentials_v,
@@ -187,9 +190,7 @@ __global__ void conductance_calculate_postsynaptic_current_injection_kernal(int 
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	while (idx < total_number_of_synapses) {
 
-		int presynaptic_neuron_index = d_presynaptic_neuron_indices[idx];
-		bool presynaptic_neuron_is_input = PRESYNAPTIC_IS_INPUT(presynaptic_neuron_index);
-		float reversal_potential_Vhat = presynaptic_neuron_is_input ? d_input_neuron_reversal_potentials_Vhat[CORRECTED_PRESYNAPTIC_ID(presynaptic_neuron_index, presynaptic_neuron_is_input)] : d_neuron_reversal_potentials_Vhat[presynaptic_neuron_index];
+		float reversal_potential_Vhat = d_reversal_potentials_Vhat[idx];
 
 		int postsynaptic_neuron_index = d_postsynaptic_neuron_indices[idx];
 

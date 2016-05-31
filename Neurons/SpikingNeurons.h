@@ -8,11 +8,10 @@
 
 
 struct spiking_neuron_parameters_struct : neuron_parameters_struct {
-	spiking_neuron_parameters_struct(): resting_potential_v0(-0.074f), threshold_for_action_potential_spike(0.03f), reversal_potential_Vhat(0.0f) { neuron_parameters_struct(); }
+	spiking_neuron_parameters_struct(): resting_potential_v0(-0.074f), threshold_for_action_potential_spike(0.03f) { neuron_parameters_struct(); }
 
 	float resting_potential_v0;
 	float threshold_for_action_potential_spike;
-	float reversal_potential_Vhat;
 };
 
 

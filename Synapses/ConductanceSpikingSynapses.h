@@ -5,9 +5,10 @@
 #include "../Neurons/SpikingNeurons.h"
 
 struct conductance_spiking_synapse_parameters_struct : spiking_synapse_parameters_struct {
-	conductance_spiking_synapse_parameters_struct(): biological_conductance_scaling_constant_lambda(1.0) { spiking_synapse_parameters_struct(); }
+	conductance_spiking_synapse_parameters_struct(): biological_conductance_scaling_constant_lambda(1.0), reversal_potential_Vhat(0.0f) { spiking_synapse_parameters_struct(); }
 
 	float biological_conductance_scaling_constant_lambda;
+	float reversal_potential_Vhat;
 };
 
 class ConductanceSpikingSynapses : public SpikingSynapses {
@@ -26,6 +27,9 @@ public:
 
 	float * biological_conductance_scaling_constants_lambda;
 	float * d_biological_conductance_scaling_constants_lambda;
+
+	float * reversal_potentials_Vhat;
+	float * d_reversal_potentials_Vhat;
 
 	// Synapse Functions
 	virtual void AddGroup(int presynaptic_group_id, 
@@ -52,8 +56,7 @@ public:
 
 __global__ void conductance_calculate_postsynaptic_current_injection_kernal(int * d_presynaptic_neuron_indices,
 							int* d_postsynaptic_neuron_indices,
-							float* d_neuron_reversal_potentials_Vhat,
-							float* d_input_neuron_reversal_potentials_Vhat,
+							float* d_reversal_potentials_Vhat,
 							float* d_neurons_current_injections,
 							size_t total_number_of_synapses,
 							float * d_membrane_potentials_v,
