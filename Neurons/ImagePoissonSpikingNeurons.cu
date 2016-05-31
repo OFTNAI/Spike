@@ -346,7 +346,7 @@ __global__ void image_poisson_update_membrane_potentials_kernal(curandState_t* d
 
 		float rate = d_gabor_input_rates[idx];
 
-		if (rate > 0.01) {
+		if (rate > 0.1) {
 
 			// Creates random float between 0 and 1 from uniform distribution
 			// d_states effectively provides a different seed for each thread

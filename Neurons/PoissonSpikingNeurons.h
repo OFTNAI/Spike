@@ -26,6 +26,7 @@ public:
 	float * d_rates;
 
 	int total_number_of_input_images;
+	int current_stimulus_index;
 
 	curandState_t* d_states;
 

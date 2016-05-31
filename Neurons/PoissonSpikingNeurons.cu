@@ -13,6 +13,7 @@ PoissonSpikingNeurons::PoissonSpikingNeurons() {
 	d_states = NULL;
 
 	total_number_of_input_images = 1;
+	current_stimulus_index = 0;
 
 	random_state_manager = NULL;
 }
