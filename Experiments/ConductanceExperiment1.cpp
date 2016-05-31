@@ -31,6 +31,8 @@ int main (int argc, char *argv[]){
 	simulator.synapses->print_synapse_group_details = false;
 	simulator.synapses->learning_rate_rho = 0.1;
 	ConductanceSpikingSynapses * conductance_spiking_synapses = (ConductanceSpikingSynapses*)simulator.synapses;
+	conductance_spiking_synapses->decay_term_tau_g = 0.004; //0.004 is arbitrary non-zero value
+	conductance_spiking_synapses->decay_term_tau_C = 0.004; //0.004 is arbitrary non-zero value
 	conductance_spiking_synapses->synaptic_neurotransmitter_concentration_alpha_C = 0.5;
 
 	/////////// ADD INPUT NEURONS ///////////
