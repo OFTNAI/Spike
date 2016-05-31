@@ -30,11 +30,11 @@ public:
 	virtual void reset_neurons();
 	virtual void update_membrane_potentials(float timestep);
 
-	void set_up_rates(const char * fileList, const char * filterParameters, const char * inputDirectory);
+	void set_up_rates(const char * fileList, const char * filterParameters, const char * inputDirectory, float rate_scaling_factor);
 
 	void load_image_names_from_file_list(const char * fileList, const char * inputDirectory);
 	void load_gabor_filter_parameters(const char * filterParameters, const char * inputDirectory);
-	void load_rates_from_files(const char * inputDirectory);
+	void load_rates_from_files(const char * inputDirectory, float rate_scaling_factor);
 	void copy_rates_to_device();
 	int calculate_gabor_index(int orientationIndex, int wavelengthIndex, int phaseIndex);
 

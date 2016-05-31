@@ -44,7 +44,7 @@ int main (int argc, char *argv[]){
 	clock_t adding_input_neurons_start = clock();
 
 	ImagePoissonSpikingNeurons* input_neurons = (ImagePoissonSpikingNeurons*)simulator.input_neurons;
-	input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "MatlabGaborFilter/Inputs/");
+	input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "MatlabGaborFilter/Inputs/", 5000.0f);
 	image_poisson_spiking_neuron_parameters_struct * image_poisson_spiking_group_params = new image_poisson_spiking_neuron_parameters_struct();
 	image_poisson_spiking_group_params->rate = 30.0f;
 	input_neurons->AddGroupForEachGaborType(image_poisson_spiking_group_params);

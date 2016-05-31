@@ -83,15 +83,14 @@ void ImagePoissonSpikingNeurons::reset_neurons() {
 
 }
 
-void ImagePoissonSpikingNeurons::set_up_rates(const char * fileList, const char * filterParameters, const char * inputDirectory) {
+void ImagePoissonSpikingNeurons::set_up_rates(const char * fileList, const char * filterParameters, const char * inputDirectory, float rate_scaling_factor) {
 	printf("--- Setting up Input Neuron Rates from Gabor files...\n");
 
 	load_image_names_from_file_list(fileList, inputDirectory);
 	load_gabor_filter_parameters(filterParameters, inputDirectory);
-	load_rates_from_files(inputDirectory);
+	load_rates_from_files(inputDirectory, rate_scaling_factor);
 	copy_rates_to_device();
 
-	// printf("\n");
 }
 
 
@@ -231,7 +230,7 @@ void ImagePoissonSpikingNeurons::load_gabor_filter_parameters(const char * filte
 }
 
 
-void ImagePoissonSpikingNeurons::load_rates_from_files(const char * inputDirectory) {
+void ImagePoissonSpikingNeurons::load_rates_from_files(const char * inputDirectory, float rate_scaling_factor) {
 
 
 	gabor_input_rates = (float *)malloc(total_number_of_rates*sizeof(float));
@@ -287,7 +286,7 @@ void ImagePoissonSpikingNeurons::load_rates_from_files(const char * inputDirecto
 
 								int element_index = start_index_for_current_gabor_image + image_x + image_y * image_width;
 								
-								gabor_input_rates[element_index] = rate*5000.0f;
+								gabor_input_rates[element_index] = rate * rate_scaling_factor;
 							}
 						
 					} catch (fstream::failure e) {
