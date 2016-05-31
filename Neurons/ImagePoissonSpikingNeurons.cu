@@ -326,7 +326,8 @@ void ImagePoissonSpikingNeurons::update_membrane_potentials(float timestep) {
 														d_membrane_potentials_v,
 														timestep,
 														d_thresholds_for_action_potential_spikes,
-														total_number_of_neurons);
+														total_number_of_neurons,
+														current_stimulus_index);
 
 	CudaCheckError();
 }
@@ -337,14 +338,17 @@ __global__ void image_poisson_update_membrane_potentials_kernal(curandState_t* d
 							float *d_membrane_potentials_v,
 							float timestep,
 							float * d_thresholds_for_action_potential_spikes,
-							size_t total_number_of_inputs){
+							size_t total_number_of_input_neurons,
+							int current_stimulus_index){
 
 	 
 	int t_idx = threadIdx.x + blockIdx.x * blockDim.x;
 	int idx = t_idx;
-	while (idx < total_number_of_inputs){
+	while (idx < total_number_of_input_neurons){
 
-		float rate = d_gabor_input_rates[idx];
+		int rate_index = (total_number_of_input_neurons * current_stimulus_index) + idx;
+
+		float rate = d_gabor_input_rates[rate_index];
 
 		if (rate > 0.1) {
 
