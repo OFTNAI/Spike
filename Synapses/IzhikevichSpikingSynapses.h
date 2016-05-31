@@ -29,7 +29,7 @@ public:
 	virtual void increment_number_of_synapses(int increment);
 	virtual void shuffle_synapses();
 
-	virtual void calculate_postsynaptic_current_injection(SpikingNeurons * neurons, SpikingNeurons * input_neurons, float current_time_in_seconds);
+	virtual void calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds);
 	virtual void apply_ltd_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds);
 	virtual void apply_ltp_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds);
 

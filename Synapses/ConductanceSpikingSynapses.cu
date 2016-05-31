@@ -118,7 +118,7 @@ void ConductanceSpikingSynapses::set_threads_per_block_and_blocks_per_grid(int t
 
 
 
-void ConductanceSpikingSynapses::calculate_postsynaptic_current_injection(SpikingNeurons * neurons, SpikingNeurons * input_neurons, float current_time_in_seconds) {
+void ConductanceSpikingSynapses::calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds) {
 
 	// printf("calculate_postsynaptic_current_injection. number_of_synapse_blocks_per_grid.x: %d. threads_per_block.x: %d\n", number_of_synapse_blocks_per_grid.x, threads_per_block.x);
 
