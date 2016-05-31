@@ -353,9 +353,7 @@ __global__ void image_poisson_update_membrane_potentials_kernal(curandState_t* d
 			// d_states effectively provides a different seed for each thread
 			// curand_uniform produces different float every time you call it
 			float random_float = curand_uniform(&d_states[t_idx]);
-
-			// if (idx == 400) printf("rate: %f, random_float: %f\n", rate, random_float);
-
+			
 			// if the randomnumber is less than the rate
 			if (random_float < (rate * timestep)){
 
