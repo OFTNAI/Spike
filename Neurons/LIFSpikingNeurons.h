@@ -27,6 +27,9 @@ public:
 	float * d_membrane_time_constants_tau_m;
 	float * d_membrane_resistances_R;
 
+	float decay_term_tau_D;
+	float model_parameter_alpha_D;
+
 
 	virtual int AddGroup(neuron_parameters_struct * group_params, int shape[2]);
 	virtual void allocate_device_pointers();
@@ -49,6 +52,8 @@ __global__ void lif_update_postsynaptic_activities_kernal(float timestep,
 								size_t total_number_of_neurons,
 								float * d_recent_postsynaptic_activities_D,
 								float * d_last_spike_time_of_each_neuron,
-								float current_time_in_seconds);
+								float current_time_in_seconds,
+								float decay_term_tau_D,
+								float model_parameter_alpha_D);
 
 #endif

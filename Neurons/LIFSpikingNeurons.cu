@@ -13,6 +13,9 @@ LIFSpikingNeurons::LIFSpikingNeurons() {
 	d_membrane_time_constants_tau_m = NULL;
 	d_membrane_resistances_R = NULL;
 
+	decay_term_tau_D = 0.07;
+	model_parameter_alpha_D = 0.5;
+
 }
 
 
@@ -84,7 +87,9 @@ void LIFSpikingNeurons::update_postsynaptic_activities(float timestep, float cur
 								total_number_of_neurons,
 								d_recent_postsynaptic_activities_D,
 								d_last_spike_time_of_each_neuron,
-								current_time_in_seconds);
+								current_time_in_seconds,
+								decay_term_tau_D,
+								model_parameter_alpha_D);
 
 	CudaCheckError();
 
@@ -124,7 +129,9 @@ __global__ void lif_update_postsynaptic_activities_kernal(float timestep,
 								size_t total_number_of_neurons,
 								float * d_recent_postsynaptic_activities_D,
 								float * d_last_spike_time_of_each_neuron,
-								float current_time_in_seconds) {
+								float current_time_in_seconds,
+								float decay_term_tau_D,
+								float model_parameter_alpha_D) {
 
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	while (idx < total_number_of_neurons) {
@@ -132,12 +139,10 @@ __global__ void lif_update_postsynaptic_activities_kernal(float timestep,
 		// if (d_stdp[idx] == 1) {
 
 			float recent_postsynaptic_activity_D = d_recent_postsynaptic_activities_D[idx];
-			float decay_term_tau_D = 0.07; // Should be variable between 0.005 and 0.125
 
 			float new_recent_postsynaptic_activity_D = (1 - (timestep/decay_term_tau_D)) * recent_postsynaptic_activity_D;
 
 			if (d_last_spike_time_of_each_neuron[idx] == current_time_in_seconds) {
-				float model_parameter_alpha_D = 0.5;
 				new_recent_postsynaptic_activity_D += timestep * model_parameter_alpha_D * (1 - recent_postsynaptic_activity_D);
 			}
 			
