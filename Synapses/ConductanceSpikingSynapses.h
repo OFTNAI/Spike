@@ -31,6 +31,8 @@ public:
 	float * reversal_potentials_Vhat;
 	float * d_reversal_potentials_Vhat;
 
+	float synaptic_neurotransmitter_concentration_alpha_C;
+
 	// Synapse Functions
 	virtual void AddGroup(int presynaptic_group_id, 
 						int postsynaptic_group_id, 
@@ -77,7 +79,8 @@ __global__ void conductance_update_presynaptic_activities_C_kernal(float* d_rece
 							bool* d_stdp,
 							float timestep,
 							float current_time_in_seconds,
-							size_t total_number_of_synapses);
+							size_t total_number_of_synapses,
+							float synaptic_neurotransmitter_concentration_alpha_C);
 
 __global__ void conductance_update_synaptic_efficacies_or_weights_kernal(float * d_recent_presynaptic_activities_C,
 																float * d_recent_postsynaptic_activities_D,

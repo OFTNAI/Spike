@@ -18,6 +18,8 @@ ConductanceSpikingSynapses::ConductanceSpikingSynapses() {
 	reversal_potentials_Vhat = NULL;
 	d_reversal_potentials_Vhat = NULL;
 
+	synaptic_neurotransmitter_concentration_alpha_C = 0.5;
+
 }
 
 // ConductanceSpikingSynapses Destructor
@@ -154,7 +156,8 @@ void ConductanceSpikingSynapses::update_presynaptic_activities(float timestep, f
 							d_stdp,
 							timestep,
 							current_time_in_seconds,
-							total_number_of_synapses);
+							total_number_of_synapses,
+							synaptic_neurotransmitter_concentration_alpha_C);
 
 	CudaCheckError();
 }
@@ -250,7 +253,8 @@ __global__ void conductance_update_presynaptic_activities_C_kernal(float* d_rece
 							bool* d_stdp,
 							float timestep, 
 							float current_time_in_seconds,
-							size_t total_number_of_synapses) {
+							size_t total_number_of_synapses,
+							float synaptic_neurotransmitter_concentration_alpha_C) {
 
 	int t_idx = threadIdx.x + blockIdx.x * blockDim.x;
 	int idx = t_idx;
@@ -264,8 +268,7 @@ __global__ void conductance_update_presynaptic_activities_C_kernal(float* d_rece
 			float new_recent_presynaptic_activity_C = (1 - (timestep/decay_term_tau_C)) * recent_presynaptic_activity_C;
 
 			if (d_time_of_last_spike_to_reach_synapse[idx] == current_time_in_seconds) {
-				float model_parameter_alpha_c = 0.5;
-				new_recent_presynaptic_activity_C += timestep * model_parameter_alpha_c * (1 - recent_presynaptic_activity_C);
+				new_recent_presynaptic_activity_C += timestep * synaptic_neurotransmitter_concentration_alpha_C * (1 - recent_presynaptic_activity_C);
 			}
 
 			if (recent_presynaptic_activity_C != new_recent_presynaptic_activity_C) {
