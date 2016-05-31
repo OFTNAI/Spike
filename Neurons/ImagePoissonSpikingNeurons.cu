@@ -83,12 +83,12 @@ void ImagePoissonSpikingNeurons::reset_neurons() {
 
 }
 
-void ImagePoissonSpikingNeurons::set_up_rates(const char * fileList, const char * filterParameters, const char * inputDirectory, float rate_scaling_factor) {
+void ImagePoissonSpikingNeurons::set_up_rates(const char * fileList, const char * filterParameters, const char * inputDirectory, float max_rate_scaling_factor) {
 	printf("--- Setting up Input Neuron Rates from Gabor files...\n");
 
 	load_image_names_from_file_list(fileList, inputDirectory);
 	load_gabor_filter_parameters(filterParameters, inputDirectory);
-	load_rates_from_files(inputDirectory, rate_scaling_factor);
+	load_rates_from_files(inputDirectory, max_rate_scaling_factor);
 	copy_rates_to_device();
 
 }
@@ -230,7 +230,7 @@ void ImagePoissonSpikingNeurons::load_gabor_filter_parameters(const char * filte
 }
 
 
-void ImagePoissonSpikingNeurons::load_rates_from_files(const char * inputDirectory, float rate_scaling_factor) {
+void ImagePoissonSpikingNeurons::load_rates_from_files(const char * inputDirectory, float max_rate_scaling_factor) {
 
 
 	gabor_input_rates = (float *)malloc(total_number_of_rates*sizeof(float));
@@ -277,8 +277,10 @@ void ImagePoissonSpikingNeurons::load_rates_from_files(const char * inputDirecto
 								
 								float rate;
 								gaborStream >> rate;
+
 								// printf("rate: %f\n", rate);
 								if (rate < 0.000001) zero_count++;
+
 								if(rate < 0) {
 									cerr << "Negative firing loaded from filter!!!" << endl;
 									exit(EXIT_FAILURE);
@@ -286,7 +288,8 @@ void ImagePoissonSpikingNeurons::load_rates_from_files(const char * inputDirecto
 
 								int element_index = start_index_for_current_gabor_image + image_x + image_y * image_width;
 								
-								gabor_input_rates[element_index] = rate * rate_scaling_factor;
+								// Rates from Matlab lie between 0 and 1, so multiply by max number of spikes per second in cortex
+								gabor_input_rates[element_index] = rate * max_rate_scaling_factor;
 							}
 						
 					} catch (fstream::failure e) {
@@ -315,12 +318,6 @@ int ImagePoissonSpikingNeurons::calculate_gabor_index(int orientationIndex, int 
 }
 
 
-__global__ void image_poisson_update_membrane_potentials_kernal(curandState_t* d_states,
-							float *d_gabor_input_rates,
-							float *d_membrane_potentials_v,
-							float timestep,
-							size_t total_number_of_inputs);
-
 
 void ImagePoissonSpikingNeurons::update_membrane_potentials(float timestep) {
 
@@ -328,6 +325,7 @@ void ImagePoissonSpikingNeurons::update_membrane_potentials(float timestep) {
 														d_gabor_input_rates,
 														d_membrane_potentials_v,
 														timestep,
+														d_thresholds_for_action_potential_spikes,
 														total_number_of_neurons);
 
 	CudaCheckError();
@@ -338,6 +336,7 @@ __global__ void image_poisson_update_membrane_potentials_kernal(curandState_t* d
 							float *d_gabor_input_rates,
 							float *d_membrane_potentials_v,
 							float timestep,
+							float * d_thresholds_for_action_potential_spikes,
 							size_t total_number_of_inputs){
 
 	 
@@ -347,9 +346,7 @@ __global__ void image_poisson_update_membrane_potentials_kernal(curandState_t* d
 
 		float rate = d_gabor_input_rates[idx];
 
-		if (rate > 0.0001) {
-			// rate = 1.0 - rate;
-			// if (rate > 0.5) printf("rate: %f\n", rate);
+		if (rate > 0.01) {
 			// printf("rate: %f\n", rate);
 
 			// Creates random float between 0 and 1 from uniform distribution
@@ -363,7 +360,7 @@ __global__ void image_poisson_update_membrane_potentials_kernal(curandState_t* d
 			if (random_float < (rate * timestep)){
 
 				// Puts membrane potential above default spiking threshold
-				d_membrane_potentials_v[idx] = 0.035f;
+				d_membrane_potentials_v[idx] = d_thresholds_for_action_potential_spikes[idx] + 0.02;
 
 			} 
 

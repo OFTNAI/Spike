@@ -30,11 +30,11 @@ public:
 	virtual void reset_neurons();
 	virtual void update_membrane_potentials(float timestep);
 
-	void set_up_rates(const char * fileList, const char * filterParameters, const char * inputDirectory, float rate_scaling_factor);
+	void set_up_rates(const char * fileList, const char * filterParameters, const char * inputDirectory, float max_rate_scaling_factor);
 
 	void load_image_names_from_file_list(const char * fileList, const char * inputDirectory);
 	void load_gabor_filter_parameters(const char * filterParameters, const char * inputDirectory);
-	void load_rates_from_files(const char * inputDirectory, float rate_scaling_factor);
+	void load_rates_from_files(const char * inputDirectory, float max_rate_scaling_factor);
 	void copy_rates_to_device();
 	int calculate_gabor_index(int orientationIndex, int wavelengthIndex, int phaseIndex);
 
@@ -63,8 +63,13 @@ public:
 
 	int total_number_of_transformations_per_object;
 	
-	
-
 };
+
+__global__ void image_poisson_update_membrane_potentials_kernal(curandState_t* d_states,
+							float *d_gabor_input_rates,
+							float *d_membrane_potentials_v,
+							float timestep,
+							float * d_thresholds_for_action_potential_spikes,
+							size_t total_number_of_inputs);
 
 #endif
