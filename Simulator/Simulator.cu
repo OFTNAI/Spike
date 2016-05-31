@@ -369,7 +369,7 @@ void Simulator::temp_lif_per_timestep_instructions(float current_time_in_seconds
 	
 	if (apply_stdp_to_relevant_synapses) {
 		// Calculate delta_g(t+delta_t) from C(t) and D(t)
-		synapses->update_synaptic_efficacies_or_weights(neurons->d_recent_postsynaptic_activities_D, timestep, current_time_in_seconds, neurons->d_last_spike_time_of_each_neuron);
+		synapses->update_synaptic_efficacies_or_weights(neurons->d_recent_postsynaptic_activities_D, current_time_in_seconds, neurons->d_last_spike_time_of_each_neuron);
 
 		// Calculate C(t+delta_t) from C(t)
 		synapses->update_presynaptic_activities(timestep, current_time_in_seconds);

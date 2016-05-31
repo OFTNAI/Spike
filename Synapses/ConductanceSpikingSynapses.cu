@@ -159,13 +159,12 @@ void ConductanceSpikingSynapses::update_presynaptic_activities(float timestep, f
 	CudaCheckError();
 }
 
-void ConductanceSpikingSynapses::update_synaptic_efficacies_or_weights(float * d_recent_postsynaptic_activities_D, float timestep, float current_time_in_seconds, float * d_last_spike_time_of_each_neuron) {
+void ConductanceSpikingSynapses::update_synaptic_efficacies_or_weights(float * d_recent_postsynaptic_activities_D, float current_time_in_seconds, float * d_last_spike_time_of_each_neuron) {
 
 	// printf("total_number_of_synapses: %d\n", total_number_of_synapses);
 
 	conductance_update_synaptic_efficacies_or_weights_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_recent_presynaptic_activities_C,
 																d_recent_postsynaptic_activities_D,
-																timestep,
 																d_postsynaptic_neuron_indices,
 																d_synaptic_efficacies_or_weights,
 																current_time_in_seconds,
@@ -290,7 +289,6 @@ __global__ void conductance_update_presynaptic_activities_C_kernal(float* d_rece
 
 __global__ void conductance_update_synaptic_efficacies_or_weights_kernal(float * d_recent_presynaptic_activities_C,
 																float * d_recent_postsynaptic_activities_D,
-																float timestep,
 																int* d_postsynaptic_neuron_indices,
 																float* d_synaptic_efficacies_or_weights,
 																float current_time_in_seconds,
@@ -324,7 +322,7 @@ __global__ void conductance_update_synaptic_efficacies_or_weights_kernal(float *
 			}			
 
 			if (new_componet != 0.0) {
-				float learning_rate_rho = 0.1;
+				float learning_rate_rho = 0.1; //Represents timestep/tau_delta_g in finite difference equation
 				new_componet = learning_rate_rho * new_componet;
 				new_synaptic_efficacy += new_componet;
 			}
