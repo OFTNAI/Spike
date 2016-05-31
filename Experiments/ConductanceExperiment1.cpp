@@ -35,6 +35,10 @@ int main (int argc, char *argv[]){
 	conductance_spiking_synapses->decay_term_tau_C = 0.004; //0.004 is arbitrary non-zero value
 	conductance_spiking_synapses->synaptic_neurotransmitter_concentration_alpha_C = 0.5;
 
+	LIFSpikingNeurons * lif_spiking_neurons = (LIFSpikingNeurons*)simulator.neurons;
+	lif_spiking_neurons->decay_term_tau_D = 0.07; //0.07 arbitrary non-zero value
+	lif_spiking_neurons->model_parameter_alpha_D = 0.5;
+
 	/////////// ADD INPUT NEURONS ///////////
 	printf("Adding Input Neurons...\n");
 	clock_t adding_input_neurons_start = clock();
