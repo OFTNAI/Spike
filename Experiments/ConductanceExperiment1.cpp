@@ -16,14 +16,13 @@
 
 // The function which will autorun when the executable is created
 int main (int argc, char *argv[]){
-	clock_t begin_entire_experiment = clock();
-
-	// Set the time_stepep of the simulation as required (time_stepep is measure in seconds)
 	
-	// Create an instance of the Simulator and set the time_step
+	clock_t begin_entire_experiment = clock();
+	
+	// Create an instance of the Simulator and set the timestep
 	Simulator simulator;
-	float time_step = 0.0001;
-	simulator.SetTimestep(time_step);
+	float timestep = 0.0001;
+	simulator.SetTimestep(timestep);
 	simulator.SetNeuronType(new LIFSpikingNeurons());
 	// simulator.SetInputNeuronType(new PoissonSpikingNeurons());
 	simulator.SetInputNeuronType(new ImagePoissonSpikingNeurons());
@@ -139,10 +138,10 @@ int main (int argc, char *argv[]){
 	I2I_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->reversal_potential_Vhat = -70.0*pow(10, -3);
 
 	//
-	float INPUT_TO_EXCITATORY_DELAY_RANGE[] = {time_step, time_step};
-	float EXCITATORY_TO_EXCITATORY_DELAY_RANGE[] = {time_step, 10.0f*pow(10, -3)};
-	float EXCITATORY_TO_INHIBITORY_DELAY_RANGE[] = {time_step, 10.0f*pow(10, -3)};
-	float INHIBITORY_TO_EXCITATORY_DELAY_RANGE[] = {time_step, 10.0f*pow(10, -3)};
+	float INPUT_TO_EXCITATORY_DELAY_RANGE[] = {timestep, timestep};
+	float EXCITATORY_TO_EXCITATORY_DELAY_RANGE[] = {timestep, 10.0f*pow(10, -3)};
+	float EXCITATORY_TO_INHIBITORY_DELAY_RANGE[] = {timestep, 10.0f*pow(10, -3)};
+	float INHIBITORY_TO_EXCITATORY_DELAY_RANGE[] = {timestep, 10.0f*pow(10, -3)};
 
 	//
 	simulator.AddSynapseGroupsForNeuronGroupAndEachInputGroup(EXCITATORY_NEURONS_LAYER_1, INPUT_TO_EXCITATORY_DELAY_RANGE, G2E_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
