@@ -10,7 +10,7 @@
 #include "../Helpers/RandomStateManager.h"
 
 struct poisson_spiking_neuron_parameters_struct : spiking_neuron_parameters_struct {
-	poisson_spiking_neuron_parameters_struct(): rate(0.0f) { spiking_neuron_parameters_struct(); }
+	poisson_spiking_neuron_parameters_struct(): rate(50.0f) { spiking_neuron_parameters_struct(); }
 
 	float rate;
 };
@@ -46,6 +46,7 @@ __global__ void poisson_update_membrane_potentials_kernal(curandState_t* d_state
 							float *d_membrane_potentials_v,
 							float timestep,
 							float * d_thresholds_for_action_potential_spikes,
-							size_t total_number_of_inputs);
+							size_t total_number_of_input_neurons,
+							int current_stimulus_index);
 
 #endif

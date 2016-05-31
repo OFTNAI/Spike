@@ -65,12 +65,4 @@ public:
 	
 };
 
-__global__ void image_poisson_update_membrane_potentials_kernal(curandState_t* d_states,
-							float *d_gabor_input_rates,
-							float *d_membrane_potentials_v,
-							float timestep,
-							float * d_thresholds_for_action_potential_spikes,
-							size_t total_number_of_input_neurons,
-							int current_stimulus_index);
-
 #endif

@@ -81,7 +81,8 @@ void PoissonSpikingNeurons::update_membrane_potentials(float timestep) {
 														d_membrane_potentials_v,
 														timestep,
 														d_thresholds_for_action_potential_spikes,
-														total_number_of_neurons);
+														total_number_of_neurons,
+														current_stimulus_index);
 
 	CudaCheckError();
 }
@@ -92,25 +93,34 @@ __global__ void poisson_update_membrane_potentials_kernal(curandState_t* d_state
 							float *d_membrane_potentials_v,
 							float timestep,
 							float * d_thresholds_for_action_potential_spikes,
-							size_t total_number_of_inputs){
+							size_t total_number_of_input_neurons,
+							int current_stimulus_index) {
 
 	 
 	int t_idx = threadIdx.x + blockIdx.x * blockDim.x;
 	int idx = t_idx;
-	while (idx < total_number_of_inputs){
+	while (idx < total_number_of_input_neurons){
 
-		// Creates random float between 0 and 1 from uniform distribution
-		// d_states effectively provides a different seed for each thread
-		// curand_uniform produces different float every time you call it
-		float random_float = curand_uniform(&d_states[t_idx]);
+		int rate_index = (total_number_of_input_neurons * current_stimulus_index) + idx;
 
-		// if the randomnumber is less than the rate
-		if (random_float < (d_rates[idx] * timestep)){
+		float rate = d_rates[rate_index];
 
-			// Puts membrane potential above default spiking threshold
-			d_membrane_potentials_v[idx] = d_thresholds_for_action_potential_spikes[idx] + 0.02;
+		if (rate > 0.1) {
 
-		} 
+			// Creates random float between 0 and 1 from uniform distribution
+			// d_states effectively provides a different seed for each thread
+			// curand_uniform produces different float every time you call it
+			float random_float = curand_uniform(&d_states[t_idx]);
+			
+			// if the randomnumber is less than the rate
+			if (random_float < (rate * timestep)){
+
+				// Puts membrane potential above default spiking threshold
+				d_membrane_potentials_v[idx] = d_thresholds_for_action_potential_spikes[idx] + 0.02;
+
+			} 
+
+		}
 
 		idx += blockDim.x * gridDim.x;
 
