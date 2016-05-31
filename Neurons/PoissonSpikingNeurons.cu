@@ -10,7 +10,6 @@ using namespace std;
 PoissonSpikingNeurons::PoissonSpikingNeurons() {
 	rates = NULL;
 	d_rates = NULL;
-	d_states = NULL;
 
 	total_number_of_input_images = 1;
 	current_stimulus_index = 0;
@@ -45,7 +44,6 @@ void PoissonSpikingNeurons::allocate_device_pointers() {
 	SpikingNeurons::allocate_device_pointers();
 
 	CudaSafeCall(cudaMalloc((void **)&d_rates, sizeof(float)*total_number_of_neurons));
-	CudaSafeCall(cudaMalloc((void**) &d_states, sizeof(curandState_t)*total_number_of_neurons));
 
 }
 
@@ -55,7 +53,6 @@ void PoissonSpikingNeurons::reset_neurons() {
 	SpikingNeurons::reset_neurons();
 
 	CudaSafeCall(cudaMemcpy(d_rates, rates, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemset(d_states, -1000.0f, sizeof(float)*total_number_of_neurons));
 }
 
 

@@ -28,8 +28,6 @@ public:
 	int total_number_of_input_images;
 	int current_stimulus_index;
 
-	curandState_t* d_states;
-
 	RandomStateManager * random_state_manager;
 
 	virtual int AddGroup(neuron_parameters_struct * group_params, int group_shape[2]);
