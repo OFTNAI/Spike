@@ -222,7 +222,7 @@ void Simulator::Run(float presentation_time_per_stimulus_per_epoch, int number_o
 	if (number_of_epochs == 0) print_message_and_exit("Error. There must be at least one epoch.");
 
 	// SEEDING
-	srand(42);
+	srand(43);
 
 	// STIMULUS ORDER (Put into function + variable)
 	int number_of_stimuli = input_neurons->total_number_of_input_images;
@@ -255,8 +255,10 @@ void Simulator::Run(float presentation_time_per_stimulus_per_epoch, int number_o
 
 			printf("Stimulus: %d, Current time in seconds: %1.2f\n", stimuli_presentation_order[stimulus_index], current_time_in_seconds);
 
-			input_neurons->current_stimulus_index = stimuli_presentation_order[stimulus_index];
 			input_neurons->reset_neurons();
+
+			input_neurons->current_stimulus_index = stimuli_presentation_order[stimulus_index];
+			// input_neurons->current_stimulus_index = 2;
 
 			int number_of_timesteps_per_stimulus_per_epoch = presentation_time_per_stimulus_per_epoch / timestep;
 		
@@ -285,6 +287,9 @@ void Simulator::Run(float presentation_time_per_stimulus_per_epoch, int number_o
 				current_time_in_seconds += float(timestep);
 
 			}
+
+			// if (recording_electrodes) printf("Total Number of Spikes: %d\n", recording_electrodes->h_total_number_of_spikes_stored_on_host);
+
 		}
 		#ifndef QUIETSTART
 		clock_t simulation_mid = clock();

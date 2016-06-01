@@ -104,7 +104,7 @@ int main (int argc, char *argv[]){
 	conductance_spiking_synapse_parameters_struct * G2E_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS = new conductance_spiking_synapse_parameters_struct();
 	G2E_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->max_number_of_connections_per_pair = 5;			
 	G2E_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_per_postsynaptic_neuron = 50;
-	G2E_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = 5.0 * pow(10, -5);
+	G2E_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = 7.9 * pow(10, -4);
 	G2E_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->connectivity_type = CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE;
 	G2E_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->stdp_on = true;
 	G2E_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_standard_deviation = 10.0;
@@ -113,7 +113,7 @@ int main (int argc, char *argv[]){
 	conductance_spiking_synapse_parameters_struct * E2E_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS = new conductance_spiking_synapse_parameters_struct();
 	E2E_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->max_number_of_connections_per_pair = 5;			
 	E2E_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_per_postsynaptic_neuron = 50;
-	E2E_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = 1.5 * pow(10, -5);
+	E2E_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = 5.0 * pow(10, -5);
 	E2E_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->connectivity_type = CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE;
 	E2E_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->stdp_on = true;
 	E2E_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_standard_deviation = 10.0;
@@ -131,7 +131,7 @@ int main (int argc, char *argv[]){
 	conductance_spiking_synapse_parameters_struct * I2E_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS = new conductance_spiking_synapse_parameters_struct();
 	I2E_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->max_number_of_connections_per_pair = 5;
 	I2E_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_per_postsynaptic_neuron = 30;
-	I2E_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = 2.07 * pow(10, -5);
+	I2E_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = 5.0 * pow(10, -4);
 	I2E_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->connectivity_type = CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE;
 	I2E_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->stdp_on = false;
 	I2E_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_standard_deviation = 10.0;
@@ -148,9 +148,9 @@ int main (int argc, char *argv[]){
 
 	//
 	float INPUT_TO_EXCITATORY_DELAY_RANGE[] = {timestep, timestep};
-	float EXCITATORY_TO_EXCITATORY_DELAY_RANGE[] = {timestep, 10.0f*pow(10, -3)};
-	float EXCITATORY_TO_INHIBITORY_DELAY_RANGE[] = {timestep, 10.0f*pow(10, -3)};
-	float INHIBITORY_TO_EXCITATORY_DELAY_RANGE[] = {timestep, 10.0f*pow(10, -3)};
+	float EXCITATORY_TO_EXCITATORY_DELAY_RANGE[] = {5.0*timestep, 3.0f*pow(10, -3)};
+	float EXCITATORY_TO_INHIBITORY_DELAY_RANGE[] = {5.0*timestep, 3.0f*pow(10, -3)};
+	float INHIBITORY_TO_EXCITATORY_DELAY_RANGE[] = {5.0*timestep, 3.0f*pow(10, -3)};
 
 	//
 	simulator.AddSynapseGroupsForNeuronGroupAndEachInputGroup(EXCITATORY_NEURONS_LAYER_1, INPUT_TO_EXCITATORY_DELAY_RANGE, G2E_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
@@ -182,30 +182,34 @@ int main (int argc, char *argv[]){
 	int temp_model_type = 1;
 	simulator.setup_network(temp_model_type);
 
+	// 
+	// int number_of_timesteps_per_device_spike_copy_check = 50;
+	// int device_spike_store_size_multiple_of_total_neurons = 10;
+	// float proportion_of_device_spike_store_full_before_copy = 0.8;
 	int number_of_timesteps_per_device_spike_copy_check = 50;
-	int device_spike_store_size_multiple_of_total_neurons = 10;
-	float proportion_of_device_spike_store_full_before_copy = 0.9;
+	int device_spike_store_size_multiple_of_total_neurons = 50;
+	float proportion_of_device_spike_store_full_before_copy = 0.5;
 	simulator.setup_recording_electrodes_for_neurons(number_of_timesteps_per_device_spike_copy_check, device_spike_store_size_multiple_of_total_neurons, proportion_of_device_spike_store_full_before_copy);
 	// simulator.setup_recording_electrodes_for_input_neurons(number_of_timesteps_per_device_spike_copy_check, device_spike_store_size_multiple_of_total_neurons, proportion_of_device_spike_store_full_before_copy);
 
 
 	// TRAINING
-	float presentation_time_per_stimulus_per_epoch = 0.5f;
-	int number_of_epochs = 1;
-	bool save_spikes = true;
+	float presentation_time_per_stimulus_per_epoch = 0.25f;
+	int number_of_epochs = 10;
+	bool save_spikes = false;
 	bool apply_stdp_to_relevant_synapses = true;
 	bool count_spikes_per_neuron = false;
 	bool present_stimuli_in_random_order = true;
 	simulator.Run(presentation_time_per_stimulus_per_epoch, number_of_epochs, temp_model_type, save_spikes, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, present_stimuli_in_random_order);
 
 	// TESTING
-	// presentation_time_per_stimulus_per_epoch = 1.0f;
-	// number_of_epochs = 1;
-	// save_spikes = false;
-	// apply_stdp_to_relevant_synapses = false;
-	// count_spikes_per_neuron = true;
-	// present_stimuli_in_random_order = false;
-	// simulator.Run(presentation_time_per_stimulus_per_epoch, number_of_epochs, temp_model_type, save_spikes, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, present_stimuli_in_random_order);
+	presentation_time_per_stimulus_per_epoch = 1.0f;
+	number_of_epochs = 1;
+	save_spikes = true;
+	apply_stdp_to_relevant_synapses = false;
+	count_spikes_per_neuron = false;
+	present_stimuli_in_random_order = false;
+	simulator.Run(presentation_time_per_stimulus_per_epoch, number_of_epochs, temp_model_type, save_spikes, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, present_stimuli_in_random_order);
 
 
 	clock_t end_entire_experiment = clock();

@@ -238,7 +238,10 @@ void ImagePoissonSpikingNeurons::load_rates_from_files(const char * inputDirecto
 
 	for(int image_index = 0; image_index < total_number_of_input_images; image_index++) {
 
+		float total_activation_for_image = 0.0;
+
 		int image_starting_index = image_index * total_number_of_rates_per_image;
+		printf("image_starting_index: %d\n", image_starting_index);
 		
 		// cout << "Loading Rates for Image #" << image_index << endl;
 		
@@ -288,6 +291,8 @@ void ImagePoissonSpikingNeurons::load_rates_from_files(const char * inputDirecto
 
 								int element_index = start_index_for_current_gabor_image + image_x + image_y * image_width;
 								
+								total_activation_for_image += rate;
+
 								// Rates from Matlab lie between 0 and 1, so multiply by max number of spikes per second in cortex
 								gabor_input_rates[element_index] = rate * max_rate_scaling_factor;
 							}
@@ -301,6 +306,7 @@ void ImagePoissonSpikingNeurons::load_rates_from_files(const char * inputDirecto
 				}
 			}
 		}
+		printf("total_activation_for_image: %f\n", total_activation_for_image);
 	}
 
 	printf("--- --- Proportion of input rates 0.0: %f\n", (float)zero_count/(float)total_number_of_rates);
@@ -320,6 +326,9 @@ int ImagePoissonSpikingNeurons::calculate_gabor_index(int orientationIndex, int 
 
 
 void ImagePoissonSpikingNeurons::update_membrane_potentials(float timestep) {
+
+	// printf("total_number_of_neurons: %d\n", total_number_of_neurons);
+	// printf("total_number_of_rates_per_image: %d\n", total_number_of_rates_per_image);
 
 	poisson_update_membrane_potentials_kernal<<<random_state_manager->block_dimensions, random_state_manager->threads_per_block>>>(random_state_manager->d_states,
 														d_gabor_input_rates,

@@ -173,13 +173,13 @@ void RecordingElectrodes::write_spikes_to_file(int epoch_number) {
 	
 
 	// Send the data
-	spikeidfile.write((char *)h_neuron_ids_of_stored_spikes_on_host, h_total_number_of_spikes_stored_on_host*sizeof(int));
-	spiketimesfile.write((char *)h_time_in_seconds_of_stored_spikes_on_host, h_total_number_of_spikes_stored_on_host*sizeof(float));
+	// spikeidfile.write((char *)h_neuron_ids_of_stored_spikes_on_host, h_total_number_of_spikes_stored_on_host*sizeof(int));
+	// spiketimesfile.write((char *)h_time_in_seconds_of_stored_spikes_on_host, h_total_number_of_spikes_stored_on_host*sizeof(float));
 
-	// for (int i = 0; i < h_total_number_of_spikes_stored_on_host; i++) {
-	// 	spikeidfile << to_string(h_neuron_ids_of_stored_spikes_on_host[i]) << endl;
-	// 	spiketimesfile << to_string(h_time_in_seconds_of_stored_spikes_on_host[i]) << endl;
-	// }
+	for (int i = 0; i < h_total_number_of_spikes_stored_on_host; i++) {
+		spikeidfile << to_string(h_neuron_ids_of_stored_spikes_on_host[i]) << endl;
+		spiketimesfile << to_string(h_time_in_seconds_of_stored_spikes_on_host[i]) << endl;
+	}
 
 	// Close the files
 	spikeidfile.close();

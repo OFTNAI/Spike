@@ -113,7 +113,7 @@ __global__ void poisson_update_membrane_potentials_kernal(curandState_t* d_state
 			float random_float = curand_uniform(&d_states[t_idx]);
 			
 			// if the randomnumber is less than the rate
-			if (random_float < (rate * timestep)){
+			if (random_float < (rate * timestep)) {
 
 				// Puts membrane potential above default spiking threshold
 				d_membrane_potentials_v[idx] = d_thresholds_for_action_potential_spikes[idx] + 0.02;
