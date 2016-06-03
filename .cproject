@@ -18,8 +18,18 @@
 					<folderInfo id="0.420286859." name="/" resourcePath="">
 						<toolChain id="org.eclipse.cdt.build.core.prefbase.toolchain.1856984096" name="No ToolChain" resourceTypeBasedDiscovery="false" superClass="org.eclipse.cdt.build.core.prefbase.toolchain">
 							<targetPlatform id="org.eclipse.cdt.build.core.prefbase.toolchain.1856984096.1342683444" name=""/>
-							<builder id="org.eclipse.cdt.build.core.settings.default.builder.1611253055" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" superClass="org.eclipse.cdt.build.core.settings.default.builder"/>
-							<tool id="org.eclipse.cdt.build.core.settings.holder.libs.1799139845" name="holder for library settings" superClass="org.eclipse.cdt.build.core.settings.holder.libs"/>
+							<builder id="ai3.target.cuda.builder.2018716337" keepEnvironmentInBuildfile="false" name="CUDA Builder" superClass="ai3.target.cuda.builder"/>
+							<tool id="org.eclipse.cdt.build.core.settings.holder.libs.1799139845" name="holder for library settings" superClass="org.eclipse.cdt.build.core.settings.holder.libs">
+								<option id="org.eclipse.cdt.build.core.settings.holder.libpaths.159432839" name="Library Paths" superClass="org.eclipse.cdt.build.core.settings.holder.libpaths" valueType="libPaths">
+									<listOptionValue builtIn="false" value="/Users/Shared/Mac_HD/MAC7DEV/ssh/usr/bin"/>
+									<listOptionValue builtIn="false" value="/Users/Shared/Mac_HD/MAC7DEV/ssh/usr/local/bin"/>
+									<listOptionValue builtIn="false" value="/Users/Shared/Mac_HD/MAC7DEV/ssh/bin"/>
+									<listOptionValue builtIn="false" value="/Users/Shared/Mac_HD/MAC7DEV/ssh/usr/sbin"/>
+									<listOptionValue builtIn="false" value="/Users/Shared/Mac_HD/MAC7DEV/ssh/sbin"/>
+									<listOptionValue builtIn="false" value="/Users/Shared/Mac_HD/MAC7DEV/ssh/opt/X11/bin"/>
+									<listOptionValue builtIn="false" value="/Users/Shared/Mac_HD/MAC7DEV/ssh/opt/ImageMagick/bin"/>
+								</option>
+							</tool>
 							<tool id="org.eclipse.cdt.build.core.settings.holder.748182861" name="Assembly" superClass="org.eclipse.cdt.build.core.settings.holder">
 								<inputType id="org.eclipse.cdt.build.core.settings.holder.inType.783727205" languageId="org.eclipse.cdt.core.assembly" languageName="Assembly" sourceContentType="org.eclipse.cdt.core.asmSource" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
 							</tool>
@@ -29,6 +39,11 @@
 							<tool id="org.eclipse.cdt.build.core.settings.holder.2136831784" name="GNU C" superClass="org.eclipse.cdt.build.core.settings.holder">
 								<inputType id="org.eclipse.cdt.build.core.settings.holder.inType.752000785" languageId="org.eclipse.cdt.core.gcc" languageName="GNU C" sourceContentType="org.eclipse.cdt.core.cSource,org.eclipse.cdt.core.cHeader" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
 							</tool>
+						</toolChain>
+					</folderInfo>
+					<folderInfo id="0.420286859.1161363484" name="/" resourcePath="Experiments">
+						<toolChain id="org.eclipse.cdt.build.core.prefbase.toolchain.773341071" name="No ToolChain" superClass="org.eclipse.cdt.build.core.prefbase.toolchain">
+							<tool id="org.eclipse.cdt.build.core.settings.holder.libs.851982823" name="holder for library settings" superClass="org.eclipse.cdt.build.core.settings.holder.libs"/>
 						</toolChain>
 					</folderInfo>
 				</configuration>
@@ -46,4 +61,6 @@
 		</scannerConfigBuildInfo>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
+	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
+	<storageModule moduleId="refreshScope"/>
 </cproject>
