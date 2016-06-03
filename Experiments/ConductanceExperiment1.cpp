@@ -201,12 +201,12 @@ int main (int argc, char *argv[]){
 	bool apply_stdp_to_relevant_synapses = true;
 	bool count_spikes_per_neuron_for_single_cell_analysis = false;
 	bool present_stimuli_in_random_order = true;
-	simulator.RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, temp_model_type, save_spikes, apply_stdp_to_relevant_synapses, count_spikes_per_neuron_for_single_cell_analysis, present_stimuli_in_random_order);
+	simulator.RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, temp_model_type, save_spikes, apply_stdp_to_relevant_synapses, count_spikes_per_neuron_for_single_cell_analysis, present_stimuli_in_random_order, NULL);
 
 	// TESTING
 	SpikeAnalyser * spike_analyser = new SpikeAnalyser();
 	presentation_time_per_stimulus_per_epoch = 1.0f;
-	save_spikes = true;
+	save_spikes = false;
 	simulator.RunSimulationToCountNeuronSpikesForSingleCellAnalysis(presentation_time_per_stimulus_per_epoch, temp_model_type, save_spikes, spike_analyser);
 
 	clock_t end_entire_experiment = clock();
