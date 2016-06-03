@@ -217,7 +217,18 @@ void Simulator::setup_recording_electrodes_for_input_neurons(int number_of_times
 }
 
 
-void Simulator::Run(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, int temp_model_type, bool save_spikes, bool apply_stdp_to_relevant_synapses, bool count_spikes_per_neuron, bool present_stimuli_in_random_order){
+void Simulator::RunSimulationToCountNeuronSpikesForSingleCellAnalysis(float presentation_time_per_stimulus_per_epoch, int temp_model_type, bool save_spikes, SpikeAnalyser *spike_analyser) {
+	bool number_of_epochs = 1;
+	bool apply_stdp_to_relevant_synapses = false;
+	bool count_spikes_per_neuron_for_single_cell_analysis = true;
+	bool present_stimuli_in_random_order = false;
+
+	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, temp_model_type, save_spikes, apply_stdp_to_relevant_synapses, count_spikes_per_neuron_for_single_cell_analysis, present_stimuli_in_random_order, spike_analyser);
+}
+
+
+
+void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, int temp_model_type, bool save_spikes, bool apply_stdp_to_relevant_synapses, bool count_spikes_per_neuron_for_single_cell_analysis, bool present_stimuli_in_random_order, SpikeAnalyser *spike_analyser){
 	
 	if (number_of_epochs == 0) print_message_and_exit("Error. There must be at least one epoch.");
 
@@ -270,7 +281,7 @@ void Simulator::Run(float presentation_time_per_stimulus_per_epoch, int number_o
 				if (temp_model_type == 0) temp_izhikevich_per_timestep_instructions(current_time_in_seconds);
 				if (temp_model_type == 1) temp_lif_per_timestep_instructions(current_time_in_seconds, apply_stdp_to_relevant_synapses);
 
-				if (count_spikes_per_neuron) recording_electrodes->add_spikes_to_per_neuron_spike_count(current_time_in_seconds);
+				if (count_spikes_per_neuron_for_single_cell_analysis) recording_electrodes->add_spikes_to_per_neuron_spike_count(current_time_in_seconds);
 
 				// // Only save the spikes if necessary
 				if (save_spikes){
