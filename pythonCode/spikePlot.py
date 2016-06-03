@@ -10,8 +10,11 @@ class SpikePlot(object):
         exDim = 32;
         inDim = 16;
         
-        fn_id = "../Results/Neurons_Epoch0_SpikeIDs.bin";
-        fn_t = "../Results/Neurons_Epoch0_SpikeTimes.bin";
+#         fn_id = "../Results/Neurons_Epoch0_SpikeIDs.bin";
+#         fn_t = "../Results/Neurons_Epoch0_SpikeTimes.bin";
+
+        fn_id = "../Results/Neurons_Epoch0_102173700SpikeIDs.bin";
+        fn_t = "../Results/Neurons_Epoch0_102173700SpikeTimes.bin";
         
         spikeIDs = np.loadtxt(fn_id);
         spikeTimes = np.loadtxt(fn_t);

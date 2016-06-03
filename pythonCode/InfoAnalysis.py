@@ -22,14 +22,13 @@ class InfoAnalysis(object):
         phaseIndex = 1;
         for phase in phases:
 
-            fn_id = "../Results/" + phase + "_SpikeIDs.bin";
-            fn_t = "../Results/" + phase + "_SpikeTimes.bin";
+            fn_id = "../Results/" + phase + "SpikeIDs.bin";
+            fn_t = "../Results/" + phase + "SpikeTimes.bin";
             
             spikeIDs = np.loadtxt(fn_id);
             spikeTimes = np.loadtxt(fn_t);
 
             FR = np.zeros((nObj, nTrans,nLayers, nCells));
-            
             for l in range(nLayers):
                 cond_ids = (l*nCells < spikeIDs) & (spikeIDs < (l+1)*nCells);
                 spikeIDs_layer = np.extract(cond_ids, spikeIDs);
@@ -40,9 +39,10 @@ class InfoAnalysis(object):
                         spikeIDs_stim = np.extract(cond_stim,spikeIDs_layer)-(nCells*l);
                         for id in spikeIDs_stim:
                             FR[obj,trans,l,id]=FR[obj,trans,l,id]+1;
+#             FR = np.random.rand(nObj, nTrans,nLayers, nCells)
                         
             
-            print FR;
+#             print FR;
                         
             performanceMeasure = 0.0;
             
@@ -109,12 +109,16 @@ class InfoAnalysis(object):
                 infos = reversed_arr;
             
                 plt.subplot(1,nLayers,l+1)
-                plt.plot(np.transpose(infos), linestyle='-', color='k');
+                if phaseIndex==1:
+                    plt.plot(np.transpose(infos), linestyle='-', color='k');
+                else:
+                    plt.plot(np.transpose(infos), linestyle='--', color='k');
                 plt.ylim([-0.05, np.log2(nObj)+0.05]);
                 plt.xlim([0, nCells])
                 plt.title("Layer " + str(l));
                 plt.ylabel("Information [bit]");
                 plt.xlabel("Cell Rank");
+                plt.hold(True);
                     
                 if (l == targetLayerForObjFunc and phaseIndex==len(phases)):
                     performanceMeasure = np.sum(reversed_arr);

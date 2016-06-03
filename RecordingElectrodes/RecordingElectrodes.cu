@@ -164,7 +164,7 @@ void RecordingElectrodes::write_spikes_to_file(int epoch_number) {
 	clock_t write_spikes_to_file_start = clock();
 
 	// Get the names
-	string file = RESULTS_DIRECTORY + prefix_string + "_Epoch" + to_string(epoch_number) + "_";
+	string file = RESULTS_DIRECTORY + prefix_string + "_Epoch" + to_string(epoch_number) + "_" + to_string(clock());
 
 	// Open the files
 	ofstream spikeidfile, spiketimesfile;
