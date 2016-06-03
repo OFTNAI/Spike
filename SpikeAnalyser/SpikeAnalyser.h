@@ -3,13 +3,16 @@
 
 #include <cuda.h>
 
+#include "Simulator.h"
+
 class InformationAnalysis{
 public:
 
 	// Constructor/Destructor
-	InformationAnalysis();
+	InformationAnalysis(Simulator * simulator_parameter);
 	~InformationAnalysis();
 
+	Simulator * simulator;
 
 };
 

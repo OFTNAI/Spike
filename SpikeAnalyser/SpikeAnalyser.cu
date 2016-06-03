@@ -1,8 +1,8 @@
 #include "InformationAnalysis.h"
 
 // InformationAnalysis Constructor
-InformationAnalysis::InformationAnalysis() {
-
+InformationAnalysis::InformationAnalysis(Simulator * simulator_parameter) {
+	simulator = simulator_parameter;
 }
 
 

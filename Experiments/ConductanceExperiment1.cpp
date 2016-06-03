@@ -13,6 +13,7 @@
 #include "../Neurons/ImagePoissonSpikingNeurons.h"
 #include "../Helpers/TerminalHelpers.h"
 #include <time.h>
+#include "../SpikeAnalyser/SpikeAnalyser.h"
 
 // The function which will autorun when the executable is created
 int main (int argc, char *argv[]){
@@ -201,6 +202,9 @@ int main (int argc, char *argv[]){
 	bool count_spikes_per_neuron = false;
 	bool present_stimuli_in_random_order = true;
 	simulator.Run(presentation_time_per_stimulus_per_epoch, number_of_epochs, temp_model_type, save_spikes, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, present_stimuli_in_random_order);
+
+
+	SpikeAnalyser * spike_analyser = new SpikeAnalyser(simulator);
 
 	// TESTING
 	presentation_time_per_stimulus_per_epoch = 1.0f;
