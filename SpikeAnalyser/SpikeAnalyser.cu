@@ -1,12 +1,12 @@
-#include "InformationAnalysis.h"
+#include "SpikeAnalyser.h"
 
-// InformationAnalysis Constructor
-InformationAnalysis::InformationAnalysis(Simulator * simulator_parameter) {
-	simulator = simulator_parameter;
+// SpikeAnalyser Constructor
+SpikeAnalyser::SpikeAnalyser() {
+	
 }
 
 
-// InformationAnalysis Destructor
-InformationAnalysis::~InformationAnalysis() {
+// SpikeAnalyser Destructor
+SpikeAnalyser::~SpikeAnalyser() {
 
 }

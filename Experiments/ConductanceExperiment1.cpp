@@ -199,22 +199,15 @@ int main (int argc, char *argv[]){
 	int number_of_epochs = 10;
 	bool save_spikes = false;
 	bool apply_stdp_to_relevant_synapses = true;
-	bool count_spikes_per_neuron = false;
+	bool count_spikes_per_neuron_for_single_cell_analysis = false;
 	bool present_stimuli_in_random_order = true;
-	simulator.Run(presentation_time_per_stimulus_per_epoch, number_of_epochs, temp_model_type, save_spikes, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, present_stimuli_in_random_order);
-
-
-	SpikeAnalyser * spike_analyser = new SpikeAnalyser(simulator);
+	simulator.RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, temp_model_type, save_spikes, apply_stdp_to_relevant_synapses, count_spikes_per_neuron_for_single_cell_analysis, present_stimuli_in_random_order);
 
 	// TESTING
+	SpikeAnalyser * spike_analyser = new SpikeAnalyser();
 	presentation_time_per_stimulus_per_epoch = 1.0f;
-	number_of_epochs = 1;
 	save_spikes = true;
-	apply_stdp_to_relevant_synapses = false;
-	count_spikes_per_neuron = false;
-	present_stimuli_in_random_order = false;
-	simulator.Run(presentation_time_per_stimulus_per_epoch, number_of_epochs, temp_model_type, save_spikes, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, present_stimuli_in_random_order);
-
+	simulator.RunSimulationToCountNeuronSpikesForSingleCellAnalysis(presentation_time_per_stimulus_per_epoch, temp_model_type, save_spikes, spike_analyser);
 
 	clock_t end_entire_experiment = clock();
 	float timed_entire_experiment = float(end_entire_experiment - begin_entire_experiment) / CLOCKS_PER_SEC;

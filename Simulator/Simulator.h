@@ -27,6 +27,8 @@
 #include "../Neurons/PoissonSpikingNeurons.h"
 #include "../Neurons/SpikingNeurons.h"
 #include "../RecordingElectrodes/RecordingElectrodes.h"
+#include "../SpikeAnalyser/SpikeAnalyser.h"
+
 
 // Simulator Class for running of the simulations
 class Simulator{
@@ -81,7 +83,9 @@ public:
 	void setup_recording_electrodes_for_neurons(int number_of_timesteps_per_device_spike_copy_check_param, int device_spike_store_size_multiple_of_total_neurons_param, float proportion_of_device_spike_store_full_before_copy_param);
 	void setup_recording_electrodes_for_input_neurons(int number_of_timesteps_per_device_spike_copy_check_param, int device_spike_store_size_multiple_of_total_neurons_param, float proportion_of_device_spike_store_full_before_copy_param);
 
-	void Run(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, int temp_model_type, bool save_spikes, bool apply_stdp_to_relevant_synapses, bool count_spikes_per_neuron, bool present_stimuli_in_random_order);
+	void RunSimulation(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, int temp_model_type, bool save_spikes, bool apply_stdp_to_relevant_synapses, bool count_spikes_per_neuron_for_single_cell_analysis, bool present_stimuli_in_random_order);
+	void RunSimulationToCountNeuronSpikesForSingleCellAnalysis(float presentation_time_per_stimulus_per_epoch, int temp_model_type, bool save_spikes, SpikeAnalyser *spike_analyser);
+
 
 protected: 
 	void temp_izhikevich_per_timestep_instructions(float current_time_in_seconds);

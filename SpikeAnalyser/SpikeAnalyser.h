@@ -1,18 +1,14 @@
-#ifndef InformationAnalysis_H
-#define InformationAnalysis_H
+#ifndef SpikeAnalyser_H
+#define SpikeAnalyser_H
 
 #include <cuda.h>
 
-#include "Simulator.h"
-
-class InformationAnalysis{
+class SpikeAnalyser{
 public:
 
 	// Constructor/Destructor
-	InformationAnalysis(Simulator * simulator_parameter);
-	~InformationAnalysis();
-
-	Simulator * simulator;
+	SpikeAnalyser();
+	~SpikeAnalyser();
 
 };
 
