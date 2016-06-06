@@ -9,7 +9,7 @@ unittests
 /ObjectFiles/*
 /MatlabGaborFilter/Inputs/*
 /Experiments/bin/*
-/PythonCode/*.pyc
+**/*.pyc
 .cproject
 ._catch.hpp
 .project
