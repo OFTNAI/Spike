@@ -60,9 +60,6 @@ int Neurons::AddGroup(neuron_parameters_struct * group_params, int group_shape[2
 	last_neuron_indices_for_each_group = (int*)realloc(last_neuron_indices_for_each_group,(total_number_of_groups*sizeof(int)));
 	last_neuron_indices_for_each_group[new_group_id] = total_number_of_neurons - 1;
 
-	// printf("start_neuron_indices_for_each_group[new_group_id]: %d\n", start_neuron_indices_for_each_group[new_group_id]);
-	// printf("last_neuron_indices_for_each_group[new_group_id]: %d\n", last_neuron_indices_for_each_group[new_group_id]);
-
 	// Add new group shape
 	group_shapes = (int**)realloc(group_shapes,(total_number_of_groups*sizeof(int*)));
 	group_shapes[new_group_id] = (int*)malloc(2*sizeof(int));
