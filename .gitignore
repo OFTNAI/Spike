@@ -11,6 +11,6 @@ unittests
 /Experiments/bin/*
 /PythonCode/*.pyc
 .cproject
-.__catch.hpp
+._catch.hpp
 .project
 .pydevproject
