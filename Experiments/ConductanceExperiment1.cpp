@@ -196,30 +196,22 @@ int main (int argc, char *argv[]){
 
 	// TESTING UNTRAINED
 	float presentation_time_per_stimulus_per_epoch = 1.0f;
-	int number_of_epochs = 10;
-	bool save_spikes = true;
-	bool apply_stdp_to_relevant_synapses = true;
-	bool count_spikes_per_neuron_for_single_cell_analysis = false;
-	bool present_stimuli_in_random_order = false;
+	bool save_spikes = false;
 	SpikeAnalyser * spike_analyser = new SpikeAnalyser();
 	simulator.RunSimulationToCountNeuronSpikesForSingleCellAnalysis(presentation_time_per_stimulus_per_epoch, temp_model_type, save_spikes, spike_analyser);
 
 
 	// TRAINING
-	presentation_time_per_stimulus_per_epoch = 0.25f;
-	number_of_epochs = 10;
-	save_spikes = false;
-	apply_stdp_to_relevant_synapses = true;
-	count_spikes_per_neuron_for_single_cell_analysis = false;
-	present_stimuli_in_random_order = true;
-	simulator.RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, temp_model_type, save_spikes, apply_stdp_to_relevant_synapses, count_spikes_per_neuron_for_single_cell_analysis, present_stimuli_in_random_order, NULL);
+	presentation_time_per_stimulus_per_epoch = 0.2f;
+	int number_of_epochs = 10;
+	bool present_stimuli_in_random_order = true;
+	simulator.RunSimulationToTrainNetwork(presentation_time_per_stimulus_per_epoch, temp_model_type, number_of_epochs, present_stimuli_in_random_order);
 
 
 	// TESTING TRAINED
-	spike_analyser = new SpikeAnalyser();
 	presentation_time_per_stimulus_per_epoch = 1.0f;
-	save_spikes = true;
-	present_stimuli_in_random_order = false;
+	save_spikes = false;
+	spike_analyser = new SpikeAnalyser();
 	simulator.RunSimulationToCountNeuronSpikesForSingleCellAnalysis(presentation_time_per_stimulus_per_epoch, temp_model_type, save_spikes, spike_analyser);
 
 

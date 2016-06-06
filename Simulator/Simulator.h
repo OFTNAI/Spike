@@ -85,7 +85,7 @@ public:
 
 	void RunSimulation(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, int temp_model_type, bool save_spikes, bool apply_stdp_to_relevant_synapses, bool count_spikes_per_neuron_for_single_cell_analysis, bool present_stimuli_in_random_order, SpikeAnalyser *spike_analyser);
 	void RunSimulationToCountNeuronSpikesForSingleCellAnalysis(float presentation_time_per_stimulus_per_epoch, int temp_model_type, bool save_spikes, SpikeAnalyser *spike_analyser);
-
+	void RunSimulationToTrainNetwork(float presentation_time_per_stimulus_per_epoch, int temp_model_type, int number_of_epochs, bool present_stimuli_in_random_order);
 
 protected: 
 	void temp_izhikevich_per_timestep_instructions(float current_time_in_seconds);

@@ -226,6 +226,15 @@ void Simulator::RunSimulationToCountNeuronSpikesForSingleCellAnalysis(float pres
 	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, temp_model_type, save_spikes, apply_stdp_to_relevant_synapses, count_spikes_per_neuron_for_single_cell_analysis, present_stimuli_in_random_order, spike_analyser);
 }
 
+void Simulator::RunSimulationToTrainNetwork(float presentation_time_per_stimulus_per_epoch, int temp_model_type, int number_of_epochs, bool present_stimuli_in_random_order) {
+
+	bool apply_stdp_to_relevant_synapses = true;
+	bool count_spikes_per_neuron_for_single_cell_analysis = false;
+	bool save_spikes = false;
+
+	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, temp_model_type, save_spikes, apply_stdp_to_relevant_synapses, count_spikes_per_neuron_for_single_cell_analysis, present_stimuli_in_random_order, NULL);
+}
+
 
 
 void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, int temp_model_type, bool save_spikes, bool apply_stdp_to_relevant_synapses, bool count_spikes_per_neuron_for_single_cell_analysis, bool present_stimuli_in_random_order, SpikeAnalyser *spike_analyser){
