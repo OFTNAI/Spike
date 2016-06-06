@@ -25,7 +25,6 @@ int main (int argc, char *argv[]){
 	float timestep = 0.0001;
 	simulator.SetTimestep(timestep);
 	simulator.SetNeuronType(new LIFSpikingNeurons());
-	// simulator.SetInputNeuronType(new PoissonSpikingNeurons());
 	simulator.SetInputNeuronType(new ImagePoissonSpikingNeurons());
 	simulator.SetSynapseType(new ConductanceSpikingSynapses());
 
@@ -197,8 +196,9 @@ int main (int argc, char *argv[]){
 	// TESTING UNTRAINED
 	float presentation_time_per_stimulus_per_epoch = 1.0f;
 	bool save_spikes = false;
-	SpikeAnalyser * spike_analyser = new SpikeAnalyser();
-	simulator.RunSimulationToCountNeuronSpikesForSingleCellAnalysis(presentation_time_per_stimulus_per_epoch, temp_model_type, save_spikes, spike_analyser);
+	SpikeAnalyser * untrained_spike_analyser = new SpikeAnalyser(simulator.neurons, simulator.input_neurons);
+	simulator.RunSimulationToCountNeuronSpikesForSingleCellAnalysis(presentation_time_per_stimulus_per_epoch, temp_model_type, save_spikes, untrained_spike_analyser);
+	spike_analyser 
 
 
 	// TRAINING
@@ -211,7 +211,7 @@ int main (int argc, char *argv[]){
 	// TESTING TRAINED
 	presentation_time_per_stimulus_per_epoch = 1.0f;
 	save_spikes = false;
-	spike_analyser = new SpikeAnalyser();
+	SpikeAnalyser * trained_spike_analyser = new SpikeAnalyser(simulator.neurons, simulator.input_neurons);
 	simulator.RunSimulationToCountNeuronSpikesForSingleCellAnalysis(presentation_time_per_stimulus_per_epoch, temp_model_type, save_spikes, spike_analyser);
 
 

@@ -278,7 +278,6 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 			input_neurons->reset_neurons();
 
 			input_neurons->current_stimulus_index = stimuli_presentation_order[stimulus_index];
-			// input_neurons->current_stimulus_index = 2;
 
 			int number_of_timesteps_per_stimulus_per_epoch = presentation_time_per_stimulus_per_epoch / timestep;
 		
