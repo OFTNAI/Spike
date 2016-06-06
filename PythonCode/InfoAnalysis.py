@@ -1,5 +1,5 @@
 import numpy as np
-import pylab as plt
+import matplotlib.pyplot as plt #Changed from 'import pylab as plt'
 import pickle
 import os;
 #from Parameters import *

@@ -5,7 +5,8 @@ ExampleLIF
 ExampleIzhikevich
 catch.hpp
 unittests
-/results/*
+/Results/*
 /ObjectFiles/*
 /MatlabGaborFilter/Inputs/*
 /Experiments/bin/*
+/PythonCode/*.pyc

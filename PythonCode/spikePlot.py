@@ -1,4 +1,4 @@
-import pylab as plt
+import matplotlib.pyplot as plt #Changed from 'import pylab as plt'
 import numpy as np
 
 
@@ -13,14 +13,14 @@ class SpikePlot(object):
 #         fn_id = "../Results/Neurons_Epoch0_SpikeIDs.bin";
 #         fn_t = "../Results/Neurons_Epoch0_SpikeTimes.bin";
 
-        fn_id = "../Results/Neurons_Epoch0_102173700SpikeIDs.bin";
-        fn_t = "../Results/Neurons_Epoch0_102173700SpikeTimes.bin";
+        fn_id = "../Results/Neurons_Epoch0_83853152SpikeIDs.bin";
+        fn_t = "../Results/Neurons_Epoch0_83853152SpikeTimes.bin";
         
         spikeIDs = np.loadtxt(fn_id);
         spikeTimes = np.loadtxt(fn_t);
         
+        #fig = plt.figure(0 , figsize=(300, 150),dpi=150);
         fig = plt.figure(0 , figsize=(30, 15),dpi=150);
-        
         
         
         for l in range(nLayers):
