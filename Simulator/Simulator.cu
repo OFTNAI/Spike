@@ -290,7 +290,11 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 				if (temp_model_type == 0) temp_izhikevich_per_timestep_instructions(current_time_in_seconds);
 				if (temp_model_type == 1) temp_lif_per_timestep_instructions(current_time_in_seconds, apply_stdp_to_relevant_synapses);
 
-				if (count_spikes_per_neuron_for_single_cell_analysis) recording_electrodes->add_spikes_to_per_neuron_spike_count(current_time_in_seconds);
+				if (count_spikes_per_neuron_for_single_cell_analysis) {
+					if (recording_electrodes) {
+						recording_electrodes->add_spikes_to_per_neuron_spike_count(current_time_in_seconds);
+					}
+				}
 
 				// // Only save the spikes if necessary
 				if (save_spikes){
@@ -306,6 +310,12 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 
 				current_time_in_seconds += float(timestep);
 
+			}
+
+			if (count_spikes_per_neuron_for_single_cell_analysis) {
+				if (spike_analyser) {
+					spike_analyser->store_spike_counts_for_stimulus_index(input_neurons->current_stimulus_index, recording_electrodes->d_per_neuron_spike_counts);
+				}
 			}
 
 			// if (recording_electrodes) printf("Total Number of Spikes: %d\n", recording_electrodes->h_total_number_of_spikes_stored_on_host);
