@@ -116,6 +116,8 @@ void Synapses::AddGroup(int presynaptic_group_id,
 		printf("postsynaptic_group_id: %d\n", postsynaptic_group_id);
 	}
 
+	int* start_neuron_indices_for_neuron_groups = neurons->start_neuron_indices_for_each_group;
+	int* start_neuron_indices_for_input_neuron_groups = input_neurons->start_neuron_indices_for_each_group;
 	int* last_neuron_indices_for_neuron_groups = neurons->last_neuron_indices_for_each_group;
 	int* last_neuron_indices_for_input_neuron_groups = input_neurons->last_neuron_indices_for_each_group;
 
@@ -134,19 +136,21 @@ void Synapses::AddGroup(int presynaptic_group_id,
 
 		// if (stdp_on == true) print_message_and_exit("Plasticity between input neurons and model neurons is not currently supported.");
 
-		presynaptic_group_shape = input_neurons->group_shapes[CORRECTED_PRESYNAPTIC_ID(presynaptic_group_id, presynaptic_group_is_input)];
+		int corrected_presynaptic_group_id = CORRECTED_PRESYNAPTIC_ID(presynaptic_group_id, presynaptic_group_is_input);
+
+		presynaptic_group_shape = input_neurons->group_shapes[corrected_presynaptic_group_id];
 
 		if (presynaptic_group_id < -1){
-			prestart = last_neuron_indices_for_input_neuron_groups[CORRECTED_PRESYNAPTIC_ID(presynaptic_group_id, presynaptic_group_is_input) - 1];
+			prestart = start_neuron_indices_for_input_neuron_groups[corrected_presynaptic_group_id];
 		}
-		preend = last_neuron_indices_for_input_neuron_groups[CORRECTED_PRESYNAPTIC_ID(presynaptic_group_id, presynaptic_group_is_input)];
+		preend = last_neuron_indices_for_input_neuron_groups[corrected_presynaptic_group_id];
 
 	} else {
 
 		presynaptic_group_shape = neurons->group_shapes[presynaptic_group_id];
 
 		if (presynaptic_group_id > 0){
-			prestart = last_neuron_indices_for_neuron_groups[presynaptic_group_id - 1];
+			prestart = start_neuron_indices_for_neuron_groups[presynaptic_group_id];
 		}
 		preend = last_neuron_indices_for_neuron_groups[presynaptic_group_id];
 
@@ -160,12 +164,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 
 	} else if (postsynaptic_group_id >= 0){
 		postsynaptic_group_shape = neurons->group_shapes[postsynaptic_group_id];
-
-		if (postsynaptic_group_id == 0) {
-			poststart = 0;
-		} else {
-			poststart = last_neuron_indices_for_neuron_groups[postsynaptic_group_id - 1];
-		}
+		poststart = start_neuron_indices_for_neuron_groups[postsynaptic_group_id];
 		
 	}
 	int postend = last_neuron_indices_for_neuron_groups[postsynaptic_group_id];

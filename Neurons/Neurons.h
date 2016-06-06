@@ -33,6 +33,7 @@ public:
 	float* d_current_injections;
 
 	int **group_shapes;
+	int *start_neuron_indices_for_each_group;
 	int *last_neuron_indices_for_each_group;
 
 	int number_of_neurons_in_new_group;
