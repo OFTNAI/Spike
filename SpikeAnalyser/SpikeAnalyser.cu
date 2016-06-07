@@ -2,10 +2,15 @@
 
 #include "../Helpers/CUDAErrorCheckHelpers.h"
 
+#include <stdlib.h>
+
 // SpikeAnalyser Constructor
 SpikeAnalyser::SpikeAnalyser(Neurons * neurons_parameter, ImagePoissonSpikingNeurons * input_neurons_parameter) {
 	neurons = neurons_parameter;
 	input_neurons = input_neurons_parameter;
+
+	information_scores_for_each_object_and_neuron = NULL;
+	descending_information_scores_for_each_object_and_neuron = NULL;
 
 	per_stimulus_per_neuron_spike_counts = new int*[input_neurons->total_number_of_input_images];
 
@@ -122,11 +127,15 @@ void SpikeAnalyser::calculate_single_cell_information_scores_for_neuron_group(in
 
 	// 5. Calculate information_scores_for_each_object_and_neuron
 	// First set up arrays
-	float ** information_scores_for_each_object_and_neuron = new float *[input_neurons->total_number_of_objects];
+	information_scores_for_each_object_and_neuron = new float *[input_neurons->total_number_of_objects];
+	descending_information_scores_for_each_object_and_neuron = new float *[input_neurons->total_number_of_objects];
+
 	for (int object_index = 0; object_index < input_neurons->total_number_of_objects; object_index++) {
 		information_scores_for_each_object_and_neuron[object_index] = new float[number_of_neurons_in_group];
+		descending_information_scores_for_each_object_and_neuron[object_index] = new float[number_of_neurons_in_group];
 		for (int neuron_index_zeroed = 0; neuron_index_zeroed < number_of_neurons_in_group; neuron_index_zeroed++) {
 			information_scores_for_each_object_and_neuron[object_index][neuron_index_zeroed] = 0.0;
+			descending_information_scores_for_each_object_and_neuron[object_index][neuron_index_zeroed] = 0.0;
 		}
 	}
 
@@ -144,12 +153,20 @@ void SpikeAnalyser::calculate_single_cell_information_scores_for_neuron_group(in
 				}
 			}
 			information_scores_for_each_object_and_neuron[object_index][neuron_index_zeroed] = information_sum;
+			descending_information_scores_for_each_object_and_neuron[object_index][neuron_index_zeroed] = information_sum;
 			// printf("information_sum: %f\n", information_sum);
 		}
 	}
 
 
+	//6. Sort information scores for each object and neuron
+	for (int object_index = 0; object_index < input_neurons->total_number_of_objects; object_index++) {
+		std::sort(descending_information_scores_for_each_object_and_neuron[object_index], descending_information_scores_for_each_object_and_neuron[object_index] + number_of_neurons_in_group, std::greater<float>());
+	}
+
 
 
 
 }
+
+

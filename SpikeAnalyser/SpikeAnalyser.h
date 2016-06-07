@@ -17,6 +17,9 @@ public:
 
 	int ** per_stimulus_per_neuron_spike_counts;
 
+	float ** information_scores_for_each_object_and_neuron;
+	float ** descending_information_scores_for_each_object_and_neuron;
+
 	void store_spike_counts_for_stimulus_index(int stimulus_index, int * d_neuron_spike_counts_for_stimulus);
 
 	void calculate_single_cell_information_scores_for_neuron_group(int neuron_group_index, int number_of_bins);
