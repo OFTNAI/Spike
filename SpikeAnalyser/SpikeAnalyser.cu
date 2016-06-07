@@ -35,6 +35,7 @@ void SpikeAnalyser::calculate_single_cell_information_scores_for_neuron_group(in
 
 	int neuron_group_start_index = neurons->start_neuron_indices_for_each_group[neuron_group_index];
 	int neuron_group_end_index = neurons->last_neuron_indices_for_each_group[neuron_group_index];
+	int number_of_neurons_in_group = neuron_group_end_index - neuron_group_start_index + 1;
 
 	// Find max number of spikes
 	int max_number_of_spikes = 0;
@@ -48,22 +49,33 @@ void SpikeAnalyser::calculate_single_cell_information_scores_for_neuron_group(in
 	}
 
 
-	// Calculate bin index for all spike counts
+	// Calculate bin index for all spike counts + create bin counts for each neuron
 	int ** bin_indices_per_stimulus_and_per_neuron = new int*[input_neurons->total_number_of_input_images];
 	for (int stimulus_index = 0; stimulus_index < input_neurons->total_number_of_input_images; stimulus_index++) {
-		bin_indices_per_stimulus_and_per_neuron[stimulus_index] = new int[neurons->total_number_of_neurons];
+		bin_indices_per_stimulus_and_per_neuron[stimulus_index] = new int[number_of_neurons_in_group];
 	}
-	for (int stimulus_index = 0; stimulus_index < input_neurons->total_number_of_input_images; stimulus_index++) {
-		for (int neuron_index = neuron_group_start_index; neuron_index <= neuron_group_end_index; neuron_index++) {
-			int number_of_spikes = per_stimulus_per_neuron_spike_counts[stimulus_index][neuron_index];
-			float ratio_of_max_number_of_spikes = (float)number_of_spikes / (float)max_number_of_spikes;
 
-			bin_indices_per_stimulus_and_per_neuron[stimulus_index][neuron_index] = floor(ratio_of_max_number_of_spikes * (float)number_of_bins);
-
+	int ** individual_bin_counts_for_each_neuron = new int*[number_of_bins];
+	for (int bin_index = 0; bin_index < number_of_bins; bin_index++) {
+		individual_bin_counts_for_each_neuron[bin_index] = new int[number_of_neurons_in_group];
+		for (int neuron_index = 0; neuron_index < number_of_neurons_in_group; neuron_index++) {
+			individual_bin_counts_for_each_neuron[bin_index][neuron_index] = 0;
 		}
 	}
 
 
+	for (int stimulus_index = 0; stimulus_index < input_neurons->total_number_of_input_images; stimulus_index++) {
+		for (int neuron_index_zeroed = 0; neuron_index_zeroed < number_of_neurons_in_group; neuron_index_zeroed++) {
+
+			int number_of_spikes = per_stimulus_per_neuron_spike_counts[stimulus_index][neuron_index_zeroed+neuron_group_start_index];
+			float ratio_of_max_number_of_spikes = (float)number_of_spikes / (float)max_number_of_spikes;
+
+			int bin_index = min(int(floor(ratio_of_max_number_of_spikes * number_of_bins)), number_of_bins - 1);
+			bin_indices_per_stimulus_and_per_neuron[stimulus_index][neuron_index_zeroed] = bin_index;
+
+			individual_bin_counts_for_each_neuron[bin_index][neuron_index_zeroed]++;
+		}
+	}
 
 
 

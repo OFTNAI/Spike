@@ -194,7 +194,7 @@ int main (int argc, char *argv[]){
 
 
 	// TESTING UNTRAINED
-	float presentation_time_per_stimulus_per_epoch = 1.0f;
+	float presentation_time_per_stimulus_per_epoch = 0.2f;
 	bool save_spikes = false;
 	SpikeAnalyser * untrained_spike_analyser = new SpikeAnalyser(simulator.neurons, simulator.input_neurons);
 	simulator.RunSimulationToCountNeuronSpikesForSingleCellAnalysis(presentation_time_per_stimulus_per_epoch, temp_model_type, save_spikes, untrained_spike_analyser);
