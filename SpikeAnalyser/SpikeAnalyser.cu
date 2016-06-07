@@ -56,10 +56,13 @@ void SpikeAnalyser::calculate_single_cell_information_scores_for_neuron_group(in
 	}
 
 	int ** individual_bin_counts_for_each_neuron = new int*[number_of_bins];
+	float ** probabilities_of_bin_responses_p_r = new float*[number_of_bins];
 	for (int bin_index = 0; bin_index < number_of_bins; bin_index++) {
 		individual_bin_counts_for_each_neuron[bin_index] = new int[number_of_neurons_in_group];
+		probabilities_of_bin_responses_p_r[bin_index] = new float[number_of_neurons_in_group];
 		for (int neuron_index = 0; neuron_index < number_of_neurons_in_group; neuron_index++) {
 			individual_bin_counts_for_each_neuron[bin_index][neuron_index] = 0;
+			probabilities_of_bin_responses_p_r[bin_index][neuron_index] = 0.0;
 		}
 	}
 
@@ -74,6 +77,15 @@ void SpikeAnalyser::calculate_single_cell_information_scores_for_neuron_group(in
 			bin_indices_per_stimulus_and_per_neuron[stimulus_index][neuron_index_zeroed] = bin_index;
 
 			individual_bin_counts_for_each_neuron[bin_index][neuron_index_zeroed]++;
+		}
+	}
+
+
+	// Calculate probabilities_of_bin_responses_p_r
+	for (int bin_index = 0; bin_index < number_of_bins; bin_index++) {
+		for (int neuron_index_zeroed = 0; neuron_index_zeroed < number_of_neurons_in_group; neuron_index_zeroed++) {
+			probabilities_of_bin_responses_p_r[bin_index][neuron_index_zeroed] = (float) individual_bin_counts_for_each_neuron[bin_index][neuron_index_zeroed] / (float) input_neurons->total_number_of_input_images;
+			// printf("probabilities_of_bin_responses_p_r[bin_index][neuron_index_zeroed]: %f\n", probabilities_of_bin_responses_p_r[bin_index][neuron_index_zeroed]);
 		}
 	}
 
