@@ -3,7 +3,7 @@
 #include "../Helpers/CUDAErrorCheckHelpers.h"
 
 // SpikeAnalyser Constructor
-SpikeAnalyser::SpikeAnalyser(Neurons * neurons_parameter, PoissonSpikingNeurons * input_neurons_parameter) {
+SpikeAnalyser::SpikeAnalyser(Neurons * neurons_parameter, ImagePoissonSpikingNeurons * input_neurons_parameter) {
 	neurons = neurons_parameter;
 	input_neurons = input_neurons_parameter;
 
@@ -37,7 +37,7 @@ void SpikeAnalyser::calculate_single_cell_information_scores_for_neuron_group(in
 	int neuron_group_end_index = neurons->last_neuron_indices_for_each_group[neuron_group_index];
 	int number_of_neurons_in_group = neuron_group_end_index - neuron_group_start_index + 1;
 
-	// Find max number of spikes
+	// 1. Find max number of spikes
 	int max_number_of_spikes = 0;
 	for (int stimulus_index = 0; stimulus_index < input_neurons->total_number_of_input_images; stimulus_index++) {
 		for (int neuron_index = neuron_group_start_index; neuron_index <= neuron_group_end_index; neuron_index++) {
@@ -49,7 +49,8 @@ void SpikeAnalyser::calculate_single_cell_information_scores_for_neuron_group(in
 	}
 
 
-	// Calculate bin index for all spike counts + create bin counts for each neuron
+	// 2. Calculate bin index for all spike counts + create bin counts for each neuron
+	// First set up arrays
 	int ** bin_indices_per_stimulus_and_per_neuron = new int*[input_neurons->total_number_of_input_images];
 	for (int stimulus_index = 0; stimulus_index < input_neurons->total_number_of_input_images; stimulus_index++) {
 		bin_indices_per_stimulus_and_per_neuron[stimulus_index] = new int[number_of_neurons_in_group];
@@ -81,11 +82,40 @@ void SpikeAnalyser::calculate_single_cell_information_scores_for_neuron_group(in
 	}
 
 
-	// Calculate probabilities_of_bin_responses_p_r
+	// 3. Calculate probabilities_of_bin_responses_p_r
 	for (int bin_index = 0; bin_index < number_of_bins; bin_index++) {
 		for (int neuron_index_zeroed = 0; neuron_index_zeroed < number_of_neurons_in_group; neuron_index_zeroed++) {
 			probabilities_of_bin_responses_p_r[bin_index][neuron_index_zeroed] = (float) individual_bin_counts_for_each_neuron[bin_index][neuron_index_zeroed] / (float) input_neurons->total_number_of_input_images;
 			// printf("probabilities_of_bin_responses_p_r[bin_index][neuron_index_zeroed]: %f\n", probabilities_of_bin_responses_p_r[bin_index][neuron_index_zeroed]);
+		}
+	}
+
+	// 4. Calculate probabilities_of_bin_responses_given_an_object_p_r_given_s
+	// First set up arrays
+	float *** probabilities_of_bin_responses_given_an_object_p_r_given_s = new float**[input_neurons->total_number_of_objects];
+	for (int object_index = 0; object_index < input_neurons->total_number_of_objects; object_index++) {
+		probabilities_of_bin_responses_given_an_object_p_r_given_s[object_index] = new float*[number_of_neurons_in_group];
+		for (int neuron_index_zeroed = 0; neuron_index_zeroed < number_of_neurons_in_group; neuron_index_zeroed++) {
+			probabilities_of_bin_responses_given_an_object_p_r_given_s[object_index][neuron_index_zeroed] = new float[number_of_bins];
+			for (int bin_index = 0; bin_index < number_of_bins; bin_index++) {
+				probabilities_of_bin_responses_given_an_object_p_r_given_s[object_index][neuron_index_zeroed][bin_index] = 0.0;
+			}
+		}
+	}
+
+
+	for (int object_index = 0; object_index < input_neurons->total_number_of_objects; object_index++) {
+		for (int neuron_index_zeroed = 0; neuron_index_zeroed < number_of_neurons_in_group; neuron_index_zeroed++) {
+			for (int bin_index = 0; bin_index < number_of_bins; bin_index++) {
+
+				int bin_count_for_object = 0;
+				for (int transform_index = 0; transform_index < input_neurons->total_number_of_transformations_per_object; transform_index++) {
+					int stimulus_index = object_index * input_neurons->total_number_of_transformations_per_object + transform_index;
+					if (bin_indices_per_stimulus_and_per_neuron[stimulus_index][neuron_index_zeroed] == bin_index) bin_count_for_object++;
+				}
+				probabilities_of_bin_responses_given_an_object_p_r_given_s[object_index][neuron_index_zeroed][bin_index] = (float)bin_count_for_object / (float)input_neurons->total_number_of_transformations_per_object;
+				// printf("probabilities_of_bin_responses_given_an_object_p_r_given_s[object_index][neuron_index_zeroed][bin_index]: %f\n", probabilities_of_bin_responses_given_an_object_p_r_given_s[object_index][neuron_index_zeroed][bin_index]);
+			}
 		}
 	}
 

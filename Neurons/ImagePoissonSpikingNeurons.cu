@@ -9,6 +9,8 @@
 #include <string>
 #include "../Helpers/FstreamWrapper.h"
 
+using namespace std;
+
 
 // ImagePoissonSpikingNeurons Constructor
 ImagePoissonSpikingNeurons::ImagePoissonSpikingNeurons() {

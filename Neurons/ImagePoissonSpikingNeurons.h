@@ -9,7 +9,7 @@
 
 #include <vector>
 
-using namespace std;
+// using namespace std;
 
 struct image_poisson_spiking_neuron_parameters_struct : poisson_spiking_neuron_parameters_struct {
 	image_poisson_spiking_neuron_parameters_struct(): gabor_index(-1) { poisson_spiking_neuron_parameters_struct(); }
@@ -54,11 +54,11 @@ public:
 	int total_number_of_objects;
 
 	//OLD VARIABLES
-	vector<string> inputNames;
+	std::vector<std::string> inputNames;
 
-	vector<float> * filterPhases;
-	vector<int>  * filterWavelengths;
-	vector<float> * filterOrientations;
+	std::vector<float> * filterPhases;
+	std::vector<int>  * filterWavelengths;
+	std::vector<float> * filterOrientations;
 	
 
 	int total_number_of_transformations_per_object;
