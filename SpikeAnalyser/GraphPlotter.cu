@@ -20,34 +20,29 @@ GraphPlotter::~GraphPlotter() {
 
 
 void GraphPlotter::plot_untrained_vs_trained_single_cell_information_for_all_objects(SpikeAnalyser *spike_analyser_for_untrained_network, SpikeAnalyser *spike_analyser_for_trained_network) {
-	// Prepare data.
-	int n = spike_analyser_for_untrained_network->number_of_neurons_in_group;
 
+	int number_of_neurons_in_group = spike_analyser_for_untrained_network->number_of_neurons_in_group;
+	
+	for (int object_index = 0; object_index < spike_analyser_for_untrained_network->input_neurons->total_number_of_objects; object_index++) {
+
+		std::vector<float> neuron_indices(number_of_neurons_in_group), trained(number_of_neurons_in_group);
+
+		std::vector<float> untrained_descending_scores = std::vector<float>(spike_analyser_for_untrained_network->descending_information_scores_for_each_object_and_neuron[object_index], spike_analyser_for_untrained_network->descending_information_scores_for_each_object_and_neuron[object_index] + number_of_neurons_in_group);
+		std::vector<float> trained_descending_scores = std::vector<float>(spike_analyser_for_trained_network->descending_information_scores_for_each_object_and_neuron[object_index], spike_analyser_for_trained_network->descending_information_scores_for_each_object_and_neuron[object_index] + number_of_neurons_in_group);
+		
+		for(int neuron_index=0; neuron_index < number_of_neurons_in_group; neuron_index++) {
+
+			neuron_indices.at(neuron_index) = neuron_index;
+		}
+
+		plt::named_plot("Untrained", neuron_indices, untrained_descending_scores, "r--");
+		plt::named_plot("Trained", neuron_indices, trained_descending_scores, "b--");
+
+	}
 	
 
-
-
-
-	// for 
-	std::vector<float> x(n), untrained(n), trained(n);
-	for(int i=0; i<n; ++i) {
-		x.at(i) = i;
-		untrained.at(i) = spike_analyser_for_untrained_network->descending_information_scores_for_each_object_and_neuron[0][i];
-		trained.at(i) = spike_analyser_for_trained_network->descending_information_scores_for_each_object_and_neuron[0][i];
-	}
-
-	plt::named_plot("Untrained", x, untrained, "r--");
-	plt::named_plot("Trained", x, trained, "b--");
-
-	// // Plot line from given x and y data. Color is selected automatically.
-	// plt::plot(x, y);
-	// // Plot a red dashed line from given x and y data.
-	// plt::plot(x, w,"r--");
-	// Plot a line whose name will show up as "log(x)" in the legend.
-	// plt::named_plot("log(x)", x, z);
-
-	// Set x-axis to interval [0,1000000]
-	plt::xlim(0, n);
+	// Set x-axis
+	plt::xlim(0, number_of_neurons_in_group);
 
 	// Add graph title
 	plt::title("Sample figure");

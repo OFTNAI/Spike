@@ -4,10 +4,6 @@
 
 #include <stdlib.h>
 
-#include "../matplotlib-cpp-master/matplotlibcpp.h"
-#include <cmath>
-namespace plt = matplotlibcpp;
-
 // SpikeAnalyser Constructor
 SpikeAnalyser::SpikeAnalyser(Neurons * neurons_parameter, ImagePoissonSpikingNeurons * input_neurons_parameter) {
 	neurons = neurons_parameter;
