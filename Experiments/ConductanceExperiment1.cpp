@@ -14,6 +14,7 @@
 #include "../Helpers/TerminalHelpers.h"
 #include <time.h>
 #include "../SpikeAnalyser/SpikeAnalyser.h"
+#include "../SpikeAnalyser/GraphPlotter.h"
 
 // The function which will autorun when the executable is created
 int main (int argc, char *argv[]){
@@ -194,7 +195,7 @@ int main (int argc, char *argv[]){
 
 
 	// TESTING UNTRAINED
-	float presentation_time_per_stimulus_per_epoch = 0.2f;
+	float presentation_time_per_stimulus_per_epoch = 1.0f;
 	bool save_spikes = false;
 	SpikeAnalyser * spike_analyser_for_untrained_network = new SpikeAnalyser(simulator.neurons, (ImagePoissonSpikingNeurons*)simulator.input_neurons);
 	simulator.RunSimulationToCountNeuronSpikesForSingleCellAnalysis(presentation_time_per_stimulus_per_epoch, temp_model_type, save_spikes, spike_analyser_for_untrained_network);
@@ -215,6 +216,10 @@ int main (int argc, char *argv[]){
 	SpikeAnalyser * spike_analyser_for_trained_network = new SpikeAnalyser(simulator.neurons, (ImagePoissonSpikingNeurons*)simulator.input_neurons);
 	simulator.RunSimulationToCountNeuronSpikesForSingleCellAnalysis(presentation_time_per_stimulus_per_epoch, temp_model_type, save_spikes, spike_analyser_for_trained_network);
 	spike_analyser_for_trained_network->calculate_single_cell_information_scores_for_neuron_group(EXCITATORY_NEURONS_LAYER_4, number_of_bins);
+
+
+	GraphPlotter *graph_plotter = new GraphPlotter();
+	graph_plotter->plot_untrained_vs_trained_single_cell_information_for_all_objects(spike_analyser_for_untrained_network, spike_analyser_for_trained_network);
 
 
 	clock_t end_entire_experiment = clock();

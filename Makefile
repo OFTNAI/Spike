@@ -20,14 +20,18 @@ ifeq ($(UNAME_S),Linux)
 endif
 
 
+
+
+
 # Default
 model: ${FILE}
 directory: ${EXPERIMENT_DIRECTORY}
 
 
 # Separating out the individual compilations so as not to compilation time
-${FILE}: ObjectFiles/${FILE}.o ObjectFiles/Simulator.o ObjectFiles/Neurons.o ObjectFiles/SpikingNeurons.o ObjectFiles/IzhikevichSpikingNeurons.o ObjectFiles/LIFSpikingNeurons.o ObjectFiles/PoissonSpikingNeurons.o ObjectFiles/ImagePoissonSpikingNeurons.o ObjectFiles/FstreamWrapper.o ObjectFiles/GeneratorSpikingNeurons.o ObjectFiles/Synapses.o ObjectFiles/SpikingSynapses.o ObjectFiles/IzhikevichSpikingSynapses.o ObjectFiles/ConductanceSpikingSynapses.o ObjectFiles/RecordingElectrodes.o ObjectFiles/RandomStateManager.o ObjectFiles/SpikeAnalyser.o
-	$(CC) ObjectFiles/${FILE}.o ObjectFiles/Simulator.o ObjectFiles/Neurons.o ObjectFiles/SpikingNeurons.o ObjectFiles/IzhikevichSpikingNeurons.o ObjectFiles/LIFSpikingNeurons.o ObjectFiles/PoissonSpikingNeurons.o ObjectFiles/ImagePoissonSpikingNeurons.o ObjectFiles/FstreamWrapper.o ObjectFiles/GeneratorSpikingNeurons.o ObjectFiles/Synapses.o ObjectFiles/SpikingSynapses.o ObjectFiles/IzhikevichSpikingSynapses.o ObjectFiles/ConductanceSpikingSynapses.o ObjectFiles/RecordingElectrodes.o ObjectFiles/RandomStateManager.o ObjectFiles/SpikeAnalyser.o -o ${EXPERIMENT_DIRECTORY}/bin/${FILE}
+${FILE}: ObjectFiles/${FILE}.o ObjectFiles/Simulator.o ObjectFiles/Neurons.o ObjectFiles/SpikingNeurons.o ObjectFiles/IzhikevichSpikingNeurons.o ObjectFiles/LIFSpikingNeurons.o ObjectFiles/PoissonSpikingNeurons.o ObjectFiles/ImagePoissonSpikingNeurons.o ObjectFiles/FstreamWrapper.o ObjectFiles/GeneratorSpikingNeurons.o ObjectFiles/Synapses.o ObjectFiles/SpikingSynapses.o ObjectFiles/IzhikevichSpikingSynapses.o ObjectFiles/ConductanceSpikingSynapses.o ObjectFiles/RecordingElectrodes.o ObjectFiles/RandomStateManager.o ObjectFiles/SpikeAnalyser.o ObjectFiles/GraphPlotter.o
+	$(CC) -lpython2.7 ObjectFiles/${FILE}.o ObjectFiles/Simulator.o ObjectFiles/Neurons.o ObjectFiles/SpikingNeurons.o ObjectFiles/IzhikevichSpikingNeurons.o ObjectFiles/LIFSpikingNeurons.o ObjectFiles/PoissonSpikingNeurons.o ObjectFiles/ImagePoissonSpikingNeurons.o ObjectFiles/FstreamWrapper.o ObjectFiles/GeneratorSpikingNeurons.o ObjectFiles/Synapses.o ObjectFiles/SpikingSynapses.o ObjectFiles/IzhikevichSpikingSynapses.o ObjectFiles/ConductanceSpikingSynapses.o ObjectFiles/RecordingElectrodes.o ObjectFiles/RandomStateManager.o ObjectFiles/SpikeAnalyser.o ObjectFiles/GraphPlotter.o -o ${EXPERIMENT_DIRECTORY}/bin/${FILE}
+
 
 # Compiling the Model file
 ObjectFiles/${FILE}.o: ${EXPERIMENT_DIRECTORY}/${FILE}.cpp
@@ -80,7 +84,9 @@ ObjectFiles/RandomStateManager.o: Helpers/RandomStateManager.cu
 # Compiling SpikeAnalyser class
 ObjectFiles/SpikeAnalyser.o: SpikeAnalyser/SpikeAnalyser.cu
 	$(CC) $(CFLAGS) SpikeAnalyser/SpikeAnalyser.cu -o $@
-
+# Compiling GraphPlotter class
+ObjectFiles/GraphPlotter.o: SpikeAnalyser/GraphPlotter.cu
+	$(CC) $(CFLAGS) SpikeAnalyser/GraphPlotter.cu -lpython2.7 -o $@
 
 # Test script
 test: Simulator.o Neurons.o SpikingNeurons.o IzhikevichSpikingNeurons.o PoissonSpikingNeurons.o ImagePoissonSpikingNeurons.o FstreamWrapper.o GeneratorSpikingNeurons.o Synapses.o RecordingElectrodes.o RandomStateManager.o SpikeAnalyser.o

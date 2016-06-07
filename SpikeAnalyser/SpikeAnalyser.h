@@ -14,6 +14,8 @@ public:
 
 	Neurons * neurons;
 	ImagePoissonSpikingNeurons * input_neurons;
+	
+	int number_of_neurons_in_group;
 
 	int ** per_stimulus_per_neuron_spike_counts;
 

@@ -4,10 +4,15 @@
 
 #include <stdlib.h>
 
+#include "../matplotlib-cpp-master/matplotlibcpp.h"
+#include <cmath>
+namespace plt = matplotlibcpp;
+
 // SpikeAnalyser Constructor
 SpikeAnalyser::SpikeAnalyser(Neurons * neurons_parameter, ImagePoissonSpikingNeurons * input_neurons_parameter) {
 	neurons = neurons_parameter;
 	input_neurons = input_neurons_parameter;
+	number_of_neurons_in_group = 0;
 
 	information_scores_for_each_object_and_neuron = NULL;
 	descending_information_scores_for_each_object_and_neuron = NULL;
@@ -40,7 +45,7 @@ void SpikeAnalyser::calculate_single_cell_information_scores_for_neuron_group(in
 
 	int neuron_group_start_index = neurons->start_neuron_indices_for_each_group[neuron_group_index];
 	int neuron_group_end_index = neurons->last_neuron_indices_for_each_group[neuron_group_index];
-	int number_of_neurons_in_group = neuron_group_end_index - neuron_group_start_index + 1;
+	number_of_neurons_in_group = neuron_group_end_index - neuron_group_start_index + 1;
 
 	// 1. Find max number of spikes
 	int max_number_of_spikes = 0;
