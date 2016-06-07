@@ -120,6 +120,36 @@ void SpikeAnalyser::calculate_single_cell_information_scores_for_neuron_group(in
 	}
 
 
+	// 5. Calculate information_scores_for_each_object_and_neuron
+	// First set up arrays
+	float ** information_scores_for_each_object_and_neuron = new float *[input_neurons->total_number_of_objects];
+	for (int object_index = 0; object_index < input_neurons->total_number_of_objects; object_index++) {
+		information_scores_for_each_object_and_neuron[object_index] = new float[number_of_neurons_in_group];
+		for (int neuron_index_zeroed = 0; neuron_index_zeroed < number_of_neurons_in_group; neuron_index_zeroed++) {
+			information_scores_for_each_object_and_neuron[object_index][neuron_index_zeroed] = 0.0;
+		}
+	}
+
+	for (int object_index = 0; object_index < input_neurons->total_number_of_objects; object_index++) {
+		for (int neuron_index_zeroed = 0; neuron_index_zeroed < number_of_neurons_in_group; neuron_index_zeroed++) {
+			float information_sum = 0.0;
+			for (int bin_index = 0; bin_index < number_of_bins; bin_index++) {
+				float p_r_given_s = probabilities_of_bin_responses_given_an_object_p_r_given_s[object_index][neuron_index_zeroed][bin_index];
+				float p_r = probabilities_of_bin_responses_p_r[bin_index][neuron_index_zeroed];
+				if ((p_r > 0.0) && (p_r_given_s > 0.0)){
+					float fraction = p_r_given_s / p_r;
+					float log_of_fraction = log2(fraction);
+					float new_component = p_r_given_s * log_of_fraction;
+					information_sum += new_component;
+				}
+			}
+			information_scores_for_each_object_and_neuron[object_index][neuron_index_zeroed] = information_sum;
+			// printf("information_sum: %f\n", information_sum);
+		}
+	}
+
+
+
 
 
 }
