@@ -15,55 +15,49 @@
 #include <time.h>
 #include "../SpikeAnalyser/SpikeAnalyser.h"
 #include "../SpikeAnalyser/GraphPlotter.h"
+#include "../Helpers/TimerWithMessages.h"
 
 // The function which will autorun when the executable is created
 int main (int argc, char *argv[]){
 	
-	clock_t begin_entire_experiment = clock();
+	TimerWithMessages * experiment_timer = new TimerWithMessages();
+
 	
 	// Create an instance of the Simulator and set the timestep
 	Simulator simulator;
 	float timestep = 0.0001;
 	simulator.SetTimestep(timestep);
-	simulator.SetNeuronType(new LIFSpikingNeurons());
-	simulator.SetInputNeuronType(new ImagePoissonSpikingNeurons());
-	simulator.SetSynapseType(new ConductanceSpikingSynapses());
 
-	simulator.synapses->print_synapse_group_details = false;
-	simulator.synapses->learning_rate_rho = 0.01;
-	ConductanceSpikingSynapses * conductance_spiking_synapses = (ConductanceSpikingSynapses*)simulator.synapses;
+	LIFSpikingNeurons * lif_spiking_neurons = new LIFSpikingNeurons();
+	ImagePoissonSpikingNeurons* input_neurons = new ImagePoissonSpikingNeurons();
+	ConductanceSpikingSynapses * conductance_spiking_synapses = new ConductanceSpikingSynapses();
+
+	simulator.SetNeuronType(lif_spiking_neurons);
+	simulator.SetInputNeuronType(input_neurons);
+	simulator.SetSynapseType(conductance_spiking_synapses);
+
+	conductance_spiking_synapses->print_synapse_group_details = false;
+	conductance_spiking_synapses->learning_rate_rho = 0.01;
 	conductance_spiking_synapses->decay_term_tau_g = 0.004; //0.004 is arbitrary non-zero value
 	conductance_spiking_synapses->decay_term_tau_C = 0.004; //0.004 is arbitrary non-zero value
 	conductance_spiking_synapses->synaptic_neurotransmitter_concentration_alpha_C = 0.5;
 
-	LIFSpikingNeurons * lif_spiking_neurons = (LIFSpikingNeurons*)simulator.neurons;
 	lif_spiking_neurons->decay_term_tau_D = 0.07; //0.07 arbitrary non-zero value
 	lif_spiking_neurons->model_parameter_alpha_D = 0.5;
 
 	/////////// ADD INPUT NEURONS ///////////
-	printf("Adding Input Neurons...\n");
-	clock_t adding_input_neurons_start = clock();
+	TimerWithMessages * adding_input_neurons_timer = new TimerWithMessages("Adding Input Neurons...\n");
 
-	ImagePoissonSpikingNeurons* input_neurons = (ImagePoissonSpikingNeurons*)simulator.input_neurons;
 	input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "MatlabGaborFilter/Inputs/", 1000.0f);
 	image_poisson_spiking_neuron_parameters_struct * image_poisson_spiking_group_params = new image_poisson_spiking_neuron_parameters_struct();
 	image_poisson_spiking_group_params->rate = 30.0f;
 	input_neurons->AddGroupForEachGaborType(image_poisson_spiking_group_params);
 
-	clock_t adding_input_neurons_end = clock();
-	float adding_input_neurons_total_time = float(adding_input_neurons_end - adding_input_neurons_start) / CLOCKS_PER_SEC;
-	printf("Input Neurons Added. Time Taken: %f\n", adding_input_neurons_total_time);
-	print_line_of_dashes_with_blank_lines_either_side();
-
-	// poisson_spiking_neuron_parameters_struct * poisson_spiking_group_params = new poisson_spiking_neuron_parameters_struct();
-	// poisson_spiking_group_params->rate = 30.0f;
-
+	adding_input_neurons_timer->stop_timer_and_log_time_and_message("Input Neurons Added.", true);
 
 	/////////// ADD NEURONS ///////////
-	printf("Adding Neurons...\n");
-	clock_t adding_neurons_start = clock();
+	TimerWithMessages * adding_neurons_timer = new TimerWithMessages("Adding Neurons...\n");
 
-	//
 	lif_spiking_neuron_parameters_struct * EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS = new lif_spiking_neuron_parameters_struct();
 	EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS->resting_potential_v0 = -0.074f;
 	EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS->threshold_for_action_potential_spike = -0.053f;
@@ -91,16 +85,11 @@ int main (int argc, char *argv[]){
 	int INHIBITORY_NEURONS_LAYER_3 = simulator.AddNeuronGroup(INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS, INHIBITORY_LAYER_SHAPE);
 	int INHIBITORY_NEURONS_LAYER_4 = simulator.AddNeuronGroup(INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS, INHIBITORY_LAYER_SHAPE);
 
-	clock_t adding_neurons_end = clock();
-	float adding_neurons_total_time = float(adding_neurons_end - adding_neurons_start) / CLOCKS_PER_SEC;
-	printf("Neurons Added. Time taken: %f\n", adding_neurons_total_time);
-	print_line_of_dashes_with_blank_lines_either_side();
+	adding_neurons_timer->stop_timer_and_log_time_and_message("Neurons Added.", true);
 
 
 	/////////// ADD SYNAPSES ///////////
-	printf("Adding Synapses...\n");
-	clock_t adding_synapses_start = clock();
-
+	TimerWithMessages * adding_synapses_timer = new TimerWithMessages("Adding Synapses...\n");
 
 	conductance_spiking_synapse_parameters_struct * G2E_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS = new conductance_spiking_synapse_parameters_struct();
 	G2E_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->max_number_of_connections_per_pair = 5;			
@@ -174,10 +163,7 @@ int main (int argc, char *argv[]){
 	simulator.AddSynapseGroup(INHIBITORY_NEURONS_LAYER_3, EXCITATORY_NEURONS_LAYER_3, INHIBITORY_TO_EXCITATORY_DELAY_RANGE, I2E_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 	simulator.AddSynapseGroup(INHIBITORY_NEURONS_LAYER_4, EXCITATORY_NEURONS_LAYER_4, INHIBITORY_TO_EXCITATORY_DELAY_RANGE, I2E_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 	
-	clock_t adding_synapses_end = clock();
-	float adding_synapses_total_time = float(adding_synapses_end - adding_synapses_start) / CLOCKS_PER_SEC;
-	printf("Synapses Added. Time taken: %f\n", adding_synapses_total_time);
-	print_line_of_dashes_with_blank_lines_either_side();
+	adding_synapses_timer->stop_timer_and_log_time_and_message("Synapses Added.", true);
 
 	//
 	int temp_model_type = 1;
@@ -233,11 +219,7 @@ int main (int argc, char *argv[]){
 	// graph_plotter->plot_untrained_vs_trained_single_cell_information_for_all_objects(spike_analyser_for_untrained_network, spike_analyser_for_trained_network);
 	// graph_plotter->plot_all_spikes(simulator.recording_electrodes);
 
-	clock_t end_entire_experiment = clock();
-	float timed_entire_experiment = float(end_entire_experiment - begin_entire_experiment) / CLOCKS_PER_SEC;
-	printf("Entire Experiment Time: %f\n", timed_entire_experiment);
-	print_line_of_dashes_with_blank_lines_either_side();
-
+	experiment_timer->stop_timer_and_log_time_and_message("Experiment Completed.", true);
 
 	return 1;
 }
