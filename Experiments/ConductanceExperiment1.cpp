@@ -195,41 +195,44 @@ int main (int argc, char *argv[]){
 
 
 	// TESTING UNTRAINED
-	float presentation_time_per_stimulus_per_epoch = 0.2f;
-	bool save_spikes = true;
+	float presentation_time_per_stimulus_per_epoch = 0.02f;
+	bool record_spikes = true;
+	bool save_recorded_spikes_to_file = false;
 	SpikeAnalyser * spike_analyser_for_untrained_network = new SpikeAnalyser(simulator.neurons, (ImagePoissonSpikingNeurons*)simulator.input_neurons);
-	simulator.RunSimulationToCountNeuronSpikesForSingleCellAnalysis(presentation_time_per_stimulus_per_epoch, temp_model_type, save_spikes, spike_analyser_for_untrained_network);
+	simulator.RunSimulationToCountNeuronSpikesForSingleCellAnalysis(presentation_time_per_stimulus_per_epoch, temp_model_type, record_spikes, save_recorded_spikes_to_file, spike_analyser_for_untrained_network);
 	int number_of_bins = 3;
 	spike_analyser_for_untrained_network->calculate_single_cell_information_scores_for_neuron_group(EXCITATORY_NEURONS_LAYER_4, number_of_bins);
 
-	// GraphPlotter *graph_plotter = new GraphPlotter();
-	// // graph_plotter->plot_untrained_vs_trained_single_cell_information_for_all_objects(spike_analyser_for_untrained_network, spike_analyser_for_trained_network);
-	// graph_plotter->plot_all_spikes(simulator.recording_electrodes);
+	GraphPlotter *graph_plotter = new GraphPlotter();
+	// graph_plotter->plot_untrained_vs_trained_single_cell_information_for_all_objects(spike_analyser_for_untrained_network, spike_analyser_for_trained_network);
+	graph_plotter->plot_all_spikes(simulator.recording_electrodes);
 
+
+	// simulator.recording_electrodes->delete_and_reset_recorded_spikes();
 
 	// TRAINING
-	presentation_time_per_stimulus_per_epoch = 0.2f;
+	presentation_time_per_stimulus_per_epoch = 0.02f;
 	int number_of_epochs = 1;
 	bool present_stimuli_in_random_order = true;
 	simulator.RunSimulationToTrainNetwork(presentation_time_per_stimulus_per_epoch, temp_model_type, number_of_epochs, present_stimuli_in_random_order);
 
 
 	// TESTING TRAINED
-	presentation_time_per_stimulus_per_epoch = 0.2f;
-	save_spikes = true;
+	presentation_time_per_stimulus_per_epoch = 0.02f;
+	record_spikes = true;
+	save_recorded_spikes_to_file = true;
 	SpikeAnalyser * spike_analyser_for_trained_network = new SpikeAnalyser(simulator.neurons, (ImagePoissonSpikingNeurons*)simulator.input_neurons);
-	simulator.RunSimulationToCountNeuronSpikesForSingleCellAnalysis(presentation_time_per_stimulus_per_epoch, temp_model_type, save_spikes, spike_analyser_for_trained_network);
+	simulator.RunSimulationToCountNeuronSpikesForSingleCellAnalysis(presentation_time_per_stimulus_per_epoch, temp_model_type, record_spikes, save_recorded_spikes_to_file, spike_analyser_for_trained_network);
 	spike_analyser_for_trained_network->calculate_single_cell_information_scores_for_neuron_group(EXCITATORY_NEURONS_LAYER_4, number_of_bins);
 
 	// GraphPlotter *graph_plotter = new GraphPlotter();
-	// // graph_plotter->plot_untrained_vs_trained_single_cell_information_for_all_objects(spike_analyser_for_untrained_network, spike_analyser_for_trained_network);
+	// graph_plotter->plot_untrained_vs_trained_single_cell_information_for_all_objects(spike_analyser_for_untrained_network, spike_analyser_for_trained_network);
 	// graph_plotter->plot_all_spikes(simulator.recording_electrodes);
 
 	clock_t end_entire_experiment = clock();
 	float timed_entire_experiment = float(end_entire_experiment - begin_entire_experiment) / CLOCKS_PER_SEC;
 	printf("Entire Experiment Time: %f\n", timed_entire_experiment);
 	print_line_of_dashes_with_blank_lines_either_side();
-
 
 
 	return 1;

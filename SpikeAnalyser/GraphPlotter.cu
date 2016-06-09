@@ -52,32 +52,42 @@ void GraphPlotter::plot_untrained_vs_trained_single_cell_information_for_all_obj
 	plt::save("./Results/SingleCellInformationAnlysisScores.png");
 }
 
-
 void GraphPlotter::plot_all_spikes(RecordingElectrodes * recording_electrodes) {
 
-	// recording_electrodes->h_time_in_seconds_of_stored_spikes_on_host;
-	// recording_electrodes->h_neuron_ids_of_stored_spikes_on_host;
-	// recording_electrodes->h_total_number_of_spikes_stored_on_host;
+	plt::figure();
 
-	std::vector<float>spike_times = std::vector<float>(recording_electrodes->h_time_in_seconds_of_stored_spikes_on_host, recording_electrodes->h_time_in_seconds_of_stored_spikes_on_host + recording_electrodes->h_total_number_of_spikes_stored_on_host);
-	// std::vector<int>spike_neuron_ids = std::vector<int>(recording_electrodes->h_neuron_ids_of_stored_spikes_on_host, recording_electrodes->h_neuron_ids_of_stored_spikes_on_host + recording_electrodes->h_total_number_of_spikes_stored_on_host);
+	// std::vector<float>spike_times = std::vector<float>(recording_electrodes->h_time_in_seconds_of_stored_spikes_on_host, recording_electrodes->h_time_in_seconds_of_stored_spikes_on_host + recording_electrodes->h_total_number_of_spikes_stored_on_host);
 
-	std::vector<float> spike_neuron_ids(recording_electrodes->h_total_number_of_spikes_stored_on_host);
-	printf("h_total_number_of_spikes_stored_on_host: %d\n", recording_electrodes->h_total_number_of_spikes_stored_on_host);
-	for(int spike_index=0; spike_index < recording_electrodes->h_total_number_of_spikes_stored_on_host; spike_index++) {
-		spike_neuron_ids.at(spike_index) = (float)recording_electrodes->h_neuron_ids_of_stored_spikes_on_host[spike_index];
-		// printf("spike_neuron_ids.at(spike_index): %f\n", spike_neuron_ids.at(spike_index));
-	}
+	// std::vector<float> spike_neuron_ids(recording_electrodes->h_total_number_of_spikes_stored_on_host);
+	// printf("h_total_number_of_spikes_stored_on_host: %d\n", recording_electrodes->h_total_number_of_spikes_stored_on_host);
+	// for(int spike_index=0; spike_index < recording_electrodes->h_total_number_of_spikes_stored_on_host; spike_index++) {
+	// 	spike_neuron_ids.at(spike_index) = (float)recording_electrodes->h_neuron_ids_of_stored_spikes_on_host[spike_index];
+	// }
 
-	// Set x-axis
+	// // Set x-axis
 	// plt::xlim(0.0, 0.5);
 
+	// // std::map< std::string, std::string> plot_map;
+	// // plot_map.insert(std::make_pair("marker", "o"));
+	// // plt::plot(spike_times,spike_neuron_ids, plot_map);
+	// // plt::plot(spike_times, spike_neuron_ids);
+	// plt::named_plot("HEY", spike_times,spike_neuron_ids, ".");
 
-	plt::plot(spike_times,spike_neuron_ids, ".");
+	// // Enable legend.
+	// plt::legend();
 
-	plt::save("./Results/rasterPlot.png");
+	// plt::save("./Results/rasterPlot.png");
+
+
+	// // Set x-axis
+	// plt::xlim(0.0, 0.5);
+
+	// plt::named_plot("HEY2", spike_times,spike_neuron_ids, ".");
+
+	// // Enable legend.
+	// plt::legend();
+
+	// plt::save("./Results/rasterPlot2.png");
 
 
 }
-
-

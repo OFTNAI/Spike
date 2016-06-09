@@ -217,27 +217,28 @@ void Simulator::setup_recording_electrodes_for_input_neurons(int number_of_times
 }
 
 
-void Simulator::RunSimulationToCountNeuronSpikesForSingleCellAnalysis(float presentation_time_per_stimulus_per_epoch, int temp_model_type, bool save_spikes, SpikeAnalyser *spike_analyser) {
+void Simulator::RunSimulationToCountNeuronSpikesForSingleCellAnalysis(float presentation_time_per_stimulus_per_epoch, int temp_model_type, bool record_spikes, bool save_recorded_spikes_to_file, SpikeAnalyser *spike_analyser) {
 	bool number_of_epochs = 1;
 	bool apply_stdp_to_relevant_synapses = false;
 	bool count_spikes_per_neuron_for_single_cell_analysis = true;
 	bool present_stimuli_in_random_order = false;
 
-	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, temp_model_type, save_spikes, apply_stdp_to_relevant_synapses, count_spikes_per_neuron_for_single_cell_analysis, present_stimuli_in_random_order, spike_analyser);
+	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, temp_model_type, record_spikes, save_recorded_spikes_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron_for_single_cell_analysis, present_stimuli_in_random_order, spike_analyser);
 }
 
 void Simulator::RunSimulationToTrainNetwork(float presentation_time_per_stimulus_per_epoch, int temp_model_type, int number_of_epochs, bool present_stimuli_in_random_order) {
 
 	bool apply_stdp_to_relevant_synapses = true;
 	bool count_spikes_per_neuron_for_single_cell_analysis = false;
-	bool save_spikes = false;
+	bool record_spikes = false;
+	bool save_recorded_spikes_to_file = false;
 
-	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, temp_model_type, save_spikes, apply_stdp_to_relevant_synapses, count_spikes_per_neuron_for_single_cell_analysis, present_stimuli_in_random_order, NULL);
+	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, temp_model_type, record_spikes, save_recorded_spikes_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron_for_single_cell_analysis, present_stimuli_in_random_order, NULL);
 }
 
 
 
-void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, int temp_model_type, bool save_spikes, bool apply_stdp_to_relevant_synapses, bool count_spikes_per_neuron_for_single_cell_analysis, bool present_stimuli_in_random_order, SpikeAnalyser *spike_analyser){
+void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, int temp_model_type, bool record_spikes, bool save_recorded_spikes_to_file, bool apply_stdp_to_relevant_synapses, bool count_spikes_per_neuron_for_single_cell_analysis, bool present_stimuli_in_random_order, SpikeAnalyser *spike_analyser){
 	
 	if (number_of_epochs == 0) print_message_and_exit("Error. There must be at least one epoch.");
 
@@ -252,9 +253,9 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 	}
 
 	recording_electrodes->write_initial_synaptic_weights_to_file(synapses);
+	// recording_electrodes->delete_and_reset_recorded_spikes();
 
-
-	begin_simulation_message(timestep, number_of_stimuli, number_of_epochs, save_spikes, present_stimuli_in_random_order, neurons->total_number_of_neurons, input_neurons->total_number_of_neurons, synapses->total_number_of_synapses);
+	begin_simulation_message(timestep, number_of_stimuli, number_of_epochs, record_spikes, save_recorded_spikes_to_file, present_stimuli_in_random_order, neurons->total_number_of_neurons, input_neurons->total_number_of_neurons, synapses->total_number_of_synapses);
 	clock_t simulation_begin = clock();
 
 	for (int epoch_number = 0; epoch_number < number_of_epochs; epoch_number++) {
@@ -296,7 +297,7 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 				}
 
 				// // Only save the spikes if necessary
-				if (save_spikes){
+				if (record_spikes){
 					if (recording_electrodes) {
 						recording_electrodes->collect_spikes_for_timestep(current_time_in_seconds);
 						recording_electrodes->copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(current_time_in_seconds, timestep_index, number_of_timesteps_per_stimulus_per_epoch );
@@ -324,7 +325,7 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 		clock_t simulation_mid = clock();
 		printf("Epoch %d, Complete.\n Running Time: %f\n", epoch_number, (float(simulation_mid-simulation_begin) / CLOCKS_PER_SEC));
 		
-		if (save_spikes) {
+		if (record_spikes) {
 			if (recording_electrodes) printf(" Number of Spikes: %d\n", recording_electrodes->h_total_number_of_spikes_stored_on_host);
 			if (input_recording_electrodes) printf(" Number of Input Spikes: %d\n", input_recording_electrodes->h_total_number_of_spikes_stored_on_host);
 		}
@@ -332,7 +333,8 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 		#endif
 		// Output Spikes list after each epoch:
 		// Only save the spikes if necessary
-		if (save_spikes){
+		if (record_spikes && save_recorded_spikes_to_file){
+			printf("Write to file\n");
 			if (recording_electrodes) recording_electrodes->write_spikes_to_file(epoch_number);
 			if (input_recording_electrodes) input_recording_electrodes->write_spikes_to_file(epoch_number);
 		}

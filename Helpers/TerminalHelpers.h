@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 
-inline void begin_simulation_message(float timestep, int number_of_stimuli, int number_of_epochs, bool save_spikes, bool present_stimuli_in_random_order, int total_number_of_neurons, int total_number_of_input_neurons, int total_number_of_synapses)
+inline void begin_simulation_message(float timestep, int number_of_stimuli, int number_of_epochs, bool record_spikes, bool save_recorded_spikes_to_file, bool present_stimuli_in_random_order, int total_number_of_neurons, int total_number_of_input_neurons, int total_number_of_synapses)
 {
 	#ifndef QUIETSTART
 
@@ -20,7 +20,8 @@ inline void begin_simulation_message(float timestep, int number_of_stimuli, int 
 
 		if (present_stimuli_in_random_order) printf("Stimuli to be presented in a random order.\n");
 		
-		if (save_spikes) printf("Spikes shall be saved.\n");
+		if (record_spikes) printf("Spikes shall be recorded.\n");
+		if ((record_spikes) && (save_recorded_spikes_to_file)) printf("Spikes shall be saved to file.\n");
 		
 		printf("----------------------------------\n\nBeginning Simulation...\n");
 

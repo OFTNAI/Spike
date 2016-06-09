@@ -355,6 +355,15 @@ namespace matplotlibcpp {
 		Py_DECREF(res);
 	}
 
+	//JI
+	inline void figure()
+	{
+		printf("figure\n");
+		PyObject* args = PyTuple_New(1);
+		PyObject* res = PyObject_CallObject(detail::_interpreter::get().s_python_function_figure, detail::_interpreter::get().s_python_empty_tuple);
+		res
+	}
+
 #if __cplusplus > 199711L
 	// C++11-exclusive content starts here (variadic plot() and initializer list support)
 

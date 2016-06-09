@@ -185,6 +185,17 @@ void RecordingElectrodes::write_spikes_to_file(int epoch_number) {
 	spikeidfile.close();
 	spiketimesfile.close();
 
+	delete_and_reset_recorded_spikes();
+
+	clock_t write_spikes_to_file_end = clock();
+	float write_spikes_to_file_total_time = float(write_spikes_to_file_end - write_spikes_to_file_start) / CLOCKS_PER_SEC;
+	printf("Spikes written to file.\n Time taken: %f\n", write_spikes_to_file_total_time);
+}
+
+
+
+void RecordingElectrodes::delete_and_reset_recorded_spikes() {
+
 	// Reset the spike store
 	// Host values
 	h_total_number_of_spikes_stored_on_host = 0;
@@ -194,15 +205,12 @@ void RecordingElectrodes::write_spikes_to_file(int epoch_number) {
 	CudaSafeCall(cudaMemset(&(d_total_number_of_spikes_stored_on_device[0]), 0, sizeof(int)));
 	CudaSafeCall(cudaMemset(d_neuron_ids_of_stored_spikes_on_device, -1, sizeof(int)*neurons->total_number_of_neurons));
 	CudaSafeCall(cudaMemset(d_time_in_seconds_of_stored_spikes_on_device, -1.0f, sizeof(float)*neurons->total_number_of_neurons));
+
 	// Free malloced host stuff
 	free(h_neuron_ids_of_stored_spikes_on_host);
 	free(h_time_in_seconds_of_stored_spikes_on_host);
 	h_neuron_ids_of_stored_spikes_on_host = NULL;
 	h_time_in_seconds_of_stored_spikes_on_host = NULL;
-
-	clock_t write_spikes_to_file_end = clock();
-	float write_spikes_to_file_total_time = float(write_spikes_to_file_end - write_spikes_to_file_start) / CLOCKS_PER_SEC;
-	printf("Spikes written to file.\n Time taken: %f\n", write_spikes_to_file_total_time);
 }
 
 
