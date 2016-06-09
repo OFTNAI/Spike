@@ -12,7 +12,6 @@
 #include "../Neurons/LIFSpikingNeurons.h"
 #include "../Neurons/ImagePoissonSpikingNeurons.h"
 #include "../Helpers/TerminalHelpers.h"
-#include <time.h>
 #include "../SpikeAnalyser/SpikeAnalyser.h"
 #include "../SpikeAnalyser/GraphPlotter.h"
 #include "../Helpers/TimerWithMessages.h"
@@ -21,7 +20,6 @@
 int main (int argc, char *argv[]){
 	
 	TimerWithMessages * experiment_timer = new TimerWithMessages();
-
 	
 	// Create an instance of the Simulator and set the timestep
 	Simulator simulator;
@@ -198,7 +196,7 @@ int main (int argc, char *argv[]){
 
 	// TRAINING
 	presentation_time_per_stimulus_per_epoch = 0.2f;
-	int number_of_epochs = 20;
+	int number_of_epochs = 1;
 	bool present_stimuli_in_random_order = true;
 	simulator.RunSimulationToTrainNetwork(presentation_time_per_stimulus_per_epoch, temp_model_type, number_of_epochs, present_stimuli_in_random_order);
 

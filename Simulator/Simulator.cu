@@ -14,6 +14,8 @@
 
 #include "../Helpers/CUDAErrorCheckHelpers.h"
 #include "../Helpers/TerminalHelpers.h"
+#include "../Helpers/TimerWithMessages.h"
+
 
 
 // Constructor
@@ -157,8 +159,7 @@ void Simulator::AddSynapseGroupsForNeuronGroupAndEachInputGroup(int postsynaptic
 
 void Simulator::setup_network(bool temp_model_type) {
 
-	printf("Setting Up Network...\n");
-	clock_t initialise_network_start = clock();
+	TimerWithMessages * timer = new TimerWithMessages("Setting Up Network...\n");
 
 	int threads_per_block_neurons = 512;
 	int threads_per_block_synapses = 512;
@@ -177,43 +178,30 @@ void Simulator::setup_network(bool temp_model_type) {
 
 	input_neurons->generate_random_states();
 
-	clock_t initialise_network_end = clock();
-	float initialise_network_total_time = float(initialise_network_end - initialise_network_start) / CLOCKS_PER_SEC;
-	printf("Network Setup. Time taken: %f\n", initialise_network_total_time);
-	print_line_of_dashes_with_blank_lines_either_side();
-
+	timer->stop_timer_and_log_time_and_message("Network Setup.", true);
 }
 
 void Simulator::setup_recording_electrodes_for_neurons(int number_of_timesteps_per_device_spike_copy_check_param, int device_spike_store_size_multiple_of_total_neurons_param, float proportion_of_device_spike_store_full_before_copy_param) {
 
-	printf("Setting Up recording electrodes for neurons...\n");
-	clock_t setup_recording_electrodes_start = clock();
+	TimerWithMessages * timer = new TimerWithMessages("Setting up recording electrodes for neurons...\n");
 
 	recording_electrodes = new RecordingElectrodes(neurons, "Neurons", number_of_timesteps_per_device_spike_copy_check_param, device_spike_store_size_multiple_of_total_neurons_param, proportion_of_device_spike_store_full_before_copy_param);
 	recording_electrodes->initialise_device_pointers();
 	recording_electrodes->initialise_host_pointers();
 
-	clock_t setup_recording_electrodes_end = clock();
-	float setup_recording_electrodes_total_time = float(setup_recording_electrodes_end - setup_recording_electrodes_start) / CLOCKS_PER_SEC;
-	printf("Recording Electrodes Setup For Neurons. Time taken: %f\n", setup_recording_electrodes_total_time);
-	print_line_of_dashes_with_blank_lines_either_side();
+	timer->stop_timer_and_log_time_and_message("Recording Electrodes Setup For Neurons.", true);
 }
 
 
 void Simulator::setup_recording_electrodes_for_input_neurons(int number_of_timesteps_per_device_spike_copy_check_param, int device_spike_store_size_multiple_of_total_neurons_param, float proportion_of_device_spike_store_full_before_copy_param) {
 
-	printf("Setting Up recording electrodes for input neurons...\n");
-	clock_t setup_recording_electrodes_start = clock();
+	TimerWithMessages * timer = new TimerWithMessages("Setting Up recording electrodes for input neurons...\n");
 
 	input_recording_electrodes = new RecordingElectrodes(input_neurons, "Input_Neurons", number_of_timesteps_per_device_spike_copy_check_param, device_spike_store_size_multiple_of_total_neurons_param, proportion_of_device_spike_store_full_before_copy_param);
 	input_recording_electrodes->initialise_device_pointers();
 	input_recording_electrodes->initialise_host_pointers();
 
-	clock_t setup_recording_electrodes_end = clock();
-	float setup_recording_electrodes_total_time = float(setup_recording_electrodes_end - setup_recording_electrodes_start) / CLOCKS_PER_SEC;
-	printf("Recording Electrodes Setup For Input Neurons. Time taken: %f\n", setup_recording_electrodes_total_time);
-	print_line_of_dashes_with_blank_lines_either_side();
-
+	timer->stop_timer_and_log_time_and_message("Recording Electrodes Setup For Input Neurons.", true);
 }
 
 
@@ -240,6 +228,9 @@ void Simulator::RunSimulationToTrainNetwork(float presentation_time_per_stimulus
 
 void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, int temp_model_type, bool record_spikes, bool save_recorded_spikes_to_file, bool apply_stdp_to_relevant_synapses, bool count_spikes_per_neuron_for_single_cell_analysis, bool present_stimuli_in_random_order, SpikeAnalyser *spike_analyser){
 	
+	begin_simulation_message(timestep, number_of_stimuli, number_of_epochs, record_spikes, save_recorded_spikes_to_file, present_stimuli_in_random_order, neurons->total_number_of_neurons, input_neurons->total_number_of_neurons, synapses->total_number_of_synapses);
+	TimerWithMessages * simulation_timer = new TimerWithMessages();
+
 	if (number_of_epochs == 0) print_message_and_exit("Error. There must be at least one epoch.");
 
 	// SEEDING
@@ -255,11 +246,9 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 	recording_electrodes->write_initial_synaptic_weights_to_file(synapses);
 	// recording_electrodes->delete_and_reset_recorded_spikes();
 
-	begin_simulation_message(timestep, number_of_stimuli, number_of_epochs, record_spikes, save_recorded_spikes_to_file, present_stimuli_in_random_order, neurons->total_number_of_neurons, input_neurons->total_number_of_neurons, synapses->total_number_of_synapses);
-	clock_t simulation_begin = clock();
-
 	for (int epoch_number = 0; epoch_number < number_of_epochs; epoch_number++) {
-
+	
+		TimerWithMessages * epoch_timer = new TimerWithMessages();
 		printf("\nStarting Epoch: %d\n", epoch_number);
 
 		if (present_stimuli_in_random_order) {
@@ -322,8 +311,8 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 
 		}
 		#ifndef QUIETSTART
-		clock_t simulation_mid = clock();
-		printf("Epoch %d, Complete.\n Running Time: %f\n", epoch_number, (float(simulation_mid-simulation_begin) / CLOCKS_PER_SEC));
+		printf("Epoch %d, Complete.\n", epoch_number);
+		epoch_timer->stop_timer_and_log_time_and_message(" ", true);
 		
 		if (record_spikes) {
 			if (recording_electrodes) printf(" Number of Spikes: %d\n", recording_electrodes->h_total_number_of_spikes_stored_on_host);
@@ -342,11 +331,7 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 	
 	// SIMULATION COMPLETE!
 	#ifndef QUIETSTART
-	// Finish the simulation and check time
-	clock_t simulation_end = clock();
-	float simulation_timed = float(simulation_end-simulation_begin) / CLOCKS_PER_SEC;
-	print_line_of_dashes_with_blank_lines_either_side();
-	printf("Simulation Complete! Time Elapsed: %f\n", simulation_timed);
+	simulation_timer->stop_timer_and_log_time_and_message("Simulation Complete!", true);
 	#endif
 
 	recording_electrodes->save_network_state(synapses);

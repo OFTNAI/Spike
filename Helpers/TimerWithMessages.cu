@@ -13,7 +13,7 @@ TimerWithMessages::TimerWithMessages(const char * start_message) {
 }
 
 TimerWithMessages::TimerWithMessages() {
-	
+	clock_start = clock();
 }
 
 // TimerWithMessages Destructor
