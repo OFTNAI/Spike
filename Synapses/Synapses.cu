@@ -7,6 +7,7 @@
 #include "Synapses.h"
 #include "../Helpers/CUDAErrorCheckHelpers.h"
 #include "../Helpers/TerminalHelpers.h"
+#include "../Helpers/RandomStateManager.h"
 
 #include <algorithm> // for random shuffle
 
@@ -51,8 +52,6 @@ Synapses::Synapses() {
 	d_synaptic_efficacies_or_weights = NULL;
 
 	d_states_for_random_number_generation = NULL;
-
-	random_state_manager = NULL;
 
 	print_synapse_group_details = false;
 
@@ -248,17 +247,6 @@ void Synapses::AddGroup(int presynaptic_group_id,
 			int total_number_of_new_synapses = number_of_new_synapses_per_postsynaptic_neuron * number_of_postsynaptic_neurons_in_group;
 			this->increment_number_of_synapses(total_number_of_new_synapses);
 
-
-			//Setting up random states
-			if (random_state_manager == NULL) {
-				random_state_manager = new RandomStateManager();
-				int threads_per_block_x = 128;
-				int number_of_blocks_x = 64;
-				random_state_manager->set_up_random_states(threads_per_block_x, number_of_blocks_x, 9);
-				CudaCheckError();
-			}
-
-
 			if (total_number_of_new_synapses > largest_synapse_group_size) {
 
 				largest_synapse_group_size = total_number_of_new_synapses;
@@ -268,7 +256,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 
 			}
 
-			set_neuron_indices_by_sampling_from_normal_distribution<<<random_state_manager->block_dimensions, random_state_manager->threads_per_block>>>(total_number_of_new_synapses, postsynaptic_group_id, poststart, prestart, postsynaptic_group_shape[0], postsynaptic_group_shape[1], presynaptic_group_shape[0], presynaptic_group_shape[1], number_of_new_synapses_per_postsynaptic_neuron, number_of_postsynaptic_neurons_in_group, d_temp_presynaptic_neuron_indices, d_temp_postsynaptic_neuron_indices, d_temp_synaptic_efficacies_or_weights, standard_deviation_sigma, presynaptic_group_is_input, random_state_manager->d_states);
+			set_neuron_indices_by_sampling_from_normal_distribution<<<RandomStateManager::instance()->block_dimensions, RandomStateManager::instance()->threads_per_block>>>(total_number_of_new_synapses, postsynaptic_group_id, poststart, prestart, postsynaptic_group_shape[0], postsynaptic_group_shape[1], presynaptic_group_shape[0], presynaptic_group_shape[1], number_of_new_synapses_per_postsynaptic_neuron, number_of_postsynaptic_neurons_in_group, d_temp_presynaptic_neuron_indices, d_temp_postsynaptic_neuron_indices, d_temp_synaptic_efficacies_or_weights, standard_deviation_sigma, presynaptic_group_is_input, RandomStateManager::instance()->d_states);
 			CudaCheckError();
 
 			CudaSafeCall(cudaMemcpy(&presynaptic_neuron_indices[original_number_of_synapses], d_temp_presynaptic_neuron_indices, sizeof(int)*total_number_of_new_synapses, cudaMemcpyDeviceToHost));

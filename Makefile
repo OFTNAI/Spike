@@ -11,6 +11,7 @@ CC = nvcc
 # --compiler-options -Wall = Warnings All. Give them to me.
 # Wall flag is inefficient
 CFLAGS = -c
+# CFLAGS += -lineinfo
 
 # Mac OS X 10.9+ uses libc++, which is an implementation of c++11 standard library. 
 # We must therefore specify c++11 as standard for out of the box compilation on Linux. 
@@ -30,7 +31,7 @@ directory: ${EXPERIMENT_DIRECTORY}
 
 # Separating out the individual compilations so as not to compilation time
 ${FILE}: ObjectFiles/${FILE}.o ObjectFiles/Simulator.o ObjectFiles/Neurons.o ObjectFiles/SpikingNeurons.o ObjectFiles/IzhikevichSpikingNeurons.o ObjectFiles/LIFSpikingNeurons.o ObjectFiles/PoissonSpikingNeurons.o ObjectFiles/ImagePoissonSpikingNeurons.o ObjectFiles/FstreamWrapper.o ObjectFiles/GeneratorSpikingNeurons.o ObjectFiles/Synapses.o ObjectFiles/SpikingSynapses.o ObjectFiles/IzhikevichSpikingSynapses.o ObjectFiles/ConductanceSpikingSynapses.o ObjectFiles/RecordingElectrodes.o ObjectFiles/RandomStateManager.o ObjectFiles/SpikeAnalyser.o ObjectFiles/GraphPlotter.o ObjectFiles/TimerWithMessages.o
-	$(CC) -lpython2.7 ObjectFiles/${FILE}.o ObjectFiles/Simulator.o ObjectFiles/Neurons.o ObjectFiles/SpikingNeurons.o ObjectFiles/IzhikevichSpikingNeurons.o ObjectFiles/LIFSpikingNeurons.o ObjectFiles/PoissonSpikingNeurons.o ObjectFiles/ImagePoissonSpikingNeurons.o ObjectFiles/FstreamWrapper.o ObjectFiles/GeneratorSpikingNeurons.o ObjectFiles/Synapses.o ObjectFiles/SpikingSynapses.o ObjectFiles/IzhikevichSpikingSynapses.o ObjectFiles/ConductanceSpikingSynapses.o ObjectFiles/RecordingElectrodes.o ObjectFiles/RandomStateManager.o ObjectFiles/SpikeAnalyser.o ObjectFiles/GraphPlotter.o ObjectFiles/TimerWithMessages.o -o ${EXPERIMENT_DIRECTORY}/bin/${FILE}
+	$(CC) -lineinfo -lpython2.7 ObjectFiles/${FILE}.o ObjectFiles/Simulator.o ObjectFiles/Neurons.o ObjectFiles/SpikingNeurons.o ObjectFiles/IzhikevichSpikingNeurons.o ObjectFiles/LIFSpikingNeurons.o ObjectFiles/PoissonSpikingNeurons.o ObjectFiles/ImagePoissonSpikingNeurons.o ObjectFiles/FstreamWrapper.o ObjectFiles/GeneratorSpikingNeurons.o ObjectFiles/Synapses.o ObjectFiles/SpikingSynapses.o ObjectFiles/IzhikevichSpikingSynapses.o ObjectFiles/ConductanceSpikingSynapses.o ObjectFiles/RecordingElectrodes.o ObjectFiles/RandomStateManager.o ObjectFiles/SpikeAnalyser.o ObjectFiles/GraphPlotter.o ObjectFiles/TimerWithMessages.o -o ${EXPERIMENT_DIRECTORY}/bin/${FILE}
 
 
 # Compiling the Model file

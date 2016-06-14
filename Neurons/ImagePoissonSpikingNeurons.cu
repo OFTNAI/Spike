@@ -100,7 +100,7 @@ void ImagePoissonSpikingNeurons::load_image_names_from_file_list(const char * fi
     
 	// Open file list
 	stringstream path;
-	path << inputDirectory << '/' << fileList;
+	path << inputDirectory << fileList;
 	string path_string = path.str();
 	
 	ifstream fileListStream;
@@ -332,7 +332,7 @@ void ImagePoissonSpikingNeurons::update_membrane_potentials(float timestep) {
 	// printf("total_number_of_neurons: %d\n", total_number_of_neurons);
 	// printf("total_number_of_rates_per_image: %d\n", total_number_of_rates_per_image);
 
-	poisson_update_membrane_potentials_kernal<<<random_state_manager->block_dimensions, random_state_manager->threads_per_block>>>(random_state_manager->d_states,
+	poisson_update_membrane_potentials_kernal<<<RandomStateManager::instance()->block_dimensions, RandomStateManager::instance()->threads_per_block>>>(RandomStateManager::instance()->d_states,
 														d_gabor_input_rates,
 														d_membrane_potentials_v,
 														timestep,

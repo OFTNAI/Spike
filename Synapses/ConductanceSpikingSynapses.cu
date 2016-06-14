@@ -110,7 +110,27 @@ void ConductanceSpikingSynapses::reset_synapse_spikes() {
 
 
 void ConductanceSpikingSynapses::shuffle_synapses() {
+	
 	SpikingSynapses::shuffle_synapses();
+
+	float * temp_synaptic_conductances_g = (float *)malloc(total_number_of_synapses*sizeof(float));
+	float * temp_recent_presynaptic_activities_C = (float *)malloc(total_number_of_synapses*sizeof(float));
+	float * temp_biological_conductance_scaling_constants_lambda = (float *)malloc(total_number_of_synapses*sizeof(float));
+	float * temp_reversal_potentials_Vhat = (float *)malloc(total_number_of_synapses*sizeof(float));
+
+	for(int i = 0; i < total_number_of_synapses; i++) {
+
+		temp_synaptic_conductances_g[i] = synaptic_conductances_g[original_synapse_indices[i]];
+		temp_recent_presynaptic_activities_C[i] = recent_presynaptic_activities_C[original_synapse_indices[i]];
+		temp_biological_conductance_scaling_constants_lambda[i] = biological_conductance_scaling_constants_lambda[original_synapse_indices[i]];
+		temp_reversal_potentials_Vhat[i] = reversal_potentials_Vhat[original_synapse_indices[i]];
+	}
+
+	synaptic_conductances_g = temp_synaptic_conductances_g;
+	recent_presynaptic_activities_C = temp_recent_presynaptic_activities_C;
+	biological_conductance_scaling_constants_lambda = temp_biological_conductance_scaling_constants_lambda;
+	reversal_potentials_Vhat = temp_reversal_potentials_Vhat;
+
 }
 
 

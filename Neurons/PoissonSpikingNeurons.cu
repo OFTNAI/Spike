@@ -13,8 +13,6 @@ PoissonSpikingNeurons::PoissonSpikingNeurons() {
 
 	total_number_of_input_images = 1;
 	current_stimulus_index = 0;
-
-	random_state_manager = NULL;
 }
 
 
@@ -67,16 +65,12 @@ void PoissonSpikingNeurons::generate_random_states() {
 	
 	printf("Generating input neuron random states\n");
 
-	if (random_state_manager == NULL) {
-		random_state_manager = new RandomStateManager();
-		random_state_manager->set_up_random_states(128, 64, 9);
-	}
 }
 
 
 void PoissonSpikingNeurons::update_membrane_potentials(float timestep) {
 
-	poisson_update_membrane_potentials_kernal<<<random_state_manager->block_dimensions, random_state_manager->threads_per_block>>>(random_state_manager->d_states,
+	poisson_update_membrane_potentials_kernal<<<RandomStateManager::instance()->block_dimensions, RandomStateManager::instance()->threads_per_block>>>(RandomStateManager::instance()->d_states,
 														d_rates,
 														d_membrane_potentials_v,
 														timestep,

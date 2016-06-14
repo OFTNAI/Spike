@@ -15,6 +15,7 @@
 #include "../SpikeAnalyser/SpikeAnalyser.h"
 #include "../SpikeAnalyser/GraphPlotter.h"
 #include "../Helpers/TimerWithMessages.h"
+#include "../Helpers/RandomStateManager.h"
 
 // The function which will autorun when the executable is created
 int main (int argc, char *argv[]){
@@ -43,6 +44,12 @@ int main (int argc, char *argv[]){
 	lif_spiking_neurons->decay_term_tau_D = 0.07; //0.07 arbitrary non-zero value
 	lif_spiking_neurons->model_parameter_alpha_D = 0.5;
 
+	////////// SET UP STATES FOR RANDOM STATE MANAGER SINGLETON ///////////
+	int random_states_threads_per_block_x = 128;
+	int random_states_number_of_blocks_x = 64;
+	RandomStateManager::instance()->set_up_random_states(random_states_threads_per_block_x, random_states_number_of_blocks_x, 9);
+
+
 	/////////// ADD INPUT NEURONS ///////////
 	TimerWithMessages * adding_input_neurons_timer = new TimerWithMessages("Adding Input Neurons...\n");
 
@@ -69,6 +76,8 @@ int main (int argc, char *argv[]){
 	INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS->somatic_leakage_conductance_g0 = 18.0*pow(10, -9);
 
 	//
+	// int EXCITATORY_LAYER_SHAPE[] = {400, 440};
+	// int INHIBITORY_LAYER_SHAPE[] = {150, 150};
 	int EXCITATORY_LAYER_SHAPE[] = {32, 32};
 	int INHIBITORY_LAYER_SHAPE[] = {16, 16};
 
@@ -172,15 +181,15 @@ int main (int argc, char *argv[]){
 	// int device_spike_store_size_multiple_of_total_neurons = 10;
 	// float proportion_of_device_spike_store_full_before_copy = 0.8;
 	int number_of_timesteps_per_device_spike_copy_check = 50;
-	int device_spike_store_size_multiple_of_total_neurons = 50;
-	float proportion_of_device_spike_store_full_before_copy = 0.5;
+	int device_spike_store_size_multiple_of_total_neurons = 52;
+	float proportion_of_device_spike_store_full_before_copy = 0.2;
 	simulator.setup_recording_electrodes_for_neurons(number_of_timesteps_per_device_spike_copy_check, device_spike_store_size_multiple_of_total_neurons, proportion_of_device_spike_store_full_before_copy);
 	// simulator.setup_recording_electrodes_for_input_neurons(number_of_timesteps_per_device_spike_copy_check, device_spike_store_size_multiple_of_total_neurons, proportion_of_device_spike_store_full_before_copy);
 
 
 	// TESTING UNTRAINED
-	float presentation_time_per_stimulus_per_epoch = 1.0f;
-	bool record_spikes = false;
+	float presentation_time_per_stimulus_per_epoch = 0.5f;
+	bool record_spikes = true;
 	bool save_recorded_spikes_to_file = false;
 	SpikeAnalyser * spike_analyser_for_untrained_network = new SpikeAnalyser(simulator.neurons, (ImagePoissonSpikingNeurons*)simulator.input_neurons);
 	simulator.RunSimulationToCountNeuronSpikesForSingleCellAnalysis(presentation_time_per_stimulus_per_epoch, temp_model_type, record_spikes, save_recorded_spikes_to_file, spike_analyser_for_untrained_network);
@@ -195,22 +204,22 @@ int main (int argc, char *argv[]){
 	// simulator.recording_electrodes->delete_and_reset_recorded_spikes();
 
 	// TRAINING
-	presentation_time_per_stimulus_per_epoch = 0.2f;
+	presentation_time_per_stimulus_per_epoch = 0.5f;
 	int number_of_epochs = 1;
 	bool present_stimuli_in_random_order = true;
 	simulator.RunSimulationToTrainNetwork(presentation_time_per_stimulus_per_epoch, temp_model_type, number_of_epochs, present_stimuli_in_random_order);
 
 
-	// TESTING TRAINED
-	presentation_time_per_stimulus_per_epoch = 1.0f;
-	record_spikes = false;
-	save_recorded_spikes_to_file = false;
-	SpikeAnalyser * spike_analyser_for_trained_network = new SpikeAnalyser(simulator.neurons, (ImagePoissonSpikingNeurons*)simulator.input_neurons);
-	simulator.RunSimulationToCountNeuronSpikesForSingleCellAnalysis(presentation_time_per_stimulus_per_epoch, temp_model_type, record_spikes, save_recorded_spikes_to_file, spike_analyser_for_trained_network);
-	spike_analyser_for_trained_network->calculate_single_cell_information_scores_for_neuron_group(EXCITATORY_NEURONS_LAYER_4, number_of_bins);
+	// // TESTING TRAINED
+	// presentation_time_per_stimulus_per_epoch = 1.0f;
+	// record_spikes = false;
+	// save_recorded_spikes_to_file = false;
+	// SpikeAnalyser * spike_analyser_for_trained_network = new SpikeAnalyser(simulator.neurons, (ImagePoissonSpikingNeurons*)simulator.input_neurons);
+	// simulator.RunSimulationToCountNeuronSpikesForSingleCellAnalysis(presentation_time_per_stimulus_per_epoch, temp_model_type, record_spikes, save_recorded_spikes_to_file, spike_analyser_for_trained_network);
+	// spike_analyser_for_trained_network->calculate_single_cell_information_scores_for_neuron_group(EXCITATORY_NEURONS_LAYER_4, number_of_bins);
 
-	float combined_information_score_training_increase = spike_analyser_for_trained_network->maximum_information_score_count_multiplied_by_sum_of_information_scores - spike_analyser_for_untrained_network->maximum_information_score_count_multiplied_by_sum_of_information_scores;
-	printf("combined_information_score_training_increase: %f\n", combined_information_score_training_increase);
+	// float combined_information_score_training_increase = spike_analyser_for_trained_network->maximum_information_score_count_multiplied_by_sum_of_information_scores - spike_analyser_for_untrained_network->maximum_information_score_count_multiplied_by_sum_of_information_scores;
+	// printf("combined_information_score_training_increase: %f\n", combined_information_score_training_increase);
 
 
 	// GraphPlotter *graph_plotter = new GraphPlotter();
@@ -219,5 +228,5 @@ int main (int argc, char *argv[]){
 
 	experiment_timer->stop_timer_and_log_time_and_message("Experiment Completed.", true);
 
-	return 1;
+	return 0;
 }

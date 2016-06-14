@@ -20,9 +20,6 @@
 #include <curand.h>
 #include <curand_kernel.h>
 
-#include "../Helpers/RandomStateManager.h"
-
-
 
 enum CONNECTIVITY_TYPE
 {
@@ -72,8 +69,6 @@ public:
 	int total_number_of_synapses;
 
 	curandState_t* d_states_for_random_number_generation;
-
-	RandomStateManager * random_state_manager;
 
 	// STDP
 	// Temporarily Synapse members (should move to SpikingNeurons)

@@ -40,8 +40,6 @@ Simulator::Simulator(){
 		// Say Hi to the user:
 		printf("\nWelcome to the SPIKE.\n");
 		print_line_of_dashes_with_blank_lines_either_side();
-		printf("Setting up Neurons and Synapses:\n");
-		print_line_of_dashes_with_blank_lines_either_side();
 		fflush(stdout);
 	#endif
 }
@@ -170,7 +168,7 @@ void Simulator::setup_network(bool temp_model_type) {
 	// Provides order of magnitude speedup for LIF (All to all atleast). 
 	// Because all synapses contribute to current_injection on every iteration, having all threads in a block accessing only 1 or 2 positions in memory causes massive slowdown.
 	// Randomising order of synapses means that each block is accessing a larger number of points in memory.
-	// if (temp_model_type == 1) synapses->shuffle_synapses();
+	if (temp_model_type == 1) synapses->shuffle_synapses();
 
 	neurons->allocate_device_pointers();
 	synapses->allocate_device_pointers();
@@ -380,7 +378,7 @@ void Simulator::temp_lif_per_timestep_instructions(float current_time_in_seconds
 	synapses->move_spikes_towards_synapses(neurons->d_last_spike_time_of_each_neuron, input_neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds);
 
 	// --------------- SAME ---------------
-	synapses->check_for_synapse_spike_arrival(current_time_in_seconds);
+	// synapses->check_for_synapse_spike_arrival(current_time_in_seconds);
 
 	// Calculate I(t) from delta_g(t) and V(t)
 	synapses->calculate_postsynaptic_current_injection(neurons, current_time_in_seconds);

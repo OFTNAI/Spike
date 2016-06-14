@@ -75,6 +75,7 @@ __global__ void move_spikes_towards_synapses_kernal(int* d_presynaptic_neuron_in
 								float* d_input_neurons_last_spike_time,
 								int* d_spikes_travelling_to_synapse_buffer,
 								float currtime,
-								size_t total_number_of_synapses);
+								size_t total_number_of_synapses,
+								float* d_time_of_last_spike_to_reach_synapse);
 
 #endif
