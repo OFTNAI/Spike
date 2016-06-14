@@ -61,13 +61,6 @@ void PoissonSpikingNeurons::set_threads_per_block_and_blocks_per_grid(int thread
 }
 
 
-void PoissonSpikingNeurons::generate_random_states() {
-	
-	printf("Generating input neuron random states\n");
-
-}
-
-
 void PoissonSpikingNeurons::update_membrane_potentials(float timestep) {
 
 	poisson_update_membrane_potentials_kernal<<<RandomStateManager::instance()->block_dimensions, RandomStateManager::instance()->threads_per_block>>>(RandomStateManager::instance()->d_states,

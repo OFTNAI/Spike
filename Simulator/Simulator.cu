@@ -174,8 +174,6 @@ void Simulator::setup_network(bool temp_model_type) {
 	synapses->allocate_device_pointers();
 	input_neurons->allocate_device_pointers();
 
-	input_neurons->generate_random_states();
-
 	timer->stop_timer_and_log_time_and_message("Network Setup.", true);
 }
 

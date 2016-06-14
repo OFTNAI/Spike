@@ -32,8 +32,7 @@ public:
 	virtual void allocate_device_pointers();
 	virtual void reset_neurons();
 	virtual void set_threads_per_block_and_blocks_per_grid(int threads);
-
-	void generate_random_states();
+	
 	virtual void update_membrane_potentials(float timestep);
 
 };
