@@ -9,8 +9,6 @@
 # This prevents file trampling when running concurrent jobs.
 #-----------------------------------
 
-
-
 simulation_index=$(echo $1 | awk -F. '{print $NF}')
 
 topdir=`pwd`

@@ -9,7 +9,7 @@ method,
 	efficient_global
 	seed = 123456
 	max_iterations = 10000
-	max_function_evaluations = 500
+#	max_function_evaluations = 500
 
 model
 	single
