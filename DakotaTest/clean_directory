@@ -1,0 +1,7 @@
+rm -r workdir.*
+rm results.out.*
+rm params.in.*
+rm LHS*
+rm S4
+rm dakota_tabular.dat
+rm dakota.rst
