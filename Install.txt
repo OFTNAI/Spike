@@ -1,0 +1,15 @@
+Various instructions that will eventually mke up install instructions
+
+1. CUDA
+
+1a. Add following to ~/.bash_profile
+export PATH="/usr/local/cuda/bin:$PATH"
+export PATH=/Developer/NVIDIA/CUDA-7.5/bin:$PATH
+export DYLD_LIBRARY_PATH=/Developer/NVIDIA/CUDA-7.5/lib:$DYLD_LIBRARY_PATH
+
+
+2. Installing + Running Dakota on OSX
+
+2a. Add following to ~/.bash_profile
+export PATH=~/Documents/Dakota/bin:~/Documents/Dakota/test:$PATH
+export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:~/Documents/Dakota/lib:~/Documents/Dakota/bin

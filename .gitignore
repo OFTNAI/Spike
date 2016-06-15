@@ -14,3 +14,11 @@ unittests
 ._catch.hpp
 .project
 .pydevproject
+DakotaTest/workdir.*
+DakotaTest/fort.*
+DakotaTest/params.in.*
+DakotaTest/results.out.*
+DakotaTest/S4
+DakotaTest/LHS*
+DakotaTest/dakota.rst
+DakotaTest/dakota_tabular.dat
