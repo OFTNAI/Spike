@@ -16,10 +16,12 @@
 #include "../SpikeAnalyser/GraphPlotter.h"
 #include "../Helpers/TimerWithMessages.h"
 #include "../Helpers/RandomStateManager.h"
+#include <string>
+#include <fstream>
 
 // The function which will autorun when the executable is created
 int main (int argc, char *argv[]){
-	
+
 	TimerWithMessages * experiment_timer = new TimerWithMessages();
 	
 	// Create an instance of the Simulator and set the timestep
@@ -36,7 +38,7 @@ int main (int argc, char *argv[]){
 	simulator.SetSynapseType(conductance_spiking_synapses);
 
 	conductance_spiking_synapses->print_synapse_group_details = false;
-	conductance_spiking_synapses->learning_rate_rho = 0.01;
+	conductance_spiking_synapses->learning_rate_rho = 0.1;
 	conductance_spiking_synapses->decay_term_tau_g = 0.004; //0.004 is arbitrary non-zero value
 	conductance_spiking_synapses->decay_term_tau_C = 0.004; //0.004 is arbitrary non-zero value
 	conductance_spiking_synapses->synaptic_neurotransmitter_concentration_alpha_C = 0.5;
@@ -53,7 +55,7 @@ int main (int argc, char *argv[]){
 	/////////// ADD INPUT NEURONS ///////////
 	TimerWithMessages * adding_input_neurons_timer = new TimerWithMessages("Adding Input Neurons...\n");
 
-	input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "MatlabGaborFilter/Inputs/", 1000.0f);
+	input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "../../MatlabGaborFilter/Inputs/", 1000.0f);
 	image_poisson_spiking_neuron_parameters_struct * image_poisson_spiking_group_params = new image_poisson_spiking_neuron_parameters_struct();
 	image_poisson_spiking_group_params->rate = 30.0f;
 	input_neurons->AddGroupForEachGaborType(image_poisson_spiking_group_params);
@@ -225,6 +227,15 @@ int main (int argc, char *argv[]){
 	// GraphPlotter *graph_plotter = new GraphPlotter();
 	// graph_plotter->plot_untrained_vs_trained_single_cell_information_for_all_objects(spike_analyser_for_untrained_network, spike_analyser_for_trained_network);
 	// graph_plotter->plot_all_spikes(simulator.recording_electrodes);
+
+	// string file = RESULTS_DIRECTORY + prefix_string + "_Epoch" + to_string(epoch_number) + "_" + to_string(clock());
+	// string file = RESULTS_DIRECTORY + prefix_string + "_Epoch" + to_string(epoch_number) + "_" + to_string(clock());
+
+	std::ofstream resultsfile;
+	resultsfile.open(argv[1], std::ios::out | std::ios::binary);
+	resultsfile << std::to_string(spike_analyser_for_untrained_network->maximum_information_score_count_multiplied_by_sum_of_information_scores) << std::endl;
+	resultsfile.close();
+
 
 	experiment_timer->stop_timer_and_log_time_and_message("Experiment Completed.", true);
 

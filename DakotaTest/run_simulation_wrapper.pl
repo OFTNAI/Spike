@@ -68,5 +68,6 @@
 #	my $ir2 = $table[6][0];
 	
 #	system("python ../../dakota_runMe.py $outdir $par1 $par2 $par3 $par4 $par5");
-	system("python ../JI_Empty_Test.py $outdir $simulation_index $par1 $par2 $par3 $par4 $par5 $simulation_index");
+	# system("python ../JI_Empty_Test.py $outdir $simulation_index $par1 $par2 $par3 $par4 $par5 $simulation_index");
+	system("../../Experiments/bin/ConductanceExperiment1 $outdir $simulation_index");
 	
