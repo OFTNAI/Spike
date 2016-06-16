@@ -5,10 +5,11 @@
 #include "../Neurons/SpikingNeurons.h"
 
 struct conductance_spiking_synapse_parameters_struct : spiking_synapse_parameters_struct {
-	conductance_spiking_synapse_parameters_struct(): biological_conductance_scaling_constant_lambda(1.0), reversal_potential_Vhat(0.0f) { spiking_synapse_parameters_struct(); }
+	conductance_spiking_synapse_parameters_struct(): biological_conductance_scaling_constant_lambda(1.0), reversal_potential_Vhat(0.0f), decay_term_tau_g(0.001f) { spiking_synapse_parameters_struct(); }
 
 	float biological_conductance_scaling_constant_lambda;
 	float reversal_potential_Vhat;
+	float decay_term_tau_g;
 };
 
 class ConductanceSpikingSynapses : public SpikingSynapses {
@@ -31,8 +32,10 @@ public:
 	float * reversal_potentials_Vhat;
 	float * d_reversal_potentials_Vhat;
 
+	float * decay_terms_tau_g;
+	float * d_decay_terms_tau_g;
+
 	//Configurable constants
-	float decay_term_tau_g;
 	float decay_term_tau_C;
 	float synaptic_neurotransmitter_concentration_alpha_C;
 
@@ -75,7 +78,7 @@ __global__ void conductance_update_synaptic_conductances_kernal(float timestep,
 													float * d_biological_conductance_scaling_constants_lambda,
 													int total_number_of_synapses,
 													float current_time_in_seconds,
-													float decay_term_tau_g);
+													float * d_decay_terms_tau_g);
 
 
 __global__ void conductance_update_presynaptic_activities_C_kernal(float* d_recent_presynaptic_activities_C,

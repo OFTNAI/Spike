@@ -18,7 +18,9 @@ ConductanceSpikingSynapses::ConductanceSpikingSynapses() {
 	reversal_potentials_Vhat = NULL;
 	d_reversal_potentials_Vhat = NULL;
 
-	decay_term_tau_g = 0.004; //0.004 is arbitrary non-zero value
+	decay_terms_tau_g = NULL;
+	d_decay_terms_tau_g = NULL;
+
 	decay_term_tau_C = 0.004; //0.004 is arbitrary non-zero value
 	synaptic_neurotransmitter_concentration_alpha_C = 0.5;
 
@@ -69,6 +71,7 @@ void ConductanceSpikingSynapses::AddGroup(int presynaptic_group_id,
 		recent_presynaptic_activities_C[i] = 0.0f;
 		biological_conductance_scaling_constants_lambda[i] = conductance_spiking_synapse_group_params->biological_conductance_scaling_constant_lambda;
 		reversal_potentials_Vhat[i] = conductance_spiking_synapse_group_params->reversal_potential_Vhat;
+		decay_terms_tau_g[i] = conductance_spiking_synapse_group_params->decay_term_tau_g;
 	}
 
 }
@@ -81,6 +84,7 @@ void ConductanceSpikingSynapses::increment_number_of_synapses(int increment) {
 	recent_presynaptic_activities_C = (float*)realloc(recent_presynaptic_activities_C, total_number_of_synapses * sizeof(float));
 	biological_conductance_scaling_constants_lambda = (float*)realloc(biological_conductance_scaling_constants_lambda, total_number_of_synapses * sizeof(float));
 	reversal_potentials_Vhat = (float*)realloc(reversal_potentials_Vhat, total_number_of_synapses * sizeof(float));
+	decay_terms_tau_g = (float*)realloc(decay_terms_tau_g, total_number_of_synapses * sizeof(float));
 
 }
 
@@ -93,6 +97,7 @@ void ConductanceSpikingSynapses::allocate_device_pointers() {
 	CudaSafeCall(cudaMalloc((void **)&d_recent_presynaptic_activities_C, sizeof(float)*total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&d_biological_conductance_scaling_constants_lambda, sizeof(float)*total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&d_reversal_potentials_Vhat, sizeof(float)*total_number_of_synapses));
+	CudaSafeCall(cudaMalloc((void **)&d_decay_terms_tau_g, sizeof(float)*total_number_of_synapses));
 
 }
 
@@ -105,6 +110,7 @@ void ConductanceSpikingSynapses::reset_synapse_spikes() {
 	CudaSafeCall(cudaMemcpy(d_recent_presynaptic_activities_C, recent_presynaptic_activities_C, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_biological_conductance_scaling_constants_lambda, biological_conductance_scaling_constants_lambda, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_reversal_potentials_Vhat, reversal_potentials_Vhat, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
+	CudaSafeCall(cudaMemcpy(d_decay_terms_tau_g, decay_terms_tau_g, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
 
 }
 
@@ -117,6 +123,7 @@ void ConductanceSpikingSynapses::shuffle_synapses() {
 	float * temp_recent_presynaptic_activities_C = (float *)malloc(total_number_of_synapses*sizeof(float));
 	float * temp_biological_conductance_scaling_constants_lambda = (float *)malloc(total_number_of_synapses*sizeof(float));
 	float * temp_reversal_potentials_Vhat = (float *)malloc(total_number_of_synapses*sizeof(float));
+	float * temp_decay_terms_tau_g = (float*)malloc(total_number_of_synapses*sizeof(float));
 
 	for(int i = 0; i < total_number_of_synapses; i++) {
 
@@ -124,12 +131,14 @@ void ConductanceSpikingSynapses::shuffle_synapses() {
 		temp_recent_presynaptic_activities_C[i] = recent_presynaptic_activities_C[original_synapse_indices[i]];
 		temp_biological_conductance_scaling_constants_lambda[i] = biological_conductance_scaling_constants_lambda[original_synapse_indices[i]];
 		temp_reversal_potentials_Vhat[i] = reversal_potentials_Vhat[original_synapse_indices[i]];
+		temp_decay_terms_tau_g[i] = decay_terms_tau_g[original_synapse_indices[i]];
 	}
 
 	synaptic_conductances_g = temp_synaptic_conductances_g;
 	recent_presynaptic_activities_C = temp_recent_presynaptic_activities_C;
 	biological_conductance_scaling_constants_lambda = temp_biological_conductance_scaling_constants_lambda;
 	reversal_potentials_Vhat = temp_reversal_potentials_Vhat;
+	decay_terms_tau_g = temp_decay_terms_tau_g;
 
 }
 
@@ -164,7 +173,7 @@ void ConductanceSpikingSynapses::update_synaptic_conductances(float timestep, fl
 											d_biological_conductance_scaling_constants_lambda,
 											total_number_of_synapses,
 											current_time_in_seconds,
-											decay_term_tau_g);
+											d_decay_terms_tau_g);
 
 	CudaCheckError();
 
@@ -238,14 +247,14 @@ __global__ void conductance_update_synaptic_conductances_kernal(float timestep,
 														float * d_biological_conductance_scaling_constants_lambda,
 														int total_number_of_synapses,
 														float current_time_in_seconds,
-														float decay_term_tau_g) {
+														float * d_decay_terms_tau_g) {
 
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	while (idx < total_number_of_synapses) {
 
 		float synaptic_conductance_g = d_synaptic_conductances_g[idx];
 
-		float new_conductance = (1.0 - (timestep/decay_term_tau_g)) * synaptic_conductance_g;
+		float new_conductance = (1.0 - (timestep/d_decay_terms_tau_g[idx])) * synaptic_conductance_g;
 		
 		if (d_time_of_last_spike_to_reach_synapse[idx] == current_time_in_seconds) {
 			float timestep_times_synaptic_efficacy = timestep * d_synaptic_efficacies_or_weights[idx];
