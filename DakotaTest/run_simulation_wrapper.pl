@@ -57,11 +57,12 @@
 		push(@table,[@rowInput]);	
 	}
 	close $fh;
-	my $par1 = sprintf("%.3f", $table[1][0]);
-	my $par2 = sprintf("%.3f", $table[2][0]);
-	my $par3 = sprintf("%.3f", $table[3][0]);
-	my $par4 = sprintf("%.3f", $table[4][0]);
-	my $par5 = sprintf("%.3f", $table[5][0]);
+	my $par1 = sprintf("%.11f", $table[1][0]);
+	my $par2 = sprintf("%.11f", $table[2][0]);
+	my $par3 = sprintf("%.11f", $table[3][0]);
+	my $par4 = sprintf("%.11f", $table[4][0]);
+	my $par5 = sprintf("%.11f", $table[5][0]);
+	print($table[1][0]);
 #	my $ss1 = $table[3][0];
 #	my $ss2 = $table[4][0];
 #	my $ir1 = $table[5][0];
@@ -69,5 +70,5 @@
 	
 #	system("python ../../dakota_runMe.py $outdir $par1 $par2 $par3 $par4 $par5");
 	# system("python ../JI_Empty_Test.py $outdir $simulation_index $par1 $par2 $par3 $par4 $par5 $simulation_index");
-	system("../../Experiments/bin/ConductanceExperiment1 $outdir $simulation_index");
+	system("../../Experiments/bin/ConductanceExperiment1 $outdir $simulation_index $par1 $par2 $par3 $par4 $par5");
 	

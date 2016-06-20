@@ -24,7 +24,7 @@ cp dakota_vars $parameters_file_name
 
 ./run_simulation_wrapper.pl $parameters_file_name $results_file_name $simulation_index
 # use sleep command if file I/O timing is a problem
-#sleep 10
+# sleep 10
 
 cp $results_file_name ../$results_file_name
 

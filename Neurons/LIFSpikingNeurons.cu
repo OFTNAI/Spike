@@ -13,7 +13,7 @@ LIFSpikingNeurons::LIFSpikingNeurons() {
 	d_membrane_time_constants_tau_m = NULL;
 	d_membrane_resistances_R = NULL;
 
-	decay_term_tau_D = 0.07;
+	decay_term_tau_D = 0.005; //Must be non-zeor
 	model_parameter_alpha_D = 0.5;
 
 }

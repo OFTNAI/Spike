@@ -49,7 +49,7 @@ void GraphPlotter::plot_untrained_vs_trained_single_cell_information_for_all_obj
 	// Enable legend.
 	plt::legend();
 	// save figure
-	plt::save("./Results/SingleCellInformationAnlysisScores.png");
+	plt::save("./SingleCellInformationAnlysisScores.png");
 }
 
 void GraphPlotter::plot_all_spikes(RecordingElectrodes * recording_electrodes) {

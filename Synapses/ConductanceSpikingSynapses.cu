@@ -21,7 +21,7 @@ ConductanceSpikingSynapses::ConductanceSpikingSynapses() {
 	decay_terms_tau_g = NULL;
 	d_decay_terms_tau_g = NULL;
 
-	decay_term_tau_C = 0.004; //0.004 is arbitrary non-zero value
+	decay_term_tau_C = 0.004; //Must be non-zero
 	synaptic_neurotransmitter_concentration_alpha_C = 0.5;
 
 }

@@ -4,23 +4,38 @@ environment,
 	graphics
 	tabular_data
 
-method,                                         
-#	conmin_frcg				
-	efficient_global
-	seed = 123456
+# method,                                         
+# #	conmin_frcg				
+# 	efficient_global
+# 	seed = 123456
+
+method
 	max_iterations = 10000
-#	max_function_evaluations = 500
+	max_function_evaluations = 200000
+	coliny_ea
+		population_size = 69
+		fitness_type merit_function
+		mutation_type offset_normal
+		mutation_rate 1.0 				# Probability of a mutation
+		crossover_type blend
+		crossover_rate 0.5				# Probability of a crossover
+		replacement_type chc = 23
 
 model
 	single
 
 
 variables,					
+#	continuous_design = 5			
+#	cdv_initial_point   1.0      1.0      1.0     1.0     1.0
+#	cdv_lower_bounds    0.50      0.10      0.10      0.10      0.10
+#	cdv_upper_bounds    1.50      10.0      10.0      10.0      10.0 
+#	cdv_descriptor      'gmax'      'tau_syn_const'      'conductanceConst_I2E_0'      'conductanceConst_I2E_1'      'conductanceConst_I2E_2'
 	continuous_design = 5			
-	cdv_initial_point   1.0      1.0      1.0     1.0     1.0
-	cdv_lower_bounds    0.50      0.10      0.10      0.10      0.10
-	cdv_upper_bounds    1.50      10.0      10.0      10.0      10.0 
-	cdv_descriptor      'gmax'      'tau_syn_const'      'conductanceConst_I2E_0'      'conductanceConst_I2E_1'      'conductanceConst_I2E_2'
+	cdv_lower_bounds    1.e-6      1.e-6      1.e-6      1.e-6      1.e-6 
+	cdv_upper_bounds    1.e-2      1.e-2      1.e-2      1.e-2     1.e-2 
+
+	cdv_descriptor      'G2E_biological_conductance_scaling_constant_lambda'      'E2E_biological_conductance_scaling_constant_lambda'      'E2I_biological_conductance_scaling_constant_lambda'      'I2E_biological_conductance_scaling_constant_lambda'      'I2I_biological_conductance_scaling_constant_lambda'
 
 
 # Case 1 (Massively Serial): Run Dakota in parallel and launch M-1 serial
