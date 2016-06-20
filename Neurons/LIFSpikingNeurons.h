@@ -31,7 +31,7 @@ public:
 	float model_parameter_alpha_D;
 
 
-	virtual int AddGroup(neuron_parameters_struct * group_params, int shape[2]);
+	virtual int AddGroup(neuron_parameters_struct * group_params);
 	virtual void allocate_device_pointers();
 	virtual void reset_neurons();
 	virtual void update_postsynaptic_activities(float timestep, float current_time_in_seconds);

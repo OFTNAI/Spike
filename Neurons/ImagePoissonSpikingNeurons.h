@@ -24,7 +24,7 @@ public:
 	ImagePoissonSpikingNeurons();
 	~ImagePoissonSpikingNeurons();
 
-	virtual int AddGroup(neuron_parameters_struct * group_params, int group_shape[2]);
+	virtual int AddGroup(neuron_parameters_struct * group_params);
 	void AddGroupForEachGaborType(neuron_parameters_struct * group_params);
 	virtual void allocate_device_pointers();
 	virtual void reset_neurons();

@@ -88,21 +88,21 @@ void Simulator::SetSynapseType(SpikingSynapses * synapses_parameter) {
 
 
 
-int Simulator::AddNeuronGroup(neuron_parameters_struct * group_params, int group_shape[2]) {
+int Simulator::AddNeuronGroup(neuron_parameters_struct * group_params) {
 
 	if (neurons == NULL) print_message_and_exit("Please call SetNeuronType before adding neuron groups.");
 
-	int neuron_group_id = neurons->AddGroup(group_params, group_shape);
+	int neuron_group_id = neurons->AddGroup(group_params);
 	return neuron_group_id;
 
 }
 
 
-int Simulator::AddInputNeuronGroup(neuron_parameters_struct * group_params, int group_shape[2]) {
+int Simulator::AddInputNeuronGroup(neuron_parameters_struct * group_params) {
 
 	if (input_neurons == NULL) print_message_and_exit("Please call SetInputNeuronType before adding inputs groups.");
 
-	int input_group_id = input_neurons->AddGroup(group_params, group_shape);
+	int input_group_id = input_neurons->AddGroup(group_params);
 	return input_group_id;
 
 }

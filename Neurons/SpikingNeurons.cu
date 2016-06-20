@@ -27,9 +27,9 @@ SpikingNeurons::~SpikingNeurons() {
 }
 
 
-int SpikingNeurons::AddGroup(neuron_parameters_struct * group_params, int group_shape[2]){
+int SpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
 	
-	int new_group_id = Neurons::AddGroup(group_params, group_shape);
+	int new_group_id = Neurons::AddGroup(group_params);
 
 	spiking_neuron_parameters_struct * spiking_group_params = (spiking_neuron_parameters_struct*)group_params;
 

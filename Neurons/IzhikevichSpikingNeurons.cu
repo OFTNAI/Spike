@@ -26,9 +26,9 @@ IzhikevichSpikingNeurons::~IzhikevichSpikingNeurons() {
 }
 
 
-int IzhikevichSpikingNeurons::AddGroup(neuron_parameters_struct * group_params, int group_shape[2]){
+int IzhikevichSpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
 
-	int new_group_id = SpikingNeurons::AddGroup(group_params, group_shape);
+	int new_group_id = SpikingNeurons::AddGroup(group_params);
 
 	izhikevich_spiking_neuron_parameters_struct * izhikevich_spiking_group_params = (izhikevich_spiking_neuron_parameters_struct*)group_params;
 

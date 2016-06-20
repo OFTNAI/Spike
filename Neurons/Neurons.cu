@@ -37,9 +37,9 @@ Neurons::~Neurons() {
 }
 
 
-int Neurons::AddGroup(neuron_parameters_struct * group_params, int group_shape[2]){
+int Neurons::AddGroup(neuron_parameters_struct * group_params){
 	
-	number_of_neurons_in_new_group = group_shape[0]*group_shape[1];
+	number_of_neurons_in_new_group = group_params->group_shape[0] * group_params->group_shape[1];
  
 	if (number_of_neurons_in_new_group < 0) {
 		print_message_and_exit("Error: Group must have at least 1 neuron.");
@@ -63,8 +63,8 @@ int Neurons::AddGroup(neuron_parameters_struct * group_params, int group_shape[2
 	// Add new group shape
 	group_shapes = (int**)realloc(group_shapes,(total_number_of_groups*sizeof(int*)));
 	group_shapes[new_group_id] = (int*)malloc(2*sizeof(int));
-	group_shapes[new_group_id][0] = group_shape[0];
-	group_shapes[new_group_id][1] = group_shape[1];
+	group_shapes[new_group_id][0] = group_params->group_shape[0];
+	group_shapes[new_group_id][1] = group_params->group_shape[1];
 	
 	return new_group_id;
 }

@@ -15,7 +15,9 @@
 
 
 struct neuron_parameters_struct {
-	neuron_parameters_struct() { }
+	neuron_parameters_struct() {}
+
+	int group_shape[2];
 };
 
 #define PRESYNAPTIC_IS_INPUT( id ) (id < 0 ? true : false)
@@ -30,20 +32,19 @@ public:
 	int total_number_of_neurons;
 	int total_number_of_groups;
 
-	float* d_current_injections;
-
 	int **group_shapes;
 	int *start_neuron_indices_for_each_group;
 	int *last_neuron_indices_for_each_group;
 
 	int number_of_neurons_in_new_group;
 
+	float* d_current_injections;
+
 	dim3 number_of_neuron_blocks_per_grid;
 	dim3 threads_per_block;
 
-	
 
-	virtual int AddGroup(neuron_parameters_struct * group_params, int group_shape[2]);
+	virtual int AddGroup(neuron_parameters_struct * group_params);
 	virtual void allocate_device_pointers();
 	virtual void reset_neurons();
 	

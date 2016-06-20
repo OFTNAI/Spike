@@ -58,8 +58,8 @@ public:
 	void SetInputNeuronType(PoissonSpikingNeurons * neurons_parameter);
 	void SetSynapseType(SpikingSynapses * synapses_parameter);
 
-	int AddNeuronGroup(neuron_parameters_struct * group_params, int shape[2]);
-	int AddInputNeuronGroup(neuron_parameters_struct * group_params, int group_shape[2]);
+	int AddNeuronGroup(neuron_parameters_struct * group_params);
+	int AddInputNeuronGroup(neuron_parameters_struct * group_params);
 	
 	void AddSynapseGroup(int presynaptic_group_id, 
 							int postsynaptic_group_id, 

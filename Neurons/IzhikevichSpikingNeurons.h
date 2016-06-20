@@ -31,7 +31,7 @@ public:
 
 	float * d_states_u;
 
-	virtual int AddGroup(neuron_parameters_struct * group_params, int shape[2]);
+	virtual int AddGroup(neuron_parameters_struct * group_params);
 	virtual void allocate_device_pointers();
 	virtual void reset_neurons();
 	virtual void check_for_neuron_spikes(float current_time_in_seconds);

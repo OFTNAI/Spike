@@ -28,7 +28,7 @@ public:
 	int total_number_of_input_images;
 	int current_stimulus_index;
 
-	virtual int AddGroup(neuron_parameters_struct * group_params, int group_shape[2]);
+	virtual int AddGroup(neuron_parameters_struct * group_params);
 	virtual void allocate_device_pointers();
 	virtual void reset_neurons();
 	virtual void set_threads_per_block_and_blocks_per_grid(int threads);

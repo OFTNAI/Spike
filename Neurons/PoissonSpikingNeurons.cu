@@ -22,9 +22,9 @@ PoissonSpikingNeurons::~PoissonSpikingNeurons() {
 }
 
 
-int PoissonSpikingNeurons::AddGroup(neuron_parameters_struct * group_params, int group_shape[2]){
+int PoissonSpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
 
-	int new_group_id = SpikingNeurons::AddGroup(group_params, group_shape);
+	int new_group_id = SpikingNeurons::AddGroup(group_params);
 
 	poisson_spiking_neuron_parameters_struct * poisson_spiking_group_params = (poisson_spiking_neuron_parameters_struct*)group_params;
 

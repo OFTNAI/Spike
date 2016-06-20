@@ -25,9 +25,9 @@ LIFSpikingNeurons::~LIFSpikingNeurons() {
 }
 
 
-int LIFSpikingNeurons::AddGroup(neuron_parameters_struct * group_params, int group_shape[2]){
+int LIFSpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
 
-	int new_group_id = SpikingNeurons::AddGroup(group_params, group_shape);
+	int new_group_id = SpikingNeurons::AddGroup(group_params);
 
 	lif_spiking_neuron_parameters_struct * lif_spiking_group_params = (lif_spiking_neuron_parameters_struct*)group_params;
 

@@ -23,7 +23,7 @@ public:
 	dim3 genblocksPerGrid;
 	
 	// Functions
-	virtual int AddGroup(neuron_parameters_struct * group_params, int group_shape[2]);
+	virtual int AddGroup(neuron_parameters_struct * group_params);
 	virtual void initialise_device_pointers_for_ents(int numEnts, int present);
 	virtual void reset_input_variables(int present);
 
