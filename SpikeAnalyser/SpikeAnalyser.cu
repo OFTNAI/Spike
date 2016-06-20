@@ -2,6 +2,7 @@
 
 #include "../Helpers/CUDAErrorCheckHelpers.h"
 #include "../Helpers/TerminalHelpers.h"
+#include "../Helpers/TimerWithMessages.h"
 
 #include <stdlib.h>
 
@@ -44,6 +45,9 @@ void SpikeAnalyser::store_spike_counts_for_stimulus_index(int stimulus_index, in
 
 void SpikeAnalyser::calculate_single_cell_information_scores_for_neuron_group(int neuron_group_index, int number_of_bins) {
 
+	TimerWithMessages * single_cell_analysis_timer = new TimerWithMessages();
+	printf("Caclulating Single Cell Information Scores for Neuron Group: %d\n", neuron_group_index);
+
 	int neuron_group_start_index = neurons->start_neuron_indices_for_each_group[neuron_group_index];
 	int neuron_group_end_index = neurons->last_neuron_indices_for_each_group[neuron_group_index];
 	number_of_neurons_in_group = neuron_group_end_index - neuron_group_start_index + 1;
@@ -73,6 +77,7 @@ void SpikeAnalyser::calculate_single_cell_information_scores_for_neuron_group(in
 
 	if (max_number_of_spikes == 0) {
 		printf("No spikes in neuron group: %d\n", neuron_group_index);
+		print_line_of_dashes_with_blank_lines_either_side();
 		sum_of_information_scores_for_last_neuron_group = 0;
 		number_of_neurons_with_maximum_information_score_in_last_neuron_group = 0;
 		maximum_information_score_count_multiplied_by_sum_of_information_scores = 0;
@@ -177,14 +182,18 @@ void SpikeAnalyser::calculate_single_cell_information_scores_for_neuron_group(in
 
 	maximum_information_score_count_multiplied_by_sum_of_information_scores = (float)number_of_neurons_with_maximum_information_score_in_last_neuron_group * sum_of_information_scores_for_last_neuron_group;
 
-	printf("sum_of_information_scores_for_last_neuron_group: %f\n", sum_of_information_scores_for_last_neuron_group);
-	printf("number_of_neurons_with_maximum_information_score_in_last_neuron_group: %d\n", number_of_neurons_with_maximum_information_score_in_last_neuron_group);
-	printf("maximum_information_score_count_multiplied_by_sum_of_information_scores: %f\n", maximum_information_score_count_multiplied_by_sum_of_information_scores);
+	
 
 	//6. Sort information scores for each object and neuron
 	for (int object_index = 0; object_index < input_neurons->total_number_of_objects; object_index++) {
 		std::sort(descending_information_scores_for_each_object_and_neuron[object_index], descending_information_scores_for_each_object_and_neuron[object_index] + number_of_neurons_in_group, std::greater<float>());
 	}
+
+	single_cell_analysis_timer->stop_timer_and_log_time_and_message("Single Cell Information Scores Calulated Neuron Group.", false);
+	printf("--- sum_of_information_scores_for_last_neuron_group: %f\n", sum_of_information_scores_for_last_neuron_group);
+	printf("--- number_of_neurons_with_maximum_information_score_in_last_neuron_group: %d\n", number_of_neurons_with_maximum_information_score_in_last_neuron_group);
+	printf("--- maximum_information_score_count_multiplied_by_sum_of_information_scores: %f\n", maximum_information_score_count_multiplied_by_sum_of_information_scores);
+	print_line_of_dashes_with_blank_lines_either_side();
 
 
 }

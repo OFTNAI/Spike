@@ -245,7 +245,7 @@ void ImagePoissonSpikingNeurons::load_rates_from_files(const char * inputDirecto
 		float total_activation_for_image = 0.0;
 
 		int image_starting_index = image_index * total_number_of_rates_per_image;
-		printf("image_starting_index: %d\n", image_starting_index);
+		// printf("image_starting_index: %d\n", image_starting_index);
 		
 		// cout << "Loading Rates for Image #" << image_index << endl;
 		
@@ -310,10 +310,10 @@ void ImagePoissonSpikingNeurons::load_rates_from_files(const char * inputDirecto
 				}
 			}
 		}
-		printf("total_activation_for_image: %f\n", total_activation_for_image);
+		// printf("total_activation_for_image: %f\n", total_activation_for_image);
 	}
 
-	printf("--- --- Proportion of input rates 0.0: %f\n", (float)zero_count/(float)total_number_of_rates);
+	// printf("--- --- Proportion of input rates 0.0: %f\n", (float)zero_count/(float)total_number_of_rates);
 }
 
 void ImagePoissonSpikingNeurons::copy_rates_to_device() {

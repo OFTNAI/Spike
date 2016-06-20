@@ -37,8 +37,8 @@ Simulator::Simulator(){
 	input_recording_electrodes = NULL;
 	
 	#ifndef QUIETSTART
-		// Say Hi to the user:
-		printf("\nWelcome to the SPIKE.\n");
+		print_line_of_dashes_with_blank_lines_either_side();
+		printf("Welcome to the SPIKE.\n");
 		print_line_of_dashes_with_blank_lines_either_side();
 		fflush(stdout);
 	#endif
@@ -234,7 +234,7 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 	for (int epoch_number = 0; epoch_number < number_of_epochs; epoch_number++) {
 	
 		TimerWithMessages * epoch_timer = new TimerWithMessages();
-		printf("\nStarting Epoch: %d\n", epoch_number);
+		printf("Starting Epoch: %d\n", epoch_number);
 
 		if (present_stimuli_in_random_order) {
 			std::random_shuffle(&stimuli_presentation_order[0], &stimuli_presentation_order[number_of_stimuli]);
