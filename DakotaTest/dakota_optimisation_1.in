@@ -35,7 +35,7 @@ variables,
 	cdv_lower_bounds    1.e-6      1.e-6      1.e-6      1.e-6      1.e-6 
 	cdv_upper_bounds    1.e-2      1.e-2      1.e-2      1.e-2     1.e-2 
 
-	cdv_descriptor      'G2E_biological_conductance_scaling_constant_lambda'      'E2E_biological_conductance_scaling_constant_lambda'      'E2I_biological_conductance_scaling_constant_lambda'      'I2E_biological_conductance_scaling_constant_lambda'      'I2I_biological_conductance_scaling_constant_lambda'
+	cdv_descriptor      'G2E_FF_biological_conductance_scaling_constant_lambda'      'E2E_FF_biological_conductance_scaling_constant_lambda'      'E2I_L_biological_conductance_scaling_constant_lambda'      'I2E_L_biological_conductance_scaling_constant_lambda'      'E2E_L_biological_conductance_scaling_constant_lambda'
 
 
 # Case 1 (Massively Serial): Run Dakota in parallel and launch M-1 serial
