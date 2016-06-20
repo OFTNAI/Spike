@@ -213,6 +213,7 @@ void Simulator::RunSimulationToTrainNetwork(float presentation_time_per_stimulus
 
 void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, int temp_model_type, bool record_spikes, bool save_recorded_spikes_to_file, bool apply_stdp_to_relevant_synapses, bool count_spikes_per_neuron_for_single_cell_analysis, bool present_stimuli_in_random_order, SpikeAnalyser *spike_analyser){
 	
+	int number_of_stimuli = input_neurons->total_number_of_input_images;
 	begin_simulation_message(timestep, number_of_stimuli, number_of_epochs, record_spikes, save_recorded_spikes_to_file, present_stimuli_in_random_order, neurons->total_number_of_neurons, input_neurons->total_number_of_neurons, synapses->total_number_of_synapses);
 	TimerWithMessages * simulation_timer = new TimerWithMessages();
 
@@ -222,7 +223,6 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 	srand(43);
 
 	// STIMULUS ORDER (Put into function + variable)
-	int number_of_stimuli = input_neurons->total_number_of_input_images;
 	int stimuli_presentation_order[number_of_stimuli];
 	for (int i = 0; i < number_of_stimuli; i++){
 		stimuli_presentation_order[i] = i;
