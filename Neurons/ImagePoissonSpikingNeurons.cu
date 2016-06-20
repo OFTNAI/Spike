@@ -60,9 +60,11 @@ int ImagePoissonSpikingNeurons::AddGroup(neuron_parameters_struct * group_params
 
 void ImagePoissonSpikingNeurons::AddGroupForEachGaborType(neuron_parameters_struct * group_params) {
 
-	int group_shape[] = {image_width, image_width};
+	// int group_shape[] = {image_width, image_width};
 
 	image_poisson_spiking_neuron_parameters_struct * image_poisson_spiking_group_params = (image_poisson_spiking_neuron_parameters_struct*)group_params;
+	image_poisson_spiking_group_params->group_shape[0] = image_width;
+	image_poisson_spiking_group_params->group_shape[1] = image_width;
 
 	for (int gabor_index = 0; gabor_index < total_number_of_gabor_types; gabor_index++) {
 		image_poisson_spiking_group_params->gabor_index = gabor_index;

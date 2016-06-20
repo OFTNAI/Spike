@@ -45,7 +45,7 @@ void SpikingSynapses::AddGroup(int presynaptic_group_id,
 						int postsynaptic_group_id, 
 						Neurons * neurons,
 						Neurons * input_neurons,
-						int delay_range[2],
+						float timestep,
 						synapse_parameters_struct * synapse_params,
 						float parameter,
 						float parameter_two) {
@@ -55,7 +55,7 @@ void SpikingSynapses::AddGroup(int presynaptic_group_id,
 							postsynaptic_group_id, 
 							neurons,
 							input_neurons,
-							delay_range,
+							timestep,
 							synapse_params,
 							parameter,
 							parameter_two);
@@ -63,14 +63,26 @@ void SpikingSynapses::AddGroup(int presynaptic_group_id,
 	spiking_synapse_parameters_struct * spiking_synapse_group_params = (spiking_synapse_parameters_struct*)synapse_params;
 
 	for (int i = (total_number_of_synapses - temp_number_of_synapses_in_last_group); i < total_number_of_synapses-1; i++){
-		// Setup Delays
-		// Get the randoms
-		if (delay_range[0] == delay_range[1]) {
-			delays[i] = delay_range[0];
-		} else {
-			float rnddelay = delay_range[0] + (delay_range[1] - delay_range[0])*((float)rand() / (RAND_MAX));
-			delays[i] = round(rnddelay);
+		
+		// Convert delay range from time to number of timesteps
+		int delay_range_in_timesteps[2] = {int(round(spiking_synapse_group_params->delay_range[0]/timestep)), int(round(spiking_synapse_group_params->delay_range[1]/timestep))};
+
+		// Check delay range bounds greater than timestep
+		if ((delay_range_in_timesteps[0] < 1) || (delay_range_in_timesteps[1] < 1)) {
+			printf("%d\n", delay_range_in_timesteps[0]);
+			printf("%d\n", delay_range_in_timesteps[1]);
+			print_message_and_exit("Delay range must be at least one timestep.");
 		}
+
+		// Setup Delays
+		if (delay_range_in_timesteps[0] == delay_range_in_timesteps[1]) {
+			delays[i] = delay_range_in_timesteps[0];
+		} else {
+			float random_delay = delay_range_in_timesteps[0] + (delay_range_in_timesteps[1] - delay_range_in_timesteps[0]) * ((float)rand() / (RAND_MAX));
+			delays[i] = round(random_delay);
+		}
+
+		//Set STDP on or off for synapse
 		stdp[i] = spiking_synapse_group_params->stdp_on;
 	}
 

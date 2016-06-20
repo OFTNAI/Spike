@@ -41,15 +41,13 @@ ConductanceSpikingSynapses::~ConductanceSpikingSynapses() {
 //		Post-neuron population ID
 //		An array of the exclusive sum of neuron populations
 //		CONNECTIVITY_TYPE (Constants.h)
-//		2 number float array for weight range
-//		2 number float array for delay range
 //		Boolean value to indicate if population is STDP based
 //		Parameter = either probability for random synapses or S.D. for Gaussian
 void ConductanceSpikingSynapses::AddGroup(int presynaptic_group_id, 
 						int postsynaptic_group_id, 
 						Neurons * neurons,
 						Neurons * input_neurons,
-						int delay_range[2],
+						float timestep,
 						synapse_parameters_struct * synapse_params,
 						float parameter,
 						float parameter_two) {
@@ -59,7 +57,7 @@ void ConductanceSpikingSynapses::AddGroup(int presynaptic_group_id,
 							postsynaptic_group_id, 
 							neurons,
 							input_neurons,
-							delay_range,
+							timestep,
 							synapse_params,
 							parameter,
 							parameter_two);

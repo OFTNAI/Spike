@@ -110,33 +110,23 @@ int Simulator::AddInputNeuronGroup(neuron_parameters_struct * group_params) {
 
 void Simulator::AddSynapseGroup(int presynaptic_group_id, 
 							int postsynaptic_group_id, 
-							float delay_range[2],
 							synapse_parameters_struct * synapse_params,
 							float parameter,
 							float parameter_two) {
 
 	if (synapses == NULL) print_message_and_exit("Please call SetSynapseType before adding synapses.");
 
-	
-	// Convert delay range from time to number of timesteps
-	int delay_range_in_timesteps[2] = {int(round(delay_range[0]/timestep)), int(round(delay_range[1]/timestep))};
-
-	if ((delay_range_in_timesteps[0] < 1) || (delay_range_in_timesteps[1] < 1)) {
-		print_message_and_exit("Delay range must be at least one timestep.");
-	}
-
 	synapses->AddGroup(presynaptic_group_id, 
 							postsynaptic_group_id, 
 							neurons,
 							input_neurons,
-							delay_range_in_timesteps,
+							timestep,
 							synapse_params,
 							parameter,
 							parameter_two);
 }
 
 void Simulator::AddSynapseGroupsForNeuronGroupAndEachInputGroup(int postsynaptic_group_id, 
-							float delay_range[2],
 							synapse_parameters_struct * synapse_params,
 							float parameter,
 							float parameter_two) {
@@ -145,7 +135,6 @@ void Simulator::AddSynapseGroupsForNeuronGroupAndEachInputGroup(int postsynaptic
 
 		AddSynapseGroup(CORRECTED_PRESYNAPTIC_ID(i, true), 
 							postsynaptic_group_id,
-							delay_range,
 							synapse_params,
 							parameter,
 							parameter_two);

@@ -101,7 +101,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 						int postsynaptic_group_id, 
 						Neurons * neurons,
 						Neurons * input_neurons,
-						int delay_range[2],
+						float timestep,
 						synapse_parameters_struct * synapse_params,
 						float parameter,
 						float parameter_two) {
