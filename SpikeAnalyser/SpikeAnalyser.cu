@@ -45,9 +45,11 @@ void SpikeAnalyser::store_spike_counts_for_stimulus_index(int stimulus_index, in
 
 void SpikeAnalyser::calculate_total_and_per_stimulus_spikes_per_neuron_group() {
 
-	int number_of_spikes_per_stimulus_per_neuron_group[neurons->total_number_of_groups][input_neurons->total_number_of_input_images];
+	number_of_spikes_per_stimulus_per_neuron_group = new int *[neurons->total_number_of_groups];
 
 	for (int neuron_group_index = 0; neuron_group_index < neurons->total_number_of_groups; neuron_group_index++) {
+
+		number_of_spikes_per_stimulus_per_neuron_group[neuron_group_index] = new int[input_neurons->total_number_of_input_images];
 
 		int neuron_group_start_index = neurons->start_neuron_indices_for_each_group[neuron_group_index];
 		int neuron_group_end_index = neurons->last_neuron_indices_for_each_group[neuron_group_index];
