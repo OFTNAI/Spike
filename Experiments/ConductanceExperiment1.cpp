@@ -25,8 +25,8 @@ int main (int argc, char *argv[]){
 	TimerWithMessages * experiment_timer = new TimerWithMessages();
 
 	bool command_line_arguments_passed = false;
-	float G2E_FF_biological_conductance_scaling_constant_lambda = 7.9 * pow(10, -4);
-	float E2E_FF_biological_conductance_scaling_constant_lambda = 5.0 * pow(10, -5);
+	float G2E_FF_biological_conductance_scaling_constant_lambda = 7.9 * pow(10, -3);
+	float E2E_FF_biological_conductance_scaling_constant_lambda = 5.0 * pow(10, -3);
 	float E2I_L_biological_conductance_scaling_constant_lambda = 3.4 * pow(10, -5);
 	float I2E_L_biological_conductance_scaling_constant_lambda = 5.0 * pow(10, -4);
 	float E2E_L_biological_conductance_scaling_constant_lambda = 0.9 * pow(10, -2);
@@ -77,8 +77,8 @@ int main (int argc, char *argv[]){
 	/////////// ADD INPUT NEURONS ///////////
 	TimerWithMessages * adding_input_neurons_timer = new TimerWithMessages("Adding Input Neurons...\n");
 
-	// input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "../../MatlabGaborFilter/Inputs/", 100.0f);
-	input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "MatlabGaborFilter/Inputs/", 100.0f);
+	input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "../../MatlabGaborFilter/Inputs/", 100.0f);
+	// input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "MatlabGaborFilter/Inputs/", 100.0f);
 	image_poisson_spiking_neuron_parameters_struct * image_poisson_spiking_group_params = new image_poisson_spiking_neuron_parameters_struct();
 	image_poisson_spiking_group_params->rate = 30.0f;
 	input_neurons->AddGroupForEachGaborType(image_poisson_spiking_group_params);
@@ -229,17 +229,26 @@ int main (int argc, char *argv[]){
 
 
 	/////////// SIMULATE NETWORK TO TEST UNTRAINED ///////////
+	float presentation_time_per_stimulus_per_epoch = 1.0f;
+	bool record_spikes = true;
+	bool save_recorded_spikes_to_file = false;
+	int number_of_bins = 3;
 	if (simulate_network_to_test_untrained) {
 
-		float presentation_time_per_stimulus_per_epoch = 1.0f;
-		bool record_spikes = true;
-		bool save_recorded_spikes_to_file = false;
 		SpikeAnalyser * spike_analyser_for_untrained_network = new SpikeAnalyser(simulator.neurons, (ImagePoissonSpikingNeurons*)simulator.input_neurons);
-		simulator.RunSimulationToCountNeuronSpikes(presentation_time_per_stimulus_per_epoch, temp_model_type, record_spikes, save_recorded_spikes_to_file, spike_analyser_for_untrained_network);
+		simulator.RunSimulationToCountNeuronSpikes(presentation_time_per_stimulus_per_epoch, temp_model_type, record_spikes, save_recorded_spikes_to_file, spike_analyser_for_untrained_network);		
 		
-		int number_of_bins = 3;
 		spike_analyser_for_untrained_network->calculate_single_cell_information_scores_for_neuron_group(EXCITATORY_NEURONS_LAYER_4, number_of_bins);
-		spike_analyser_for_untrained_network->calculate_various_neuron_spike_totals();
+		spike_analyser_for_untrained_network->calculate_various_neuron_spike_totals_and_averages(presentation_time_per_stimulus_per_epoch);
+
+
+		float optimal_average_firing_rate = 50.0f;
+		float average_number_of_neuron_spikes_per_second = spike_analyser_for_untrained_network->average_number_of_neuron_spikes_per_second;
+		if (average_number_of_neuron_spikes_per_second < optimal_average_firing_rate) {
+			single_score_to_write_to_file_for_dakota_optimisation = - pow((optimal_average_firing_rate - average_number_of_neuron_spikes_per_second), 5);
+		} else {
+			single_score_to_write_to_file_for_dakota_optimisation = - pow((average_number_of_neuron_spikes_per_second - optimal_average_firing_rate), 2);
+		}
 
 		// GraphPlotter *graph_plotter = new GraphPlotter();
 		// graph_plotter->plot_untrained_vs_trained_single_cell_information_for_all_objects(spike_analyser_for_untrained_network, spike_analyser_for_trained_network);
@@ -251,20 +260,20 @@ int main (int argc, char *argv[]){
 
 
 	/////////// SIMULATE NETWORK TRAINING ///////////
+	presentation_time_per_stimulus_per_epoch = 0.25f;
+	int number_of_epochs = 10;
+	bool present_stimuli_in_random_order = true;
 	if (simulate_network_to_train_network) {
-		presentation_time_per_stimulus_per_epoch = 0.25f;
-		int number_of_epochs = 10;
-		bool present_stimuli_in_random_order = true;
 		simulator.RunSimulationToTrainNetwork(presentation_time_per_stimulus_per_epoch, temp_model_type, number_of_epochs, present_stimuli_in_random_order);
 	}
 
 
 
 	/////////// SIMULATE NETWORK TO TEST TRAINED ///////////
+	presentation_time_per_stimulus_per_epoch = 1.0f;
+	record_spikes = false;
+	save_recorded_spikes_to_file = false;
 	if (simulate_network_to_test_trained) {
-		presentation_time_per_stimulus_per_epoch = 1.0f;
-		record_spikes = false;
-		save_recorded_spikes_to_file = false;
 		SpikeAnalyser * spike_analyser_for_trained_network = new SpikeAnalyser(simulator.neurons, (ImagePoissonSpikingNeurons*)simulator.input_neurons);
 		simulator.RunSimulationToCountNeuronSpikes(presentation_time_per_stimulus_per_epoch, temp_model_type, record_spikes, save_recorded_spikes_to_file, spike_analyser_for_trained_network);
 		spike_analyser_for_trained_network->calculate_single_cell_information_scores_for_neuron_group(EXCITATORY_NEURONS_LAYER_4, number_of_bins);

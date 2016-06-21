@@ -47,17 +47,20 @@ void SpikeAnalyser::store_spike_counts_for_stimulus_index(int stimulus_index, in
 
 }
 
-void SpikeAnalyser::calculate_various_neuron_spike_totals() {
+void SpikeAnalyser::calculate_various_neuron_spike_totals_and_averages(float presentation_time_per_stimulus_per_epoch) {
 
 	TimerWithMessages * timer = new TimerWithMessages("Calculating total and per stimulus spikes per neuron group...\n");
 
 	number_of_spikes_per_stimulus_per_neuron_group = new int *[neurons->total_number_of_groups];
+	average_number_of_spikes_per_stimulus_per_neuron_group_per_second = new float *[neurons->total_number_of_groups];
 	total_number_of_spikes_per_neuron_group = new int [neurons->total_number_of_groups];
+	average_number_of_spikes_per_neuron_group_per_second = new float [neurons->total_number_of_groups];
 	total_number_of_neuron_spikes = 0;
 
 	for (int neuron_group_index = 0; neuron_group_index < neurons->total_number_of_groups; neuron_group_index++) {
 
 		number_of_spikes_per_stimulus_per_neuron_group[neuron_group_index] = new int[input_neurons->total_number_of_input_images];
+		average_number_of_spikes_per_stimulus_per_neuron_group_per_second[neuron_group_index] = new float[input_neurons->total_number_of_input_images];
 
 		int neuron_group_start_index = neurons->start_neuron_indices_for_each_group[neuron_group_index];
 		int neuron_group_end_index = neurons->last_neuron_indices_for_each_group[neuron_group_index];
@@ -76,6 +79,9 @@ void SpikeAnalyser::calculate_various_neuron_spike_totals() {
 
 			}
 			
+			average_number_of_spikes_per_stimulus_per_neuron_group_per_second[neuron_group_index][stimulus_index] = ((float)number_of_spikes_per_stimulus_per_neuron_group[neuron_group_index][stimulus_index]/(float)number_of_neurons_in_group) / presentation_time_per_stimulus_per_epoch;
+			printf("average_number_of_spikes_per_stimulus_per_neuron_group_per_second[neuron_group_index][stimulus_index]: %f\n", average_number_of_spikes_per_stimulus_per_neuron_group_per_second[neuron_group_index][stimulus_index]);
+
 			total_number_of_spikes_per_neuron_group[neuron_group_index] += number_of_spikes_per_stimulus_per_neuron_group[neuron_group_index][stimulus_index];
 
 			// printf("number_of_spikes_per_stimulus_per_neuron_group[%d][%d]: %d\n", neuron_group_index, stimulus_index, number_of_spikes_per_stimulus_per_neuron_group[neuron_group_index][stimulus_index]);
@@ -83,10 +89,17 @@ void SpikeAnalyser::calculate_various_neuron_spike_totals() {
 
 		}
 
+		average_number_of_spikes_per_neuron_group_per_second[neuron_group_index] = ((float)total_number_of_spikes_per_neuron_group[neuron_group_index] / (float)number_of_neurons_in_group) / presentation_time_per_stimulus_per_epoch;
+		printf("average_number_of_spikes_per_neuron_group_per_second[neuron_group_index]: %f\n", average_number_of_spikes_per_neuron_group_per_second[neuron_group_index]);
+
 		total_number_of_neuron_spikes += total_number_of_spikes_per_neuron_group[neuron_group_index];
 
 	}
+
+	average_number_of_neuron_spikes_per_second = ((float)total_number_of_neuron_spikes / (float)neurons->total_number_of_neurons) / presentation_time_per_stimulus_per_epoch;
+
 	// printf("total_number_of_neuron_spikes: %d\n", total_number_of_neuron_spikes);
+	printf("average_number_of_neuron_spikes_per_second: %f\n", average_number_of_neuron_spikes_per_second);
 
 	timer->stop_timer_and_log_time_and_message("Total and per stimulus spikes per neuron group calculated.", true);
 
