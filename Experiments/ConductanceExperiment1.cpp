@@ -26,25 +26,32 @@ int main (int argc, char *argv[]){
 
 	bool command_line_arguments_passed = false;
 	float G2E_FF_biological_conductance_scaling_constant_lambda = 7.9 * pow(10, -3);
-	float E2E_FF_biological_conductance_scaling_constant_lambda = 5.0 * pow(10, -3);
-	float E2I_L_biological_conductance_scaling_constant_lambda = 3.4 * pow(10, -5);
-	float I2E_L_biological_conductance_scaling_constant_lambda = 5.0 * pow(10, -4);
-	float E2E_L_biological_conductance_scaling_constant_lambda = 0.9 * pow(10, -2);
+	float L1_E2I_L_biological_conductance_scaling_constant_lambda = 5.0 * pow(10, -3);
+	float L1_I2E_L_biological_conductance_scaling_constant_lambda = 3.4 * pow(10, -5);
+	float L1_E2E_L_biological_conductance_scaling_constant_lambda = 5.0 * pow(10, -4);
+	float E2E_FF_biological_conductance_scaling_constant_lambda = 0.9 * pow(10, -2);
+	float L2plus_E2I_L_biological_conductance_scaling_constant_lambda = 0.9 * pow(10, -2);
+	float L2plus_I2E_L_biological_conductance_scaling_constant_lambda = 0.9 * pow(10, -2);
+	float L2plus_E2E_L_biological_conductance_scaling_constant_lambda = 0.9 * pow(10, -2);
 	// printf("argc = %d\n", argc);
 	if (argc > 1) {
 		command_line_arguments_passed = true;
 		// printf("argv[3]: %s\n", argv[3]);
 		// printf("std::stof(argv[3]): %.12f\n", std::stof(argv[3]));
 		G2E_FF_biological_conductance_scaling_constant_lambda = std::stof(argv[3]);
-		E2E_FF_biological_conductance_scaling_constant_lambda = std::stof(argv[4]);
-		E2I_L_biological_conductance_scaling_constant_lambda = std::stof(argv[5]);
-		I2E_L_biological_conductance_scaling_constant_lambda = std::stof(argv[6]);
-		E2E_L_biological_conductance_scaling_constant_lambda = std::stof(argv[7]);
-		printf("G2E_FF_biological_conductance_scaling_constant_lambda: %.12f\n", G2E_FF_biological_conductance_scaling_constant_lambda);
-		printf("E2E_FF_biological_conductance_scaling_constant_lambda: %.12f\n", E2E_FF_biological_conductance_scaling_constant_lambda);
-		printf("E2I_L_biological_conductance_scaling_constant_lambda: %.12f\n", E2I_L_biological_conductance_scaling_constant_lambda);
-		printf("I2E_L_biological_conductance_scaling_constant_lambda: %.12f\n", I2E_L_biological_conductance_scaling_constant_lambda);
-		printf("E2E_L_biological_conductance_scaling_constant_lambda: %.12f\n", E2E_L_biological_conductance_scaling_constant_lambda);
+		L1_E2I_L_biological_conductance_scaling_constant_lambda = std::stof(argv[4]);
+		L1_I2E_L_biological_conductance_scaling_constant_lambda = std::stof(argv[5]);
+		L1_E2E_L_biological_conductance_scaling_constant_lambda = std::stof(argv[6]);
+		E2E_FF_biological_conductance_scaling_constant_lambda = std::stof(argv[7]);
+		L2plus_E2I_L_biological_conductance_scaling_constant_lambda = std::stof(argv[8]);
+		L2plus_I2E_L_biological_conductance_scaling_constant_lambda = std::stof(argv[9]);
+		L2plus_E2E_L_biological_conductance_scaling_constant_lambda = std::stof(argv[10]);
+
+		// printf("G2E_FF_biological_conductance_scaling_constant_lambda: %.12f\n", G2E_FF_biological_conductance_scaling_constant_lambda);
+		// printf("E2E_FF_biological_conductance_scaling_constant_lambda: %.12f\n", E2E_FF_biological_conductance_scaling_constant_lambda);
+		// printf("E2I_L_biological_conductance_scaling_constant_lambda: %.12f\n", E2I_L_biological_conductance_scaling_constant_lambda);
+		// printf("I2E_L_biological_conductance_scaling_constant_lambda: %.12f\n", I2E_L_biological_conductance_scaling_constant_lambda);
+		// printf("E2E_L_biological_conductance_scaling_constant_lambda: %.12f\n", E2E_L_biological_conductance_scaling_constant_lambda);
 	}
 	
 	// Create an instance of the Simulator and set the timestep
@@ -151,7 +158,7 @@ int main (int argc, char *argv[]){
 	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[1] = 3.0f*pow(10, -3);
 	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->max_number_of_connections_per_pair = 5;
 	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_per_postsynaptic_neuron = 30;
-	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = E2I_L_biological_conductance_scaling_constant_lambda;
+	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = L1_E2I_L_biological_conductance_scaling_constant_lambda;
 	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->connectivity_type = CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE;
 	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->stdp_on = false;
 	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_standard_deviation = 10.0;
@@ -163,7 +170,7 @@ int main (int argc, char *argv[]){
 	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[1] = 3.0f*pow(10, -3);
 	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->max_number_of_connections_per_pair = 5;
 	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_per_postsynaptic_neuron = 30;
-	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = I2E_L_biological_conductance_scaling_constant_lambda;
+	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = L1_I2E_L_biological_conductance_scaling_constant_lambda;
 	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->connectivity_type = CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE;
 	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->stdp_on = false;
 	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_standard_deviation = 10.0;
@@ -175,7 +182,7 @@ int main (int argc, char *argv[]){
 	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[1] = 3.0f*pow(10, -3);
 	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->max_number_of_connections_per_pair = 5;
 	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_per_postsynaptic_neuron = 20;
-	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = E2E_L_biological_conductance_scaling_constant_lambda;
+	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = L1_E2E_L_biological_conductance_scaling_constant_lambda;
 	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->connectivity_type = CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE;
 	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->stdp_on = false;
 	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_standard_deviation = 10.0;
@@ -189,16 +196,21 @@ int main (int argc, char *argv[]){
 	simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_3, EXCITATORY_NEURONS_LAYER_4, E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 
 	simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_1, INHIBITORY_NEURONS_LAYER_1, E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
+	simulator.AddSynapseGroup(INHIBITORY_NEURONS_LAYER_1, EXCITATORY_NEURONS_LAYER_1, I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
+	simulator.AddSynapseGroup(INHIBITORY_NEURONS_LAYER_1, EXCITATORY_NEURONS_LAYER_1, I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
+	simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_1, EXCITATORY_NEURONS_LAYER_1, E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
+
+	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = L2plus_E2I_L_biological_conductance_scaling_constant_lambda;
 	simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_2, INHIBITORY_NEURONS_LAYER_2, E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 	simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_3, INHIBITORY_NEURONS_LAYER_3, E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 	simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_4, INHIBITORY_NEURONS_LAYER_4, E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 
-	simulator.AddSynapseGroup(INHIBITORY_NEURONS_LAYER_1, EXCITATORY_NEURONS_LAYER_1, I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
+	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = L2plus_I2E_L_biological_conductance_scaling_constant_lambda;
 	simulator.AddSynapseGroup(INHIBITORY_NEURONS_LAYER_2, EXCITATORY_NEURONS_LAYER_2, I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 	simulator.AddSynapseGroup(INHIBITORY_NEURONS_LAYER_3, EXCITATORY_NEURONS_LAYER_3, I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 	simulator.AddSynapseGroup(INHIBITORY_NEURONS_LAYER_4, EXCITATORY_NEURONS_LAYER_4, I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 
-	simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_1, EXCITATORY_NEURONS_LAYER_1, E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
+	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = L2plus_E2E_L_biological_conductance_scaling_constant_lambda;
 	simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_2, EXCITATORY_NEURONS_LAYER_2, E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 	simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_3, EXCITATORY_NEURONS_LAYER_3, E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 	simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_4, EXCITATORY_NEURONS_LAYER_4, E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
@@ -229,7 +241,7 @@ int main (int argc, char *argv[]){
 
 
 	/////////// SIMULATE NETWORK TO TEST UNTRAINED ///////////
-	float presentation_time_per_stimulus_per_epoch = 1.0f;
+	float presentation_time_per_stimulus_per_epoch = 0.25f;
 	bool record_spikes = true;
 	bool save_recorded_spikes_to_file = false;
 	int number_of_bins = 3;
