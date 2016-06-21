@@ -48,6 +48,8 @@ void SpikeAnalyser::store_spike_counts_for_stimulus_index(int stimulus_index, in
 
 void SpikeAnalyser::calculate_total_and_per_stimulus_spikes_per_neuron_group() {
 
+	TimerWithMessages * timer = new TimerWithMessages("Calculating total and per stimulus spikes per neuron group...\n");
+
 	number_of_spikes_per_stimulus_per_neuron_group = new int *[neurons->total_number_of_groups];
 	total_number_of_spikes_per_neuron_group = new int [neurons->total_number_of_groups];
 
@@ -74,20 +76,21 @@ void SpikeAnalyser::calculate_total_and_per_stimulus_spikes_per_neuron_group() {
 			
 			total_number_of_spikes_per_neuron_group[neuron_group_index] += number_of_spikes_per_stimulus_per_neuron_group[neuron_group_index][stimulus_index];
 
-			printf("number_of_spikes_per_stimulus_per_neuron_group[%d][%d]: %d\n", neuron_group_index, stimulus_index, number_of_spikes_per_stimulus_per_neuron_group[neuron_group_index][stimulus_index]);
-			printf("total_number_of_spikes_per_neuron_group[neuron_group_index]: %d\n", total_number_of_spikes_per_neuron_group[neuron_group_index]);
-
+			// printf("number_of_spikes_per_stimulus_per_neuron_group[%d][%d]: %d\n", neuron_group_index, stimulus_index, number_of_spikes_per_stimulus_per_neuron_group[neuron_group_index][stimulus_index]);
+			// printf("total_number_of_spikes_per_neuron_group[neuron_group_index]: %d\n", total_number_of_spikes_per_neuron_group[neuron_group_index]);
 
 		}
 
 	}
+
+	timer->stop_timer_and_log_time_and_message("Total and per stimulus spikes per neuron group calculated.", true);
 
 }
 
 void SpikeAnalyser::calculate_single_cell_information_scores_for_neuron_group(int neuron_group_index, int number_of_bins) {
 
 	TimerWithMessages * single_cell_analysis_timer = new TimerWithMessages();
-	printf("Caclulating Single Cell Information Scores for Neuron Group: %d\n", neuron_group_index);
+	printf("Calculating Single Cell Information Scores for Neuron Group: %d\n", neuron_group_index);
 
 	int neuron_group_start_index = neurons->start_neuron_indices_for_each_group[neuron_group_index];
 	int neuron_group_end_index = neurons->last_neuron_indices_for_each_group[neuron_group_index];
