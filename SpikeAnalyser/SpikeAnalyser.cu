@@ -15,6 +15,9 @@ SpikeAnalyser::SpikeAnalyser(Neurons * neurons_parameter, ImagePoissonSpikingNeu
 	information_scores_for_each_object_and_neuron = NULL;
 	descending_information_scores_for_each_object_and_neuron = NULL;
 
+	number_of_spikes_per_stimulus_per_neuron_group = NULL;
+	total_number_of_spikes_per_neuron_group = NULL;
+
 	sum_of_information_scores_for_last_neuron_group = -1.0;
 	number_of_neurons_with_maximum_information_score_in_last_neuron_group = -1;
 	maximum_information_score_count_multiplied_by_sum_of_information_scores = -1.0;
@@ -46,6 +49,7 @@ void SpikeAnalyser::store_spike_counts_for_stimulus_index(int stimulus_index, in
 void SpikeAnalyser::calculate_total_and_per_stimulus_spikes_per_neuron_group() {
 
 	number_of_spikes_per_stimulus_per_neuron_group = new int *[neurons->total_number_of_groups];
+	total_number_of_spikes_per_neuron_group = new int [neurons->total_number_of_groups];
 
 	for (int neuron_group_index = 0; neuron_group_index < neurons->total_number_of_groups; neuron_group_index++) {
 
@@ -55,6 +59,8 @@ void SpikeAnalyser::calculate_total_and_per_stimulus_spikes_per_neuron_group() {
 		int neuron_group_end_index = neurons->last_neuron_indices_for_each_group[neuron_group_index];
 		number_of_neurons_in_group = neuron_group_end_index - neuron_group_start_index + 1;
 	
+		total_number_of_spikes_per_neuron_group[neuron_group_index] = 0;
+
 		for (int stimulus_index = 0; stimulus_index < input_neurons->total_number_of_input_images; stimulus_index++) {
 
 			number_of_spikes_per_stimulus_per_neuron_group[neuron_group_index][stimulus_index] = 0;
@@ -65,7 +71,13 @@ void SpikeAnalyser::calculate_total_and_per_stimulus_spikes_per_neuron_group() {
 				number_of_spikes_per_stimulus_per_neuron_group[neuron_group_index][stimulus_index] += number_of_spikes;
 
 			}
+			
+			total_number_of_spikes_per_neuron_group[neuron_group_index] += number_of_spikes_per_stimulus_per_neuron_group[neuron_group_index][stimulus_index];
+
 			printf("number_of_spikes_per_stimulus_per_neuron_group[%d][%d]: %d\n", neuron_group_index, stimulus_index, number_of_spikes_per_stimulus_per_neuron_group[neuron_group_index][stimulus_index]);
+			printf("total_number_of_spikes_per_neuron_group[neuron_group_index]: %d\n", total_number_of_spikes_per_neuron_group[neuron_group_index]);
+
+
 		}
 
 	}

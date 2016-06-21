@@ -23,6 +23,7 @@ public:
 	float ** descending_information_scores_for_each_object_and_neuron;
 
 	int ** number_of_spikes_per_stimulus_per_neuron_group;
+	int * total_number_of_spikes_per_neuron_group;
 
 	int number_of_neurons_with_maximum_information_score_in_last_neuron_group;
 	float sum_of_information_scores_for_last_neuron_group;
