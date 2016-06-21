@@ -43,6 +43,33 @@ void SpikeAnalyser::store_spike_counts_for_stimulus_index(int stimulus_index, in
 
 }
 
+void SpikeAnalyser::calculate_total_and_per_stimulus_spikes_per_neuron_group() {
+
+	int number_of_spikes_per_stimulus_per_neuron_group[neurons->total_number_of_groups][input_neurons->total_number_of_input_images];
+
+	for (int neuron_group_index = 0; neuron_group_index < neurons->total_number_of_groups; neuron_group_index++) {
+
+		int neuron_group_start_index = neurons->start_neuron_indices_for_each_group[neuron_group_index];
+		int neuron_group_end_index = neurons->last_neuron_indices_for_each_group[neuron_group_index];
+		number_of_neurons_in_group = neuron_group_end_index - neuron_group_start_index + 1;
+	
+		for (int stimulus_index = 0; stimulus_index < input_neurons->total_number_of_input_images; stimulus_index++) {
+
+			number_of_spikes_per_stimulus_per_neuron_group[neuron_group_index][stimulus_index] = 0;
+
+			for (int neuron_index_zeroed = 0; neuron_index_zeroed < number_of_neurons_in_group; neuron_index_zeroed++) {
+
+				int number_of_spikes = per_stimulus_per_neuron_spike_counts[stimulus_index][neuron_index_zeroed+neuron_group_start_index];
+				number_of_spikes_per_stimulus_per_neuron_group[neuron_group_index][stimulus_index] += number_of_spikes;
+
+			}
+			printf("number_of_spikes_per_stimulus_per_neuron_group[%d][%d]: %d\n", neuron_group_index, stimulus_index, number_of_spikes_per_stimulus_per_neuron_group[neuron_group_index][stimulus_index]);
+		}
+
+	}
+
+}
+
 void SpikeAnalyser::calculate_single_cell_information_scores_for_neuron_group(int neuron_group_index, int number_of_bins) {
 
 	TimerWithMessages * single_cell_analysis_timer = new TimerWithMessages();

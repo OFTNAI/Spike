@@ -27,7 +27,7 @@ public:
 	float maximum_information_score_count_multiplied_by_sum_of_information_scores;
 
 	void store_spike_counts_for_stimulus_index(int stimulus_index, int * d_neuron_spike_counts_for_stimulus);
-
+	void calculate_total_and_per_stimulus_spikes_per_neuron_group();
 	void calculate_single_cell_information_scores_for_neuron_group(int neuron_group_index, int number_of_bins);
 
 };
