@@ -157,7 +157,7 @@ void Simulator::setup_network(bool temp_model_type) {
 	// Provides order of magnitude speedup for LIF (All to all atleast). 
 	// Because all synapses contribute to current_injection on every iteration, having all threads in a block accessing only 1 or 2 positions in memory causes massive slowdown.
 	// Randomising order of synapses means that each block is accessing a larger number of points in memory.
-	if (temp_model_type == 1) synapses->shuffle_synapses();
+	// if (temp_model_type == 1) synapses->shuffle_synapses();
 
 	neurons->allocate_device_pointers();
 	synapses->allocate_device_pointers();
@@ -190,28 +190,28 @@ void Simulator::setup_recording_electrodes_for_input_neurons(int number_of_times
 }
 
 
-void Simulator::RunSimulationToCountNeuronSpikesForSingleCellAnalysis(float presentation_time_per_stimulus_per_epoch, int temp_model_type, bool record_spikes, bool save_recorded_spikes_to_file, SpikeAnalyser *spike_analyser) {
+void Simulator::RunSimulationToCountNeuronSpikes(float presentation_time_per_stimulus_per_epoch, int temp_model_type, bool record_spikes, bool save_recorded_spikes_to_file, SpikeAnalyser *spike_analyser) {
 	bool number_of_epochs = 1;
 	bool apply_stdp_to_relevant_synapses = false;
-	bool count_spikes_per_neuron_for_single_cell_analysis = true;
+	bool count_spikes_per_neuron = true;
 	bool present_stimuli_in_random_order = false;
 
-	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, temp_model_type, record_spikes, save_recorded_spikes_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron_for_single_cell_analysis, present_stimuli_in_random_order, spike_analyser);
+	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, temp_model_type, record_spikes, save_recorded_spikes_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, present_stimuli_in_random_order, spike_analyser);
 }
 
 void Simulator::RunSimulationToTrainNetwork(float presentation_time_per_stimulus_per_epoch, int temp_model_type, int number_of_epochs, bool present_stimuli_in_random_order) {
 
 	bool apply_stdp_to_relevant_synapses = true;
-	bool count_spikes_per_neuron_for_single_cell_analysis = false;
+	bool count_spikes_per_neuron = false;
 	bool record_spikes = false;
 	bool save_recorded_spikes_to_file = false;
 
-	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, temp_model_type, record_spikes, save_recorded_spikes_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron_for_single_cell_analysis, present_stimuli_in_random_order, NULL);
+	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, temp_model_type, record_spikes, save_recorded_spikes_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, present_stimuli_in_random_order, NULL);
 }
 
 
 
-void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, int temp_model_type, bool record_spikes, bool save_recorded_spikes_to_file, bool apply_stdp_to_relevant_synapses, bool count_spikes_per_neuron_for_single_cell_analysis, bool present_stimuli_in_random_order, SpikeAnalyser *spike_analyser){
+void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, int temp_model_type, bool record_spikes, bool save_recorded_spikes_to_file, bool apply_stdp_to_relevant_synapses, bool count_spikes_per_neuron, bool present_stimuli_in_random_order, SpikeAnalyser *spike_analyser){
 	
 	int number_of_stimuli = input_neurons->total_number_of_input_images;
 	begin_simulation_message(timestep, number_of_stimuli, number_of_epochs, record_spikes, save_recorded_spikes_to_file, present_stimuli_in_random_order, neurons->total_number_of_neurons, input_neurons->total_number_of_neurons, synapses->total_number_of_synapses);
@@ -264,7 +264,7 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 				if (temp_model_type == 0) temp_izhikevich_per_timestep_instructions(current_time_in_seconds);
 				if (temp_model_type == 1) temp_lif_per_timestep_instructions(current_time_in_seconds, apply_stdp_to_relevant_synapses);
 
-				if (count_spikes_per_neuron_for_single_cell_analysis) {
+				if (count_spikes_per_neuron) {
 					if (recording_electrodes) {
 						recording_electrodes->add_spikes_to_per_neuron_spike_count(current_time_in_seconds);
 					}
@@ -286,7 +286,7 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 
 			}
 
-			if (count_spikes_per_neuron_for_single_cell_analysis) {
+			if (count_spikes_per_neuron) {
 				if (spike_analyser) {
 					spike_analyser->store_spike_counts_for_stimulus_index(input_neurons->current_stimulus_index, recording_electrodes->d_per_neuron_spike_counts);
 				}
