@@ -222,49 +222,61 @@ int main (int argc, char *argv[]){
 
 
 
+	bool simulate_network_to_test_untrained = true;
+	bool simulate_network_to_train_network = false;
+	bool simulate_network_to_test_trained = false;
+	float single_score_to_write_to_file_for_dakota_optimisation = 0.0;
+
 
 	/////////// SIMULATE NETWORK TO TEST UNTRAINED ///////////
-	float presentation_time_per_stimulus_per_epoch = 1.0f;
-	bool record_spikes = true;
-	bool save_recorded_spikes_to_file = false;
-	SpikeAnalyser * spike_analyser_for_untrained_network = new SpikeAnalyser(simulator.neurons, (ImagePoissonSpikingNeurons*)simulator.input_neurons);
-	simulator.RunSimulationToCountNeuronSpikes(presentation_time_per_stimulus_per_epoch, temp_model_type, record_spikes, save_recorded_spikes_to_file, spike_analyser_for_untrained_network);
-	
-	int number_of_bins = 3;
-	spike_analyser_for_untrained_network->calculate_single_cell_information_scores_for_neuron_group(EXCITATORY_NEURONS_LAYER_4, number_of_bins);
-	spike_analyser_for_untrained_network->calculate_various_neuron_spike_totals();
+	if (simulate_network_to_test_untrained) {
 
-	// GraphPlotter *graph_plotter = new GraphPlotter();
-	// graph_plotter->plot_untrained_vs_trained_single_cell_information_for_all_objects(spike_analyser_for_untrained_network, spike_analyser_for_trained_network);
-	// graph_plotter->plot_all_spikes(simulator.recording_electrodes);
+		float presentation_time_per_stimulus_per_epoch = 1.0f;
+		bool record_spikes = true;
+		bool save_recorded_spikes_to_file = false;
+		SpikeAnalyser * spike_analyser_for_untrained_network = new SpikeAnalyser(simulator.neurons, (ImagePoissonSpikingNeurons*)simulator.input_neurons);
+		simulator.RunSimulationToCountNeuronSpikes(presentation_time_per_stimulus_per_epoch, temp_model_type, record_spikes, save_recorded_spikes_to_file, spike_analyser_for_untrained_network);
+		
+		int number_of_bins = 3;
+		spike_analyser_for_untrained_network->calculate_single_cell_information_scores_for_neuron_group(EXCITATORY_NEURONS_LAYER_4, number_of_bins);
+		spike_analyser_for_untrained_network->calculate_various_neuron_spike_totals();
 
-	// simulator.recording_electrodes->delete_and_reset_recorded_spikes();
+		// GraphPlotter *graph_plotter = new GraphPlotter();
+		// graph_plotter->plot_untrained_vs_trained_single_cell_information_for_all_objects(spike_analyser_for_untrained_network, spike_analyser_for_trained_network);
+		// graph_plotter->plot_all_spikes(simulator.recording_electrodes);
 
+		// simulator.recording_electrodes->delete_and_reset_recorded_spikes();
 
+	}
 
 
 	/////////// SIMULATE NETWORK TRAINING ///////////
-	presentation_time_per_stimulus_per_epoch = 0.25f;
-	int number_of_epochs = 10;
-	bool present_stimuli_in_random_order = true;
-	simulator.RunSimulationToTrainNetwork(presentation_time_per_stimulus_per_epoch, temp_model_type, number_of_epochs, present_stimuli_in_random_order);
-
+	if (simulate_network_to_train_network) {
+		presentation_time_per_stimulus_per_epoch = 0.25f;
+		int number_of_epochs = 10;
+		bool present_stimuli_in_random_order = true;
+		simulator.RunSimulationToTrainNetwork(presentation_time_per_stimulus_per_epoch, temp_model_type, number_of_epochs, present_stimuli_in_random_order);
+	}
 
 
 
 	/////////// SIMULATE NETWORK TO TEST TRAINED ///////////
-	presentation_time_per_stimulus_per_epoch = 1.0f;
-	record_spikes = false;
-	save_recorded_spikes_to_file = false;
-	SpikeAnalyser * spike_analyser_for_trained_network = new SpikeAnalyser(simulator.neurons, (ImagePoissonSpikingNeurons*)simulator.input_neurons);
-	simulator.RunSimulationToCountNeuronSpikes(presentation_time_per_stimulus_per_epoch, temp_model_type, record_spikes, save_recorded_spikes_to_file, spike_analyser_for_trained_network);
-	spike_analyser_for_trained_network->calculate_single_cell_information_scores_for_neuron_group(EXCITATORY_NEURONS_LAYER_4, number_of_bins);
+	if (simulate_network_to_test_trained) {
+		presentation_time_per_stimulus_per_epoch = 1.0f;
+		record_spikes = false;
+		save_recorded_spikes_to_file = false;
+		SpikeAnalyser * spike_analyser_for_trained_network = new SpikeAnalyser(simulator.neurons, (ImagePoissonSpikingNeurons*)simulator.input_neurons);
+		simulator.RunSimulationToCountNeuronSpikes(presentation_time_per_stimulus_per_epoch, temp_model_type, record_spikes, save_recorded_spikes_to_file, spike_analyser_for_trained_network);
+		spike_analyser_for_trained_network->calculate_single_cell_information_scores_for_neuron_group(EXCITATORY_NEURONS_LAYER_4, number_of_bins);
 
-	// GraphPlotter *graph_plotter = new GraphPlotter();
-	// graph_plotter->plot_untrained_vs_trained_single_cell_information_for_all_objects(spike_analyser_for_untrained_network, spike_analyser_for_trained_network);
-	// graph_plotter->plot_all_spikes(simulator.recording_electrodes);
+		single_score_to_write_to_file_for_dakota_optimisation = spike_analyser_for_trained_network->maximum_information_score_count_multiplied_by_sum_of_information_scores;
 
-	// string file = RESULTS_DIRECTORY + prefix_string + "_Epoch" + to_string(epoch_number) + "_" + to_string(clock());
+		// GraphPlotter *graph_plotter = new GraphPlotter();
+		// graph_plotter->plot_untrained_vs_trained_single_cell_information_for_all_objects(spike_analyser_for_untrained_network, spike_analyser_for_trained_network);
+		// graph_plotter->plot_all_spikes(simulator.recording_electrodes);
+
+		// string file = RESULTS_DIRECTORY + prefix_string + "_Epoch" + to_string(epoch_number) + "_" + to_string(clock());
+	}
 
 
 	/////////// WRITE NETWORK SCORE TO RESULTS FILE FOR DAKOTA OPTIMISATION ///////////
@@ -273,7 +285,7 @@ int main (int argc, char *argv[]){
 	// printf("combined_information_score_training_increase: %f\n", combined_information_score_training_increase);
 	std::ofstream resultsfile;
 	resultsfile.open(argv[1], std::ios::out | std::ios::binary);
-	resultsfile << std::to_string(spike_analyser_for_trained_network->maximum_information_score_count_multiplied_by_sum_of_information_scores) << std::endl;
+	resultsfile << std::to_string(single_score_to_write_to_file_for_dakota_optimisation) << std::endl;
 	resultsfile.close();
 
 	writing_network_score_to_results_file_timer->stop_timer_and_log_time_and_message("Network Score Written to File.", true);
