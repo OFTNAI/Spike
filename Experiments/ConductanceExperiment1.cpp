@@ -197,6 +197,11 @@ int main (int argc, char *argv[]){
 	simulator.AddSynapseGroup(INHIBITORY_NEURONS_LAYER_2, EXCITATORY_NEURONS_LAYER_2, I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 	simulator.AddSynapseGroup(INHIBITORY_NEURONS_LAYER_3, EXCITATORY_NEURONS_LAYER_3, I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 	simulator.AddSynapseGroup(INHIBITORY_NEURONS_LAYER_4, EXCITATORY_NEURONS_LAYER_4, I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
+
+	simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_1, EXCITATORY_NEURONS_LAYER_1, E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
+	simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_2, EXCITATORY_NEURONS_LAYER_2, E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
+	simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_3, EXCITATORY_NEURONS_LAYER_3, E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
+	simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_4, EXCITATORY_NEURONS_LAYER_4, E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 	
 	adding_synapses_timer->stop_timer_and_log_time_and_message("Synapses Added.", true);
 
@@ -218,7 +223,7 @@ int main (int argc, char *argv[]){
 
 
 
-	/////////// TEST UNTRAINED NETWORK ///////////
+	/////////// SIMULATE NETWORK TO TEST UNTRAINED ///////////
 	float presentation_time_per_stimulus_per_epoch = 1.0f;
 	bool record_spikes = true;
 	bool save_recorded_spikes_to_file = false;
@@ -237,7 +242,7 @@ int main (int argc, char *argv[]){
 
 
 
-	/////////// TRAIN NETWORK ///////////
+	/////////// SIMULATE NETWORK TRAINING ///////////
 	presentation_time_per_stimulus_per_epoch = 0.25f;
 	int number_of_epochs = 10;
 	bool present_stimuli_in_random_order = true;
@@ -246,7 +251,7 @@ int main (int argc, char *argv[]){
 
 
 
-	/////////// TEST TRAINED NETWORK ///////////
+	/////////// SIMULATE NETWORK TO TEST TRAINED ///////////
 	presentation_time_per_stimulus_per_epoch = 1.0f;
 	record_spikes = false;
 	save_recorded_spikes_to_file = false;
@@ -259,8 +264,6 @@ int main (int argc, char *argv[]){
 	// graph_plotter->plot_all_spikes(simulator.recording_electrodes);
 
 	// string file = RESULTS_DIRECTORY + prefix_string + "_Epoch" + to_string(epoch_number) + "_" + to_string(clock());
-	// string file = RESULTS_DIRECTORY + prefix_string + "_Epoch" + to_string(epoch_number) + "_" + to_string(clock());
-
 
 
 	/////////// WRITE NETWORK SCORE TO RESULTS FILE FOR DAKOTA OPTIMISATION ///////////
