@@ -232,7 +232,7 @@ int main (int argc, char *argv[]){
 	
 	int number_of_bins = 3;
 	spike_analyser_for_untrained_network->calculate_single_cell_information_scores_for_neuron_group(EXCITATORY_NEURONS_LAYER_4, number_of_bins);
-	spike_analyser_for_untrained_network->calculate_total_and_per_stimulus_spikes_per_neuron_group();
+	spike_analyser_for_untrained_network->calculate_various_neuron_spike_totals();
 
 	// GraphPlotter *graph_plotter = new GraphPlotter();
 	// graph_plotter->plot_untrained_vs_trained_single_cell_information_for_all_objects(spike_analyser_for_untrained_network, spike_analyser_for_trained_network);

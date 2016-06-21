@@ -17,6 +17,7 @@ SpikeAnalyser::SpikeAnalyser(Neurons * neurons_parameter, ImagePoissonSpikingNeu
 
 	number_of_spikes_per_stimulus_per_neuron_group = NULL;
 	total_number_of_spikes_per_neuron_group = NULL;
+	total_number_of_neuron_spikes = 0;
 
 	sum_of_information_scores_for_last_neuron_group = -1.0;
 	number_of_neurons_with_maximum_information_score_in_last_neuron_group = -1;
@@ -46,12 +47,13 @@ void SpikeAnalyser::store_spike_counts_for_stimulus_index(int stimulus_index, in
 
 }
 
-void SpikeAnalyser::calculate_total_and_per_stimulus_spikes_per_neuron_group() {
+void SpikeAnalyser::calculate_various_neuron_spike_totals() {
 
 	TimerWithMessages * timer = new TimerWithMessages("Calculating total and per stimulus spikes per neuron group...\n");
 
 	number_of_spikes_per_stimulus_per_neuron_group = new int *[neurons->total_number_of_groups];
 	total_number_of_spikes_per_neuron_group = new int [neurons->total_number_of_groups];
+	total_number_of_neuron_spikes = 0;
 
 	for (int neuron_group_index = 0; neuron_group_index < neurons->total_number_of_groups; neuron_group_index++) {
 
@@ -81,7 +83,10 @@ void SpikeAnalyser::calculate_total_and_per_stimulus_spikes_per_neuron_group() {
 
 		}
 
+		total_number_of_neuron_spikes += total_number_of_spikes_per_neuron_group[neuron_group_index];
+
 	}
+	// printf("total_number_of_neuron_spikes: %d\n", total_number_of_neuron_spikes);
 
 	timer->stop_timer_and_log_time_and_message("Total and per stimulus spikes per neuron group calculated.", true);
 
