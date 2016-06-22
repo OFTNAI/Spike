@@ -47,6 +47,27 @@ void SpikeAnalyser::store_spike_counts_for_stimulus_index(int stimulus_index, in
 
 }
 
+
+void SpikeAnalyser::calculate_combined_powered_distance_from_average_score() {
+
+	combined_powered_distance_from_average_score = 0.0;
+
+	for (int neuron_group_index = 0; neuron_group_index < neurons->total_number_of_groups; neuron_group_index++) {
+
+		float optimal_average_firing_rate = 50.0f;
+		float average_number_of_neuron_spikes_per_second_for_neuron_group = average_number_of_spikes_per_neuron_group_per_second[neuron_group_index];
+		if (average_number_of_neuron_spikes_per_second_for_neuron_group < optimal_average_firing_rate) {
+			combined_powered_distance_from_average_score += - pow((optimal_average_firing_rate - average_number_of_neuron_spikes_per_second_for_neuron_group), 6);
+		} else {
+			combined_powered_distance_from_average_score += - pow((average_number_of_neuron_spikes_per_second_for_neuron_group - optimal_average_firing_rate), 2);
+		}
+
+	}
+
+	combined_powered_distance_from_average_score = combined_powered_distance_from_average_score; // Stops Dakota output "1.2E-10" style
+
+}
+
 void SpikeAnalyser::calculate_various_neuron_spike_totals_and_averages(float presentation_time_per_stimulus_per_epoch) {
 
 	TimerWithMessages * timer = new TimerWithMessages("Calculating total and per stimulus spikes per neuron group...\n");

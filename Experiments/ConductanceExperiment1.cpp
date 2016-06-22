@@ -25,27 +25,28 @@ int main (int argc, char *argv[]){
 	TimerWithMessages * experiment_timer = new TimerWithMessages();
 
 	bool command_line_arguments_passed = false;
-	float G2E_FF_biological_conductance_scaling_constant_lambda = 7.9 * pow(10, -3);
-	float L1_E2I_L_biological_conductance_scaling_constant_lambda = 5.0 * pow(10, -3);
-	float L1_I2E_L_biological_conductance_scaling_constant_lambda = 3.4 * pow(10, -5);
-	float L1_E2E_L_biological_conductance_scaling_constant_lambda = 5.0 * pow(10, -4);
-	float E2E_FF_biological_conductance_scaling_constant_lambda = 0.9 * pow(10, -2);
-	float L2plus_E2I_L_biological_conductance_scaling_constant_lambda = 0.9 * pow(10, -2);
-	float L2plus_I2E_L_biological_conductance_scaling_constant_lambda = 0.9 * pow(10, -2);
-	float L2plus_E2E_L_biological_conductance_scaling_constant_lambda = 0.9 * pow(10, -2);
+	float G2E_FF_biological_conductance_scaling_constant_lambda = 0.001732477223;
+	float L1_E2I_L_biological_conductance_scaling_constant_lambda = 0.0002244875205;
+	float L1_I2E_L_biological_conductance_scaling_constant_lambda = 0.002573465137;
+	float L1_E2E_L_biological_conductance_scaling_constant_lambda = 0.002194632248;
+	
+	float E2E_FF_biological_conductance_scaling_constant_lambda = 0.0002910494922;
+	float L2plus_E2I_L_biological_conductance_scaling_constant_lambda = 0.0001888349535;
+	float L2plus_I2E_L_biological_conductance_scaling_constant_lambda = 0.003112143311;
+	float L2plus_E2E_L_biological_conductance_scaling_constant_lambda = 0.0008515281938;
 	// printf("argc = %d\n", argc);
 	if (argc > 1) {
 		command_line_arguments_passed = true;
 		// printf("argv[3]: %s\n", argv[3]);
 		// printf("std::stof(argv[3]): %.12f\n", std::stof(argv[3]));
-		G2E_FF_biological_conductance_scaling_constant_lambda = std::stof(argv[3]);
-		L1_E2I_L_biological_conductance_scaling_constant_lambda = std::stof(argv[4]);
-		L1_I2E_L_biological_conductance_scaling_constant_lambda = std::stof(argv[5]);
-		L1_E2E_L_biological_conductance_scaling_constant_lambda = std::stof(argv[6]);
-		E2E_FF_biological_conductance_scaling_constant_lambda = std::stof(argv[7]);
-		L2plus_E2I_L_biological_conductance_scaling_constant_lambda = std::stof(argv[8]);
-		L2plus_I2E_L_biological_conductance_scaling_constant_lambda = std::stof(argv[9]);
-		L2plus_E2E_L_biological_conductance_scaling_constant_lambda = std::stof(argv[10]);
+		// G2E_FF_biological_conductance_scaling_constant_lambda = std::stof(argv[3]);
+		// L1_E2I_L_biological_conductance_scaling_constant_lambda = std::stof(argv[4]);
+		// L1_I2E_L_biological_conductance_scaling_constant_lambda = std::stof(argv[5]);
+		// L1_E2E_L_biological_conductance_scaling_constant_lambda = std::stof(argv[6]);
+		E2E_FF_biological_conductance_scaling_constant_lambda = std::stof(argv[3]);
+		L2plus_E2I_L_biological_conductance_scaling_constant_lambda = std::stof(argv[4]);
+		L2plus_I2E_L_biological_conductance_scaling_constant_lambda = std::stof(argv[5]);
+		L2plus_E2E_L_biological_conductance_scaling_constant_lambda = std::stof(argv[6]);
 
 		// printf("G2E_FF_biological_conductance_scaling_constant_lambda: %.12f\n", G2E_FF_biological_conductance_scaling_constant_lambda);
 		// printf("E2E_FF_biological_conductance_scaling_constant_lambda: %.12f\n", E2E_FF_biological_conductance_scaling_constant_lambda);
@@ -84,8 +85,8 @@ int main (int argc, char *argv[]){
 	/////////// ADD INPUT NEURONS ///////////
 	TimerWithMessages * adding_input_neurons_timer = new TimerWithMessages("Adding Input Neurons...\n");
 
-	input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "../../MatlabGaborFilter/Inputs/", 100.0f);
-	// input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "MatlabGaborFilter/Inputs/", 100.0f);
+	// input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "../../MatlabGaborFilter/Inputs/", 100.0f);
+	input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "MatlabGaborFilter/Inputs/", 100.0f);
 	image_poisson_spiking_neuron_parameters_struct * image_poisson_spiking_group_params = new image_poisson_spiking_neuron_parameters_struct();
 	image_poisson_spiking_group_params->rate = 30.0f;
 	input_neurons->AddGroupForEachGaborType(image_poisson_spiking_group_params);
@@ -197,7 +198,6 @@ int main (int argc, char *argv[]){
 
 	simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_1, INHIBITORY_NEURONS_LAYER_1, E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 	simulator.AddSynapseGroup(INHIBITORY_NEURONS_LAYER_1, EXCITATORY_NEURONS_LAYER_1, I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
-	simulator.AddSynapseGroup(INHIBITORY_NEURONS_LAYER_1, EXCITATORY_NEURONS_LAYER_1, I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 	simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_1, EXCITATORY_NEURONS_LAYER_1, E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 
 	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = L2plus_E2I_L_biological_conductance_scaling_constant_lambda;
@@ -241,8 +241,8 @@ int main (int argc, char *argv[]){
 
 
 	/////////// SIMULATE NETWORK TO TEST UNTRAINED ///////////
-	float presentation_time_per_stimulus_per_epoch = 0.25f;
-	bool record_spikes = true;
+	float presentation_time_per_stimulus_per_epoch = 0.05f;
+	bool record_spikes = false;
 	bool save_recorded_spikes_to_file = false;
 	int number_of_bins = 3;
 	if (simulate_network_to_test_untrained) {
@@ -250,17 +250,11 @@ int main (int argc, char *argv[]){
 		SpikeAnalyser * spike_analyser_for_untrained_network = new SpikeAnalyser(simulator.neurons, (ImagePoissonSpikingNeurons*)simulator.input_neurons);
 		simulator.RunSimulationToCountNeuronSpikes(presentation_time_per_stimulus_per_epoch, temp_model_type, record_spikes, save_recorded_spikes_to_file, spike_analyser_for_untrained_network);		
 		
-		spike_analyser_for_untrained_network->calculate_single_cell_information_scores_for_neuron_group(EXCITATORY_NEURONS_LAYER_4, number_of_bins);
+		// spike_analyser_for_untrained_network->calculate_single_cell_information_scores_for_neuron_group(EXCITATORY_NEURONS_LAYER_4, number_of_bins);
 		spike_analyser_for_untrained_network->calculate_various_neuron_spike_totals_and_averages(presentation_time_per_stimulus_per_epoch);
+		spike_analyser_for_untrained_network->calculate_combined_powered_distance_from_average_score();
+		single_score_to_write_to_file_for_dakota_optimisation = spike_analyser_for_untrained_network->combined_powered_distance_from_average_score;
 
-
-		float optimal_average_firing_rate = 50.0f;
-		float average_number_of_neuron_spikes_per_second = spike_analyser_for_untrained_network->average_number_of_neuron_spikes_per_second;
-		if (average_number_of_neuron_spikes_per_second < optimal_average_firing_rate) {
-			single_score_to_write_to_file_for_dakota_optimisation = - pow((optimal_average_firing_rate - average_number_of_neuron_spikes_per_second), 5);
-		} else {
-			single_score_to_write_to_file_for_dakota_optimisation = - pow((average_number_of_neuron_spikes_per_second - optimal_average_firing_rate), 2);
-		}
 
 		// GraphPlotter *graph_plotter = new GraphPlotter();
 		// graph_plotter->plot_untrained_vs_trained_single_cell_information_for_all_objects(spike_analyser_for_untrained_network, spike_analyser_for_trained_network);
@@ -288,7 +282,7 @@ int main (int argc, char *argv[]){
 	if (simulate_network_to_test_trained) {
 		SpikeAnalyser * spike_analyser_for_trained_network = new SpikeAnalyser(simulator.neurons, (ImagePoissonSpikingNeurons*)simulator.input_neurons);
 		simulator.RunSimulationToCountNeuronSpikes(presentation_time_per_stimulus_per_epoch, temp_model_type, record_spikes, save_recorded_spikes_to_file, spike_analyser_for_trained_network);
-		spike_analyser_for_trained_network->calculate_single_cell_information_scores_for_neuron_group(EXCITATORY_NEURONS_LAYER_4, number_of_bins);
+		// spike_analyser_for_trained_network->calculate_single_cell_information_scores_for_neuron_group(EXCITATORY_NEURONS_LAYER_4, number_of_bins);
 
 		single_score_to_write_to_file_for_dakota_optimisation = spike_analyser_for_trained_network->maximum_information_score_count_multiplied_by_sum_of_information_scores;
 
