@@ -33,10 +33,23 @@ int main (int argc, char *argv[]){
 	float L1_I2E_L_biological_conductance_scaling_constant_lambda = 0.002573465137;
 	float L1_E2E_L_biological_conductance_scaling_constant_lambda = 0.002194632248;
 
-	float E2E_FF_biological_conductance_scaling_constant_lambda = 0.0002910494922;
-	float L2plus_E2I_L_biological_conductance_scaling_constant_lambda = 0.0001888349535;
-	float L2plus_I2E_L_biological_conductance_scaling_constant_lambda = 0.003112143311;
-	float L2plus_E2E_L_biological_conductance_scaling_constant_lambda = 0.0008515281938;
+	float L1_2_L2_E2E_FF_biological_conductance_scaling_constant_lambda = 0.0002910494922;
+	float L2_E2I_L_biological_conductance_scaling_constant_lambda = 0.0001888349535;
+	float L2_I2E_L_biological_conductance_scaling_constant_lambda = 0.003112143311;
+	float L2_E2E_L_biological_conductance_scaling_constant_lambda = 0.0008515281938;
+
+	//VALUES COPIED FROM 2
+	float L2_2_L3_E2E_FF_biological_conductance_scaling_constant_lambda = 0.0002910494922;
+	float L3_E2I_L_biological_conductance_scaling_constant_lambda = 0.0001888349535;
+	float L3_I2E_L_biological_conductance_scaling_constant_lambda = 0.003112143311;
+	float L3_E2E_L_biological_conductance_scaling_constant_lambda = 0.0008515281938;
+
+	//VALUES COPIED FROM 2
+	float L3_2_L4_E2E_FF_biological_conductance_scaling_constant_lambda = 0.0002910494922;
+	float L4_E2I_L_biological_conductance_scaling_constant_lambda = 0.0001888349535;
+	float L4_I2E_L_biological_conductance_scaling_constant_lambda = 0.003112143311;
+	float L4_E2E_L_biological_conductance_scaling_constant_lambda = 0.0008515281938;
+
 	// printf("argc = %d\n", argc);
 	if (argc > 1) {
 		command_line_arguments_passed = true;
@@ -57,18 +70,24 @@ int main (int argc, char *argv[]){
 		}
 
 		if (optimisation_stage == 1) {
-			E2E_FF_biological_conductance_scaling_constant_lambda = std::stof(argv[3]);
-			L2plus_E2I_L_biological_conductance_scaling_constant_lambda = std::stof(argv[4]);
-			L2plus_I2E_L_biological_conductance_scaling_constant_lambda = std::stof(argv[5]);
-			L2plus_E2E_L_biological_conductance_scaling_constant_lambda = std::stof(argv[6]);
+			L1_2_L2_E2E_FF_biological_conductance_scaling_constant_lambda = std::stof(argv[3]);
+			L2_E2I_L_biological_conductance_scaling_constant_lambda = std::stof(argv[4]);
+			L2_I2E_L_biological_conductance_scaling_constant_lambda = std::stof(argv[5]);
+			L2_E2E_L_biological_conductance_scaling_constant_lambda = std::stof(argv[6]);
 		}
 
 		if (optimisation_stage == 2) {
-
+			L2_2_L3_E2E_FF_biological_conductance_scaling_constant_lambda = std::stof(argv[3]);
+			L3_E2I_L_biological_conductance_scaling_constant_lambda = std::stof(argv[4]);
+			L3_I2E_L_biological_conductance_scaling_constant_lambda = std::stof(argv[5]);
+			L3_E2E_L_biological_conductance_scaling_constant_lambda = std::stof(argv[6]);
 		}
 
 		if (optimisation_stage == 3) {
-
+			L3_2_L4_E2E_FF_biological_conductance_scaling_constant_lambda = std::stof(argv[3]);
+			L4_E2I_L_biological_conductance_scaling_constant_lambda = std::stof(argv[4]);
+			L4_I2E_L_biological_conductance_scaling_constant_lambda = std::stof(argv[5]);
+			L4_E2E_L_biological_conductance_scaling_constant_lambda = std::stof(argv[6]);
 		}
 
 	}
@@ -132,25 +151,32 @@ int main (int argc, char *argv[]){
 	INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS->somatic_capcitance_Cm = 214.0*pow(10, -12);
 	INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS->somatic_leakage_conductance_g0 = 18.0*pow(10, -9);
 
-
+	int EXCITATORY_NEURONS_LAYER_1 = 0;
+	int EXCITATORY_NEURONS_LAYER_2 = 0;
+	int EXCITATORY_NEURONS_LAYER_3 = 0;
+	int EXCITATORY_NEURONS_LAYER_4 = 0;
+	int INHIBITORY_NEURONS_LAYER_1 = 0;
+	int INHIBITORY_NEURONS_LAYER_2 = 0;
+	int INHIBITORY_NEURONS_LAYER_3 = 0;
+	int INHIBITORY_NEURONS_LAYER_4 = 0;
 	if (optimisation_stage >= 0) {
-		int EXCITATORY_NEURONS_LAYER_1 = simulator.AddNeuronGroup(EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS);
-		int INHIBITORY_NEURONS_LAYER_1 = simulator.AddNeuronGroup(INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS);
+		EXCITATORY_NEURONS_LAYER_1 = simulator.AddNeuronGroup(EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS);
+		INHIBITORY_NEURONS_LAYER_1 = simulator.AddNeuronGroup(INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS);
 	}
 
 	if (optimisation_stage >= 1) {
-		int EXCITATORY_NEURONS_LAYER_2 = simulator.AddNeuronGroup(EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS);
-		int INHIBITORY_NEURONS_LAYER_2 = simulator.AddNeuronGroup(INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS);
+		EXCITATORY_NEURONS_LAYER_2 = simulator.AddNeuronGroup(EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS);
+		INHIBITORY_NEURONS_LAYER_2 = simulator.AddNeuronGroup(INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS);
 	}
 
 	if (optimisation_stage >= 2) {
-		int EXCITATORY_NEURONS_LAYER_3 = simulator.AddNeuronGroup(EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS);
-		int INHIBITORY_NEURONS_LAYER_3 = simulator.AddNeuronGroup(INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS);
+		EXCITATORY_NEURONS_LAYER_3 = simulator.AddNeuronGroup(EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS);
+		INHIBITORY_NEURONS_LAYER_3 = simulator.AddNeuronGroup(INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS);
 	}
 
 	if (optimisation_stage >= 3) {
-		int EXCITATORY_NEURONS_LAYER_4 = simulator.AddNeuronGroup(EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS);
-		int INHIBITORY_NEURONS_LAYER_4 = simulator.AddNeuronGroup(INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS);
+		EXCITATORY_NEURONS_LAYER_4 = simulator.AddNeuronGroup(EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS);
+		INHIBITORY_NEURONS_LAYER_4 = simulator.AddNeuronGroup(INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS);
 	}
 
 	adding_neurons_timer->stop_timer_and_log_time_and_message("Neurons Added.", true);
@@ -176,7 +202,7 @@ int main (int argc, char *argv[]){
 	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[1] = 3.0f*pow(10, -3);
 	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->max_number_of_connections_per_pair = 5;			
 	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_per_postsynaptic_neuron = 50;
-	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = E2E_FF_biological_conductance_scaling_constant_lambda;
+	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = L1_2_L2_E2E_FF_biological_conductance_scaling_constant_lambda;
 	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->connectivity_type = CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE;
 	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->stdp_on = true;
 	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_standard_deviation = 10.0;
@@ -219,46 +245,57 @@ int main (int argc, char *argv[]){
 	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->reversal_potential_Vhat = -70.0*pow(10, -3);
 	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->decay_term_tau_g = 0.005;
 
-	if (optimisation_stage >=0) {
+	if (optimisation_stage >= 0) {
 		simulator.AddSynapseGroupsForNeuronGroupAndEachInputGroup(EXCITATORY_NEURONS_LAYER_1, G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 		simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_1, INHIBITORY_NEURONS_LAYER_1, E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 		simulator.AddSynapseGroup(INHIBITORY_NEURONS_LAYER_1, EXCITATORY_NEURONS_LAYER_1, I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 		simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_1, EXCITATORY_NEURONS_LAYER_1, E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 	}
 
-	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = L2plus_E2I_L_biological_conductance_scaling_constant_lambda;
-	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = L2plus_I2E_L_biological_conductance_scaling_constant_lambda;
-	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = L2plus_E2E_L_biological_conductance_scaling_constant_lambda;
 
-	if (optimisation_stage >=1) {
+	if (optimisation_stage >= 1) {
+
+		E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = L1_2_L2_E2E_FF_biological_conductance_scaling_constant_lambda;
+		E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = L2_E2I_L_biological_conductance_scaling_constant_lambda;
+		I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = L2_I2E_L_biological_conductance_scaling_constant_lambda;
+		E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = L2_E2E_L_biological_conductance_scaling_constant_lambda;
+
 		simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_1, EXCITATORY_NEURONS_LAYER_2, E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 		simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_2, INHIBITORY_NEURONS_LAYER_2, E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 		simulator.AddSynapseGroup(INHIBITORY_NEURONS_LAYER_2, EXCITATORY_NEURONS_LAYER_2, I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 		simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_2, EXCITATORY_NEURONS_LAYER_2, E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
+
 	}
 
-	if (optimisation_stage >=2) {
+	if (optimisation_stage >= 2) {
+
+		E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = L2_2_L3_E2E_FF_biological_conductance_scaling_constant_lambda;
+		E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = L3_E2I_L_biological_conductance_scaling_constant_lambda;
+		I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = L3_I2E_L_biological_conductance_scaling_constant_lambda;
+		E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = L3_E2E_L_biological_conductance_scaling_constant_lambda;
+
 		simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_2, EXCITATORY_NEURONS_LAYER_3, E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 		simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_3, INHIBITORY_NEURONS_LAYER_3, E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 		simulator.AddSynapseGroup(INHIBITORY_NEURONS_LAYER_3, EXCITATORY_NEURONS_LAYER_3, I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 		simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_3, EXCITATORY_NEURONS_LAYER_3, E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 	}
 
-	if (optimisation_stage >=3) {
+	if (optimisation_stage >= 3) {
+
+		E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = L3_2_L4_E2E_FF_biological_conductance_scaling_constant_lambda;
+		E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = L4_E2I_L_biological_conductance_scaling_constant_lambda;
+		I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = L4_I2E_L_biological_conductance_scaling_constant_lambda;
+		E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = L4_E2E_L_biological_conductance_scaling_constant_lambda;
+
 		simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_3, EXCITATORY_NEURONS_LAYER_4, E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 		simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_4, INHIBITORY_NEURONS_LAYER_4, E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 		simulator.AddSynapseGroup(INHIBITORY_NEURONS_LAYER_4, EXCITATORY_NEURONS_LAYER_4, I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 		simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_4, EXCITATORY_NEURONS_LAYER_4, E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
+
 	}
 	
 	
-	
-	
 
-	
-	
-	
-	
 	
 	adding_synapses_timer->stop_timer_and_log_time_and_message("Synapses Added.", true);
 
