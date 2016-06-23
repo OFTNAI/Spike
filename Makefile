@@ -21,85 +21,64 @@ ifeq ($(UNAME_S),Linux)
 endif
 
 
+# Include all of the folders from which we want to include files
+# CU
+SIM_FILES := $(wildcard Simulator/*.cu)
+NEUR_FILES := $(wildcard Neurons/*.cu)
+STDP_FILES := $(wildcard STDP/*.cu)
+HELP_FILES := $(wildcard Helpers/*.cu)
+SYNS_FILES := $(wildcard Synapses/*.cu)
+REC_FILES := $(wildcard RecordingElectrodes/*.cu)
+ANALY_FILES := $(wildcard SpikeAnalyser/*.cu)
+# CPP
+HELP_CPP_FILES := $(wildcard Helpers/*.cpp)
 
+# COMBINE LISTS
+CU_FILES := $(SIM_FILES) $(NEUR_FILES) $(STDP_FILES) $(HELP_FILES) $(SYNS_FILES) $(REC_FILES) $(ANALY_FILES)
+CPP_FILES := $(HELP_CPP_FILES)
+
+# Create Objects
+CU_OBJ_FILES := $(addprefix ObjectFiles/,$(notdir $(CU_FILES:.cu=.o)))
+CPP_OBJ_FILES := $(addprefix ObjectFiles/,$(notdir $(CPP_FILES:.cpp=.o)))
 
 
 # Default
 model: ${FILE}
 directory: ${EXPERIMENT_DIRECTORY}
 
-
-# Separating out the individual compilations so as not to compilation time
-${FILE}: ObjectFiles/${FILE}.o ObjectFiles/Simulator.o ObjectFiles/Neurons.o ObjectFiles/SpikingNeurons.o ObjectFiles/IzhikevichSpikingNeurons.o ObjectFiles/LIFSpikingNeurons.o ObjectFiles/PoissonSpikingNeurons.o ObjectFiles/ImagePoissonSpikingNeurons.o ObjectFiles/FstreamWrapper.o ObjectFiles/GeneratorSpikingNeurons.o ObjectFiles/Synapses.o ObjectFiles/SpikingSynapses.o ObjectFiles/IzhikevichSpikingSynapses.o ObjectFiles/ConductanceSpikingSynapses.o ObjectFiles/RecordingElectrodes.o ObjectFiles/RandomStateManager.o ObjectFiles/SpikeAnalyser.o ObjectFiles/GraphPlotter.o ObjectFiles/TimerWithMessages.o ObjectFiles/STDP.o ObjectFiles/HigginsSTDP.o ObjectFiles/EvansSTDP.o
-	$(CC) -lineinfo -lpython2.7 ObjectFiles/${FILE}.o ObjectFiles/Simulator.o ObjectFiles/Neurons.o ObjectFiles/SpikingNeurons.o ObjectFiles/IzhikevichSpikingNeurons.o ObjectFiles/LIFSpikingNeurons.o ObjectFiles/PoissonSpikingNeurons.o ObjectFiles/ImagePoissonSpikingNeurons.o ObjectFiles/FstreamWrapper.o ObjectFiles/GeneratorSpikingNeurons.o ObjectFiles/Synapses.o ObjectFiles/SpikingSynapses.o ObjectFiles/IzhikevichSpikingSynapses.o ObjectFiles/ConductanceSpikingSynapses.o ObjectFiles/RecordingElectrodes.o ObjectFiles/RandomStateManager.o ObjectFiles/SpikeAnalyser.o ObjectFiles/GraphPlotter.o ObjectFiles/TimerWithMessages.o ObjectFiles/STDP.o ObjectFiles/HigginsSTDP.o ObjectFiles/EvansSTDP.o -o ${EXPERIMENT_DIRECTORY}/bin/${FILE}
-
+${FILE}: ObjectFiles/${FILE}.o $(CU_OBJ_FILES) $(CPP_OBJ_FILES)
+	$(CC) -lineinfo ObjectFiles/${FILE}.o $(CU_OBJ_FILES) $(CPP_OBJ_FILES) -o ${EXPERIMENT_DIRECTORY}/bin/${FILE}
 
 # Compiling the Model file
 ObjectFiles/${FILE}.o: ${EXPERIMENT_DIRECTORY}/${FILE}.cpp
 	$(CC) $(CFLAGS) ${EXPERIMENT_DIRECTORY}/${FILE}.cpp -o $@
-# Compiling the Simulator class
-ObjectFiles/Simulator.o: Simulator/Simulator.cu
-	$(CC) $(CFLAGS) Simulator/Simulator.cu -o $@
-# Compiling the Neurons class
-ObjectFiles/Neurons.o: Neurons/Neurons.cu
-	$(CC) $(CFLAGS) Neurons/Neurons.cu -o $@
-# Compiling the SpikingNeurons class
-ObjectFiles/SpikingNeurons.o: Neurons/SpikingNeurons.cu
-	$(CC) $(CFLAGS) Neurons/SpikingNeurons.cu -o $@
-# Compiling the IzhikevichSpikingNeurons class
-ObjectFiles/IzhikevichSpikingNeurons.o: Neurons/IzhikevichSpikingNeurons.cu
-	$(CC) $(CFLAGS) Neurons/IzhikevichSpikingNeurons.cu -o $@
-# Compiling the LIFSpikingNeurons class
-ObjectFiles/LIFSpikingNeurons.o: Neurons/LIFSpikingNeurons.cu
-	$(CC) $(CFLAGS) Neurons/LIFSpikingNeurons.cu -o $@
-# Compiling the PoissonSpikingNeurons class
-ObjectFiles/PoissonSpikingNeurons.o: Neurons/PoissonSpikingNeurons.cu
-	$(CC) $(CFLAGS) Neurons/PoissonSpikingNeurons.cu -o $@
-# Compiling the ImagePoissonSpikingNeurons class
-ObjectFiles/ImagePoissonSpikingNeurons.o: Neurons/ImagePoissonSpikingNeurons.cu
-	$(CC) $(CFLAGS) Neurons/ImagePoissonSpikingNeurons.cu -o $@
-# Compiling the FstreamWrapper class
-ObjectFiles/FstreamWrapper.o: Helpers/FstreamWrapper.cpp
-	$(CC) $(CFLAGS) Helpers/FstreamWrapper.cpp -o $@
-# Compiling the GeneratorSpikingNeurons class
-ObjectFiles/GeneratorSpikingNeurons.o: Neurons/GeneratorSpikingNeurons.cu
-	$(CC) $(CFLAGS) Neurons/GeneratorSpikingNeurons.cu -o $@
-# Compiling the Synapses class
-ObjectFiles/Synapses.o: Synapses/Synapses.cu
-	$(CC) $(CFLAGS) Synapses/Synapses.cu -o $@
-# Compiling the SpikingSynapses class
-ObjectFiles/SpikingSynapses.o: Synapses/SpikingSynapses.cu
-	$(CC) $(CFLAGS) Synapses/SpikingSynapses.cu -o $@
-# Compiling the IzhikevichSpikingSynapses class
-ObjectFiles/IzhikevichSpikingSynapses.o: Synapses/IzhikevichSpikingSynapses.cu
-	$(CC) $(CFLAGS) Synapses/IzhikevichSpikingSynapses.cu -o $@
-# Compiling the ConductanceSpikingSynapses class
-ObjectFiles/ConductanceSpikingSynapses.o: Synapses/ConductanceSpikingSynapses.cu
-	$(CC) $(CFLAGS) Synapses/ConductanceSpikingSynapses.cu -o $@
-# Compiling RecordingElectrodes class
-ObjectFiles/RecordingElectrodes.o: RecordingElectrodes/RecordingElectrodes.cu
-	$(CC) $(CFLAGS) RecordingElectrodes/RecordingElectrodes.cu -o $@
-# Compiling RandomStateManager class
-ObjectFiles/RandomStateManager.o: Helpers/RandomStateManager.cu
-	$(CC) $(CFLAGS) Helpers/RandomStateManager.cu -o $@
-# Compiling SpikeAnalyser class
-ObjectFiles/SpikeAnalyser.o: SpikeAnalyser/SpikeAnalyser.cu
-	$(CC) $(CFLAGS) SpikeAnalyser/SpikeAnalyser.cu -o $@
-# Compiling GraphPlotter class
-ObjectFiles/GraphPlotter.o: SpikeAnalyser/GraphPlotter.cu
-	$(CC) $(CFLAGS) SpikeAnalyser/GraphPlotter.cu -lpython2.7 -o $@
-# Compiling TimeWithMessages class
-ObjectFiles/TimerWithMessages.o: Helpers/TimerWithMessages.cu
-	$(CC) $(CFLAGS) Helpers/TimerWithMessages.cu -o $@
-# Compiling STDP class
-ObjectFiles/STDP.o: STDP/STDP.cu
-	$(CC) $(CFLAGS) STDP/STDP.cu -o $@
-# Compiling Higgins STDP class
-ObjectFiles/HigginsSTDP.o: STDP/HigginsSTDP.cu
-	$(CC) $(CFLAGS) STDP/HigginsSTDP.cu -o $@
-# Compiling Evans STDP class
-ObjectFiles/EvansSTDP.o: STDP/EvansSTDP.cu
-	$(CC) $(CFLAGS) STDP/EvansSTDP.cu -o $@
+
+# Add Each folder
+# Simulator
+# CUDA
+ObjectFiles/%.o: Simulator/%.cu
+	$(CC) $(CFLAGS) -o $@ $<
+
+ObjectFiles/%.o: Neurons/%.cu
+	$(CC) $(CFLAGS) -o $@ $<
+
+ObjectFiles/%.o: STDP/%.cu
+	$(CC) $(CFLAGS) -o $@ $<
+
+ObjectFiles/%.o: Helpers/%.cu
+	$(CC) $(CFLAGS) -o $@ $<
+
+ObjectFiles/%.o: Synapses/%.cu
+	$(CC) $(CFLAGS) -o $@ $<
+
+ObjectFiles/%.o: RecordingElectrodes/%.cu
+	$(CC) $(CFLAGS) -o $@ $<
+
+ObjectFiles/%.o: SpikeAnalyser/%.cu
+	$(CC) $(CFLAGS) -o $@ $<
+# CPP
+ObjectFiles/%.o: Helpers/%.cpp
+	$(CC) $(CFLAGS) -o $@ $<
 
 # Test script
 test: Simulator.o Neurons.o SpikingNeurons.o IzhikevichSpikingNeurons.o PoissonSpikingNeurons.o ImagePoissonSpikingNeurons.o FstreamWrapper.o GeneratorSpikingNeurons.o Synapses.o RecordingElectrodes.o RandomStateManager.o SpikeAnalyser.o

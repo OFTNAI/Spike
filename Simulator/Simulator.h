@@ -89,7 +89,7 @@ public:
 	void RunSimulationToTrainNetwork(float presentation_time_per_stimulus_per_epoch, int temp_model_type, int number_of_epochs, bool present_stimuli_in_random_order);
 
 protected: 
-	void temp_izhikevich_per_timestep_instructions(float current_time_in_seconds);
+	void temp_izhikevich_per_timestep_instructions(float current_time_in_seconds, bool apply_stdp_to_relevant_synapses);
 	void temp_lif_per_timestep_instructions(float current_time_in_seconds, bool apply_stdp_to_relevant_synapses);
 
 };

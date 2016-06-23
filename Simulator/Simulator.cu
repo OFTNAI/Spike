@@ -229,7 +229,8 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 	srand(43);
 
 	// STIMULUS ORDER (Put into function + variable)
-	int stimuli_presentation_order[number_of_stimuli];
+	int* stimuli_presentation_order;
+	stimuli_presentation_order = (int*)malloc(number_of_stimuli*sizeof(int));
 	for (int i = 0; i < number_of_stimuli; i++){
 		stimuli_presentation_order[i] = i;
 	}
@@ -268,7 +269,7 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 				neurons->reset_current_injections();
 
 				// Temporary seperation of izhikevich and lif per timestep instructions. Eventually hope to share as much execuation as possible between both models for generality
-				if (temp_model_type == 0) temp_izhikevich_per_timestep_instructions(current_time_in_seconds);
+				if (temp_model_type == 0) temp_izhikevich_per_timestep_instructions(current_time_in_seconds, apply_stdp_to_relevant_synapses);
 				if (temp_model_type == 1) temp_lif_per_timestep_instructions(current_time_in_seconds, apply_stdp_to_relevant_synapses);
 
 				if (count_spikes_per_neuron) {
@@ -335,7 +336,7 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 
 
 // Temporary seperation of izhikevich and lif per timestep instructions. Eventually hope to share as much execuation as possible between both models for generality
-void Simulator::temp_izhikevich_per_timestep_instructions(float current_time_in_seconds) {
+void Simulator::temp_izhikevich_per_timestep_instructions(float current_time_in_seconds, bool apply_stdp_to_relevant_synapses) {
 
 	neurons->check_for_neuron_spikes(current_time_in_seconds);
 	input_neurons->check_for_neuron_spikes(current_time_in_seconds);
