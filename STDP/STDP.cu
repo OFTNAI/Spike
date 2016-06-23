@@ -17,9 +17,18 @@ STDP::STDP() {
 STDP::~STDP() {
 }
 
-void STDP::Set_STDP_Parameters(SpikingSynapses* synapses, stdp_parameters_struct* stdp_parameters){
+// Setting the Parameter Structure
+void STDP::Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons* neurons, stdp_parameters_struct* stdp_parameters){
+}
+
+// Initialize STDP (Must be run before network start)
+void STDP::Initialize_STDP(){
 }
 
 // Setting personal STDP parameters
-void STDP::Run_STDP(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds){
+void STDP::Run_STDP(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds, float timestep){
+}
+
+// Reset STDP
+void STDP::Reset_STDP(){
 }

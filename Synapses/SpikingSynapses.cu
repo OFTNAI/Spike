@@ -181,14 +181,6 @@ void SpikingSynapses::calculate_postsynaptic_current_injection(SpikingNeurons * 
 
 }
 
-void SpikingSynapses::update_presynaptic_activities(float timestep, float current_time_in_seconds) {
-
-}
-
-void SpikingSynapses::update_synaptic_efficacies_or_weights(float * d_recent_postsynaptic_activities_D, float current_time_in_seconds, float * d_last_spike_time_of_each_neuron) {
-	
-}
-
 
 __global__ void check_for_synapse_spike_arrival_kernel(int* d_spikes_travelling_to_synapse,
 							float* d_time_of_last_spike_to_reach_synapse,

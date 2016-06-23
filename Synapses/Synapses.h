@@ -58,8 +58,6 @@ public:
 
 	curandState_t* d_states_for_random_number_generation;
 
-	float learning_rate_rho;
-
 	// Full Matrices
 	int* presynaptic_neuron_indices;
 	int* postsynaptic_neuron_indices; 

@@ -7,8 +7,9 @@
 #ifndef HIGGINS_STDP_H
 #define HIGGINS_STDP_H
 
-// Get Synapses Class
-#include "../Synapses/Synapses.h"
+// Get Synapses & Neurons Class
+#include "../Synapses/SpikingSynapses.h"
+#include "../Neurons/SpikingNeurons.h"
 #include "../STDP/STDP.h"
 
 // stdlib allows random numbers
@@ -45,9 +46,9 @@ public:
 	SpikingSynapses* syns;
 
 	// Set STDP Parameters
-	virtual void Set_STDP_Parameters(SpikingSynapses* synapses, stdp_parameters_struct* stdp_parameters);
+	virtual void Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons* neurons, stdp_parameters_struct* stdp_parameters);
 	// STDP
-	virtual void Run_STDP(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds);
+	virtual void Run_STDP(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds, float timestep);
 	// LTP & LTD for this model
 	void apply_ltd_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds);
 	void apply_ltp_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds);

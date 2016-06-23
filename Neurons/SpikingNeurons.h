@@ -33,10 +33,6 @@ public:
 	float * d_thresholds_for_action_potential_spikes;
 	float * d_resting_potentials;
 
-	//LIF extra
-	float * recent_postsynaptic_activities_D;
-	float * d_recent_postsynaptic_activities_D;
-
 
 	// Functions
 	virtual int AddGroup(neuron_parameters_struct * group_params);

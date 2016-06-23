@@ -7,8 +7,9 @@
 #ifndef STDP_H
 #define STDP_H
 
-// Get Synapses Class
+// Get Synapses & Neurons Class
 #include "../Synapses/SpikingSynapses.h"
+#include "../Neurons/SpikingNeurons.h"
 
 // stdlib allows random numbers
 #include <stdlib.h>
@@ -34,9 +35,13 @@ public:
 	~STDP();
 
 	// Set STDP Parameters
-	virtual void Set_STDP_Parameters(SpikingSynapses* synapses, stdp_parameters_struct* stdp_parameters);
+	virtual void Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons* neurons, stdp_parameters_struct* stdp_parameters);
+	// Initialize STDP
+	virtual void Initialize_STDP();
 	// STDP
-	virtual void Run_STDP(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds);
+	virtual void Run_STDP(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds, float timestep);
+	// Reset
+	virtual void Reset_STDP();
 };
 
 #endif

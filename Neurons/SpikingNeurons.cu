@@ -14,16 +14,11 @@ SpikingNeurons::SpikingNeurons() {
 	d_thresholds_for_action_potential_spikes = NULL;
 	d_resting_potentials = NULL;
 
-	recent_postsynaptic_activities_D = NULL;
-	d_recent_postsynaptic_activities_D = NULL;
-
 }
 
 
 // SpikingNeurons Destructor
 SpikingNeurons::~SpikingNeurons() {
-	free(recent_postsynaptic_activities_D);
-	CudaSafeCall(cudaFree(d_recent_postsynaptic_activities_D));
 }
 
 
@@ -35,14 +30,10 @@ int SpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
 
 	after_spike_reset_membrane_potentials_c = (float*)realloc(after_spike_reset_membrane_potentials_c, (total_number_of_neurons*sizeof(float)));
 	thresholds_for_action_potential_spikes = (float*)realloc(thresholds_for_action_potential_spikes, (total_number_of_neurons*sizeof(float)));
-	recent_postsynaptic_activities_D = (float*)realloc(recent_postsynaptic_activities_D, (total_number_of_neurons*sizeof(float)));
 
 	for (int i = total_number_of_neurons - number_of_neurons_in_new_group; i < total_number_of_neurons; i++) {
 		after_spike_reset_membrane_potentials_c[i] = spiking_group_params->resting_potential_v0;
 		thresholds_for_action_potential_spikes[i] = spiking_group_params->threshold_for_action_potential_spike;
-
-		//LIF extra
-		recent_postsynaptic_activities_D[i] = 0.0f;
 	}
 
 	return new_group_id;
@@ -59,8 +50,6 @@ void SpikingNeurons::allocate_device_pointers() {
 	CudaSafeCall(cudaMalloc((void **)&d_thresholds_for_action_potential_spikes, sizeof(float)*total_number_of_neurons));
 	CudaSafeCall(cudaMalloc((void **)&d_resting_potentials, sizeof(float)*total_number_of_neurons));
 
- 	//LIF extra
- 	CudaSafeCall(cudaMalloc((void **)&d_recent_postsynaptic_activities_D, sizeof(float)*total_number_of_neurons));
 }
 
 void SpikingNeurons::reset_neurons() {
@@ -73,8 +62,6 @@ void SpikingNeurons::reset_neurons() {
 	CudaSafeCall(cudaMemcpy(d_thresholds_for_action_potential_spikes, thresholds_for_action_potential_spikes, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_resting_potentials, after_spike_reset_membrane_potentials_c, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
 
-	//LIF extra
-	CudaSafeCall(cudaMemcpy(d_recent_postsynaptic_activities_D, recent_postsynaptic_activities_D, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
 }
 
 

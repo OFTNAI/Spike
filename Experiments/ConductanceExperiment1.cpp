@@ -8,7 +8,10 @@
 
 #include "../Simulator/Simulator.h"
 #include "../Synapses/ConductanceSpikingSynapses.h"
+#include "../STDP/STDP.h"
+#include "../STDP/EvansSTDP.h"
 #include "../Neurons/Neurons.h"
+#include "../Neurons/SpikingNeurons.h"
 #include "../Neurons/LIFSpikingNeurons.h"
 #include "../Neurons/ImagePoissonSpikingNeurons.h"
 #include "../Helpers/TerminalHelpers.h"
@@ -100,18 +103,18 @@ int main (int argc, char *argv[]){
 	LIFSpikingNeurons * lif_spiking_neurons = new LIFSpikingNeurons();
 	ImagePoissonSpikingNeurons* input_neurons = new ImagePoissonSpikingNeurons();
 	ConductanceSpikingSynapses * conductance_spiking_synapses = new ConductanceSpikingSynapses();
+	EvansSTDP * evans_stdp = new EvansSTDP();
+
+	/////////// STDP SETUP ///////////
+	evans_stdp_parameters_struct * STDP_PARAMS = new evans_stdp_parameters_struct();
+	evans_stdp->Set_STDP_Parameters((SpikingSynapses *) conductance_spiking_synapses, (SpikingNeurons *) lif_spiking_neurons, (stdp_parameters_struct *) STDP_PARAMS);
 
 	simulator.SetNeuronType(lif_spiking_neurons);
 	simulator.SetInputNeuronType(input_neurons);
 	simulator.SetSynapseType(conductance_spiking_synapses);
+	simulator.SetSTDPType(evans_stdp);
 
 	conductance_spiking_synapses->print_synapse_group_details = false;
-	conductance_spiking_synapses->learning_rate_rho = 0.1;
-	conductance_spiking_synapses->decay_term_tau_C = 0.003;
-	conductance_spiking_synapses->synaptic_neurotransmitter_concentration_alpha_C = 0.5;
-
-	lif_spiking_neurons->decay_term_tau_D = 0.005;
-	lif_spiking_neurons->model_parameter_alpha_D = 0.5;
 
 	////////// SET UP STATES FOR RANDOM STATE MANAGER SINGLETON ///////////
 	int random_states_threads_per_block_x = 128;

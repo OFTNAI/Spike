@@ -30,8 +30,8 @@ directory: ${EXPERIMENT_DIRECTORY}
 
 
 # Separating out the individual compilations so as not to compilation time
-${FILE}: ObjectFiles/${FILE}.o ObjectFiles/Simulator.o ObjectFiles/Neurons.o ObjectFiles/SpikingNeurons.o ObjectFiles/IzhikevichSpikingNeurons.o ObjectFiles/LIFSpikingNeurons.o ObjectFiles/PoissonSpikingNeurons.o ObjectFiles/ImagePoissonSpikingNeurons.o ObjectFiles/FstreamWrapper.o ObjectFiles/GeneratorSpikingNeurons.o ObjectFiles/Synapses.o ObjectFiles/SpikingSynapses.o ObjectFiles/IzhikevichSpikingSynapses.o ObjectFiles/ConductanceSpikingSynapses.o ObjectFiles/RecordingElectrodes.o ObjectFiles/RandomStateManager.o ObjectFiles/SpikeAnalyser.o ObjectFiles/GraphPlotter.o ObjectFiles/TimerWithMessages.o ObjectFiles/STDP.o ObjectFiles/HigginsSTDP.o
-	$(CC) -lineinfo -lpython2.7 ObjectFiles/${FILE}.o ObjectFiles/Simulator.o ObjectFiles/Neurons.o ObjectFiles/SpikingNeurons.o ObjectFiles/IzhikevichSpikingNeurons.o ObjectFiles/LIFSpikingNeurons.o ObjectFiles/PoissonSpikingNeurons.o ObjectFiles/ImagePoissonSpikingNeurons.o ObjectFiles/FstreamWrapper.o ObjectFiles/GeneratorSpikingNeurons.o ObjectFiles/Synapses.o ObjectFiles/SpikingSynapses.o ObjectFiles/IzhikevichSpikingSynapses.o ObjectFiles/ConductanceSpikingSynapses.o ObjectFiles/RecordingElectrodes.o ObjectFiles/RandomStateManager.o ObjectFiles/SpikeAnalyser.o ObjectFiles/GraphPlotter.o ObjectFiles/TimerWithMessages.o ObjectFiles/STDP.o ObjectFiles/HigginsSTDP.o -o ${EXPERIMENT_DIRECTORY}/bin/${FILE}
+${FILE}: ObjectFiles/${FILE}.o ObjectFiles/Simulator.o ObjectFiles/Neurons.o ObjectFiles/SpikingNeurons.o ObjectFiles/IzhikevichSpikingNeurons.o ObjectFiles/LIFSpikingNeurons.o ObjectFiles/PoissonSpikingNeurons.o ObjectFiles/ImagePoissonSpikingNeurons.o ObjectFiles/FstreamWrapper.o ObjectFiles/GeneratorSpikingNeurons.o ObjectFiles/Synapses.o ObjectFiles/SpikingSynapses.o ObjectFiles/IzhikevichSpikingSynapses.o ObjectFiles/ConductanceSpikingSynapses.o ObjectFiles/RecordingElectrodes.o ObjectFiles/RandomStateManager.o ObjectFiles/SpikeAnalyser.o ObjectFiles/GraphPlotter.o ObjectFiles/TimerWithMessages.o ObjectFiles/STDP.o ObjectFiles/HigginsSTDP.o ObjectFiles/EvansSTDP.o
+	$(CC) -lineinfo -lpython2.7 ObjectFiles/${FILE}.o ObjectFiles/Simulator.o ObjectFiles/Neurons.o ObjectFiles/SpikingNeurons.o ObjectFiles/IzhikevichSpikingNeurons.o ObjectFiles/LIFSpikingNeurons.o ObjectFiles/PoissonSpikingNeurons.o ObjectFiles/ImagePoissonSpikingNeurons.o ObjectFiles/FstreamWrapper.o ObjectFiles/GeneratorSpikingNeurons.o ObjectFiles/Synapses.o ObjectFiles/SpikingSynapses.o ObjectFiles/IzhikevichSpikingSynapses.o ObjectFiles/ConductanceSpikingSynapses.o ObjectFiles/RecordingElectrodes.o ObjectFiles/RandomStateManager.o ObjectFiles/SpikeAnalyser.o ObjectFiles/GraphPlotter.o ObjectFiles/TimerWithMessages.o ObjectFiles/STDP.o ObjectFiles/HigginsSTDP.o ObjectFiles/EvansSTDP.o -o ${EXPERIMENT_DIRECTORY}/bin/${FILE}
 
 
 # Compiling the Model file
@@ -96,7 +96,10 @@ ObjectFiles/STDP.o: STDP/STDP.cu
 	$(CC) $(CFLAGS) STDP/STDP.cu -o $@
 # Compiling Higgins STDP class
 ObjectFiles/HigginsSTDP.o: STDP/HigginsSTDP.cu
-	$(CC) $(CFLAGS) STDP/HigginsSTDP.cu -o $@	
+	$(CC) $(CFLAGS) STDP/HigginsSTDP.cu -o $@
+# Compiling Evans STDP class
+ObjectFiles/EvansSTDP.o: STDP/EvansSTDP.cu
+	$(CC) $(CFLAGS) STDP/EvansSTDP.cu -o $@
 
 # Test script
 test: Simulator.o Neurons.o SpikingNeurons.o IzhikevichSpikingNeurons.o PoissonSpikingNeurons.o ImagePoissonSpikingNeurons.o FstreamWrapper.o GeneratorSpikingNeurons.o Synapses.o RecordingElectrodes.o RandomStateManager.o SpikeAnalyser.o

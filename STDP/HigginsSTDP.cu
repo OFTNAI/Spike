@@ -20,13 +20,13 @@ HigginsSTDP::~HigginsSTDP() {
 }
 
 // Implementation of the STDP Rule for Irina's Model
-void HigginsSTDP::Set_STDP_Parameters(SpikingSynapses* synapses, stdp_parameters_struct* stdp_parameters){
+void HigginsSTDP::Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons* neurons, stdp_parameters_struct* stdp_parameters){
 	stdp_params = (higgins_stdp_parameters_struct *)stdp_parameters;
 	syns = synapses;
 }
 
 // Run the STDP
-void HigginsSTDP::Run_STDP(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds){
+void HigginsSTDP::Run_STDP(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds, float timestep){
 	apply_ltd_to_synapse_weights(d_last_spike_time_of_each_neuron, current_time_in_seconds);
 	apply_ltp_to_synapse_weights(d_last_spike_time_of_each_neuron, current_time_in_seconds);
 }

@@ -220,6 +220,9 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 	begin_simulation_message(timestep, number_of_stimuli, number_of_epochs, record_spikes, save_recorded_spikes_to_file, present_stimuli_in_random_order, neurons->total_number_of_neurons, input_neurons->total_number_of_neurons, synapses->total_number_of_synapses);
 	TimerWithMessages * simulation_timer = new TimerWithMessages();
 
+	// Initialize STDP
+	stdp_rule->Initialize_STDP();
+
 	if (number_of_epochs == 0) print_message_and_exit("Error. There must be at least one epoch.");
 
 	// SEEDING
@@ -245,6 +248,7 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 
 		neurons->reset_neurons();
 		synapses->reset_synapse_spikes();
+		stdp_rule->Reset_STDP();
 
 		float current_time_in_seconds = 0.0f;
 
@@ -340,7 +344,7 @@ void Simulator::temp_izhikevich_per_timestep_instructions(float current_time_in_
 	// --------------- SAME ---------------
 
 	// synapses->apply_ltd_to_synapse_weights(neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds);
-	stdp_rule->Run_STDP(neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds);
+	stdp_rule->Run_STDP(neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds, timestep);
 
 
 	// --------------- SAME ---------------
@@ -379,13 +383,14 @@ void Simulator::temp_lif_per_timestep_instructions(float current_time_in_seconds
 	
 	if (apply_stdp_to_relevant_synapses) {
 		// Calculate delta_g(t+delta_t) from C(t) and D(t)
-		synapses->update_synaptic_efficacies_or_weights(neurons->d_recent_postsynaptic_activities_D, current_time_in_seconds, neurons->d_last_spike_time_of_each_neuron);
+		// synapses->update_synaptic_efficacies_or_weights(neurons->d_recent_postsynaptic_activities_D, current_time_in_seconds, neurons->d_last_spike_time_of_each_neuron);
 
 		// Calculate C(t+delta_t) from C(t)
-		synapses->update_presynaptic_activities(timestep, current_time_in_seconds);
+		// synapses->update_presynaptic_activities(timestep, current_time_in_seconds);
 
 		// Calculate D(t+delta_t) from D(t)
-		neurons->update_postsynaptic_activities(timestep, current_time_in_seconds);
+		// neurons->update_postsynaptic_activities(timestep, current_time_in_seconds);
+		stdp_rule->Run_STDP(neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds, timestep);
 	}
 
 	// --------------- SAME ---------------

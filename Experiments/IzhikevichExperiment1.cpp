@@ -11,6 +11,7 @@
 #include "../STDP/STDP.h"
 #include "../STDP/HigginsSTDP.h"
 #include "../Neurons/Neurons.h"
+#include "../Neurons/SpikingNeurons.h"
 #include "../Neurons/IzhikevichSpikingNeurons.h"
 #include "../Neurons/ImagePoissonSpikingNeurons.h"
 #include "../Helpers/TerminalHelpers.h"
@@ -53,7 +54,7 @@ int main (int argc, char *argv[]){
 
 	/////////// STDP SETUP ///////////
 	higgins_stdp_parameters_struct * STDP_PARAMS = new higgins_stdp_parameters_struct();
-	higgins_stdp->Set_STDP_Parameters((SpikingSynapses *) conductance_spiking_synapses, (stdp_parameters_struct *) STDP_PARAMS);
+	higgins_stdp->Set_STDP_Parameters((SpikingSynapses *) conductance_spiking_synapses, (SpikingNeurons *) izhikevich_spiking_neurons, (stdp_parameters_struct *) STDP_PARAMS);
 
 	simulator.SetNeuronType(izhikevich_spiking_neurons);
 	simulator.SetInputNeuronType(input_neurons);
@@ -61,9 +62,6 @@ int main (int argc, char *argv[]){
 	simulator.SetSTDPType(higgins_stdp);
 
 	conductance_spiking_synapses->print_synapse_group_details = false;
-	conductance_spiking_synapses->learning_rate_rho = 0.1;
-	conductance_spiking_synapses->decay_term_tau_C = 0.003;
-	conductance_spiking_synapses->synaptic_neurotransmitter_concentration_alpha_C = 0.5;
 
 
 	////////// SET UP STATES FOR RANDOM STATE MANAGER SINGLETON ///////////
