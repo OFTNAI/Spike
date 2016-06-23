@@ -337,28 +337,19 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 // Temporary seperation of izhikevich and lif per timestep instructions. Eventually hope to share as much execuation as possible between both models for generality
 void Simulator::temp_izhikevich_per_timestep_instructions(float current_time_in_seconds) {
 
-
-	// --------------- SAME ---------------
-	synapses->check_for_synapse_spike_arrival(current_time_in_seconds);
-	synapses->calculate_postsynaptic_current_injection(neurons, current_time_in_seconds);
-	// --------------- SAME ---------------
-
-	// synapses->apply_ltd_to_synapse_weights(neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds);
-	stdp_rule->Run_STDP(neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds, timestep);
-
-
-	// --------------- SAME ---------------
-	neurons->update_membrane_potentials(timestep);
-	input_neurons->update_membrane_potentials(timestep);
-
 	neurons->check_for_neuron_spikes(current_time_in_seconds);
 	input_neurons->check_for_neuron_spikes(current_time_in_seconds);
-					
+
 	synapses->move_spikes_towards_synapses(neurons->d_last_spike_time_of_each_neuron, input_neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds);
-	// --------------- SAME ---------------
 
+	synapses->calculate_postsynaptic_current_injection(neurons, current_time_in_seconds);
 
-	// synapses->apply_ltp_to_synapse_weights(neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds);
+	if (apply_stdp_to_relevant_synapses){
+		stdp_rule->Run_STDP(neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds, timestep);
+	}
+
+	neurons->update_membrane_potentials(timestep);
+	input_neurons->update_membrane_potentials(timestep);
 
 }
 
@@ -371,7 +362,6 @@ void Simulator::temp_lif_per_timestep_instructions(float current_time_in_seconds
 					
 	synapses->move_spikes_towards_synapses(neurons->d_last_spike_time_of_each_neuron, input_neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds);
 
-	// --------------- SAME ---------------
 	// synapses->check_for_synapse_spike_arrival(current_time_in_seconds);
 
 	// Calculate I(t) from delta_g(t) and V(t)
@@ -382,28 +372,15 @@ void Simulator::temp_lif_per_timestep_instructions(float current_time_in_seconds
 	synapses->update_synaptic_conductances(timestep, current_time_in_seconds);
 	
 	if (apply_stdp_to_relevant_synapses) {
-		// Calculate delta_g(t+delta_t) from C(t) and D(t)
-		// synapses->update_synaptic_efficacies_or_weights(neurons->d_recent_postsynaptic_activities_D, current_time_in_seconds, neurons->d_last_spike_time_of_each_neuron);
-
-		// Calculate C(t+delta_t) from C(t)
-		// synapses->update_presynaptic_activities(timestep, current_time_in_seconds);
-
-		// Calculate D(t+delta_t) from D(t)
-		// neurons->update_postsynaptic_activities(timestep, current_time_in_seconds);
 		stdp_rule->Run_STDP(neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds, timestep);
 	}
 
-	// --------------- SAME ---------------
-	// Caculate V(t+delta_t) from V(t) and I(t)
 	neurons->update_membrane_potentials(timestep);
 	input_neurons->update_membrane_potentials(timestep);
 
-	
-	// --------------- SAME ---------------
 
 
 }
-
 
 
 
