@@ -63,7 +63,7 @@ void PoissonSpikingNeurons::set_threads_per_block_and_blocks_per_grid(int thread
 
 void PoissonSpikingNeurons::update_membrane_potentials(float timestep) {
 
-	poisson_update_membrane_potentials_kernal<<<RandomStateManager::instance()->block_dimensions, RandomStateManager::instance()->threads_per_block>>>(RandomStateManager::instance()->d_states,
+	poisson_update_membrane_potentials_kernel<<<RandomStateManager::instance()->block_dimensions, RandomStateManager::instance()->threads_per_block>>>(RandomStateManager::instance()->d_states,
 														d_rates,
 														d_membrane_potentials_v,
 														timestep,
@@ -75,7 +75,7 @@ void PoissonSpikingNeurons::update_membrane_potentials(float timestep) {
 }
 
 
-__global__ void poisson_update_membrane_potentials_kernal(curandState_t* d_states,
+__global__ void poisson_update_membrane_potentials_kernel(curandState_t* d_states,
 							float *d_rates,
 							float *d_membrane_potentials_v,
 							float timestep,

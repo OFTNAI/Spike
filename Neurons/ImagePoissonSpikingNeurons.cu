@@ -334,7 +334,7 @@ void ImagePoissonSpikingNeurons::update_membrane_potentials(float timestep) {
 	// printf("total_number_of_neurons: %d\n", total_number_of_neurons);
 	// printf("total_number_of_rates_per_image: %d\n", total_number_of_rates_per_image);
 
-	poisson_update_membrane_potentials_kernal<<<RandomStateManager::instance()->block_dimensions, RandomStateManager::instance()->threads_per_block>>>(RandomStateManager::instance()->d_states,
+	poisson_update_membrane_potentials_kernel<<<RandomStateManager::instance()->block_dimensions, RandomStateManager::instance()->threads_per_block>>>(RandomStateManager::instance()->d_states,
 														d_gabor_input_rates,
 														d_membrane_potentials_v,
 														timestep,

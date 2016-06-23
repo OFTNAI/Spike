@@ -69,7 +69,7 @@ void IzhikevichSpikingSynapses::set_threads_per_block_and_blocks_per_grid(int th
 
 void IzhikevichSpikingSynapses::calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds) {
 
-	izhikevich_calculate_postsynaptic_current_injection_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_synaptic_efficacies_or_weights,
+	izhikevich_calculate_postsynaptic_current_injection_kernel<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_synaptic_efficacies_or_weights,
 																	d_time_of_last_spike_to_reach_synapse,
 																	d_postsynaptic_neuron_indices,
 																	neurons->d_current_injections,
@@ -79,7 +79,8 @@ void IzhikevichSpikingSynapses::calculate_postsynaptic_current_injection(Spiking
 	CudaCheckError();
 }
 
-__global__ void izhikevich_calculate_postsynaptic_current_injection_kernal(float* d_synaptic_efficacies_or_weights,
+
+__global__ void izhikevich_calculate_postsynaptic_current_injection_kernel(float* d_synaptic_efficacies_or_weights,
 							float* d_time_of_last_spike_to_reach_synapse,
 							int* d_postsynaptic_neuron_indices,
 							float* d_neurons_current_injections,

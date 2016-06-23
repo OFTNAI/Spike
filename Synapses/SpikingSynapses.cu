@@ -152,7 +152,7 @@ void SpikingSynapses::check_for_synapse_spike_arrival(float current_time_in_seco
 
 	// printf("check_for_synapse_spike_arrival. number_of_synapse_blocks_per_grid.x: %d. threads_per_block.x: %d\n", number_of_synapse_blocks_per_grid.x, threads_per_block.x);
 
-	check_for_synapse_spike_arrival_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_spikes_travelling_to_synapse,
+	check_for_synapse_spike_arrival_kernel<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_spikes_travelling_to_synapse,
 																	d_time_of_last_spike_to_reach_synapse,
 																	current_time_in_seconds,
 																	total_number_of_synapses);
@@ -162,7 +162,7 @@ void SpikingSynapses::check_for_synapse_spike_arrival(float current_time_in_seco
 
 void SpikingSynapses::move_spikes_towards_synapses(float* d_last_spike_time_of_each_neuron, float* d_input_neurons_last_spike_time, float current_time_in_seconds) {
 
-	move_spikes_towards_synapses_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_presynaptic_neuron_indices,
+	move_spikes_towards_synapses_kernel<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_presynaptic_neuron_indices,
 																		d_delays,
 																		d_spikes_travelling_to_synapse,
 																		d_last_spike_time_of_each_neuron,
@@ -190,7 +190,7 @@ void SpikingSynapses::update_synaptic_efficacies_or_weights(float * d_recent_pos
 }
 
 
-__global__ void check_for_synapse_spike_arrival_kernal(int* d_spikes_travelling_to_synapse,
+__global__ void check_for_synapse_spike_arrival_kernel(int* d_spikes_travelling_to_synapse,
 							float* d_time_of_last_spike_to_reach_synapse,
 							float current_time_in_seconds,
 							size_t total_number_of_synapses){
@@ -211,7 +211,7 @@ void SpikingSynapses::update_synaptic_conductances(float timestep, float current
 
 }
 
-__global__ void move_spikes_towards_synapses_kernal(int* d_presynaptic_neuron_indices,
+__global__ void move_spikes_towards_synapses_kernel(int* d_presynaptic_neuron_indices,
 								int* d_delays,
 								int* d_spikes_travelling_to_synapse,
 								float* d_last_spike_time_of_each_neuron,

@@ -1,34 +1,31 @@
-//	STDP Class C++
-//	STDP.cpp
+//	Evans STDP Class C++
+//	EvansSTDP.cu
 //
 //	Author: Nasir Ahmad
 //	Date: 23/06/2016
 
-#include "STDP.h"
+#include "EvansSTDP.h"
 #include "../Helpers/CUDAErrorCheckHelpers.h"
 #include "../Helpers/TerminalHelpers.h"
 
 
 // STDP Constructor
-STDP::STDP() {
+EvansSTDP::EvansSTDP() {
 
 }
 
 // STDP Destructor
-STDP::~STDP() {
+EvansSTDP::~EvansSTDP() {
 
 }
 
-// Setting personal STDP parameters
-void STDP::SetSTDP(float w_max_new,
-				float a_minus_new,
-				float a_plus_new,
-				float tau_minus_new,
-				float tau_plus_new){
-	// Set the values
-	stdp_vars.w_max = w_max_new;
-	stdp_vars.a_minus = a_minus_new;
-	stdp_vars.a_plus = a_plus_new;
-	stdp_vars.tau_minus = tau_minus_new;
-	stdp_vars.tau_plus = tau_plus_new;
+// Implementation of the STDP Rule for Irina's Model
+void EvansSTDP::Set_STDP_Parameters(SpikingSynapses* synapses, stdp_parameters_struct* stdp_parameters){
+	stdp_params = (evans_stdp_parameters_struct *)stdp_parameters;
+	syns = synapses;
+}
+
+// Run the STDP
+void EvansSTDP::Run_STDP(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds){
+	// Update
 }

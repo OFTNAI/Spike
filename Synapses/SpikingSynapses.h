@@ -60,13 +60,13 @@ public:
 
 };
 
-__global__ void check_for_synapse_spike_arrival_kernal(int* d_spikes_travelling_to_synapse,
+__global__ void check_for_synapse_spike_arrival_kernel(int* d_spikes_travelling_to_synapse,
 							float* d_time_of_last_spike_to_reach_synapse,
 							float current_time_in_seconds,
 							size_t total_number_of_synapses);
 
 
-__global__ void move_spikes_towards_synapses_kernal(int* d_presynaptic_neuron_indices,
+__global__ void move_spikes_towards_synapses_kernel(int* d_presynaptic_neuron_indices,
 								int* d_delays,
 								int* d_spikes_travelling_to_synapse,
 								float* d_neurons_last_spike_time,

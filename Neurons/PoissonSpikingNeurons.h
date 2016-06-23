@@ -38,7 +38,7 @@ public:
 };
 
 
-__global__ void poisson_update_membrane_potentials_kernal(curandState_t* d_states,
+__global__ void poisson_update_membrane_potentials_kernel(curandState_t* d_states,
 							float *d_rates,
 							float *d_membrane_potentials_v,
 							float timestep,

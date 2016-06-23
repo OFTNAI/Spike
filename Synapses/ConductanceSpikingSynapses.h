@@ -62,7 +62,7 @@ public:
 
 };
 
-__global__ void conductance_calculate_postsynaptic_current_injection_kernal(int * d_presynaptic_neuron_indices,
+__global__ void conductance_calculate_postsynaptic_current_injection_kernel(int * d_presynaptic_neuron_indices,
 							int* d_postsynaptic_neuron_indices,
 							float* d_reversal_potentials_Vhat,
 							float* d_neurons_current_injections,
@@ -71,7 +71,7 @@ __global__ void conductance_calculate_postsynaptic_current_injection_kernal(int 
 							float * d_synaptic_conductances_g);
 
 
-__global__ void conductance_update_synaptic_conductances_kernal(float timestep, 
+__global__ void conductance_update_synaptic_conductances_kernel(float timestep, 
 													float * d_synaptic_conductances_g, 
 													float * d_synaptic_efficacies_or_weights, 
 													float * d_time_of_last_spike_to_reach_synapse,
@@ -81,7 +81,7 @@ __global__ void conductance_update_synaptic_conductances_kernal(float timestep,
 													float * d_decay_terms_tau_g);
 
 
-__global__ void conductance_update_presynaptic_activities_C_kernal(float* d_recent_presynaptic_activities_C,
+__global__ void conductance_update_presynaptic_activities_C_kernel(float* d_recent_presynaptic_activities_C,
 							float* d_time_of_last_spike_to_reach_synapse,
 							bool* d_stdp,
 							float timestep,
@@ -90,7 +90,7 @@ __global__ void conductance_update_presynaptic_activities_C_kernal(float* d_rece
 							float synaptic_neurotransmitter_concentration_alpha_C,
 							float decay_term_tau_C);
 
-__global__ void conductance_update_synaptic_efficacies_or_weights_kernal(float * d_recent_presynaptic_activities_C,
+__global__ void conductance_update_synaptic_efficacies_or_weights_kernel(float * d_recent_presynaptic_activities_C,
 																float * d_recent_postsynaptic_activities_D,
 																int* d_postsynaptic_neuron_indices,
 																float* d_synaptic_efficacies_or_weights,

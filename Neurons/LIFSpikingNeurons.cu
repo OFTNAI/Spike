@@ -83,7 +83,7 @@ void LIFSpikingNeurons::update_membrane_potentials(float timestep) {
 
 void LIFSpikingNeurons::update_postsynaptic_activities(float timestep, float current_time_in_seconds) {
 
-	lif_update_postsynaptic_activities_kernal<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(timestep,
+	lif_update_postsynaptic_activities_kernel<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(timestep,
 								total_number_of_neurons,
 								d_recent_postsynaptic_activities_D,
 								d_last_spike_time_of_each_neuron,
@@ -125,7 +125,7 @@ __global__ void lif_update_membrane_potentials(float *d_membrane_potentials_v,
 	__syncthreads();
 }
 
-__global__ void lif_update_postsynaptic_activities_kernal(float timestep,
+__global__ void lif_update_postsynaptic_activities_kernel(float timestep,
 								size_t total_number_of_neurons,
 								float * d_recent_postsynaptic_activities_D,
 								float * d_last_spike_time_of_each_neuron,

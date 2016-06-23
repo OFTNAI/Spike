@@ -48,7 +48,7 @@ __global__ void lif_update_membrane_potentials(float *d_membrane_potentials_v,
 								float timestep,
 								size_t total_number_of_neurons);
 
-__global__ void lif_update_postsynaptic_activities_kernal(float timestep,
+__global__ void lif_update_postsynaptic_activities_kernel(float timestep,
 								size_t total_number_of_neurons,
 								float * d_recent_postsynaptic_activities_D,
 								float * d_last_spike_time_of_each_neuron,

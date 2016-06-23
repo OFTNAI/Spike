@@ -89,7 +89,7 @@ void SpikingNeurons::update_postsynaptic_activities(float timestep, float curren
 
 void SpikingNeurons::check_for_neuron_spikes(float current_time_in_seconds) {
 
-	check_for_neuron_spikes_kernal<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_membrane_potentials_v,
+	check_for_neuron_spikes_kernel<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_membrane_potentials_v,
 																	d_thresholds_for_action_potential_spikes,
 																	d_resting_potentials,
 																	d_last_spike_time_of_each_neuron,
@@ -101,7 +101,7 @@ void SpikingNeurons::check_for_neuron_spikes(float current_time_in_seconds) {
 
 
 // Spiking Neurons
-__global__ void check_for_neuron_spikes_kernal(float *d_membrane_potentials_v,
+__global__ void check_for_neuron_spikes_kernel(float *d_membrane_potentials_v,
 								float *d_thresholds_for_action_potential_spikes,
 								float *d_resting_potentials,
 								float* d_last_spike_time_of_each_neuron,

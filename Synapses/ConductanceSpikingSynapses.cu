@@ -151,7 +151,7 @@ void ConductanceSpikingSynapses::set_threads_per_block_and_blocks_per_grid(int t
 
 void ConductanceSpikingSynapses::calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds) {
 
-	conductance_calculate_postsynaptic_current_injection_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_presynaptic_neuron_indices,
+	conductance_calculate_postsynaptic_current_injection_kernel<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_presynaptic_neuron_indices,
 																	d_postsynaptic_neuron_indices,
 																	d_reversal_potentials_Vhat,
 																	neurons->d_current_injections,
@@ -164,7 +164,7 @@ void ConductanceSpikingSynapses::calculate_postsynaptic_current_injection(Spikin
 
 void ConductanceSpikingSynapses::update_synaptic_conductances(float timestep, float current_time_in_seconds) {
 
-	conductance_update_synaptic_conductances_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(timestep, 
+	conductance_update_synaptic_conductances_kernel<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(timestep, 
 											d_synaptic_conductances_g, 
 											d_synaptic_efficacies_or_weights, 
 											d_time_of_last_spike_to_reach_synapse,
@@ -179,7 +179,7 @@ void ConductanceSpikingSynapses::update_synaptic_conductances(float timestep, fl
 
 void ConductanceSpikingSynapses::update_presynaptic_activities(float timestep, float current_time_in_seconds) {
 
-	conductance_update_presynaptic_activities_C_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_recent_presynaptic_activities_C,
+	conductance_update_presynaptic_activities_C_kernel<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_recent_presynaptic_activities_C,
 							d_time_of_last_spike_to_reach_synapse,
 							d_stdp,
 							timestep,
@@ -193,7 +193,7 @@ void ConductanceSpikingSynapses::update_presynaptic_activities(float timestep, f
 
 void ConductanceSpikingSynapses::update_synaptic_efficacies_or_weights(float * d_recent_postsynaptic_activities_D, float current_time_in_seconds, float * d_last_spike_time_of_each_neuron) {
 
-	conductance_update_synaptic_efficacies_or_weights_kernal<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_recent_presynaptic_activities_C,
+	conductance_update_synaptic_efficacies_or_weights_kernel<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_recent_presynaptic_activities_C,
 																d_recent_postsynaptic_activities_D,
 																d_postsynaptic_neuron_indices,
 																d_synaptic_efficacies_or_weights,
@@ -209,7 +209,7 @@ void ConductanceSpikingSynapses::update_synaptic_efficacies_or_weights(float * d
 }
 
 
-__global__ void conductance_calculate_postsynaptic_current_injection_kernal(int * d_presynaptic_neuron_indices,
+__global__ void conductance_calculate_postsynaptic_current_injection_kernel(int * d_presynaptic_neuron_indices,
 							int* d_postsynaptic_neuron_indices,
 							float* d_reversal_potentials_Vhat,
 							float* d_neurons_current_injections,
@@ -238,7 +238,7 @@ __global__ void conductance_calculate_postsynaptic_current_injection_kernal(int 
 
 
 
-__global__ void conductance_update_synaptic_conductances_kernal(float timestep, 
+__global__ void conductance_update_synaptic_conductances_kernel(float timestep, 
 														float * d_synaptic_conductances_g, 
 														float * d_synaptic_efficacies_or_weights, 
 														float * d_time_of_last_spike_to_reach_synapse,
@@ -272,7 +272,7 @@ __global__ void conductance_update_synaptic_conductances_kernal(float timestep,
 }
 
 
-__global__ void conductance_update_presynaptic_activities_C_kernal(float* d_recent_presynaptic_activities_C,
+__global__ void conductance_update_presynaptic_activities_C_kernel(float* d_recent_presynaptic_activities_C,
 							float* d_time_of_last_spike_to_reach_synapse,
 							bool* d_stdp,
 							float timestep, 
@@ -308,7 +308,7 @@ __global__ void conductance_update_presynaptic_activities_C_kernal(float* d_rece
 }
 
 
-__global__ void conductance_update_synaptic_efficacies_or_weights_kernal(float * d_recent_presynaptic_activities_C,
+__global__ void conductance_update_synaptic_efficacies_or_weights_kernel(float * d_recent_presynaptic_activities_C,
 																float * d_recent_postsynaptic_activities_D,
 																int* d_postsynaptic_neuron_indices,
 																float* d_synaptic_efficacies_or_weights,
