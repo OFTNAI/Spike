@@ -9,6 +9,7 @@
 
 // Get Synapses Class
 #include "../Synapses/Synapses.h"
+#include "../STDP/STDP.h"
 
 // stdlib allows random numbers
 #include <stdlib.h>
@@ -21,11 +22,6 @@
 
 
 // STDP Parameters
-// Temporarily Synapse member (should move to SpikingNeurons)
-struct stdp_parameters_struct {
-	stdp_parameters_struct() {}
-}
-
 struct higgins_stdp_parameters_struct : stdp_parameters_struct {
 	higgins_stdp_parameters_struct() : w_max(60.0f), a_minus(-0.015f), a_plus(0.005f), tau_minus(0.025f), tau_plus(0.015) { } // default Constructor
 	// STDP Parameters
@@ -45,11 +41,16 @@ public:
 	HigginsSTDP();
 	~HigginsSTDP();
 
-	// STDP Implementation
-	virtual void ImplementSTDPRule(stdp_parameters_struct * stdp_params);
+	struct higgins_stdp_parameters_struct* stdp_params;
+	SpikingSynapses* syns;
+
+	// Set STDP Parameters
+	virtual void Set_STDP_Parameters(SpikingSynapses* synapses, stdp_parameters_struct* stdp_parameters);
+	// STDP
+	virtual void Run_STDP(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds);
 	// LTP & LTD for this model
-	void HigginsSTDP::apply_ltd_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds);
-	void HigginsSTDP::apply_ltp_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds);
+	void apply_ltd_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds);
+	void apply_ltp_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds);
 
 };
 

@@ -20,35 +20,42 @@ HigginsSTDP::~HigginsSTDP() {
 }
 
 // Implementation of the STDP Rule for Irina's Model
-void HigginsSTDP::ImplementSTDPRule(stdp_parameters_struct * stdp_params){
+void HigginsSTDP::Set_STDP_Parameters(SpikingSynapses* synapses, stdp_parameters_struct* stdp_parameters){
+	stdp_params = (higgins_stdp_parameters_struct *)stdp_parameters;
+	syns = synapses;
+}
 
+// Run the STDP
+void HigginsSTDP::Run_STDP(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds){
+	apply_ltd_to_synapse_weights(d_last_spike_time_of_each_neuron, current_time_in_seconds);
+	apply_ltp_to_synapse_weights(d_last_spike_time_of_each_neuron, current_time_in_seconds);
 }
 
 void HigginsSTDP::apply_ltd_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds) {
-
-	izhikevich_apply_ltd_to_synapse_weights_kernel<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_time_of_last_spike_to_reach_synapse,
-																	d_synaptic_efficacies_or_weights,
-																	d_stdp,
+	izhikevich_apply_ltd_to_synapse_weights_kernel<<<syns->number_of_synapse_blocks_per_grid, syns->threads_per_block>>>(
+																	syns->d_time_of_last_spike_to_reach_synapse,
+																	syns->d_synaptic_efficacies_or_weights,
+																	syns->d_stdp,
 																	d_last_spike_time_of_each_neuron,
-																	d_postsynaptic_neuron_indices,
+																	syns->d_postsynaptic_neuron_indices,
 																	current_time_in_seconds,
-																	stdp_vars, // Should make device copy?
-																	total_number_of_synapses);
+																	*stdp_params, // Should make device copy?
+																	syns->total_number_of_synapses);
 
 	CudaCheckError();
 }
 
 
 void HigginsSTDP::apply_ltp_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds) {
-	// Carry out the last step, LTP!
-	izhikevich_apply_ltp_to_synapse_weights_kernel<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_postsynaptic_neuron_indices,
+	izhikevich_apply_ltp_to_synapse_weights_kernel<<<syns->number_of_synapse_blocks_per_grid, syns->threads_per_block>>>(
+																	syns->d_postsynaptic_neuron_indices,
 																	d_last_spike_time_of_each_neuron,
-																	d_stdp,
-																	d_time_of_last_spike_to_reach_synapse,
-																	d_synaptic_efficacies_or_weights,
-																	stdp_vars, 
+																	syns->d_stdp,
+																	syns->d_time_of_last_spike_to_reach_synapse,
+																	syns->d_synaptic_efficacies_or_weights,
+																	*stdp_params, 
 																	current_time_in_seconds,
-																	total_number_of_synapses);
+																	syns->total_number_of_synapses);
 
 	CudaCheckError();
 }

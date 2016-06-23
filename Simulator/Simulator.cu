@@ -86,6 +86,9 @@ void Simulator::SetSynapseType(SpikingSynapses * synapses_parameter) {
 
 }
 
+void Simulator::SetSTDPType(STDP* stdp_parameter) {
+	stdp_rule = stdp_parameter;
+}
 
 
 int Simulator::AddNeuronGroup(neuron_parameters_struct * group_params) {
@@ -336,8 +339,8 @@ void Simulator::temp_izhikevich_per_timestep_instructions(float current_time_in_
 	synapses->calculate_postsynaptic_current_injection(neurons, current_time_in_seconds);
 	// --------------- SAME ---------------
 
-	synapses->apply_ltd_to_synapse_weights(neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds);
-
+	// synapses->apply_ltd_to_synapse_weights(neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds);
+	stdp_rule->Run_STDP(neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds);
 
 
 	// --------------- SAME ---------------
@@ -351,7 +354,7 @@ void Simulator::temp_izhikevich_per_timestep_instructions(float current_time_in_
 	// --------------- SAME ---------------
 
 
-	synapses->apply_ltp_to_synapse_weights(neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds);
+	// synapses->apply_ltp_to_synapse_weights(neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds);
 
 }
 

@@ -32,18 +32,6 @@ enum CONNECTIVITY_TYPE
 };
 
 
-// STDP Parameters
-// Temporarily Synapse member (should move to SpikingNeurons)
-struct stdp_struct {
-	stdp_struct(): w_max(60.0f), a_minus(-0.015f), a_plus(0.005f), tau_minus(0.025f), tau_plus(0.015) { } // default Constructor
-	// STDP Parameters
-	float w_max;
-	float a_minus;
-	float a_plus;
-	float tau_minus;
-	float tau_plus;
-};
-
 
 struct synapse_parameters_struct {
 	synapse_parameters_struct(): max_number_of_connections_per_pair(1), gaussian_synapses_per_postsynaptic_neuron(10), gaussian_synapses_standard_deviation(10.0), weight_range_bottom(0.0), weight_range_top(1.0), connectivity_type(CONNECTIVITY_TYPE_ALL_TO_ALL)  {}
@@ -69,15 +57,6 @@ public:
 	int total_number_of_synapses;
 
 	curandState_t* d_states_for_random_number_generation;
-
-	// STDP
-	// Temporarily Synapse members (should move to SpikingNeurons)
-	struct stdp_struct stdp_vars;
-	void SetSTDP(float w_max_new,
-				float a_minus_new,
-				float a_plus_new,
-				float tau_minus_new,
-				float tau_plus_new);
 
 	float learning_rate_rho;
 

@@ -30,9 +30,6 @@ public:
 	virtual void shuffle_synapses();
 
 	virtual void calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds);
-	virtual void apply_ltd_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds);
-	virtual void apply_ltp_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds);
-
 };
 
 __global__ void izhikevich_calculate_postsynaptic_current_injection_kernal(float* d_synaptic_efficacies_or_weights,

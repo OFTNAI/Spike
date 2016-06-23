@@ -28,6 +28,7 @@
 #include "../Neurons/SpikingNeurons.h"
 #include "../RecordingElectrodes/RecordingElectrodes.h"
 #include "../SpikeAnalyser/SpikeAnalyser.h"
+#include "../STDP/STDP.h"
 
 
 // Simulator Class for running of the simulations
@@ -40,6 +41,7 @@ public:
 	SpikingNeurons * neurons;
 	SpikingSynapses * synapses;
 	PoissonSpikingNeurons * input_neurons;
+	STDP* stdp_rule; 
 
 	RecordingElectrodes * recording_electrodes;
 	RecordingElectrodes * input_recording_electrodes;
@@ -57,6 +59,7 @@ public:
 	void SetNeuronType(SpikingNeurons * neurons_parameter);
 	void SetInputNeuronType(PoissonSpikingNeurons * neurons_parameter);
 	void SetSynapseType(SpikingSynapses * synapses_parameter);
+	void SetSTDPType(STDP* stdp_parameter);
 
 	int AddNeuronGroup(neuron_parameters_struct * group_params);
 	int AddInputNeuronGroup(neuron_parameters_struct * group_params);

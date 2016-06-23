@@ -8,6 +8,8 @@
 
 #include "../Simulator/Simulator.h"
 #include "../Synapses/ConductanceSpikingSynapses.h"
+#include "../STDP/STDP.h"
+#include "../STDP/HigginsSTDP.h"
 #include "../Neurons/Neurons.h"
 #include "../Neurons/IzhikevichSpikingNeurons.h"
 #include "../Neurons/ImagePoissonSpikingNeurons.h"
@@ -47,10 +49,16 @@ int main (int argc, char *argv[]){
 	IzhikevichSpikingNeurons * izhikevich_spiking_neurons = new IzhikevichSpikingNeurons();
 	ImagePoissonSpikingNeurons* input_neurons = new ImagePoissonSpikingNeurons();
 	ConductanceSpikingSynapses * conductance_spiking_synapses = new ConductanceSpikingSynapses();
+	HigginsSTDP * higgins_stdp = new HigginsSTDP();
+
+	/////////// STDP SETUP ///////////
+	higgins_stdp_parameters_struct * STDP_PARAMS = new higgins_stdp_parameters_struct();
+	higgins_stdp->Set_STDP_Parameters((SpikingSynapses *) conductance_spiking_synapses, (stdp_parameters_struct *) STDP_PARAMS);
 
 	simulator.SetNeuronType(izhikevich_spiking_neurons);
 	simulator.SetInputNeuronType(input_neurons);
 	simulator.SetSynapseType(conductance_spiking_synapses);
+	simulator.SetSTDPType(higgins_stdp);
 
 	conductance_spiking_synapses->print_synapse_group_details = false;
 	conductance_spiking_synapses->learning_rate_rho = 0.1;

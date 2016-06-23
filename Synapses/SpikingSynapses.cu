@@ -189,15 +189,6 @@ void SpikingSynapses::update_synaptic_efficacies_or_weights(float * d_recent_pos
 	
 }
 
-void SpikingSynapses::apply_ltd_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds) {
-
-}
-
-
-void SpikingSynapses::apply_ltp_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds) {
-
-}
-
 
 __global__ void check_for_synapse_spike_arrival_kernal(int* d_spikes_travelling_to_synapse,
 							float* d_time_of_last_spike_to_reach_synapse,
