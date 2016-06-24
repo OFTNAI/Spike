@@ -165,6 +165,7 @@ void Simulator::setup_network() {
 	neurons->allocate_device_pointers();
 	synapses->allocate_device_pointers();
 	input_neurons->allocate_device_pointers();
+	stdp_rule->allocate_device_pointers();
 
 	timer->stop_timer_and_log_time_and_message("Network Setup.", true);
 }
@@ -219,9 +220,6 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 	int number_of_stimuli = input_neurons->total_number_of_input_stimuli;
 	begin_simulation_message(timestep, number_of_stimuli, number_of_epochs, record_spikes, save_recorded_spikes_to_file, present_stimuli_in_random_order, neurons->total_number_of_neurons, input_neurons->total_number_of_neurons, synapses->total_number_of_synapses);
 	TimerWithMessages * simulation_timer = new TimerWithMessages();
-
-	// Initialize STDP
-	stdp_rule->Initialize_STDP();
 
 	if (number_of_epochs == 0) print_message_and_exit("Error. There must be at least one epoch.");
 
