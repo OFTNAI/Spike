@@ -1,4 +1,4 @@
-#include "PoissonSpikingNeurons.h"
+#include "PoissonInputSpikingNeurons.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include "../Helpers/CUDAErrorCheckHelpers.h"
@@ -6,36 +6,36 @@
 using namespace std;
 
 
-// PoissonSpikingNeurons Constructor
-PoissonSpikingNeurons::PoissonSpikingNeurons() {
+// PoissonInputSpikingNeurons Constructor
+PoissonInputSpikingNeurons::PoissonInputSpikingNeurons() {
 	rates = NULL;
 	d_rates = NULL;
 
 }
 
 
-// PoissonSpikingNeurons Destructor
-PoissonSpikingNeurons::~PoissonSpikingNeurons() {
+// PoissonInputSpikingNeurons Destructor
+PoissonInputSpikingNeurons::~PoissonInputSpikingNeurons() {
 
 }
 
 
-int PoissonSpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
+int PoissonInputSpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
 
 	int new_group_id = InputSpikingNeurons::AddGroup(group_params);
 
-	poisson_spiking_neuron_parameters_struct * poisson_spiking_group_params = (poisson_spiking_neuron_parameters_struct*)group_params;
+	poisson_input_spiking_neuron_parameters_struct * poisson_input_spiking_group_params = (poisson_input_spiking_neuron_parameters_struct*)group_params;
 
 	rates = (float*)realloc(rates, sizeof(float)*total_number_of_neurons);
 	for (int i = total_number_of_neurons - number_of_neurons_in_new_group; i < total_number_of_neurons; i++) {
-		rates[i] = poisson_spiking_group_params->rate;
+		rates[i] = poisson_input_spiking_group_params->rate;
 	}
 
 	return CORRECTED_PRESYNAPTIC_ID(new_group_id, true);
 
 }
 
-void PoissonSpikingNeurons::allocate_device_pointers() {
+void PoissonInputSpikingNeurons::allocate_device_pointers() {
 
 	InputSpikingNeurons::allocate_device_pointers();
 
@@ -44,7 +44,7 @@ void PoissonSpikingNeurons::allocate_device_pointers() {
 }
 
 
-void PoissonSpikingNeurons::reset_neurons() {
+void PoissonInputSpikingNeurons::reset_neurons() {
 
 	InputSpikingNeurons::reset_neurons();
 
@@ -52,14 +52,14 @@ void PoissonSpikingNeurons::reset_neurons() {
 }
 
 
-void PoissonSpikingNeurons::set_threads_per_block_and_blocks_per_grid(int threads) {
+void PoissonInputSpikingNeurons::set_threads_per_block_and_blocks_per_grid(int threads) {
 	
 	InputSpikingNeurons::set_threads_per_block_and_blocks_per_grid(threads);
 
 }
 
 
-void PoissonSpikingNeurons::update_membrane_potentials(float timestep) {
+void PoissonInputSpikingNeurons::update_membrane_potentials(float timestep) {
 
 	poisson_update_membrane_potentials_kernel<<<RandomStateManager::instance()->block_dimensions, RandomStateManager::instance()->threads_per_block>>>(RandomStateManager::instance()->d_states,
 														d_rates,

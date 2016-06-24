@@ -7,7 +7,7 @@
 #include <stdlib.h>
 
 // SpikeAnalyser Constructor
-SpikeAnalyser::SpikeAnalyser(Neurons * neurons_parameter, ImagePoissonSpikingNeurons * input_neurons_parameter) {
+SpikeAnalyser::SpikeAnalyser(Neurons * neurons_parameter, ImagePoissonInputSpikingNeurons * input_neurons_parameter) {
 	neurons = neurons_parameter;
 	input_neurons = input_neurons_parameter;
 	number_of_neurons_in_group = 0;

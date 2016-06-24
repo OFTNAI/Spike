@@ -1,4 +1,4 @@
-#include "ImagePoissonSpikingNeurons.h"
+#include "ImagePoissonInputSpikingNeurons.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include "../Helpers/CUDAErrorCheckHelpers.h"
@@ -12,8 +12,8 @@
 using namespace std;
 
 
-// ImagePoissonSpikingNeurons Constructor
-ImagePoissonSpikingNeurons::ImagePoissonSpikingNeurons() {
+// ImagePoissonInputSpikingNeurons Constructor
+ImagePoissonInputSpikingNeurons::ImagePoissonInputSpikingNeurons() {
 
 	//JI
 	total_number_of_transformations_per_object = 0;
@@ -37,17 +37,17 @@ ImagePoissonSpikingNeurons::ImagePoissonSpikingNeurons() {
 }
 
 
-// ImagePoissonSpikingNeurons Destructor
-ImagePoissonSpikingNeurons::~ImagePoissonSpikingNeurons() {
+// ImagePoissonInputSpikingNeurons Destructor
+ImagePoissonInputSpikingNeurons::~ImagePoissonInputSpikingNeurons() {
 
 }
 
 
-int ImagePoissonSpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
+int ImagePoissonInputSpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
 
-	int new_group_id = PoissonSpikingNeurons::AddGroup(group_params);
+	int new_group_id = PoissonInputSpikingNeurons::AddGroup(group_params);
 
-	image_poisson_spiking_neuron_parameters_struct * image_poisson_spiking_group_params = (image_poisson_spiking_neuron_parameters_struct*)group_params;
+	image_poisson_input_spiking_neuron_parameters_struct * image_poisson_input_spiking_group_params = (image_poisson_input_spiking_neuron_parameters_struct*)group_params;
 
 	for (int i = total_number_of_neurons - number_of_neurons_in_new_group; i < total_number_of_neurons; i++) {
 
@@ -58,36 +58,36 @@ int ImagePoissonSpikingNeurons::AddGroup(neuron_parameters_struct * group_params
 }
 
 
-void ImagePoissonSpikingNeurons::AddGroupForEachGaborType(neuron_parameters_struct * group_params) {
+void ImagePoissonInputSpikingNeurons::AddGroupForEachGaborType(neuron_parameters_struct * group_params) {
 
 	// int group_shape[] = {image_width, image_width};
 
-	image_poisson_spiking_neuron_parameters_struct * image_poisson_spiking_group_params = (image_poisson_spiking_neuron_parameters_struct*)group_params;
-	image_poisson_spiking_group_params->group_shape[0] = image_width;
-	image_poisson_spiking_group_params->group_shape[1] = image_width;
+	image_poisson_input_spiking_neuron_parameters_struct * image_poisson_input_spiking_group_params = (image_poisson_input_spiking_neuron_parameters_struct*)group_params;
+	image_poisson_input_spiking_group_params->group_shape[0] = image_width;
+	image_poisson_input_spiking_group_params->group_shape[1] = image_width;
 
 	for (int gabor_index = 0; gabor_index < total_number_of_gabor_types; gabor_index++) {
-		image_poisson_spiking_group_params->gabor_index = gabor_index;
-		int new_group_id = this->AddGroup(image_poisson_spiking_group_params);
+		image_poisson_input_spiking_group_params->gabor_index = gabor_index;
+		int new_group_id = this->AddGroup(image_poisson_input_spiking_group_params);
 	}
 
 }
 
 
-void ImagePoissonSpikingNeurons::allocate_device_pointers() {
+void ImagePoissonInputSpikingNeurons::allocate_device_pointers() {
 
-	PoissonSpikingNeurons::allocate_device_pointers();
-
-}
-
-
-void ImagePoissonSpikingNeurons::reset_neurons() {
-
-	PoissonSpikingNeurons::reset_neurons();
+	PoissonInputSpikingNeurons::allocate_device_pointers();
 
 }
 
-void ImagePoissonSpikingNeurons::set_up_rates(const char * fileList, const char * filterParameters, const char * inputDirectory, float max_rate_scaling_factor) {
+
+void ImagePoissonInputSpikingNeurons::reset_neurons() {
+
+	PoissonInputSpikingNeurons::reset_neurons();
+
+}
+
+void ImagePoissonInputSpikingNeurons::set_up_rates(const char * fileList, const char * filterParameters, const char * inputDirectory, float max_rate_scaling_factor) {
 	printf("--- Setting up Input Neuron Rates from Gabor files...\n");
 
 	load_image_names_from_file_list(fileList, inputDirectory);
@@ -98,7 +98,7 @@ void ImagePoissonSpikingNeurons::set_up_rates(const char * fileList, const char 
 }
 
 
-void ImagePoissonSpikingNeurons::load_image_names_from_file_list(const char * fileList, const char * inputDirectory) {
+void ImagePoissonInputSpikingNeurons::load_image_names_from_file_list(const char * fileList, const char * inputDirectory) {
     
 	// Open file list
 	stringstream path;
@@ -156,7 +156,7 @@ void ImagePoissonSpikingNeurons::load_image_names_from_file_list(const char * fi
 }
 
 
-void ImagePoissonSpikingNeurons::load_gabor_filter_parameters(const char * filterParameters, const char * inputDirectory) {
+void ImagePoissonInputSpikingNeurons::load_gabor_filter_parameters(const char * filterParameters, const char * inputDirectory) {
 
 
 	// cout << "Reading filter parameters:" << endl;
@@ -234,7 +234,7 @@ void ImagePoissonSpikingNeurons::load_gabor_filter_parameters(const char * filte
 }
 
 
-void ImagePoissonSpikingNeurons::load_rates_from_files(const char * inputDirectory, float max_rate_scaling_factor) {
+void ImagePoissonInputSpikingNeurons::load_rates_from_files(const char * inputDirectory, float max_rate_scaling_factor) {
 
 
 	gabor_input_rates = (float *)malloc(total_number_of_rates*sizeof(float));
@@ -316,20 +316,20 @@ void ImagePoissonSpikingNeurons::load_rates_from_files(const char * inputDirecto
 	// printf("--- --- Proportion of input rates 0.0: %f\n", (float)zero_count/(float)total_number_of_rates);
 }
 
-void ImagePoissonSpikingNeurons::copy_rates_to_device() {
+void ImagePoissonInputSpikingNeurons::copy_rates_to_device() {
 	CudaSafeCall(cudaMalloc((void **)&d_gabor_input_rates, sizeof(float)*total_number_of_rates));
 	CudaSafeCall(cudaMemcpy(d_gabor_input_rates, gabor_input_rates, sizeof(float)*total_number_of_rates, cudaMemcpyHostToDevice));
 }
 
 
-int ImagePoissonSpikingNeurons::calculate_gabor_index(int orientationIndex, int wavelengthIndex, int phaseIndex) {
+int ImagePoissonInputSpikingNeurons::calculate_gabor_index(int orientationIndex, int wavelengthIndex, int phaseIndex) {
 	
 	return orientationIndex * (total_number_of_wavelengths * total_number_of_phases) + wavelengthIndex * total_number_of_phases + phaseIndex;
 }
 
 
 
-void ImagePoissonSpikingNeurons::update_membrane_potentials(float timestep) {
+void ImagePoissonInputSpikingNeurons::update_membrane_potentials(float timestep) {
 
 	// printf("total_number_of_neurons: %d\n", total_number_of_neurons);
 	// printf("total_number_of_rates_per_image: %d\n", total_number_of_rates_per_image);

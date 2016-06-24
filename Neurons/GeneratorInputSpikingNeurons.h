@@ -1,5 +1,5 @@
-#ifndef GeneratorSpikingNeurons_H
-#define GeneratorSpikingNeurons_H
+#ifndef GeneratorInputSpikingNeurons_H
+#define GeneratorInputSpikingNeurons_H
 
 #include <cuda.h>
 #include <curand.h>
@@ -7,15 +7,15 @@
 
 #include "InputSpikingNeurons.h"
 
-struct generator_spiking_neuron_parameters_struct : input_spiking_neuron_parameters_struct {
-	generator_spiking_neuron_parameters_struct() { input_spiking_neuron_parameters_struct(); }
+struct generator_input_spiking_parameters_struct : input_spiking_neuron_parameters_struct {
+	generator_input_spiking_parameters_struct() { input_spiking_neuron_parameters_struct(); }
 };
 
-class GeneratorSpikingNeurons : public InputSpikingNeurons {
+class GeneratorInputSpikingNeurons : public InputSpikingNeurons {
 public:
 	// Constructor/Destructor
-	GeneratorSpikingNeurons();
-	~GeneratorSpikingNeurons();
+	GeneratorInputSpikingNeurons();
+	~GeneratorInputSpikingNeurons();
 
 	int** neuron_id_matrix_for_stimuli;
 	float** spike_times_matrix_for_stimuli;

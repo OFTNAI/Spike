@@ -1,4 +1,4 @@
-#include "GeneratorSpikingNeurons.h"
+#include "GeneratorInputSpikingNeurons.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include "../Helpers/CUDAErrorCheckHelpers.h"
@@ -6,8 +6,8 @@
 using namespace std;
 
 
-// GeneratorSpikingNeurons Constructor
-GeneratorSpikingNeurons::GeneratorSpikingNeurons() {
+// GeneratorInputSpikingNeurons Constructor
+GeneratorInputSpikingNeurons::GeneratorInputSpikingNeurons() {
 	neuron_id_matrix_for_stimuli = NULL;
 	spike_times_matrix_for_stimuli = NULL;
 	number_of_spikes_in_stimuli = NULL;
@@ -19,8 +19,8 @@ GeneratorSpikingNeurons::GeneratorSpikingNeurons() {
 }
 
 
-// GeneratorSpikingNeurons Destructor
-GeneratorSpikingNeurons::~GeneratorSpikingNeurons() {
+// GeneratorInputSpikingNeurons Destructor
+GeneratorInputSpikingNeurons::~GeneratorInputSpikingNeurons() {
 	free(neuron_id_matrix_for_stimuli);
 	free(spike_times_matrix_for_stimuli);
 	free(number_of_spikes_in_stimuli);
@@ -29,7 +29,7 @@ GeneratorSpikingNeurons::~GeneratorSpikingNeurons() {
 }
 
 // Add Group of given size as usual - nothing special in constructor
-int GeneratorSpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
+int GeneratorInputSpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
 	
 	int new_group_id = InputSpikingNeurons::AddGroup(group_params);
 	return CORRECTED_PRESYNAPTIC_ID(new_group_id, true);
@@ -37,7 +37,7 @@ int GeneratorSpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
 }
 
 // Allocate device pointers for the longest stimulus so that they do not need to be replaced
-void GeneratorSpikingNeurons::allocate_device_pointers() {
+void GeneratorInputSpikingNeurons::allocate_device_pointers() {
 
 	InputSpikingNeurons::allocate_device_pointers();
 
@@ -46,12 +46,12 @@ void GeneratorSpikingNeurons::allocate_device_pointers() {
 }
 
 
-void GeneratorSpikingNeurons::reset_neurons() {
+void GeneratorInputSpikingNeurons::reset_neurons() {
 	CudaSafeCall(cudaMemcpy(d_neuron_ids_for_stimulus, neuron_id_matrix_for_stimuli[current_stimulus_index], sizeof(int)*number_of_spikes_in_stimuli[current_stimulus_index], cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_spike_times_for_stimulus, spike_times_matrix_for_stimuli[current_stimulus_index], sizeof(float)*number_of_spikes_in_stimuli[current_stimulus_index], cudaMemcpyHostToDevice));
 }
 
-void GeneratorSpikingNeurons::set_threads_per_block_and_blocks_per_grid(int threads) {
+void GeneratorInputSpikingNeurons::set_threads_per_block_and_blocks_per_grid(int threads) {
 	
 	InputSpikingNeurons::set_threads_per_block_and_blocks_per_grid(threads);
 
@@ -59,7 +59,7 @@ void GeneratorSpikingNeurons::set_threads_per_block_and_blocks_per_grid(int thre
 	number_of_neuron_blocks_per_grid.x = genblocknum;
 }
 
-void GeneratorSpikingNeurons::check_for_neuron_spikes(float current_time_in_seconds, float timestep) {
+void GeneratorInputSpikingNeurons::check_for_neuron_spikes(float current_time_in_seconds, float timestep) {
 
 	check_for_generator_spikes_kernel<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(
 		d_neuron_ids_for_stimulus,
@@ -72,10 +72,10 @@ void GeneratorSpikingNeurons::check_for_neuron_spikes(float current_time_in_seco
 	CudaCheckError();
 }
 
-void GeneratorSpikingNeurons::update_membrane_potentials(float timestep){
+void GeneratorInputSpikingNeurons::update_membrane_potentials(float timestep){
 }
 
-void GeneratorSpikingNeurons::AddStimulus(int spikenumber, int* ids, float* spiketimes){
+void GeneratorInputSpikingNeurons::AddStimulus(int spikenumber, int* ids, float* spiketimes){
 
 	++total_number_of_input_stimuli;
 	// If the number of spikes in this stimulus is larger than any other ...
