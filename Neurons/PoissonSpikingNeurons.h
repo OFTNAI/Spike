@@ -5,18 +5,18 @@
 #include <curand.h>
 #include <curand_kernel.h>
 
-#include "SpikingNeurons.h"
+#include "InputSpikingNeurons.h"
 
 #include "../Helpers/RandomStateManager.h"
 
-struct poisson_spiking_neuron_parameters_struct : spiking_neuron_parameters_struct {
-	poisson_spiking_neuron_parameters_struct(): rate(50.0f) { spiking_neuron_parameters_struct(); }
+struct poisson_spiking_neuron_parameters_struct : input_spiking_neuron_parameters_struct {
+	poisson_spiking_neuron_parameters_struct(): rate(50.0f) { input_spiking_neuron_parameters_struct(); }
 
 	float rate;
 };
 
 
-class PoissonSpikingNeurons : public SpikingNeurons {
+class PoissonSpikingNeurons : public InputSpikingNeurons {
 public:
 	// Constructor/Destructor
 	PoissonSpikingNeurons();
@@ -25,14 +25,10 @@ public:
 	float * rates;
 	float * d_rates;
 
-	int total_number_of_input_images;
-	int current_stimulus_index;
-
 	virtual int AddGroup(neuron_parameters_struct * group_params);
 	virtual void allocate_device_pointers();
 	virtual void reset_neurons();
 	virtual void set_threads_per_block_and_blocks_per_grid(int threads);
-	
 	virtual void update_membrane_potentials(float timestep);
 
 };

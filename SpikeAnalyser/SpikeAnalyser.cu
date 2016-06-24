@@ -23,9 +23,9 @@ SpikeAnalyser::SpikeAnalyser(Neurons * neurons_parameter, ImagePoissonSpikingNeu
 	number_of_neurons_with_maximum_information_score_in_last_neuron_group = -1;
 	maximum_information_score_count_multiplied_by_sum_of_information_scores = -1.0;
 
-	per_stimulus_per_neuron_spike_counts = new int*[input_neurons->total_number_of_input_images];
+	per_stimulus_per_neuron_spike_counts = new int*[input_neurons->total_number_of_input_stimuli];
 
-	for (int stimulus_index = 0; stimulus_index < input_neurons->total_number_of_input_images; stimulus_index++) {
+	for (int stimulus_index = 0; stimulus_index < input_neurons->total_number_of_input_stimuli; stimulus_index++) {
 		per_stimulus_per_neuron_spike_counts[stimulus_index] = new int[neurons->total_number_of_neurons];
 	}
 	
@@ -80,8 +80,8 @@ void SpikeAnalyser::calculate_various_neuron_spike_totals_and_averages(float pre
 
 	for (int neuron_group_index = 0; neuron_group_index < neurons->total_number_of_groups; neuron_group_index++) {
 
-		number_of_spikes_per_stimulus_per_neuron_group[neuron_group_index] = new int[input_neurons->total_number_of_input_images];
-		average_number_of_spikes_per_stimulus_per_neuron_group_per_second[neuron_group_index] = new float[input_neurons->total_number_of_input_images];
+		number_of_spikes_per_stimulus_per_neuron_group[neuron_group_index] = new int[input_neurons->total_number_of_input_stimuli];
+		average_number_of_spikes_per_stimulus_per_neuron_group_per_second[neuron_group_index] = new float[input_neurons->total_number_of_input_stimuli];
 
 		int neuron_group_start_index = neurons->start_neuron_indices_for_each_group[neuron_group_index];
 		int neuron_group_end_index = neurons->last_neuron_indices_for_each_group[neuron_group_index];
@@ -89,7 +89,7 @@ void SpikeAnalyser::calculate_various_neuron_spike_totals_and_averages(float pre
 	
 		total_number_of_spikes_per_neuron_group[neuron_group_index] = 0;
 
-		for (int stimulus_index = 0; stimulus_index < input_neurons->total_number_of_input_images; stimulus_index++) {
+		for (int stimulus_index = 0; stimulus_index < input_neurons->total_number_of_input_stimuli; stimulus_index++) {
 
 			number_of_spikes_per_stimulus_per_neuron_group[neuron_group_index][stimulus_index] = 0;
 
@@ -137,7 +137,7 @@ void SpikeAnalyser::calculate_single_cell_information_scores_for_neuron_group(in
 
 	// 1. Find max number of spikes
 	int max_number_of_spikes = 0;
-	for (int stimulus_index = 0; stimulus_index < input_neurons->total_number_of_input_images; stimulus_index++) {
+	for (int stimulus_index = 0; stimulus_index < input_neurons->total_number_of_input_stimuli; stimulus_index++) {
 		for (int neuron_index = neuron_group_start_index; neuron_index <= neuron_group_end_index; neuron_index++) {
 			int number_of_spikes = per_stimulus_per_neuron_spike_counts[stimulus_index][neuron_index];
 			if (max_number_of_spikes < number_of_spikes) {
@@ -169,8 +169,8 @@ void SpikeAnalyser::calculate_single_cell_information_scores_for_neuron_group(in
 
 	// 2. Calculate bin index for all spike counts + create bin counts for each neuron
 	// First set up arrays
-	int ** bin_indices_per_stimulus_and_per_neuron = new int*[input_neurons->total_number_of_input_images];
-	for (int stimulus_index = 0; stimulus_index < input_neurons->total_number_of_input_images; stimulus_index++) {
+	int ** bin_indices_per_stimulus_and_per_neuron = new int*[input_neurons->total_number_of_input_stimuli];
+	for (int stimulus_index = 0; stimulus_index < input_neurons->total_number_of_input_stimuli; stimulus_index++) {
 		bin_indices_per_stimulus_and_per_neuron[stimulus_index] = new int[number_of_neurons_in_group];
 	}
 
@@ -185,7 +185,7 @@ void SpikeAnalyser::calculate_single_cell_information_scores_for_neuron_group(in
 		}
 	}
 
-	for (int stimulus_index = 0; stimulus_index < input_neurons->total_number_of_input_images; stimulus_index++) {
+	for (int stimulus_index = 0; stimulus_index < input_neurons->total_number_of_input_stimuli; stimulus_index++) {
 		for (int neuron_index_zeroed = 0; neuron_index_zeroed < number_of_neurons_in_group; neuron_index_zeroed++) {
 
 			int number_of_spikes = per_stimulus_per_neuron_spike_counts[stimulus_index][neuron_index_zeroed+neuron_group_start_index];
@@ -201,7 +201,7 @@ void SpikeAnalyser::calculate_single_cell_information_scores_for_neuron_group(in
 	// 3. Calculate probabilities_of_bin_responses_p_r
 	for (int bin_index = 0; bin_index < number_of_bins; bin_index++) {
 		for (int neuron_index_zeroed = 0; neuron_index_zeroed < number_of_neurons_in_group; neuron_index_zeroed++) {
-			probabilities_of_bin_responses_p_r[bin_index][neuron_index_zeroed] = (float) individual_bin_counts_for_each_neuron[bin_index][neuron_index_zeroed] / (float) input_neurons->total_number_of_input_images;
+			probabilities_of_bin_responses_p_r[bin_index][neuron_index_zeroed] = (float) individual_bin_counts_for_each_neuron[bin_index][neuron_index_zeroed] / (float) input_neurons->total_number_of_input_stimuli;
 			// printf("probabilities_of_bin_responses_p_r[bin_index][neuron_index_zeroed]: %f\n", probabilities_of_bin_responses_p_r[bin_index][neuron_index_zeroed]);
 		}
 	}

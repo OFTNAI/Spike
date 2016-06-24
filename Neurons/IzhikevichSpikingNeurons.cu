@@ -75,8 +75,8 @@ void IzhikevichSpikingNeurons::reset_neurons() {
 
 // GPU Kernel Class Wrappers
 
-void IzhikevichSpikingNeurons::check_for_neuron_spikes(float current_time_in_seconds) {
-	SpikingNeurons::check_for_neuron_spikes(current_time_in_seconds);
+void IzhikevichSpikingNeurons::check_for_neuron_spikes(float current_time_in_seconds, float timestep) {
+	SpikingNeurons::check_for_neuron_spikes(current_time_in_seconds, timestep);
 
 	reset_states_u_after_spikes_kernel<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_states_u,
 								d_param_d,

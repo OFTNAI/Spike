@@ -10,7 +10,7 @@
 #include <time.h>
 
 #include "Simulator.h"
-#include "../Neurons/GeneratorSpikingNeurons.h"
+#include "../Neurons/InputSpikingNeurons.h"
 
 #include "../Helpers/CUDAErrorCheckHelpers.h"
 #include "../Helpers/TerminalHelpers.h"
@@ -74,7 +74,7 @@ void Simulator::SetNeuronType(SpikingNeurons * neurons_parameter) {
 
 }
 
-void Simulator::SetInputNeuronType(PoissonSpikingNeurons * inputs_parameter) {
+void Simulator::SetInputNeuronType(InputSpikingNeurons * inputs_parameter) {
 
 	input_neurons = inputs_parameter;
 
@@ -216,7 +216,7 @@ void Simulator::RunSimulationToTrainNetwork(float presentation_time_per_stimulus
 
 void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, bool record_spikes, bool save_recorded_spikes_to_file, bool apply_stdp_to_relevant_synapses, bool count_spikes_per_neuron, bool present_stimuli_in_random_order, SpikeAnalyser *spike_analyser){
 	
-	int number_of_stimuli = input_neurons->total_number_of_input_images;
+	int number_of_stimuli = input_neurons->total_number_of_input_stimuli;
 	begin_simulation_message(timestep, number_of_stimuli, number_of_epochs, record_spikes, save_recorded_spikes_to_file, present_stimuli_in_random_order, neurons->total_number_of_neurons, input_neurons->total_number_of_neurons, synapses->total_number_of_synapses);
 	TimerWithMessages * simulation_timer = new TimerWithMessages();
 
@@ -258,9 +258,9 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 
 			printf("Stimulus: %d, Current time in seconds: %1.2f\n", stimuli_presentation_order[stimulus_index], current_time_in_seconds);
 
-			input_neurons->reset_neurons();
-
+			// These statements have been placed in this order for the Spike Generator Neurons so that they can set up for the next timestep
 			input_neurons->current_stimulus_index = stimuli_presentation_order[stimulus_index];
+			input_neurons->reset_neurons();
 
 			int number_of_timesteps_per_stimulus_per_epoch = presentation_time_per_stimulus_per_epoch / timestep;
 		
@@ -336,8 +336,8 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 
 void Simulator::per_timestep_instructions(float current_time_in_seconds, bool apply_stdp_to_relevant_synapses){
 
-	neurons->check_for_neuron_spikes(current_time_in_seconds);
-	input_neurons->check_for_neuron_spikes(current_time_in_seconds);
+	neurons->check_for_neuron_spikes(current_time_in_seconds, timestep);
+	input_neurons->check_for_neuron_spikes(current_time_in_seconds, timestep);
 
 	synapses->move_spikes_towards_synapses(neurons->d_last_spike_time_of_each_neuron, input_neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds);
 
@@ -351,57 +351,6 @@ void Simulator::per_timestep_instructions(float current_time_in_seconds, bool ap
 	input_neurons->update_membrane_potentials(timestep);
 
 }
-
-
-// Spike Generator Spike Creation
-// INPUT:
-//		Population ID
-//		Stimulus ID
-//		Number of Neurons
-//		Number of entries in our arrays
-//		Array of generator indices (neuron IDs)
-//		Corresponding array of the spike times for each instance
-void Simulator::CreateGenerator(int popID, int stimulusid, int spikenumber, int* ids, float* spiketimes){
-	// We have to ensure that we have created space for the current stimulus.
-	if ((number_of_stimuli - 1) < stimulusid) {
-
-		// Check what the difference is and quit if it is too high
-		if ((stimulusid - (number_of_stimuli - 1)) > 1)	print_message_and_exit("Error: Stimuli not created in order.");
-
-		// If it isn't greater than 1, make space!
-		++number_of_stimuli;
-		numEntries = (int*)realloc(numEntries, sizeof(int)*number_of_stimuli);
-		genids = (int**)realloc(genids, sizeof(int*)*number_of_stimuli);
-		gentimes = (float**)realloc(gentimes, sizeof(float*)*number_of_stimuli);
-		// Initialize stuff
-		genids[stimulusid] = NULL;
-		gentimes[stimulusid] = NULL;
-		numEntries[stimulusid] = 0;
-	}
-	// Spike generator populations are necessary
-	// Create space for the new ids
-	
-	genids[stimulusid] = (int*)realloc(genids[stimulusid], 
-								sizeof(int)*(spikenumber + numEntries[stimulusid]));
-	gentimes[stimulusid] = (float*)realloc(gentimes[stimulusid], 
-								sizeof(float)*(spikenumber + numEntries[stimulusid]));
-	
-	// Check where the neuron population starts
-	int startnum = 0;
-	if (popID > 0) {
-		startnum = neurons->last_neuron_indices_for_each_group[popID-1];
-	}
-	
-	// Assign the genid values according to how many neurons exist already
-	for (int i = 0; i < spikenumber; i++){
-		genids[stimulusid][numEntries[stimulusid]+i] = ids[i] + startnum;
-		gentimes[stimulusid][numEntries[stimulusid]+i] = spiketimes[i];
-	}
-	// Increment the number of entries the generator population
-	numEntries[stimulusid] += spikenumber;
-	
-}
-
 
 
 // // Synapse weight loading

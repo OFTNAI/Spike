@@ -11,8 +11,6 @@ PoissonSpikingNeurons::PoissonSpikingNeurons() {
 	rates = NULL;
 	d_rates = NULL;
 
-	total_number_of_input_images = 1;
-	current_stimulus_index = 0;
 }
 
 
@@ -24,7 +22,7 @@ PoissonSpikingNeurons::~PoissonSpikingNeurons() {
 
 int PoissonSpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
 
-	int new_group_id = SpikingNeurons::AddGroup(group_params);
+	int new_group_id = InputSpikingNeurons::AddGroup(group_params);
 
 	poisson_spiking_neuron_parameters_struct * poisson_spiking_group_params = (poisson_spiking_neuron_parameters_struct*)group_params;
 
@@ -39,7 +37,7 @@ int PoissonSpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
 
 void PoissonSpikingNeurons::allocate_device_pointers() {
 
-	SpikingNeurons::allocate_device_pointers();
+	InputSpikingNeurons::allocate_device_pointers();
 
 	CudaSafeCall(cudaMalloc((void **)&d_rates, sizeof(float)*total_number_of_neurons));
 
@@ -48,7 +46,7 @@ void PoissonSpikingNeurons::allocate_device_pointers() {
 
 void PoissonSpikingNeurons::reset_neurons() {
 
-	SpikingNeurons::reset_neurons();
+	InputSpikingNeurons::reset_neurons();
 
 	CudaSafeCall(cudaMemcpy(d_rates, rates, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
 }
@@ -56,7 +54,7 @@ void PoissonSpikingNeurons::reset_neurons() {
 
 void PoissonSpikingNeurons::set_threads_per_block_and_blocks_per_grid(int threads) {
 	
-	SpikingNeurons::set_threads_per_block_and_blocks_per_grid(threads);
+	InputSpikingNeurons::set_threads_per_block_and_blocks_per_grid(threads);
 
 }
 

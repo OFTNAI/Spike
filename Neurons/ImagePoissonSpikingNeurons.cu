@@ -18,7 +18,7 @@ ImagePoissonSpikingNeurons::ImagePoissonSpikingNeurons() {
 	//JI
 	total_number_of_transformations_per_object = 0;
 	total_number_of_objects = 0;
-	total_number_of_input_images = 0;
+	total_number_of_input_stimuli = 0;
 
 	total_number_of_phases = 0;
 	total_number_of_wavelengths = 0;
@@ -152,7 +152,7 @@ void ImagePoissonSpikingNeurons::load_image_names_from_file_list(const char * fi
 	
 	cout << "--- --- Objects: " << total_number_of_objects << ", Transforms per Object: " << total_number_of_transformations_per_object << endl;
 	
-	total_number_of_input_images = total_number_of_objects * total_number_of_transformations_per_object;
+	total_number_of_input_stimuli = total_number_of_objects * total_number_of_transformations_per_object;
 }
 
 
@@ -228,7 +228,7 @@ void ImagePoissonSpikingNeurons::load_gabor_filter_parameters(const char * filte
 	total_number_of_gabor_types = total_number_of_phases*total_number_of_wavelengths*total_number_of_orientations;
 
 	total_number_of_rates_per_image = total_number_of_gabor_types * image_width * image_width;
-	total_number_of_rates = total_number_of_input_images * total_number_of_rates_per_image;
+	total_number_of_rates = total_number_of_input_stimuli * total_number_of_rates_per_image;
 
 	// printf("\ntotal_number_of_rates: %d\n", total_number_of_rates);
 }
@@ -240,7 +240,7 @@ void ImagePoissonSpikingNeurons::load_rates_from_files(const char * inputDirecto
 	gabor_input_rates = (float *)malloc(total_number_of_rates*sizeof(float));
 	int zero_count = 0;
 
-	for(int image_index = 0; image_index < total_number_of_input_images; image_index++) {
+	for(int image_index = 0; image_index < total_number_of_input_stimuli; image_index++) {
 
 		float total_activation_for_image = 0.0;
 
