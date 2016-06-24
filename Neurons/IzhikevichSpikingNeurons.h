@@ -34,7 +34,7 @@ public:
 	virtual int AddGroup(neuron_parameters_struct * group_params);
 	virtual void allocate_device_pointers();
 	virtual void reset_neurons();
-	virtual void check_for_neuron_spikes(float current_time_in_seconds);
+	virtual void check_for_neuron_spikes(float current_time_in_seconds, float timestep);
 	virtual void update_membrane_potentials(float timestep);
 
 };

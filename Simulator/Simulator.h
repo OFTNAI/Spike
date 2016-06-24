@@ -24,7 +24,7 @@
 // #include "CUDAcode.h"
 #include "../Neurons/Neurons.h"
 #include "../Synapses/SpikingSynapses.h"
-#include "../Neurons/PoissonSpikingNeurons.h"
+#include "../Neurons/InputSpikingNeurons.h"
 #include "../Neurons/SpikingNeurons.h"
 #include "../RecordingElectrodes/RecordingElectrodes.h"
 #include "../SpikeAnalyser/SpikeAnalyser.h"
@@ -40,7 +40,7 @@ public:
 
 	SpikingNeurons * neurons;
 	SpikingSynapses * synapses;
-	PoissonSpikingNeurons * input_neurons;
+	InputSpikingNeurons * input_neurons;
 	STDP* stdp_rule; 
 
 	RecordingElectrodes * recording_electrodes;
@@ -57,7 +57,7 @@ public:
 	void SetTimestep(float timest);
 
 	void SetNeuronType(SpikingNeurons * neurons_parameter);
-	void SetInputNeuronType(PoissonSpikingNeurons * neurons_parameter);
+	void SetInputNeuronType(InputSpikingNeurons * neurons_parameter);
 	void SetSynapseType(SpikingSynapses * synapses_parameter);
 	void SetSTDPType(STDP* stdp_parameter);
 

@@ -69,12 +69,7 @@ void SpikingNeurons::update_membrane_potentials(float timestep) {
 	
 }
 
-void SpikingNeurons::update_postsynaptic_activities(float timestep, float current_time_in_seconds) {
-	
-}
-
-
-void SpikingNeurons::check_for_neuron_spikes(float current_time_in_seconds) {
+void SpikingNeurons::check_for_neuron_spikes(float current_time_in_seconds, float timestep) {
 
 	check_for_neuron_spikes_kernel<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_membrane_potentials_v,
 																	d_thresholds_for_action_potential_spikes,
