@@ -53,32 +53,13 @@ ${FILE}: ObjectFiles/${FILE}.o $(CU_OBJ_FILES) $(CPP_OBJ_FILES)
 ObjectFiles/${FILE}.o: ${EXPERIMENT_DIRECTORY}/${FILE}.cpp
 	$(CC) $(CFLAGS) ${EXPERIMENT_DIRECTORY}/${FILE}.cpp -o $@
 
-# Add Each folder
-# Simulator
 # CUDA
-ObjectFiles/%.o: Simulator/%.cu
-	$(CC) $(CFLAGS) -o $@ $<
-
-ObjectFiles/%.o: Neurons/%.cu
-	$(CC) $(CFLAGS) -o $@ $<
-
-ObjectFiles/%.o: STDP/%.cu
-	$(CC) $(CFLAGS) -o $@ $<
-
-ObjectFiles/%.o: Helpers/%.cu
-	$(CC) $(CFLAGS) -o $@ $<
-
-ObjectFiles/%.o: Synapses/%.cu
-	$(CC) $(CFLAGS) -o $@ $<
-
-ObjectFiles/%.o: RecordingElectrodes/%.cu
-	$(CC) $(CFLAGS) -o $@ $<
-
-ObjectFiles/%.o: SpikeAnalyser/%.cu
+ObjectFiles/%.o: */%.cu
 	$(CC) $(CFLAGS) -o $@ $<
 # CPP
 ObjectFiles/%.o: Helpers/%.cpp
 	$(CC) $(CFLAGS) -o $@ $<
+
 
 # Test script
 test: Simulator.o Neurons.o SpikingNeurons.o IzhikevichSpikingNeurons.o PoissonSpikingNeurons.o ImagePoissonSpikingNeurons.o FstreamWrapper.o GeneratorSpikingNeurons.o Synapses.o RecordingElectrodes.o RandomStateManager.o SpikeAnalyser.o
