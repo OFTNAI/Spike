@@ -50,19 +50,12 @@ public:
 	virtual void increment_number_of_synapses(int increment);
 	virtual void shuffle_synapses();
 
-	virtual void check_for_synapse_spike_arrival(float current_time_in_seconds);
 	virtual void update_synaptic_conductances(float timestep, float current_time_in_seconds);
 	virtual void calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds, float timestep);
 
 	virtual void move_spikes_towards_synapses(float* d_last_spike_time_of_each_neuron, float* d_input_neurons_last_spike_time, float current_time_in_seconds);
 
 };
-
-__global__ void check_for_synapse_spike_arrival_kernel(int* d_spikes_travelling_to_synapse,
-							float* d_time_of_last_spike_to_reach_synapse,
-							float current_time_in_seconds,
-							size_t total_number_of_synapses);
-
 
 __global__ void move_spikes_towards_synapses_kernel(int* d_presynaptic_neuron_indices,
 								int* d_delays,

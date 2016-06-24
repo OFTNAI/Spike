@@ -146,20 +146,6 @@ void SpikingSynapses::set_threads_per_block_and_blocks_per_grid(int threads) {
 	
 }
 
-
-
-void SpikingSynapses::check_for_synapse_spike_arrival(float current_time_in_seconds) {
-
-	// printf("check_for_synapse_spike_arrival. number_of_synapse_blocks_per_grid.x: %d. threads_per_block.x: %d\n", number_of_synapse_blocks_per_grid.x, threads_per_block.x);
-
-	check_for_synapse_spike_arrival_kernel<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_spikes_travelling_to_synapse,
-																	d_time_of_last_spike_to_reach_synapse,
-																	current_time_in_seconds,
-																	total_number_of_synapses);
-
-	CudaCheckError();
-}
-
 void SpikingSynapses::move_spikes_towards_synapses(float* d_last_spike_time_of_each_neuron, float* d_input_neurons_last_spike_time, float current_time_in_seconds) {
 
 	move_spikes_towards_synapses_kernel<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_presynaptic_neuron_indices,
@@ -179,24 +165,6 @@ void SpikingSynapses::move_spikes_towards_synapses(float* d_last_spike_time_of_e
 
 void SpikingSynapses::calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds, float timestep) {
 
-}
-
-
-__global__ void check_for_synapse_spike_arrival_kernel(int* d_spikes_travelling_to_synapse,
-							float* d_time_of_last_spike_to_reach_synapse,
-							float current_time_in_seconds,
-							size_t total_number_of_synapses){
-
-	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	while (idx < total_number_of_synapses) {
-		// Decrememnt Spikes
-		d_spikes_travelling_to_synapse[idx] -= 1;
-		if (d_spikes_travelling_to_synapse[idx] == 0) {
-			d_time_of_last_spike_to_reach_synapse[idx] = current_time_in_seconds;
-		}
-		idx += blockDim.x * gridDim.x;
-	}
-	__syncthreads();
 }
 
 void SpikingSynapses::update_synaptic_conductances(float timestep, float current_time_in_seconds) {
