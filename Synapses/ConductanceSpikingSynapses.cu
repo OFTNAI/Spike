@@ -133,7 +133,7 @@ void ConductanceSpikingSynapses::set_threads_per_block_and_blocks_per_grid(int t
 
 
 
-void ConductanceSpikingSynapses::calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds) {
+void ConductanceSpikingSynapses::calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds, float timestep) {
 
 	conductance_calculate_postsynaptic_current_injection_kernel<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_presynaptic_neuron_indices,
 																	d_postsynaptic_neuron_indices,
@@ -144,6 +144,9 @@ void ConductanceSpikingSynapses::calculate_postsynaptic_current_injection(Spikin
 																	d_synaptic_conductances_g);
 
 	CudaCheckError();
+
+	// After injecting current, update the conductances
+	update_synaptic_conductances(timestep, current_time_in_seconds);
 }
 
 void ConductanceSpikingSynapses::update_synaptic_conductances(float timestep, float current_time_in_seconds) {

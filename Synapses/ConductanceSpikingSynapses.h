@@ -48,7 +48,7 @@ public:
 	virtual void increment_number_of_synapses(int increment);
 	virtual void shuffle_synapses();
 
-	virtual void calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds);
+	virtual void calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds, float timestep);
 	virtual void update_synaptic_conductances(float timestep, float current_time_in_seconds);
 };
 

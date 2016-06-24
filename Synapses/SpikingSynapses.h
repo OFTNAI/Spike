@@ -52,7 +52,7 @@ public:
 
 	virtual void check_for_synapse_spike_arrival(float current_time_in_seconds);
 	virtual void update_synaptic_conductances(float timestep, float current_time_in_seconds);
-	virtual void calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds);
+	virtual void calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds, float timestep);
 
 	virtual void move_spikes_towards_synapses(float* d_last_spike_time_of_each_neuron, float* d_input_neurons_last_spike_time, float current_time_in_seconds);
 

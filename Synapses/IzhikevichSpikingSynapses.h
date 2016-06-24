@@ -29,7 +29,7 @@ public:
 	virtual void increment_number_of_synapses(int increment);
 	virtual void shuffle_synapses();
 
-	virtual void calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds);
+	virtual void calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds, float timestep);
 };
 
 __global__ void izhikevich_calculate_postsynaptic_current_injection_kernel(float* d_synaptic_efficacies_or_weights,

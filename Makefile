@@ -47,7 +47,7 @@ model: ${FILE}
 directory: ${EXPERIMENT_DIRECTORY}
 
 ${FILE}: ObjectFiles/${FILE}.o $(CU_OBJ_FILES) $(CPP_OBJ_FILES)
-	$(CC) -lineinfo ObjectFiles/${FILE}.o $(CU_OBJ_FILES) $(CPP_OBJ_FILES) -o ${EXPERIMENT_DIRECTORY}/bin/${FILE}
+	$(CC) -lineinfo  -lpython2.7 ObjectFiles/${FILE}.o $(CU_OBJ_FILES) $(CPP_OBJ_FILES) -o ${EXPERIMENT_DIRECTORY}/bin/${FILE}
 
 # Compiling the Model file
 ObjectFiles/${FILE}.o: ${EXPERIMENT_DIRECTORY}/${FILE}.cpp

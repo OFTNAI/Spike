@@ -343,7 +343,7 @@ void Simulator::temp_izhikevich_per_timestep_instructions(float current_time_in_
 
 	synapses->move_spikes_towards_synapses(neurons->d_last_spike_time_of_each_neuron, input_neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds);
 
-	synapses->calculate_postsynaptic_current_injection(neurons, current_time_in_seconds);
+	synapses->calculate_postsynaptic_current_injection(neurons, current_time_in_seconds, timestep);
 
 	if (apply_stdp_to_relevant_synapses){
 		stdp_rule->Run_STDP(neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds, timestep);
@@ -366,11 +366,11 @@ void Simulator::temp_lif_per_timestep_instructions(float current_time_in_seconds
 	// synapses->check_for_synapse_spike_arrival(current_time_in_seconds);
 
 	// Calculate I(t) from delta_g(t) and V(t)
-	synapses->calculate_postsynaptic_current_injection(neurons, current_time_in_seconds);
+	synapses->calculate_postsynaptic_current_injection(neurons, current_time_in_seconds, timestep);
 	// --------------- SAME ---------------
 
-	// Calculate g(t+delta_t) and delta_g(t)
-	synapses->update_synaptic_conductances(timestep, current_time_in_seconds);
+	// PLACED INTO POSTSYNAPTIC CURRENT INJECTION _____ Calculate g(t+delta_t) and delta_g(t)
+	// synapses->update_synaptic_conductances(timestep, current_time_in_seconds);
 	
 	if (apply_stdp_to_relevant_synapses) {
 		stdp_rule->Run_STDP(neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds, timestep);
