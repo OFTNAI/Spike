@@ -13,7 +13,7 @@
 #include "../Neurons/Neurons.h"
 #include "../Neurons/SpikingNeurons.h"
 #include "../Neurons/LIFSpikingNeurons.h"
-#include "../Neurons/ImagePoissonSpikingNeurons.h"
+#include "../Neurons/ImagePoissonInputSpikingNeurons.h"
 #include "../Helpers/TerminalHelpers.h"
 #include "../SpikeAnalyser/SpikeAnalyser.h"
 #include "../SpikeAnalyser/GraphPlotter.h"
@@ -101,7 +101,7 @@ int main (int argc, char *argv[]){
 	simulator.SetTimestep(timestep);
 
 	LIFSpikingNeurons * lif_spiking_neurons = new LIFSpikingNeurons();
-	ImagePoissonSpikingNeurons* input_neurons = new ImagePoissonSpikingNeurons();
+	ImagePoissonInputSpikingNeurons* input_neurons = new ImagePoissonInputSpikingNeurons();
 	ConductanceSpikingSynapses * conductance_spiking_synapses = new ConductanceSpikingSynapses();
 	EvansSTDP * evans_stdp = new EvansSTDP();
 
@@ -127,9 +127,9 @@ int main (int argc, char *argv[]){
 
 	input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "../../MatlabGaborFilter/Inputs/", 100.0f);
 	// input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "MatlabGaborFilter/Inputs/", 100.0f);
-	image_poisson_spiking_neuron_parameters_struct * image_poisson_spiking_group_params = new image_poisson_spiking_neuron_parameters_struct();
-	image_poisson_spiking_group_params->rate = 30.0f;
-	input_neurons->AddGroupForEachGaborType(image_poisson_spiking_group_params);
+	image_poisson_input_spiking_neuron_parameters_struct * image_poisson_input_spiking_group_params = new image_poisson_input_spiking_neuron_parameters_struct();
+	image_poisson_input_spiking_group_params->rate = 30.0f;
+	input_neurons->AddGroupForEachGaborType(image_poisson_input_spiking_group_params);
 
 	adding_input_neurons_timer->stop_timer_and_log_time_and_message("Input Neurons Added.", true);
 
@@ -331,7 +331,7 @@ int main (int argc, char *argv[]){
 	int number_of_bins = 3;
 	if (simulate_network_to_test_untrained) {
 
-		SpikeAnalyser * spike_analyser_for_untrained_network = new SpikeAnalyser(simulator.neurons, (ImagePoissonSpikingNeurons*)simulator.input_neurons);
+		SpikeAnalyser * spike_analyser_for_untrained_network = new SpikeAnalyser(simulator.neurons, (ImagePoissonInputSpikingNeurons*)simulator.input_neurons);
 		simulator.RunSimulationToCountNeuronSpikes(presentation_time_per_stimulus_per_epoch, record_spikes, save_recorded_spikes_to_file, spike_analyser_for_untrained_network);		
 		
 		// spike_analyser_for_untrained_network->calculate_single_cell_information_scores_for_neuron_group(EXCITATORY_NEURONS_LAYER_4, number_of_bins);
@@ -364,7 +364,7 @@ int main (int argc, char *argv[]){
 	record_spikes = false;
 	save_recorded_spikes_to_file = false;
 	if (simulate_network_to_test_trained) {
-		SpikeAnalyser * spike_analyser_for_trained_network = new SpikeAnalyser(simulator.neurons, (ImagePoissonSpikingNeurons*)simulator.input_neurons);
+		SpikeAnalyser * spike_analyser_for_trained_network = new SpikeAnalyser(simulator.neurons, (ImagePoissonInputSpikingNeurons*)simulator.input_neurons);
 		simulator.RunSimulationToCountNeuronSpikes(presentation_time_per_stimulus_per_epoch, record_spikes, save_recorded_spikes_to_file, spike_analyser_for_trained_network);
 		// spike_analyser_for_trained_network->calculate_single_cell_information_scores_for_neuron_group(EXCITATORY_NEURONS_LAYER_4, number_of_bins);
 

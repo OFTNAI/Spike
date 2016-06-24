@@ -3,17 +3,17 @@
 
 #include <cuda.h>
 #include "../Neurons/Neurons.h"
-#include "../Neurons/ImagePoissonSpikingNeurons.h"
+#include "../Neurons/ImagePoissonInputSpikingNeurons.h"
 
 class SpikeAnalyser{
 public:
 
 	// Constructor/Destructor
-	SpikeAnalyser(Neurons *neurons_parameter, ImagePoissonSpikingNeurons *input_neurons_parameter);
+	SpikeAnalyser(Neurons *neurons_parameter, ImagePoissonInputSpikingNeurons *input_neurons_parameter);
 	~SpikeAnalyser();
 
 	Neurons * neurons;
-	ImagePoissonSpikingNeurons * input_neurons;
+	ImagePoissonInputSpikingNeurons * input_neurons;
 	
 	int number_of_neurons_in_group;
 

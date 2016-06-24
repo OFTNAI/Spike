@@ -10,7 +10,7 @@
 #include "../Synapses/IzhikevichSpikingSynapses.h"
 #include "../Neurons/Neurons.h"
 #include "../Neurons/IzhikevichSpikingNeurons.h"
-#include "../Neurons/PoissonSpikingNeurons.h"
+#include "../Neurons/PoissonInputNeurons.h"
 
 // The function which will autorun when the executable is created
 int main (int argc, char *argv[]){
@@ -21,12 +21,12 @@ int main (int argc, char *argv[]){
 	float time_step = 0.001;
 	simulator.SetTimestep(time_step);
 	simulator.SetNeuronType(new IzhikevichSpikingNeurons());
-	simulator.SetInputNeuronType(new PoissonSpikingNeurons());
+	simulator.SetInputNeuronType(new PoissonInputNeurons());
 	simulator.SetSynapseType(new IzhikevichSpikingSynapses());
 
 	//
-	poisson_spiking_neuron_parameters_struct * poisson_spiking_group_params = new poisson_spiking_neuron_parameters_struct();
-	poisson_spiking_group_params->rate = 30.0f;
+	poisson_input_spiking_neuron_parameters_struct * poisson_input_spiking_group_params = new poisson_input_spiking_neuron_parameters_struct();
+	poisson_input_spiking_group_params->rate = 30.0f;
 
 	//
 	izhikevich_spiking_neuron_parameters_struct * izhhikevich_spiking_group_params = new izhikevich_spiking_neuron_parameters_struct();
@@ -44,7 +44,7 @@ int main (int argc, char *argv[]){
 	// int LAYER_3_SHAPE[] = {5, 5};
 
 	//
-	int POISSON_SPIKING_GROUP_ID_LAYER_1 = simulator.AddInputNeuronGroup(poisson_spiking_group_params, LAYER_1_SHAPE);
+	int POISSON_INPUT_SPIKING_GROUP_ID_LAYER_1 = simulator.AddInputNeuronGroup(poisson_input_spiking_group_params, LAYER_1_SHAPE);
 	int IZHIKEVICH_SPIKING_GROUP_ID_LAYER_2 = simulator.AddNeuronGroup(izhhikevich_spiking_group_params, LAYER_2_SHAPE);
 	int IZHIKEVICH_SPIKING_GROUP_ID_LAYER_3 = simulator.AddNeuronGroup(izhhikevich_spiking_group_params, LAYER_3_SHAPE);
 	
@@ -59,7 +59,7 @@ int main (int argc, char *argv[]){
 	float LAYER_2_TO_LAYER_3_DELAY_RANGE[] = {time_step, 50.0f*pow(10, -3)};
 
 	//
-	simulator.AddSynapseGroup(POISSON_SPIKING_GROUP_ID_LAYER_1, IZHIKEVICH_SPIKING_GROUP_ID_LAYER_2, CONNECTIVITY_TYPE_ALL_TO_ALL, LAYER_1_TO_LAYER_2_WEIGHTS, LAYER_1_TO_LAYER_2_DELAY_RANGE, false);
+	simulator.AddSynapseGroup(POISSON_INPUT_SPIKING_GROUP_ID_LAYER_1, IZHIKEVICH_SPIKING_GROUP_ID_LAYER_2, CONNECTIVITY_TYPE_ALL_TO_ALL, LAYER_1_TO_LAYER_2_WEIGHTS, LAYER_1_TO_LAYER_2_DELAY_RANGE, false);
 	simulator.AddSynapseGroup(IZHIKEVICH_SPIKING_GROUP_ID_LAYER_2, IZHIKEVICH_SPIKING_GROUP_ID_LAYER_3, CONNECTIVITY_TYPE_ALL_TO_ALL, LAYER_2_TO_LAYER_3_WEIGHTS, LAYER_2_TO_LAYER_3_DELAY_RANGE, true);
 
 	//

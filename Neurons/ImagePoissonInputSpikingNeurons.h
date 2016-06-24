@@ -1,28 +1,28 @@
-#ifndef ImagePoissonSpikingNeurons_H
-#define ImagePoissonSpikingNeurons_H
+#ifndef ImagePoissonInputSpikingNeurons_H
+#define ImagePoissonInputSpikingNeurons_H
 
 #include <cuda.h>
 #include <curand.h>
 #include <curand_kernel.h>
 
-#include "PoissonSpikingNeurons.h"
+#include "PoissonInputSpikingNeurons.h"
 
 #include <vector>
 
 // using namespace std;
 
-struct image_poisson_spiking_neuron_parameters_struct : poisson_spiking_neuron_parameters_struct {
-	image_poisson_spiking_neuron_parameters_struct(): gabor_index(-1) { poisson_spiking_neuron_parameters_struct(); }
+struct image_poisson_input_spiking_neuron_parameters_struct : poisson_input_spiking_neuron_parameters_struct {
+	image_poisson_input_spiking_neuron_parameters_struct(): gabor_index(-1) { poisson_input_spiking_neuron_parameters_struct(); }
 
 	int gabor_index;
 };
 
 
-class ImagePoissonSpikingNeurons : public PoissonSpikingNeurons {
+class ImagePoissonInputSpikingNeurons : public PoissonInputSpikingNeurons {
 public:
 	// Constructor/Destructor
-	ImagePoissonSpikingNeurons();
-	~ImagePoissonSpikingNeurons();
+	ImagePoissonInputSpikingNeurons();
+	~ImagePoissonInputSpikingNeurons();
 
 	virtual int AddGroup(neuron_parameters_struct * group_params);
 	void AddGroupForEachGaborType(neuron_parameters_struct * group_params);

@@ -1,5 +1,5 @@
-#ifndef PoissonSpikingNeurons_H
-#define PoissonSpikingNeurons_H
+#ifndef PoissonInputSpikingNeurons_H
+#define PoissonInputSpikingNeurons_H
 
 #include <cuda.h>
 #include <curand.h>
@@ -9,18 +9,18 @@
 
 #include "../Helpers/RandomStateManager.h"
 
-struct poisson_spiking_neuron_parameters_struct : input_spiking_neuron_parameters_struct {
-	poisson_spiking_neuron_parameters_struct(): rate(50.0f) { input_spiking_neuron_parameters_struct(); }
+struct poisson_input_spiking_neuron_parameters_struct : input_spiking_neuron_parameters_struct {
+	poisson_input_spiking_neuron_parameters_struct(): rate(50.0f) { input_spiking_neuron_parameters_struct(); }
 
 	float rate;
 };
 
 
-class PoissonSpikingNeurons : public InputSpikingNeurons {
+class PoissonInputSpikingNeurons : public InputSpikingNeurons {
 public:
 	// Constructor/Destructor
-	PoissonSpikingNeurons();
-	~PoissonSpikingNeurons();
+	PoissonInputSpikingNeurons();
+	~PoissonInputSpikingNeurons();
 
 	float * rates;
 	float * d_rates;
