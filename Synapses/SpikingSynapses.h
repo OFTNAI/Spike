@@ -30,7 +30,6 @@ public:
 	bool* d_stdp;
 	
 	int* d_spikes_travelling_to_synapse;
-	int* d_spikes_travelling_to_synapse_buffer;
 	float* d_time_of_last_spike_to_reach_synapse;
 	
 
@@ -62,7 +61,6 @@ __global__ void move_spikes_towards_synapses_kernel(int* d_presynaptic_neuron_in
 								int* d_spikes_travelling_to_synapse,
 								float* d_neurons_last_spike_time,
 								float* d_input_neurons_last_spike_time,
-								int* d_spikes_travelling_to_synapse_buffer,
 								float currtime,
 								size_t total_number_of_synapses,
 								float* d_time_of_last_spike_to_reach_synapse);
