@@ -342,7 +342,7 @@ int main (int argc, char *argv[]){
 		spike_analyser_for_untrained_network->calculate_various_neuron_spike_totals_and_averages(presentation_time_per_stimulus_per_epoch);
 		spike_analyser_for_untrained_network->calculate_combined_powered_distance_from_average_score();
 		// single_score_to_write_to_file_for_dakota_optimisation = spike_analyser_for_untrained_network->combined_powered_distance_from_average_score;
-		single_score_to_write_to_file_for_dakota_optimisation = spike_analyser_for_untrained_network->combined_powered_distance_from_average_score_for_each_neuron_group[optimisation_stage*2] + spike_analyser_for_trained_network->combined_powered_distance_from_average_score_for_each_neuron_group[optimisation_stage*2 + 1];
+		single_score_to_write_to_file_for_dakota_optimisation = spike_analyser_for_untrained_network->combined_powered_distance_from_average_score_for_each_neuron_group[optimisation_stage*2] + spike_analyser_for_untrained_network->combined_powered_distance_from_average_score_for_each_neuron_group[optimisation_stage*2 + 1];
 
 
 		// GraphPlotter *graph_plotter = new GraphPlotter();
