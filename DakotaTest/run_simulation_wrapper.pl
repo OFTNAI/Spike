@@ -65,11 +65,11 @@
 	# my $par6 = sprintf("%.11f", $table[6][0]);
 	# my $par7 = sprintf("%.11f", $table[7][0]);
 	# my $par8 = sprintf("%.11f", $table[8][0]);
-	print($table[1][0]);
+	# print($table[1][0]);
 
 	
 #	system("python ../../dakota_runMe.py $outdir $par1 $par2 $par3 $par4 $par5");
 	# system("python ../JI_Empty_Test.py $outdir $simulation_index $par1 $par2 $par3 $par4 $par5 $simulation_index");
 	# system("../../Experiments/bin/ConductanceExperiment1 $outdir $simulation_index $par1 $par2 $par3 $par4 $par5 $par6 $par7 $par8");
-	system("../../Experiments/bin/ConductanceExperiment1 $outdir $simulation_index $par1 $par2 $par3 $par4");
+	system("../../Experiments/bin/ConductanceExperiment1 $outdir $simulation_index 2 $par1 $par2 $par3 $par4");
 	

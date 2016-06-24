@@ -30,6 +30,7 @@ public:
 	float average_number_of_neuron_spikes_per_second;
 
 	float combined_powered_distance_from_average_score;
+	float * combined_powered_distance_from_average_score_for_each_neuron_group;
 
 
 
