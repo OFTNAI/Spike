@@ -36,16 +36,15 @@ int main (int argc, char *argv[]){
 	float L1_I2E_L_biological_conductance_scaling_constant_lambda = 0.002573465137;
 	float L1_E2E_L_biological_conductance_scaling_constant_lambda = 0.002194632248;
 
-	float L1_2_L2_E2E_FF_biological_conductance_scaling_constant_lambda = 0.0002910494922;
-	float L2_E2I_L_biological_conductance_scaling_constant_lambda = 0.0001888349535;
-	float L2_I2E_L_biological_conductance_scaling_constant_lambda = 0.003112143311;
-	float L2_E2E_L_biological_conductance_scaling_constant_lambda = 0.0008515281938;
-
-	//VALUES COPIED FROM 2
-	float L2_2_L3_E2E_FF_biological_conductance_scaling_constant_lambda = 0.0002910494922;
-	float L3_E2I_L_biological_conductance_scaling_constant_lambda = 0.0001888349535;
-	float L3_I2E_L_biological_conductance_scaling_constant_lambda = 0.003112143311;
-	float L3_E2E_L_biological_conductance_scaling_constant_lambda = 0.0008515281938;
+	float L1_2_L2_E2E_FF_biological_conductance_scaling_constant_lambda = 0.000320288275;
+	float L2_E2I_L_biological_conductance_scaling_constant_lambda = 0.0001493473745;
+	float L2_I2E_L_biological_conductance_scaling_constant_lambda = 0.00332457261;
+	float L2_E2E_L_biological_conductance_scaling_constant_lambda = 0.001317482035;
+ 
+	float L2_2_L3_E2E_FF_biological_conductance_scaling_constant_lambda = 0.0001702463826;
+	float L3_E2I_L_biological_conductance_scaling_constant_lambda = 0.0001034771659;
+	float L3_I2E_L_biological_conductance_scaling_constant_lambda = 0.004517876013;
+	float L3_E2E_L_biological_conductance_scaling_constant_lambda = 0.004139377891;
 
 	//VALUES COPIED FROM 2
 	float L3_2_L4_E2E_FF_biological_conductance_scaling_constant_lambda = 0.0002910494922;
@@ -57,43 +56,48 @@ int main (int argc, char *argv[]){
 	if (argc > 1) {
 		command_line_arguments_passed = true;
 
-		optimisation_stage = std::stoi(argv[2]);
+		optimisation_stage = std::stoi(argv[3]);
+		printf("optimisation_stage: %d\n", optimisation_stage);
 
-		// printf("optimisation_stage: %d\n", optimisation_stage);
-		// printf("std::stof(argv[3]): %f\n", std::stof(argv[3]));
-		// printf("std::stof(argv[4]): %f\n", std::stof(argv[4]));
-		// printf("std::stof(argv[5]): %f\n", std::stof(argv[5]));
-		// printf("std::stof(argv[6]): %f\n", std::stof(argv[6]));
+		float optimisation_variable_1 = std::stof(argv[4]);
+		float optimisation_variable_2 = std::stof(argv[5]);
+		float optimisation_variable_3 = std::stof(argv[6]);
+		float optimisation_variable_4 = std::stof(argv[7]);
+		printf("optimisation_variable_1: %f\n", optimisation_variable_1);
+		printf("optimisation_variable_2: %f\n", optimisation_variable_2);
+		printf("optimisation_variable_3: %f\n", optimisation_variable_3);
+		printf("optimisation_variable_4: %f\n", optimisation_variable_4);
 
 		if (optimisation_stage == 0) {
-			G2E_FF_biological_conductance_scaling_constant_lambda = std::stof(argv[3]);
-			L1_E2I_L_biological_conductance_scaling_constant_lambda = std::stof(argv[4]);
-			L1_I2E_L_biological_conductance_scaling_constant_lambda = std::stof(argv[5]);
-			L1_E2E_L_biological_conductance_scaling_constant_lambda = std::stof(argv[6]);
+			G2E_FF_biological_conductance_scaling_constant_lambda = optimisation_variable_1;
+			L1_E2I_L_biological_conductance_scaling_constant_lambda = optimisation_variable_2;
+			L1_I2E_L_biological_conductance_scaling_constant_lambda = optimisation_variable_3;
+			L1_E2E_L_biological_conductance_scaling_constant_lambda = optimisation_variable_4;
 		}
 
 		if (optimisation_stage == 1) {
-			L1_2_L2_E2E_FF_biological_conductance_scaling_constant_lambda = std::stof(argv[3]);
-			L2_E2I_L_biological_conductance_scaling_constant_lambda = std::stof(argv[4]);
-			L2_I2E_L_biological_conductance_scaling_constant_lambda = std::stof(argv[5]);
-			L2_E2E_L_biological_conductance_scaling_constant_lambda = std::stof(argv[6]);
+			L1_2_L2_E2E_FF_biological_conductance_scaling_constant_lambda = optimisation_variable_1;
+			L2_E2I_L_biological_conductance_scaling_constant_lambda = optimisation_variable_2;
+			L2_I2E_L_biological_conductance_scaling_constant_lambda = optimisation_variable_3;
+			L2_E2E_L_biological_conductance_scaling_constant_lambda = optimisation_variable_4;
 		}
 
 		if (optimisation_stage == 2) {
-			L2_2_L3_E2E_FF_biological_conductance_scaling_constant_lambda = std::stof(argv[3]);
-			L3_E2I_L_biological_conductance_scaling_constant_lambda = std::stof(argv[4]);
-			L3_I2E_L_biological_conductance_scaling_constant_lambda = std::stof(argv[5]);
-			L3_E2E_L_biological_conductance_scaling_constant_lambda = std::stof(argv[6]);
+			L2_2_L3_E2E_FF_biological_conductance_scaling_constant_lambda = optimisation_variable_1;
+			L3_E2I_L_biological_conductance_scaling_constant_lambda = optimisation_variable_2;
+			L3_I2E_L_biological_conductance_scaling_constant_lambda = optimisation_variable_3;
+			L3_E2E_L_biological_conductance_scaling_constant_lambda = optimisation_variable_4;
 		}
 
 		if (optimisation_stage == 3) {
-			L3_2_L4_E2E_FF_biological_conductance_scaling_constant_lambda = std::stof(argv[3]);
-			L4_E2I_L_biological_conductance_scaling_constant_lambda = std::stof(argv[4]);
-			L4_I2E_L_biological_conductance_scaling_constant_lambda = std::stof(argv[5]);
-			L4_E2E_L_biological_conductance_scaling_constant_lambda = std::stof(argv[6]);
+			L3_2_L4_E2E_FF_biological_conductance_scaling_constant_lambda = optimisation_variable_1;
+			L4_E2I_L_biological_conductance_scaling_constant_lambda = optimisation_variable_2;
+			L4_I2E_L_biological_conductance_scaling_constant_lambda = optimisation_variable_3;
+			L4_E2E_L_biological_conductance_scaling_constant_lambda = optimisation_variable_4;
 		}
 
 	}
+
 	
 	// Create an instance of the Simulator and set the timestep
 	Simulator simulator;
@@ -337,7 +341,8 @@ int main (int argc, char *argv[]){
 		// spike_analyser_for_untrained_network->calculate_single_cell_information_scores_for_neuron_group(EXCITATORY_NEURONS_LAYER_4, number_of_bins);
 		spike_analyser_for_untrained_network->calculate_various_neuron_spike_totals_and_averages(presentation_time_per_stimulus_per_epoch);
 		spike_analyser_for_untrained_network->calculate_combined_powered_distance_from_average_score();
-		single_score_to_write_to_file_for_dakota_optimisation = spike_analyser_for_untrained_network->combined_powered_distance_from_average_score;
+		// single_score_to_write_to_file_for_dakota_optimisation = spike_analyser_for_untrained_network->combined_powered_distance_from_average_score;
+		single_score_to_write_to_file_for_dakota_optimisation = spike_analyser_for_untrained_network->combined_powered_distance_from_average_score_for_each_neuron_group[optimisation_stage*2] + spike_analyser_for_trained_network->combined_powered_distance_from_average_score_for_each_neuron_group[optimisation_stage*2 + 1];
 
 
 		// GraphPlotter *graph_plotter = new GraphPlotter();
