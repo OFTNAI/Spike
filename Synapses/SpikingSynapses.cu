@@ -13,7 +13,6 @@ SpikingSynapses::SpikingSynapses() {
 	d_spikes_travelling_to_synapse = NULL;
 	d_stdp = NULL;
 	d_time_of_last_spike_to_reach_synapse = NULL;
-	d_spikes_travelling_to_synapse_buffer = NULL;
 }
 
 // SpikingSynapses Destructor
@@ -27,7 +26,6 @@ SpikingSynapses::~SpikingSynapses() {
 	CudaSafeCall(cudaFree(d_spikes_travelling_to_synapse));
 	CudaSafeCall(cudaFree(d_stdp));
 	CudaSafeCall(cudaFree(d_time_of_last_spike_to_reach_synapse));
-	CudaSafeCall(cudaFree(d_spikes_travelling_to_synapse_buffer));
 
 }
 
