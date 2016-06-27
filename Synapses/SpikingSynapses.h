@@ -31,6 +31,9 @@ public:
 	
 	int* d_spikes_travelling_to_synapse;
 	float* d_time_of_last_spike_to_reach_synapse;
+
+	// For spike array stuff
+	int maximum_axonal_delay_in_timesteps;
 	
 
 	// Synapse Functions

@@ -37,9 +37,9 @@ int GeneratorInputSpikingNeurons::AddGroup(neuron_parameters_struct * group_para
 }
 
 // Allocate device pointers for the longest stimulus so that they do not need to be replaced
-void GeneratorInputSpikingNeurons::allocate_device_pointers() {
+void GeneratorInputSpikingNeurons::allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage) {
 
-	InputSpikingNeurons::allocate_device_pointers();
+	InputSpikingNeurons::allocate_device_pointers(maximum_axonal_delay_in_timesteps);
 
 	CudaSafeCall(cudaMalloc((void **)&d_neuron_ids_for_stimulus, sizeof(int)*length_of_longest_stimulus));
 	CudaSafeCall(cudaMalloc((void **)&d_spike_times_for_stimulus, sizeof(float)*length_of_longest_stimulus));

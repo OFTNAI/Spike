@@ -35,6 +35,9 @@ Simulator::Simulator(){
 
 	recording_electrodes = NULL;
 	input_recording_electrodes = NULL;
+
+	// Default low fidelity spike storage
+	high_fidelity_spike_storage = false;
 	
 	#ifndef QUIETSTART
 		print_line_of_dashes_with_blank_lines_either_side();
@@ -162,7 +165,7 @@ void Simulator::setup_network() {
 	// Randomising order of synapses means that each block is accessing a larger number of points in memory.
 	// if (temp_model_type == 1) synapses->shuffle_synapses();
 
-	neurons->allocate_device_pointers();
+	neurons->allocate_device_pointers(synapses->maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
 	synapses->allocate_device_pointers();
 	input_neurons->allocate_device_pointers();
 	stdp_rule->allocate_device_pointers();

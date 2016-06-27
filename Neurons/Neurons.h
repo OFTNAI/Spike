@@ -45,7 +45,7 @@ public:
 
 
 	virtual int AddGroup(neuron_parameters_struct * group_params);
-	virtual void allocate_device_pointers();
+	virtual void allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage);
 	virtual void reset_neurons();
 	
 	void reset_current_injections();
