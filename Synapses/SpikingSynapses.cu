@@ -156,20 +156,20 @@ void SpikingSynapses::interact_spikes_with_synapses(SpikingNeurons * neurons, Sp
 								d_presynaptic_neuron_indices,
 								d_delays,
 								neurons->d_bitarray_of_neuron_spikes,
-								input_neurons->d_input_neuruon_bitarray_of_neuron_spikes,
+								input_neurons->d_bitarray_of_neuron_spikes,
 								neurons->bitarray_length,
 								neurons->bitarray_maximum_axonal_delay_in_timesteps,
 								current_time_in_seconds,
 								timestep,
 								total_number_of_synapses,
-								d_time_of_last_spike_to_reach_synapse)
+								d_time_of_last_spike_to_reach_synapse);
 	}
 	else{
 		move_spikes_towards_synapses_kernel<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_presynaptic_neuron_indices,
 																			d_delays,
 																			d_spikes_travelling_to_synapse,
 																			neurons->d_last_spike_time_of_each_neuron,
-																			input_neurons->d_input_neurons_last_spike_time,
+																			input_neurons->d_last_spike_time_of_each_neuron,
 																			current_time_in_seconds,
 																			total_number_of_synapses,
 																			d_time_of_last_spike_to_reach_synapse);
@@ -247,10 +247,10 @@ __global__ void check_bitarray_for_presynaptic_neuron_spikes(int* d_presynaptic_
 		int delay = d_delays[idx];
 
 		// Get offset depending upon the current timestep
-		int offset_index = round((float)(current_time_in_seconds % bitarray_maximum_axonal_delay_in_timesteps) / timestep) - delay;
-		offset_index = (offset_index < 0) ? (offset_index + bitarray_maximum_axonal_delay_in_timesteps) : offset_index 
-		int offset_byte = offset_index / 8
-		int offset_bit_pos = offset_index - (8 * offset_byte)
+		int offset_index = ((int)(round(current_time_in_seconds / timestep)) % bitarray_maximum_axonal_delay_in_timesteps) - delay;
+		offset_index = (offset_index < 0) ? (offset_index + bitarray_maximum_axonal_delay_in_timesteps) : offset_index;
+		int offset_byte = offset_index / 8;
+		int offset_bit_pos = offset_index - (8 * offset_byte);
 
 		// Get the correct neuron index
 		int neuron_index = presynaptic_is_input ? (PRESYNAPTIC_IS_INPUT(presynaptic_neuron_index)) : presynaptic_neuron_index;

@@ -103,6 +103,7 @@ int main (int argc, char *argv[]){
 	Simulator simulator;
 	float timestep = 0.0001;
 	simulator.SetTimestep(timestep);
+	simulator.high_fidelity_spike_storage = true;
 
 	LIFSpikingNeurons * lif_spiking_neurons = new LIFSpikingNeurons();
 	ImagePoissonInputSpikingNeurons* input_neurons = new ImagePoissonInputSpikingNeurons();
