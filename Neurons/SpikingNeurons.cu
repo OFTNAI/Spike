@@ -17,7 +17,7 @@ SpikingNeurons::SpikingNeurons() {
 	d_bitarray_of_neuron_spikes = NULL;
 	bitarray_of_neuron_spikes = NULL;
 	bitarray_length = false
-	high_fidelity_spike_storage = false;
+	high_fidelity_spike_flag = false;
 
 }
 
@@ -56,6 +56,8 @@ void SpikingNeurons::allocate_device_pointers(int maximum_axonal_delay_in_timest
 	CudaSafeCall(cudaMalloc((void **)&d_resting_potentials, sizeof(float)*total_number_of_neurons));
 
 	// Choosing Spike Mechanism
+	high_fidelity_spike_flag = high_fidelity_spike_storage;
+	bitarray_maximum_axonal_delay_in_timesteps = maximum_axonal_delay_in_timesteps;
 	if (high_fidelity_spike_storage){
 		// Create bit array of correct length
 		bitarray_length = (maximum_axonal_delay_in_timesteps + 7) / 8; // each char is 8 bit long.
@@ -92,10 +94,11 @@ void SpikingNeurons::check_for_neuron_spikes(float current_time_in_seconds, floa
 																	d_last_spike_time_of_each_neuron,
 																	d_bitarray_of_neuron_spikes,
 																	bitarray_length,
+																	bitarray_maximum_axonal_delay_in_timesteps,
 																	current_time_in_seconds,
 																	timestep,
 																	total_number_of_neurons,
-																	high_fidelity_spike_storage);
+																	high_fidelity_spike_flag);
 
 	CudaCheckError();
 }
@@ -108,10 +111,11 @@ __global__ void check_for_neuron_spikes_kernel(float *d_membrane_potentials_v,
 								float* d_last_spike_time_of_each_neuron,
 								char* d_bitarray_of_neuron_spikes,
 								int bitarray_length,
+								int bitarray_maximum_axonal_delay_in_timesteps,
 								float current_time_in_seconds,
 								float timestep,
 								size_t total_number_of_neurons,
-								bool high_fidelity_spike_storage) {
+								bool high_fidelity_spike_flag) {
 
 	// Get thread IDs
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
@@ -126,11 +130,11 @@ __global__ void check_for_neuron_spikes_kernel(float *d_membrane_potentials_v,
 			d_membrane_potentials_v[idx] = d_resting_potentials[idx];
 
 			// High fidelity spike storage
-			if (high_fidelity_spike_storage){
+			if (high_fidelity_spike_flag){
 				// Get start of the given neuron's bits
 				int neuron_id_spike_store_start = idx * bitarray_length;
 				// Get offset depending upon the current timestep
-				int offset_index = round((float)(current_time_in_seconds % timestep) / timestep)
+				int offset_index = round((float)(current_time_in_seconds % bitarray_maximum_axonal_delay_in_timesteps) / timestep)
 				int offset_byte = offset_index / 8
 				int offset_bit_pos = offset_index - (8 * offset_byte)
 				// Get the specific position at which we should be putting the current value

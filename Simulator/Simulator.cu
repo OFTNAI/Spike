@@ -166,8 +166,8 @@ void Simulator::setup_network() {
 	// if (temp_model_type == 1) synapses->shuffle_synapses();
 
 	neurons->allocate_device_pointers(synapses->maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
-	synapses->allocate_device_pointers();
-	input_neurons->allocate_device_pointers();
+	synapses->allocate_device_pointers(high_fidelity_spike_storage);
+	input_neurons->allocate_device_pointers(synapses->maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
 	stdp_rule->allocate_device_pointers();
 
 	timer->stop_timer_and_log_time_and_message("Network Setup.", true);
@@ -340,7 +340,7 @@ void Simulator::per_timestep_instructions(float current_time_in_seconds, bool ap
 	neurons->check_for_neuron_spikes(current_time_in_seconds, timestep);
 	input_neurons->check_for_neuron_spikes(current_time_in_seconds, timestep);
 
-	synapses->move_spikes_towards_synapses(neurons->d_last_spike_time_of_each_neuron, input_neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds);
+	synapses->interact_spikes_with_synapses(neurons, input_neurons, current_time_in_seconds, timestep);
 
 	synapses->calculate_postsynaptic_current_injection(neurons, current_time_in_seconds, timestep);
 
