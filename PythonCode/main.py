@@ -1,5 +1,6 @@
 import InfoAnalysis
-import spikePlot
+import SpikePlot
+import PolyGroup
 
 
 #INFO ANALYSIS:
@@ -8,6 +9,14 @@ import spikePlot
 #ia.singleCellInfoAnalysis(['Neurons_Epoch0_83853152', 'Neurons_Epoch0_83853152'],weightedAnalysis = 1,saveImage = True, showImage = True);
 # ia.singleCellInfoAnalysis(['Neurons_Epoch0_'],weightedAnalysis = 1,saveImage = True, showImage = False);
 
+
+#Struct
+pg = PolyGroup.PolyGroup();
+pg.polyGroup(saveImage = True, showImage = False);
+
+
 #PLOT SPIKES
-sp = spikePlot.SpikePlot();
+sp = SpikePlot.SpikePlot();
 sp.plotSpikes(saveImage = True, showImage = False);
+
+
