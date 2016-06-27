@@ -70,7 +70,7 @@ int Neurons::AddGroup(neuron_parameters_struct * group_params){
 }
 
 
-void Neurons::allocate_device_pointers() {
+void Neurons::allocate_device_pointers(int maximum_axonal_delay_in_timesteps,  bool high_fidelity_spike_storage) {
 
 	CudaSafeCall(cudaMalloc((void **)&d_current_injections, sizeof(float)*total_number_of_neurons));
 }

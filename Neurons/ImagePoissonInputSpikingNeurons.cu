@@ -74,9 +74,9 @@ void ImagePoissonInputSpikingNeurons::AddGroupForEachGaborType(neuron_parameters
 }
 
 
-void ImagePoissonInputSpikingNeurons::allocate_device_pointers() {
+void ImagePoissonInputSpikingNeurons::allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage) {
 
-	PoissonInputSpikingNeurons::allocate_device_pointers();
+	PoissonInputSpikingNeurons::allocate_device_pointers(maximum_axonal_delay_in_timesteps);
 
 }
 

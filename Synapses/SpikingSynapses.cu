@@ -13,6 +13,8 @@ SpikingSynapses::SpikingSynapses() {
 	d_spikes_travelling_to_synapse = NULL;
 	d_stdp = NULL;
 	d_time_of_last_spike_to_reach_synapse = NULL;
+
+	maximum_axonal_delay_in_timesteps = 0;
 }
 
 // SpikingSynapses Destructor
@@ -78,6 +80,12 @@ void SpikingSynapses::AddGroup(int presynaptic_group_id,
 		} else {
 			float random_delay = delay_range_in_timesteps[0] + (delay_range_in_timesteps[1] - delay_range_in_timesteps[0]) * ((float)rand() / (RAND_MAX));
 			delays[i] = round(random_delay);
+		}
+
+		if (delay_range_in_timesteps[0] > maximum_axonal_delay_in_timesteps){
+			maximum_axonal_delay_in_timesteps = delay_range_in_timesteps[0];
+		} else if (delay_range_in_timesteps[1] > maximum_axonal_delay_in_timesteps){
+			maximum_axonal_delay_in_timesteps = delay_range_in_timesteps[1];
 		}
 
 		//Set STDP on or off for synapse
