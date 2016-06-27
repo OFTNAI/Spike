@@ -283,10 +283,18 @@ void RecordingElectrodes::save_network_state(SpikingSynapses *synapses) {
 	synapsepost.open(RESULTS_DIRECTORY + prefix_string + "_NetworkPost.bin", ios::out | ios::binary);
 	
 	// Writing the data
-	weightfile.write((char *)synapses->synaptic_efficacies_or_weights, synapses->total_number_of_synapses*sizeof(float));
-	delayfile.write((char *)synapses->delays, synapses->total_number_of_synapses*sizeof(int));
-	synapsepre.write((char *)synapses->presynaptic_neuron_indices, synapses->total_number_of_synapses*sizeof(int));
-	synapsepost.write((char *)synapses->postsynaptic_neuron_indices, synapses->total_number_of_synapses*sizeof(int));
+//	weightfile.write((char *)synapses->synaptic_efficacies_or_weights, synapses->total_number_of_synapses*sizeof(float));
+//	delayfile.write((char *)synapses->delays, synapses->total_number_of_synapses*sizeof(int));
+//	synapsepre.write((char *)synapses->presynaptic_neuron_indices, synapses->total_number_of_synapses*sizeof(int));
+//	synapsepost.write((char *)synapses->postsynaptic_neuron_indices, synapses->total_number_of_synapses*sizeof(int));
+	
+	for (int i=0; i< synapses->total_number_of_synapses; i++){
+		weightfile << to_string(synapses->synaptic_efficacies_or_weights[i]) <<endl;
+		delayfile << to_string(synapses->delays[i])<<endl;
+		synapsepre << to_string(synapses->presynaptic_neuron_indices[i])<<endl;
+		synapsepost << to_string(synapses->postsynaptic_neuron_indices[i])<<endl;
+	}
+	
 
 	// Close files
 	weightfile.close();

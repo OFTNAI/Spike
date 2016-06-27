@@ -129,8 +129,8 @@ int main (int argc, char *argv[]){
 	/////////// ADD INPUT NEURONS ///////////
 	TimerWithMessages * adding_input_neurons_timer = new TimerWithMessages("Adding Input Neurons...\n");
 
-	input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "../../MatlabGaborFilter/Inputs/", 100.0f);
-	// input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "MatlabGaborFilter/Inputs/", 100.0f);
+	// input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "../../MatlabGaborFilter/Inputs/", 100.0f);
+	input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "MatlabGaborFilter/Inputs/", 100.0f);
 	image_poisson_input_spiking_neuron_parameters_struct * image_poisson_input_spiking_group_params = new image_poisson_input_spiking_neuron_parameters_struct();
 	image_poisson_input_spiking_group_params->rate = 30.0f;
 	input_neurons->AddGroupForEachGaborType(image_poisson_input_spiking_group_params);
@@ -324,7 +324,7 @@ int main (int argc, char *argv[]){
 
 	bool simulate_network_to_test_untrained = true;
 	bool simulate_network_to_train_network = false;
-	bool simulate_network_to_test_trained = false;
+	bool simulate_network_to_test_trained = true;
 	float single_score_to_write_to_file_for_dakota_optimisation = 0.0;
 
 
@@ -366,8 +366,8 @@ int main (int argc, char *argv[]){
 
 	/////////// SIMULATE NETWORK TO TEST TRAINED ///////////
 	presentation_time_per_stimulus_per_epoch = 1.0f;
-	record_spikes = false;
-	save_recorded_spikes_to_file = false;
+	record_spikes = true;
+	save_recorded_spikes_to_file = true;
 	if (simulate_network_to_test_trained) {
 		SpikeAnalyser * spike_analyser_for_trained_network = new SpikeAnalyser(simulator.neurons, (ImagePoissonInputSpikingNeurons*)simulator.input_neurons);
 		simulator.RunSimulationToCountNeuronSpikes(presentation_time_per_stimulus_per_epoch, record_spikes, save_recorded_spikes_to_file, spike_analyser_for_trained_network);
