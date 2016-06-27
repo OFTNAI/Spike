@@ -166,7 +166,7 @@ void Simulator::setup_network() {
 	// if (temp_model_type == 1) synapses->shuffle_synapses();
 
 	neurons->allocate_device_pointers(synapses->maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
-	synapses->allocate_device_pointers(high_fidelity_spike_storage);
+	synapses->allocate_device_pointers();
 	input_neurons->allocate_device_pointers(synapses->maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
 	stdp_rule->allocate_device_pointers();
 
