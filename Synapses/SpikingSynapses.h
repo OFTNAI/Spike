@@ -55,7 +55,7 @@ public:
 	virtual void update_synaptic_conductances(float timestep, float current_time_in_seconds);
 	virtual void calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds, float timestep);
 
-	virtual void move_spikes_towards_synapses(float* d_last_spike_time_of_each_neuron, float* d_input_neurons_last_spike_time, float current_time_in_seconds);
+	virtual void interact_spikes_with_synapses(SpikingNeurons * neurons, SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep);
 
 };
 
@@ -65,6 +65,17 @@ __global__ void move_spikes_towards_synapses_kernel(int* d_presynaptic_neuron_in
 								float* d_neurons_last_spike_time,
 								float* d_input_neurons_last_spike_time,
 								float currtime,
+								size_t total_number_of_synapses,
+								float* d_time_of_last_spike_to_reach_synapse);
+
+__global__ void check_bitarray_for_presynaptic_neuron_spikes(int* d_presynaptic_neuron_indices,
+								int* d_delays,
+								char* d_bitarray_of_neuron_spikes,
+								char* d_input_neuruon_bitarray_of_neuron_spikes,
+								int bitarray_length,
+								int bitarray_maximum_axonal_delay_in_timesteps,
+								float current_time_in_seconds,
+								float timestep,
 								size_t total_number_of_synapses,
 								float* d_time_of_last_spike_to_reach_synapse);
 
