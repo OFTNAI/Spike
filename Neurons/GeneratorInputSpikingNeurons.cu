@@ -146,6 +146,22 @@ __global__ void check_for_generator_spikes_kernel(int *d_neuron_ids_for_stimulus
 				// Assign the byte
 				d_bitarray_of_neuron_spikes[neuron_id_spike_store_start + offset_byte] = byte;
 			}
+		} else {
+			// High fidelity spike storage
+			if (high_fidelity_spike_flag){
+				// Get start of the given neuron's bits
+				int neuron_id_spike_store_start = d_neuron_ids_for_stimulus[idx] * bitarray_length;
+				// Get offset depending upon the current timestep
+				int offset_index = (int)(round((float)(current_time_in_seconds / timestep))) % bitarray_maximum_axonal_delay_in_timesteps;
+				int offset_byte = offset_index / 8;
+				int offset_bit_pos = offset_index - (8 * offset_byte);
+				// Get the specific position at which we should be putting the current value
+				unsigned char byte = d_bitarray_of_neuron_spikes[neuron_id_spike_store_start + offset_byte];
+				// Set the specific bit in the byte to on 
+				byte &= ~(1 << offset_bit_pos);
+				// Assign the byte
+				d_bitarray_of_neuron_spikes[neuron_id_spike_store_start + offset_byte] = byte;
+			}
 		}
 
 		idx += blockDim.x * gridDim.x;
