@@ -250,7 +250,7 @@ __global__ void check_bitarray_for_presynaptic_neuron_spikes(int* d_presynaptic_
 		// Get offset depending upon the current timestep
 		int offset_index = ((int)(round(current_time_in_seconds / timestep)) % bitarray_maximum_axonal_delay_in_timesteps) - delay;
 		offset_index = (offset_index < 0) ? (offset_index + bitarray_maximum_axonal_delay_in_timesteps) : offset_index;
-		int offset_byte = (int)((float)offset_index / 8.0f);
+		int offset_byte = offset_index / 8.0f;
 		int offset_bit_pos = offset_index - (8 * offset_byte);
 
 		// Get the correct neuron index
@@ -262,13 +262,13 @@ __global__ void check_bitarray_for_presynaptic_neuron_spikes(int* d_presynaptic_
 		if (presynaptic_is_input){
 			unsigned char byte = d_input_neuron_bitarray_of_neuron_spikes[neuron_id_spike_store_start + offset_byte];
 			check = ((byte >> offset_bit_pos) & 1);
-			if (check){
+			if (check == 1){
 				d_time_of_last_spike_to_reach_synapse[idx] = current_time_in_seconds;
 			}
 		} else {
 			unsigned char byte = d_bitarray_of_neuron_spikes[neuron_id_spike_store_start + offset_byte];
 			check = ((byte >> offset_bit_pos) & 1);
-			if (check){
+			if (check == 1){
 				d_time_of_last_spike_to_reach_synapse[idx] = current_time_in_seconds;
 			}
 		}

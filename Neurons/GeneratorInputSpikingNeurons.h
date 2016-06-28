@@ -42,8 +42,12 @@ public:
 __global__ void check_for_generator_spikes_kernel(int *d_neuron_ids_for_stimulus,
 								float *d_spike_times_for_stimulus,
 								float* d_last_spike_time_of_each_neuron,
+								unsigned char* d_bitarray_of_neuron_spikes,
+								int bitarray_length,
+								int bitarray_maximum_axonal_delay_in_timesteps,
 								float current_time_in_seconds,
 								float timestep,
-								size_t number_of_spikes_in_stimulus);
+								size_t number_of_spikes_in_stimulus,
+								bool high_fidelity_spike_flag);
 
 #endif
