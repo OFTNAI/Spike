@@ -250,7 +250,7 @@ __global__ void check_bitarray_for_presynaptic_neuron_spikes(int* d_presynaptic_
 		// Get offset depending upon the current timestep
 		int offset_index = ((int)(round(current_time_in_seconds / timestep)) % bitarray_maximum_axonal_delay_in_timesteps) - delay;
 		offset_index = (offset_index < 0) ? (offset_index + bitarray_maximum_axonal_delay_in_timesteps) : offset_index;
-		int offset_byte = offset_index / 8.0f;
+		int offset_byte = offset_index / 8;
 		int offset_bit_pos = offset_index - (8 * offset_byte);
 
 		// Get the correct neuron index
