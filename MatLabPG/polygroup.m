@@ -16,13 +16,12 @@ group.gr=[];                                  % the group connectivity will be h
 
 I(v0+N*t0)=1000;                        % fire the anchor neurons at the right times
 
-for t=1:T
-    
+for t=1:T    
     v=v+0.5*((0.04*v+5).*v+140-u+ I(:,t));    % for numerical 
     v=v+0.5*((0.04*v+5).*v+140-u+ I(:,t));    % stability time 
     u=u+a.*(0.2*v-u);                   % step is 0.5 ms
     fired = find(v>=30);                % indices of fired neurons
-       
+
     v(fired)=-65;  
     u(fired)=u(fired)+d(fired);
     last_fired(fired)=t;
