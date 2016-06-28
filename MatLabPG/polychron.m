@@ -7,13 +7,15 @@
 % pre-synatic (anchor) neurons and see whether any activity of a silent
 % network could emerge if these anchors are fired. 
 
-fname = '18000.mat';
+% fname = '18000.mat';
 
 global a d N D pp s ppre dpre post pre delay T
 % a: 
 % d:
 % N: num neurons
+N = (32*32+16*16)*4;
 % D: max delay
+D = 30;
 % pp: 
 % s: synaptiv weight
 % ppre
@@ -23,18 +25,23 @@ global a d N D pp s ppre dpre post pre delay T
 % delay
 % T
 % delays : cell(N,D) 
+M = 50; %number of syn per neurons
+sm = 10;
+
+a = zeros(N,1)+0.02;%todo check what this number is
+d = zeros(N,1)+2;
 
 % load(fname);
-preIDs = load('../Results/Neurons_NetworkPre.bin');
-postIDs = load('../Results/Neurons_NetworkPost.bin');
-weights = load('../Results/Neurons_NetworkWeights.bin');
-delays = load('../Results/Neurons_NetworkDelays.bin');
+preIDs_loaded = load('../Results/Neurons_NetworkPre.bin');
+postIDs_loaded = load('../Results/Neurons_NetworkPost.bin');
+weights_loaded = load('../Results/Neurons_NetworkWeights.bin');
+delays_loaded = load('../Results/Neurons_NetworkDelays.bin');
 
-cond = find(preIDs>=0);
-preIDs = preIDs(cond);
-postIDs = postIDs(cond);
-weights = weights(cond);
-delays = delays(cond);
+cond = find(preIDs_loaded>=0);
+preIDs_loaded = preIDs_loaded(cond)+1;
+postIDs_loaded = postIDs_loaded(cond)+1;
+weights_loaded = weights_loaded(cond);
+delays_loaded = delays_loaded(cond);
 
 %uncomment the command below to test the algorithm for shuffled (randomized e->e) synapses
 %e2e = find(s>=0 & post<Ne); s(e2e) = s(e2e(randperm(length(e2e))));
@@ -45,16 +52,72 @@ min_group_path=7;   % discard all groups having shorter paths from the anchor ne
 T=150;              % the max length of a group to be considered;
                     % longer groups will be cut at t=T
 
+
 % Make necessary initializations to speed-up simulations.
 
-% This matrix provides the delay values for each synapse.
+% PROBLEM:
+% In the original model, number of postSynCells for each cell is fixed, 
+% but in our model, number of preSynCells for each cell is fixed
+
+
+%find max numPostSynCon:
+maxNumPostSynCon = 0;
 for i=1:N
-    for j=1:D
-        delay(i, delays{i,j})=j;
-    end;
+    postListLen = length(find(preIDs_loaded==i));
+    if maxNumPostSynCon<postListLen
+        maxNumPostSynCon = postListLen;
+    end
 end;
 
-%This cell element tells what the presynaptic delay is; 
+post = zeros(N,maxNumPostSynCon);
+delay = zeros(N,maxNumPostSynCon)+1;
+s = zeros(N,maxNumPostSynCon);
+
+for i=1:N
+    cond = preIDs_loaded == i;
+    
+    delays_tmp = delays_loaded(cond);
+    delay(i,1:length(delays_tmp))=delays_tmp;
+    % This matrix provides the delay values for each synapse.
+    %delay values of synapses that are connected from each presynaptic id i;
+    % ie delay{i} return a list of delays of synapses that is connected from i
+    
+    post_tmp = postIDs_loaded(cond);
+    post(i,1:length(post_tmp))=post_tmp;
+    %post synaptic ids that are connected from each presynaptic id i;
+    %ie post{i} return a list of ids of synapses that is connected from i
+
+    s_tmp = weights_loaded(cond);
+    s(i,1:length(s_tmp))=s_tmp*10;
+end
+
+
+
+
+
+
+%This cell element tells who (indexes) the pre-synaptic neurons are; 
+% for i=1:N
+%     ppre{i}=mod( pre{i}, N);
+% end;
+
+%ppre and pre contain lists of presynaptic ids connected to post synaptic
+%cell i
+pre = cell(N);
+ppre = cell(N);
+
+for i=1:N
+    cond = postIDs_loaded==i;
+    ppre_tmp = preIDs_loaded(cond);
+    ppre{i}=ppre_tmp;
+    
+    for j=1:length(ppre_tmp)
+        pre{i}(j,1)=ppre_tmp(j)+N*(j+1);
+    end
+end;
+
+
+% %This cell element tells what the presynaptic delay is; 
 for i=1:N
     dpre{i}=delay( pre{i} );
 end;
@@ -64,21 +127,18 @@ for i=1:N
     pp{i}=post(i,:)+N*(delay(i,:)-1);
 end;
 
-%This cell element tells who (indexes) the pre-synaptic neurons are; 
-for i=1:N
-    ppre{i}=mod( pre{i}, N);
-end;
 
 sm_threshold = 0.95*sm;     % discard all weak exc->exc synapses
-s(find(post<Ne & s>0 & s<=sm_threshold))=0;
+%s(find(post<Ne & s>0 & s<=sm_threshold))=0;
+s(find(s>0 & s<=sm_threshold))=0;%todo inhibitory neurons should be excluded
 
-for i=1:Ne
-    
+%for i=1:Ne
+for i=1:(32*32)
+    i
     anchors=1:anchor_width;                     % initial choice of anchor neurons
     strong_pre=find(s(pre{i})>sm_threshold);    % candidates for anchor neurons
     if length(strong_pre) >= anchor_width       % must be enough candidates
-     while 1        % will get out of the loop via the 'break' command below
-         
+     while 1        % will get out of the loop via the 'break' command below 
         gr=polygroup( ppre{i}(strong_pre(anchors)), D-dpre{i}(strong_pre(anchors)) ); 
         
         %Calculate the longest path from the first to the last spike
