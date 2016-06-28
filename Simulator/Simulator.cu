@@ -166,9 +166,18 @@ void Simulator::setup_network() {
 	// if (temp_model_type == 1) synapses->shuffle_synapses();
 
 	neurons->allocate_device_pointers(synapses->maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
-	synapses->allocate_device_pointers();
 	input_neurons->allocate_device_pointers(synapses->maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
+	synapses->allocate_device_pointers();
 	stdp_rule->allocate_device_pointers();
+
+	printf("HELLO\n");
+	for (int i=0; i < synapses->total_number_of_synapses; i++){
+		if (synapses->delays[i] > synapses->maximum_axonal_delay_in_timesteps){
+			printf("%d, %d\n", i, synapses->delays[i]);
+		}
+	}
+	// printf("InputNeuronNum: %d\n", input_neurons->total_number_of_neurons);
+	printf("BYE\n");
 
 	timer->stop_timer_and_log_time_and_message("Network Setup.", true);
 }

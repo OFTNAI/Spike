@@ -37,7 +37,7 @@ int PoissonInputSpikingNeurons::AddGroup(neuron_parameters_struct * group_params
 
 void PoissonInputSpikingNeurons::allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage) {
 
-	InputSpikingNeurons::allocate_device_pointers(maximum_axonal_delay_in_timesteps);
+	InputSpikingNeurons::allocate_device_pointers(maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
 
 	CudaSafeCall(cudaMalloc((void **)&d_rates, sizeof(float)*total_number_of_neurons));
 

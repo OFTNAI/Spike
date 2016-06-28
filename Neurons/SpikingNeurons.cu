@@ -16,7 +16,7 @@ SpikingNeurons::SpikingNeurons() {
 
 	d_bitarray_of_neuron_spikes = NULL;
 	bitarray_of_neuron_spikes = NULL;
-	bitarray_length = false
+	bitarray_length = 0;
 	high_fidelity_spike_flag = false;
 
 }
@@ -47,7 +47,7 @@ int SpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
 
 void SpikingNeurons::allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage) {
 
-	Neurons::allocate_device_pointers();
+	Neurons::allocate_device_pointers(maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
 
 	CudaSafeCall(cudaMalloc((void **)&d_last_spike_time_of_each_neuron, sizeof(float)*total_number_of_neurons));
 
@@ -60,11 +60,11 @@ void SpikingNeurons::allocate_device_pointers(int maximum_axonal_delay_in_timest
 	bitarray_maximum_axonal_delay_in_timesteps = maximum_axonal_delay_in_timesteps;
 	if (high_fidelity_spike_storage){
 		// Create bit array of correct length
-		bitarray_length = (maximum_axonal_delay_in_timesteps + 7) / 8; // each char is 8 bit long.
-		CudaSafeCall(cudaMalloc((void **)&d_bitarray_of_neuron_spikes, sizeof(char)*bitarray_length*total_number_of_neurons));
-		bitarray_of_neuron_spikes = (char *)malloc(sizeof(char)*bitarray_length*total_number_of_neurons);
+		bitarray_length = (maximum_axonal_delay_in_timesteps / 8) + 1; // each char is 8 bit long.
+		CudaSafeCall(cudaMalloc((void **)&d_bitarray_of_neuron_spikes, sizeof(unsigned char)*bitarray_length*total_number_of_neurons));
+		bitarray_of_neuron_spikes = (unsigned char *)malloc(sizeof(unsigned char)*bitarray_length*total_number_of_neurons);
 		for (int i = 0; i < bitarray_length*total_number_of_neurons; i++){
-			bitarray_of_neuron_spikes[i] = (char)0;
+			bitarray_of_neuron_spikes[i] = (unsigned char)0;
 		}
 	}
 }
@@ -78,7 +78,9 @@ void SpikingNeurons::reset_neurons() {
 	CudaSafeCall(cudaMemcpy(d_membrane_potentials_v, after_spike_reset_membrane_potentials_c, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_thresholds_for_action_potential_spikes, thresholds_for_action_potential_spikes, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_resting_potentials, after_spike_reset_membrane_potentials_c, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemcpy(d_bitarray_of_neuron_spikes, bitarray_of_neuron_spikes_length, sizeof(char)*bitarray_of_neuron_spikes_length*total_number_of_neurons, cudaMemcpyHostToDevice));
+	if (high_fidelity_spike_flag){
+		CudaSafeCall(cudaMemcpy(d_bitarray_of_neuron_spikes, bitarray_of_neuron_spikes, sizeof(unsigned char)*bitarray_length*total_number_of_neurons, cudaMemcpyHostToDevice));
+	}
 }
 
 
@@ -109,7 +111,7 @@ __global__ void check_for_neuron_spikes_kernel(float *d_membrane_potentials_v,
 								float *d_thresholds_for_action_potential_spikes,
 								float *d_resting_potentials,
 								float* d_last_spike_time_of_each_neuron,
-								char* d_bitarray_of_neuron_spikes,
+								unsigned char* d_bitarray_of_neuron_spikes,
 								int bitarray_length,
 								int bitarray_maximum_axonal_delay_in_timesteps,
 								float current_time_in_seconds,
@@ -134,13 +136,13 @@ __global__ void check_for_neuron_spikes_kernel(float *d_membrane_potentials_v,
 				// Get start of the given neuron's bits
 				int neuron_id_spike_store_start = idx * bitarray_length;
 				// Get offset depending upon the current timestep
-				int offset_index = round((float)(current_time_in_seconds % bitarray_maximum_axonal_delay_in_timesteps) / timestep)
-				int offset_byte = offset_index / 8
-				int offset_bit_pos = offset_index - (8 * offset_byte)
+				int offset_index = (int)(round((float)(current_time_in_seconds / timestep))) % bitarray_maximum_axonal_delay_in_timesteps;
+				int offset_byte = offset_index / 8;
+				int offset_bit_pos = offset_index - (8 * offset_byte);
 				// Get the specific position at which we should be putting the current value
-				char byte = d_bitarray_of_neuron_spikes[neuron_id_spike_store_start + offset_byte]
+				unsigned char byte = d_bitarray_of_neuron_spikes[neuron_id_spike_store_start + offset_byte];
 				// Set the specific bit in the byte to on 
-				byte |= 1 << offset_bit_pos;
+				byte |= (1 << offset_bit_pos);
 				// Assign the byte
 				d_bitarray_of_neuron_spikes[neuron_id_spike_store_start + offset_byte] = byte;
 			}

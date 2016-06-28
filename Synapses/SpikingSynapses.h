@@ -70,8 +70,8 @@ __global__ void move_spikes_towards_synapses_kernel(int* d_presynaptic_neuron_in
 
 __global__ void check_bitarray_for_presynaptic_neuron_spikes(int* d_presynaptic_neuron_indices,
 								int* d_delays,
-								char* d_bitarray_of_neuron_spikes,
-								char* d_input_neuruon_bitarray_of_neuron_spikes,
+								unsigned char* d_bitarray_of_neuron_spikes,
+								unsigned char* d_input_neuruon_bitarray_of_neuron_spikes,
 								int bitarray_length,
 								int bitarray_maximum_axonal_delay_in_timesteps,
 								float current_time_in_seconds,
