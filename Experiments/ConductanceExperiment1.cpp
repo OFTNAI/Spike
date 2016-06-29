@@ -31,10 +31,11 @@ int main (int argc, char *argv[]){
 
 	int optimisation_stage = 4;
 
-	float G2E_FF_biological_conductance_scaling_constant_lambda = 0.001732477223;
-	float L1_E2I_L_biological_conductance_scaling_constant_lambda = 0.0002244875205;
-	float L1_I2E_L_biological_conductance_scaling_constant_lambda = 0.002573465137;
-	float L1_E2E_L_biological_conductance_scaling_constant_lambda = 0.002194632248;
+	   
+	float G2E_FF_biological_conductance_scaling_constant_lambda = 0.001360840969;
+	float L1_E2I_L_biological_conductance_scaling_constant_lambda = 0.0001937483874;
+	float L1_I2E_L_biological_conductance_scaling_constant_lambda = 0.001607171098;
+	float L1_E2E_L_biological_conductance_scaling_constant_lambda = 0.0005013331389;
 
 	float L1_2_L2_E2E_FF_biological_conductance_scaling_constant_lambda = 0.000320288275;
 	float L2_E2I_L_biological_conductance_scaling_constant_lambda = 0.0001493473745;

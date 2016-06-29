@@ -1,0 +1,4 @@
+source ~/.bash_profile
+
+dakota -i dakota_optimisation_1.in
+bash clean_directory
