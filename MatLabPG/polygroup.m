@@ -16,12 +16,29 @@ group.gr=[];                                  % the group connectivity will be h
 
 I(v0+N*t0)=1000;                        % fire the anchor neurons at the right times
 
+%debug part begins
+v_debug = [];
+u_debug = [];
+a = zeros(N,1)+0.02;%todo check what this number is
+d = zeros(N,1)+2;
+%b = 0.2;
+%debug part end
+
 for t=1:T    
     v=v+0.5*((0.04*v+5).*v+140-u+ I(:,t));    % for numerical 
     v=v+0.5*((0.04*v+5).*v+140-u+ I(:,t));    % stability time 
     u=u+a.*(0.2*v-u);                   % step is 0.5 ms
     fired = find(v>=30);                % indices of fired neurons
-
+    
+%     v_debug = [v_debug v(v0(1))];
+%     u_debug = [u_debug u(v0(1))];
+%     if t > t0(1)
+%          listPostCells = post(v0(1),(s(v0(1),:)>0.9));
+%          reshape(v(listPostCells),1,[])
+%     end
+    
+%     length(fired)
+    
     v(fired)=-65;  
     u(fired)=u(fired)+d(fired);
     last_fired(fired)=t;
@@ -41,4 +58,9 @@ for t=1:T
                
         group.firings=[group.firings; t, fired(k)];
     end;
-end;   
+end;
+% v0
+% figure
+% plot(1:T,[v_debug;u_debug]);
+% xlim([1, T])
+% v_debug
