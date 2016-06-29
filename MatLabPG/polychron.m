@@ -7,133 +7,128 @@
 % pre-synatic (anchor) neurons and see whether any activity of a silent
 % network could emerge if these anchors are fired. 
 
-% fname = '18000.mat';
-
+initOn = 1;
 global a d N D pp s ppre dpre post pre delay T
-% a: 
-% d:
-% N: num neurons
-N = (32*32+16*16)*4;
-% D: max delay
-D = 30;
-% pp: 
-% s: synaptiv weight
-% ppre
-% dpre: dpre{i} contains a list of delay from cell i
-% post: store index of post syn cells for each pre cell. (N,M) where M is numSynPerNeurons
-% pre: cell(N,1)
-% delay
-% T
-% delays : cell(N,D) 
-M = 50; %number of syn per neurons
-sm = 10;
 
-a = zeros(N,1)+0.02;%todo check what this number is
-d = zeros(N,1)+2;
+if initOn==1
+    % params to be tuned
+    sm = 18 ;%max synaptic weight
+    sm_threshold = 0.90*sm;
+    E_IsynEfficRatio = 1.0
+        
+    % val from the simulation
+    M = 50; %number of syn per neurons
+    ExcitDim = 32;
+    InhibDim = 16;
+    nLayers = 4;
+    N = (ExcitDim*ExcitDim+InhibDim*InhibDim)*nLayers;% N: num neurons
+    D = 30; % D: max delay
 
-% load(fname);
-preIDs_loaded = load('../Results/Neurons_NetworkPre.bin');
-postIDs_loaded = load('../Results/Neurons_NetworkPost.bin');
-weights_loaded = load('../Results/Neurons_NetworkWeights.bin');
-delays_loaded = load('../Results/Neurons_NetworkDelays.bin');
+    % izhikevich model params:
+    a = zeros(N,1)+0.02;%todo check what this number is
+    d = zeros(N,1)+2;
+    
 
-cond = find(preIDs_loaded>=0);
-preIDs_loaded = preIDs_loaded(cond)+1;
-postIDs_loaded = postIDs_loaded(cond)+1;
-weights_loaded = weights_loaded(cond);
-delays_loaded = delays_loaded(cond);
+    % load data;
+    preIDs_loaded = load('../Results/Neurons_NetworkPre.bin');
+    postIDs_loaded = load('../Results/Neurons_NetworkPost.bin');
+    weights_loaded = load('../Results/Neurons_NetworkWeights.bin');
+    delays_loaded = load('../Results/Neurons_NetworkDelays.bin');
 
-%uncomment the command below to test the algorithm for shuffled (randomized e->e) synapses
-%e2e = find(s>=0 & post<Ne); s(e2e) = s(e2e(randperm(length(e2e))));
-            
-groups={};          % the list of all polychronous groups
-anchor_width=3;     % the number of anchor neurons, from which a group starts
-min_group_path=7;   % discard all groups having shorter paths from the anchor neurons 
-T=150;              % the max length of a group to be considered;
-                    % longer groups will be cut at t=T
+    cond = find(preIDs_loaded>=0);
+    preIDs_loaded = preIDs_loaded(cond)+1; %index start from 1 in matlab
+    postIDs_loaded = postIDs_loaded(cond)+1;
+    weights_loaded = weights_loaded(cond);
+    delays_loaded = delays_loaded(cond);
 
+    %uncomment the command below to test the algorithm for shuffled (randomized e->e) synapses
+    %e2e = find(s>=0 & post<Ne); s(e2e) = s(e2e(randperm(length(e2e))));
 
-% Make necessary initializations to speed-up simulations.
-
-% PROBLEM:
-% In the original model, number of postSynCells for each cell is fixed, 
-% but in our model, number of preSynCells for each cell is fixed
+    groups={};          % the list of all polychronous groups
+    anchor_width=3;     % the number of anchor neurons, from which a group starts
+    min_group_path=4%7;   % discard all groups having shorter paths from the anchor neurons 
+    T=150;              % the max length of a group to be considered;
+                        % longer groups will be cut at t=T
 
 
-%find max numPostSynCon:
-maxNumPostSynCon = 0;
-for i=1:N
-    postListLen = length(find(preIDs_loaded==i));
-    if maxNumPostSynCon<postListLen
-        maxNumPostSynCon = postListLen;
+    % Make necessary initializations to speed-up simulations.
+
+    %find max numPostSynCon:
+    maxNumPostSynCon = 0;
+    for i=1:N
+        postListLen = length(find(preIDs_loaded==i));
+        if maxNumPostSynCon<postListLen
+            maxNumPostSynCon = postListLen;
+        end
+    end;
+
+    post = zeros(N,maxNumPostSynCon);
+    delay = zeros(N,maxNumPostSynCon)+1;
+    s = zeros(N,maxNumPostSynCon);
+    
+
+    for i=1:N
+        cond = preIDs_loaded == i;
+
+        delays_tmp = delays_loaded(cond);
+        delay(i,1:length(delays_tmp))=delays_tmp;
+        % This matrix provides the delay values for each synapse.
+        %delay values of synapses that are connected from each presynaptic id i;
+        % ie delay{i} return a list of delays of synapses that is connected from i
+
+        post_tmp = postIDs_loaded(cond);
+        post(i,1:length(post_tmp))=post_tmp;
+        %post synaptic ids that are connected from each presynaptic id i;
+        %ie post{i} return a list of ids of synapses that is connected from i
+
+        s_tmp = weights_loaded(cond);
+        s(i,1:length(s_tmp))=s_tmp*sm;
     end
-end;
 
-post = zeros(N,maxNumPostSynCon);
-delay = zeros(N,maxNumPostSynCon)+1;
-s = zeros(N,maxNumPostSynCon);
+    %This cell element tells who (indexes) the pre-synaptic neurons are; 
+    % for i=1:N
+    %     ppre{i}=mod( pre{i}, N);
+    % end;
 
-for i=1:N
-    cond = preIDs_loaded == i;
+    %ppre and pre contain lists of presynaptic ids connected to post synaptic
+    %cell i
+    pre = cell(1,N);
+    ppre = cell(1,N);
+
+    for i=1:N
+        cond = postIDs_loaded==i;
+        ppre_tmp = preIDs_loaded(cond);
+        ppre{i}=ppre_tmp;
+
+        for j=1:length(ppre_tmp)
+            pre{i}(j,1)=ppre_tmp(j)+N*(j+1);
+        end
+    end;
+
+
+    % %This cell element tells what the presynaptic delay is; 
+    for i=1:N
+        dpre{i}=delay( pre{i} );
+    end;
+
+    %This cell element tells where to put PSPs in the matrix I (N by 1000)
+    for i=1:N
+        pp{i}=post(i,:)+N*(delay(i,:)-1);
+    end;
+
     
-    delays_tmp = delays_loaded(cond);
-    delay(i,1:length(delays_tmp))=delays_tmp;
-    % This matrix provides the delay values for each synapse.
-    %delay values of synapses that are connected from each presynaptic id i;
-    % ie delay{i} return a list of delays of synapses that is connected from i
+    %remove small values for the synaptic weights:
+    for l = 1:nLayers % set inhibitory synaptic weight negative
+        i_begin = ExcitDim*ExcitDim*l + (InhibDim*InhibDim)*(l-1) + 1;
+        i_end = (ExcitDim*ExcitDim+InhibDim*InhibDim)*l;
+        s(i_begin:i_end,:)=s(i_begin:i_end,:)*-1*E_IsynEfficRatio;
+    end
+    s(find(s>0 & s<=sm_threshold))=0;%remove small vals
     
-    post_tmp = postIDs_loaded(cond);
-    post(i,1:length(post_tmp))=post_tmp;
-    %post synaptic ids that are connected from each presynaptic id i;
-    %ie post{i} return a list of ids of synapses that is connected from i
-
-    s_tmp = weights_loaded(cond);
-    s(i,1:length(s_tmp))=s_tmp*10;
 end
 
 
-
-
-
-
-%This cell element tells who (indexes) the pre-synaptic neurons are; 
-% for i=1:N
-%     ppre{i}=mod( pre{i}, N);
-% end;
-
-%ppre and pre contain lists of presynaptic ids connected to post synaptic
-%cell i
-pre = cell(N);
-ppre = cell(N);
-
-for i=1:N
-    cond = postIDs_loaded==i;
-    ppre_tmp = preIDs_loaded(cond);
-    ppre{i}=ppre_tmp;
-    
-    for j=1:length(ppre_tmp)
-        pre{i}(j,1)=ppre_tmp(j)+N*(j+1);
-    end
-end;
-
-
-% %This cell element tells what the presynaptic delay is; 
-for i=1:N
-    dpre{i}=delay( pre{i} );
-end;
-
-%This cell element tells where to put PSPs in the matrix I (N by 1000)
-for i=1:N
-    pp{i}=post(i,:)+N*(delay(i,:)-1);
-end;
-
-
-sm_threshold = 0.95*sm;     % discard all weak exc->exc synapses
-%s(find(post<Ne & s>0 & s<=sm_threshold))=0;
-s(find(s>0 & s<=sm_threshold))=0;%todo inhibitory neurons should be excluded
-
-%for i=1:Ne
-for i=1:(32*32)
+for i=1:(ExcitDim*ExcitDim)
     i
     anchors=1:anchor_width;                     % initial choice of anchor neurons
     strong_pre=find(s(pre{i})>sm_threshold);    % candidates for anchor neurons
@@ -164,12 +159,12 @@ for i=1:(32*32)
                 useful(j) = length( find(gr.gr(:,2) == anch(j) ) );
             end;
        
-            
+            useful
             
             if all(useful>=2)
                 
                 groups{end+1}=gr;           % add found group to the list
-                disp([num2str(round(100*i/Ne)) '%: groups=' num2str(length(groups)) ', size=' num2str(size(gr.firings,1)) ', path_length=' num2str(gr.longest_path)])   % display of the current status
+                disp([num2str(round(100*i/N)) '%: groups=' num2str(length(groups)) ', size=' num2str(size(gr.firings,1)) ', path_length=' num2str(gr.longest_path)])   % display of the current status
             
                 plot(gr.firings(:,1),gr.firings(:,2),'o');
                 hold on;
