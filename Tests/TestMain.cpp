@@ -7,15 +7,12 @@
 //  Adapted by Nasir Ahmad and James Isbister
 //	Date: 23/3/2016
 
-// Developed upon Catch.hpp version 1.5.6
+// Developed upon Catch.hpp version 1.5.6 (Updated: 29/06/2016, Nasir Ahmad)
 
+
+// As recommended by Catch, this source file shall contain only these definitions
 #define CATCH_CONFIG_MAIN
-#include "catch.hpp"
-#include <cmath>
-#include <iostream>
-#include <fstream>
-
-using namespace std;
+#include "../catch.hpp"
 
 
 
