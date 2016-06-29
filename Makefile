@@ -64,14 +64,14 @@ ObjectFiles/%.o: Helpers/%.cpp
 
 
 # Test Files
-TEST_CPP_FILES := $(wildcard Tests/*.cpp)
-TEST_OBJ_FILES := $(addprefix Tests/obj/,$(notdir $(TEST_CPP_FILES:.cpp=.o)))
+TEST_CPP_FILES := $(wildcard Tests/*.cu)
+TEST_OBJ_FILES := $(addprefix Tests/obj/,$(notdir $(TEST_CPP_FILES:.cu=.o)))
 
-test: ${TEST_OBJ_FILES}
-	$(CC) ${TEST_OBJ_FILES} -o Tests/unittests
+test: ${TEST_OBJ_FILES} $(CU_OBJ_FILES) $(CPP_OBJ_FILES)
+	$(CC)  -lineinfo  -lpython2.7 ${TEST_OBJ_FILES} $(CU_OBJ_FILES) $(CPP_OBJ_FILES) -o Tests/unittests
 
 # Test Compilation
-Tests/obj/%.o: Tests/%.cpp
+Tests/obj/%.o: Tests/%.cu
 	$(CC) $(CFLAGS) -o $@ $<
 
 # Cleaning tests
