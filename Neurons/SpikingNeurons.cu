@@ -147,7 +147,7 @@ __global__ void check_for_neuron_spikes_kernel(float *d_membrane_potentials_v,
 			}
 
 		} else {
-						// High fidelity spike storage
+			// High fidelity spike storage
 			if (high_fidelity_spike_flag){
 				// Get start of the given neuron's bits
 				int neuron_id_spike_store_start = idx * bitarray_length;
