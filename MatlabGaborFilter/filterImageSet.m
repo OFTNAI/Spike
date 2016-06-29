@@ -1,4 +1,6 @@
 function [] = filterImageSet(inputDirectory, nrOfObjects, nrOfTransforms, imageSize, filterScale, paddingGrayScaleColor)
+% matlab -nodesktop -nosplash -r "filterImageSet('Inputs', 2, 2, 256, 0.5, 128)"
+
 
 %inputDirectory = Directory where we look for /Images folder with
 %input pictures, and where we save /Filtered folder with output and
