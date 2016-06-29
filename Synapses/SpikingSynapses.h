@@ -30,8 +30,10 @@ public:
 	bool* d_stdp;
 	
 	int* d_spikes_travelling_to_synapse;
-	int* d_spikes_travelling_to_synapse_buffer;
 	float* d_time_of_last_spike_to_reach_synapse;
+
+	// For spike array stuff
+	int maximum_axonal_delay_in_timesteps;
 	
 
 	// Synapse Functions
@@ -50,27 +52,30 @@ public:
 	virtual void increment_number_of_synapses(int increment);
 	virtual void shuffle_synapses();
 
-	virtual void check_for_synapse_spike_arrival(float current_time_in_seconds);
 	virtual void update_synaptic_conductances(float timestep, float current_time_in_seconds);
 	virtual void calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds, float timestep);
 
-	virtual void move_spikes_towards_synapses(float* d_last_spike_time_of_each_neuron, float* d_input_neurons_last_spike_time, float current_time_in_seconds);
+	virtual void interact_spikes_with_synapses(SpikingNeurons * neurons, SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep);
 
 };
-
-__global__ void check_for_synapse_spike_arrival_kernel(int* d_spikes_travelling_to_synapse,
-							float* d_time_of_last_spike_to_reach_synapse,
-							float current_time_in_seconds,
-							size_t total_number_of_synapses);
-
 
 __global__ void move_spikes_towards_synapses_kernel(int* d_presynaptic_neuron_indices,
 								int* d_delays,
 								int* d_spikes_travelling_to_synapse,
 								float* d_neurons_last_spike_time,
 								float* d_input_neurons_last_spike_time,
-								int* d_spikes_travelling_to_synapse_buffer,
 								float currtime,
+								size_t total_number_of_synapses,
+								float* d_time_of_last_spike_to_reach_synapse);
+
+__global__ void check_bitarray_for_presynaptic_neuron_spikes(int* d_presynaptic_neuron_indices,
+								int* d_delays,
+								unsigned char* d_bitarray_of_neuron_spikes,
+								unsigned char* d_input_neuruon_bitarray_of_neuron_spikes,
+								int bitarray_length,
+								int bitarray_maximum_axonal_delay_in_timesteps,
+								float current_time_in_seconds,
+								float timestep,
 								size_t total_number_of_synapses,
 								float* d_time_of_last_spike_to_reach_synapse);
 

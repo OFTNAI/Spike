@@ -46,11 +46,10 @@ int main (int argc, char *argv[]){
 	float L3_I2E_L_biological_conductance_scaling_constant_lambda = 0.004517876013;
 	float L3_E2E_L_biological_conductance_scaling_constant_lambda = 0.004139377891;
 
-	//VALUES COPIED FROM 2
-	float L3_2_L4_E2E_FF_biological_conductance_scaling_constant_lambda = 0.0002910494922;
-	float L4_E2I_L_biological_conductance_scaling_constant_lambda = 0.0001888349535;
-	float L4_I2E_L_biological_conductance_scaling_constant_lambda = 0.003112143311;
-	float L4_E2E_L_biological_conductance_scaling_constant_lambda = 0.0008515281938;
+	float L3_2_L4_E2E_FF_biological_conductance_scaling_constant_lambda = 0.0001259627431;
+	float L4_E2I_L_biological_conductance_scaling_constant_lambda = 5.491266961e-05;
+	float L4_I2E_L_biological_conductance_scaling_constant_lambda = 0.003885850461;
+	float L4_E2E_L_biological_conductance_scaling_constant_lambda = 0.000193538218;
 
 	// printf("argc = %d\n", argc);
 	if (argc > 1) {
@@ -103,6 +102,7 @@ int main (int argc, char *argv[]){
 	Simulator simulator;
 	float timestep = 0.0001;
 	simulator.SetTimestep(timestep);
+	simulator.high_fidelity_spike_storage = true;
 
 	LIFSpikingNeurons * lif_spiking_neurons = new LIFSpikingNeurons();
 	ImagePoissonInputSpikingNeurons* input_neurons = new ImagePoissonInputSpikingNeurons();

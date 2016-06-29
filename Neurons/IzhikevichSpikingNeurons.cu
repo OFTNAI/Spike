@@ -47,9 +47,9 @@ int IzhikevichSpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
 }
 
 
-void IzhikevichSpikingNeurons::allocate_device_pointers() {
+void IzhikevichSpikingNeurons::allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage) {
  	
- 	SpikingNeurons::allocate_device_pointers();
+ 	SpikingNeurons::allocate_device_pointers(maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
 
  	CudaSafeCall(cudaMalloc((void **)&d_param_a, sizeof(float)*total_number_of_neurons));
  	CudaSafeCall(cudaMalloc((void **)&d_param_b, sizeof(float)*total_number_of_neurons));

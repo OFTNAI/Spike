@@ -36,7 +36,7 @@ void EvansSTDP::Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons* n
 }
 
 // RUN AFTER NETWORK HAS BEEN STARTED
-void EvansSTDP::Initialize_STDP(){
+void EvansSTDP::allocate_device_pointers(){
 	// Create extra LIF arrays
 	recent_postsynaptic_activities_D = (float*)realloc(recent_postsynaptic_activities_D, (neurs->total_number_of_neurons*sizeof(float)));
 	recent_presynaptic_activities_C = (float*)realloc(recent_presynaptic_activities_C, syns->total_number_of_synapses*sizeof(float));

@@ -22,7 +22,7 @@ void STDP::Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons* neuron
 }
 
 // Initialize STDP (Must be run before network start)
-void STDP::Initialize_STDP(){
+void STDP::allocate_device_pointers(){
 }
 
 // Setting personal STDP parameters
