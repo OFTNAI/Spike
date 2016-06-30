@@ -11,10 +11,10 @@ environment,
 # 	seed = 123456
 
 method
-	max_iterations = 10000
+	max_iterations = 1
 	max_function_evaluations = 200000
 	coliny_ea
-		population_size = 10
+		population_size = 2
 		fitness_type merit_function
 		mutation_type offset_normal
 		mutation_rate 0.2 				# Probability of a mutation

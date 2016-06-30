@@ -25,3 +25,4 @@ DakotaTest/dakota.rst
 DakotaTest/dakota_tabular.dat
 DakotaTest/dakota_results.txt.txt
 *.png
+DakotaTest/OptimalParameters/

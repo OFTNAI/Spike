@@ -1,4 +1,19 @@
 source ~/.bash_profile
 
-dakota -i dakota_optimisation_1.in
-bash clean_directory
+
+for i in {0..3}; 
+	do 
+
+		> "optimisation_iteration_index.txt"
+		echo $i >> "optimisation_iteration_index.txt"
+
+		dakota -i dakota_optimisation_1.in
+
+		bash put_optimal_parameters_in_file_from_dakota_results.sh "optimal_parameters_from_optimisation_iteration_$i"
+
+		bash clean_directory
+		rm "dakota_results.txt.txt"
+		 
+done
+
+rm "optimisation_iteration_index.txt"

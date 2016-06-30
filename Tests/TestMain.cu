@@ -8,6 +8,7 @@
 //	Date: 23/3/2016
 
 // Developed upon Catch.hpp version 1.5.6 (Updated: 29/06/2016, Nasir Ahmad)
+// Latest version available at https://github.com/philsquared/Catch/blob/master/single_include/catch.hpp
 
 
 // As recommended by Catch, this source file shall contain only these definitions
