@@ -62,6 +62,18 @@
 	my $par3 = sprintf("%.11f", $table[3][0]);
 	my $par4 = sprintf("%.11f", $table[4][0]);
 
-	# system("python ../JI_Empty_Test.py $outdir $simulation_index $par1 $par2 $par3 $par4 $par5 $simulation_index");
-	system("../../Experiments/bin/ConductanceExperiment1 $outdir $simulation_index 1 $par1 $par2 $par3 $par4");
+
+	# Read optimisation iteration index from file
+	my $optimisation_iteration_index_filename = '../optimisation_iteration_index.txt';
+	open(my $optimisation_iteration_index_text, '<:encoding(UTF-8)', $optimisation_iteration_index_filename)
+  		or die "Could not open file '$optimisation_iteration_index_filename' $!";
+ 
+ 	my $optimisation_iteration_index;
+	while (my $row = <$optimisation_iteration_index_text>) {
+  		chomp $row;
+  		print "$row\n";
+  		$optimisation_iteration_index = $row;
+	}	
+
+	system("../../Experiments/bin/ConductanceExperiment1 $outdir $simulation_index $optimisation_iteration_index $par1 $par2 $par3 $par4");
 	
