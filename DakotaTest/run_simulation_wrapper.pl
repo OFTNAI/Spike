@@ -9,6 +9,8 @@
 	#
 	#  This is a perl script to be called by dakota optimizer
 
+	# Adapted by James Isbister for use with Spike
+
 	use strict;
     use warnings;
     use POSIX;
@@ -71,9 +73,13 @@
  	my $optimisation_iteration_index;
 	while (my $row = <$optimisation_iteration_index_text>) {
   		chomp $row;
-  		print "$row\n";
+  		# print "$row\n";
   		$optimisation_iteration_index = $row;
 	}	
 
-	system("../../Experiments/bin/ConductanceExperiment1 $outdir $simulation_index $optimisation_iteration_index $par1 $par2 $par3 $par4");
-	
+
+	# Use when optimising entire network layer by layer.
+	system("../../Experiments/bin/ConductanceExperiment1 $outdir $simulation_index $optimisation_iteration_index $par1 $par2 $par3 $par4 1");
+
+	# Use when optimising particular layer.
+	# system("../../Experiments/bin/ConductanceExperiment1 $outdir $simulation_index 0 $par1 $par2 $par3 $par4 0");

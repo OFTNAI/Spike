@@ -63,10 +63,13 @@ int main (int argc, char *argv[]){
 		float optimisation_variable_2 = std::stof(argv[5]);
 		float optimisation_variable_3 = std::stof(argv[6]);
 		float optimisation_variable_4 = std::stof(argv[7]);
+		bool take_previous_layer_parameters_from_files = std::stoi(argv[8]);
 		printf("optimisation_variable_1: %f\n", optimisation_variable_1);
 		printf("optimisation_variable_2: %f\n", optimisation_variable_2);
 		printf("optimisation_variable_3: %f\n", optimisation_variable_3);
 		printf("optimisation_variable_4: %f\n", optimisation_variable_4);
+		printf("take_previous_layer_parameters_from_files: ");
+		take_previous_layer_parameters_from_files ? printf("true\n") : printf("false\n");
 
 		if (optimisation_stage == 0) {
 			G2E_FF_biological_conductance_scaling_constant_lambda = optimisation_variable_1;

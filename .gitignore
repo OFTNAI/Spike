@@ -26,3 +26,4 @@ DakotaTest/dakota_tabular.dat
 DakotaTest/dakota_results.txt.txt
 *.png
 DakotaTest/OptimalParameters/
+DakotaTest/optimisation_iteration_index.txt
