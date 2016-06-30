@@ -73,7 +73,13 @@ void SpikingNeurons::reset_neurons() {
 
 	Neurons::reset_neurons();
 
-	CudaSafeCall(cudaMemset(d_last_spike_time_of_each_neuron, -1000.0f, total_number_of_neurons*sizeof(float)));
+	// Set last spike times to -1000 so that the times do not affect current simulation.
+	float* last_spike_times;
+	last_spike_times = (float*)malloc(sizeof(float)*total_number_of_neurons);
+	for (int i=0; i < total_number_of_neurons; i++){
+		last_spike_times[i] = -1000.0f;
+	}
+	CudaSafeCall(cudaMemcpy(d_last_spike_time_of_each_neuron, last_spike_times, total_number_of_neurons*sizeof(float), cudaMemcpyHostToDevice));
 
 	CudaSafeCall(cudaMemcpy(d_membrane_potentials_v, after_spike_reset_membrane_potentials_c, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_thresholds_for_action_potential_spikes, thresholds_for_action_potential_spikes, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
