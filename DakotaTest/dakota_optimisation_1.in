@@ -11,17 +11,17 @@ environment,
 # 	seed = 123456
 
 method
-	max_iterations = 1
+	max_iterations = 100000
 	max_function_evaluations = 200000
 	coliny_ea
-		population_size = 2
+		population_size = 100
 		fitness_type merit_function
 		mutation_type offset_normal
 		mutation_rate 0.2 				# Probability of a mutation
 		crossover_type blend
 		crossover_rate 0.2				# Probability of a crossover
 		replacement_type chc = 23
-		solution_target = 100000
+		solution_target = 100
 
 model
 	single
