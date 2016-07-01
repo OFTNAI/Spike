@@ -385,8 +385,15 @@ TEST_CASE("Izhikevich Spiking Neurons Class") {
 
 			// Compare results
 			for (int i=0; i < test_neurons.total_number_of_neurons; i++){
+<<<<<<< HEAD
 				REQUIRE(state_u[i] == u[i]);
 				REQUIRE(state_v[i] == v[i]);
+=======
+				//REQUIRE(state_u[i] == u[i]);
+				//REQUIRE(state_v[i] == v[i]);
+				printf("\n%f, %f", state_v[i], v[i]);
+				printf("\t%f, %f", state_u[i], u[i]);
+>>>>>>> 00bfde41d4632c3b08ea5442fff6ab0c94d65456
 			}
 		}	
 	}
