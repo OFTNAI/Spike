@@ -55,4 +55,22 @@ TEST_CASE("Synapses Class Tests") {
 			}
 		}
 	}
+
+	SECTION("AddGroup One to One"){
+		synapse_parameters_struct synapse_params;
+		synapse_params.connectivity_type = CONNECTIVITY_TYPE_ONE_TO_ONE;
+		test_synapses.AddGroup(
+			presynaptic_population,
+			presynaptic_population,
+			&test_neurons,
+			&test_neurons,
+			timestep,
+			&synapse_params);
+
+		// Check the created connections
+		for(int i=0; i < test_neurons.group_shapes[presynaptic_population][1]; i++){
+			REQUIRE(test_synapses.presynaptic_neuron_indices[i] == i);
+			REQUIRE(test_synapses.presynaptic_neuron_indices[i] == i);
+		}
+	}
 }
