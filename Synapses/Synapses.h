@@ -42,7 +42,7 @@ struct synapse_parameters_struct {
 	float gaussian_synapses_standard_deviation;
 	float weight_range_bottom;
 	float weight_range_top;
-	float random_connnectivity_probability;
+	float random_connectivity_probability;
 	int connectivity_type;
 
 };

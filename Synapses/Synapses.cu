@@ -206,7 +206,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 					// Probability of connection
 					float prob = ((float)rand() / (RAND_MAX));
 					// If it is within the probability range, connect!
-					if (prob < synapse_params->random_connnectivity_probability){
+					if (prob < synapse_params->random_connectivity_probability){
 						
 						this->increment_number_of_synapses(1);
 

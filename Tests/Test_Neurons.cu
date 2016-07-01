@@ -455,9 +455,9 @@ TEST_CASE("Poisson Input Spiking Neurons Class") {
 				count++;
 			}
 		}
-		// Checking that the rate for the combined population is within 1
+		// Checking that the rate for the combined population is within 5%
 		float actual_rate = count / (test_neurons.total_number_of_neurons * timestep);
-		REQUIRE(std::abs(actual_rate - params.rate) < 1.0f);
+		REQUIRE(std::abs(actual_rate - params.rate) < 5.0f);
 	}
 }
 

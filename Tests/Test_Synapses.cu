@@ -73,4 +73,20 @@ TEST_CASE("Synapses Class Tests") {
 			REQUIRE(test_synapses.presynaptic_neuron_indices[i] == i);
 		}
 	}
+
+	SECTION("AddGroup Random"){
+		synapse_parameters_struct synapse_params;
+		synapse_params.connectivity_type = CONNECTIVITY_TYPE_RANDOM;
+		synapse_params.random_connectivity_probability = 0.5f;
+		test_synapses.AddGroup(
+			presynaptic_population,
+			postsynaptic_population,
+			&test_neurons,
+			&test_neurons,
+			timestep,
+			&synapse_params);
+
+		// Check the created connections
+		REQUIRE(std::abs(synapse_params.random_connectivity_probability - ((float)test_synapses.total_number_of_synapses / (float)(dim2*dim2_2))) < 0.05);
+	}
 }
