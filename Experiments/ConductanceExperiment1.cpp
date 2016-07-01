@@ -30,147 +30,49 @@ int main (int argc, char *argv[]){
 
 	int optimisation_stage = 4;
 
-	   
-	float G2E_FF_biological_conductance_scaling_constant_lambda = 0.001360840969;
-	float L1_E2I_L_biological_conductance_scaling_constant_lambda = 0.0001937483874;
-	float L1_I2E_L_biological_conductance_scaling_constant_lambda = 0.001607171098;
-	float L1_E2E_L_biological_conductance_scaling_constant_lambda = 0.0005013331389;
-
-	float L1_2_L2_E2E_FF_biological_conductance_scaling_constant_lambda = 0.000320288275;
-	float L2_E2I_L_biological_conductance_scaling_constant_lambda = 0.0001493473745;
-	float L2_I2E_L_biological_conductance_scaling_constant_lambda = 0.00332457261;
-	float L2_E2E_L_biological_conductance_scaling_constant_lambda = 0.001317482035;
- 
-	float L2_2_L3_E2E_FF_biological_conductance_scaling_constant_lambda = 0.0001702463826;
-	float L3_E2I_L_biological_conductance_scaling_constant_lambda = 0.0001034771659;
-	float L3_I2E_L_biological_conductance_scaling_constant_lambda = 0.004517876013;
-	float L3_E2E_L_biological_conductance_scaling_constant_lambda = 0.004139377891;
-
-	float L3_2_L4_E2E_FF_biological_conductance_scaling_constant_lambda = 0.0001259627431;
-	float L4_E2I_L_biological_conductance_scaling_constant_lambda = 5.491266961e-05;
-	float L4_I2E_L_biological_conductance_scaling_constant_lambda = 0.003885850461;
-	float L4_E2E_L_biological_conductance_scaling_constant_lambda = 0.000193538218;
+	int number_of_optimisation_stages = 4;
+	int number_of_new_parameters_per_optimisation_stage = 4;
+	float optimisation_parameters[number_of_optimisation_stages][number_of_new_parameters_per_optimisation_stage];
+	optimisation_parameters[0][0] = 0.001360840969; //FF
+	optimisation_parameters[0][1] = 0.0001937483874; //E2I
+	optimisation_parameters[0][2] = 0.001607171098; //I2E
+	optimisation_parameters[0][3] = 0.0005013331389; //E2E
+	optimisation_parameters[1][0] = 0.000320288275;
+	optimisation_parameters[1][1] = 0.0001493473745;
+	optimisation_parameters[1][2] = 0.00332457261;
+	optimisation_parameters[1][3] = 0.001317482035;
+	optimisation_parameters[2][0] = 0.0001702463826;
+	optimisation_parameters[2][1] = 0.0001034771659;
+	optimisation_parameters[2][2] = 0.004517876013;
+	optimisation_parameters[2][3] = 0.004139377891;
+	optimisation_parameters[3][0] = 0.0001259627431;
+	optimisation_parameters[3][1] = 5.491266961e-05;
+	optimisation_parameters[3][2] = 0.003885850461;
+	optimisation_parameters[3][3] = 0.000193538218;
 
 	// printf("argc = %d\n", argc);
 	if (argc > 1) {
 		command_line_arguments_passed = true;
 
 		optimisation_stage = std::stoi(argv[3]);
-		printf("optimisation_stage: %d\n", optimisation_stage);
-
-		float optimisation_variable_1 = std::stof(argv[4]);
-		float optimisation_variable_2 = std::stof(argv[5]);
-		float optimisation_variable_3 = std::stof(argv[6]);
-		float optimisation_variable_4 = std::stof(argv[7]);
+		optimisation_parameters[optimisation_stage][0] = std::stof(argv[4]);
+		optimisation_parameters[optimisation_stage][1] = std::stof(argv[5]);
+		optimisation_parameters[optimisation_stage][2]= std::stof(argv[6]);
+		optimisation_parameters[optimisation_stage][3] = std::stof(argv[7]);
 		bool take_previous_layer_parameters_from_files = std::stoi(argv[8]);
-		printf("optimisation_variable_1: %f\n", optimisation_variable_1);
-		printf("optimisation_variable_2: %f\n", optimisation_variable_2);
-		printf("optimisation_variable_3: %f\n", optimisation_variable_3);
-		printf("optimisation_variable_4: %f\n", optimisation_variable_4);
-		printf("take_previous_layer_parameters_from_files: ");
-		take_previous_layer_parameters_from_files ? printf("true\n") : printf("false\n");
-
-		if (optimisation_stage == 0) {
-			G2E_FF_biological_conductance_scaling_constant_lambda = optimisation_variable_1;
-			L1_E2I_L_biological_conductance_scaling_constant_lambda = optimisation_variable_2;
-			L1_I2E_L_biological_conductance_scaling_constant_lambda = optimisation_variable_3;
-			L1_E2E_L_biological_conductance_scaling_constant_lambda = optimisation_variable_4;
-		}
-
-		if (optimisation_stage == 1) {
-			L1_2_L2_E2E_FF_biological_conductance_scaling_constant_lambda = optimisation_variable_1;
-			L2_E2I_L_biological_conductance_scaling_constant_lambda = optimisation_variable_2;
-			L2_I2E_L_biological_conductance_scaling_constant_lambda = optimisation_variable_3;
-			L2_E2E_L_biological_conductance_scaling_constant_lambda = optimisation_variable_4;
-		}
-
-		if (optimisation_stage == 2) {
-			L2_2_L3_E2E_FF_biological_conductance_scaling_constant_lambda = optimisation_variable_1;
-			L3_E2I_L_biological_conductance_scaling_constant_lambda = optimisation_variable_2;
-			L3_I2E_L_biological_conductance_scaling_constant_lambda = optimisation_variable_3;
-			L3_E2E_L_biological_conductance_scaling_constant_lambda = optimisation_variable_4;
-		}
-
-		if (optimisation_stage == 3) {
-			L3_2_L4_E2E_FF_biological_conductance_scaling_constant_lambda = optimisation_variable_1;
-			L4_E2I_L_biological_conductance_scaling_constant_lambda = optimisation_variable_2;
-			L4_I2E_L_biological_conductance_scaling_constant_lambda = optimisation_variable_3;
-			L4_E2E_L_biological_conductance_scaling_constant_lambda = optimisation_variable_4;
-		}
-
 
 		if (take_previous_layer_parameters_from_files) {
 
 			std::string parameter_from_file_as_string;
-
-			if (optimisation_stage > 0) {
-				std::ifstream optimal_parameters_from_optimisation_iteration_0("../OptimalParameters/optimal_parameters_from_optimisation_iteration_0.txt");
-
-				std::getline(optimal_parameters_from_optimisation_iteration_0, parameter_from_file_as_string);
-				G2E_FF_biological_conductance_scaling_constant_lambda = std::atof(parameter_from_file_as_string.c_str());
-				
-				std::getline(optimal_parameters_from_optimisation_iteration_0, parameter_from_file_as_string);
-				L1_E2I_L_biological_conductance_scaling_constant_lambda = std::atof(parameter_from_file_as_string.c_str());
-
-				std::getline(optimal_parameters_from_optimisation_iteration_0, parameter_from_file_as_string);
-				L1_I2E_L_biological_conductance_scaling_constant_lambda = std::atof(parameter_from_file_as_string.c_str());
-
-				std::getline(optimal_parameters_from_optimisation_iteration_0, parameter_from_file_as_string);
-				L1_E2E_L_biological_conductance_scaling_constant_lambda = std::atof(parameter_from_file_as_string.c_str());
-
-				// printf("%s", parameter_from_file_as_string.c_str());				
-				// printf("G2E_FF_biological_conductance_scaling_constant_lambda: %f\n", G2E_FF_biological_conductance_scaling_constant_lambda);				
-			}
-
-			if (optimisation_stage > 1) {
-				std::ifstream optimal_parameters_from_optimisation_iteration_1("../OptimalParameters/optimal_parameters_from_optimisation_iteration_1.txt");
-
-				std::getline(optimal_parameters_from_optimisation_iteration_1, parameter_from_file_as_string);
-				L1_2_L2_E2E_FF_biological_conductance_scaling_constant_lambda = std::atof(parameter_from_file_as_string.c_str());
-
-				std::getline(optimal_parameters_from_optimisation_iteration_1, parameter_from_file_as_string);
-				L2_E2I_L_biological_conductance_scaling_constant_lambda = std::atof(parameter_from_file_as_string.c_str());
-
-				std::getline(optimal_parameters_from_optimisation_iteration_1, parameter_from_file_as_string);
-				L2_I2E_L_biological_conductance_scaling_constant_lambda = std::atof(parameter_from_file_as_string.c_str());
-
-				std::getline(optimal_parameters_from_optimisation_iteration_1, parameter_from_file_as_string);
-				L2_E2E_L_biological_conductance_scaling_constant_lambda = std::atof(parameter_from_file_as_string.c_str());
-			}
-
-			if (optimisation_stage > 2) {
-				std::ifstream optimal_parameters_from_optimisation_iteration_2("../OptimalParameters/optimal_parameters_from_optimisation_iteration_2.txt");
-
-				std::getline(optimal_parameters_from_optimisation_iteration_2, parameter_from_file_as_string);
-				L2_2_L3_E2E_FF_biological_conductance_scaling_constant_lambda = std::atof(parameter_from_file_as_string.c_str());
-
-				std::getline(optimal_parameters_from_optimisation_iteration_2, parameter_from_file_as_string);
-				L3_E2I_L_biological_conductance_scaling_constant_lambda = std::atof(parameter_from_file_as_string.c_str());
-
-				std::getline(optimal_parameters_from_optimisation_iteration_2, parameter_from_file_as_string);
-				L3_I2E_L_biological_conductance_scaling_constant_lambda = std::atof(parameter_from_file_as_string.c_str());
-
-				std::getline(optimal_parameters_from_optimisation_iteration_2, parameter_from_file_as_string);
-				L3_E2E_L_biological_conductance_scaling_constant_lambda = std::atof(parameter_from_file_as_string.c_str());
-			}
-
-			if (optimisation_stage > 3) {
-				std::ifstream optimal_parameters_from_optimisation_iteration_3("../OptimalParameters/optimal_parameters_from_optimisation_iteration_3.txt");
-
-				std::getline(optimal_parameters_from_optimisation_iteration_3, parameter_from_file_as_string);
-				L3_2_L4_E2E_FF_biological_conductance_scaling_constant_lambda = std::atof(parameter_from_file_as_string.c_str());
-
-				std::getline(optimal_parameters_from_optimisation_iteration_3, parameter_from_file_as_string);
-				L4_E2I_L_biological_conductance_scaling_constant_lambda = std::atof(parameter_from_file_as_string.c_str());
-
-				std::getline(optimal_parameters_from_optimisation_iteration_3, parameter_from_file_as_string);
-				L4_I2E_L_biological_conductance_scaling_constant_lambda = std::atof(parameter_from_file_as_string.c_str());
-
-				std::getline(optimal_parameters_from_optimisation_iteration_3, parameter_from_file_as_string);
-				L4_E2E_L_biological_conductance_scaling_constant_lambda = std::atof(parameter_from_file_as_string.c_str());
+			for (int i = 0; i < optimisation_stage; i++) {
+				std::string file_name("../OptimalParameters/optimal_parameters_from_optimisation_iteration" + std::to_string(i) + ".txt");
+				std::ifstream optimal_parameters_from_optimisation_iteration_0(file_name.c_str());
+				for (int j = 0; j < number_of_new_parameters_per_optimisation_stage; j++) {
+					std::getline(optimal_parameters_from_optimisation_iteration_0, parameter_from_file_as_string);
+					optimisation_parameters[i][j] = std::atof(parameter_from_file_as_string.c_str());
+				}
 			}
 		}
-
 	}
 
 	
@@ -273,7 +175,7 @@ int main (int argc, char *argv[]){
 	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[1] = timestep;
 	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->max_number_of_connections_per_pair = 5;			
 	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_per_postsynaptic_neuron = 50;
-	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = G2E_FF_biological_conductance_scaling_constant_lambda;
+	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = optimisation_parameters[0][0];
 	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->connectivity_type = CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE;
 	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->stdp_on = true;
 	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_standard_deviation = 10.0;
@@ -285,7 +187,7 @@ int main (int argc, char *argv[]){
 	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[1] = 3.0f*pow(10, -3);
 	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->max_number_of_connections_per_pair = 5;			
 	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_per_postsynaptic_neuron = 50;
-	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = L1_2_L2_E2E_FF_biological_conductance_scaling_constant_lambda;
+	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = optimisation_parameters[1][0];
 	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->connectivity_type = CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE;
 	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->stdp_on = true;
 	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_standard_deviation = 10.0;
@@ -297,7 +199,7 @@ int main (int argc, char *argv[]){
 	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[1] = 3.0f*pow(10, -3);
 	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->max_number_of_connections_per_pair = 5;
 	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_per_postsynaptic_neuron = 30;
-	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = L1_E2I_L_biological_conductance_scaling_constant_lambda;
+	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = optimisation_parameters[0][1];
 	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->connectivity_type = CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE;
 	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->stdp_on = false;
 	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_standard_deviation = 10.0;
@@ -309,7 +211,7 @@ int main (int argc, char *argv[]){
 	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[1] = 3.0f*pow(10, -3);
 	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->max_number_of_connections_per_pair = 5;
 	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_per_postsynaptic_neuron = 30;
-	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = L1_I2E_L_biological_conductance_scaling_constant_lambda;
+	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = optimisation_parameters[0][2];
 	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->connectivity_type = CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE;
 	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->stdp_on = false;
 	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_standard_deviation = 10.0;
@@ -321,7 +223,7 @@ int main (int argc, char *argv[]){
 	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[1] = 3.0f*pow(10, -3);
 	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->max_number_of_connections_per_pair = 5;
 	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_per_postsynaptic_neuron = 20;
-	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = L1_E2E_L_biological_conductance_scaling_constant_lambda;
+	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = optimisation_parameters[0][3];
 	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->connectivity_type = CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE;
 	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->stdp_on = false;
 	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_standard_deviation = 10.0;
@@ -338,10 +240,10 @@ int main (int argc, char *argv[]){
 
 	if (optimisation_stage >= 1) {
 
-		E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = L1_2_L2_E2E_FF_biological_conductance_scaling_constant_lambda;
-		E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = L2_E2I_L_biological_conductance_scaling_constant_lambda;
-		I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = L2_I2E_L_biological_conductance_scaling_constant_lambda;
-		E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = L2_E2E_L_biological_conductance_scaling_constant_lambda;
+		E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = optimisation_parameters[1][0];
+		E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = optimisation_parameters[1][1];
+		I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = optimisation_parameters[1][2];
+		E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = optimisation_parameters[1][3];
 
 		simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_1, EXCITATORY_NEURONS_LAYER_2, E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 		simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_2, INHIBITORY_NEURONS_LAYER_2, E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
@@ -352,10 +254,10 @@ int main (int argc, char *argv[]){
 
 	if (optimisation_stage >= 2) {
 
-		E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = L2_2_L3_E2E_FF_biological_conductance_scaling_constant_lambda;
-		E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = L3_E2I_L_biological_conductance_scaling_constant_lambda;
-		I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = L3_I2E_L_biological_conductance_scaling_constant_lambda;
-		E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = L3_E2E_L_biological_conductance_scaling_constant_lambda;
+		E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = optimisation_parameters[2][0];
+		E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = optimisation_parameters[2][1];
+		I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = optimisation_parameters[2][2];
+		E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = optimisation_parameters[2][3];
 
 		simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_2, EXCITATORY_NEURONS_LAYER_3, E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 		simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_3, INHIBITORY_NEURONS_LAYER_3, E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
@@ -365,10 +267,10 @@ int main (int argc, char *argv[]){
 
 	if (optimisation_stage >= 3) {
 
-		E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = L3_2_L4_E2E_FF_biological_conductance_scaling_constant_lambda;
-		E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = L4_E2I_L_biological_conductance_scaling_constant_lambda;
-		I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = L4_I2E_L_biological_conductance_scaling_constant_lambda;
-		E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = L4_E2E_L_biological_conductance_scaling_constant_lambda;
+		E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = optimisation_parameters[3][0];
+		E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = optimisation_parameters[3][1];
+		I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = optimisation_parameters[3][2];
+		E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = optimisation_parameters[3][3];
 
 		simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_3, EXCITATORY_NEURONS_LAYER_4, E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 		simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_4, INHIBITORY_NEURONS_LAYER_4, E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
