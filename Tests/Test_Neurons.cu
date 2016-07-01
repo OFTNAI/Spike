@@ -212,6 +212,37 @@ TEST_CASE("Generator Input Spiking Neurons Class") {
 			}
 		}
 	}
+
+	SECTION("High Fidelity check_for_neuron_spikes Kernel Check") {
+		int max_delay = 10;
+		test_neurons.allocate_device_pointers(max_delay, true);
+
+		for (int s=0; s < num_spikes; s++){		
+			float current_time = spike_times[s];
+			float timestep = 0.1f;
+			test_neurons.reset_neurons();
+			test_neurons.check_for_neuron_spikes(current_time, timestep);
+
+			// Copy back the correct array
+			char* neuron_spike_array;
+			neuron_spike_array = (char*)malloc(sizeof(char)*test_neurons.total_number_of_neurons*((max_delay / 8)+ 1));
+			CudaSafeCall(cudaMemcpy(neuron_spike_array, test_neurons.d_bitarray_of_neuron_spikes, sizeof(char)*test_neurons.total_number_of_neurons*((max_delay / 8)+ 1), cudaMemcpyDeviceToHost));
+
+			for (int n=0; n < test_neurons.total_number_of_neurons; n++){
+				for (int i=0; i < ((max_delay / 8)); i++){
+					for (int j=0; j < 8; j++){
+						int check = (neuron_spike_array[n*((max_delay / 8)+ 1) + i] >> j) & 1;
+						if ((n == neuron_ids[s]) && ((j + i*8) == (int)(spike_times[s]*10.0f))){
+							REQUIRE(check == 1);
+						}
+						else {
+							REQUIRE(check == 0);
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 
