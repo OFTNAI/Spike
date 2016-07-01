@@ -283,6 +283,48 @@ TEST_CASE("Izhikevich Spiking Neurons Class") {
 			REQUIRE(test_neurons.param_d[i] == 6.0f);
 		}
 	}
+
+	SECTION("State u update on spike"){
+		test_neurons.allocate_device_pointers(0, false);
+		test_neurons.reset_neurons();
+
+		// Testing before any spikes
+		// Copying the data to Host
+		float* state_u;
+		state_u = (float*)malloc(sizeof(float)*test_neurons.total_number_of_neurons);
+		CudaSafeCall(cudaMemcpy(state_u, test_neurons.d_states_u, sizeof(float)*test_neurons.total_number_of_neurons, cudaMemcpyDeviceToHost));
+		for (int i=0; i < test_neurons.total_number_of_neurons; i++){
+			REQUIRE(state_u[i] == 0.0f);
+		}
+
+		// Setting some neurons as fired
+		float current_time = 0.1f;
+		int neurons[5] = {0, 3, 5, 6, 9};
+		float* last_spike_times = (float*)malloc(sizeof(float)*test_neurons.total_number_of_neurons);
+		for (int i=0; i < test_neurons.total_number_of_neurons; i++){
+			last_spike_times[i] = 0.0f;
+		}
+		for (int i=0; i < 5; i++){
+			last_spike_times[neurons[i]] = current_time;
+		}
+		// Copy to device
+		CudaSafeCall(cudaMemcpy(test_neurons.d_last_spike_time_of_each_neuron, last_spike_times, sizeof(float)*test_neurons.total_number_of_neurons, cudaMemcpyHostToDevice));
+		test_neurons.check_for_neuron_spikes(current_time, current_time);
+	
+		// Check the resulting state values
+		CudaSafeCall(cudaMemcpy(state_u, test_neurons.d_states_u, sizeof(float)*test_neurons.total_number_of_neurons, cudaMemcpyDeviceToHost));
+		for (int i=0; i < test_neurons.total_number_of_neurons; i++){
+			if ((i == neurons[0]) || (i == neurons[1]) || (i == neurons[2]) || (i == neurons[3]) || (i == neurons[4])){
+				REQUIRE(state_u[i] == params.paramd);
+			} else {
+				REQUIRE(state_u[i] == 0.0f);
+			}
+		}
+	}
+
+	SECTION("Membrane Potential Update"){
+	}
+
 }
 
 
