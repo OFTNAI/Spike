@@ -155,7 +155,7 @@ TEST_CASE("Generator Input Spiking Neurons Class") {
 	// Create an instance of the neuron class
 	GeneratorInputSpikingNeurons test_neurons;
 
-	spiking_neuron_parameters_struct params;
+	input_spiking_neuron_parameters_struct params;
 	int dim1 = 1;
 	int dim2 = 10;
 	float resting_pot = -50.0f;
@@ -244,6 +244,50 @@ TEST_CASE("Generator Input Spiking Neurons Class") {
 		}
 	}
 }
+
+
+
+/**
+		IZHIKEVICHSPIKINGNEURONS.CU Test Set
+**/
+#include "../Neurons/IzhikevichSpikingNeurons.h"
+TEST_CASE("Izhikevich Spiking Neurons Class") {
+
+	// Create an instance of the neuron class
+	IzhikevichSpikingNeurons test_neurons;
+
+	izhikevich_spiking_neuron_parameters_struct params;
+	int dim1 = 1;
+	int dim2 = 10;
+	float resting_pot = -55.0f;
+	float threshold = 50.0f;
+
+	params.group_shape[0] = dim1;
+	params.group_shape[1] = dim2;
+	params.resting_potential_v0 = resting_pot;
+	params.threshold_for_action_potential_spike = threshold;
+
+	// Testing values
+	params.parama = 0.02f;
+	params.paramb = -0.01;
+	params.paramd = 6.0f;
+
+	// AddGroup
+	int ID = test_neurons.AddGroup(&params);
+
+	SECTION("AddGroup Testing"){
+		REQUIRE(ID == 0);
+		for (int i=0; i < test_neurons.total_number_of_neurons; i++){
+			REQUIRE(test_neurons.param_a[i] == 0.02f);
+			REQUIRE(test_neurons.param_b[i] == -0.01f);
+			REQUIRE(test_neurons.param_d[i] == 6.0f);
+		}
+	}
+}
+
+
+
+
 
 
 
