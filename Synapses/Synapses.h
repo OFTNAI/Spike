@@ -27,7 +27,6 @@ enum CONNECTIVITY_TYPE
     CONNECTIVITY_TYPE_ONE_TO_ONE,
     CONNECTIVITY_TYPE_RANDOM,
     CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE,
-    CONNECTIVITY_TYPE_IRINA_GAUSSIAN,
     CONNECTIVITY_TYPE_SINGLE
 };
 
@@ -37,10 +36,13 @@ struct synapse_parameters_struct {
 	synapse_parameters_struct(): max_number_of_connections_per_pair(1), gaussian_synapses_per_postsynaptic_neuron(10), gaussian_synapses_standard_deviation(10.0), weight_range_bottom(0.0), weight_range_top(1.0), connectivity_type(CONNECTIVITY_TYPE_ALL_TO_ALL)  {}
 
 	int max_number_of_connections_per_pair;
+	int pairwise_connect_presynaptic;
+	int pairwise_connect_postsynaptic;
 	int gaussian_synapses_per_postsynaptic_neuron;
 	float gaussian_synapses_standard_deviation;
 	float weight_range_bottom;
 	float weight_range_top;
+	float random_connnectivity_probability;
 	int connectivity_type;
 
 };
@@ -88,9 +90,7 @@ public:
 						Neurons * neurons,
 						Neurons * input_neurons,
 						float timestep,
-						synapse_parameters_struct * synapse_params,
-						float parameter,
-						float parameter_two);
+						synapse_parameters_struct * synapse_params);
 
 	virtual void allocate_device_pointers();
 	virtual void set_threads_per_block_and_blocks_per_grid(int threads);

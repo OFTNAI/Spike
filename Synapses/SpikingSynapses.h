@@ -42,9 +42,7 @@ public:
 						Neurons * neurons,
 						Neurons * input_neurons,
 						float timestep,
-						synapse_parameters_struct * synapse_params,
-						float parameter,
-						float parameter_two);
+						synapse_parameters_struct * synapse_params);
 
 	virtual void allocate_device_pointers();
 	virtual void reset_synapse_spikes();

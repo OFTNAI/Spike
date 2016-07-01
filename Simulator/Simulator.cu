@@ -116,9 +116,7 @@ int Simulator::AddInputNeuronGroup(neuron_parameters_struct * group_params) {
 
 void Simulator::AddSynapseGroup(int presynaptic_group_id, 
 							int postsynaptic_group_id, 
-							synapse_parameters_struct * synapse_params,
-							float parameter,
-							float parameter_two) {
+							synapse_parameters_struct * synapse_params) {
 
 	if (synapses == NULL) print_message_and_exit("Please call SetSynapseType before adding synapses.");
 
@@ -127,23 +125,17 @@ void Simulator::AddSynapseGroup(int presynaptic_group_id,
 							neurons,
 							input_neurons,
 							timestep,
-							synapse_params,
-							parameter,
-							parameter_two);
+							synapse_params);
 }
 
 void Simulator::AddSynapseGroupsForNeuronGroupAndEachInputGroup(int postsynaptic_group_id, 
-							synapse_parameters_struct * synapse_params,
-							float parameter,
-							float parameter_two) {
+							synapse_parameters_struct * synapse_params) {
 
 	for (int i = 0; i < input_neurons->total_number_of_groups; i++) {
 
 		AddSynapseGroup(CORRECTED_PRESYNAPTIC_ID(i, true), 
 							postsynaptic_group_id,
-							synapse_params,
-							parameter,
-							parameter_two);
+							synapse_params);
 
 	}
 

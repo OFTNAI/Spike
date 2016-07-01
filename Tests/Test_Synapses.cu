@@ -45,9 +45,7 @@ TEST_CASE("Synapses Class Tests") {
 			&test_neurons,
 			&test_neurons,
 			timestep,
-			&synapse_params,
-			0.0f,
-			0.0f);
+			&synapse_params);
 
 		// Check the created connections
 		for(int i=0; i < test_neurons.group_shapes[presynaptic_population][1]; i++){

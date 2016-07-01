@@ -46,9 +46,7 @@ void SpikingSynapses::AddGroup(int presynaptic_group_id,
 						Neurons * neurons,
 						Neurons * input_neurons,
 						float timestep,
-						synapse_parameters_struct * synapse_params,
-						float parameter,
-						float parameter_two) {
+						synapse_parameters_struct * synapse_params) {
 	
 	
 	Synapses::AddGroup(presynaptic_group_id, 
@@ -56,9 +54,7 @@ void SpikingSynapses::AddGroup(int presynaptic_group_id,
 							neurons,
 							input_neurons,
 							timestep,
-							synapse_params,
-							parameter,
-							parameter_two);
+							synapse_params);
 
 	spiking_synapse_parameters_struct * spiking_synapse_group_params = (spiking_synapse_parameters_struct*)synapse_params;
 

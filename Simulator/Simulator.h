@@ -69,14 +69,10 @@ public:
 	
 	void AddSynapseGroup(int presynaptic_group_id, 
 							int postsynaptic_group_id, 
-							synapse_parameters_struct * synapse_params,
-							float parameter = 0.0f,
-							float parameter_two = 0.0f);
+							synapse_parameters_struct * synapse_params);
 
 	void AddSynapseGroupsForNeuronGroupAndEachInputGroup(int postsynaptic_group_id, 
-							synapse_parameters_struct * synapse_params,
-							float parameter = 0.0f,
-							float parameter_two = 0.0f);
+							synapse_parameters_struct * synapse_params);
 
 
 	void CreateGenerator(int popID, int stimulusid, int spikenumber, int* ids, float* spiketimes);
