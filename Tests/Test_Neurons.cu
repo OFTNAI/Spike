@@ -71,7 +71,6 @@ TEST_CASE("Spiking Neurons Class") {
 	SECTION("Low Fidelity check_for_neuron_spikes Kernel Check") {
 		// Setting up the Spiking Neurons
 		// No high fidelity
-		test_neurons.set_threads_per_block_and_blocks_per_grid(512);
 		test_neurons.allocate_device_pointers(0, false);
 		// Selecting some indices to set to fire
 		int indices[3];
@@ -104,7 +103,6 @@ TEST_CASE("Spiking Neurons Class") {
 		// Setting up the Spiking Neurons
 		// No high fidelity
 		int max_delay = 10;
-		test_neurons.set_threads_per_block_and_blocks_per_grid(512);
 		test_neurons.allocate_device_pointers(max_delay, true);
 		// Selecting some indices to set to fire
 		int indices[3];
@@ -192,9 +190,8 @@ TEST_CASE("Generator Input Spiking Neurons Class") {
 	}
 
 	SECTION("Low Fidelity check_for_neuron_spikes Kernel Check") {
+		test_neurons.allocate_device_pointers(0, false);
 		InputSpikingNeurons* cast_test_neurons = &test_neurons;
-		cast_test_neurons->set_threads_per_block_and_blocks_per_grid(512);
-		cast_test_neurons->allocate_device_pointers(0, false);
 
 		for (int s=0; s < num_spikes; s++){		
 			float current_time = spike_times[s];
@@ -219,9 +216,8 @@ TEST_CASE("Generator Input Spiking Neurons Class") {
 
 	SECTION("High Fidelity check_for_neuron_spikes Kernel Check") {
 		int max_delay = 10;
+		test_neurons.allocate_device_pointers(max_delay, true);
 		InputSpikingNeurons* cast_test_neurons = &test_neurons;
-		cast_test_neurons->set_threads_per_block_and_blocks_per_grid(512);
-		cast_test_neurons->allocate_device_pointers(max_delay, true);
 
 		for (int s=0; s < num_spikes; s++){		
 			float current_time = spike_times[s];
@@ -292,7 +288,6 @@ TEST_CASE("Izhikevich Spiking Neurons Class") {
 
 	SECTION("State Updates"){
 		SpikingNeurons* cast_test_neurons = &test_neurons;
-		cast_test_neurons->set_threads_per_block_and_blocks_per_grid(512);
 		cast_test_neurons->allocate_device_pointers(0, false);
 		cast_test_neurons->reset_neurons();
 
@@ -316,7 +311,6 @@ TEST_CASE("Izhikevich Spiking Neurons Class") {
 
 		// Setting some neurons as fired
 		float current_time = 0.1f;
-		float timestep = 0.1f;
 		int neurons[5] = {0, 3, 5, 6, 9};
 		float* last_spike_times = (float*)malloc(sizeof(float)*test_neurons.total_number_of_neurons);
 		float* current_injection = (float*)malloc(sizeof(float)*test_neurons.total_number_of_neurons);
@@ -333,11 +327,12 @@ TEST_CASE("Izhikevich Spiking Neurons Class") {
 		CudaSafeCall(cudaMemcpy(test_neurons.d_current_injections, current_injection, sizeof(float)*test_neurons.total_number_of_neurons, cudaMemcpyHostToDevice));
 		
 		// Running update of state u
-		cast_test_neurons->check_for_neuron_spikes(current_time, timestep);
+		cast_test_neurons->check_for_neuron_spikes(current_time, current_time);
 	
 		SECTION("Checking State U spike reset"){
 			float* state_u;
 			state_u = (float*)malloc(sizeof(float)*test_neurons.total_number_of_neurons);
+			CudaSafeCall(cudaMemcpy(state_u, test_neurons.d_states_u, sizeof(float)*test_neurons.total_number_of_neurons, cudaMemcpyDeviceToHost));
 			// Check the resulting state values
 			CudaSafeCall(cudaMemcpy(state_u, test_neurons.d_states_u, sizeof(float)*test_neurons.total_number_of_neurons, cudaMemcpyDeviceToHost));
 			for (int i=0; i < test_neurons.total_number_of_neurons; i++){
@@ -349,49 +344,10 @@ TEST_CASE("Izhikevich Spiking Neurons Class") {
 			}
 		}
 
-		cast_test_neurons->update_membrane_potentials(timestep);
-
 		SECTION("Membrane Potential Update"){
-			// Computing what I expect the values to be:
-			float* u = (float*)malloc(sizeof(float)*test_neurons.total_number_of_neurons);
-			float* v = (float*)malloc(sizeof(float)*test_neurons.total_number_of_neurons);
-			float* v_update = (float*)malloc(sizeof(float)*test_neurons.total_number_of_neurons);
-			for (int i=0; i < test_neurons.total_number_of_neurons; i++){
-				u[i] = 0.0f;
-				v[i] = resting_pot;
-				v_update[i] = 0.0f;
-			}
-			// Updating u as before
-			for (int i=0; i < test_neurons.total_number_of_neurons; i++){
-				if ((i == neurons[0]) || (i == neurons[1]) || (i == neurons[2]) || (i == neurons[3]) || (i == neurons[4])){
-					u[i] += params.paramd;
-				} else {
-					u[i] = 0.0f;
-				}
-			}
-			// Computing v_update, v and u:
-			for (int i=0; i < test_neurons.total_number_of_neurons; i++){
-				v_update[i] = 0.04f*v[i]*v[i] + 5.0f*v[i] + 140.0f - u[i] + current_injection[i];
-				v[i] += 1000.0f*timestep*v_update[i];
-				u[i] += 1000.0f*timestep*(params.parama*(params.paramb*v[i] - u[i]));
-			}
-
-			// Copying the data from device
-			float* state_u = (float*)malloc(sizeof(float)*test_neurons.total_number_of_neurons);
-			CudaSafeCall(cudaMemcpy(state_u, test_neurons.d_states_u, sizeof(float)*test_neurons.total_number_of_neurons, cudaMemcpyDeviceToHost));
-
-			float* state_v = (float*)malloc(sizeof(float)*test_neurons.total_number_of_neurons);
-			CudaSafeCall(cudaMemcpy(state_v, test_neurons.d_membrane_potentials_v, sizeof(float)*test_neurons.total_number_of_neurons, cudaMemcpyDeviceToHost));
-
-			// Compare results
-			for (int i=0; i < test_neurons.total_number_of_neurons; i++){
-				//REQUIRE(state_u[i] == u[i]);
-				//REQUIRE(state_v[i] == v[i]);
-				printf("\n%f, %f", state_v[i], v[i]);
-				printf("\t%f, %f", state_u[i], u[i]);
-			}
-		}	
+		}
 	}
+
 }
 
 

@@ -83,8 +83,6 @@ void IzhikevichSpikingNeurons::check_for_neuron_spikes(float current_time_in_sec
 								d_last_spike_time_of_each_neuron,
 								current_time_in_seconds,
 								total_number_of_neurons);
-
-	CudaCheckError();
 }
 
 void IzhikevichSpikingNeurons::update_membrane_potentials(float timestep) {
