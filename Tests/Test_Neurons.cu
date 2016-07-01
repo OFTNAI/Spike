@@ -1,6 +1,8 @@
 #include "../catch.hpp"
 #include "../Helpers/CUDAErrorCheckHelpers.h"
 
+
+
 /**
 		NEURONS.CU Test Set
 **/
@@ -32,6 +34,7 @@ TEST_CASE("Neurons Class") {
 		REQUIRE(test_neurons.group_shapes[0][1] == dim2);
 	}
 }
+
 
 
 /**
@@ -134,6 +137,49 @@ TEST_CASE("Spiking Neurons Class") {
 	}
 }
 
+
+
+/**
+		INPUTSPIKINGNEURONS.CU Test Set
+**/
+
+// No tests required yet. This class if almost entirely empty.
+
+
+
+/**
+		GENERATORINPUTSPIKINGNEURONS.CU Test Set
+**/
+#include "../Neurons/GeneratorInputSpikingNeurons.h"
+TEST_CASE("Generator Input Spiking Neurons Class") {
+	// Create an instance of the neuron class
+	GeneratorInputSpikingNeurons test_neurons;
+
+	spiking_neuron_parameters_struct params;
+	int dim1 = 1;
+	int dim2 = 10;
+	float resting_pot = -50.0f;
+	float threshold = 50.0f;
+
+	params.group_shape[0] = dim1;
+	params.group_shape[1] = dim2;
+	params.resting_potential_v0 = resting_pot;
+	params.threshold_for_action_potential_spike = threshold;
+
+	int ID = test_neurons.AddGroup(&params);
+
+	SECTION("Generator AddGroup Check") {
+		REQUIRE(ID < 0);
+	}
+
+	// Creating a set of spikes for our group
+	int neuron_ids[5];
+	float spike_times[5];
+
+
+	SECTION("Generator AddStimulus") {
+	}
+}
 
 
 
