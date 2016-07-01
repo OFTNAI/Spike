@@ -191,23 +191,24 @@ TEST_CASE("Generator Input Spiking Neurons Class") {
 
 	SECTION("Low Fidelity check_for_neuron_spikes Kernel Check") {
 		test_neurons.allocate_device_pointers(0, false);
-		test_neurons.reset_neurons();
 
-		float current_time = 0.1f;
-		float timestep = 0.1f;
-		
-		test_neurons.check_for_neuron_spikes(current_time, timestep);
+		for (int s=0; s < num_spikes; s++){		
+			float current_time = spike_times[s];
+			float timestep = 0.1f;
+			test_neurons.reset_neurons();
+			test_neurons.check_for_neuron_spikes(current_time, timestep);
 
-		// Copying the data to Host
-		float* last_neuron_spike_times;
-		last_neuron_spike_times = (float*)malloc(sizeof(float)*test_neurons.total_number_of_neurons);
-		CudaSafeCall(cudaMemcpy(last_neuron_spike_times, test_neurons.d_last_spike_time_of_each_neuron, sizeof(float)*test_neurons.total_number_of_neurons, cudaMemcpyDeviceToHost));
+			// Copying the data to Host
+			float* last_neuron_spike_times;
+			last_neuron_spike_times = (float*)malloc(sizeof(float)*test_neurons.total_number_of_neurons);
+			CudaSafeCall(cudaMemcpy(last_neuron_spike_times, test_neurons.d_last_spike_time_of_each_neuron, sizeof(float)*test_neurons.total_number_of_neurons, cudaMemcpyDeviceToHost));
 
-		for (int i=0; i < dim1*dim2; i++){
-			if (i == 0){
-				REQUIRE(last_neuron_spike_times[i] == 0.1f);
-			} else {
-				REQUIRE(last_neuron_spike_times[i] == -1000.0f);
+			for (int i=0; i < dim1*dim2; i++){
+				if (i == neuron_ids[s]){
+					REQUIRE(last_neuron_spike_times[i] == spike_times[s]);
+				} else {
+					REQUIRE(last_neuron_spike_times[i] == -1000.0f);
+				}
 			}
 		}
 	}
