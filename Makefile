@@ -82,4 +82,4 @@ cleantest:
 
 # Removing all created files
 clean:
-	rm ObjectFiles/*.o ${EXPERIMENT_DIRECTORY}/bin/* Tests/obj/*
+	rm ObjectFiles/*.o Tests/obj/*

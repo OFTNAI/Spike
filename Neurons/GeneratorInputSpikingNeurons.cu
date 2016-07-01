@@ -105,7 +105,7 @@ void GeneratorInputSpikingNeurons::AddStimulus(int spikenumber, int* ids, float*
 	
 	// Assign the genid values according to how many neurons exist already
 	for (int i = 0; i < spikenumber; i++){
-		spike_times_matrix_for_stimuli[total_number_of_input_stimuli - 1][i] = ids[i];
+		neuron_id_matrix_for_stimuli[total_number_of_input_stimuli - 1][i] = ids[i];
 		spike_times_matrix_for_stimuli[total_number_of_input_stimuli - 1][i] = spiketimes[i];
 	}
 	// Increment the number of entries the generator population

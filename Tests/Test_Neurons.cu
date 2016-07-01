@@ -173,11 +173,23 @@ TEST_CASE("Generator Input Spiking Neurons Class") {
 	}
 
 	// Creating a set of spikes for our group
-	int neuron_ids[5];
-	float spike_times[5];
+	int num_spikes = 5;
+	int neuron_ids[5] = {0, 1, 3, 6, 7};
+	float spike_times[5] = {0.1f, 0.3f, 0.2f, 0.5f, 0.9f};
 
+	test_neurons.AddStimulus(num_spikes, neuron_ids, spike_times);
 
 	SECTION("Generator AddStimulus") {
+		REQUIRE(test_neurons.total_number_of_input_stimuli == 1);
+		REQUIRE(test_neurons.length_of_longest_stimulus == 5);
+		REQUIRE(test_neurons.number_of_spikes_in_stimuli[0] == 5);
+		for (int i=0; i < num_spikes; i++){
+			REQUIRE(test_neurons.neuron_id_matrix_for_stimuli[0][i] == neuron_ids[i]);
+			REQUIRE(test_neurons.spike_times_matrix_for_stimuli[0][i] == spike_times[i]);
+		}
+	}
+
+	SECTION("Low Fidelity check_for_neuron_spikes Kernel Check") {
 	}
 }
 

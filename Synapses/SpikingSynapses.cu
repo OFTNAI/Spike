@@ -120,7 +120,14 @@ void SpikingSynapses::allocate_device_pointers() {
 void SpikingSynapses::reset_synapse_spikes() {
 	
 	CudaSafeCall(cudaMemset(d_spikes_travelling_to_synapse, 0, sizeof(int)*total_number_of_synapses));
-	CudaSafeCall(cudaMemset(d_time_of_last_spike_to_reach_synapse, -1000.0f, sizeof(float)*total_number_of_synapses));
+	// Set last spike times to -1000 so that the times do not affect current simulation.
+	float* last_spike_to_reach_synapse;
+	last_spike_to_reach_synapse = (float*)malloc(sizeof(float)*total_number_of_synapses);
+	for (int i=0; i < total_number_of_synapses; i++){
+		last_spike_to_reach_synapse[i] = -1000.0f;
+	}
+	CudaSafeCall(cudaMemcpy(d_time_of_last_spike_to_reach_synapse, last_spike_to_reach_synapse, total_number_of_synapses*sizeof(float), cudaMemcpyHostToDevice));
+
 }
 
 
