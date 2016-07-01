@@ -89,4 +89,30 @@ TEST_CASE("Synapses Class Tests") {
 		// Check the created connections
 		REQUIRE(std::abs(synapse_params.random_connectivity_probability - ((float)test_synapses.total_number_of_synapses / (float)(dim2*dim2_2))) < 0.05);
 	}
+
+	SECTION("AddGroup Gaussian Sample"){
+		synapse_parameters_struct synapse_params;
+		synapse_params.connectivity_type = CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE;
+		synapse_params.gaussian_synapses_per_postsynaptic_neuron = 25;
+		synapse_params.gaussian_synapses_standard_deviation = 1;
+		
+		test_synapses.AddGroup(
+			presynaptic_population,
+			postsynaptic_population,
+			&test_neurons,
+			&test_neurons,
+			timestep,
+			&synapse_params);
+
+		for(int i=0; i<dim2_2; i++){
+			int num_connects = 0;
+			for(int j=0; j<test_synapses.total_number_of_synapses; j++){
+				if (test_synapses.postsynaptic_neuron_indices[j] == 100 + i){
+					num_connects++;
+				}
+			}
+			REQUIRE(num_connects == synapse_params.gaussian_synapses_per_postsynaptic_neuron);
+
+		}
+	}
 }

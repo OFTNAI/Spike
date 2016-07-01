@@ -362,11 +362,11 @@ __global__ void set_neuron_indices_by_sampling_from_normal_distribution(int tota
 
 		int postsynaptic_x = postsynaptic_neuron_id % post_width; 
 		int postsynaptic_y = floor((float)(postsynaptic_neuron_id) / post_width);
-		int fractional_x = postsynaptic_x / post_width;
-		int fractional_y = postsynaptic_y / post_height;
+		float fractional_x = (float)postsynaptic_x / post_width;
+		float fractional_y = (float)postsynaptic_y / post_height;
 
-		int corresponding_presynaptic_centre_x = pre_width * fractional_x; 
-		int corresponding_presynaptic_centre_y = pre_height * fractional_y;
+		int corresponding_presynaptic_centre_x = floor((float)pre_width * fractional_x); 
+		int corresponding_presynaptic_centre_y = floor((float)pre_height * fractional_y);
 
 		bool presynaptic_x_set = false;
 		bool presynaptic_y_set = false;
@@ -392,7 +392,7 @@ __global__ void set_neuron_indices_by_sampling_from_normal_distribution(int tota
 				float scaled_value_from_normal_distribution_for_y = standard_deviation_sigma * value_from_normal_distribution_for_y;
 				int rounded_scaled_value_from_normal_distribution_for_y = round(scaled_value_from_normal_distribution_for_y);
 				presynaptic_y = corresponding_presynaptic_centre_y + rounded_scaled_value_from_normal_distribution_for_y;
-				if ((presynaptic_y > -1) && (presynaptic_y < pre_width)) {
+				if ((presynaptic_y > -1) && (presynaptic_y < pre_height)) {
 					presynaptic_y_set = true;
 				}
 
@@ -405,7 +405,6 @@ __global__ void set_neuron_indices_by_sampling_from_normal_distribution(int tota
 			
 
 		}	
-
 		idx += blockDim.x * gridDim.x;
 
 	}	
