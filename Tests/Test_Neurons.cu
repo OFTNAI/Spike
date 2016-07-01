@@ -462,5 +462,11 @@ TEST_CASE("Poisson Input Spiking Neurons Class") {
 }
 
 
-
+/**
+		IMAGEPOISSONINPUTSPIKINGNEURONS.CU Test Set
+**/
+// TO DO (JI)
+#include "../Neurons/ImagePoissonInputSpikingNeurons.h"
+TEST_CASE("Image Poisson Input Spiking Neurons Class") {
+}
 
