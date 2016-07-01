@@ -16,7 +16,6 @@
 #include "../Neurons/ImagePoissonInputSpikingNeurons.h"
 #include "../Helpers/TerminalHelpers.h"
 #include "../SpikeAnalyser/SpikeAnalyser.h"
-#include "../SpikeAnalyser/GraphPlotter.h"
 #include "../Helpers/TimerWithMessages.h"
 #include "../Helpers/RandomStateManager.h"
 #include <string>
@@ -421,11 +420,6 @@ int main (int argc, char *argv[]){
 		// single_score_to_write_to_file_for_dakota_optimisation = spike_analyser_for_untrained_network->combined_powered_distance_from_average_score;
 		single_score_to_write_to_file_for_dakota_optimisation = spike_analyser_for_untrained_network->combined_powered_distance_from_average_score_for_each_neuron_group[optimisation_stage*2] + spike_analyser_for_untrained_network->combined_powered_distance_from_average_score_for_each_neuron_group[optimisation_stage*2 + 1];
 
-
-		// GraphPlotter *graph_plotter = new GraphPlotter();
-		// graph_plotter->plot_untrained_vs_trained_single_cell_information_for_all_objects(spike_analyser_for_untrained_network, spike_analyser_for_trained_network);
-		// graph_plotter->plot_all_spikes(simulator.recording_electrodes);
-
 		// simulator.recording_electrodes->delete_and_reset_recorded_spikes();
 
 	}
@@ -451,10 +445,6 @@ int main (int argc, char *argv[]){
 		// spike_analyser_for_trained_network->calculate_single_cell_information_scores_for_neuron_group(EXCITATORY_NEURONS_LAYER_4, number_of_bins);
 
 		single_score_to_write_to_file_for_dakota_optimisation = spike_analyser_for_trained_network->maximum_information_score_count_multiplied_by_sum_of_information_scores;
-
-		// GraphPlotter *graph_plotter = new GraphPlotter();
-		// graph_plotter->plot_untrained_vs_trained_single_cell_information_for_all_objects(spike_analyser_for_untrained_network, spike_analyser_for_trained_network);
-		// graph_plotter->plot_all_spikes(simulator.recording_electrodes);
 
 		// string file = RESULTS_DIRECTORY + prefix_string + "_Epoch" + to_string(epoch_number) + "_" + to_string(clock());
 	}
