@@ -71,6 +71,7 @@ TEST_CASE("Spiking Neurons Class") {
 	SECTION("Low Fidelity check_for_neuron_spikes Kernel Check") {
 		// Setting up the Spiking Neurons
 		// No high fidelity
+		test_neurons.set_threads_per_block_and_blocks_per_grid(512);
 		test_neurons.allocate_device_pointers(0, false);
 		// Selecting some indices to set to fire
 		int indices[3];
@@ -103,6 +104,7 @@ TEST_CASE("Spiking Neurons Class") {
 		// Setting up the Spiking Neurons
 		// No high fidelity
 		int max_delay = 10;
+		test_neurons.set_threads_per_block_and_blocks_per_grid(512);
 		test_neurons.allocate_device_pointers(max_delay, true);
 		// Selecting some indices to set to fire
 		int indices[3];
@@ -190,8 +192,9 @@ TEST_CASE("Generator Input Spiking Neurons Class") {
 	}
 
 	SECTION("Low Fidelity check_for_neuron_spikes Kernel Check") {
-		test_neurons.allocate_device_pointers(0, false);
 		InputSpikingNeurons* cast_test_neurons = &test_neurons;
+		cast_test_neurons->allocate_device_pointers(0, false);
+		cast_test_neurons->set_threads_per_block_and_blocks_per_grid(512);
 
 		for (int s=0; s < num_spikes; s++){		
 			float current_time = spike_times[s];
@@ -216,8 +219,9 @@ TEST_CASE("Generator Input Spiking Neurons Class") {
 
 	SECTION("High Fidelity check_for_neuron_spikes Kernel Check") {
 		int max_delay = 10;
-		test_neurons.allocate_device_pointers(max_delay, true);
 		InputSpikingNeurons* cast_test_neurons = &test_neurons;
+		cast_test_neurons->allocate_device_pointers(max_delay, true);
+		cast_test_neurons->set_threads_per_block_and_blocks_per_grid(512);
 
 		for (int s=0; s < num_spikes; s++){		
 			float current_time = spike_times[s];
@@ -289,6 +293,7 @@ TEST_CASE("Izhikevich Spiking Neurons Class") {
 	SECTION("State Updates"){
 		SpikingNeurons* cast_test_neurons = &test_neurons;
 		cast_test_neurons->allocate_device_pointers(0, false);
+		cast_test_neurons->set_threads_per_block_and_blocks_per_grid(512);
 		cast_test_neurons->reset_neurons();
 
 		SECTION("Initial State Variable Values"){
@@ -311,6 +316,7 @@ TEST_CASE("Izhikevich Spiking Neurons Class") {
 
 		// Setting some neurons as fired
 		float current_time = 0.1f;
+		float timestep = 0.1f;
 		int neurons[5] = {0, 3, 5, 6, 9};
 		float* last_spike_times = (float*)malloc(sizeof(float)*test_neurons.total_number_of_neurons);
 		float* current_injection = (float*)malloc(sizeof(float)*test_neurons.total_number_of_neurons);
@@ -327,12 +333,11 @@ TEST_CASE("Izhikevich Spiking Neurons Class") {
 		CudaSafeCall(cudaMemcpy(test_neurons.d_current_injections, current_injection, sizeof(float)*test_neurons.total_number_of_neurons, cudaMemcpyHostToDevice));
 		
 		// Running update of state u
-		cast_test_neurons->check_for_neuron_spikes(current_time, current_time);
+		cast_test_neurons->check_for_neuron_spikes(current_time, timestep);
 	
 		SECTION("Checking State U spike reset"){
 			float* state_u;
 			state_u = (float*)malloc(sizeof(float)*test_neurons.total_number_of_neurons);
-			CudaSafeCall(cudaMemcpy(state_u, test_neurons.d_states_u, sizeof(float)*test_neurons.total_number_of_neurons, cudaMemcpyDeviceToHost));
 			// Check the resulting state values
 			CudaSafeCall(cudaMemcpy(state_u, test_neurons.d_states_u, sizeof(float)*test_neurons.total_number_of_neurons, cudaMemcpyDeviceToHost));
 			for (int i=0; i < test_neurons.total_number_of_neurons; i++){
@@ -343,6 +348,8 @@ TEST_CASE("Izhikevich Spiking Neurons Class") {
 				}
 			}
 		}
+
+		cast_test_neurons->update_membrane_potentials(timestep);
 
 		SECTION("Membrane Potential Update"){
 			// Computing what I expect the values to be:
@@ -386,8 +393,42 @@ TEST_CASE("Izhikevich Spiking Neurons Class") {
 }
 
 
+/**
+		POISSONINPUTSPIKINGNEURONS.CU Test Set
+**/
+#include "../Neurons/PoissonInputSpikingNeurons.h"
+TEST_CASE("Poisson Input Spiking Neurons Class") {
 
+	// Create an instance of the neuron class
+	PoissonInputSpikingNeurons test_neurons;
 
+	poisson_input_spiking_neuron_parameters_struct params;
+	int dim1 = 1;
+	int dim2 = 10;
+	float resting_pot = -55.0f;
+	float threshold = 50.0f;
+
+	params.group_shape[0] = dim1;
+	params.group_shape[1] = dim2;
+	params.resting_potential_v0 = resting_pot;
+	params.threshold_for_action_potential_spike = threshold;
+
+	params.rate = 30.0f;
+
+	// AddGroup
+	int ID = test_neurons.AddGroup(&params);
+
+	SECTION("AddGroup"){
+		REQUIRE(ID < 0);
+		// Checking that the rate has been correctly set
+		for(int i=0; i < test_neurons.total_number_of_neurons; i++){
+			REQUIRE(test_neurons.rates[i] == params.rate);
+		}
+	}
+
+	SECTION("Membrane Potential Update"){
+	}
+}
 
 
 
