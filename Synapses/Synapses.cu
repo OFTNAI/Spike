@@ -135,7 +135,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 		if (presynaptic_group_id > 0){
 			prestart = start_neuron_indices_for_neuron_groups[presynaptic_group_id];
 		}
-		preend = last_neuron_indices_for_neuron_groups[presynaptic_group_id];
+		preend = last_neuron_indices_for_neuron_groups[presynaptic_group_id] + 1;
 
 	}
 
@@ -150,7 +150,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 		poststart = start_neuron_indices_for_neuron_groups[postsynaptic_group_id];
 		
 	}
-	int postend = last_neuron_indices_for_neuron_groups[postsynaptic_group_id];
+	int postend = last_neuron_indices_for_neuron_groups[postsynaptic_group_id] + 1;
 
 	if (print_synapse_group_details == true) {
 		const char * presynaptic_group_type_string = (presynaptic_group_id < 0) ? "input_neurons" : "neurons";
@@ -171,12 +171,12 @@ void Synapses::AddGroup(int presynaptic_group_id,
             
             int increment = (preend-prestart)*(postend-poststart);
             this->increment_number_of_synapses(increment);
-            
+
 			// If the connectivity is all_to_all
 			for (int i = prestart; i < preend; i++){
 				for (int j = poststart; j < postend; j++){
 					// Index
-					int idx = original_number_of_synapses + (i-prestart) + (j-poststart)*(preend-prestart);
+					int idx = original_number_of_synapses + (i-prestart)*(postend-poststart) + (j-poststart);
 					// Setup Synapses
 					presynaptic_neuron_indices[idx] = CORRECTED_PRESYNAPTIC_ID(i, presynaptic_group_is_input);
 					postsynaptic_neuron_indices[idx] = j;
