@@ -257,6 +257,81 @@ TEST_CASE("Synapses Class Tests") {
 **/
 #include "../Synapses/SpikingSynapses.h"
 TEST_CASE("Spiking Synapses Class Tests") {
+	SpikingSynapses test_synapses;
+	Neurons test_neurons;
+	
+	SECTION("Constructor"){
+		REQUIRE(test_synapses.maximum_axonal_delay_in_timesteps == 0);
+	}
+
+	float timestep = 0.1f;
+
+	// Creating Neuron Populations to test with
+	// Pre-synaptic Population
+	neuron_parameters_struct neuron_params_1;
+	int dim1 = 1;
+	int dim2 = 100;
+
+	neuron_params_1.group_shape[0] = dim1;
+	neuron_params_1.group_shape[1] = dim2;
+
+	int presynaptic_population = test_neurons.AddGroup(&neuron_params_1);
+	
+	// Post-synaptic Population
+	neuron_parameters_struct neuron_params_2;
+	int dim1_2 = 1;
+	int dim2_2 = 250;
+
+	neuron_params_2.group_shape[0] = dim1_2;
+	neuron_params_2.group_shape[1] = dim2_2;
+
+	int postsynaptic_population = test_neurons.AddGroup(&neuron_params_2);
+
+	SECTION("Delay Setting Check"){
+		SECTION("Constant Delay Value"){
+			spiking_synapse_parameters_struct synapse_params;
+			synapse_params.stdp_on = false;
+			synapse_params.delay_range[0] = 0.1f;
+			synapse_params.delay_range[1] = 0.1f;
+			synapse_params.connectivity_type = CONNECTIVITY_TYPE_ALL_TO_ALL;
+			test_synapses.AddGroup(
+				presynaptic_population,
+				postsynaptic_population,
+				&test_neurons,
+				&test_neurons,
+				timestep,
+				&synapse_params);
+			for (int i=0; i < test_synapses.total_number_of_synapses; i++){
+				REQUIRE(test_synapses.delays[i] == (int)(synapse_params.delay_range[0] / timestep));
+			}
+			REQUIRE(test_synapses.maximum_axonal_delay_in_timesteps == 1);
+		}
+
+		SECTION("Uniform Delay Value"){
+			spiking_synapse_parameters_struct synapse_params;
+			synapse_params.stdp_on = false;
+			synapse_params.delay_range[0] = 0.1f;
+			synapse_params.delay_range[1] = 5.0f;
+			synapse_params.connectivity_type = CONNECTIVITY_TYPE_ALL_TO_ALL;
+			test_synapses.AddGroup(
+				presynaptic_population,
+				postsynaptic_population,
+				&test_neurons,
+				&test_neurons,
+				timestep,
+				&synapse_params);
+			float mean_delay = 0;
+			for (int i=0; i < test_synapses.total_number_of_synapses; i++){
+				REQUIRE(test_synapses.delays[i] >= (int)(synapse_params.delay_range[0]) / timestep);
+				REQUIRE(test_synapses.delays[i] <= (int)(synapse_params.delay_range[1]) / timestep);
+				mean_delay += test_synapses.delays[i];
+			}
+			// Ensure that the mean delay is within a timestep of what it should be
+			REQUIRE(std::abs(((float)mean_delay / test_synapses.total_number_of_synapses) 
+				- ((synapse_params.delay_range[0] + synapse_params.delay_range[1]) / (2 * timestep))) < 1.0f);
+			REQUIRE(test_synapses.maximum_axonal_delay_in_timesteps == 50);
+		}
+	}
 }
 
 
