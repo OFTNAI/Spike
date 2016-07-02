@@ -455,7 +455,64 @@ TEST_CASE("Spiking Synapses Class Tests") {
 				}
 			}
 		}
+
+		SECTION("High Fidelity Spike Time Allocation Check") {
+			test_neurons.allocate_device_pointers(test_synapses.maximum_axonal_delay_in_timesteps, true);
+			test_synapses.allocate_device_pointers();
+			// Set-up Variables
+			test_neurons.reset_neurons();
+			test_synapses.reset_synapse_spikes();
+
+			// Copy the correct array
+			char* neuron_spike_array;
+			neuron_spike_array = (char*)malloc(sizeof(char)*test_neurons.total_number_of_neurons*((test_synapses.maximum_axonal_delay_in_timesteps / 8)+ 1));
+			CudaSafeCall(cudaMemcpy(neuron_spike_array, test_neurons.d_bitarray_of_neuron_spikes, sizeof(char)*test_neurons.total_number_of_neurons*((test_synapses.maximum_axonal_delay_in_timesteps / 8)+ 1), cudaMemcpyDeviceToHost));
+			// Set some indices to have spiked at t=2.6s
+			float current_time = 0.0f;
+			int indices[5] = {0, 12, 78, 9, 11};
+			// Check the neuron spikes array
+			for (int n=0; n < 5; n++){
+				for (int j=0; j < 8; j++){
+					char byte = neuron_spike_array[indices[n]*((test_synapses.maximum_axonal_delay_in_timesteps / 8)+ 1) + ((test_synapses.maximum_axonal_delay_in_timesteps - 26) / 8)];
+					byte |= 1 << ((test_synapses.maximum_axonal_delay_in_timesteps - 26) % 8);
+					neuron_spike_array[indices[n]*((test_synapses.maximum_axonal_delay_in_timesteps / 8)+ 1) + ((test_synapses.maximum_axonal_delay_in_timesteps - 26) / 8)] = byte;
+				}
+			}
+
+			// Copy back the array
+			CudaSafeCall(cudaMemcpy(test_neurons.d_bitarray_of_neuron_spikes, neuron_spike_array, sizeof(char)*test_neurons.total_number_of_neurons*((test_synapses.maximum_axonal_delay_in_timesteps / 8)+ 1), cudaMemcpyHostToDevice));
+			
+			// Run the sim
+			test_synapses.interact_spikes_with_synapses(&test_neurons, &test_neurons, current_time, timestep);
+			
+			float* last_synapse_spike_times = (float*)malloc(sizeof(float)*test_synapses.total_number_of_synapses);
+			CudaSafeCall(cudaMemcpy(last_synapse_spike_times, test_synapses.d_time_of_last_spike_to_reach_synapse, sizeof(float)*test_synapses.total_number_of_synapses, cudaMemcpyDeviceToHost));
+
+			for (int i=0; i < test_synapses.total_number_of_synapses; i++){
+				if ((test_synapses.presynaptic_neuron_indices[i] == indices[0]) ||
+						(test_synapses.presynaptic_neuron_indices[i] == indices[1]) ||
+						(test_synapses.presynaptic_neuron_indices[i] == indices[2]) ||
+						(test_synapses.presynaptic_neuron_indices[i] == indices[3]) ||
+						(test_synapses.presynaptic_neuron_indices[i] == indices[4])){
+					if (test_synapses.delays[i] == 26){
+						REQUIRE(last_synapse_spike_times[i] == current_time);
+					} else {
+						REQUIRE(last_synapse_spike_times[i] == -1000.0f);
+					}
+				} else {
+					REQUIRE(last_synapse_spike_times[i] == -1000.0f);
+				}
+			}
+		}
+
 	}
 }
 
 
+/**
+		CURRENTSPIKINGSYNAPSES.CU Test Set
+**/
+#include "../Synapses/CurrentSpikingSynapses.h"
+TEST_CASE("Current Spiking Synapses Class Tests") {
+
+}
