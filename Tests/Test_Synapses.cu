@@ -334,6 +334,11 @@ TEST_CASE("Spiking Synapses Class Tests") {
 			REQUIRE(test_synapses.maximum_axonal_delay_in_timesteps == 50);
 		}
 	}
+
+
+	SECTION("CUDA Kernels for Spikes approaching Synapses"){
+		
+	}
 }
 
 
