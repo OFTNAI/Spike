@@ -65,10 +65,12 @@ int main (int argc, char *argv[]){
 
 			std::string parameter_from_file_as_string;
 			for (int i = 0; i < optimisation_stage; i++) {
-				std::string file_name("../OptimalParameters/optimal_parameters_from_optimisation_iteration" + std::to_string(i) + ".txt");
-				std::ifstream optimal_parameters_from_optimisation_iteration_0(file_name.c_str());
+				std::string file_name("../OptimalParameters/optimal_parameters_from_optimisation_iteration_" + std::to_string(i) + ".txt");
+				// printf("file_name: %s\n", file_name.c_str());
+				std::ifstream optimal_parameters_from_optimisation_iteration(file_name.c_str());
 				for (int j = 0; j < number_of_new_parameters_per_optimisation_stage; j++) {
-					std::getline(optimal_parameters_from_optimisation_iteration_0, parameter_from_file_as_string);
+					std::getline(optimal_parameters_from_optimisation_iteration, parameter_from_file_as_string);
+					// printf("parameter_from_file_as_string: %s\n", parameter_from_file_as_string.c_str());
 					optimisation_parameters[i][j] = std::atof(parameter_from_file_as_string.c_str());
 				}
 			}
