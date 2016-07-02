@@ -287,7 +287,7 @@ TEST_CASE("Spiking Synapses Class Tests") {
 
 	int postsynaptic_population = test_neurons.AddGroup(&neuron_params_2);
 
-	SECTION("Delay Setting Check"){
+	SECTION("Delay/STDP Setting Check"){
 		SECTION("Constant Delay Value"){
 			spiking_synapse_parameters_struct synapse_params;
 			synapse_params.stdp_on = false;
@@ -303,13 +303,14 @@ TEST_CASE("Spiking Synapses Class Tests") {
 				&synapse_params);
 			for (int i=0; i < test_synapses.total_number_of_synapses; i++){
 				REQUIRE(test_synapses.delays[i] == (int)(synapse_params.delay_range[0] / timestep));
+				REQUIRE(test_synapses.stdp[i] == false);
 			}
 			REQUIRE(test_synapses.maximum_axonal_delay_in_timesteps == 1);
 		}
 
-		SECTION("Uniform Delay Value"){
+		SECTION("Uniform Delay (+STDP) Value"){
 			spiking_synapse_parameters_struct synapse_params;
-			synapse_params.stdp_on = false;
+			synapse_params.stdp_on = true;
 			synapse_params.delay_range[0] = 0.1f;
 			synapse_params.delay_range[1] = 5.0f;
 			synapse_params.connectivity_type = CONNECTIVITY_TYPE_ALL_TO_ALL;
@@ -324,6 +325,7 @@ TEST_CASE("Spiking Synapses Class Tests") {
 			for (int i=0; i < test_synapses.total_number_of_synapses; i++){
 				REQUIRE(test_synapses.delays[i] >= (int)(synapse_params.delay_range[0]) / timestep);
 				REQUIRE(test_synapses.delays[i] <= (int)(synapse_params.delay_range[1]) / timestep);
+				REQUIRE(test_synapses.stdp[i] == true);
 				mean_delay += test_synapses.delays[i];
 			}
 			// Ensure that the mean delay is within a timestep of what it should be
