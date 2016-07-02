@@ -10,10 +10,15 @@ for i in {0..3};
 		dakota -i dakota_optimisation_1.in
 
 		bash put_optimal_parameters_in_file_from_dakota_results.sh "optimal_parameters_from_optimisation_iteration_$i"
+		bash put_total_number_of_test_iterations_in_file.sh "total_number_of_test_iterations_for_stage_$i"
 
-		bash clean_directory
-		rm "dakota_results.txt.txt"
+
+		
 		 
 done
 
 rm "optimisation_iteration_index.txt"
+
+
+bash clean_directory
+		rm "dakota_results.txt.txt"
