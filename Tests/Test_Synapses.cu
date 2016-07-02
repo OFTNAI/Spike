@@ -94,7 +94,7 @@ TEST_CASE("Synapses Class Tests") {
 		synapse_parameters_struct synapse_params;
 		synapse_params.connectivity_type = CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE;
 		synapse_params.gaussian_synapses_per_postsynaptic_neuron = 25;
-		synapse_params.gaussian_synapses_standard_deviation = 1;
+		synapse_params.gaussian_synapses_standard_deviation = 5;
 		
 		test_synapses.AddGroup(
 			presynaptic_population,
@@ -104,15 +104,46 @@ TEST_CASE("Synapses Class Tests") {
 			timestep,
 			&synapse_params);
 
+		int average_standard_dev = 0;
 		for(int i=0; i<dim2_2; i++){
 			int num_connects = 0;
+			int presynaptic_mean_expected = ((float)i / dim2_2)*dim2;
+			int presynaptic_mean_actual = 0;
+			int standard_deviation = 0;
 			for(int j=0; j<test_synapses.total_number_of_synapses; j++){
 				if (test_synapses.postsynaptic_neuron_indices[j] == 100 + i){
 					num_connects++;
+					presynaptic_mean_actual += test_synapses.presynaptic_neuron_indices[j];
+					standard_deviation += pow((test_synapses.presynaptic_neuron_indices[j] - presynaptic_mean_expected), 2);
 				}
 			}
+			// Check that the number of connections are correct
 			REQUIRE(num_connects == synapse_params.gaussian_synapses_per_postsynaptic_neuron);
-
+			// Check that the mean is within 10 neurons of what it should be
+			REQUIRE(std::abs(presynaptic_mean_expected - presynaptic_mean_actual/num_connects) < 10);
+			
+			average_standard_dev += pow(((float)standard_deviation  / (num_connects - 1)), 0.5);
 		}
+		average_standard_dev /= dim2_2;
+		REQUIRE(std::abs(average_standard_dev - synapse_params.gaussian_synapses_standard_deviation) < 0.25*synapse_params.gaussian_synapses_standard_deviation);
+
+	}
+
+	SECTION("AddGroup Single Connectivity"){
+		synapse_parameters_struct synapse_params;
+		synapse_params.connectivity_type = CONNECTIVITY_TYPE_SINGLE;
+		synapse_params.pairwise_connect_presynaptic = 25;
+		synapse_params.pairwise_connect_postsynaptic = 10;
+		
+		test_synapses.AddGroup(
+			presynaptic_population,
+			postsynaptic_population,
+			&test_neurons,
+			&test_neurons,
+			timestep,
+			&synapse_params);
+
+		REQUIRE(test_synapses.presynaptic_neuron_indices[0] == 25);
+		REQUIRE(test_synapses.postsynaptic_neuron_indices[0] == 10 + 100);
 	}
 }
