@@ -124,7 +124,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 		if (presynaptic_group_id < -1){
 			prestart = start_neuron_indices_for_input_neuron_groups[corrected_presynaptic_group_id];
 		}
-		preend = last_neuron_indices_for_input_neuron_groups[corrected_presynaptic_group_id];
+		preend = last_neuron_indices_for_input_neuron_groups[corrected_presynaptic_group_id] + 1;
 
 	} else {
 

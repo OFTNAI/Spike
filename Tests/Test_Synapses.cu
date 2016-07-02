@@ -196,4 +196,25 @@ TEST_CASE("Synapses Class Tests") {
 			REQUIRE(std::abs(mean_weight - synapse_params.weight_range_top / 2.0f) < 0.01*synapse_params.weight_range_top);
 		}
 	}
+
+	SECTION("Input Neuron Indices Check"){
+		synapse_parameters_struct synapse_params;
+		synapse_params.connectivity_type = CONNECTIVITY_TYPE_ALL_TO_ALL;
+		
+		test_synapses.AddGroup(
+			-1,
+			postsynaptic_population,
+			&test_neurons,
+			&test_neurons,
+			timestep,
+			&synapse_params);
+
+		// Check the created connections
+		for(int i=0; i < test_neurons.group_shapes[presynaptic_population][1]; i++){
+			for(int j=0; j < test_neurons.group_shapes[postsynaptic_population][1]; j++){
+				REQUIRE(test_synapses.presynaptic_neuron_indices[j + i*test_neurons.group_shapes[postsynaptic_population][1]] == - 1 - i);
+				REQUIRE(test_synapses.postsynaptic_neuron_indices[j + i*test_neurons.group_shapes[postsynaptic_population][1]] == j + test_neurons.group_shapes[presynaptic_population][1]);
+			}
+		}
+	}
 }
