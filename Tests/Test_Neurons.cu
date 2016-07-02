@@ -1,4 +1,4 @@
-#include "../catch.hpp"
+#include "catch.hpp"
 #include "../Helpers/CUDAErrorCheckHelpers.h"
 
 
@@ -404,7 +404,7 @@ TEST_CASE("Poisson Input Spiking Neurons Class") {
 
 	poisson_input_spiking_neuron_parameters_struct params;
 	int dim1 = 1;
-	int dim2 = 10;
+	int dim2 = 300;
 	float resting_pot = -55.0f;
 	float threshold = 50.0f;
 
@@ -415,8 +415,16 @@ TEST_CASE("Poisson Input Spiking Neurons Class") {
 
 	params.rate = 30.0f;
 
+	float timestep = 0.01;
+
 	// AddGroup
 	int ID = test_neurons.AddGroup(&params);
+
+	////////// SET UP STATES FOR RANDOM STATE MANAGER SINGLETON ///////////
+	int random_states_threads_per_block_x = 128;
+	int random_states_number_of_blocks_x = 64;
+	RandomStateManager::instance()->set_up_random_states(random_states_threads_per_block_x, random_states_number_of_blocks_x, 9);
+
 
 	SECTION("AddGroup"){
 		REQUIRE(ID < 0);
@@ -426,10 +434,47 @@ TEST_CASE("Poisson Input Spiking Neurons Class") {
 		}
 	}
 
+
 	SECTION("Membrane Potential Update"){
+		InputSpikingNeurons* cast_test_neurons = &test_neurons;
+		cast_test_neurons->allocate_device_pointers(0, false);
+		cast_test_neurons->set_threads_per_block_and_blocks_per_grid(512);
+		cast_test_neurons->reset_neurons();
+
+		// Running the network for many timesteps and checking rate
+		cast_test_neurons->update_membrane_potentials(timestep);
+
+		// Copying the membrane potentials back
+		float* membrane_potentials;
+		membrane_potentials = (float*)malloc(sizeof(float)*test_neurons.total_number_of_neurons);
+		CudaSafeCall(cudaMemcpy(membrane_potentials, test_neurons.d_membrane_potentials_v, sizeof(float)*test_neurons.total_number_of_neurons, cudaMemcpyDeviceToHost));
+		// Count the number of spikes
+		int count = 0;
+		for (int i=0; i < test_neurons.total_number_of_neurons; i++){
+			if (membrane_potentials[i] > threshold){
+				count++;
+			}
+		}
+		// Checking that the rate for the combined population is within 5%
+		float actual_rate = count / (test_neurons.total_number_of_neurons * timestep);
+		REQUIRE(std::abs(actual_rate - params.rate) < 5.0f);
 	}
 }
 
 
+/**
+		LIFSPIKINGNEURONS.CU Test Set
+**/
+// TO DO (JI)
+#include "../Neurons/LIFSpikingNeurons.h"
+TEST_CASE("LIF Spiking Neurons Class") {
+}
 
+/**
+		IMAGEPOISSONINPUTSPIKINGNEURONS.CU Test Set
+**/
+// TO DO (JI)
+#include "../Neurons/ImagePoissonInputSpikingNeurons.h"
+TEST_CASE("Image Poisson Input Spiking Neurons Class") {
+}
 
