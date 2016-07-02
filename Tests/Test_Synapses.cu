@@ -70,7 +70,7 @@ TEST_CASE("Synapses Class Tests") {
 		// Check the created connections
 		for(int i=0; i < test_neurons.group_shapes[presynaptic_population][1]; i++){
 			REQUIRE(test_synapses.presynaptic_neuron_indices[i] == i);
-			REQUIRE(test_synapses.presynaptic_neuron_indices[i] == i);
+			REQUIRE(test_synapses.postsynaptic_neuron_indices[i] == i);
 		}
 	}
 
@@ -216,5 +216,37 @@ TEST_CASE("Synapses Class Tests") {
 				REQUIRE(test_synapses.postsynaptic_neuron_indices[j + i*test_neurons.group_shapes[postsynaptic_population][1]] == j + test_neurons.group_shapes[presynaptic_population][1]);
 			}
 		}
+	}
+
+	SECTION("Synapse Shuffle Check"){
+		synapse_parameters_struct synapse_params;
+		synapse_params.connectivity_type = CONNECTIVITY_TYPE_ONE_TO_ONE;
+		test_synapses.AddGroup(
+			presynaptic_population,
+			presynaptic_population,
+			&test_neurons,
+			&test_neurons,
+			timestep,
+			&synapse_params);
+
+		// Shuffle the created connections
+		test_synapses.shuffle_synapses();
+		
+		// Create an array to tick off synapses
+		bool* check_array = (bool*)malloc(sizeof(bool)*dim2);
+		for (int i=0; i < dim2; i++){
+			check_array[i] = false;
+		}
+
+		// Check the synapses
+		for(int i=0; i < test_neurons.group_shapes[presynaptic_population][1]; i++){
+			REQUIRE(test_synapses.presynaptic_neuron_indices[i] == test_synapses.postsynaptic_neuron_indices[i]);
+			if (check_array[test_synapses.presynaptic_neuron_indices[i]]){
+				REQUIRE(false == true);
+			} else {
+				check_array[test_synapses.presynaptic_neuron_indices[i]] = true;
+			}
+		}
+
 	}
 }
