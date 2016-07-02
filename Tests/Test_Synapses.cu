@@ -379,7 +379,7 @@ TEST_CASE("Spiking Synapses Class Tests") {
 			}
 		}
 
-		SECTION("Low Fidelity Spike Recognition and Spike Setting") {
+		SECTION("Low Fidelity Spike Recognition") {
 			test_neurons.allocate_device_pointers(test_synapses.maximum_axonal_delay_in_timesteps, false);
 			test_synapses.allocate_device_pointers();
 			// Set-up Variables
@@ -416,6 +416,42 @@ TEST_CASE("Spiking Synapses Class Tests") {
 				} else {
 					REQUIRE(last_synapse_spike_times[i] == -1000.0f);
 					REQUIRE(timestep_countdown[i] == -1);
+				}
+			}
+		}
+
+		SECTION("Low Fidelity Time Allocation Check"){
+			test_neurons.allocate_device_pointers(test_synapses.maximum_axonal_delay_in_timesteps, false);
+			test_synapses.allocate_device_pointers();
+			// Set-up Variables
+			test_neurons.reset_neurons();
+			test_synapses.reset_synapse_spikes();
+			int* spike_countdown;
+			spike_countdown = (int*)malloc(sizeof(int)*test_synapses.total_number_of_synapses);
+			CudaSafeCall(cudaMemcpy(spike_countdown, test_synapses.d_spikes_travelling_to_synapse, sizeof(int)*test_synapses.total_number_of_synapses, cudaMemcpyDeviceToHost));
+			// Set of the neuron spike times to now
+			float current_time = 0.9f;
+			int indices[5] = {0, 12, 78, 9, 11};
+			for (int i=0; i < 5; i++){
+				spike_countdown[indices[i]] = 1;
+			}
+			// Return the data to the device
+			CudaSafeCall(cudaMemcpy(test_synapses.d_spikes_travelling_to_synapse, spike_countdown, sizeof(int)*test_synapses.total_number_of_synapses, cudaMemcpyHostToDevice));
+			// Run the sim
+			test_synapses.interact_spikes_with_synapses(&test_neurons, &test_neurons, current_time, timestep);
+			float* last_synapse_spike_times;
+			last_synapse_spike_times = (float*)malloc(sizeof(float)*test_synapses.total_number_of_synapses);
+			CudaSafeCall(cudaMemcpy(last_synapse_spike_times, test_synapses.d_time_of_last_spike_to_reach_synapse, sizeof(float)*test_synapses.total_number_of_synapses, cudaMemcpyDeviceToHost));
+
+			for (int i=0; i < test_synapses.total_number_of_synapses; i++){
+				if ((i == indices[0]) ||
+						(i == indices[1]) ||
+						(i == indices[2]) ||
+						(i == indices[3]) ||
+						(i == indices[4])){
+					REQUIRE(last_synapse_spike_times[i] == current_time);
+				} else {
+					REQUIRE(last_synapse_spike_times[i] == -1000.0f);
 				}
 			}
 		}
