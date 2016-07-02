@@ -250,3 +250,13 @@ TEST_CASE("Synapses Class Tests") {
 
 	}
 }
+
+
+/**
+		SPIKINGSYNAPSES.CU Test Set
+**/
+#include "../Synapses/SpikingSynapses.h"
+TEST_CASE("Spiking Synapses Class Tests") {
+}
+
+
