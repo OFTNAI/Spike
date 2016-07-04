@@ -1,15 +1,15 @@
-#include "IzhikevichSpikingSynapses.h"
+#include "CurrentSpikingSynapses.h"
 
 #include "../Helpers/CUDAErrorCheckHelpers.h"
 #include "../Helpers/TerminalHelpers.h"
 
-// IzhikevichSpikingSynapses Constructor
-IzhikevichSpikingSynapses::IzhikevichSpikingSynapses() {
+// CurrentSpikingSynapses Constructor
+CurrentSpikingSynapses::CurrentSpikingSynapses() {
 
 }
 
-// IzhikevichSpikingSynapses Destructor
-IzhikevichSpikingSynapses::~IzhikevichSpikingSynapses() {
+// CurrentSpikingSynapses Destructor
+CurrentSpikingSynapses::~CurrentSpikingSynapses() {
 	// Just need to free up the memory
 }
 
@@ -23,7 +23,7 @@ IzhikevichSpikingSynapses::~IzhikevichSpikingSynapses() {
 //		2 number float array for delay range
 //		Boolean value to indicate if population is STDP based
 //		Parameter = either probability for random synapses or S.D. for Gaussian
-void IzhikevichSpikingSynapses::AddGroup(int presynaptic_group_id, 
+void CurrentSpikingSynapses::AddGroup(int presynaptic_group_id, 
 						int postsynaptic_group_id, 
 						Neurons * neurons,
 						Neurons * input_neurons,
@@ -40,32 +40,32 @@ void IzhikevichSpikingSynapses::AddGroup(int presynaptic_group_id,
 
 }
 
-void IzhikevichSpikingSynapses::increment_number_of_synapses(int increment) {
+void CurrentSpikingSynapses::increment_number_of_synapses(int increment) {
 	SpikingSynapses::increment_number_of_synapses(increment);
 }
 
 
-void IzhikevichSpikingSynapses::allocate_device_pointers() {
+void CurrentSpikingSynapses::allocate_device_pointers() {
 	SpikingSynapses::allocate_device_pointers();
 }
 
-void IzhikevichSpikingSynapses::reset_synapse_spikes() {
+void CurrentSpikingSynapses::reset_synapse_spikes() {
 	SpikingSynapses::reset_synapse_spikes();
 }
 
-void IzhikevichSpikingSynapses::shuffle_synapses() {
+void CurrentSpikingSynapses::shuffle_synapses() {
  	SpikingSynapses::shuffle_synapses();
 }
 
 
-void IzhikevichSpikingSynapses::set_threads_per_block_and_blocks_per_grid(int threads) {
+void CurrentSpikingSynapses::set_threads_per_block_and_blocks_per_grid(int threads) {
 	SpikingSynapses::set_threads_per_block_and_blocks_per_grid(threads);
 }
 
 
-void IzhikevichSpikingSynapses::calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds, float timestep) {
+void CurrentSpikingSynapses::calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds, float timestep) {
 
-	izhikevich_calculate_postsynaptic_current_injection_kernel<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_synaptic_efficacies_or_weights,
+	current_calculate_postsynaptic_current_injection_kernel<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_synaptic_efficacies_or_weights,
 																	d_time_of_last_spike_to_reach_synapse,
 																	d_postsynaptic_neuron_indices,
 																	neurons->d_current_injections,
@@ -76,7 +76,7 @@ void IzhikevichSpikingSynapses::calculate_postsynaptic_current_injection(Spiking
 }
 
 
-__global__ void izhikevich_calculate_postsynaptic_current_injection_kernel(float* d_synaptic_efficacies_or_weights,
+__global__ void current_calculate_postsynaptic_current_injection_kernel(float* d_synaptic_efficacies_or_weights,
 							float* d_time_of_last_spike_to_reach_synapse,
 							int* d_postsynaptic_neuron_indices,
 							float* d_neurons_current_injections,
