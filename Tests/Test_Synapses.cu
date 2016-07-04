@@ -595,7 +595,17 @@ TEST_CASE("Current Spiking Synapses Class Tests") {
 					}
 				}
 			}
-			REQUIRE(std::abs(current_inj[i] - current) < 0.01f);
+			REQUIRE(std::abs(current_inj[i] - current) < 0.00005f);
 		}
 	}
 }
+
+
+/**
+		CONDUCTANCESPIKINGSYNAPSES.CU Test Set
+**/
+#include "../Synapses/ConductanceSpikingSynapses.h"
+TEST_CASE("Conductance Spiking Synapses Class Tests") {
+
+}
+
