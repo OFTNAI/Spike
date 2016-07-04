@@ -21,7 +21,7 @@ method
 		crossover_type blend
 		crossover_rate 0.2				# Probability of a crossover
 		replacement_type chc = 50
-		solution_target = 500
+		solution_target = 100
 
 model
 	single

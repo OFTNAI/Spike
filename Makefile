@@ -20,6 +20,9 @@ ifeq ($(UNAME_S),Linux)
 	CFLAGS += --std=c++11 
 endif
 
+# mkdir -p ${EXPERIMENT_DIRECTORY}/bin
+# test -d ${EXPERIMENT_DIRECTORY}/bin || mkdir ${EXPERIMENT_DIRECTORY}/bin
+
 
 # Include all of the folders from which we want to include files
 # CU
@@ -46,7 +49,9 @@ CPP_OBJ_FILES := $(addprefix ObjectFiles/,$(notdir $(CPP_FILES:.cpp=.o)))
 model: ${FILE}
 directory: ${EXPERIMENT_DIRECTORY}
 
+
 ${FILE}: ObjectFiles/${FILE}.o $(CU_OBJ_FILES) $(CPP_OBJ_FILES)
+	test -d ${EXPERIMENT_DIRECTORY}/bin || mkdir ${EXPERIMENT_DIRECTORY}/bin
 	$(CC) -lineinfo ObjectFiles/${FILE}.o $(CU_OBJ_FILES) $(CPP_OBJ_FILES) -o ${EXPERIMENT_DIRECTORY}/bin/${FILE}
 
 # Compiling the Model file

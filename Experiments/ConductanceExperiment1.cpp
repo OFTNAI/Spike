@@ -33,22 +33,23 @@ int main (int argc, char *argv[]){
 	int number_of_optimisation_stages = 4;
 	int number_of_new_parameters_per_optimisation_stage = 4;
 	float optimisation_parameters[number_of_optimisation_stages][number_of_new_parameters_per_optimisation_stage];
-	optimisation_parameters[0][0] = 0.001360840969; //FF
-	optimisation_parameters[0][1] = 0.0001937483874; //E2I
-	optimisation_parameters[0][2] = 0.001607171098; //I2E
-	optimisation_parameters[0][3] = 0.0005013331389; //E2E
-	optimisation_parameters[1][0] = 0.000320288275;
-	optimisation_parameters[1][1] = 0.0001493473745;
-	optimisation_parameters[1][2] = 0.00332457261;
-	optimisation_parameters[1][3] = 0.001317482035;
-	optimisation_parameters[2][0] = 0.0001702463826;
-	optimisation_parameters[2][1] = 0.0001034771659;
-	optimisation_parameters[2][2] = 0.004517876013;
-	optimisation_parameters[2][3] = 0.004139377891;
-	optimisation_parameters[3][0] = 0.0001259627431;
-	optimisation_parameters[3][1] = 5.491266961e-05;
-	optimisation_parameters[3][2] = 0.003885850461;
-	optimisation_parameters[3][3] = 0.000193538218;
+
+	optimisation_parameters[0][0] = 2.5191751063e-03; //FF
+	optimisation_parameters[0][1] = 8.8227295814e-05; //E2I
+	optimisation_parameters[0][2] = 4.4264296185e-03; //I2E
+	optimisation_parameters[0][3] = 2.6775065427e-03; //E2E
+	optimisation_parameters[1][0] = 2.7736894247e-04;
+	optimisation_parameters[1][1] = 8.9909369312e-05;
+	optimisation_parameters[1][2] = 1.0000000000e-06;
+	optimisation_parameters[1][3] = 3.9666270087e-03;
+	optimisation_parameters[2][0] = 2.4246870746e-04;
+	optimisation_parameters[2][1] = 8.3654704179e-05;
+	optimisation_parameters[2][2] = 5.2362272268e-04;
+	optimisation_parameters[2][3] = 4.3139460801e-03;
+	optimisation_parameters[3][0] = 1.4086389598e-04;
+	optimisation_parameters[3][1] = 6.4970154059e-05;
+	optimisation_parameters[3][2] = 6.3505187529e-04;
+	optimisation_parameters[3][3] = 1.2694665284e-03;
 
 	// printf("argc = %d\n", argc);
 	if (argc > 1) {
@@ -109,8 +110,8 @@ int main (int argc, char *argv[]){
 	/////////// ADD INPUT NEURONS ///////////
 	TimerWithMessages * adding_input_neurons_timer = new TimerWithMessages("Adding Input Neurons...\n");
 
-	input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "../../MatlabGaborFilter/Inputs/", 100.0f);
-	// input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "MatlabGaborFilter/Inputs/", 100.0f);
+	// input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "../../MatlabGaborFilter/Inputs/", 100.0f);
+	input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "MatlabGaborFilter/Inputs/", 100.0f);
 	image_poisson_input_spiking_neuron_parameters_struct * image_poisson_input_spiking_group_params = new image_poisson_input_spiking_neuron_parameters_struct();
 	image_poisson_input_spiking_group_params->rate = 30.0f;
 	input_neurons->AddGroupForEachGaborType(image_poisson_input_spiking_group_params);
@@ -303,22 +304,22 @@ int main (int argc, char *argv[]){
 
 
 	bool simulate_network_to_test_untrained = true;
-	bool simulate_network_to_train_network = false;
-	bool simulate_network_to_test_trained = false;
+	bool simulate_network_to_train_network = true;
+	bool simulate_network_to_test_trained = true;
 	float single_score_to_write_to_file_for_dakota_optimisation = 0.0;
 
 
 	/////////// SIMULATE NETWORK TO TEST UNTRAINED ///////////
-	float presentation_time_per_stimulus_per_epoch = 0.05f;
+	float presentation_time_per_stimulus_per_epoch = 1.0f;
 	bool record_spikes = false;
 	bool save_recorded_spikes_to_file = false;
 	int number_of_bins = 3;
+	SpikeAnalyser * spike_analyser_for_untrained_network = new SpikeAnalyser(simulator.neurons, (ImagePoissonInputSpikingNeurons*)simulator.input_neurons);
 	if (simulate_network_to_test_untrained) {
 
-		SpikeAnalyser * spike_analyser_for_untrained_network = new SpikeAnalyser(simulator.neurons, (ImagePoissonInputSpikingNeurons*)simulator.input_neurons);
 		simulator.RunSimulationToCountNeuronSpikes(presentation_time_per_stimulus_per_epoch, record_spikes, save_recorded_spikes_to_file, spike_analyser_for_untrained_network);		
 		
-		// spike_analyser_for_untrained_network->calculate_single_cell_information_scores_for_neuron_group(EXCITATORY_NEURONS_LAYER_4, number_of_bins);
+		spike_analyser_for_untrained_network->calculate_single_cell_information_scores_for_neuron_group(EXCITATORY_NEURONS_LAYER_4, number_of_bins);
 		spike_analyser_for_untrained_network->calculate_various_neuron_spike_totals_and_averages(presentation_time_per_stimulus_per_epoch);
 		spike_analyser_for_untrained_network->calculate_combined_powered_distance_from_average_score();
 		// single_score_to_write_to_file_for_dakota_optimisation = spike_analyser_for_untrained_network->combined_powered_distance_from_average_score;
@@ -346,10 +347,10 @@ int main (int argc, char *argv[]){
 	if (simulate_network_to_test_trained) {
 		SpikeAnalyser * spike_analyser_for_trained_network = new SpikeAnalyser(simulator.neurons, (ImagePoissonInputSpikingNeurons*)simulator.input_neurons);
 		simulator.RunSimulationToCountNeuronSpikes(presentation_time_per_stimulus_per_epoch, record_spikes, save_recorded_spikes_to_file, spike_analyser_for_trained_network);
-		// spike_analyser_for_trained_network->calculate_single_cell_information_scores_for_neuron_group(EXCITATORY_NEURONS_LAYER_4, number_of_bins);
+		spike_analyser_for_trained_network->calculate_single_cell_information_scores_for_neuron_group(EXCITATORY_NEURONS_LAYER_4, number_of_bins);
 
-		single_score_to_write_to_file_for_dakota_optimisation = spike_analyser_for_trained_network->maximum_information_score_count_multiplied_by_sum_of_information_scores;
-
+		single_score_to_write_to_file_for_dakota_optimisation = spike_analyser_for_trained_network->maximum_information_score_count_multiplied_by_sum_of_information_scores - spike_analyser_for_untrained_network->maximum_information_score_count_multiplied_by_sum_of_information_scores;
+		printf("single_score_to_write_to_file_for_dakota_optimisation: %f\n", single_score_to_write_to_file_for_dakota_optimisation);
 		// string file = RESULTS_DIRECTORY + prefix_string + "_Epoch" + to_string(epoch_number) + "_" + to_string(clock());
 	}
 
