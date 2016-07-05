@@ -10,7 +10,7 @@ inline void print_line_of_dashes_with_blank_lines_either_side(){
 }
 
 
-inline void begin_simulation_message(float timestep, int number_of_stimuli, int number_of_epochs, bool record_spikes, bool save_recorded_spikes_to_file, bool present_stimuli_in_random_order, int total_number_of_neurons, int total_number_of_input_neurons, int total_number_of_synapses)
+inline void begin_simulation_message(float timestep, int number_of_stimuli, int number_of_epochs, bool record_spikes, bool save_recorded_spikes_to_file, int stimuli_presentation_order_type, int total_number_of_neurons, int total_number_of_input_neurons, int total_number_of_synapses)
 {
 	#ifndef QUIETSTART
 
@@ -21,8 +21,7 @@ inline void begin_simulation_message(float timestep, int number_of_stimuli, int 
 		printf("Total Number of Neurons: %d\n", total_number_of_neurons);
 		printf("Total Number of Input Neurons: %d\n", total_number_of_input_neurons);
 		printf("Total Number of Synapses: %d\n", total_number_of_synapses);
-
-		if (present_stimuli_in_random_order) printf("Stimuli to be presented in a random order.\n");
+		printf("STIMULI_PRESENTATION_ORDER_TYPE: %d\n", stimuli_presentation_order_type);
 		
 		if (record_spikes) printf("Spikes shall be recorded.\n");
 		if ((record_spikes) && (save_recorded_spikes_to_file)) printf("Spikes shall be saved to file.\n");
