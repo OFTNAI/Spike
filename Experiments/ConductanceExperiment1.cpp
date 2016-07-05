@@ -332,10 +332,11 @@ int main (int argc, char *argv[]){
 
 	/////////// SIMULATE NETWORK TRAINING ///////////
 	presentation_time_per_stimulus_per_epoch = 0.25f;
+	int stimulus_presentation_order_seed = 1;
 	int number_of_epochs = 10;
 	bool present_stimuli_in_random_order = true;
 	if (simulate_network_to_train_network) {
-		simulator.RunSimulationToTrainNetwork(presentation_time_per_stimulus_per_epoch, number_of_epochs, STIMULI_PRESENTATION_ORDER_TYPE_RANDOM);
+		simulator.RunSimulationToTrainNetwork(presentation_time_per_stimulus_per_epoch, number_of_epochs, STIMULI_PRESENTATION_ORDER_TYPE_RANDOM, stimulus_presentation_order_seed);
 	}
 
 

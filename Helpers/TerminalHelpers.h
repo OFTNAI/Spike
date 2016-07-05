@@ -10,6 +10,13 @@ inline void print_line_of_dashes_with_blank_lines_either_side(){
 }
 
 
+inline void print_message_and_exit(const char * message)
+{
+    printf("\n%s\nExiting...\n", message);
+
+    exit(-1);
+}
+
 inline void check_for_epochs_and_begin_simulation_message(float timestep, int number_of_stimuli, int number_of_epochs, bool record_spikes, bool save_recorded_spikes_to_file, int stimuli_presentation_order_type, int total_number_of_neurons, int total_number_of_input_neurons, int total_number_of_synapses)
 {
 	if (number_of_epochs == 0) print_message_and_exit("Error. There must be at least one epoch.");
@@ -33,10 +40,3 @@ inline void check_for_epochs_and_begin_simulation_message(float timestep, int nu
 	#endif
 }
 
-
-inline void print_message_and_exit(const char * message)
-{
-    printf("\n%s\nExiting...\n", message);
-
-    exit(-1);
-}
