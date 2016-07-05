@@ -58,6 +58,20 @@ void PoissonInputSpikingNeurons::set_threads_per_block_and_blocks_per_grid(int t
 
 }
 
+int* PoissonInputSpikingNeurons::setup_stimuli_presentation_order(STIMULI_PRESENTATION_ORDER_TYPE stimuli_presentation_order_type) {
+	
+	int* stimuli_presentation_order = InputSpikingNeurons::setup_stimuli_presentation_order(stimuli_presentation_order_type);
+
+	switch (stimuli_presentation_order_type)
+	{
+		default:
+			break;
+	}
+
+	return stimuli_presentation_order;
+}
+
+
 
 void PoissonInputSpikingNeurons::update_membrane_potentials(float timestep) {
 

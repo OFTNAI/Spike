@@ -30,6 +30,8 @@ public:
 	virtual void reset_neurons();
 	virtual void set_threads_per_block_and_blocks_per_grid(int threads);
 	virtual void update_membrane_potentials(float timestep);
+	virtual int* setup_stimuli_presentation_order(STIMULI_PRESENTATION_ORDER_TYPE stimuli_presentation_order_type);
+
 
 };
 

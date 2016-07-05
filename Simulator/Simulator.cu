@@ -206,8 +206,7 @@ void Simulator::RunSimulationToTrainNetwork(float presentation_time_per_stimulus
 
 void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, bool record_spikes, bool save_recorded_spikes_to_file, bool apply_stdp_to_relevant_synapses, bool count_spikes_per_neuron, STIMULI_PRESENTATION_ORDER_TYPE stimuli_presentation_order_type, SpikeAnalyser *spike_analyser){
 	
-	int number_of_stimuli = input_neurons->total_number_of_input_stimuli;
-	begin_simulation_message(timestep, number_of_stimuli, number_of_epochs, record_spikes, save_recorded_spikes_to_file, stimuli_presentation_order_type, neurons->total_number_of_neurons, input_neurons->total_number_of_neurons, synapses->total_number_of_synapses);
+	begin_simulation_message(timestep, input_neurons->total_number_of_input_stimuli, number_of_epochs, record_spikes, save_recorded_spikes_to_file, stimuli_presentation_order_type, neurons->total_number_of_neurons, input_neurons->total_number_of_neurons, synapses->total_number_of_synapses);
 	TimerWithMessages * simulation_timer = new TimerWithMessages();
 
 	if (number_of_epochs == 0) print_message_and_exit("Error. There must be at least one epoch.");
@@ -223,7 +222,7 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 		TimerWithMessages * epoch_timer = new TimerWithMessages();
 		printf("Starting Epoch: %d\n", epoch_number);
 
-		int* stimuli_presentation_order = setup_stimuli_presentation_order(stimuli_presentation_order_type, number_of_stimuli);
+		int* stimuli_presentation_order = input_neurons->setup_stimuli_presentation_order(stimuli_presentation_order_type);
 
 		neurons->reset_neurons();
 		synapses->reset_synapse_spikes();
@@ -232,7 +231,7 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 		float current_time_in_seconds = 0.0f;
 
 		// Running through every Stimulus
-		for (int stimulus_index = 0; stimulus_index < number_of_stimuli; stimulus_index++){
+		for (int stimulus_index = 0; stimulus_index < input_neurons->total_number_of_input_stimuli; stimulus_index++) {
 
 			printf("Stimulus: %d, Current time in seconds: %1.2f\n", stimuli_presentation_order[stimulus_index], current_time_in_seconds);
 
@@ -328,38 +327,6 @@ void Simulator::per_timestep_instructions(float current_time_in_seconds, bool ap
 	neurons->update_membrane_potentials(timestep);
 	input_neurons->update_membrane_potentials(timestep);
 
-}
-
-
-int* Simulator::setup_stimuli_presentation_order(STIMULI_PRESENTATION_ORDER_TYPE stimuli_presentation_order_type, int number_of_stimuli) {
-	
-	int* stimuli_presentation_order = (int*)malloc(number_of_stimuli*sizeof(int));
-	switch (stimuli_presentation_order_type)
-	{
-		case STIMULI_PRESENTATION_ORDER_TYPE_DEFAULT:
-			for (int i = 0; i < number_of_stimuli; i++){
-				stimuli_presentation_order[i] = i;
-			}
-			break;
-
-		case STIMULI_PRESENTATION_ORDER_TYPE_RANDOM:
-			for (int i = 0; i < number_of_stimuli; i++){
-				stimuli_presentation_order[i] = i;
-			}
-			std::random_shuffle(&stimuli_presentation_order[0], &stimuli_presentation_order[number_of_stimuli]);
-			break;
-
-		case STIMULI_PRESENTATION_ORDER_TYPE_OBJECT_BY_OBJECT_RANDOM_TRANSFORM_ORDER:
-
-			break;
-
-		case STIMULI_PRESENTATION_ORDER_TYPE_OBJECT_BY_OBJECT_RANDOM_TRANSFORM_ORDER_RESET_BETWEEN_OBJECTS:
-
-			break;
-
-	}
-
-	return stimuli_presentation_order;
 }
 
 

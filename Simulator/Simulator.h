@@ -30,12 +30,6 @@
 #include "../SpikeAnalyser/SpikeAnalyser.h"
 #include "../STDP/STDP.h"
 
-enum STIMULI_PRESENTATION_ORDER_TYPE {
-	STIMULI_PRESENTATION_ORDER_TYPE_DEFAULT,
-	STIMULI_PRESENTATION_ORDER_TYPE_RANDOM,
-	STIMULI_PRESENTATION_ORDER_TYPE_OBJECT_BY_OBJECT_RANDOM_TRANSFORM_ORDER,
-	STIMULI_PRESENTATION_ORDER_TYPE_OBJECT_BY_OBJECT_RANDOM_TRANSFORM_ORDER_RESET_BETWEEN_OBJECTS,
-};
 
 // Simulator Class for running of the simulations
 class Simulator{
@@ -87,7 +81,5 @@ public:
 
 protected: 
 	void per_timestep_instructions(float current_time_in_seconds, bool apply_stdp_to_relevant_synapses);
-	int* setup_stimuli_presentation_order(STIMULI_PRESENTATION_ORDER_TYPE stimuli_presentation_order_type, int number_of_stimuli);
-
 };
 #endif
