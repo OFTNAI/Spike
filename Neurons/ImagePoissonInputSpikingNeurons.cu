@@ -327,27 +327,27 @@ int ImagePoissonInputSpikingNeurons::calculate_gabor_index(int orientationIndex,
 	return orientationIndex * (total_number_of_wavelengths * total_number_of_phases) + wavelengthIndex * total_number_of_phases + phaseIndex;
 }
 
-int* ImagePoissonInputSpikingNeurons::setup_stimuli_presentation_order(STIMULI_PRESENTATION_ORDER_TYPE stimuli_presentation_order_type) {
+int* ImagePoissonInputSpikingNeurons::setup_stimuli_presentation_order(Stimuli_Presentation_Struct * stimuli_presentation_params) {
 	
-	int* stimuli_presentation_order = PoissonInputSpikingNeurons::setup_stimuli_presentation_order(stimuli_presentation_order_type);
+	int* stimuli_presentation_order = PoissonInputSpikingNeurons::setup_stimuli_presentation_order(stimuli_presentation_params);
 	
-	switch (stimuli_presentation_order_type)
-	{
-		case STIMULI_PRESENTATION_ORDER_TYPE_OBJECT_BY_OBJECT_RANDOM_TRANSFORM_ORDER:
-			for (int object_index = 0; object_index < total_number_of_objects; object_index++) {
-				for (int object_transform_index = 0; object_transform_index < total_number_of_transformations_per_object; object_transform_index++) {
-					stimuli_presentation_order[object_index * total_number_of_transformations_per_object + object_transform_index] = object_index * total_number_of_transformations_per_object + object_transform_index;
-				}
-			}
-			break;
+	// switch (stimuli_presentation_order_type)
+	// {
+	// 	case STIMULI_PRESENTATION_ORDER_TYPE_OBJECT_BY_OBJECT_RANDOM_TRANSFORM_ORDER:
+	// 		for (int object_index = 0; object_index < total_number_of_objects; object_index++) {
+	// 			for (int object_transform_index = 0; object_transform_index < total_number_of_transformations_per_object; object_transform_index++) {
+	// 				stimuli_presentation_order[object_index * total_number_of_transformations_per_object + object_transform_index] = object_index * total_number_of_transformations_per_object + object_transform_index;
+	// 			}
+	// 		}
+	// 		break;
 
-		case STIMULI_PRESENTATION_ORDER_TYPE_OBJECT_BY_OBJECT_RANDOM_TRANSFORM_ORDER_RESET_BETWEEN_OBJECTS:
-			break;
+	// 	case STIMULI_PRESENTATION_ORDER_TYPE_OBJECT_BY_OBJECT_RANDOM_TRANSFORM_ORDER_RESET_BETWEEN_OBJECTS:
+	// 		break;
 
-		default:
-			break;
+	// 	default:
+	// 		break;
 
-	}
+	// }
 
 	return stimuli_presentation_order;
 }

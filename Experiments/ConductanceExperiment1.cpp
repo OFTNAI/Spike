@@ -335,8 +335,10 @@ int main (int argc, char *argv[]){
 	int stimulus_presentation_order_seed = 1;
 	int number_of_epochs = 10;
 	bool present_stimuli_in_random_order = true;
+	Stimuli_Presentation_Struct * stimuli_presentation_params = new Stimuli_Presentation_Struct();
+	stimuli_presentation_params->presentation_format = PRESENTATION_FORMAT_RANDOM_NO_RESET;
 	if (simulate_network_to_train_network) {
-		simulator.RunSimulationToTrainNetwork(presentation_time_per_stimulus_per_epoch, number_of_epochs, STIMULI_PRESENTATION_ORDER_TYPE_RANDOM, stimulus_presentation_order_seed);
+		simulator.RunSimulationToTrainNetwork(presentation_time_per_stimulus_per_epoch, number_of_epochs, stimuli_presentation_params, stimulus_presentation_order_seed);
 	}
 
 

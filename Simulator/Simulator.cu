@@ -188,26 +188,27 @@ void Simulator::RunSimulationToCountNeuronSpikes(float presentation_time_per_sti
 	bool apply_stdp_to_relevant_synapses = false;
 	bool count_spikes_per_neuron = true;
 	int stimulus_presentation_order_seed = 0; // Shouldn't be needed if stimuli presentation not random
-	STIMULI_PRESENTATION_ORDER_TYPE stimuli_presentation_order_type = STIMULI_PRESENTATION_ORDER_TYPE_DEFAULT;
-
-	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, record_spikes, save_recorded_spikes_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, stimuli_presentation_order_type, stimulus_presentation_order_seed, spike_analyser);
+	Stimuli_Presentation_Struct * stimuli_presentation_params = new Stimuli_Presentation_Struct();
+	stimuli_presentation_params->presentation_format = PRESENTATION_FORMAT_RANDOM_NO_RESET;
+	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, record_spikes, save_recorded_spikes_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, stimuli_presentation_params, stimulus_presentation_order_seed, spike_analyser);
 }
 
-void Simulator::RunSimulationToTrainNetwork(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, STIMULI_PRESENTATION_ORDER_TYPE stimuli_presentation_order_type, int stimulus_presentation_order_seed) {
+void Simulator::RunSimulationToTrainNetwork(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, Stimuli_Presentation_Struct * stimuli_presentation_params, int stimulus_presentation_order_seed) {
 
 	bool apply_stdp_to_relevant_synapses = true;
 	bool count_spikes_per_neuron = false;
 	bool record_spikes = false;
 	bool save_recorded_spikes_to_file = false;
 
-	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, record_spikes, save_recorded_spikes_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, stimuli_presentation_order_type, stimulus_presentation_order_seed, NULL);
+	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, record_spikes, save_recorded_spikes_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, stimuli_presentation_params, stimulus_presentation_order_seed, NULL);
 }
 
 
 
-void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, bool record_spikes, bool save_recorded_spikes_to_file, bool apply_stdp_to_relevant_synapses, bool count_spikes_per_neuron, STIMULI_PRESENTATION_ORDER_TYPE stimuli_presentation_order_type, int stimulus_presentation_order_seed, SpikeAnalyser *spike_analyser){
-	
-	check_for_epochs_and_begin_simulation_message(timestep, input_neurons->total_number_of_input_stimuli, number_of_epochs, record_spikes, save_recorded_spikes_to_file, stimuli_presentation_order_type, neurons->total_number_of_neurons, input_neurons->total_number_of_neurons, synapses->total_number_of_synapses);
+void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, bool record_spikes, bool save_recorded_spikes_to_file, bool apply_stdp_to_relevant_synapses, bool count_spikes_per_neuron, Stimuli_Presentation_Struct * stimuli_presentation_params, int stimulus_presentation_order_seed, SpikeAnalyser *spike_analyser){
+
+	check_for_epochs_and_begin_simulation_message(timestep, input_neurons->total_number_of_input_stimuli, number_of_epochs, record_spikes, save_recorded_spikes_to_file, neurons->total_number_of_neurons, input_neurons->total_number_of_neurons, synapses->total_number_of_synapses);
+	// Should print something about stimuli_presentation_params as old stuff removed from check_for_epochs...
 	TimerWithMessages * simulation_timer = new TimerWithMessages();
 
 	// Set seed for stimulus presentation order
@@ -227,7 +228,7 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 
 		float current_time_in_seconds = 0.0f;
 
-		int* stimuli_presentation_order = input_neurons->setup_stimuli_presentation_order(stimuli_presentation_order_type);
+		int* stimuli_presentation_order = input_neurons->setup_stimuli_presentation_order(stimuli_presentation_params);
 		for (int stimulus_index = 0; stimulus_index < input_neurons->total_number_of_input_stimuli; stimulus_index++) {
 
 			printf("Stimulus: %d, Current time in seconds: %1.2f\n", stimuli_presentation_order[stimulus_index], current_time_in_seconds);

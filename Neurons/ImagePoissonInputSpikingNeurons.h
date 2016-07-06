@@ -29,7 +29,7 @@ public:
 	virtual void allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage);
 	virtual void reset_neurons();
 	virtual void update_membrane_potentials(float timestep);
-	virtual int* setup_stimuli_presentation_order(STIMULI_PRESENTATION_ORDER_TYPE stimuli_presentation_order_type);
+	virtual int* setup_stimuli_presentation_order(Stimuli_Presentation_Struct * stimuli_presentation_params);
 
 	void set_up_rates(const char * fileList, const char * filterParameters, const char * inputDirectory, float max_rate_scaling_factor);
 
