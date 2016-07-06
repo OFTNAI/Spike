@@ -47,7 +47,7 @@ int ImagePoissonInputSpikingNeurons::AddGroup(neuron_parameters_struct * group_p
 
 	int new_group_id = PoissonInputSpikingNeurons::AddGroup(group_params);
 
-	image_poisson_input_spiking_neuron_parameters_struct * image_poisson_input_spiking_group_params = (image_poisson_input_spiking_neuron_parameters_struct*)group_params;
+	// image_poisson_input_spiking_neuron_parameters_struct * image_poisson_input_spiking_group_params = (image_poisson_input_spiking_neuron_parameters_struct*)group_params;
 
 	for (int i = total_number_of_neurons - number_of_neurons_in_new_group; i < total_number_of_neurons; i++) {
 
