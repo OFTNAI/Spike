@@ -327,27 +327,53 @@ int ImagePoissonInputSpikingNeurons::calculate_gabor_index(int orientationIndex,
 	return orientationIndex * (total_number_of_wavelengths * total_number_of_phases) + wavelengthIndex * total_number_of_phases + phaseIndex;
 }
 
+
+
 int* ImagePoissonInputSpikingNeurons::setup_stimuli_presentation_order(Stimuli_Presentation_Struct * stimuli_presentation_params) {
 	
 	int* stimuli_presentation_order = PoissonInputSpikingNeurons::setup_stimuli_presentation_order(stimuli_presentation_params);
 	
-	// switch (stimuli_presentation_order_type)
-	// {
-	// 	case STIMULI_PRESENTATION_ORDER_TYPE_OBJECT_BY_OBJECT_RANDOM_TRANSFORM_ORDER:
-	// 		for (int object_index = 0; object_index < total_number_of_objects; object_index++) {
-	// 			for (int object_transform_index = 0; object_transform_index < total_number_of_transformations_per_object; object_transform_index++) {
-	// 				stimuli_presentation_order[object_index * total_number_of_transformations_per_object + object_transform_index] = object_index * total_number_of_transformations_per_object + object_transform_index;
-	// 			}
-	// 		}
-	// 		break;
+	switch (stimuli_presentation_params->presentation_format) {
+		
+		case PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_OBJECTS: case PRESENTATION_FORMAT_OBJECT_BY_OBJECT_NO_RESET:
+		{
+			int* object_order_indices = (int*)malloc(total_number_of_objects * sizeof(int));
 
-	// 	case STIMULI_PRESENTATION_ORDER_TYPE_OBJECT_BY_OBJECT_RANDOM_TRANSFORM_ORDER_RESET_BETWEEN_OBJECTS:
-	// 		break;
+			for (int object_index = 0; object_index < total_number_of_objects; object_index++) {
+				object_order_indices[object_index] = object_index;			
+			}
 
-	// 	default:
-	// 		break;
+			switch (stimuli_presentation_params->object_order) {
+		
+				case OBJECT_ORDER_ORIGINAL:
 
-	// }
+					break;
+
+				case OBJECT_ORDER_RANDOM:
+					std::random_shuffle(&object_order_indices[0], &object_order_indices[total_number_of_objects]);
+					break;
+
+			}
+
+			int* transform_order_indices = (int*)malloc(total_number_of_transformations_per_object * sizeof(int));
+			for (int transform_index = 0; transform_index < total_number_of_transformations_per_object; transform_index++) {
+				transform_order_indices[transform_index] = transform_index;			
+			}
+
+			for (int object_index = 0; object_index < total_number_of_objects; object_index++) {
+				
+				if (stimuli_presentation_params->transform_order == TRANSFORM_ORDER_RANDOM) std::random_shuffle(&transform_order_indices[0], &transform_order_indices[total_number_of_transformations_per_object]);
+
+				for (int transform_index = 0; transform_index < total_number_of_transformations_per_object; transform_index++) {
+					stimuli_presentation_order[object_index * total_number_of_transformations_per_object + transform_index] = object_order_indices[object_index] * total_number_of_transformations_per_object + transform_order_indices[transform_index]; 
+				}					
+			}
+
+		}
+
+		default:
+			break;
+	}
 
 	return stimuli_presentation_order;
 }

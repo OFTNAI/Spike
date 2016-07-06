@@ -189,7 +189,9 @@ void Simulator::RunSimulationToCountNeuronSpikes(float presentation_time_per_sti
 	bool count_spikes_per_neuron = true;
 	int stimulus_presentation_order_seed = 0; // Shouldn't be needed if stimuli presentation not random
 	Stimuli_Presentation_Struct * stimuli_presentation_params = new Stimuli_Presentation_Struct();
-	stimuli_presentation_params->presentation_format = PRESENTATION_FORMAT_RANDOM_NO_RESET;
+	stimuli_presentation_params->presentation_format = PRESENTATION_FORMAT_OBJECT_BY_OBJECT_NO_RESET;
+	stimuli_presentation_params->object_order = OBJECT_ORDER_ORIGINAL;
+	stimuli_presentation_params->transform_order = TRANSFORM_ORDER_ORIGINAL;
 	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, record_spikes, save_recorded_spikes_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, stimuli_presentation_params, stimulus_presentation_order_seed, spike_analyser);
 }
 

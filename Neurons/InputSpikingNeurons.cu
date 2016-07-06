@@ -23,25 +23,16 @@ int* InputSpikingNeurons::setup_stimuli_presentation_order(Stimuli_Presentation_
 		stimuli_presentation_order[i] = i;
 	}
 
-	// switch (stimuli_presentation_order_type)
-	// {
-	// 	case STIMULI_PRESENTATION_ORDER_TYPE_DEFAULT:
-	// 		for (int i = 0; i < total_number_of_input_stimuli; i++){
-	// 			stimuli_presentation_order[i] = i;
-	// 		}
-	// 		break;
+	switch (stimuli_presentation_params->presentation_format) {
 
-	// 	case STIMULI_PRESENTATION_ORDER_TYPE_RANDOM:
-	// 		for (int i = 0; i < total_number_of_input_stimuli; i++){
-	// 			stimuli_presentation_order[i] = i;
-	// 		}
-	// 		std::random_shuffle(&stimuli_presentation_order[0], &stimuli_presentation_order[total_number_of_input_stimuli]);
-	// 		break;
+		case PRESENTATION_FORMAT_RANDOM_RESET_BETWEEN_EACH_STIMULUS: case PRESENTATION_FORMAT_RANDOM_NO_RESET: {
+			std::random_shuffle(&stimuli_presentation_order[0], &stimuli_presentation_order[total_number_of_input_stimuli]);
+			break;
+		}
 
-	// 	default:
-	// 		break;
-
-	// }
+		default:
+			break;
+	}
 
 	return stimuli_presentation_order;
 }
