@@ -61,12 +61,25 @@ ObjectFiles/%.o: Helpers/%.cpp
 	$(CC) $(CFLAGS) -o $@ $<
 
 
-# Test script
-test: Simulator.o Neurons.o SpikingNeurons.o IzhikevichSpikingNeurons.o PoissonSpikingNeurons.o ImagePoissonSpikingNeurons.o FstreamWrapper.o GeneratorSpikingNeurons.o Synapses.o RecordingElectrodes.o RandomStateManager.o SpikeAnalyser.o
-	$(CC) Tests.cu Simulator.o Neurons.o SpikingNeurons.o IzhikevichSpikingNeurons.o PoissonSpikingNeurons.o ImagePoissonSpikingNeurons.o FstreamWrapper.o GeneratorSpikingNeurons.o Synapses.o RecordingElectrodes.o RandomStateManager.o SpikeAnalyser.o -o unittests
+
+
+# Test Files
+TEST_CPP_FILES := $(wildcard Tests/*.cu)
+TEST_OBJ_FILES := $(addprefix Tests/obj/,$(notdir $(TEST_CPP_FILES:.cu=.o)))
+
+test: ${TEST_OBJ_FILES} $(CU_OBJ_FILES) $(CPP_OBJ_FILES)
+	$(CC)  -lineinfo  -lpython2.7 ${TEST_OBJ_FILES} $(CU_OBJ_FILES) $(CPP_OBJ_FILES) -o Tests/unittests
+
+# Test Compilation
+Tests/obj/%.o: Tests/%.cu
+	$(CC) $(CFLAGS) -o $@ $<
+
+# Cleaning tests
 cleantest:
-	rm *.o unittests
+	rm Tests/obj/* Tests/unittests
+
+
 
 # Removing all created files
 clean:
-	rm ObjectFiles/*.o run
+	rm ObjectFiles/*.o ${EXPERIMENT_DIRECTORY}/bin/* Tests/obj/*

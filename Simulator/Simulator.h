@@ -52,6 +52,9 @@ public:
 	int** genids;
 	float** gentimes;
 
+	// Flag: Enable for high accuracy spike storage, Disable for speed
+	bool high_fidelity_spike_storage;
+
 	// Parameters
 	float timestep;
 	void SetTimestep(float timest);

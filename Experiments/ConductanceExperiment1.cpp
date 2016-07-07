@@ -31,10 +31,11 @@ int main (int argc, char *argv[]){
 
 	int optimisation_stage = 4;
 
-	float G2E_FF_biological_conductance_scaling_constant_lambda = 0.001732477223;
-	float L1_E2I_L_biological_conductance_scaling_constant_lambda = 0.0002244875205;
-	float L1_I2E_L_biological_conductance_scaling_constant_lambda = 0.002573465137;
-	float L1_E2E_L_biological_conductance_scaling_constant_lambda = 0.002194632248;
+	   
+	float G2E_FF_biological_conductance_scaling_constant_lambda = 0.001360840969;
+	float L1_E2I_L_biological_conductance_scaling_constant_lambda = 0.0001937483874;
+	float L1_I2E_L_biological_conductance_scaling_constant_lambda = 0.001607171098;
+	float L1_E2E_L_biological_conductance_scaling_constant_lambda = 0.0005013331389;
 
 	float L1_2_L2_E2E_FF_biological_conductance_scaling_constant_lambda = 0.000320288275;
 	float L2_E2I_L_biological_conductance_scaling_constant_lambda = 0.0001493473745;
@@ -46,11 +47,10 @@ int main (int argc, char *argv[]){
 	float L3_I2E_L_biological_conductance_scaling_constant_lambda = 0.004517876013;
 	float L3_E2E_L_biological_conductance_scaling_constant_lambda = 0.004139377891;
 
-	//VALUES COPIED FROM 2
-	float L3_2_L4_E2E_FF_biological_conductance_scaling_constant_lambda = 0.0002910494922;
-	float L4_E2I_L_biological_conductance_scaling_constant_lambda = 0.0001888349535;
-	float L4_I2E_L_biological_conductance_scaling_constant_lambda = 0.003112143311;
-	float L4_E2E_L_biological_conductance_scaling_constant_lambda = 0.0008515281938;
+	float L3_2_L4_E2E_FF_biological_conductance_scaling_constant_lambda = 0.0001259627431;
+	float L4_E2I_L_biological_conductance_scaling_constant_lambda = 5.491266961e-05;
+	float L4_I2E_L_biological_conductance_scaling_constant_lambda = 0.003885850461;
+	float L4_E2E_L_biological_conductance_scaling_constant_lambda = 0.000193538218;
 
 	// printf("argc = %d\n", argc);
 	if (argc > 1) {
@@ -63,10 +63,13 @@ int main (int argc, char *argv[]){
 		float optimisation_variable_2 = std::stof(argv[5]);
 		float optimisation_variable_3 = std::stof(argv[6]);
 		float optimisation_variable_4 = std::stof(argv[7]);
+		bool take_previous_layer_parameters_from_files = std::stoi(argv[8]);
 		printf("optimisation_variable_1: %f\n", optimisation_variable_1);
 		printf("optimisation_variable_2: %f\n", optimisation_variable_2);
 		printf("optimisation_variable_3: %f\n", optimisation_variable_3);
 		printf("optimisation_variable_4: %f\n", optimisation_variable_4);
+		printf("take_previous_layer_parameters_from_files: ");
+		take_previous_layer_parameters_from_files ? printf("true\n") : printf("false\n");
 
 		if (optimisation_stage == 0) {
 			G2E_FF_biological_conductance_scaling_constant_lambda = optimisation_variable_1;
@@ -96,6 +99,79 @@ int main (int argc, char *argv[]){
 			L4_E2E_L_biological_conductance_scaling_constant_lambda = optimisation_variable_4;
 		}
 
+
+		if (take_previous_layer_parameters_from_files) {
+
+			std::string parameter_from_file_as_string;
+
+			if (optimisation_stage > 0) {
+				std::ifstream optimal_parameters_from_optimisation_iteration_0("../OptimalParameters/optimal_parameters_from_optimisation_iteration_0.txt");
+
+				std::getline(optimal_parameters_from_optimisation_iteration_0, parameter_from_file_as_string);
+				G2E_FF_biological_conductance_scaling_constant_lambda = std::atof(parameter_from_file_as_string.c_str());
+				
+				std::getline(optimal_parameters_from_optimisation_iteration_0, parameter_from_file_as_string);
+				L1_E2I_L_biological_conductance_scaling_constant_lambda = std::atof(parameter_from_file_as_string.c_str());
+
+				std::getline(optimal_parameters_from_optimisation_iteration_0, parameter_from_file_as_string);
+				L1_I2E_L_biological_conductance_scaling_constant_lambda = std::atof(parameter_from_file_as_string.c_str());
+
+				std::getline(optimal_parameters_from_optimisation_iteration_0, parameter_from_file_as_string);
+				L1_E2E_L_biological_conductance_scaling_constant_lambda = std::atof(parameter_from_file_as_string.c_str());
+
+				// printf("%s", parameter_from_file_as_string.c_str());				
+				// printf("G2E_FF_biological_conductance_scaling_constant_lambda: %f\n", G2E_FF_biological_conductance_scaling_constant_lambda);				
+			}
+
+			if (optimisation_stage > 1) {
+				std::ifstream optimal_parameters_from_optimisation_iteration_1("../OptimalParameters/optimal_parameters_from_optimisation_iteration_1.txt");
+
+				std::getline(optimal_parameters_from_optimisation_iteration_1, parameter_from_file_as_string);
+				L1_2_L2_E2E_FF_biological_conductance_scaling_constant_lambda = std::atof(parameter_from_file_as_string.c_str());
+
+				std::getline(optimal_parameters_from_optimisation_iteration_1, parameter_from_file_as_string);
+				L2_E2I_L_biological_conductance_scaling_constant_lambda = std::atof(parameter_from_file_as_string.c_str());
+
+				std::getline(optimal_parameters_from_optimisation_iteration_1, parameter_from_file_as_string);
+				L2_I2E_L_biological_conductance_scaling_constant_lambda = std::atof(parameter_from_file_as_string.c_str());
+
+				std::getline(optimal_parameters_from_optimisation_iteration_1, parameter_from_file_as_string);
+				L2_E2E_L_biological_conductance_scaling_constant_lambda = std::atof(parameter_from_file_as_string.c_str());
+			}
+
+			if (optimisation_stage > 2) {
+				std::ifstream optimal_parameters_from_optimisation_iteration_2("../OptimalParameters/optimal_parameters_from_optimisation_iteration_2.txt");
+
+				std::getline(optimal_parameters_from_optimisation_iteration_2, parameter_from_file_as_string);
+				L2_2_L3_E2E_FF_biological_conductance_scaling_constant_lambda = std::atof(parameter_from_file_as_string.c_str());
+
+				std::getline(optimal_parameters_from_optimisation_iteration_2, parameter_from_file_as_string);
+				L3_E2I_L_biological_conductance_scaling_constant_lambda = std::atof(parameter_from_file_as_string.c_str());
+
+				std::getline(optimal_parameters_from_optimisation_iteration_2, parameter_from_file_as_string);
+				L3_I2E_L_biological_conductance_scaling_constant_lambda = std::atof(parameter_from_file_as_string.c_str());
+
+				std::getline(optimal_parameters_from_optimisation_iteration_2, parameter_from_file_as_string);
+				L3_E2E_L_biological_conductance_scaling_constant_lambda = std::atof(parameter_from_file_as_string.c_str());
+			}
+
+			if (optimisation_stage > 3) {
+				std::ifstream optimal_parameters_from_optimisation_iteration_3("../OptimalParameters/optimal_parameters_from_optimisation_iteration_3.txt");
+
+				std::getline(optimal_parameters_from_optimisation_iteration_3, parameter_from_file_as_string);
+				L3_2_L4_E2E_FF_biological_conductance_scaling_constant_lambda = std::atof(parameter_from_file_as_string.c_str());
+
+				std::getline(optimal_parameters_from_optimisation_iteration_3, parameter_from_file_as_string);
+				L4_E2I_L_biological_conductance_scaling_constant_lambda = std::atof(parameter_from_file_as_string.c_str());
+
+				std::getline(optimal_parameters_from_optimisation_iteration_3, parameter_from_file_as_string);
+				L4_I2E_L_biological_conductance_scaling_constant_lambda = std::atof(parameter_from_file_as_string.c_str());
+
+				std::getline(optimal_parameters_from_optimisation_iteration_3, parameter_from_file_as_string);
+				L4_E2E_L_biological_conductance_scaling_constant_lambda = std::atof(parameter_from_file_as_string.c_str());
+			}
+		}
+
 	}
 
 	
@@ -103,6 +179,7 @@ int main (int argc, char *argv[]){
 	Simulator simulator;
 	float timestep = 0.0001;
 	simulator.SetTimestep(timestep);
+	simulator.high_fidelity_spike_storage = true;
 
 	LIFSpikingNeurons * lif_spiking_neurons = new LIFSpikingNeurons();
 	ImagePoissonInputSpikingNeurons* input_neurons = new ImagePoissonInputSpikingNeurons();

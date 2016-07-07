@@ -42,9 +42,9 @@ int LIFSpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
 }
 
 
-void LIFSpikingNeurons::allocate_device_pointers() {
+void LIFSpikingNeurons::allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage) {
  	
- 	SpikingNeurons::allocate_device_pointers();
+ 	SpikingNeurons::allocate_device_pointers(maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
 
  	CudaSafeCall(cudaMalloc((void **)&d_membrane_time_constants_tau_m, sizeof(float)*total_number_of_neurons));
  	CudaSafeCall(cudaMalloc((void **)&d_membrane_resistances_R, sizeof(float)*total_number_of_neurons));
