@@ -75,6 +75,10 @@ void Neurons::allocate_device_pointers(int maximum_axonal_delay_in_timesteps,  b
 	CudaSafeCall(cudaMalloc((void **)&d_current_injections, sizeof(float)*total_number_of_neurons));
 }
 
+void Neurons::copy_constants_to_device() {
+	
+}
+
 void Neurons::reset_neurons() {
 	reset_current_injections();
 }

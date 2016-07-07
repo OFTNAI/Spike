@@ -43,8 +43,4 @@ bool InputSpikingNeurons::stimulus_is_new_object_for_object_by_object_presentati
 	return false;
 }
 
-void InputSpikingNeurons::reset_neurons() {
 
-	SpikingNeurons::reset_neurons();
-
-}

@@ -26,12 +26,15 @@ public:
 
 	int length_of_longest_stimulus;
 
-	
-	// Functions
+
 	virtual int AddGroup(neuron_parameters_struct * group_params);
+
 	virtual void allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage);
+	virtual void copy_constants_to_device();
 	virtual void reset_neurons();
+
 	virtual void set_threads_per_block_and_blocks_per_grid(int threads);
+	
 	virtual void check_for_neuron_spikes(float current_time_in_seconds, float timestep);
 	virtual void update_membrane_potentials(float timestep);
 

@@ -44,6 +44,14 @@ void GeneratorInputSpikingNeurons::allocate_device_pointers(int maximum_axonal_d
 }
 
 
+void GeneratorInputSpikingNeurons::copy_constants_to_device() {
+
+	InputSpikingNeurons::copy_constants_to_device();
+
+}
+
+
+
 void GeneratorInputSpikingNeurons::reset_neurons() {
 	InputSpikingNeurons::reset_neurons();
 

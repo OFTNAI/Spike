@@ -79,6 +79,13 @@ void ImagePoissonInputSpikingNeurons::allocate_device_pointers(int maximum_axona
 }
 
 
+void ImagePoissonInputSpikingNeurons::copy_constants_to_device() {
+
+	PoissonInputSpikingNeurons::copy_constants_to_device();
+
+}
+
+
 void ImagePoissonInputSpikingNeurons::reset_neurons() {
 
 	PoissonInputSpikingNeurons::reset_neurons();

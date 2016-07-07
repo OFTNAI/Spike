@@ -54,20 +54,29 @@ void IzhikevichSpikingNeurons::allocate_device_pointers(int maximum_axonal_delay
  	CudaSafeCall(cudaMalloc((void **)&d_param_a, sizeof(float)*total_number_of_neurons));
  	CudaSafeCall(cudaMalloc((void **)&d_param_b, sizeof(float)*total_number_of_neurons));
  	CudaSafeCall(cudaMalloc((void **)&d_param_d, sizeof(float)*total_number_of_neurons));
-
  	CudaSafeCall(cudaMalloc((void **)&d_states_u, sizeof(float)*total_number_of_neurons));
  	
  	
 }
 
-void IzhikevichSpikingNeurons::reset_neurons() {
 
-	SpikingNeurons::reset_neurons();	
+void IzhikevichSpikingNeurons::copy_constants_to_device() {
+
+	SpikingNeurons::copy_constants_to_device();
 
 	CudaSafeCall(cudaMemcpy(d_param_a, param_a, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_param_b, param_b, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_param_d, param_d, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
 	
+
+}
+
+
+
+void IzhikevichSpikingNeurons::reset_neurons() {
+
+	SpikingNeurons::reset_neurons();	
+
 	CudaSafeCall(cudaMemset(d_states_u, 0.0f, sizeof(float)*total_number_of_neurons));
 
 }

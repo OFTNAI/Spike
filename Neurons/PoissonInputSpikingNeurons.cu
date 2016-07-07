@@ -44,12 +44,18 @@ void PoissonInputSpikingNeurons::allocate_device_pointers(int maximum_axonal_del
 
 }
 
+void PoissonInputSpikingNeurons::copy_constants_to_device() {
+	InputSpikingNeurons::copy_constants_to_device();
+
+	CudaSafeCall(cudaMemcpy(d_rates, rates, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
+}
+
 
 void PoissonInputSpikingNeurons::reset_neurons() {
 
 	InputSpikingNeurons::reset_neurons();
 
-	CudaSafeCall(cudaMemcpy(d_rates, rates, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
+	
 }
 
 

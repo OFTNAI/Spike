@@ -150,6 +150,9 @@ void Simulator::setup_network() {
 	synapses->allocate_device_pointers();
 	stdp_rule->allocate_device_pointers();
 
+	neurons->copy_constants_to_device();
+	input_neurons->copy_constants_to_device();
+
 	timer->stop_timer_and_log_time_and_message("Network Setup.", true);
 }
 

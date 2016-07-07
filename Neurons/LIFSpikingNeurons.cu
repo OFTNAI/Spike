@@ -51,12 +51,19 @@ void LIFSpikingNeurons::allocate_device_pointers(int maximum_axonal_delay_in_tim
 
 }
 
-void LIFSpikingNeurons::reset_neurons() {
 
-	SpikingNeurons::reset_neurons();	
+void LIFSpikingNeurons::copy_constants_to_device() {
+
+	SpikingNeurons::copy_constants_to_device();
 
 	CudaSafeCall(cudaMemcpy(d_membrane_time_constants_tau_m, membrane_time_constants_tau_m, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_membrane_resistances_R, membrane_resistances_R, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
+}
+
+
+
+void LIFSpikingNeurons::reset_neurons() {
+	SpikingNeurons::reset_neurons();	
 }
 
 
