@@ -30,6 +30,7 @@ public:
 	virtual void reset_neurons();
 	virtual void update_membrane_potentials(float timestep);
 	virtual int* setup_stimuli_presentation_order(Stimuli_Presentation_Struct * stimuli_presentation_params);
+	virtual bool stimulus_is_new_object_for_object_by_object_presentation(int stimulus_index);
 
 	void set_up_rates(const char * fileList, const char * filterParameters, const char * inputDirectory, float max_rate_scaling_factor);
 

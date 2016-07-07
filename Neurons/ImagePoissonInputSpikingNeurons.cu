@@ -60,8 +60,6 @@ int ImagePoissonInputSpikingNeurons::AddGroup(neuron_parameters_struct * group_p
 
 void ImagePoissonInputSpikingNeurons::AddGroupForEachGaborType(neuron_parameters_struct * group_params) {
 
-	// int group_shape[] = {image_width, image_width};
-
 	image_poisson_input_spiking_neuron_parameters_struct * image_poisson_input_spiking_group_params = (image_poisson_input_spiking_neuron_parameters_struct*)group_params;
 	image_poisson_input_spiking_group_params->group_shape[0] = image_width;
 	image_poisson_input_spiking_group_params->group_shape[1] = image_width;
@@ -379,11 +377,12 @@ int* ImagePoissonInputSpikingNeurons::setup_stimuli_presentation_order(Stimuli_P
 }
 
 
+bool ImagePoissonInputSpikingNeurons::stimulus_is_new_object_for_object_by_object_presentation(int stimulus_index) {
+	return (stimulus_index % total_number_of_transformations_per_object == 0) ? true : false;
+}
+
 
 void ImagePoissonInputSpikingNeurons::update_membrane_potentials(float timestep) {
-
-	// printf("total_number_of_neurons: %d\n", total_number_of_neurons);
-	// printf("total_number_of_rates_per_image: %d\n", total_number_of_rates_per_image);
 
 	poisson_update_membrane_potentials_kernel<<<RandomStateManager::instance()->block_dimensions, RandomStateManager::instance()->threads_per_block>>>(RandomStateManager::instance()->d_states,
 														d_gabor_input_rates,

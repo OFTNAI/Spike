@@ -1,6 +1,7 @@
 #include "InputSpikingNeurons.h"
 #include <stdlib.h>
 #include "../Helpers/CUDAErrorCheckHelpers.h"
+#include "../Helpers/TerminalHelpers.h"
 
 
 // InputSpikingNeurons Constructor
@@ -35,4 +36,9 @@ int* InputSpikingNeurons::setup_stimuli_presentation_order(Stimuli_Presentation_
 	}
 
 	return stimuli_presentation_order;
+}
+
+bool InputSpikingNeurons::stimulus_is_new_object_for_object_by_object_presentation(int stimulus_index) {
+	print_message_and_exit("Object by object presentation currently unsupported at InputSpikingNeurons level. Please use ImagePoissonInputSpikingNeurons.");
+	return false;
 }

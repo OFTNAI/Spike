@@ -189,7 +189,7 @@ void Simulator::RunSimulationToCountNeuronSpikes(float presentation_time_per_sti
 	bool count_spikes_per_neuron = true;
 	int stimulus_presentation_order_seed = 0; // Shouldn't be needed if stimuli presentation not random
 	Stimuli_Presentation_Struct * stimuli_presentation_params = new Stimuli_Presentation_Struct();
-	stimuli_presentation_params->presentation_format = PRESENTATION_FORMAT_OBJECT_BY_OBJECT_NO_RESET;
+	stimuli_presentation_params->presentation_format = PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_OBJECTS;
 	stimuli_presentation_params->object_order = OBJECT_ORDER_ORIGINAL;
 	stimuli_presentation_params->transform_order = TRANSFORM_ORDER_ORIGINAL;
 	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, record_spikes, save_recorded_spikes_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, stimuli_presentation_params, stimulus_presentation_order_seed, spike_analyser);
@@ -234,6 +234,23 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 		for (int stimulus_index = 0; stimulus_index < input_neurons->total_number_of_input_stimuli; stimulus_index++) {
 
 			printf("Stimulus: %d, Current time in seconds: %1.2f\n", stimuli_presentation_order[stimulus_index], current_time_in_seconds);
+			printf("stimuli_presentation_params->presentation_format: %d\n", stimuli_presentation_params->presentation_format);
+
+			if (stimuli_presentation_params->presentation_format == PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_OBJECTS) {
+
+				bool stimulus_is_new_object = input_neurons->stimulus_is_new_object_for_object_by_object_presentation(stimulus_index);
+				(stimulus_is_new_object) ? printf("stimulus_is_new_object\n") : printf("stimulus_is_NOT_new_object\n");
+
+				if (stimulus_is_new_object) {
+					
+				}
+
+			} else if (stimuli_presentation_params->presentation_format == PRESENTATION_FORMAT_RANDOM_RESET_BETWEEN_EACH_STIMULUS) {
+				
+
+
+			}
+
 
 			// These statements have been placed in this order for the Spike Generator Neurons so that they can set up for the next timestep
 			input_neurons->current_stimulus_index = stimuli_presentation_order[stimulus_index];

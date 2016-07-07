@@ -31,6 +31,7 @@ public:
 	virtual void set_threads_per_block_and_blocks_per_grid(int threads);
 	virtual void update_membrane_potentials(float timestep);
 	virtual int* setup_stimuli_presentation_order(Stimuli_Presentation_Struct * stimuli_presentation_params);
+	virtual bool stimulus_is_new_object_for_object_by_object_presentation(int stimulus_index);
 
 
 };

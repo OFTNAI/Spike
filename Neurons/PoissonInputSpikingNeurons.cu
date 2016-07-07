@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "../Helpers/CUDAErrorCheckHelpers.h"
+#include "../Helpers/TerminalHelpers.h"
 #include <algorithm> // For random shuffle
 using namespace std;
 
@@ -62,15 +63,14 @@ int* PoissonInputSpikingNeurons::setup_stimuli_presentation_order(Stimuli_Presen
 	
 	int* stimuli_presentation_order = InputSpikingNeurons::setup_stimuli_presentation_order(stimuli_presentation_params);
 
-	// switch (stimuli_presentation_order_type)
-	// {
-	// 	default:
-	// 		break;
-	// }
-
 	return stimuli_presentation_order;
 }
 
+
+bool PoissonInputSpikingNeurons::stimulus_is_new_object_for_object_by_object_presentation(int stimulus_index) {
+	print_message_and_exit("Object by object presentation currently unsupported at PoissonInputSpikingNeurons level. Please use ImagePoissonInputSpikingNeurons.");
+	return false;
+}
 
 
 void PoissonInputSpikingNeurons::update_membrane_potentials(float timestep) {

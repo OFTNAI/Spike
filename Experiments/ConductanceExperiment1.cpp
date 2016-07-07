@@ -336,7 +336,7 @@ int main (int argc, char *argv[]){
 	int number_of_epochs = 10;
 	bool present_stimuli_in_random_order = true;
 	Stimuli_Presentation_Struct * stimuli_presentation_params = new Stimuli_Presentation_Struct();
-	stimuli_presentation_params->presentation_format = PRESENTATION_FORMAT_OBJECT_BY_OBJECT_NO_RESET;
+	stimuli_presentation_params->presentation_format = PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_OBJECTS;
 	stimuli_presentation_params->object_order = OBJECT_ORDER_RANDOM;
 	stimuli_presentation_params->transform_order = TRANSFORM_ORDER_RANDOM;
 	if (simulate_network_to_train_network) {
