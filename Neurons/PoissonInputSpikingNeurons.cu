@@ -51,11 +51,10 @@ void PoissonInputSpikingNeurons::copy_constants_to_device() {
 }
 
 
-void PoissonInputSpikingNeurons::reset_neurons() {
+void PoissonInputSpikingNeurons::reset_neuron_activities() {
 
-	InputSpikingNeurons::reset_neurons();
+	InputSpikingNeurons::reset_neuron_activities();
 
-	
 }
 
 

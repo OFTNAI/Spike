@@ -76,10 +76,10 @@ void Neurons::allocate_device_pointers(int maximum_axonal_delay_in_timesteps,  b
 }
 
 void Neurons::copy_constants_to_device() {
-	
+
 }
 
-void Neurons::reset_neurons() {
+void Neurons::reset_neuron_activities() {
 	reset_current_injections();
 }
 

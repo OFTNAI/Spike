@@ -44,20 +44,13 @@ void GeneratorInputSpikingNeurons::allocate_device_pointers(int maximum_axonal_d
 }
 
 
-void GeneratorInputSpikingNeurons::copy_constants_to_device() {
-
-	InputSpikingNeurons::copy_constants_to_device();
-
-}
-
-
-
-void GeneratorInputSpikingNeurons::reset_neurons() {
-	InputSpikingNeurons::reset_neurons();
+void GeneratorInputSpikingNeurons::reset_neuron_activities() {
+	InputSpikingNeurons::reset_neuron_activities();
 
 	CudaSafeCall(cudaMemcpy(d_neuron_ids_for_stimulus, neuron_id_matrix_for_stimuli[current_stimulus_index], sizeof(int)*number_of_spikes_in_stimuli[current_stimulus_index], cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_spike_times_for_stimulus, spike_times_matrix_for_stimuli[current_stimulus_index], sizeof(float)*number_of_spikes_in_stimuli[current_stimulus_index], cudaMemcpyHostToDevice));
 }
+
 
 void GeneratorInputSpikingNeurons::set_threads_per_block_and_blocks_per_grid(int threads) {
 	

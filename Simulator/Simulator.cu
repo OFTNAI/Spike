@@ -221,7 +221,7 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 		TimerWithMessages * epoch_timer = new TimerWithMessages();
 		printf("Starting Epoch: %d\n", epoch_number);
 
-		neurons->reset_neurons();
+		neurons->reset_neuron_activities();
 		synapses->reset_synapse_spikes();
 		stdp_rule->Reset_STDP();
 
@@ -251,7 +251,7 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 
 			// These statements have been placed in this order for the Spike Generator Neurons so that they can set up for the next timestep
 			input_neurons->current_stimulus_index = stimuli_presentation_order[stimulus_index];
-			input_neurons->reset_neurons();
+			input_neurons->reset_neuron_activities();
 
 			int number_of_timesteps_per_stimulus_per_epoch = presentation_time_per_stimulus_per_epoch / timestep;
 		

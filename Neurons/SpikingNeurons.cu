@@ -78,9 +78,9 @@ void SpikingNeurons::copy_constants_to_device() {
 }
 
 
-void SpikingNeurons::reset_neurons() {
+void SpikingNeurons::reset_neuron_activities() {
 
-	Neurons::reset_neurons();
+	Neurons::reset_neuron_activities();
 
 	// Set last spike times to -1000 so that the times do not affect current simulation.
 	float* last_spike_times;

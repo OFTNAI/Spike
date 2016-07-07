@@ -72,26 +72,6 @@ void ImagePoissonInputSpikingNeurons::AddGroupForEachGaborType(neuron_parameters
 }
 
 
-void ImagePoissonInputSpikingNeurons::allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage) {
-
-	PoissonInputSpikingNeurons::allocate_device_pointers(maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
-
-}
-
-
-void ImagePoissonInputSpikingNeurons::copy_constants_to_device() {
-
-	PoissonInputSpikingNeurons::copy_constants_to_device();
-
-}
-
-
-void ImagePoissonInputSpikingNeurons::reset_neurons() {
-
-	PoissonInputSpikingNeurons::reset_neurons();
-
-}
-
 void ImagePoissonInputSpikingNeurons::set_up_rates(const char * fileList, const char * filterParameters, const char * inputDirectory, float max_rate_scaling_factor) {
 	printf("--- Setting up Input Neuron Rates from Gabor files...\n");
 

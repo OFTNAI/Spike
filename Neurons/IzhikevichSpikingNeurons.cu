@@ -73,9 +73,9 @@ void IzhikevichSpikingNeurons::copy_constants_to_device() {
 
 
 
-void IzhikevichSpikingNeurons::reset_neurons() {
+void IzhikevichSpikingNeurons::reset_neuron_activities() {
 
-	SpikingNeurons::reset_neurons();	
+	SpikingNeurons::reset_neuron_activities();	
 
 	CudaSafeCall(cudaMemset(d_states_u, 0.0f, sizeof(float)*total_number_of_neurons));
 

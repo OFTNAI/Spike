@@ -62,15 +62,6 @@ void LIFSpikingNeurons::copy_constants_to_device() {
 
 
 
-void LIFSpikingNeurons::reset_neurons() {
-	SpikingNeurons::reset_neurons();	
-}
-
-
-
-
-
-
 void LIFSpikingNeurons::update_membrane_potentials(float timestep) {
 
 	lif_update_membrane_potentials<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_membrane_potentials_v,
