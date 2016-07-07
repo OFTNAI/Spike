@@ -26,7 +26,7 @@ Simulator::Simulator(){
 	input_neurons = NULL;
 
 	// Default parameters
-	timestep = 0.001f;
+	timestep = 0.0001f;
 
 	recording_electrodes = NULL;
 	input_recording_electrodes = NULL;
