@@ -80,7 +80,8 @@ TEST_CASE("Spiking Neurons Class") {
 			test_neurons.after_spike_reset_membrane_potentials_c[indices[i]] = 60.0f;
 		}
 		// Copying the given arrays to the GPU
-		test_neurons.reset_neurons();
+		test_neurons.copy_constants_to_device();
+		test_neurons.reset_neuron_activities();
 		// Carrying out the spike check
 		float current_time = 0.9f;
 		float timestep = 0.1f;
@@ -113,7 +114,8 @@ TEST_CASE("Spiking Neurons Class") {
 			test_neurons.after_spike_reset_membrane_potentials_c[indices[i]] = 60.0f;
 		}
 		// Copying the given arrays to the GPU
-		test_neurons.reset_neurons();
+		test_neurons.copy_constants_to_device();
+		test_neurons.reset_neuron_activities();
 		// Carrying out the spike check
 		float current_time = 0.9f;
 		float timestep = 0.1f;
@@ -199,7 +201,8 @@ TEST_CASE("Generator Input Spiking Neurons Class") {
 		for (int s=0; s < num_spikes; s++){		
 			float current_time = spike_times[s];
 			float timestep = 0.1f;
-			cast_test_neurons->reset_neurons();
+			cast_test_neurons->copy_constants_to_device();
+			cast_test_neurons->reset_neuron_activities();
 			cast_test_neurons->check_for_neuron_spikes(current_time, timestep);
 
 			// Copying the data to Host
@@ -226,7 +229,7 @@ TEST_CASE("Generator Input Spiking Neurons Class") {
 		for (int s=0; s < num_spikes; s++){		
 			float current_time = spike_times[s];
 			float timestep = 0.1f;
-			cast_test_neurons->reset_neurons();
+			cast_test_neurons->reset_neuron_activities();
 			cast_test_neurons->check_for_neuron_spikes(current_time, timestep);
 
 			// Copy back the correct array
@@ -294,7 +297,8 @@ TEST_CASE("Izhikevich Spiking Neurons Class") {
 		SpikingNeurons* cast_test_neurons = &test_neurons;
 		cast_test_neurons->allocate_device_pointers(0, false);
 		cast_test_neurons->set_threads_per_block_and_blocks_per_grid(512);
-		cast_test_neurons->reset_neurons();
+		cast_test_neurons->copy_constants_to_device();
+		cast_test_neurons->reset_neuron_activities();
 
 		SECTION("Initial State Variable Values"){
 			// Testing before any spikes
@@ -439,7 +443,8 @@ TEST_CASE("Poisson Input Spiking Neurons Class") {
 		InputSpikingNeurons* cast_test_neurons = &test_neurons;
 		cast_test_neurons->allocate_device_pointers(0, false);
 		cast_test_neurons->set_threads_per_block_and_blocks_per_grid(512);
-		cast_test_neurons->reset_neurons();
+		cast_test_neurons->copy_constants_to_device();
+		cast_test_neurons->reset_neuron_activities();
 
 		// Running the network for many timesteps and checking rate
 		cast_test_neurons->update_membrane_potentials(timestep);

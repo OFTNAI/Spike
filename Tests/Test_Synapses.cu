@@ -360,7 +360,8 @@ TEST_CASE("Spiking Synapses Class Tests") {
 			test_neurons.allocate_device_pointers(test_synapses.maximum_axonal_delay_in_timesteps, false);
 			test_synapses.allocate_device_pointers();
 			// Set-up Variables
-			test_neurons.reset_neurons();
+			test_neurons.copy_constants_to_device();
+			test_neurons.reset_neuron_activities();
 			test_synapses.reset_synapse_spikes();
 			// Run the synapse interaction
 			float current_time = 0.9f;
@@ -383,7 +384,8 @@ TEST_CASE("Spiking Synapses Class Tests") {
 			test_neurons.allocate_device_pointers(test_synapses.maximum_axonal_delay_in_timesteps, false);
 			test_synapses.allocate_device_pointers();
 			// Set-up Variables
-			test_neurons.reset_neurons();
+			test_neurons.copy_constants_to_device();
+			test_neurons.reset_neuron_activities();
 			test_synapses.reset_synapse_spikes();
 			float* last_neuron_spike_times;
 			last_neuron_spike_times = (float*)malloc(sizeof(float)*test_neurons.total_number_of_neurons);
@@ -424,7 +426,8 @@ TEST_CASE("Spiking Synapses Class Tests") {
 			test_neurons.allocate_device_pointers(test_synapses.maximum_axonal_delay_in_timesteps, false);
 			test_synapses.allocate_device_pointers();
 			// Set-up Variables
-			test_neurons.reset_neurons();
+			test_neurons.copy_constants_to_device();
+			test_neurons.reset_neuron_activities();
 			test_synapses.reset_synapse_spikes();
 			int* spike_countdown;
 			spike_countdown = (int*)malloc(sizeof(int)*test_synapses.total_number_of_synapses);
@@ -460,7 +463,8 @@ TEST_CASE("Spiking Synapses Class Tests") {
 			test_neurons.allocate_device_pointers(test_synapses.maximum_axonal_delay_in_timesteps, true);
 			test_synapses.allocate_device_pointers();
 			// Set-up Variables
-			test_neurons.reset_neurons();
+			test_neurons.copy_constants_to_device();
+			test_neurons.reset_neuron_activities();
 			test_synapses.reset_synapse_spikes();
 
 			// Copy the correct array
@@ -561,7 +565,8 @@ TEST_CASE("Current Spiking Synapses Class Tests") {
 		test_neurons.allocate_device_pointers(test_synapses.maximum_axonal_delay_in_timesteps, true);
 		test_synapses.allocate_device_pointers();
 		// Set-up Variables
-		test_neurons.reset_neurons();
+		test_neurons.copy_constants_to_device();
+		test_neurons.reset_neuron_activities();
 		test_synapses.reset_synapse_spikes();
 		// Check the initial current injection values after a run
 		test_synapses.calculate_postsynaptic_current_injection(&test_neurons, current_time, timestep);
