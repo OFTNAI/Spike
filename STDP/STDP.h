@@ -41,7 +41,7 @@ public:
 	// STDP
 	virtual void Run_STDP(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds, float timestep);
 	// Reset
-	virtual void Reset_STDP();
+	virtual void reset_STDP_activities();
 };
 
 #endif

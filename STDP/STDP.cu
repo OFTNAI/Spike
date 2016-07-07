@@ -30,5 +30,5 @@ void STDP::Run_STDP(float* d_last_spike_time_of_each_neuron, float current_time_
 }
 
 // Reset STDP
-void STDP::Reset_STDP(){
+void STDP::reset_STDP_activities(){
 }

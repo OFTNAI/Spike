@@ -224,7 +224,7 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 
 		neurons->reset_neuron_activities();
 		synapses->reset_synapse_activities();
-		stdp_rule->Reset_STDP();
+		stdp_rule->reset_STDP_activities();
 
 		float current_time_in_seconds = 0.0f;
 
