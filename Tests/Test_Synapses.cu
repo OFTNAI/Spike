@@ -362,7 +362,7 @@ TEST_CASE("Spiking Synapses Class Tests") {
 			// Set-up Variables
 			test_neurons.copy_constants_to_device();
 			test_neurons.reset_neuron_activities();
-			test_synapses.reset_synapse_spikes();
+			test_synapses.reset_synapse_activities();
 			// Run the synapse interaction
 			float current_time = 0.9f;
 			test_synapses.interact_spikes_with_synapses(&test_neurons, &test_neurons, current_time, timestep);
@@ -386,7 +386,7 @@ TEST_CASE("Spiking Synapses Class Tests") {
 			// Set-up Variables
 			test_neurons.copy_constants_to_device();
 			test_neurons.reset_neuron_activities();
-			test_synapses.reset_synapse_spikes();
+			test_synapses.reset_synapse_activities();
 			float* last_neuron_spike_times;
 			last_neuron_spike_times = (float*)malloc(sizeof(float)*test_neurons.total_number_of_neurons);
 			CudaSafeCall(cudaMemcpy(last_neuron_spike_times, test_neurons.d_last_spike_time_of_each_neuron, sizeof(float)*test_neurons.total_number_of_neurons, cudaMemcpyDeviceToHost));
@@ -428,7 +428,7 @@ TEST_CASE("Spiking Synapses Class Tests") {
 			// Set-up Variables
 			test_neurons.copy_constants_to_device();
 			test_neurons.reset_neuron_activities();
-			test_synapses.reset_synapse_spikes();
+			test_synapses.reset_synapse_activities();
 			int* spike_countdown;
 			spike_countdown = (int*)malloc(sizeof(int)*test_synapses.total_number_of_synapses);
 			CudaSafeCall(cudaMemcpy(spike_countdown, test_synapses.d_spikes_travelling_to_synapse, sizeof(int)*test_synapses.total_number_of_synapses, cudaMemcpyDeviceToHost));
@@ -465,7 +465,7 @@ TEST_CASE("Spiking Synapses Class Tests") {
 			// Set-up Variables
 			test_neurons.copy_constants_to_device();
 			test_neurons.reset_neuron_activities();
-			test_synapses.reset_synapse_spikes();
+			test_synapses.reset_synapse_activities();
 
 			// Copy the correct array
 			char* neuron_spike_array;
@@ -567,7 +567,7 @@ TEST_CASE("Current Spiking Synapses Class Tests") {
 		// Set-up Variables
 		test_neurons.copy_constants_to_device();
 		test_neurons.reset_neuron_activities();
-		test_synapses.reset_synapse_spikes();
+		test_synapses.reset_synapse_activities();
 		// Check the initial current injection values after a run
 		test_synapses.calculate_postsynaptic_current_injection(&test_neurons, current_time, timestep);
 		float* current_inj = (float*)malloc(sizeof(float)*test_neurons.total_number_of_neurons);

@@ -76,10 +76,11 @@ void ConductanceSpikingSynapses::allocate_device_pointers() {
 
 	SpikingSynapses::allocate_device_pointers();
 
-	CudaSafeCall(cudaMalloc((void **)&d_synaptic_conductances_g, sizeof(float)*total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&d_biological_conductance_scaling_constants_lambda, sizeof(float)*total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&d_reversal_potentials_Vhat, sizeof(float)*total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&d_decay_terms_tau_g, sizeof(float)*total_number_of_synapses));
+
+	CudaSafeCall(cudaMalloc((void **)&d_synaptic_conductances_g, sizeof(float)*total_number_of_synapses));
 
 }
 
@@ -94,9 +95,9 @@ void ConductanceSpikingSynapses::copy_constants_and_initial_efficacies_to_device
 }
 
 
-void ConductanceSpikingSynapses::reset_synapse_spikes() {
+void ConductanceSpikingSynapses::reset_synapse_activities() {
 
-	SpikingSynapses::reset_synapse_spikes();
+	SpikingSynapses::reset_synapse_activities();
 
 	CudaSafeCall(cudaMemcpy(d_synaptic_conductances_g, synaptic_conductances_g, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
 

@@ -124,7 +124,7 @@ void SpikingSynapses::copy_constants_and_initial_efficacies_to_device() {
 }
 
 
-void SpikingSynapses::reset_synapse_spikes() {
+void SpikingSynapses::reset_synapse_activities() {
 	
 	CudaSafeCall(cudaMemset(d_spikes_travelling_to_synapse, 0, sizeof(int)*total_number_of_synapses));
 	// Set last spike times to -1000 so that the times do not affect current simulation.
