@@ -15,13 +15,6 @@
 #include <thrust/host_vector.h>
 #include <thrust/count.h>
 
-// Macro to get the gaussian prob
-//	INPUT:
-//			x = The pre-population input neuron position that is being checked
-//			u = The post-population neuron to which the connection is forming (taken as mean)
-//			sigma = Standard Deviation of the gaussian distribution
-#define GAUS(distance, sigma) ( (1.0f/(sigma*(sqrt(2.0f*M_PI)))) * (exp(-1.0f * (pow((distance),(2.0f))) / (2.0f*(pow(sigma,(2.0f)))))) )
-
 
 // Synapses Constructor
 Synapses::Synapses() {
@@ -59,8 +52,7 @@ Synapses::Synapses() {
 
 // Synapses Destructor
 Synapses::~Synapses() {
-	// Just need to free up the memory
-	// Full Matrices
+
 	free(presynaptic_neuron_indices);
 	free(postsynaptic_neuron_indices);
 	free(synaptic_efficacies_or_weights);
@@ -71,25 +63,13 @@ Synapses::~Synapses() {
 
 }
 
-// Connection Detail implementation
-//	INPUT:
-//		Pre-neuron population ID
-//		Post-neuron population ID
-//		An array of the exclusive sum of neuron populations
-//		CONNECTIVITY_TYPE (Constants.h)
-//		2 number float array for weight range
-//		2 number float array for delay range
-//		Boolean value to indicate if population is STDP based
-//		Parameter = either probability for random synapses or S.D. for Gaussian
+
 void Synapses::AddGroup(int presynaptic_group_id, 
 						int postsynaptic_group_id, 
 						Neurons * neurons,
 						Neurons * input_neurons,
 						float timestep,
 						synapse_parameters_struct * synapse_params) {
-	
-	// Find the right set of indices
-	// Take everything in 2D
 
 	if (print_synapse_group_details == true) {
 		printf("Adding synapse group...\n");
@@ -294,7 +274,6 @@ void Synapses::increment_number_of_synapses(int increment) {
 	presynaptic_neuron_indices = (int*)realloc(presynaptic_neuron_indices, total_number_of_synapses * sizeof(int));
     postsynaptic_neuron_indices = (int*)realloc(postsynaptic_neuron_indices, total_number_of_synapses * sizeof(int));
     synaptic_efficacies_or_weights = (float*)realloc(synaptic_efficacies_or_weights, total_number_of_synapses * sizeof(float));
-    // CudaSafeCall(cudaHostAlloc((void**)&synaptic_efficacies_or_weights, total_number_of_synapses * sizeof(float), cudaHostAllocDefault));
     original_synapse_indices = (int*)realloc(original_synapse_indices, total_number_of_synapses * sizeof(int));
     
 }
@@ -411,36 +390,4 @@ __global__ void set_neuron_indices_by_sampling_from_normal_distribution(int tota
 
 	__syncthreads();
 
-}
-
-
-
-// An implementation of the polar gaussian random number generator which I need
-double randn (double mu, double sigma)
-{
-  double U1, U2, W, mult;
-  static double X1, X2;
-  static int call = 0;
-
-  if (call == 1)
-    {
-      call = !call;
-      return (mu + sigma * (double) X2);
-    }
-
-  do
-    {
-      U1 = -1 + ((double) rand () / RAND_MAX) * 2;
-      U2 = -1 + ((double) rand () / RAND_MAX) * 2;
-      W = pow (U1, 2) + pow (U2, 2);
-    }
-  while (W >= 1 || W == 0);
-
-  mult = sqrt ((-2 * log (W)) / W);
-  X1 = U1 * mult;
-  X2 = U2 * mult;
-
-  call = !call;
-
-  return (mu + sigma * (double) X1);
 }
