@@ -29,7 +29,7 @@ public:
 	
 	// Functions
 	virtual int AddGroup(neuron_parameters_struct * group_params);
-	virtual void allocate_device_pointers();
+	virtual void allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage);
 	virtual void reset_neurons();
 	virtual void set_threads_per_block_and_blocks_per_grid(int threads);
 	virtual void check_for_neuron_spikes(float current_time_in_seconds, float timestep);
@@ -42,8 +42,12 @@ public:
 __global__ void check_for_generator_spikes_kernel(int *d_neuron_ids_for_stimulus,
 								float *d_spike_times_for_stimulus,
 								float* d_last_spike_time_of_each_neuron,
+								unsigned char* d_bitarray_of_neuron_spikes,
+								int bitarray_length,
+								int bitarray_maximum_axonal_delay_in_timesteps,
 								float current_time_in_seconds,
 								float timestep,
-								size_t number_of_spikes_in_stimulus);
+								size_t number_of_spikes_in_stimulus,
+								bool high_fidelity_spike_flag);
 
 #endif

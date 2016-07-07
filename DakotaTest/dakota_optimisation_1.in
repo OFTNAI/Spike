@@ -3,6 +3,7 @@
 environment,
 	graphics
 	tabular_data
+	results_output
 
 # method,                                         
 # #	conmin_frcg				
@@ -10,7 +11,7 @@ environment,
 # 	seed = 123456
 
 method
-	max_iterations = 10000
+	max_iterations = 100000
 	max_function_evaluations = 200000
 	coliny_ea
 		population_size = 100
@@ -20,17 +21,10 @@ method
 		crossover_type blend
 		crossover_rate 0.2				# Probability of a crossover
 		replacement_type chc = 23
+		solution_target = 100
 
 model
 	single
-
-
-# variables,					
-# 	continuous_design = 5			
-# 	cdv_lower_bounds    1.e-5      1.e-5      1.e-5      1.e-5
-# 	cdv_upper_bounds    5.e-3      5.e-3      5.e-3      5.e-3
-
-# 	cdv_descriptor      'G2E_FF_biological_conductance_scaling_constant_lambda' 'L1_E2I_L_biological_conductance_scaling_constant_lambda'      'L1_I2E_L_biological_conductance_scaling_constant_lambda'  'L1_E2E_L_biological_conductance_scaling_constant_lambda' 
 
 
 variables,					
@@ -38,15 +32,7 @@ variables,
 	cdv_lower_bounds    1.e-5	1.e-5      1.e-5      1.e-5
 	cdv_upper_bounds    5.e-3	5.e-3      5.e-3      5.e-3
 
-	cdv_descriptor      'E2E_FF_biological_conductance_scaling_constant_lambda' 'L2plus_E2I_L_biological_conductance_scaling_constant_lambda'      'L2plus_I2E_L_biological_conductance_scaling_constant_lambda'  'L2plus_E2E_L_biological_conductance_scaling_constant_lambda'
-
-
-# variables,					
-# 	continuous_design = 8			
-# 	cdv_lower_bounds    1.e-5      1.e-5      1.e-5      1.e-5      1.e-5	1.e-5      1.e-5      1.e-5
-# 	cdv_upper_bounds    5.e-3      5.e-3      5.e-3      5.e-3     5.e-3	5.e-3      5.e-3      5.e-3
-
-# 	cdv_descriptor      'G2E_FF_biological_conductance_scaling_constant_lambda' 'L1_E2I_L_biological_conductance_scaling_constant_lambda'      'L1_I2E_L_biological_conductance_scaling_constant_lambda'  'L1_E2E_L_biological_conductance_scaling_constant_lambda' 'E2E_FF_biological_conductance_scaling_constant_lambda' 'L2plus_E2I_L_biological_conductance_scaling_constant_lambda'      'L2plus_I2E_L_biological_conductance_scaling_constant_lambda'  'L2plus_E2E_L_biological_conductance_scaling_constant_lambda'
+	cdv_descriptor      'E2E_FF_biological_conductance_scaling_constant_lambda' 'E2I_L_biological_conductance_scaling_constant_lambda'      'I2E_L_biological_conductance_scaling_constant_lambda'  'E2E_L_biological_conductance_scaling_constant_lambda'
 
 
 # Case 1 (Massively Serial): Run Dakota in parallel and launch M-1 serial

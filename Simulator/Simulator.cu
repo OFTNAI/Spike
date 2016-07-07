@@ -35,6 +35,9 @@ Simulator::Simulator(){
 
 	recording_electrodes = NULL;
 	input_recording_electrodes = NULL;
+
+	// Default low fidelity spike storage
+	high_fidelity_spike_storage = false;
 	
 	#ifndef QUIETSTART
 		print_line_of_dashes_with_blank_lines_either_side();
@@ -162,9 +165,19 @@ void Simulator::setup_network() {
 	// Randomising order of synapses means that each block is accessing a larger number of points in memory.
 	// if (temp_model_type == 1) synapses->shuffle_synapses();
 
-	neurons->allocate_device_pointers();
+	neurons->allocate_device_pointers(synapses->maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
+	input_neurons->allocate_device_pointers(synapses->maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
 	synapses->allocate_device_pointers();
-	input_neurons->allocate_device_pointers();
+	stdp_rule->allocate_device_pointers();
+
+	printf("HELLO\n");
+	for (int i=0; i < synapses->total_number_of_synapses; i++){
+		if (synapses->delays[i] > synapses->maximum_axonal_delay_in_timesteps){
+			printf("%d, %d\n", i, synapses->delays[i]);
+		}
+	}
+	// printf("InputNeuronNum: %d\n", input_neurons->total_number_of_neurons);
+	printf("BYE\n");
 
 	timer->stop_timer_and_log_time_and_message("Network Setup.", true);
 }
@@ -219,9 +232,6 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 	int number_of_stimuli = input_neurons->total_number_of_input_stimuli;
 	begin_simulation_message(timestep, number_of_stimuli, number_of_epochs, record_spikes, save_recorded_spikes_to_file, present_stimuli_in_random_order, neurons->total_number_of_neurons, input_neurons->total_number_of_neurons, synapses->total_number_of_synapses);
 	TimerWithMessages * simulation_timer = new TimerWithMessages();
-
-	// Initialize STDP
-	stdp_rule->Initialize_STDP();
 
 	if (number_of_epochs == 0) print_message_and_exit("Error. There must be at least one epoch.");
 
@@ -339,7 +349,7 @@ void Simulator::per_timestep_instructions(float current_time_in_seconds, bool ap
 	neurons->check_for_neuron_spikes(current_time_in_seconds, timestep);
 	input_neurons->check_for_neuron_spikes(current_time_in_seconds, timestep);
 
-	synapses->move_spikes_towards_synapses(neurons->d_last_spike_time_of_each_neuron, input_neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds);
+	synapses->interact_spikes_with_synapses(neurons, input_neurons, current_time_in_seconds, timestep);
 
 	synapses->calculate_postsynaptic_current_injection(neurons, current_time_in_seconds, timestep);
 

@@ -9,6 +9,8 @@
 	#
 	#  This is a perl script to be called by dakota optimizer
 
+	# Adapted by James Isbister for use with Spike
+
 	use strict;
     use warnings;
     use POSIX;
@@ -61,15 +63,23 @@
 	my $par2 = sprintf("%.11f", $table[2][0]);
 	my $par3 = sprintf("%.11f", $table[3][0]);
 	my $par4 = sprintf("%.11f", $table[4][0]);
-	# my $par5 = sprintf("%.11f", $table[5][0]);
-	# my $par6 = sprintf("%.11f", $table[6][0]);
-	# my $par7 = sprintf("%.11f", $table[7][0]);
-	# my $par8 = sprintf("%.11f", $table[8][0]);
-	# print($table[1][0]);
 
-	
-#	system("python ../../dakota_runMe.py $outdir $par1 $par2 $par3 $par4 $par5");
-	# system("python ../JI_Empty_Test.py $outdir $simulation_index $par1 $par2 $par3 $par4 $par5 $simulation_index");
-	# system("../../Experiments/bin/ConductanceExperiment1 $outdir $simulation_index $par1 $par2 $par3 $par4 $par5 $par6 $par7 $par8");
-	system("../../Experiments/bin/ConductanceExperiment1 $outdir $simulation_index 0 $par1 $par2 $par3 $par4");
-	
+
+	# Read optimisation iteration index from file
+	my $optimisation_iteration_index_filename = '../optimisation_iteration_index.txt';
+	open(my $optimisation_iteration_index_text, '<:encoding(UTF-8)', $optimisation_iteration_index_filename)
+  		or die "Could not open file '$optimisation_iteration_index_filename' $!";
+ 
+ 	my $optimisation_iteration_index;
+	while (my $row = <$optimisation_iteration_index_text>) {
+  		chomp $row;
+  		# print "$row\n";
+  		$optimisation_iteration_index = $row;
+	}	
+
+
+	# Use when optimising entire network layer by layer.
+	system("../../Experiments/bin/ConductanceExperiment1 $outdir $simulation_index $optimisation_iteration_index $par1 $par2 $par3 $par4 1");
+
+	# Use when optimising particular layer.
+	# system("../../Experiments/bin/ConductanceExperiment1 $outdir $simulation_index 0 $par1 $par2 $par3 $par4 0");

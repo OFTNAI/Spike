@@ -21,7 +21,7 @@ struct neuron_parameters_struct {
 };
 
 #define PRESYNAPTIC_IS_INPUT( id ) (id < 0 ? true : false)
-#define CORRECTED_PRESYNAPTIC_ID(id, is_input) (is_input ? -1 * (id) - 1 : id) 
+#define CORRECTED_PRESYNAPTIC_ID(id, is_input) (is_input ? (-1 * (id)) - 1 : id) 
 
 class Neurons{
 public:
@@ -45,7 +45,7 @@ public:
 
 
 	virtual int AddGroup(neuron_parameters_struct * group_params);
-	virtual void allocate_device_pointers();
+	virtual void allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage);
 	virtual void reset_neurons();
 	
 	void reset_current_injections();
