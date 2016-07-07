@@ -45,6 +45,8 @@ public:
 						synapse_parameters_struct * synapse_params);
 
 	virtual void allocate_device_pointers();
+	virtual void copy_constants_and_initial_efficacies_to_device();
+	
 	virtual void reset_synapse_spikes();
 	virtual void set_threads_per_block_and_blocks_per_grid(int threads);
 	virtual void increment_number_of_synapses(int increment);

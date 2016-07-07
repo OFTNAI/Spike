@@ -13,16 +13,6 @@ CurrentSpikingSynapses::~CurrentSpikingSynapses() {
 	// Just need to free up the memory
 }
 
-// Connection Detail implementation
-//	INPUT:
-//		Pre-neuron population ID
-//		Post-neuron population ID
-//		An array of the exclusive sum of neuron populations
-//		CONNECTIVITY_TYPE (Constants.h)
-//		2 number float array for weight range
-//		2 number float array for delay range
-//		Boolean value to indicate if population is STDP based
-//		Parameter = either probability for random synapses or S.D. for Gaussian
 void CurrentSpikingSynapses::AddGroup(int presynaptic_group_id, 
 						int postsynaptic_group_id, 
 						Neurons * neurons,
@@ -38,28 +28,6 @@ void CurrentSpikingSynapses::AddGroup(int presynaptic_group_id,
 							timestep,
 							synapse_params);
 
-}
-
-void CurrentSpikingSynapses::increment_number_of_synapses(int increment) {
-	SpikingSynapses::increment_number_of_synapses(increment);
-}
-
-
-void CurrentSpikingSynapses::allocate_device_pointers() {
-	SpikingSynapses::allocate_device_pointers();
-}
-
-void CurrentSpikingSynapses::reset_synapse_spikes() {
-	SpikingSynapses::reset_synapse_spikes();
-}
-
-void CurrentSpikingSynapses::shuffle_synapses() {
- 	SpikingSynapses::shuffle_synapses();
-}
-
-
-void CurrentSpikingSynapses::set_threads_per_block_and_blocks_per_grid(int threads) {
-	SpikingSynapses::set_threads_per_block_and_blocks_per_grid(threads);
 }
 
 

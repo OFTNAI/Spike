@@ -13,7 +13,7 @@ public:
 	CurrentSpikingSynapses();
 	~CurrentSpikingSynapses();
 
-	// Synapse Functions
+
 	virtual void AddGroup(int presynaptic_group_id, 
 						int postsynaptic_group_id, 
 						Neurons * neurons,
@@ -21,11 +21,6 @@ public:
 						float timestep,
 						synapse_parameters_struct * synapse_params);
 
-	virtual void allocate_device_pointers();
-	virtual void reset_synapse_spikes();
-	virtual void set_threads_per_block_and_blocks_per_grid(int threads);
-	virtual void increment_number_of_synapses(int increment);
-	virtual void shuffle_synapses();
 
 	virtual void calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds, float timestep);
 };

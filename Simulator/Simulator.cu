@@ -145,11 +145,12 @@ void Simulator::setup_network() {
 	// Randomising order of synapses means that each block is accessing a larger number of points in memory.
 	// if (temp_model_type == 1) synapses->shuffle_synapses();
 
+	synapses->allocate_device_pointers();
 	neurons->allocate_device_pointers(synapses->maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
 	input_neurons->allocate_device_pointers(synapses->maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
-	synapses->allocate_device_pointers();
 	stdp_rule->allocate_device_pointers();
 
+	synapses->copy_constants_and_initial_efficacies_to_device();
 	neurons->copy_constants_to_device();
 	input_neurons->copy_constants_to_device();
 
