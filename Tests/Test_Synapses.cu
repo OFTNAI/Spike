@@ -361,6 +361,8 @@ TEST_CASE("Spiking Synapses Class Tests") {
 			test_synapses.allocate_device_pointers();
 			// Set-up Variables
 			test_neurons.copy_constants_to_device();
+			test_synapses.copy_constants_and_initial_efficacies_to_device();
+
 			test_neurons.reset_neuron_activities();
 			test_synapses.reset_synapse_activities();
 			// Run the synapse interaction
@@ -383,8 +385,11 @@ TEST_CASE("Spiking Synapses Class Tests") {
 		SECTION("Low Fidelity Spike Recognition") {
 			test_neurons.allocate_device_pointers(test_synapses.maximum_axonal_delay_in_timesteps, false);
 			test_synapses.allocate_device_pointers();
+
 			// Set-up Variables
 			test_neurons.copy_constants_to_device();
+			test_synapses.copy_constants_and_initial_efficacies_to_device();
+
 			test_neurons.reset_neuron_activities();
 			test_synapses.reset_synapse_activities();
 			float* last_neuron_spike_times;
@@ -427,6 +432,7 @@ TEST_CASE("Spiking Synapses Class Tests") {
 			test_synapses.allocate_device_pointers();
 			// Set-up Variables
 			test_neurons.copy_constants_to_device();
+			test_synapses.copy_constants_and_initial_efficacies_to_device();
 			test_neurons.reset_neuron_activities();
 			test_synapses.reset_synapse_activities();
 			int* spike_countdown;
@@ -464,6 +470,8 @@ TEST_CASE("Spiking Synapses Class Tests") {
 			test_synapses.allocate_device_pointers();
 			// Set-up Variables
 			test_neurons.copy_constants_to_device();
+			test_synapses.copy_constants_and_initial_efficacies_to_device();
+
 			test_neurons.reset_neuron_activities();
 			test_synapses.reset_synapse_activities();
 
@@ -566,6 +574,7 @@ TEST_CASE("Current Spiking Synapses Class Tests") {
 		test_synapses.allocate_device_pointers();
 		// Set-up Variables
 		test_neurons.copy_constants_to_device();
+		test_synapses.copy_constants_and_initial_efficacies_to_device();
 		test_neurons.reset_neuron_activities();
 		test_synapses.reset_synapse_activities();
 		// Check the initial current injection values after a run
