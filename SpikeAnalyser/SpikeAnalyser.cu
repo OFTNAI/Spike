@@ -279,6 +279,12 @@ void SpikeAnalyser::calculate_single_cell_information_scores_for_neuron_group(in
 	//6. Sort information scores for each object and neuron
 	for (int object_index = 0; object_index < input_neurons->total_number_of_objects; object_index++) {
 		std::sort(descending_information_scores_for_each_object_and_neuron[object_index], descending_information_scores_for_each_object_and_neuron[object_index] + number_of_neurons_in_group, std::greater<float>());
+		
+		// printf("object_index: %d\n", object_index);
+		// for (int neuron_index_zeroed = 0; neuron_index_zeroed < number_of_neurons_in_group; neuron_index_zeroed++) {
+		// 	printf("%f\n", descending_information_scores_for_each_object_and_neuron[object_index][neuron_index_zeroed]);
+		// }
+
 	}
 
 	single_cell_analysis_timer->stop_timer_and_log_time_and_message("Single Cell Information Scores Calulated Neuron Group.", false);

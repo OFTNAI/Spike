@@ -34,22 +34,51 @@ int main (int argc, char *argv[]){
 	int number_of_new_parameters_per_optimisation_stage = 4;
 	float optimisation_parameters[number_of_optimisation_stages][number_of_new_parameters_per_optimisation_stage];
 
-	optimisation_parameters[0][0] = 2.5191751063e-03; //FF
-	optimisation_parameters[0][1] = 8.8227295814e-05; //E2I
-	optimisation_parameters[0][2] = 4.4264296185e-03; //I2E
-	optimisation_parameters[0][3] = 2.6775065427e-03; //E2E
-	optimisation_parameters[1][0] = 2.7736894247e-04;
-	optimisation_parameters[1][1] = 8.9909369312e-05;
-	optimisation_parameters[1][2] = 1.0000000000e-06;
-	optimisation_parameters[1][3] = 3.9666270087e-03;
-	optimisation_parameters[2][0] = 2.4246870746e-04;
-	optimisation_parameters[2][1] = 8.3654704179e-05;
-	optimisation_parameters[2][2] = 5.2362272268e-04;
-	optimisation_parameters[2][3] = 4.3139460801e-03;
-	optimisation_parameters[3][0] = 1.4086389598e-04;
-	optimisation_parameters[3][1] = 6.4970154059e-05;
-	optimisation_parameters[3][2] = 6.3505187529e-04;
-	optimisation_parameters[3][3] = 1.2694665284e-03;
+
+	// TUNED FOR CT TIME CONSTANTS
+	// optimisation_parameters[0][0] = 4.9424046448e-03; //FF
+	// optimisation_parameters[0][1] = 3.0721486040e-04; //E2I
+	// optimisation_parameters[0][2] = 1.0000000000e-06; //I2E
+	// optimisation_parameters[0][3] = 1.0000000000e-06; //E2E
+
+	// optimisation_parameters[1][0] = 1.2195856890e-03;
+	// optimisation_parameters[1][1] = 3.2339270330e-04;
+	// optimisation_parameters[1][2] = 1.4817377313e-03;
+	// optimisation_parameters[1][3] = 4.3324103306e-03;
+
+	// optimisation_parameters[2][0] = 1.0906226194e-03;
+	// optimisation_parameters[2][1] = 3.1213436942e-04;
+	// optimisation_parameters[2][2] = 2.5472091040e-03;
+	// optimisation_parameters[2][3] = 4.5437511920e-03;
+
+	// optimisation_parameters[3][0] = 6.7036330039e-04;
+	// optimisation_parameters[3][1] = 3.1248292741e-04;
+	// optimisation_parameters[3][2] = 5.0000000000e-03;
+	// optimisation_parameters[3][3] = 2.7271900043e-03;
+
+
+	// TUNED FOR TRACE TIME CONSTANTS
+	optimisation_parameters[0][0] = 1.6050619558e-03; //FF
+	optimisation_parameters[0][1] = 3.0444365718e-04; //E2I
+	optimisation_parameters[0][2] = 2.3300506416e-03; //I2E
+	optimisation_parameters[0][3] = 3.1998653821e-03; //E2E
+
+	optimisation_parameters[1][0] = 8.1803982070e-05;
+	optimisation_parameters[1][1] = 2.7920822012e-04;
+	optimisation_parameters[1][2] = 3.8044413393e-03;
+	optimisation_parameters[1][3] = 2.4310200294e-04;
+
+	optimisation_parameters[2][0] = 0.0002327689851;
+	optimisation_parameters[2][1] = 0.0003458381666;
+	optimisation_parameters[2][2] = 0.002807993811;
+	optimisation_parameters[2][3] = 0.004543682477;
+
+	optimisation_parameters[3][0] = 0.0001409219094;
+	optimisation_parameters[3][1] = 0.0003649566225;
+	optimisation_parameters[3][2] = 0.001277445509;
+	optimisation_parameters[3][3] = 0.00106619301;
+
+
 
 	// printf("argc = %d\n", argc);
 	if (argc > 1) {
@@ -92,6 +121,8 @@ int main (int argc, char *argv[]){
 
 	/////////// STDP SETUP ///////////
 	evans_stdp_parameters_struct * STDP_PARAMS = new evans_stdp_parameters_struct();
+	STDP_PARAMS->decay_term_tau_C = 0.015;
+	STDP_PARAMS->decay_term_tau_D = 0.025;
 	evans_stdp->Set_STDP_Parameters((SpikingSynapses *) conductance_spiking_synapses, (SpikingNeurons *) lif_spiking_neurons, (stdp_parameters_struct *) STDP_PARAMS);
 
 	simulator.SetNeuronType(lif_spiking_neurons);
@@ -183,7 +214,7 @@ int main (int argc, char *argv[]){
 	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->stdp_on = true;
 	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_standard_deviation = 10.0;
 	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->reversal_potential_Vhat = 0.0;
-	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->decay_term_tau_g = 0.002;
+	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->decay_term_tau_g = 0.15;
 
 	conductance_spiking_synapse_parameters_struct * E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS = new conductance_spiking_synapse_parameters_struct();
 	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[0] = 5.0*timestep;
@@ -195,7 +226,7 @@ int main (int argc, char *argv[]){
 	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->stdp_on = true;
 	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_standard_deviation = 10.0;
 	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->reversal_potential_Vhat = 0.0;
-	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->decay_term_tau_g = 0.002;
+	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->decay_term_tau_g = 0.15;
 
 	conductance_spiking_synapse_parameters_struct * E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS = new conductance_spiking_synapse_parameters_struct();
 	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[0] = 5.0*timestep;
@@ -306,11 +337,11 @@ int main (int argc, char *argv[]){
 	bool simulate_network_to_test_untrained = true;
 	bool simulate_network_to_train_network = true;
 	bool simulate_network_to_test_trained = true;
-	float single_score_to_write_to_file_for_dakota_optimisation = 0.0;
+	float single_score_to_write_to_file_for_dakota_optimisation = 0.04;
 
 
 	/////////// SIMULATE NETWORK TO TEST UNTRAINED ///////////
-	float presentation_time_per_stimulus_per_epoch = 1.0f;
+	float presentation_time_per_stimulus_per_epoch = 0.25f;
 	bool record_spikes = false;
 	bool save_recorded_spikes_to_file = false;
 	int number_of_bins = 3;
@@ -346,7 +377,7 @@ int main (int argc, char *argv[]){
 
 
 	/////////// SIMULATE NETWORK TO TEST TRAINED ///////////
-	presentation_time_per_stimulus_per_epoch = 1.0f;
+	presentation_time_per_stimulus_per_epoch = 0.25f;
 	record_spikes = false;
 	save_recorded_spikes_to_file = false;
 	if (simulate_network_to_test_trained) {

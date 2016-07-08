@@ -163,11 +163,11 @@ void Simulator::setup_recording_electrodes_for_neurons(int number_of_timesteps_p
 
 	recording_electrodes = new RecordingElectrodes(neurons, "Neurons", number_of_timesteps_per_device_spike_copy_check_param, device_spike_store_size_multiple_of_total_neurons_param, proportion_of_device_spike_store_full_before_copy_param);
 	
+	recording_electrodes->allocate_pointers_for_spike_store();
+	recording_electrodes->reset_pointers_for_spike_store();
+
 	recording_electrodes->allocate_pointers_for_spike_count();
 	recording_electrodes->reset_pointers_for_spike_count();
-
-	// recording_electrodes->initialise_device_pointers();
-	// recording_electrodes->initialise_host_pointers();
 
 	timer->stop_timer_and_log_time_and_message("Recording Electrodes Setup For Neurons.", true);
 }
@@ -178,8 +178,12 @@ void Simulator::setup_recording_electrodes_for_input_neurons(int number_of_times
 	TimerWithMessages * timer = new TimerWithMessages("Setting Up recording electrodes for input neurons...\n");
 
 	input_recording_electrodes = new RecordingElectrodes(input_neurons, "Input_Neurons", number_of_timesteps_per_device_spike_copy_check_param, device_spike_store_size_multiple_of_total_neurons_param, proportion_of_device_spike_store_full_before_copy_param);
-	// input_recording_electrodes->initialise_device_pointers();
-	// input_recording_electrodes->initialise_host_pointers();
+	
+	input_recording_electrodes->allocate_pointers_for_spike_store();
+	input_recording_electrodes->reset_pointers_for_spike_store();
+
+	input_recording_electrodes->allocate_pointers_for_spike_count();
+	input_recording_electrodes->reset_pointers_for_spike_count();
 
 	timer->stop_timer_and_log_time_and_message("Recording Electrodes Setup For Input Neurons.", true);
 }
@@ -191,7 +195,8 @@ void Simulator::RunSimulationToCountNeuronSpikes(float presentation_time_per_sti
 	bool count_spikes_per_neuron = true;
 	int stimulus_presentation_order_seed = 0; // Shouldn't be needed if stimuli presentation not random
 	Stimuli_Presentation_Struct * stimuli_presentation_params = new Stimuli_Presentation_Struct();
-	stimuli_presentation_params->presentation_format = PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_OBJECTS;
+	// stimuli_presentation_params->presentation_format = PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_OBJECTS;
+	stimuli_presentation_params->presentation_format = PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_STIMULI;
 	stimuli_presentation_params->object_order = OBJECT_ORDER_ORIGINAL;
 	stimuli_presentation_params->transform_order = TRANSFORM_ORDER_ORIGINAL;
 	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, record_spikes, save_recorded_spikes_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, stimuli_presentation_params, stimulus_presentation_order_seed, spike_analyser);
