@@ -13,3 +13,15 @@ export DYLD_LIBRARY_PATH=/Developer/NVIDIA/CUDA-7.5/lib:$DYLD_LIBRARY_PATH
 2a. Add following to ~/.bash_profile
 export PATH=~/Documents/Dakota/bin:~/Documents/Dakota/test:$PATH
 export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:~/Documents/Dakota/lib:~/Documents/Dakota/bin
+
+
+3. Install mathgl
+Download
+mkdir build
+cd build
+cmake ..
+edit build/CMakeCache.txt (turn openmp enable OFF)
+cmake ..
+make -j8
+make install -j8
+clang++ -lmgl <file>.cpp
