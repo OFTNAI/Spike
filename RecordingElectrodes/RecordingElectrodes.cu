@@ -65,31 +65,43 @@ RecordingElectrodes::~RecordingElectrodes() {
 }
 
 
-void RecordingElectrodes::initialise_device_pointers() {
-
-	//For counting spikes
-	CudaSafeCall(cudaMalloc((void **)&d_per_neuron_spike_counts, sizeof(int) * neurons->total_number_of_neurons));
-	CudaSafeCall(cudaMemset(d_per_neuron_spike_counts, 0, sizeof(int) * neurons->total_number_of_neurons));
-
-	// For saving spikes (Make seperate class)
-	CudaSafeCall(cudaMalloc((void **)&d_neuron_ids_of_stored_spikes_on_device, sizeof(int)*size_of_device_spike_store));
-	CudaSafeCall(cudaMalloc((void **)&d_time_in_seconds_of_stored_spikes_on_device, sizeof(float)*size_of_device_spike_store));
-	CudaSafeCall(cudaMalloc((void **)&d_total_number_of_spikes_stored_on_device, sizeof(int)));
-
-	// Send data to device: data for saving spikes
-	CudaSafeCall(cudaMemset(d_neuron_ids_of_stored_spikes_on_device, -1, sizeof(int)*size_of_device_spike_store));
-	CudaSafeCall(cudaMemset(d_time_in_seconds_of_stored_spikes_on_device, -1.0f, sizeof(float)*size_of_device_spike_store));
-	CudaSafeCall(cudaMemset(d_total_number_of_spikes_stored_on_device, 0, sizeof(int)));
-}
-
-void RecordingElectrodes::initialise_host_pointers() {
+void RecordingElectrodes::allocate_pointers_for_spike_store() {
 
 	h_neuron_ids_of_stored_spikes_on_device = (int*)malloc(sizeof(int)*size_of_device_spike_store);
 	h_time_in_seconds_of_stored_spikes_on_device = (float*)malloc(sizeof(float)*size_of_device_spike_store);
-
 	h_total_number_of_spikes_stored_on_device = (int*)malloc(sizeof(int));
-	h_total_number_of_spikes_stored_on_device[0] = 0;
+	
+	CudaSafeCall(cudaMalloc((void **)&d_neuron_ids_of_stored_spikes_on_device, sizeof(int)*size_of_device_spike_store));
+	CudaSafeCall(cudaMalloc((void **)&d_time_in_seconds_of_stored_spikes_on_device, sizeof(float)*size_of_device_spike_store));
+	CudaSafeCall(cudaMalloc((void **)&d_total_number_of_spikes_stored_on_device, sizeof(int)));
 }
+
+
+void RecordingElectrodes::reset_pointers_for_spike_store() {
+
+	h_total_number_of_spikes_stored_on_device[0] = 0;
+	h_total_number_of_spikes_stored_on_host = 0;
+
+	CudaSafeCall(cudaMemset(d_neuron_ids_of_stored_spikes_on_device, -1, sizeof(int)*size_of_device_spike_store));
+	CudaSafeCall(cudaMemset(d_time_in_seconds_of_stored_spikes_on_device, -1.0f, sizeof(float)*size_of_device_spike_store));
+	CudaSafeCall(cudaMemset(d_total_number_of_spikes_stored_on_device, 0, sizeof(int)));
+
+}
+
+
+
+void RecordingElectrodes::allocate_pointers_for_spike_count() {
+	//For counting spikes
+	CudaSafeCall(cudaMalloc((void **)&d_per_neuron_spike_counts, sizeof(int) * neurons->total_number_of_neurons));
+	
+}
+
+void RecordingElectrodes::reset_pointers_for_spike_count() {
+
+	CudaSafeCall(cudaMemset(d_per_neuron_spike_counts, 0, sizeof(int) * neurons->total_number_of_neurons));
+
+}
+
 
 
 

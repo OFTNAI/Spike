@@ -162,8 +162,12 @@ void Simulator::setup_recording_electrodes_for_neurons(int number_of_timesteps_p
 	TimerWithMessages * timer = new TimerWithMessages("Setting up recording electrodes for neurons...\n");
 
 	recording_electrodes = new RecordingElectrodes(neurons, "Neurons", number_of_timesteps_per_device_spike_copy_check_param, device_spike_store_size_multiple_of_total_neurons_param, proportion_of_device_spike_store_full_before_copy_param);
-	recording_electrodes->initialise_device_pointers();
-	recording_electrodes->initialise_host_pointers();
+	
+	recording_electrodes->allocate_pointers_for_spike_count();
+	recording_electrodes->reset_pointers_for_spike_count();
+
+	// recording_electrodes->initialise_device_pointers();
+	// recording_electrodes->initialise_host_pointers();
 
 	timer->stop_timer_and_log_time_and_message("Recording Electrodes Setup For Neurons.", true);
 }
@@ -174,8 +178,8 @@ void Simulator::setup_recording_electrodes_for_input_neurons(int number_of_times
 	TimerWithMessages * timer = new TimerWithMessages("Setting Up recording electrodes for input neurons...\n");
 
 	input_recording_electrodes = new RecordingElectrodes(input_neurons, "Input_Neurons", number_of_timesteps_per_device_spike_copy_check_param, device_spike_store_size_multiple_of_total_neurons_param, proportion_of_device_spike_store_full_before_copy_param);
-	input_recording_electrodes->initialise_device_pointers();
-	input_recording_electrodes->initialise_host_pointers();
+	// input_recording_electrodes->initialise_device_pointers();
+	// input_recording_electrodes->initialise_host_pointers();
 
 	timer->stop_timer_and_log_time_and_message("Recording Electrodes Setup For Input Neurons.", true);
 }
@@ -234,18 +238,32 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 			printf("Stimulus: %d, Current time in seconds: %1.2f\n", stimuli_presentation_order[stimulus_index], current_time_in_seconds);
 			printf("stimuli_presentation_params->presentation_format: %d\n", stimuli_presentation_params->presentation_format);
 
-			if (stimuli_presentation_params->presentation_format == PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_OBJECTS) {
+			switch (stimuli_presentation_params->presentation_format) {
+				case PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_STIMULI: case PRESENTATION_FORMAT_RANDOM_RESET_BETWEEN_EACH_STIMULUS:
+				{
+					neurons->reset_neuron_activities();
+					input_neurons->reset_neuron_activities();
+					synapses->reset_synapse_activities();
+					stdp_rule->reset_STDP_activities();
 
-				bool stimulus_is_new_object = input_neurons->stimulus_is_new_object_for_object_by_object_presentation(stimulus_index);
-				(stimulus_is_new_object) ? printf("stimulus_is_new_object\n") : printf("stimulus_is_NOT_new_object\n");
-
-				if (stimulus_is_new_object) {
-					
+					break;
 				}
+				case PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_OBJECTS:
+				{
+					bool stimulus_is_new_object = input_neurons->stimulus_is_new_object_for_object_by_object_presentation(stimulus_index);
+					(stimulus_is_new_object) ? printf("stimulus_is_new_object\n") : printf("stimulus_is_NOT_new_object\n");
 
-			} else if (stimuli_presentation_params->presentation_format == PRESENTATION_FORMAT_RANDOM_RESET_BETWEEN_EACH_STIMULUS) {
-				
+					if (stimulus_is_new_object) {
+						neurons->reset_neuron_activities();
+						input_neurons->reset_neuron_activities();
+						synapses->reset_synapse_activities();
+						stdp_rule->reset_STDP_activities();
+					}
 
+					break;
+				}
+				default:
+					break;
 
 			}
 
@@ -288,6 +306,7 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 			if (count_spikes_per_neuron) {
 				if (spike_analyser) {
 					spike_analyser->store_spike_counts_for_stimulus_index(input_neurons->current_stimulus_index, recording_electrodes->d_per_neuron_spike_counts);
+					recording_electrodes->reset_pointers_for_spike_count();
 				}
 			}
 

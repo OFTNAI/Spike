@@ -45,8 +45,10 @@ public:
 	RecordingElectrodes(SpikingNeurons * neurons_parameter, const char * prefix_string_param, int number_of_timesteps_per_device_spike_copy_check_param, int device_spike_store_size_multiple_of_total_neurons_param, float proportion_of_device_spike_store_full_before_copy_param);
 	~RecordingElectrodes();
 
-	void initialise_device_pointers();
-	void initialise_host_pointers();
+	void allocate_pointers_for_spike_store();
+	void reset_pointers_for_spike_store();
+	void allocate_pointers_for_spike_count();
+	void reset_pointers_for_spike_count();
 
 
 	void collect_spikes_for_timestep(float current_time_in_seconds);
