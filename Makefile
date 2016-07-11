@@ -20,6 +20,7 @@ ifeq ($(UNAME_S),Linux)
 	CFLAGS += --std=c++11 
 endif
 
+
 # mkdir -p ${EXPERIMENT_DIRECTORY}/bin
 # test -d ${EXPERIMENT_DIRECTORY}/bin || mkdir ${EXPERIMENT_DIRECTORY}/bin
 
@@ -35,10 +36,11 @@ REC_FILES := $(wildcard RecordingElectrodes/*.cu)
 ANALY_FILES := $(wildcard SpikeAnalyser/*.cu)
 # CPP
 HELP_CPP_FILES := $(wildcard Helpers/*.cpp)
+PLOTTING_FILES := $(wildcard Plotting/*.cpp)
 
 # COMBINE LISTS
 CU_FILES := $(SIM_FILES) $(NEUR_FILES) $(STDP_FILES) $(HELP_FILES) $(SYNS_FILES) $(REC_FILES) $(ANALY_FILES)
-CPP_FILES := $(HELP_CPP_FILES)
+CPP_FILES := $(HELP_CPP_FILES) $(PLOTTING_FILES)
 
 # Create Objects
 CU_OBJ_FILES := $(addprefix ObjectFiles/,$(notdir $(CU_FILES:.cu=.o)))
@@ -52,7 +54,7 @@ directory: ${EXPERIMENT_DIRECTORY}
 
 ${FILE}: ObjectFiles/${FILE}.o $(CU_OBJ_FILES) $(CPP_OBJ_FILES)
 	test -d ${EXPERIMENT_DIRECTORY}/bin || mkdir ${EXPERIMENT_DIRECTORY}/bin
-	$(CC) -lineinfo ObjectFiles/${FILE}.o $(CU_OBJ_FILES) $(CPP_OBJ_FILES) -o ${EXPERIMENT_DIRECTORY}/bin/${FILE}
+	$(CC) -lineinfo -lmgl ObjectFiles/${FILE}.o $(CU_OBJ_FILES) $(CPP_OBJ_FILES) -o ${EXPERIMENT_DIRECTORY}/bin/${FILE}
 
 # Compiling the Model file
 ObjectFiles/${FILE}.o: ${EXPERIMENT_DIRECTORY}/${FILE}.cpp
@@ -61,8 +63,9 @@ ObjectFiles/${FILE}.o: ${EXPERIMENT_DIRECTORY}/${FILE}.cpp
 # CUDA
 ObjectFiles/%.o: */%.cu
 	$(CC) $(CFLAGS) -o $@ $<
+
 # CPP
-ObjectFiles/%.o: Helpers/%.cpp
+ObjectFiles/%.o: */%.cpp
 	$(CC) $(CFLAGS) -o $@ $<
 
 

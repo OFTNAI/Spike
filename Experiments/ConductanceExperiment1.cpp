@@ -20,9 +20,14 @@
 #include "../Helpers/RandomStateManager.h"
 #include <string>
 #include <fstream>
+#include "../Plotting/Plotter.h"
 
 // The function which will autorun when the executable is created
 int main (int argc, char *argv[]){
+
+	Plotter * plotter = new Plotter();
+	plotter->test_plot();
+	printf("made a plotter!\n");
 
 	TimerWithMessages * experiment_timer = new TimerWithMessages();
 
