@@ -25,9 +25,6 @@
 // The function which will autorun when the executable is created
 int main (int argc, char *argv[]){
 
-	Plotter * plotter = new Plotter();
-	plotter->plot_single_cell_information_analysis();
-
 	TimerWithMessages * experiment_timer = new TimerWithMessages();
 
 	bool command_line_arguments_passed = false;
@@ -345,7 +342,7 @@ int main (int argc, char *argv[]){
 
 
 	/////////// SIMULATE NETWORK TO TEST UNTRAINED ///////////
-	float presentation_time_per_stimulus_per_epoch = 0.05f;
+	float presentation_time_per_stimulus_per_epoch = 0.25f;
 	bool record_spikes = false;
 	bool save_recorded_spikes_to_file = false;
 	int number_of_bins = 3;
@@ -366,7 +363,7 @@ int main (int argc, char *argv[]){
 
 
 	/////////// SIMULATE NETWORK TRAINING ///////////
-	presentation_time_per_stimulus_per_epoch = 0.25f;
+	presentation_time_per_stimulus_per_epoch = 0.01f;
 	int stimulus_presentation_order_seed = 1;
 	int number_of_epochs = 10;
 	bool present_stimuli_in_random_order = true;
@@ -392,6 +389,9 @@ int main (int argc, char *argv[]){
 		single_score_to_write_to_file_for_dakota_optimisation = spike_analyser_for_trained_network->maximum_information_score_count_multiplied_by_sum_of_information_scores - spike_analyser_for_untrained_network->maximum_information_score_count_multiplied_by_sum_of_information_scores;
 		printf("single_score_to_write_to_file_for_dakota_optimisation: %f\n", single_score_to_write_to_file_for_dakota_optimisation);
 		// string file = RESULTS_DIRECTORY + prefix_string + "_Epoch" + to_string(epoch_number) + "_" + to_string(clock());
+
+		Plotter * plotter = new Plotter();
+		plotter->plot_single_cell_information_analysis(spike_analyser_for_untrained_network, spike_analyser_for_trained_network);
 	}
 
 

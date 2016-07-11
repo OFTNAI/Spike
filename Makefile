@@ -34,6 +34,7 @@ HELP_FILES := $(wildcard Helpers/*.cu)
 SYNS_FILES := $(wildcard Synapses/*.cu)
 REC_FILES := $(wildcard RecordingElectrodes/*.cu)
 ANALY_FILES := $(wildcard SpikeAnalyser/*.cu)
+# PLOTTING_FILES := $(wildcard Plotting/*.cu)
 # CPP
 HELP_CPP_FILES := $(wildcard Helpers/*.cpp)
 PLOTTING_FILES := $(wildcard Plotting/*.cpp)
