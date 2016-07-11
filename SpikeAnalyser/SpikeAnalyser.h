@@ -21,6 +21,8 @@ public:
 
 	float ** information_scores_for_each_object_and_neuron;
 	float ** descending_information_scores_for_each_object_and_neuron;
+	float * maximum_information_score_for_each_neuron;
+	float * descending_maximum_information_score_for_each_neuron;
 
 	int ** number_of_spikes_per_stimulus_per_neuron_group;
 	float ** average_number_of_spikes_per_stimulus_per_neuron_group_per_second;

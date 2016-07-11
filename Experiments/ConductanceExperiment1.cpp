@@ -26,8 +26,7 @@
 int main (int argc, char *argv[]){
 
 	Plotter * plotter = new Plotter();
-	plotter->test_plot();
-	printf("made a plotter!\n");
+	plotter->plot_single_cell_information_analysis();
 
 	TimerWithMessages * experiment_timer = new TimerWithMessages();
 
@@ -346,7 +345,7 @@ int main (int argc, char *argv[]){
 
 
 	/////////// SIMULATE NETWORK TO TEST UNTRAINED ///////////
-	float presentation_time_per_stimulus_per_epoch = 0.25f;
+	float presentation_time_per_stimulus_per_epoch = 0.05f;
 	bool record_spikes = false;
 	bool save_recorded_spikes_to_file = false;
 	int number_of_bins = 3;

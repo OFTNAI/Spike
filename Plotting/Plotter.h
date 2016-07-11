@@ -8,8 +8,9 @@ public:
 	Plotter();
 	~Plotter();
 
-	void test_plot();
+	void plot_single_cell_information_analysis();
 
+	void multiple_subplots_test();
 
 };
 

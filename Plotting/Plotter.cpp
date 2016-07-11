@@ -15,7 +15,23 @@ Plotter::~Plotter() {
 }
 
 
-void Plotter::test_plot() {
+
+void Plotter::plot_single_cell_information_analysis() {
+	mglGraph *gr = new mglGraph();
+	gr->SetFontSize(0.8);
+	gr->SetSize(2000,2000);
+
+
+	gr->SubPlot(1,1,0,"<_");
+	gr->Title("Single Cell Information Analysis");
+	gr->SetRanges(0,4,0,1);	gr->Axis();
+	// gr->Bifurcation(0.005,"x*y*(1-y)","r");
+
+	 gr->WriteFrame("single_cell_information_analysis.png");
+}
+
+
+void Plotter::multiple_subplots_test() {
 
 	mglGraph *gr = new mglGraph();		// class for plot drawing
 
