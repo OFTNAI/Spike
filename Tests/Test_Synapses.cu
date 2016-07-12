@@ -526,91 +526,89 @@ TEST_CASE("Spiking Synapses Class Tests") {
 **/
 #include "../Synapses/CurrentSpikingSynapses.h"
 TEST_CASE("Current Spiking Synapses Class Tests") {
-	SECTION("Current Calculation Check"){
-		CurrentSpikingSynapses test_synapses;
-		SpikingNeurons test_neurons;
+	CurrentSpikingSynapses test_synapses;
+	SpikingNeurons test_neurons;
 
-		// Pre-synaptic Population
-		neuron_parameters_struct neuron_params_1;
-		int dim1 = 1;
-		int dim2 = 100;
-		neuron_params_1.group_shape[0] = dim1;
-		neuron_params_1.group_shape[1] = dim2;
+	// Pre-synaptic Population
+	neuron_parameters_struct neuron_params_1;
+	int dim1 = 1;
+	int dim2 = 100;
+	neuron_params_1.group_shape[0] = dim1;
+	neuron_params_1.group_shape[1] = dim2;
 
-		int presynaptic_population = test_neurons.AddGroup(&neuron_params_1);
-		
-		// Post-synaptic Population
-		neuron_parameters_struct neuron_params_2;
-		int dim1_2 = 1;
-		int dim2_2 = 250;
-		neuron_params_2.group_shape[0] = dim1_2;
-		neuron_params_2.group_shape[1] = dim2_2;
+	int presynaptic_population = test_neurons.AddGroup(&neuron_params_1);
+	
+	// Post-synaptic Population
+	neuron_parameters_struct neuron_params_2;
+	int dim1_2 = 1;
+	int dim2_2 = 250;
+	neuron_params_2.group_shape[0] = dim1_2;
+	neuron_params_2.group_shape[1] = dim2_2;
 
-		int postsynaptic_population = test_neurons.AddGroup(&neuron_params_2);
+	int postsynaptic_population = test_neurons.AddGroup(&neuron_params_2);
 
-		// Setting times
-		float timestep = 0.1f;
-		float current_time = 0.9f;
+	// Setting times
+	float timestep = 0.1f;
+	float current_time = 0.9f;
 
-		// Setting Synapses up!
-		spiking_synapse_parameters_struct synapse_params;
-		synapse_params.stdp_on = true;
-		synapse_params.delay_range[0] = 0.1f;
-		synapse_params.delay_range[1] = 5.0f;
-		synapse_params.connectivity_type = CONNECTIVITY_TYPE_ALL_TO_ALL;
-		test_synapses.AddGroup(
-			presynaptic_population,
-			postsynaptic_population,
-			&test_neurons,
-			&test_neurons,
-			timestep,
-			&synapse_params);
+	// Setting Synapses up!
+	spiking_synapse_parameters_struct synapse_params;
+	synapse_params.stdp_on = true;
+	synapse_params.delay_range[0] = 0.1f;
+	synapse_params.delay_range[1] = 5.0f;
+	synapse_params.connectivity_type = CONNECTIVITY_TYPE_ALL_TO_ALL;
+	test_synapses.AddGroup(
+		presynaptic_population,
+		postsynaptic_population,
+		&test_neurons,
+		&test_neurons,
+		timestep,
+		&synapse_params);
 
-		// Setting up simulation
-		test_neurons.set_threads_per_block_and_blocks_per_grid(512);
-		test_synapses.set_threads_per_block_and_blocks_per_grid(512);
-		// Allocating Pointers
-		test_neurons.allocate_device_pointers(test_synapses.maximum_axonal_delay_in_timesteps, true);
-		test_synapses.allocate_device_pointers();
-		// Set-up Variables
-		test_neurons.copy_constants_to_device();
-		test_synapses.copy_constants_and_initial_efficacies_to_device();
-		test_neurons.reset_neuron_activities();
-		test_synapses.reset_synapse_activities();
-		// Check the initial current injection values after a run
-		test_synapses.calculate_postsynaptic_current_injection(&test_neurons, current_time, timestep);
-		float* current_inj = (float*)malloc(sizeof(float)*test_neurons.total_number_of_neurons);
-		CudaSafeCall(cudaMemcpy(current_inj, test_neurons.d_current_injections, sizeof(float)*test_neurons.total_number_of_neurons, cudaMemcpyDeviceToHost));
-		for (int i=0; i < test_neurons.total_number_of_neurons; i++){
-			REQUIRE(current_inj[i] == 0.0f);
+	// Setting up simulation
+	test_neurons.set_threads_per_block_and_blocks_per_grid(512);
+	test_synapses.set_threads_per_block_and_blocks_per_grid(512);
+	// Allocating Pointers
+	test_neurons.allocate_device_pointers(test_synapses.maximum_axonal_delay_in_timesteps, true);
+	test_synapses.allocate_device_pointers();
+	// Set-up Variables
+	test_neurons.copy_constants_to_device();
+	test_synapses.copy_constants_and_initial_efficacies_to_device();
+	test_neurons.reset_neuron_activities();
+	test_synapses.reset_synapse_activities();
+	// Check the initial current injection values after a run
+	test_synapses.calculate_postsynaptic_current_injection(&test_neurons, current_time, timestep);
+	float* current_inj = (float*)malloc(sizeof(float)*test_neurons.total_number_of_neurons);
+	CudaSafeCall(cudaMemcpy(current_inj, test_neurons.d_current_injections, sizeof(float)*test_neurons.total_number_of_neurons, cudaMemcpyDeviceToHost));
+	for (int i=0; i < test_neurons.total_number_of_neurons; i++){
+		REQUIRE(current_inj[i] == 0.0f);
+	}
+	
+	// Set some of the synapses as having a spike at them
+	float* last_synapse_spike_times = (float*)malloc(sizeof(float)*test_synapses.total_number_of_synapses);
+	CudaSafeCall(cudaMemcpy(last_synapse_spike_times, test_synapses.d_time_of_last_spike_to_reach_synapse, sizeof(float)*test_synapses.total_number_of_synapses, cudaMemcpyDeviceToHost));
+	int indices[5] = {0, 120, 78, 9, 11};
+	for (int i=0; i < 5; i++){
+		for (int j=0; j < test_synapses.total_number_of_synapses; j++){
+			if (test_synapses.postsynaptic_neuron_indices[j] == indices[i]){
+				last_synapse_spike_times[j] = current_time;
+			}
 		}
-		
-		// Set some of the synapses as having a spike at them
-		float* last_synapse_spike_times = (float*)malloc(sizeof(float)*test_synapses.total_number_of_synapses);
-		CudaSafeCall(cudaMemcpy(last_synapse_spike_times, test_synapses.d_time_of_last_spike_to_reach_synapse, sizeof(float)*test_synapses.total_number_of_synapses, cudaMemcpyDeviceToHost));
-		int indices[5] = {0, 120, 700, 6, 212};
-		for (int i=0; i < 5; i++){
+	}
+	CudaSafeCall(cudaMemcpy(test_synapses.d_time_of_last_spike_to_reach_synapse, last_synapse_spike_times, sizeof(float)*test_synapses.total_number_of_synapses, cudaMemcpyHostToDevice));
+	// Now running the sim and checking again
+	test_synapses.calculate_postsynaptic_current_injection(&test_neurons, current_time, timestep);
+	CudaSafeCall(cudaMemcpy(current_inj, test_neurons.d_current_injections, sizeof(float)*test_neurons.total_number_of_neurons, cudaMemcpyDeviceToHost));
+	for(int i=0; i < test_neurons.total_number_of_neurons; i++){
+		float current = 0.0f;
+		if ((i == indices[0]) || (i == indices[1]) || (i == indices[2]) || (i == indices[3]) || (i == indices[4])){
 			for (int j=0; j < test_synapses.total_number_of_synapses; j++){
-				if (test_synapses.postsynaptic_neuron_indices[j] == indices[i]){
-					last_synapse_spike_times[j] = current_time;
+				if (test_synapses.postsynaptic_neuron_indices[j] == i){
+					current += test_synapses.synaptic_efficacies_or_weights[j];
 				}
 			}
 		}
-		CudaSafeCall(cudaMemcpy(test_synapses.d_time_of_last_spike_to_reach_synapse, last_synapse_spike_times, sizeof(float)*test_synapses.total_number_of_synapses, cudaMemcpyHostToDevice));
-		// Now running the sim and checking again
-		test_synapses.calculate_postsynaptic_current_injection(&test_neurons, current_time, timestep);
-		CudaSafeCall(cudaMemcpy(current_inj, test_neurons.d_current_injections, sizeof(float)*test_neurons.total_number_of_neurons, cudaMemcpyDeviceToHost));
-		for(int i=0; i < test_neurons.total_number_of_neurons; i++){
-			float current = 0.0f;
-			if ((i == indices[0]) || (i == indices[1]) || (i == indices[2]) || (i == indices[3]) || (i == indices[4])){
-				for (int j=0; j < test_synapses.total_number_of_synapses; j++){
-					if (test_synapses.postsynaptic_neuron_indices[j] == i){
-						current += test_synapses.synaptic_efficacies_or_weights[j];
-					}
-				}
-			}
-			REQUIRE(std::abs(current_inj[i] - current) < 0.00005f);
-		}
+		REQUIRE(std::abs(current_inj[i] - current) < 0.00005f);
 	}
 }
 

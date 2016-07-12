@@ -54,7 +54,7 @@ public:
 	float * d_recent_presynaptic_activities_C;
 
 	// Set STDP Parameters
-	virtual void Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons* neurons, stdp_parameters_struct* stdp_parameters);
+	virtual void Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons* neurons, SpikingNeurons* input_neurons, stdp_parameters_struct* stdp_parameters);
 	// STDP
 	virtual void allocate_device_pointers();
 	virtual void reset_STDP_activities();
