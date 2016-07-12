@@ -151,9 +151,16 @@ void RecordingElectrodes::copy_spikes_from_device_to_host_and_reset_device_spike
 			
 			// Reset the number on the device
 			CudaSafeCall(cudaMemset(&(d_total_number_of_spikes_stored_on_device[0]), 0, sizeof(int)));
-			CudaSafeCall(cudaMemset(d_neuron_ids_of_stored_spikes_on_device, -1, sizeof(int)*size_of_device_spike_store));
-			CudaSafeCall(cudaMemset(d_time_in_seconds_of_stored_spikes_on_device, -1.0f, sizeof(float)*size_of_device_spike_store));
-			// // Increase the number on host
+			// Resetting with arrays
+			int* reset_neuron_ids = (int *)malloc(sizeof(int)*size_of_device_spike_store);
+			float* reset_neuron_times = (float *)malloc(sizeof(float)*size_of_device_spike_store);
+			for (int i=0; i < size_of_device_spike_store; i++){
+				reset_neuron_ids[i] = -1;
+				reset_neuron_times[i] = -1.0f;
+			}
+			CudaSafeCall(cudaMemcpy(d_neuron_ids_of_stored_spikes_on_device, reset_neuron_ids, sizeof(int)*size_of_device_spike_store, cudaMemcpyHostToDevice));
+			CudaSafeCall(cudaMemcpy(d_time_in_seconds_of_stored_spikes_on_device, reset_neuron_times, sizeof(float)*size_of_device_spike_store, cudaMemcpyHostToDevice));
+			// Increase the number on host
 			h_total_number_of_spikes_stored_on_host += h_total_number_of_spikes_stored_on_device[0];
 			h_total_number_of_spikes_stored_on_device[0] = 0;
 		}
