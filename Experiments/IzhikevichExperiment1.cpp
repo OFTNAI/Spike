@@ -54,7 +54,7 @@ int main (int argc, char *argv[]){
 
 	/////////// STDP SETUP ///////////
 	higgins_stdp_parameters_struct * STDP_PARAMS = new higgins_stdp_parameters_struct();
-	higgins_stdp->Set_STDP_Parameters((SpikingSynapses *) conductance_spiking_synapses, (SpikingNeurons *) izhikevich_spiking_neurons, (stdp_parameters_struct *) STDP_PARAMS);
+	higgins_stdp->Set_STDP_Parameters((SpikingSynapses *) conductance_spiking_synapses, (SpikingNeurons *) izhikevich_spiking_neurons, (SpikingNeurons *) input_neurons, (stdp_parameters_struct *) STDP_PARAMS);
 
 	simulator.SetNeuronType(izhikevich_spiking_neurons);
 	simulator.SetInputNeuronType(input_neurons);

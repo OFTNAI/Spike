@@ -124,7 +124,7 @@ int main (int argc, char *argv[]){
 	evans_stdp_parameters_struct * STDP_PARAMS = new evans_stdp_parameters_struct();
 	STDP_PARAMS->decay_term_tau_C = 0.015;
 	STDP_PARAMS->decay_term_tau_D = 0.025;
-	evans_stdp->Set_STDP_Parameters((SpikingSynapses *) conductance_spiking_synapses, (SpikingNeurons *) lif_spiking_neurons, (stdp_parameters_struct *) STDP_PARAMS);
+	evans_stdp->Set_STDP_Parameters((SpikingSynapses *) conductance_spiking_synapses, (SpikingNeurons *) lif_spiking_neurons, (SpikingNeurons *) input_neurons, (stdp_parameters_struct *) STDP_PARAMS);
 
 	simulator.SetNeuronType(lif_spiking_neurons);
 	simulator.SetInputNeuronType(input_neurons);

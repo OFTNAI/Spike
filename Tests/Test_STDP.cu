@@ -1,5 +1,10 @@
 #include "catch.hpp"
 
-TEST_CASE("Hello World STDP") {
+/**
+		HIGGINSSTDP.CU Test Set
+**/
+#include "../STDP/STDP.h"
+#include "../STDP/HigginsSTDP.h"
+TEST_CASE("HigginsSTDP") {
 	REQUIRE(true == true);
 }

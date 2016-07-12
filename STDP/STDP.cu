@@ -18,7 +18,7 @@ STDP::~STDP() {
 }
 
 // Setting the Parameter Structure
-void STDP::Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons* neurons, stdp_parameters_struct* stdp_parameters){
+void STDP::Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons* neurons, SpikingNeurons* input_neurons, stdp_parameters_struct* stdp_parameters){
 }
 
 // Initialize STDP (Must be run before network start)
