@@ -42,6 +42,7 @@ TEST_CASE("HigginsSTDP") {
 
 	// Setting times
 	float timestep = 0.01f;
+	float current_time = 0.09f;
 
 	// Setting Synapses up!
 	spiking_synapse_parameters_struct synapse_params;
@@ -103,7 +104,6 @@ TEST_CASE("HigginsSTDP") {
 		last_neuron_spike_times = (float*)malloc(sizeof(float)*test_neurons.total_number_of_neurons);
 		CudaSafeCall(cudaMemcpy(last_neuron_spike_times, test_neurons.d_last_spike_time_of_each_neuron, sizeof(float)*test_neurons.total_number_of_neurons, cudaMemcpyDeviceToHost));
 		// Set of the neuron spike times to now
-		float current_time = 0.9f;
 		for (int i=0; i < 5; i++){
 			// Setting it to half the current_time so that it can 
 			last_neuron_spike_times[indices[i]] = current_time;
@@ -121,7 +121,51 @@ TEST_CASE("HigginsSTDP") {
 		for(int i=0; i < test_synapses.total_number_of_synapses; i++){
 			float diff = current_time - last_synapse_spike_times[i];
 			float weight_change = (STDP_PARAMS->w_max - 0.5f) * (STDP_PARAMS->a_plus * exp(-diff / STDP_PARAMS->tau_plus));
-			REQUIRE(std::abs(test_synapses.synaptic_efficacies_or_weights[i] - (0.5f + weight_change)) < 0.00005f);
+			REQUIRE(synaptic_weights[i] >= 0.5f);
+			REQUIRE(std::abs(synaptic_weights[i] - (0.5f + weight_change)) < 0.00005f);
+		}
+	}
+
+	SECTION("LTD Test"){
+		// Set some of the synapses as having a spike at them
+		float* last_synapse_spike_times = (float*)malloc(sizeof(float)*test_synapses.total_number_of_synapses);
+		CudaSafeCall(cudaMemcpy(last_synapse_spike_times, test_synapses.d_time_of_last_spike_to_reach_synapse, sizeof(float)*test_synapses.total_number_of_synapses, cudaMemcpyDeviceToHost));
+		int indices[5] = {0, 12, 78, 9, 11};
+		float spike_times[5] = {0.01f, 0.02f, 0.05f, 0.08f, 0.00f};
+		for (int i=0; i < 5; i++){
+			for (int j=0; j < test_synapses.total_number_of_synapses; j++){
+				if (test_synapses.postsynaptic_neuron_indices[j] == indices[i]){
+					last_synapse_spike_times[j] = current_time;
+				}
+			}
+		}
+		CudaSafeCall(cudaMemcpy(test_synapses.d_time_of_last_spike_to_reach_synapse, last_synapse_spike_times, sizeof(float)*test_synapses.total_number_of_synapses, cudaMemcpyHostToDevice));
+
+
+		// Set neuron last spike indices to those required:
+		float* last_neuron_spike_times;
+		last_neuron_spike_times = (float*)malloc(sizeof(float)*test_neurons.total_number_of_neurons);
+		CudaSafeCall(cudaMemcpy(last_neuron_spike_times, test_neurons.d_last_spike_time_of_each_neuron, sizeof(float)*test_neurons.total_number_of_neurons, cudaMemcpyDeviceToHost));
+		// Set of the neuron spike times to now
+		for (int i=0; i < 5; i++){
+			// Setting it to half the current_time so that it can 
+			last_neuron_spike_times[indices[i]] = spike_times[i];
+		}
+		// Return the data to the device
+		CudaSafeCall(cudaMemcpy(test_neurons.d_last_spike_time_of_each_neuron, last_neuron_spike_times, sizeof(float)*test_neurons.total_number_of_neurons, cudaMemcpyHostToDevice));
+
+		// Now run STDP
+		test_stdp.Run_STDP(test_neurons.d_last_spike_time_of_each_neuron, current_time, timestep);
+
+		// Check synaptic weights copy back weights
+		float* synaptic_weights = (float*)malloc(sizeof(float)*test_synapses.total_number_of_synapses);
+		CudaSafeCall(cudaMemcpy(synaptic_weights, test_synapses.d_synaptic_efficacies_or_weights, sizeof(float)*test_synapses.total_number_of_synapses, cudaMemcpyDeviceToHost));
+		// Check the synaptic weight values
+		for(int i=0; i < test_synapses.total_number_of_synapses; i++){
+			float diff = last_neuron_spike_times[test_synapses.postsynaptic_neuron_indices[i]] - current_time;
+			float weightscale = STDP_PARAMS->w_max * STDP_PARAMS->a_minus * exp(diff / STDP_PARAMS->tau_minus);
+			REQUIRE(synaptic_weights[i] <= 0.5f);
+			REQUIRE(std::abs(synaptic_weights[i] - (0.5f + weightscale)) < 0.00005f);
 		}
 	}
 }	
