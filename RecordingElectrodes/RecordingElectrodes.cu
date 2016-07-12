@@ -248,10 +248,8 @@ __global__ void add_spikes_to_per_neuron_spike_count_kernel(float* d_last_spike_
 		}
 
 		// if (idx == 1000) printf("d_per_neuron_spike_counts[idx]: %d\n", d_per_neuron_spike_counts[idx]);
-		idx = blockDim.x * gridDim.x;
+		idx += blockDim.x * gridDim.x;
 	}
-
-
 }
 
 // Collect Spikes
@@ -273,8 +271,7 @@ __global__ void collect_spikes_for_timestep_kernel(float* d_last_spike_time_of_e
 			d_neuron_ids_of_stored_spikes_on_device[i] = idx;
 			d_time_in_seconds_of_stored_spikes_on_device[i] = current_time_in_seconds;
 		}
-		idx = blockDim.x * gridDim.x;
-
+		idx += blockDim.x * gridDim.x;
 	}
 	__syncthreads();
 }

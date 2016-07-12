@@ -59,6 +59,7 @@ __global__ void current_calculate_postsynaptic_current_injection_kernel(float* d
 			atomicAdd(&d_neurons_current_injections[d_postsynaptic_neuron_indices[idx]], d_synaptic_efficacies_or_weights[idx]);
 
 		}
+		idx += blockDim.x * gridDim.x;
 	}
 	__syncthreads();
 }
