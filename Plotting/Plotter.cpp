@@ -20,33 +20,41 @@ void Plotter::plot_single_cell_information_analysis(SpikeAnalyser * spike_analys
 	gr->SetFontSize(0.8);
 	gr->SetSize(2000,2000);
 
-	mglData dataUNTRAINED(spike_analyser_for_untrained_network->number_of_neurons_in_group);
-	mglData dataTRAINED(spike_analyser_for_trained_network->number_of_neurons_in_group);
-	mglData neuron_indices_zeroed(spike_analyser_for_trained_network->number_of_neurons_in_group);
+	mglData dataUNTRAINED(spike_analyser_for_untrained_network->number_of_neurons_in_single_cell_analysis_group);
+	mglData dataTRAINED(spike_analyser_for_trained_network->number_of_neurons_in_single_cell_analysis_group);
+	mglData neuron_indices_zeroed(spike_analyser_for_untrained_network->number_of_neurons_in_single_cell_analysis_group);
 
-	for (int neuron_index_zeroed = 0; neuron_index_zeroed < spike_analyser_for_untrained_network->number_of_neurons_in_group; neuron_index_zeroed++) {
-		printf("spike_analyser_for_untrained_network->descending_maximum_information_score_for_each_neuron[%d]: %f\n", neuron_index_zeroed, spike_analyser_for_untrained_network->descending_maximum_information_score_for_each_neuron[neuron_index_zeroed]);
-		printf("spike_analyser_for_trained_network->descending_maximum_information_score_for_each_neuron[%d]: %f\n", neuron_index_zeroed, spike_analyser_for_trained_network->descending_maximum_information_score_for_each_neuron[neuron_index_zeroed]);
-		dataUNTRAINED.a[neuron_index_zeroed] = spike_analyser_for_untrained_network->descending_maximum_information_score_for_each_neuron[neuron_index_zeroed];
-		dataTRAINED.a[neuron_index_zeroed] = spike_analyser_for_trained_network->descending_maximum_information_score_for_each_neuron[neuron_index_zeroed];
+	printf("spike_analyser_for_untrained_network->number_of_neurons_in_single_cell_analysis_group: %d\n", spike_analyser_for_untrained_network->number_of_neurons_in_single_cell_analysis_group);
+	printf("spike_analyser_for_trained_network->number_of_neurons_in_single_cell_analysis_group: %d\n", spike_analyser_for_trained_network->number_of_neurons_in_single_cell_analysis_group);
+
+	for (int neuron_index_zeroed = 0; neuron_index_zeroed < spike_analyser_for_untrained_network->number_of_neurons_in_single_cell_analysis_group; neuron_index_zeroed++) {
+		// printf("neuron_index_zeroed: %d\n", neuron_index_zeroed);
+		// printf("spike_analyser_for_untrained_network->descending_maximum_information_score_for_each_neuron[%d]: %f\n", neuron_index_zeroed, spike_analyser_for_untrained_network->descending_maximum_information_score_for_each_neuron[neuron_index_zeroed]);
+		// printf("spike_analyser_for_trained_network->descending_maximum_information_score_for_each_neuron[%d]: %f\n", neuron_index_zeroed, spike_analyser_for_trained_network->descending_maximum_information_score_for_each_neuron[neuron_index_zeroed]);
+		dataUNTRAINED.a[neuron_index_zeroed] = 0.0;
+		// dataUNTRAINED.a[neuron_index_zeroed] = spike_analyser_for_untrained_network->descending_maximum_information_score_for_each_neuron[neuron_index_zeroed];
+		// dataTRAINED.a[neuron_index_zeroed] = spike_analyser_for_trained_network->descending_maximum_information_score_for_each_neuron[neuron_index_zeroed];
 		neuron_indices_zeroed.a[neuron_index_zeroed] = neuron_index_zeroed;
 	}
 
-	gr->SubPlot(1,1,0,"<_");
-	gr->Title("Single Cell Information Analysis");
-	gr->SetRanges(0,spike_analyser_for_untrained_network->number_of_neurons_in_group,0,spike_analyser_for_untrained_network->maximum_possible_information_score);	gr->Axis();
+	// gr->SubPlot(1,1,0,"<_");
+	// gr->Title("Single Cell Information Analysis");
+	// gr->SetRanges(0,spike_analyser_for_untrained_network->number_of_neurons_in_single_cell_analysis_group,0,spike_analyser_for_untrained_network->maximum_possible_information_score);	gr->Axis();
 
-	gr->Plot(dataUNTRAINED);
-	gr->Plot(dataTRAINED);
+	// // gr->Plot(dataUNTRAINED);
+	// // gr->Plot(dataTRAINED);
 
-	// gr->Plot(dataUNTRAINED, "b.", "legend 'dataUNTRAINED'");
-	gr->Plot(dataUNTRAINED, dataTRAINED, "b., r.");
-	// gr->Plot(dataTRAINED, neuron_indices_zeroed, "r.", "legend 'dataTRAINED'");
-	gr->Legend(2);
+	// // gr->Plot(dataUNTRAINED, "b.", "legend 'dataUNTRAINED'");
+	// gr->Plot(dataUNTRAINED, dataTRAINED);
+	// // gr->Plot(dataTRAINED, neuron_indices_zeroed, "r.", "legend 'dataTRAINED'");
+	// // gr->AddLegend("dataUNTRAINED","b");
+	// // gr->AddLegend("sin(\\pi x)","g*");
 
-	// // gr->Bifurcation(0.005,"x*y*(1-y)","r");
+	// gr->Legend(2);
 
-	 gr->WriteFrame("single_cell_information_analysis.png");
+	// // // gr->Bifurcation(0.005,"x*y*(1-y)","r");
+
+	//  gr->WriteFrame("single_cell_information_analysis.png");
 }
 
 

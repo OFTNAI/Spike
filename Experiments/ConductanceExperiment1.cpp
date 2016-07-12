@@ -338,7 +338,7 @@ int main (int argc, char *argv[]){
 	bool simulate_network_to_test_untrained = true;
 	bool simulate_network_to_train_network = true;
 	bool simulate_network_to_test_trained = true;
-	float single_score_to_write_to_file_for_dakota_optimisation = 0.04;
+	float single_score_to_write_to_file_for_dakota_optimisation = 0.0;
 
 
 	/////////// SIMULATE NETWORK TO TEST UNTRAINED ///////////
@@ -363,9 +363,9 @@ int main (int argc, char *argv[]){
 
 
 	/////////// SIMULATE NETWORK TRAINING ///////////
-	presentation_time_per_stimulus_per_epoch = 0.01f;
+	presentation_time_per_stimulus_per_epoch = 0.1f;
 	int stimulus_presentation_order_seed = 1;
-	int number_of_epochs = 10;
+	int number_of_epochs = 1;
 	bool present_stimuli_in_random_order = true;
 	Stimuli_Presentation_Struct * stimuli_presentation_params = new Stimuli_Presentation_Struct();
 	stimuli_presentation_params->presentation_format = PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_OBJECTS;
