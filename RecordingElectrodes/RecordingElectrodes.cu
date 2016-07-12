@@ -166,6 +166,7 @@ void RecordingElectrodes::add_spikes_to_per_neuron_spike_count(float current_tim
 														d_per_neuron_spike_counts,
 														current_time_in_seconds,
 														neurons->total_number_of_neurons);
+	CudaCheckError();
 }
 
 

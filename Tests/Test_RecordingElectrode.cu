@@ -58,6 +58,18 @@ TEST_CASE("RecordingElectrode") {
 	// Checking for spikes on every timestep, with a store of length the number of neurons. Save spikes whenever they come.
 	RecordingElectrodes test_record = RecordingElectrodes(&test_neurons, "test", 1, 1, 0.0f);
 
+	// Setting up simulation
+	test_neurons.set_threads_per_block_and_blocks_per_grid(512);
+	test_synapses.set_threads_per_block_and_blocks_per_grid(512);
+	// Allocating Pointers
+	test_neurons.allocate_device_pointers(test_synapses.maximum_axonal_delay_in_timesteps, true);
+	test_synapses.allocate_device_pointers();
+	// Set-up Variables
+	test_neurons.copy_constants_to_device();
+	test_synapses.copy_constants_and_initial_efficacies_to_device();
+	test_neurons.reset_neuron_activities();
+	test_synapses.reset_synapse_activities();
+
 	// Setting up the recording electrode
 	test_record.allocate_pointers_for_spike_store();
 	test_record.reset_pointers_for_spike_store();
@@ -78,6 +90,53 @@ TEST_CASE("RecordingElectrode") {
 			weightfile.read((char*)&test_val, sizeof(float));
 			REQUIRE(test_val == test_synapses.synaptic_efficacies_or_weights[i]);
 		}
+	}
 
+	SECTION("Spike Collection Test"){
+		// Set neuron last spike indices to those required:
+		int indices[5] = {0, 12, 78, 9, 11};
+		float* last_neuron_spike_times;
+		last_neuron_spike_times = (float*)malloc(sizeof(float)*test_neurons.total_number_of_neurons);
+		CudaSafeCall(cudaMemcpy(last_neuron_spike_times, test_neurons.d_last_spike_time_of_each_neuron, sizeof(float)*test_neurons.total_number_of_neurons, cudaMemcpyDeviceToHost));
+		// Set of the neuron spike times to now
+		for (int i=0; i < 5; i++){
+			last_neuron_spike_times[indices[i]] = current_time;
+		}
+		// Return the data to the device
+		CudaSafeCall(cudaMemcpy(test_neurons.d_last_spike_time_of_each_neuron, last_neuron_spike_times, sizeof(float)*test_neurons.total_number_of_neurons, cudaMemcpyHostToDevice));
+
+		// Collect Spikes and check
+		test_record.collect_spikes_for_timestep(current_time);
+		// Copy spikes back and ensure that the values are correct
+		int* number_of_spikes = (int*)malloc(sizeof(int));
+		int* spiked_neuron_ids = (int*)malloc(sizeof(int)*number_of_spikes[0]);
+		float* spiked_neuron_times = (float*)malloc(sizeof(float)*number_of_spikes[0]);
+		CudaSafeCall(cudaMemcpy(number_of_spikes, test_record.d_total_number_of_spikes_stored_on_device, sizeof(int), cudaMemcpyDeviceToHost));
+		CudaSafeCall(cudaMemcpy(spiked_neuron_ids, test_record.d_neuron_ids_of_stored_spikes_on_device, sizeof(int)*number_of_spikes[0], cudaMemcpyDeviceToHost));
+		CudaSafeCall(cudaMemcpy(spiked_neuron_times, test_record.d_time_in_seconds_of_stored_spikes_on_device, sizeof(float)*number_of_spikes[0], cudaMemcpyDeviceToHost));
+
+		// Check Values
+		REQUIRE(number_of_spikes[0] == 5);
+		// Values will not necessarily be in order. So check that they are only checked once
+		bool checked[5];
+		for (int i=0; i < 5; i++){
+			checked[i] = false;
+		}
+
+		for (int i=0; i < 5; i++){
+			for (int j=0; j < 5; j++){
+				if (spiked_neuron_ids[i] == indices[j]){
+					if (checked[i] == false){
+						checked[i] = true;
+						REQUIRE(spiked_neuron_ids[i] == indices[j]);
+						REQUIRE(spiked_neuron_times[i] == current_time);
+					} else {
+						printf("Multiple copies of a single spike!");
+						REQUIRE(true == false);
+					}
+				}
+			}
+
+		}
 	}
 }
