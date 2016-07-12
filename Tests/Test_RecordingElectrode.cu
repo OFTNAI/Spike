@@ -136,7 +136,27 @@ TEST_CASE("RecordingElectrode") {
 					}
 				}
 			}
+		}
 
+		// Test the effect when we use the spike copy function
+		test_record.copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(current_time, 0, 1);
+		REQUIRE(test_record.h_total_number_of_spikes_stored_on_host == 5);
+		for (int i=0; i < 5; i++){
+			checked[i] = false;
+		}
+		for (int i=0; i < 5; i++){
+			for (int j=0; j < 5; j++){
+				if (test_record.h_neuron_ids_of_stored_spikes_on_device[i] == indices[j]){
+					if (checked[i] == false){
+						checked[i] = true;
+						REQUIRE(test_record.h_neuron_ids_of_stored_spikes_on_device[i] == indices[j]);
+						REQUIRE(test_record.h_time_in_seconds_of_stored_spikes_on_device[i] == current_time);
+					} else {
+						printf("Multiple copies of a single spike!");
+						REQUIRE(true == false);
+					}
+				}
+			}
 		}
 	}
 }
