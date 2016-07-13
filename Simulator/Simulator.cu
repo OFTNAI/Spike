@@ -332,8 +332,8 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 		// Only save the spikes if necessary
 		if (record_spikes && save_recorded_spikes_to_file){
 			printf("Write to file\n");
-			if (recording_electrodes) recording_electrodes->write_spikes_to_file(epoch_number);
-			if (input_recording_electrodes) input_recording_electrodes->write_spikes_to_file(epoch_number);
+			if (recording_electrodes) recording_electrodes->write_spikes_to_file(epoch_number, true);
+			if (input_recording_electrodes) input_recording_electrodes->write_spikes_to_file(epoch_number, true);
 		}
 	}
 	

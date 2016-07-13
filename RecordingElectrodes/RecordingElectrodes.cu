@@ -179,12 +179,15 @@ void RecordingElectrodes::add_spikes_to_per_neuron_spike_count(float current_tim
 
 
 
-void RecordingElectrodes::write_spikes_to_file(int epoch_number) {
+void RecordingElectrodes::write_spikes_to_file(int epoch_number, bool append_clock_to_filenames) {
 
 	clock_t write_spikes_to_file_start = clock();
 
 	// Get the names
-	string file = RESULTS_DIRECTORY + prefix_string + "_Epoch" + to_string(epoch_number) + "_" + to_string(clock());
+	string file = RESULTS_DIRECTORY + prefix_string + "_Epoch" + to_string(epoch_number) + "_";
+
+	// Append the clock to the file if flag
+	if (append_clock_to_filenames){ file = file + to_string(clock()); }
 
 	// Open the files
 	ofstream spikeidfile, spiketimesfile;
@@ -205,7 +208,7 @@ void RecordingElectrodes::write_spikes_to_file(int epoch_number) {
 	spikeidfile.close();
 	spiketimesfile.close();
 
-	delete_and_reset_recorded_spikes();
+	//delete_and_reset_recorded_spikes();
 
 	clock_t write_spikes_to_file_end = clock();
 	float write_spikes_to_file_total_time = float(write_spikes_to_file_end - write_spikes_to_file_start) / CLOCKS_PER_SEC;
