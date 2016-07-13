@@ -3,6 +3,17 @@ http://oftnai.github.io/Spike/
 
 A GPGPU based Spiking Neural Network (SNN) designed to provide users flexibility in the creation of simulations and high speed in execution. Written in C++/CUDA.
 
+# Requirements
+  - Windows 8 (or greater), OS X 10.10.5 (or greater), (Soon to be tested on Linux)
+  - NVIDIA GPU capable of CUDA code exectution
+  - NVIDIA CUDA Toolkit >= v7.5
+  - Catch.hpp v1.5.6 (https://github.com/philsquared/Catch/tree/master/single_include)
+
+Other packages:
+  - MathGL (http://sourceforge.net/projects/mathgl/files/): Recommended, allows the creation of plots
+  - Dakota (https://dakota.sandia.gov/content/packages): Recommended for parameter optimization using genetic algorithms
+
+For installation instructions, see "Install.txt" file.
 
 # Release Log
 
