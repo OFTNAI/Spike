@@ -85,7 +85,7 @@ TEST_CASE("RecordingElectrode") {
 			test_record.write_initial_synaptic_weights_to_file(&test_synapses, true);
 			// Check the Results dir.
 			std::ifstream weightfile;
-			weightfile.open("./Results/test_NetworkWeights_Initial.txt", std::ios::binary);
+			weightfile.open("./output/test_NetworkWeights_Initial.txt", std::ios::binary);
 			
 			// Check weights
 			for (int i=0; i < test_synapses.total_number_of_synapses; i++){
@@ -100,7 +100,7 @@ TEST_CASE("RecordingElectrode") {
 			test_record.write_initial_synaptic_weights_to_file(&test_synapses, false);
 			// Check the Results dir.
 			std::ifstream weightfile;
-			weightfile.open("./Results/test_NetworkWeights_Initial.bin", std::ios::binary);
+			weightfile.open("./output/test_NetworkWeights_Initial.bin", std::ios::binary);
 			
 			// Check weights
 			for (int i=0; i < test_synapses.total_number_of_synapses; i++){
@@ -206,8 +206,8 @@ TEST_CASE("RecordingElectrode") {
 			// Open the saved spikes and check contents
 			std::ifstream savedspikeids;
 			std::ifstream savedspiketimes;
-			savedspikeids.open("./Results/test_Epoch0_SpikeIDs.txt", std::ios::binary);
-			savedspiketimes.open("./Results/test_Epoch0_SpikeTimes.txt", std::ios::binary);
+			savedspikeids.open("./output/test_Epoch0_SpikeIDs.txt", std::ios::binary);
+			savedspiketimes.open("./output/test_Epoch0_SpikeTimes.txt", std::ios::binary);
 			
 			// Check values
 			for (int i=0; i < 5; i++){
@@ -237,8 +237,8 @@ TEST_CASE("RecordingElectrode") {
 			// Open the saved spikes and check contents
 			std::ifstream savedspikeids;
 			std::ifstream savedspiketimes;
-			savedspikeids.open("./Results/test_Epoch0_SpikeIDs.bin", std::ios::binary);
-			savedspiketimes.open("./Results/test_Epoch0_SpikeTimes.bin", std::ios::binary);
+			savedspikeids.open("./output/test_Epoch0_SpikeIDs.bin", std::ios::binary);
+			savedspiketimes.open("./output/test_Epoch0_SpikeTimes.bin", std::ios::binary);
 			
 			// Check values
 			for (int i=0; i < 5; i++){
@@ -271,10 +271,10 @@ TEST_CASE("RecordingElectrode") {
 			// Open the various file outputs and check the values
 
 			std::ifstream weightfile, delayfile, prefile, postfile;
-			weightfile.open("./Results/test_NetworkWeights.txt", std::ios::binary);
-			delayfile.open("./Results/test_NetworkDelays.txt", std::ios::binary);
-			prefile.open("./Results/test_NetworkPre.txt", std::ios::binary);
-			postfile.open("./Results/test_NetworkPost.txt", std::ios::binary);
+			weightfile.open("./output/test_NetworkWeights.txt", std::ios::binary);
+			delayfile.open("./output/test_NetworkDelays.txt", std::ios::binary);
+			prefile.open("./output/test_NetworkPre.txt", std::ios::binary);
+			postfile.open("./output/test_NetworkPost.txt", std::ios::binary);
 			
 			// Check weights
 			for (int i=0; i < test_synapses.total_number_of_synapses; i++){
@@ -299,10 +299,10 @@ TEST_CASE("RecordingElectrode") {
 			// Open the various file outputs and check the values
 
 			std::ifstream weightfile, delayfile, prefile, postfile;
-			weightfile.open("./Results/test_NetworkWeights.bin", std::ios::binary);
-			delayfile.open("./Results/test_NetworkDelays.bin", std::ios::binary);
-			prefile.open("./Results/test_NetworkPre.bin", std::ios::binary);
-			postfile.open("./Results/test_NetworkPost.bin", std::ios::binary);
+			weightfile.open("./output/test_NetworkWeights.bin", std::ios::binary);
+			delayfile.open("./output/test_NetworkDelays.bin", std::ios::binary);
+			prefile.open("./output/test_NetworkPre.bin", std::ios::binary);
+			postfile.open("./output/test_NetworkPost.bin", std::ios::binary);
 			
 			// Check weights
 			for (int i=0; i < test_synapses.total_number_of_synapses; i++){

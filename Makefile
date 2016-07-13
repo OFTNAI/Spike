@@ -85,7 +85,7 @@ Tests/obj/%.o: Tests/%.cu
 
 # Cleaning tests
 cleantest:
-	rm Tests/obj/* Tests/unittests Tests/Results/*
+	rm Tests/obj/* Tests/unittests Tests/output/*
 
 
 
