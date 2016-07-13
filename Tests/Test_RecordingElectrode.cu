@@ -187,8 +187,8 @@ TEST_CASE("RecordingElectrode") {
 		// Open the saved spikes and check contents
 		std::ifstream savedspikeids;
 		std::ifstream savedspiketimes;
-		savedspikeids.open("./Results/test_Epoch0_SpikeIDs.bin", std::ios::binary);
-		savedspiketimes.open("./Results/test_Epoch0_SpikeTimes.bin", std::ios::binary);
+		savedspikeids.open("./Results/test_Epoch0_SpikeIDs.txt", std::ios::binary);
+		savedspiketimes.open("./Results/test_Epoch0_SpikeTimes.txt", std::ios::binary);
 		
 		// Check values
 		for (int i=0; i < 5; i++){
@@ -218,5 +218,28 @@ TEST_CASE("RecordingElectrode") {
 		test_record.save_network_state(&test_synapses, false);
 		// Open the various file outputs and check the values
 
+		std::ifstream weightfile, delayfile, prefile, postfile;
+		weightfile.open("./Results/test_NetworkWeights.bin", std::ios::binary);
+		delayfile.open("./Results/test_NetworkDelays.bin", std::ios::binary);
+		prefile.open("./Results/test_NetworkPre.bin", std::ios::binary);
+		postfile.open("./Results/test_NetworkPost.bin", std::ios::binary);
+		
+		// Check weights
+		for (int i=0; i < test_synapses.total_number_of_synapses; i++){
+			float test_weight;
+			int test_delay, test_pre, test_post;
+			weightfile.read((char*)&test_weight, sizeof(float));
+			delayfile.read((char*)&test_delay, sizeof(int));
+			prefile.read((char*)&test_pre, sizeof(int));
+			postfile.read((char*)&test_post, sizeof(int));
+			REQUIRE(test_weight == test_synapses.synaptic_efficacies_or_weights[i]);
+			REQUIRE(test_delay == test_synapses.delays[i]);
+			REQUIRE(test_pre == test_synapses.presynaptic_neuron_indices[i]);
+			REQUIRE(test_post == test_synapses.postsynaptic_neuron_indices[i]);
+		}
+		weightfile.close();
+		delayfile.close();
+		prefile.close();
+		postfile.close();
 	}
 }
