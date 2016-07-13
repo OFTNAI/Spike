@@ -33,4 +33,5 @@ This simulator is under constant development. We recommend users to regularly up
 Any individuals who have any questions or wish to contribute, please contact: 
 
 Co-Creators: Nasir Ahmad (nasir.ahmad@psy.ox.ac.uk) & James Isbister (james.isbister@psy.ox.ac.uk)
-Contributers: Akihiro Eguchi (akihiro.eguchi@psy.ox.ac.uk)
+
+Contributors: Akihiro Eguchi (akihiro.eguchi@psy.ox.ac.uk)
