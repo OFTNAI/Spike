@@ -1,8 +1,24 @@
 # Spike
 http://oftnai.github.io/Spike/
 
-A GPGPU based Spiking Neural Network (SNN) designed to be as transparent and easy to modify as possible. Written in C++/CUDA.
+A GPGPU based Spiking Neural Network (SNN) designed to provide users flexibility in the creation of simulations and high speed in execution. Written in C++/CUDA.
 
-This simulator is currently operational but under development and testing. An effort is being made to ensure the code meets standards and practices and that the testing is sufficiently borad. The script is regularly tested on Mac OSX (Yosemite) with a Geforce GTX 980 and CUDA toolkit v7.5.
 
-Any individuals who have any questions or wish to contribute, please contact: nasir.ahmad@psy.ox.ac.uk.
+Release Log
+------------
+v1.0 (13/07/2016):  
+  - Overhaul of code structure for fully separated Neuron, Synapse, STDP and Simulator Classes.
+  - Addition of LIF Neuron type and Conductance based Synapses
+  - Ability to create 2D Neuron Layers and Synapse Connectivities
+  - Scripts for Gabor filtering of images (to represent V1 simple cell outputs)
+  - "Tests" folder containing unittests. Created using Catch (https://github.com/philsquared/Catch) v1.5.6
+  - Plotting functionality reliant upon the MathGL library (mathgl.sourceforge.net/)
+  - Install.txt file descriping the steps necessary for installation
+  - Example Networks in the "Experiments" folder
+
+
+This simulator is under constant development. We recommend users to regularly update any codebase which they use. This software is regularly tested on Mac OSX (El Capitan) and Windows 8 using NVIDIA GPUs (e.g. Geforce GTX 980, Geforce GTX 980ti, Geforce GTX 1080 etc.) The software has been tested on CUDA Toolkit 7.5 and above.
+
+Any individuals who have any questions or wish to contribute, please contact: 
+Creator: Nasir Ahmad (nasir.ahmad@psy.ox.ac.uk)
+Co-Creators: James Isbister (isbisterjb@gmail.com), Akihiro Eguchi (akihiro.eguchi@psy.ox.ac.uk)
