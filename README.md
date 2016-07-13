@@ -4,8 +4,8 @@ http://oftnai.github.io/Spike/
 A GPGPU based Spiking Neural Network (SNN) designed to provide users flexibility in the creation of simulations and high speed in execution. Written in C++/CUDA.
 
 
-Release Log
-------------
+# Release Log
+
 v1.0 (13/07/2016):  
   - Overhaul of code structure for fully separated Neuron, Synapse, STDP and Simulator Classes.
   - Addition of LIF Neuron type and Conductance based Synapses
