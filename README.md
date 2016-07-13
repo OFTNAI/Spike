@@ -34,4 +34,4 @@ Any individuals who have any questions or wish to contribute, please contact:
 
 Creator: Nasir Ahmad (nasir.ahmad@psy.ox.ac.uk)
 
-Co-Creators: James Isbister (isbisterjb@gmail.com), Akihiro Eguchi (akihiro.eguchi@psy.ox.ac.uk)
+Co-Creators: James Isbister (james.isbister@psy.ox.ac.uk), Akihiro Eguchi (akihiro.eguchi@psy.ox.ac.uk)
