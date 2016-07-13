@@ -80,7 +80,8 @@ TEST_CASE("RecordingElectrode") {
 
 	SECTION("Testing Initial Weight Save"){
 		// Saving the initial synaptic weights to file
-		test_record.write_initial_synaptic_weights_to_file(&test_synapses);
+		// Non human readable form
+		test_record.write_initial_synaptic_weights_to_file(&test_synapses, false);
 		// Check the Results dir.
 		std::ifstream weightfile;
 		weightfile.open("./Results/test_NetworkWeights_Initial.bin", std::ios::binary);
@@ -182,7 +183,7 @@ TEST_CASE("RecordingElectrode") {
 		test_record.collect_spikes_for_timestep(current_time);
 		test_record.copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(current_time, 0, 1);
 		// Save the spikes to file
-		test_record.write_spikes_to_file(0, false);
+		test_record.write_spikes_to_file(0, false, true);
 		// Open the saved spikes and check contents
 		std::ifstream savedspikeids;
 		std::ifstream savedspiketimes;
@@ -210,5 +211,12 @@ TEST_CASE("RecordingElectrode") {
 		}
 		savedspiketimes.close();
 		savedspikeids.close();
+	}
+
+	SECTION("Save Network State"){
+		// Save the network to files
+		test_record.save_network_state(&test_synapses, false);
+		// Open the various file outputs and check the values
+
 	}
 }

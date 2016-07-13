@@ -223,7 +223,7 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 	// Set seed for stimulus presentation order
 	srand(stimulus_presentation_order_seed);
 
-	recording_electrodes->write_initial_synaptic_weights_to_file(synapses);
+	recording_electrodes->write_initial_synaptic_weights_to_file(synapses, false);
 	// recording_electrodes->delete_and_reset_recorded_spikes();
 
 	for (int epoch_number = 0; epoch_number < number_of_epochs; epoch_number++) {
@@ -332,8 +332,8 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 		// Only save the spikes if necessary
 		if (record_spikes && save_recorded_spikes_to_file){
 			printf("Write to file\n");
-			if (recording_electrodes) recording_electrodes->write_spikes_to_file(epoch_number, true);
-			if (input_recording_electrodes) input_recording_electrodes->write_spikes_to_file(epoch_number, true);
+			if (recording_electrodes) recording_electrodes->write_spikes_to_file(epoch_number, true, true);
+			if (input_recording_electrodes) input_recording_electrodes->write_spikes_to_file(epoch_number, true, true);
 		}
 	}
 	
@@ -342,7 +342,7 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 	simulation_timer->stop_timer_and_log_time_and_message("Simulation Complete!", true);
 	#endif
 
-	recording_electrodes->save_network_state(synapses);
+	recording_electrodes->save_network_state(synapses, false);
 
 	// delete recording_electrodes;
 	// delete input_recording_electrodes;
