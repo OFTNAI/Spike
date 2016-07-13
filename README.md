@@ -31,5 +31,7 @@ v1.0 (13/07/2016):
 This simulator is under constant development. We recommend users to regularly update any codebase which they use. This software is regularly tested on Mac OSX (El Capitan) and Windows 8 using NVIDIA GPUs (e.g. Geforce GTX 980, Geforce GTX 980ti, Geforce GTX 1080 etc.) The software has been tested on CUDA Toolkit 7.5 and above.
 
 Any individuals who have any questions or wish to contribute, please contact: 
+
 Creator: Nasir Ahmad (nasir.ahmad@psy.ox.ac.uk)
+
 Co-Creators: James Isbister (isbisterjb@gmail.com), Akihiro Eguchi (akihiro.eguchi@psy.ox.ac.uk)
