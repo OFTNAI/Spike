@@ -170,5 +170,10 @@ TEST_CASE("HigginsSTDP") {
 	}
 }	
 
+/**
+		EVANSSTDP.CU Test Set
+**/
+#include "../STDP/EvansSTDP.h"
+TEST_CASE("EvansSTDP") {
 
-
+}
