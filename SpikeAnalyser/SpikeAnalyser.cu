@@ -18,6 +18,8 @@ SpikeAnalyser::SpikeAnalyser(Neurons * neurons_parameter, ImagePoissonInputSpiki
 	descending_information_scores_for_each_object_and_neuron = NULL;
 	maximum_information_score_for_each_neuron = NULL;
 
+	spike_totals_and_averages_were_calculated = false;
+
 	number_of_spikes_per_stimulus_per_neuron_group = NULL;
 	total_number_of_spikes_per_neuron_group = NULL;
 	total_number_of_neuron_spikes = 0;
@@ -135,6 +137,7 @@ void SpikeAnalyser::calculate_various_neuron_spike_totals_and_averages(float pre
 	// printf("total_number_of_neuron_spikes: %d\n", total_number_of_neuron_spikes);
 	printf("average_number_of_neuron_spikes_per_second: %f\n", average_number_of_neuron_spikes_per_second);
 
+	spike_totals_and_averages_were_calculated = true;
 	timer->stop_timer_and_log_time_and_message("Total and per stimulus spikes per neuron group calculated.", true);
 
 }
@@ -144,9 +147,38 @@ void SpikeAnalyser::calculate_single_cell_information_scores_for_neuron_group(in
 	TimerWithMessages * single_cell_analysis_timer = new TimerWithMessages();
 	printf("Calculating Single Cell Information Scores for Neuron Group: %d\n", neuron_group_index);
 
+	if (spike_totals_and_averages_were_calculated == false) print_message_and_exit("Please call calculate_various_neuron_spike_totals_and_averages before calculating single cell information scores");
+
 	int neuron_group_start_index = neurons->start_neuron_indices_for_each_group[neuron_group_index];
 	int neuron_group_end_index = neurons->last_neuron_indices_for_each_group[neuron_group_index];
 	number_of_neurons_in_single_cell_analysis_group = neuron_group_end_index - neuron_group_start_index + 1;
+
+
+	// 0. First initialise public variables. This is important to do first in case there are no spikes at step 1.
+	maximum_possible_information_score = log2((float)input_neurons->total_number_of_objects);
+	sum_of_information_scores_for_last_neuron_group = 0;
+	number_of_neurons_with_maximum_information_score_in_last_neuron_group = 0;
+	maximum_information_score_count_multiplied_by_sum_of_information_scores = 0;
+
+	information_scores_for_each_object_and_neuron = new float *[input_neurons->total_number_of_objects];
+	descending_information_scores_for_each_object_and_neuron = new float *[input_neurons->total_number_of_objects];
+	for (int object_index = 0; object_index < input_neurons->total_number_of_objects; object_index++) {
+
+		information_scores_for_each_object_and_neuron[object_index] = new float[number_of_neurons_in_single_cell_analysis_group];
+		descending_information_scores_for_each_object_and_neuron[object_index] = new float[number_of_neurons_in_single_cell_analysis_group];
+		for (int neuron_index_zeroed = 0; neuron_index_zeroed < number_of_neurons_in_single_cell_analysis_group; neuron_index_zeroed++) {
+			information_scores_for_each_object_and_neuron[object_index][neuron_index_zeroed] = 0.0;
+			descending_information_scores_for_each_object_and_neuron[object_index][neuron_index_zeroed] = 0.0;
+		}
+	}
+
+	maximum_information_score_for_each_neuron = new float[number_of_neurons_in_single_cell_analysis_group];
+	descending_maximum_information_score_for_each_neuron = new float[number_of_neurons_in_single_cell_analysis_group];
+	for (int neuron_index_zeroed = 0; neuron_index_zeroed < number_of_neurons_in_single_cell_analysis_group; neuron_index_zeroed++) {
+		maximum_information_score_for_each_neuron[neuron_index_zeroed] = 0.0f;
+		descending_maximum_information_score_for_each_neuron[neuron_index_zeroed] = 0.0f;
+	}
+
 
 	// 1. Find max number of spikes
 	int max_number_of_spikes = 0;
@@ -163,23 +195,7 @@ void SpikeAnalyser::calculate_single_cell_information_scores_for_neuron_group(in
 	if (max_number_of_spikes == 0) {
 		printf("No spikes in neuron group: %d\n", neuron_group_index);
 		print_line_of_dashes_with_blank_lines_either_side();
-		sum_of_information_scores_for_last_neuron_group = 0;
-		number_of_neurons_with_maximum_information_score_in_last_neuron_group = 0;
-		maximum_information_score_count_multiplied_by_sum_of_information_scores = 0;
 		return;
-	}
-
-	information_scores_for_each_object_and_neuron = new float *[input_neurons->total_number_of_objects];
-	descending_information_scores_for_each_object_and_neuron = new float *[input_neurons->total_number_of_objects];
-	maximum_information_score_for_each_neuron = new float[number_of_neurons_in_single_cell_analysis_group];
-	descending_maximum_information_score_for_each_neuron = new float[number_of_neurons_in_single_cell_analysis_group];
-	for (int object_index = 0; object_index < input_neurons->total_number_of_objects; object_index++) {
-		information_scores_for_each_object_and_neuron[object_index] = new float[number_of_neurons_in_single_cell_analysis_group];
-		descending_information_scores_for_each_object_and_neuron[object_index] = new float[number_of_neurons_in_single_cell_analysis_group];
-		for (int neuron_index_zeroed = 0; neuron_index_zeroed < number_of_neurons_in_single_cell_analysis_group; neuron_index_zeroed++) {
-			information_scores_for_each_object_and_neuron[object_index][neuron_index_zeroed] = 0.0;
-			descending_information_scores_for_each_object_and_neuron[object_index][neuron_index_zeroed] = 0.0;
-		}
 	}
 
 
@@ -255,7 +271,6 @@ void SpikeAnalyser::calculate_single_cell_information_scores_for_neuron_group(in
 	// 5. Calculate information_scores_for_each_object_and_neuron
 	sum_of_information_scores_for_last_neuron_group = 0.0;
 	number_of_neurons_with_maximum_information_score_in_last_neuron_group = 0;
-	maximum_possible_information_score = log2((float)input_neurons->total_number_of_objects);
 	// printf("maximum_possible_information_score: %f\n", maximum_possible_information_score);
 	for (int object_index = 0; object_index < input_neurons->total_number_of_objects; object_index++) {
 		for (int neuron_index_zeroed = 0; neuron_index_zeroed < number_of_neurons_in_single_cell_analysis_group; neuron_index_zeroed++) {
@@ -302,14 +317,13 @@ void SpikeAnalyser::calculate_single_cell_information_scores_for_neuron_group(in
 	maximum_information_score_count_multiplied_by_sum_of_information_scores = (float)number_of_neurons_with_maximum_information_score_in_last_neuron_group * sum_of_information_scores_for_last_neuron_group;
 
 	
-
+	// printf("HERE\n");
 	//6. Sort information scores for each object and neuron
 	for (int object_index = 0; object_index < input_neurons->total_number_of_objects; object_index++) {
 		std::sort(descending_information_scores_for_each_object_and_neuron[object_index], descending_information_scores_for_each_object_and_neuron[object_index] + number_of_neurons_in_single_cell_analysis_group, std::greater<float>());
 		
-		// printf("object_index: %d\n", object_index);
 		// for (int neuron_index_zeroed = 0; neuron_index_zeroed < number_of_neurons_in_single_cell_analysis_group; neuron_index_zeroed++) {
-		// 	printf("%f\n", descending_information_scores_for_each_object_and_neuron[object_index][neuron_index_zeroed]);
+		// 	printf("%f\n", descending_maximum_information_score_for_each_neuron[neuron_index_zeroed]);
 		// }
 
 	}
