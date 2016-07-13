@@ -15,7 +15,7 @@ public:
 	Neurons * neurons;
 	ImagePoissonInputSpikingNeurons * input_neurons;
 	
-	int number_of_neurons_in_group;
+	int number_of_neurons_in_single_cell_analysis_group;
 
 	int ** per_stimulus_per_neuron_spike_counts;
 
@@ -36,6 +36,7 @@ public:
 	float combined_powered_distance_from_average_score;
 	float * combined_powered_distance_from_average_score_for_each_neuron_group;
 
+	bool spike_totals_and_averages_were_calculated;
 
 
 	int number_of_neurons_with_maximum_information_score_in_last_neuron_group;

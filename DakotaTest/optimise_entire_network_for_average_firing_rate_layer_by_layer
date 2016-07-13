@@ -21,4 +21,4 @@ rm "optimisation_iteration_index.txt"
 
 
 bash clean_directory
-		rm "dakota_results.txt.txt"
+rm "dakota_results.txt.txt"
