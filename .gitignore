@@ -1,15 +1,10 @@
 *~
 *.DS_Store
 *.o
-ExampleLIF
-ExampleIzhikevich
-catch.hpp
-unittests
-/Results/*
-/ObjectFiles/*
+/Tests/catch.hpp
+/Tests/unittests
 /MatlabGaborFilter/Inputs/*
 /matlab.mat
-/Experiments/bin/*
 **/*.pyc
 .cproject
 ._catch.hpp

@@ -44,8 +44,8 @@ CU_FILES := $(SIM_FILES) $(NEUR_FILES) $(STDP_FILES) $(HELP_FILES) $(SYNS_FILES)
 CPP_FILES := $(HELP_CPP_FILES) $(PLOTTING_FILES)
 
 # Create Objects
-CU_OBJ_FILES := $(addprefix ObjectFiles/,$(notdir $(CU_FILES:.cu=.o)))
-CPP_OBJ_FILES := $(addprefix ObjectFiles/,$(notdir $(CPP_FILES:.cpp=.o)))
+CU_OBJ_FILES := $(addprefix obj/,$(notdir $(CU_FILES:.cu=.o)))
+CPP_OBJ_FILES := $(addprefix obj/,$(notdir $(CPP_FILES:.cpp=.o)))
 
 
 # Default
@@ -53,20 +53,20 @@ model: ${FILE}
 directory: ${EXPERIMENT_DIRECTORY}
 
 
-${FILE}: ObjectFiles/${FILE}.o $(CU_OBJ_FILES) $(CPP_OBJ_FILES)
-	test -d ${EXPERIMENT_DIRECTORY}/bin || mkdir ${EXPERIMENT_DIRECTORY}/bin
-	$(CC) -lineinfo -lmgl ObjectFiles/${FILE}.o $(CU_OBJ_FILES) $(CPP_OBJ_FILES) -o ${EXPERIMENT_DIRECTORY}/bin/${FILE}
+${FILE}: obj/${FILE}.o $(CU_OBJ_FILES) $(CPP_OBJ_FILES)
+	test -d ${EXPERIMENT_DIRECTORY}/binaries || mkdir ${EXPERIMENT_DIRECTORY}/binarie
+	$(CC) -lineinfo -lmgl obj/${FILE}.o $(CU_OBJ_FILES) $(CPP_OBJ_FILES) -o ${EXPERIMENT_DIRECTORY}/bin/${FILE}
 
 # Compiling the Model file
-ObjectFiles/${FILE}.o: ${EXPERIMENT_DIRECTORY}/${FILE}.cpp
+obj/${FILE}.o: ${EXPERIMENT_DIRECTORY}/${FILE}.cpp
 	$(CC) $(CFLAGS) ${EXPERIMENT_DIRECTORY}/${FILE}.cpp -o $@
 
 # CUDA
-ObjectFiles/%.o: */%.cu
+obj/%.o: */%.cu
 	$(CC) $(CFLAGS) -o $@ $<
 
 # CPP
-ObjectFiles/%.o: */%.cpp
+obj/%.o: */%.cpp
 	$(CC) $(CFLAGS) -o $@ $<
 
 
@@ -91,4 +91,4 @@ cleantest:
 
 # Removing all created files
 clean:
-	rm ObjectFiles/*.o Tests/obj/*
+	rm obj/*.o Tests/obj/*

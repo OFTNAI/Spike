@@ -16,7 +16,7 @@
 #include <time.h>
 using namespace std;
 
-const string RESULTS_DIRECTORY ("Results/");
+const string RESULTS_DIRECTORY ("output/");
 
 
 // RecordingElectrodes Constructor
