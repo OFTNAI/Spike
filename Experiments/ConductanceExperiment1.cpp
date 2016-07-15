@@ -29,85 +29,37 @@ int main (int argc, char *argv[]){
 
 	bool command_line_arguments_passed = false;
 
-	int optimisation_stage = 4;
+	
 
 	int number_of_optimisation_stages = 4;
 	int number_of_new_parameters_per_optimisation_stage = 4;
 	float optimisation_parameters[number_of_optimisation_stages][number_of_new_parameters_per_optimisation_stage];
 
+	int optimisation_stage = number_of_optimisation_stages;
 
-	// TUNED FOR CT TIME CONSTANTS
-	// optimisation_parameters[0][0] = 4.9424046448e-03; //FF
-	// optimisation_parameters[0][1] = 3.0721486040e-04; //E2I
-	// optimisation_parameters[0][2] = 1.0000000000e-06; //I2E
-	// optimisation_parameters[0][3] = 1.0000000000e-06; //E2E
-
-	// optimisation_parameters[1][0] = 1.2195856890e-03;
-	// optimisation_parameters[1][1] = 3.2339270330e-04;
-	// optimisation_parameters[1][2] = 1.4817377313e-03;
-	// optimisation_parameters[1][3] = 4.3324103306e-03;
-
-	// optimisation_parameters[2][0] = 1.0906226194e-03;
-	// optimisation_parameters[2][1] = 3.1213436942e-04;
-	// optimisation_parameters[2][2] = 2.5472091040e-03;
-	// optimisation_parameters[2][3] = 4.5437511920e-03;
-
-	// optimisation_parameters[3][0] = 6.7036330039e-04;
-	// optimisation_parameters[3][1] = 3.1248292741e-04;
-	// optimisation_parameters[3][2] = 5.0000000000e-03;
-	// optimisation_parameters[3][3] = 2.7271900043e-03;
-
-
-	// TUNED FOR TRACE TIME CONSTANTS
-	optimisation_parameters[0][0] = 1.6050619558e-03; //FF
-	optimisation_parameters[0][1] = 3.0444365718e-04; //E2I
-	optimisation_parameters[0][2] = 2.3300506416e-03; //I2E
-	optimisation_parameters[0][3] = 3.1998653821e-03; //E2E
-
-	optimisation_parameters[1][0] = 8.1803982070e-05;
-	optimisation_parameters[1][1] = 2.7920822012e-04;
-	optimisation_parameters[1][2] = 3.8044413393e-03;
-	optimisation_parameters[1][3] = 2.4310200294e-04;
-
-	optimisation_parameters[2][0] = 0.0002327689851;
-	optimisation_parameters[2][1] = 0.0003458381666;
-	optimisation_parameters[2][2] = 0.002807993811;
-	optimisation_parameters[2][3] = 0.004543682477;
-
-	optimisation_parameters[3][0] = 0.0001409219094;
-	optimisation_parameters[3][1] = 0.0003649566225;
-	optimisation_parameters[3][2] = 0.001277445509;
-	optimisation_parameters[3][3] = 0.00106619301;
-
-
-
-	// printf("argc = %d\n", argc);
 	if (argc > 1) {
 		command_line_arguments_passed = true;
+
+		is_optimisation = true;
 
 		optimisation_stage = std::stoi(argv[3]);
 		optimisation_parameters[optimisation_stage][0] = std::stof(argv[4]);
 		optimisation_parameters[optimisation_stage][1] = std::stof(argv[5]);
 		optimisation_parameters[optimisation_stage][2]= std::stof(argv[6]);
 		optimisation_parameters[optimisation_stage][3] = std::stof(argv[7]);
-		bool take_previous_layer_parameters_from_files = std::stoi(argv[8]);
-
-		if (take_previous_layer_parameters_from_files) {
-
-			std::string parameter_from_file_as_string;
-			for (int i = 0; i < optimisation_stage; i++) {
-				std::string file_name("../OptimalParameters/optimal_parameters_from_optimisation_iteration_" + std::to_string(i) + ".txt");
-				// printf("file_name: %s\n", file_name.c_str());
-				std::ifstream optimal_parameters_from_optimisation_iteration(file_name.c_str());
-				for (int j = 0; j < number_of_new_parameters_per_optimisation_stage; j++) {
-					std::getline(optimal_parameters_from_optimisation_iteration, parameter_from_file_as_string);
-					// printf("parameter_from_file_as_string: %s\n", parameter_from_file_as_string.c_str());
-					optimisation_parameters[i][j] = std::atof(parameter_from_file_as_string.c_str());
-				}
-			}
-		}
 	}
 
+
+	// Load preoptimised parameters from files
+	std::string parameter_from_file_as_string;
+	for (int i = 0; i < optimisation_stage; i++) {
+		std::string file_name("../OptimalParameters/optimal_parameters_from_optimisation_iteration_" + std::to_string(i) + ".txt");
+		std::ifstream optimal_parameters_from_optimisation_iteration(file_name.c_str());
+		for (int j = 0; j < number_of_new_parameters_per_optimisation_stage; j++) {
+			std::getline(optimal_parameters_from_optimisation_iteration, parameter_from_file_as_string);
+			optimisation_parameters[i][j] = std::atof(parameter_from_file_as_string.c_str());
+		}
+	}
 	
 	// Create an instance of the Simulator and set the timestep
 	Simulator simulator;
