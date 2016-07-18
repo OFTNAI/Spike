@@ -35,13 +35,13 @@ public:
 	~STDP();
 
 	// Set STDP Parameters
-	virtual void Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons* neurons, stdp_parameters_struct* stdp_parameters);
+	virtual void Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons* neurons, SpikingNeurons* input_neurons, stdp_parameters_struct* stdp_parameters);
 	// Initialize STDP
 	virtual void allocate_device_pointers();
 	// STDP
 	virtual void Run_STDP(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds, float timestep);
 	// Reset
-	virtual void Reset_STDP();
+	virtual void reset_STDP_activities();
 };
 
 #endif

@@ -47,7 +47,7 @@ int ImagePoissonInputSpikingNeurons::AddGroup(neuron_parameters_struct * group_p
 
 	int new_group_id = PoissonInputSpikingNeurons::AddGroup(group_params);
 
-	image_poisson_input_spiking_neuron_parameters_struct * image_poisson_input_spiking_group_params = (image_poisson_input_spiking_neuron_parameters_struct*)group_params;
+	// image_poisson_input_spiking_neuron_parameters_struct * image_poisson_input_spiking_group_params = (image_poisson_input_spiking_neuron_parameters_struct*)group_params;
 
 	for (int i = total_number_of_neurons - number_of_neurons_in_new_group; i < total_number_of_neurons; i++) {
 
@@ -60,8 +60,6 @@ int ImagePoissonInputSpikingNeurons::AddGroup(neuron_parameters_struct * group_p
 
 void ImagePoissonInputSpikingNeurons::AddGroupForEachGaborType(neuron_parameters_struct * group_params) {
 
-	// int group_shape[] = {image_width, image_width};
-
 	image_poisson_input_spiking_neuron_parameters_struct * image_poisson_input_spiking_group_params = (image_poisson_input_spiking_neuron_parameters_struct*)group_params;
 	image_poisson_input_spiking_group_params->group_shape[0] = image_width;
 	image_poisson_input_spiking_group_params->group_shape[1] = image_width;
@@ -73,19 +71,6 @@ void ImagePoissonInputSpikingNeurons::AddGroupForEachGaborType(neuron_parameters
 
 }
 
-
-void ImagePoissonInputSpikingNeurons::allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage) {
-
-	PoissonInputSpikingNeurons::allocate_device_pointers(maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
-
-}
-
-
-void ImagePoissonInputSpikingNeurons::reset_neurons() {
-
-	PoissonInputSpikingNeurons::reset_neurons();
-
-}
 
 void ImagePoissonInputSpikingNeurons::set_up_rates(const char * fileList, const char * filterParameters, const char * inputDirectory, float max_rate_scaling_factor) {
 	printf("--- Setting up Input Neuron Rates from Gabor files...\n");
@@ -329,10 +314,62 @@ int ImagePoissonInputSpikingNeurons::calculate_gabor_index(int orientationIndex,
 
 
 
-void ImagePoissonInputSpikingNeurons::update_membrane_potentials(float timestep) {
+int* ImagePoissonInputSpikingNeurons::setup_stimuli_presentation_order(Stimuli_Presentation_Struct * stimuli_presentation_params) {
+	
+	int* stimuli_presentation_order = PoissonInputSpikingNeurons::setup_stimuli_presentation_order(stimuli_presentation_params);
+	
+	switch (stimuli_presentation_params->presentation_format) {
+		
+		case PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_OBJECTS: case PRESENTATION_FORMAT_OBJECT_BY_OBJECT_NO_RESET:
+		{
+			int* object_order_indices = (int*)malloc(total_number_of_objects * sizeof(int));
 
-	// printf("total_number_of_neurons: %d\n", total_number_of_neurons);
-	// printf("total_number_of_rates_per_image: %d\n", total_number_of_rates_per_image);
+			for (int object_index = 0; object_index < total_number_of_objects; object_index++) {
+				object_order_indices[object_index] = object_index;			
+			}
+
+			switch (stimuli_presentation_params->object_order) {
+		
+				case OBJECT_ORDER_ORIGINAL:
+
+					break;
+
+				case OBJECT_ORDER_RANDOM:
+					std::random_shuffle(&object_order_indices[0], &object_order_indices[total_number_of_objects]);
+					break;
+
+			}
+
+			int* transform_order_indices = (int*)malloc(total_number_of_transformations_per_object * sizeof(int));
+			for (int transform_index = 0; transform_index < total_number_of_transformations_per_object; transform_index++) {
+				transform_order_indices[transform_index] = transform_index;			
+			}
+
+			for (int object_index = 0; object_index < total_number_of_objects; object_index++) {
+				
+				if (stimuli_presentation_params->transform_order == TRANSFORM_ORDER_RANDOM) std::random_shuffle(&transform_order_indices[0], &transform_order_indices[total_number_of_transformations_per_object]);
+
+				for (int transform_index = 0; transform_index < total_number_of_transformations_per_object; transform_index++) {
+					stimuli_presentation_order[object_index * total_number_of_transformations_per_object + transform_index] = object_order_indices[object_index] * total_number_of_transformations_per_object + transform_order_indices[transform_index]; 
+				}					
+			}
+
+		}
+
+		default:
+			break;
+	}
+
+	return stimuli_presentation_order;
+}
+
+
+bool ImagePoissonInputSpikingNeurons::stimulus_is_new_object_for_object_by_object_presentation(int stimulus_index) {
+	return (stimulus_index % total_number_of_transformations_per_object == 0) ? true : false;
+}
+
+
+void ImagePoissonInputSpikingNeurons::update_membrane_potentials(float timestep) {
 
 	poisson_update_membrane_potentials_kernel<<<RandomStateManager::instance()->block_dimensions, RandomStateManager::instance()->threads_per_block>>>(RandomStateManager::instance()->d_states,
 														d_gabor_input_rates,

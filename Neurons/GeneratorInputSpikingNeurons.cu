@@ -44,10 +44,13 @@ void GeneratorInputSpikingNeurons::allocate_device_pointers(int maximum_axonal_d
 }
 
 
-void GeneratorInputSpikingNeurons::reset_neurons() {
+void GeneratorInputSpikingNeurons::reset_neuron_activities() {
+	InputSpikingNeurons::reset_neuron_activities();
+
 	CudaSafeCall(cudaMemcpy(d_neuron_ids_for_stimulus, neuron_id_matrix_for_stimuli[current_stimulus_index], sizeof(int)*number_of_spikes_in_stimuli[current_stimulus_index], cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_spike_times_for_stimulus, spike_times_matrix_for_stimuli[current_stimulus_index], sizeof(float)*number_of_spikes_in_stimuli[current_stimulus_index], cudaMemcpyHostToDevice));
 }
+
 
 void GeneratorInputSpikingNeurons::set_threads_per_block_and_blocks_per_grid(int threads) {
 	
@@ -105,7 +108,7 @@ void GeneratorInputSpikingNeurons::AddStimulus(int spikenumber, int* ids, float*
 	
 	// Assign the genid values according to how many neurons exist already
 	for (int i = 0; i < spikenumber; i++){
-		spike_times_matrix_for_stimuli[total_number_of_input_stimuli - 1][i] = ids[i];
+		neuron_id_matrix_for_stimuli[total_number_of_input_stimuli - 1][i] = ids[i];
 		spike_times_matrix_for_stimuli[total_number_of_input_stimuli - 1][i] = spiketimes[i];
 	}
 	// Increment the number of entries the generator population
@@ -125,7 +128,7 @@ __global__ void check_for_generator_spikes_kernel(int *d_neuron_ids_for_stimulus
 								size_t number_of_spikes_in_stimulus,
 								bool high_fidelity_spike_flag) {
 
-	// Get thread IDs
+	// // Get thread IDs
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	while (idx < number_of_spikes_in_stimulus) {
 		if (fabs(current_time_in_seconds - d_spike_times_for_stimulus[idx]) < 0.5 * timestep) {

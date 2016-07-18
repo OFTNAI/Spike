@@ -16,7 +16,7 @@
 #include <time.h>
 using namespace std;
 
-const string RESULTS_DIRECTORY ("Results/");
+const string RESULTS_DIRECTORY ("output/");
 
 
 // RecordingElectrodes Constructor
@@ -65,31 +65,43 @@ RecordingElectrodes::~RecordingElectrodes() {
 }
 
 
-void RecordingElectrodes::initialise_device_pointers() {
-
-	//For counting spikes
-	CudaSafeCall(cudaMalloc((void **)&d_per_neuron_spike_counts, sizeof(int) * neurons->total_number_of_neurons));
-	CudaSafeCall(cudaMemset(d_per_neuron_spike_counts, 0, sizeof(int) * neurons->total_number_of_neurons));
-
-	// For saving spikes (Make seperate class)
-	CudaSafeCall(cudaMalloc((void **)&d_neuron_ids_of_stored_spikes_on_device, sizeof(int)*size_of_device_spike_store));
-	CudaSafeCall(cudaMalloc((void **)&d_time_in_seconds_of_stored_spikes_on_device, sizeof(float)*size_of_device_spike_store));
-	CudaSafeCall(cudaMalloc((void **)&d_total_number_of_spikes_stored_on_device, sizeof(int)));
-
-	// Send data to device: data for saving spikes
-	CudaSafeCall(cudaMemset(d_neuron_ids_of_stored_spikes_on_device, -1, sizeof(int)*size_of_device_spike_store));
-	CudaSafeCall(cudaMemset(d_time_in_seconds_of_stored_spikes_on_device, -1.0f, sizeof(float)*size_of_device_spike_store));
-	CudaSafeCall(cudaMemset(d_total_number_of_spikes_stored_on_device, 0, sizeof(int)));
-}
-
-void RecordingElectrodes::initialise_host_pointers() {
+void RecordingElectrodes::allocate_pointers_for_spike_store() {
 
 	h_neuron_ids_of_stored_spikes_on_device = (int*)malloc(sizeof(int)*size_of_device_spike_store);
 	h_time_in_seconds_of_stored_spikes_on_device = (float*)malloc(sizeof(float)*size_of_device_spike_store);
-
 	h_total_number_of_spikes_stored_on_device = (int*)malloc(sizeof(int));
-	h_total_number_of_spikes_stored_on_device[0] = 0;
+	
+	CudaSafeCall(cudaMalloc((void **)&d_neuron_ids_of_stored_spikes_on_device, sizeof(int)*size_of_device_spike_store));
+	CudaSafeCall(cudaMalloc((void **)&d_time_in_seconds_of_stored_spikes_on_device, sizeof(float)*size_of_device_spike_store));
+	CudaSafeCall(cudaMalloc((void **)&d_total_number_of_spikes_stored_on_device, sizeof(int)));
 }
+
+
+void RecordingElectrodes::reset_pointers_for_spike_store() {
+
+	h_total_number_of_spikes_stored_on_device[0] = 0;
+	h_total_number_of_spikes_stored_on_host = 0;
+
+	CudaSafeCall(cudaMemset(d_neuron_ids_of_stored_spikes_on_device, -1, sizeof(int)*size_of_device_spike_store));
+	CudaSafeCall(cudaMemset(d_time_in_seconds_of_stored_spikes_on_device, -1.0f, sizeof(float)*size_of_device_spike_store));
+	CudaSafeCall(cudaMemset(d_total_number_of_spikes_stored_on_device, 0, sizeof(int)));
+
+}
+
+
+
+void RecordingElectrodes::allocate_pointers_for_spike_count() {
+	//For counting spikes
+	CudaSafeCall(cudaMalloc((void **)&d_per_neuron_spike_counts, sizeof(int) * neurons->total_number_of_neurons));
+	
+}
+
+void RecordingElectrodes::reset_pointers_for_spike_count() {
+
+	CudaSafeCall(cudaMemset(d_per_neuron_spike_counts, 0, sizeof(int) * neurons->total_number_of_neurons));
+
+}
+
 
 
 
@@ -139,9 +151,16 @@ void RecordingElectrodes::copy_spikes_from_device_to_host_and_reset_device_spike
 			
 			// Reset the number on the device
 			CudaSafeCall(cudaMemset(&(d_total_number_of_spikes_stored_on_device[0]), 0, sizeof(int)));
-			CudaSafeCall(cudaMemset(d_neuron_ids_of_stored_spikes_on_device, -1, sizeof(int)*size_of_device_spike_store));
-			CudaSafeCall(cudaMemset(d_time_in_seconds_of_stored_spikes_on_device, -1.0f, sizeof(float)*size_of_device_spike_store));
-			// // Increase the number on host
+			// Resetting with arrays
+			int* reset_neuron_ids = (int *)malloc(sizeof(int)*size_of_device_spike_store);
+			float* reset_neuron_times = (float *)malloc(sizeof(float)*size_of_device_spike_store);
+			for (int i=0; i < size_of_device_spike_store; i++){
+				reset_neuron_ids[i] = -1;
+				reset_neuron_times[i] = -1.0f;
+			}
+			CudaSafeCall(cudaMemcpy(d_neuron_ids_of_stored_spikes_on_device, reset_neuron_ids, sizeof(int)*size_of_device_spike_store, cudaMemcpyHostToDevice));
+			CudaSafeCall(cudaMemcpy(d_time_in_seconds_of_stored_spikes_on_device, reset_neuron_times, sizeof(float)*size_of_device_spike_store, cudaMemcpyHostToDevice));
+			// Increase the number on host
 			h_total_number_of_spikes_stored_on_host += h_total_number_of_spikes_stored_on_device[0];
 			h_total_number_of_spikes_stored_on_device[0] = 0;
 		}
@@ -154,39 +173,60 @@ void RecordingElectrodes::add_spikes_to_per_neuron_spike_count(float current_tim
 														d_per_neuron_spike_counts,
 														current_time_in_seconds,
 														neurons->total_number_of_neurons);
+	CudaCheckError();
 }
 
 
 
 
-void RecordingElectrodes::write_spikes_to_file(int epoch_number) {
+void RecordingElectrodes::write_spikes_to_file(int epoch_number, bool append_clock_to_filenames, bool human_readable_storage) {
 
 	clock_t write_spikes_to_file_start = clock();
 
 	// Get the names
+<<<<<<< HEAD
 //	string file = RESULTS_DIRECTORY + prefix_string + "_Epoch" + to_string(epoch_number) + "_" + to_string(clock());
 	string file = RESULTS_DIRECTORY + prefix_string + "_";
+=======
+	string file = RESULTS_DIRECTORY + prefix_string + "_Epoch" + to_string(epoch_number) + "_";
+>>>>>>> refs/remotes/origin/ji_master
 
-	// Open the files
-	ofstream spikeidfile, spiketimesfile;
-	spikeidfile.open((file + "SpikeIDs.bin"), ios::out | ios::binary);
-	spiketimesfile.open((file + "SpikeTimes.bin"), ios::out | ios::binary);
-	
+	// Append the clock to the file if flag
+	if (append_clock_to_filenames){ file = file + to_string(clock()); }
 
-	// Send the data
-	// spikeidfile.write((char *)h_neuron_ids_of_stored_spikes_on_host, h_total_number_of_spikes_stored_on_host*sizeof(int));
-	// spiketimesfile.write((char *)h_time_in_seconds_of_stored_spikes_on_host, h_total_number_of_spikes_stored_on_host*sizeof(float));
+	if (human_readable_storage){
+		// Open the files
+		ofstream spikeidfile, spiketimesfile;
+		spikeidfile.open((file + "SpikeIDs.txt"), ios::out | ios::binary);
+		spiketimesfile.open((file + "SpikeTimes.txt"), ios::out | ios::binary);
+		
 
-	for (int i = 0; i < h_total_number_of_spikes_stored_on_host; i++) {
-		spikeidfile << to_string(h_neuron_ids_of_stored_spikes_on_host[i]) << endl;
-		spiketimesfile << to_string(h_time_in_seconds_of_stored_spikes_on_host[i]) << endl;
+		// Send the data
+		for (int i = 0; i < h_total_number_of_spikes_stored_on_host; i++) {
+			spikeidfile << to_string(h_neuron_ids_of_stored_spikes_on_host[i]) << endl;
+			spiketimesfile << to_string(h_time_in_seconds_of_stored_spikes_on_host[i]) << endl;
+		}
+
+		// Close the files
+		spikeidfile.close();
+		spiketimesfile.close();
+	} else {
+		// Open the files
+		ofstream spikeidfile, spiketimesfile;
+		spikeidfile.open((file + "SpikeIDs.bin"), ios::out | ios::binary);
+		spiketimesfile.open((file + "SpikeTimes.bin"), ios::out | ios::binary);
+		
+
+		// Send the data
+		spikeidfile.write((char *)h_neuron_ids_of_stored_spikes_on_host, h_total_number_of_spikes_stored_on_host*sizeof(int));
+		spiketimesfile.write((char *)h_time_in_seconds_of_stored_spikes_on_host, h_total_number_of_spikes_stored_on_host*sizeof(float));
+
+		// Close the files
+		spikeidfile.close();
+		spiketimesfile.close();
 	}
 
-	// Close the files
-	spikeidfile.close();
-	spiketimesfile.close();
-
-	delete_and_reset_recorded_spikes();
+	//delete_and_reset_recorded_spikes();
 
 	clock_t write_spikes_to_file_end = clock();
 	float write_spikes_to_file_total_time = float(write_spikes_to_file_end - write_spikes_to_file_start) / CLOCKS_PER_SEC;
@@ -229,10 +269,8 @@ __global__ void add_spikes_to_per_neuron_spike_count_kernel(float* d_last_spike_
 		}
 
 		// if (idx == 1000) printf("d_per_neuron_spike_counts[idx]: %d\n", d_per_neuron_spike_counts[idx]);
-		idx = blockDim.x * gridDim.x;
+		idx += blockDim.x * gridDim.x;
 	}
-
-
 }
 
 // Collect Spikes
@@ -254,35 +292,38 @@ __global__ void collect_spikes_for_timestep_kernel(float* d_last_spike_time_of_e
 			d_neuron_ids_of_stored_spikes_on_device[i] = idx;
 			d_time_in_seconds_of_stored_spikes_on_device[i] = current_time_in_seconds;
 		}
-		idx = blockDim.x * gridDim.x;
-
+		idx += blockDim.x * gridDim.x;
 	}
 	__syncthreads();
 }
 
 
 
-void RecordingElectrodes::write_initial_synaptic_weights_to_file(SpikingSynapses *synapses) {
+void RecordingElectrodes::write_initial_synaptic_weights_to_file(SpikingSynapses *synapses, bool human_readable_storage) {
 	ofstream initweightfile;
-	initweightfile.open(RESULTS_DIRECTORY + prefix_string + "_NetworkWeights_Initial.bin", ios::out | ios::binary);
-	initweightfile.write((char *)synapses->synaptic_efficacies_or_weights, synapses->total_number_of_synapses*sizeof(float));
-	initweightfile.close();
+	if (human_readable_storage){
+		initweightfile.open(RESULTS_DIRECTORY + prefix_string + "_NetworkWeights_Initial.txt", ios::out | ios::binary);
+		for (int i=0; i < synapses->total_number_of_synapses; i++){
+			initweightfile << to_string(synapses->synaptic_efficacies_or_weights[i]) << endl;
+
+		}
+		initweightfile.close();
+	} else {
+		initweightfile.open(RESULTS_DIRECTORY + prefix_string + "_NetworkWeights_Initial.bin", ios::out | ios::binary);
+		initweightfile.write((char *)synapses->synaptic_efficacies_or_weights, synapses->total_number_of_synapses*sizeof(float));
+		initweightfile.close();
+	}
 }
 
 
-void RecordingElectrodes::save_network_state(SpikingSynapses *synapses) {
+void RecordingElectrodes::save_network_state(SpikingSynapses *synapses, bool human_readable_storage) {
 
 	clock_t save_network_state_start = clock();
 
 	// Copy back the data that we might want:
 	CudaSafeCall(cudaMemcpy(synapses->synaptic_efficacies_or_weights, synapses->d_synaptic_efficacies_or_weights, sizeof(float)*synapses->total_number_of_synapses, cudaMemcpyDeviceToHost));
-	// Creating and Opening all the files
-	ofstream synapsepre, synapsepost, weightfile, delayfile;
-	weightfile.open(RESULTS_DIRECTORY + prefix_string + "_NetworkWeights.bin", ios::out | ios::binary);
-	delayfile.open(RESULTS_DIRECTORY + prefix_string + "_NetworkDelays.bin", ios::out | ios::binary);
-	synapsepre.open(RESULTS_DIRECTORY + prefix_string + "_NetworkPre.bin", ios::out | ios::binary);
-	synapsepost.open(RESULTS_DIRECTORY + prefix_string + "_NetworkPost.bin", ios::out | ios::binary);
 	
+<<<<<<< HEAD
 	// Writing the data
 //	weightfile.write((char *)synapses->synaptic_efficacies_or_weights, synapses->total_number_of_synapses*sizeof(float));
 //	delayfile.write((char *)synapses->delays, synapses->total_number_of_synapses*sizeof(int));
@@ -296,12 +337,50 @@ void RecordingElectrodes::save_network_state(SpikingSynapses *synapses) {
 		synapsepost << to_string(synapses->postsynaptic_neuron_indices[i])<<endl;
 	}
 	
+=======
+	if (human_readable_storage){
+		// Creating and Opening all the files
+		ofstream synapsepre, synapsepost, weightfile, delayfile;
+		weightfile.open(RESULTS_DIRECTORY + prefix_string + "_NetworkWeights.txt", ios::out | ios::binary);
+		delayfile.open(RESULTS_DIRECTORY + prefix_string + "_NetworkDelays.txt", ios::out | ios::binary);
+		synapsepre.open(RESULTS_DIRECTORY + prefix_string + "_NetworkPre.txt", ios::out | ios::binary);
+		synapsepost.open(RESULTS_DIRECTORY + prefix_string + "_NetworkPost.txt", ios::out | ios::binary);
+		
+		// Writing the data
+		for (int i=0; i < synapses->total_number_of_synapses; i++){
+			weightfile << to_string(synapses->synaptic_efficacies_or_weights[i]) << endl;
+			delayfile << to_string(synapses->delays[i]) << endl;
+			synapsepre << to_string(synapses->presynaptic_neuron_indices[i]) << endl;
+			synapsepost << to_string(synapses->postsynaptic_neuron_indices[i]) << endl;
+>>>>>>> refs/remotes/origin/ji_master
 
-	// Close files
-	weightfile.close();
-	delayfile.close();
-	synapsepre.close();
-	synapsepost.close();
+		}
+
+		// Close files
+		weightfile.close();
+		delayfile.close();
+		synapsepre.close();
+		synapsepost.close();
+	} else {
+		// Creating and Opening all the files
+		ofstream synapsepre, synapsepost, weightfile, delayfile;
+		weightfile.open(RESULTS_DIRECTORY + prefix_string + "_NetworkWeights.bin", ios::out | ios::binary);
+		delayfile.open(RESULTS_DIRECTORY + prefix_string + "_NetworkDelays.bin", ios::out | ios::binary);
+		synapsepre.open(RESULTS_DIRECTORY + prefix_string + "_NetworkPre.bin", ios::out | ios::binary);
+		synapsepost.open(RESULTS_DIRECTORY + prefix_string + "_NetworkPost.bin", ios::out | ios::binary);
+		
+		// Writing the data
+		weightfile.write((char *)synapses->synaptic_efficacies_or_weights, synapses->total_number_of_synapses*sizeof(float));
+		delayfile.write((char *)synapses->delays, synapses->total_number_of_synapses*sizeof(int));
+		synapsepre.write((char *)synapses->presynaptic_neuron_indices, synapses->total_number_of_synapses*sizeof(int));
+		synapsepost.write((char *)synapses->postsynaptic_neuron_indices, synapses->total_number_of_synapses*sizeof(int));
+
+		// Close files
+		weightfile.close();
+		delayfile.close();
+		synapsepre.close();
+		synapsepost.close();
+	}
 
 	#ifndef QUIETSTART
 	clock_t save_network_state_end = clock();

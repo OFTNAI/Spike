@@ -45,16 +45,18 @@ public:
 	RecordingElectrodes(SpikingNeurons * neurons_parameter, const char * prefix_string_param, int number_of_timesteps_per_device_spike_copy_check_param, int device_spike_store_size_multiple_of_total_neurons_param, float proportion_of_device_spike_store_full_before_copy_param);
 	~RecordingElectrodes();
 
-	void initialise_device_pointers();
-	void initialise_host_pointers();
+	void allocate_pointers_for_spike_store();
+	void reset_pointers_for_spike_store();
+	void allocate_pointers_for_spike_count();
+	void reset_pointers_for_spike_count();
 
 
 	void collect_spikes_for_timestep(float current_time_in_seconds);
 	void copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(float current_time_in_seconds, int timestep_index, int number_of_timesteps_per_epoch);
-	void write_spikes_to_file(int epoch_number);
+	void write_spikes_to_file(int epoch_number, bool append_clock_to_filenames, bool human_readable_storage);
 
-	void write_initial_synaptic_weights_to_file(SpikingSynapses *synapses);
-	void save_network_state(SpikingSynapses *synapses);
+	void write_initial_synaptic_weights_to_file(SpikingSynapses *synapses, bool human_readable_storage);
+	void save_network_state(SpikingSynapses *synapses, bool human_readable_storage);
 
 	void add_spikes_to_per_neuron_spike_count(float current_time_in_seconds);
 

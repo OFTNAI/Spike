@@ -20,7 +20,7 @@ method
 		mutation_rate 0.2 				# Probability of a mutation
 		crossover_type blend
 		crossover_rate 0.2				# Probability of a crossover
-		replacement_type chc = 23
+		replacement_type chc = 50
 		solution_target = 100
 
 model
@@ -29,7 +29,7 @@ model
 
 variables,					
 	continuous_design = 4			
-	cdv_lower_bounds    1.e-5	1.e-5      1.e-5      1.e-5
+	cdv_lower_bounds    1.e-6	1.e-6      1.e-6      1.e-6
 	cdv_upper_bounds    5.e-3	5.e-3      5.e-3      5.e-3
 
 	cdv_descriptor      'E2E_FF_biological_conductance_scaling_constant_lambda' 'E2I_L_biological_conductance_scaling_constant_lambda'      'I2E_L_biological_conductance_scaling_constant_lambda'  'E2E_L_biological_conductance_scaling_constant_lambda'

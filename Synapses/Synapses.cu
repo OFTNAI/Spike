@@ -15,13 +15,6 @@
 #include <thrust/host_vector.h>
 #include <thrust/count.h>
 
-// Macro to get the gaussian prob
-//	INPUT:
-//			x = The pre-population input neuron position that is being checked
-//			u = The post-population neuron to which the connection is forming (taken as mean)
-//			sigma = Standard Deviation of the gaussian distribution
-#define GAUS(distance, sigma) ( (1.0f/(sigma*(sqrt(2.0f*M_PI)))) * (exp(-1.0f * (pow((distance),(2.0f))) / (2.0f*(pow(sigma,(2.0f)))))) )
-
 
 // Synapses Constructor
 Synapses::Synapses() {
@@ -59,8 +52,7 @@ Synapses::Synapses() {
 
 // Synapses Destructor
 Synapses::~Synapses() {
-	// Just need to free up the memory
-	// Full Matrices
+
 	free(presynaptic_neuron_indices);
 	free(postsynaptic_neuron_indices);
 	free(synaptic_efficacies_or_weights);
@@ -71,27 +63,13 @@ Synapses::~Synapses() {
 
 }
 
-// Connection Detail implementation
-//	INPUT:
-//		Pre-neuron population ID
-//		Post-neuron population ID
-//		An array of the exclusive sum of neuron populations
-//		CONNECTIVITY_TYPE (Constants.h)
-//		2 number float array for weight range
-//		2 number float array for delay range
-//		Boolean value to indicate if population is STDP based
-//		Parameter = either probability for random synapses or S.D. for Gaussian
+
 void Synapses::AddGroup(int presynaptic_group_id, 
 						int postsynaptic_group_id, 
 						Neurons * neurons,
 						Neurons * input_neurons,
 						float timestep,
-						synapse_parameters_struct * synapse_params,
-						float parameter,
-						float parameter_two) {
-	
-	// Find the right set of indices
-	// Take everything in 2D
+						synapse_parameters_struct * synapse_params) {
 
 	if (print_synapse_group_details == true) {
 		printf("Adding synapse group...\n");
@@ -126,7 +104,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 		if (presynaptic_group_id < -1){
 			prestart = start_neuron_indices_for_input_neuron_groups[corrected_presynaptic_group_id];
 		}
-		preend = last_neuron_indices_for_input_neuron_groups[corrected_presynaptic_group_id];
+		preend = last_neuron_indices_for_input_neuron_groups[corrected_presynaptic_group_id] + 1;
 
 	} else {
 
@@ -135,7 +113,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 		if (presynaptic_group_id > 0){
 			prestart = start_neuron_indices_for_neuron_groups[presynaptic_group_id];
 		}
-		preend = last_neuron_indices_for_neuron_groups[presynaptic_group_id];
+		preend = last_neuron_indices_for_neuron_groups[presynaptic_group_id] + 1;
 
 	}
 
@@ -150,7 +128,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 		poststart = start_neuron_indices_for_neuron_groups[postsynaptic_group_id];
 		
 	}
-	int postend = last_neuron_indices_for_neuron_groups[postsynaptic_group_id];
+	int postend = last_neuron_indices_for_neuron_groups[postsynaptic_group_id] + 1;
 
 	if (print_synapse_group_details == true) {
 		const char * presynaptic_group_type_string = (presynaptic_group_id < 0) ? "input_neurons" : "neurons";
@@ -171,12 +149,12 @@ void Synapses::AddGroup(int presynaptic_group_id,
             
             int increment = (preend-prestart)*(postend-poststart);
             this->increment_number_of_synapses(increment);
-            
+
 			// If the connectivity is all_to_all
 			for (int i = prestart; i < preend; i++){
 				for (int j = poststart; j < postend; j++){
 					// Index
-					int idx = original_number_of_synapses + (i-prestart) + (j-poststart)*(preend-prestart);
+					int idx = original_number_of_synapses + (i-prestart)*(postend-poststart) + (j-poststart);
 					// Setup Synapses
 					presynaptic_neuron_indices[idx] = CORRECTED_PRESYNAPTIC_ID(i, presynaptic_group_is_input);
 					postsynaptic_neuron_indices[idx] = j;
@@ -208,7 +186,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 					// Probability of connection
 					float prob = ((float)rand() / (RAND_MAX));
 					// If it is within the probability range, connect!
-					if (prob < parameter){
+					if (prob < synapse_params->random_connectivity_probability){
 						
 						this->increment_number_of_synapses(1);
 
@@ -248,56 +226,14 @@ void Synapses::AddGroup(int presynaptic_group_id,
 
 			break;
 		}
-		case CONNECTIVITY_TYPE_IRINA_GAUSSIAN: // 1-D only
-		{
-			// Getting the population sizes
-			int in_size = preend - prestart;
-			int out_size = postend - poststart;
-			// Diagonal Width value
-			float diagonal_width = parameter;
-			// Irina's application of some sparse measure
-			float in2out_sparse = 0.67f*0.67f;
-			// Irina's implementation of some kind of stride
-			int dist = 1;
-			if ( (float(out_size)/float(in_size)) > 1.0f ){
-				dist = int(out_size/in_size);
-			}
-			// Irina's version of sigma
-			double sigma = dist*diagonal_width;
-			// Number of synapses to form
-			int conn_num = int((sigma/in2out_sparse));
-			int conn_tgts = 0;
-			int temp = 0;
-			// Running through the input neurons
-			for (int i = prestart; i < preend; i++){
-				double mu = int(float(dist)/2.0f) + (i-prestart)*dist;
-				conn_tgts = 0;
-				while (conn_tgts < conn_num) {
-					temp = int(randn(mu, sigma));
-					if ((temp >= 0) && (temp < out_size)){
-						
-						this->increment_number_of_synapses(1);
-
-						// Setup the synapses:
-						// Setup Synapses
-						presynaptic_neuron_indices[total_number_of_synapses - 1] = CORRECTED_PRESYNAPTIC_ID(i, presynaptic_group_is_input);
-						postsynaptic_neuron_indices[total_number_of_synapses - 1] = poststart + temp;
-
-						// Increment conn_tgts
-						++conn_tgts;
-					}
-				}
-			}
-			break;
-		}
 		case CONNECTIVITY_TYPE_SINGLE:
 		{
 			// If we desire a single connection
 			this->increment_number_of_synapses(1);
 
 			// Setup Synapses
-			presynaptic_neuron_indices[original_number_of_synapses] = CORRECTED_PRESYNAPTIC_ID(prestart + int(parameter), presynaptic_group_is_input);
-			postsynaptic_neuron_indices[original_number_of_synapses] = poststart + int(parameter_two);
+			presynaptic_neuron_indices[original_number_of_synapses] = CORRECTED_PRESYNAPTIC_ID(prestart + int(synapse_params->pairwise_connect_presynaptic), presynaptic_group_is_input);
+			postsynaptic_neuron_indices[original_number_of_synapses] = poststart + int(synapse_params->pairwise_connect_postsynaptic);
 
 			break;
 		}
@@ -338,7 +274,6 @@ void Synapses::increment_number_of_synapses(int increment) {
 	presynaptic_neuron_indices = (int*)realloc(presynaptic_neuron_indices, total_number_of_synapses * sizeof(int));
     postsynaptic_neuron_indices = (int*)realloc(postsynaptic_neuron_indices, total_number_of_synapses * sizeof(int));
     synaptic_efficacies_or_weights = (float*)realloc(synaptic_efficacies_or_weights, total_number_of_synapses * sizeof(float));
-    // CudaSafeCall(cudaHostAlloc((void**)&synaptic_efficacies_or_weights, total_number_of_synapses * sizeof(float), cudaHostAllocDefault));
     original_synapse_indices = (int*)realloc(original_synapse_indices, total_number_of_synapses * sizeof(int));
     
 }
@@ -352,10 +287,21 @@ void Synapses::allocate_device_pointers() {
 	CudaSafeCall(cudaMalloc((void **)&d_postsynaptic_neuron_indices, sizeof(int)*total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&d_synaptic_efficacies_or_weights, sizeof(float)*total_number_of_synapses));
 
+}
+
+
+void Synapses::copy_constants_and_initial_efficacies_to_device() {
+
+	printf("Copying synaptic constants and initial efficacies to device...\n");
+
 	CudaSafeCall(cudaMemcpy(d_presynaptic_neuron_indices, presynaptic_neuron_indices, sizeof(int)*total_number_of_synapses, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_postsynaptic_neuron_indices, postsynaptic_neuron_indices, sizeof(int)*total_number_of_synapses, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_synaptic_efficacies_or_weights, synaptic_efficacies_or_weights, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
+
 }
+
+
+
 
 // Provides order of magnitude speedup for LIF (All to all atleast). 
 // Because all synapses contribute to current_injection on every iteration, having all threads in a block accessing only 1 or 2 positions in memory causing massive slowdown.
@@ -406,11 +352,11 @@ __global__ void set_neuron_indices_by_sampling_from_normal_distribution(int tota
 
 		int postsynaptic_x = postsynaptic_neuron_id % post_width; 
 		int postsynaptic_y = floor((float)(postsynaptic_neuron_id) / post_width);
-		int fractional_x = postsynaptic_x / post_width;
-		int fractional_y = postsynaptic_y / post_height;
+		float fractional_x = (float)postsynaptic_x / post_width;
+		float fractional_y = (float)postsynaptic_y / post_height;
 
-		int corresponding_presynaptic_centre_x = pre_width * fractional_x; 
-		int corresponding_presynaptic_centre_y = pre_height * fractional_y;
+		int corresponding_presynaptic_centre_x = floor((float)pre_width * fractional_x); 
+		int corresponding_presynaptic_centre_y = floor((float)pre_height * fractional_y);
 
 		bool presynaptic_x_set = false;
 		bool presynaptic_y_set = false;
@@ -436,7 +382,7 @@ __global__ void set_neuron_indices_by_sampling_from_normal_distribution(int tota
 				float scaled_value_from_normal_distribution_for_y = standard_deviation_sigma * value_from_normal_distribution_for_y;
 				int rounded_scaled_value_from_normal_distribution_for_y = round(scaled_value_from_normal_distribution_for_y);
 				presynaptic_y = corresponding_presynaptic_centre_y + rounded_scaled_value_from_normal_distribution_for_y;
-				if ((presynaptic_y > -1) && (presynaptic_y < pre_width)) {
+				if ((presynaptic_y > -1) && (presynaptic_y < pre_height)) {
 					presynaptic_y_set = true;
 				}
 
@@ -449,43 +395,10 @@ __global__ void set_neuron_indices_by_sampling_from_normal_distribution(int tota
 			
 
 		}	
-
 		idx += blockDim.x * gridDim.x;
 
 	}	
 
 	__syncthreads();
 
-}
-
-
-
-// An implementation of the polar gaussian random number generator which I need
-double randn (double mu, double sigma)
-{
-  double U1, U2, W, mult;
-  static double X1, X2;
-  static int call = 0;
-
-  if (call == 1)
-    {
-      call = !call;
-      return (mu + sigma * (double) X2);
-    }
-
-  do
-    {
-      U1 = -1 + ((double) rand () / RAND_MAX) * 2;
-      U2 = -1 + ((double) rand () / RAND_MAX) * 2;
-      W = pow (U1, 2) + pow (U2, 2);
-    }
-  while (W >= 1 || W == 0);
-
-  mult = sqrt ((-2 * log (W)) / W);
-  X1 = U1 * mult;
-  X2 = U2 * mult;
-
-  call = !call;
-
-  return (mu + sigma * (double) X1);
 }
