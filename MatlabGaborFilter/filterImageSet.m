@@ -1,4 +1,4 @@
-function [] = filterImageSet(inputDirectory, nrOfObjects, nrOfTransforms, imageSize, filterScale, paddingGrayScaleColor)
+function [] = filterImageSet(inputDirectory, nrOfObjects, nrOfTransforms, imageSize, filterScale)
 
 %inputDirectory = Directory where we look for /Images folder with
 %input pictures, and where we save /Filtered folder with output and
@@ -108,7 +108,7 @@ for i = 1:length(content)
             end
             
             % Filter
-            filtering(imgFile, psi, scale, orient, bw, gamma, set, paddingGrayScaleColor);
+            filtering(imgFile, psi, scale, orient, bw, gamma, set);
             
             % Dump to file list
             fprintf(iList, '%s\n', fname);

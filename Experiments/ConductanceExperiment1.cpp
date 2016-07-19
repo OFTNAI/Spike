@@ -291,16 +291,16 @@ int main (int argc, char *argv[]){
 
 
 	bool simulate_network_to_test_untrained = true;
-	bool simulate_network_to_train_network = true;
-	bool simulate_network_to_test_trained = true;
+	bool simulate_network_to_train_network = false;
+	bool simulate_network_to_test_trained = false;
 	bool human_readable_storage = true;
 	float single_score_to_write_to_file_for_dakota_optimisation = 0.0;
 
 
 	/////////// SIMULATE NETWORK TO TEST UNTRAINED ///////////
 	float presentation_time_per_stimulus_per_epoch = 0.25f;
-	bool record_spikes = true;
-	bool save_recorded_spikes_to_file = true;
+	bool record_spikes = false;
+	bool save_recorded_spikes_to_file = false;
 	int number_of_bins = 3;
 	SpikeAnalyser * spike_analyser_for_untrained_network = new SpikeAnalyser(simulator.neurons, (ImagePoissonInputSpikingNeurons*)simulator.input_neurons);
 	if (simulate_network_to_test_untrained) {
@@ -333,8 +333,8 @@ int main (int argc, char *argv[]){
 
 	/////////// SIMULATE NETWORK TO TEST TRAINED ///////////
 	presentation_time_per_stimulus_per_epoch = 0.25f;
-	record_spikes = true;
-	save_recorded_spikes_to_file = true;
+	record_spikes = false;
+	save_recorded_spikes_to_file = false;
 	if (simulate_network_to_test_trained) {
 		SpikeAnalyser * spike_analyser_for_trained_network = new SpikeAnalyser(simulator.neurons, (ImagePoissonInputSpikingNeurons*)simulator.input_neurons);
 		simulator.RunSimulationToCountNeuronSpikes(presentation_time_per_stimulus_per_epoch, record_spikes, save_recorded_spikes_to_file, spike_analyser_for_trained_network,human_readable_storage);
