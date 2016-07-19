@@ -1,7 +1,7 @@
-function [dim,FI,GF] = filtering(file, psi, scale, orient, bw, gamma, set, paddingColor)
+function [dim,FI,GF] = filtering(file, psi, scale, orient, bw, gamma, set)
     close all;
 
-    if nargin < 8
+    if nargin < 7
         error('Not enough arguments passed');
     end
 
@@ -43,6 +43,7 @@ function [dim,FI,GF] = filtering(file, psi, scale, orient, bw, gamma, set, paddi
     % is located.
 
     % Make padded image, set to provided background color
+    paddingColor = I(1,1);
     paddedImage = paddingColor * ones(paddedImageD(1),paddedImageD(2));
 
     % Copy original image into center of padded image
