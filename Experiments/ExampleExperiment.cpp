@@ -45,7 +45,6 @@
 // Other helper code
 #include "../Helpers/TerminalHelpers.h"
 #include "../Helpers/TimerWithMessages.h"
-#include "../Helpers/RandomStateManager.h"
 
 
 
@@ -88,7 +87,7 @@ int main (int argc, char *argv[]){
 
 
 	/*
-			CREATE YOUR NETWORK
+			SETUP PROPERTIES AND CREATE NETWORK:
 	*/
 
 	/////////// STDP SETUP ///////////
@@ -104,10 +103,6 @@ int main (int argc, char *argv[]){
 
 	conductance_spiking_synapses->print_synapse_group_details = false;
 
-	////////// SET UP STATES FOR RANDOM STATE MANAGER SINGLETON ///////////
-	int random_states_threads_per_block_x = 128;
-	int random_states_number_of_blocks_x = 64;
-	RandomStateManager::instance()->set_up_random_states(random_states_threads_per_block_x, random_states_number_of_blocks_x, 9);
 
 
 	/////////// ADD INPUT NEURONS ///////////
