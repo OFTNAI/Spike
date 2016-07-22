@@ -152,7 +152,7 @@ int main (int argc, char *argv[]){
 	input_to_excitatory_parameters->stdp_on = true;
 
 	// Creating a set of synapse parameters for connections from the excitatory neurons to the inhibitory neurons
-	current_spiking_synapse_parameters_struct * excitatory_to_inhibitory = new current_spiking_synapse_parameters_struct();
+	current_spiking_synapse_parameters_struct * excitatory_to_inhibitory_parameters = new current_spiking_synapse_parameters_struct();
 	excitatory_to_inhibitory_parameters->weight_range_bottom = 10.0f;
 	excitatory_to_inhibitory_parameters->weight_range_top = 10.0f;
 	excitatory_to_inhibitory_parameters->delay_range[0] = 5.0*timestep;
@@ -171,9 +171,11 @@ int main (int argc, char *argv[]){
 	
 
 	// CREATING SYNAPSES
-	// When creating synapses, input neurons must be treated differently and hence there is a unique function for them.
-	// Input neurons can also only be 
-	simulator.AddSynapseGroupFromInputNeurons()
+	// When creating synapses, the ids of the presynaptic and postsynaptic populations are all that are required
+	// Note: Input neuron populations cannot be post-synaptic on any synapse
+	simulator.AddSynapseGroup(input_layer_ID, excitatory_neuron_layer_ID, input_to_excitatory_parameters);
+	simulator.AddSynapseGroup(excitatory_neuron_layer_ID, inhibitory_neuron_layer_ID, excitatory_to_inhibitory_parameters);
+	simulator.AddSynapseGroup(inhibitory_neuron_layer_ID, excitatory_neuron_layer_ID, inhibitory_to_excitatory_parameters);
 
 	// SETTING UP STDP
 	// Getting the STDP parameter structure for this STDP type
@@ -186,148 +188,44 @@ int main (int argc, char *argv[]){
 
 
 
-
-
-	if (optimisation_stage >= 0) {
-		simulator.AddSynapseGroupsForNeuronGroupAndEachInputGroup(EXCITATORY_NEURONS_LAYER_1, G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
-		simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_1, INHIBITORY_NEURONS_LAYER_1, E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
-		simulator.AddSynapseGroup(INHIBITORY_NEURONS_LAYER_1, EXCITATORY_NEURONS_LAYER_1, I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
-		simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_1, EXCITATORY_NEURONS_LAYER_1, E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
-	}
-
-
-	if (optimisation_stage >= 1) {
-
-		E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = optimisation_parameters[1][0];
-		E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = optimisation_parameters[1][1];
-		I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = optimisation_parameters[1][2];
-		E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = optimisation_parameters[1][3];
-
-		simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_1, EXCITATORY_NEURONS_LAYER_2, E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
-		simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_2, INHIBITORY_NEURONS_LAYER_2, E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
-		simulator.AddSynapseGroup(INHIBITORY_NEURONS_LAYER_2, EXCITATORY_NEURONS_LAYER_2, I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
-		simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_2, EXCITATORY_NEURONS_LAYER_2, E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
-
-	}
-
-	if (optimisation_stage >= 2) {
-
-		E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = optimisation_parameters[2][0];
-		E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = optimisation_parameters[2][1];
-		I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = optimisation_parameters[2][2];
-		E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = optimisation_parameters[2][3];
-
-		simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_2, EXCITATORY_NEURONS_LAYER_3, E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
-		simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_3, INHIBITORY_NEURONS_LAYER_3, E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
-		simulator.AddSynapseGroup(INHIBITORY_NEURONS_LAYER_3, EXCITATORY_NEURONS_LAYER_3, I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
-		simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_3, EXCITATORY_NEURONS_LAYER_3, E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
-	}
-
-	if (optimisation_stage >= 3) {
-
-		E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = optimisation_parameters[3][0];
-		E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = optimisation_parameters[3][1];
-		I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = optimisation_parameters[3][2];
-		E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = optimisation_parameters[3][3];
-
-		simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_3, EXCITATORY_NEURONS_LAYER_4, E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
-		simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_4, INHIBITORY_NEURONS_LAYER_4, E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
-		simulator.AddSynapseGroup(INHIBITORY_NEURONS_LAYER_4, EXCITATORY_NEURONS_LAYER_4, I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
-		simulator.AddSynapseGroup(EXCITATORY_NEURONS_LAYER_4, EXCITATORY_NEURONS_LAYER_4, E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
-
-	}
 	
-	
-
-	
-	adding_synapses_timer->stop_timer_and_log_time_and_message("Synapses Added.", true);
-
-
-	/////////// SETUP NETWORK ///////////
+	/*
+			SETUP THE SIMULATOR
+	*/
+	// This command concludes network creation and sets up variables required for the simulation
 	simulator.setup_network();
 
-
-
-
+	// If you wish to save the neuron spike times to a file, you must set-up a recording electrode for the neurons.
+	// The recording electrode takes some parameters to ensure that it is able to record spikes before the GPU runs out of space
+	// The values chosen below are on the safe side (but naturally therefore consume a relatively large amount of memory)
 	/////////// SETUP RECORDING ELECTRODES ///////////
-	int number_of_timesteps_per_device_spike_copy_check = 50;
-	int device_spike_store_size_multiple_of_total_neurons = 52;
-	float proportion_of_device_spike_store_full_before_copy = 0.2;
+	int number_of_timesteps_per_device_spike_copy_check = 50;			// The number of timesteps after which the number of spikes on the GPU are checked
+	int device_spike_store_size_multiple_of_total_neurons = 50;			// Defines the amount of allocated space on the GPU for spike storage
+	float proportion_of_device_spike_store_full_before_copy = 0.2;		// The proportion of the memory on the GPU which has to be filled for the Recording electrode to copy the data off the GPU and clear it
+	// Recording electrodes must be set for both the neuron and input neuron classes.
 	simulator.setup_recording_electrodes_for_neurons(number_of_timesteps_per_device_spike_copy_check, device_spike_store_size_multiple_of_total_neurons, proportion_of_device_spike_store_full_before_copy);
 	// simulator.setup_recording_electrodes_for_input_neurons(number_of_timesteps_per_device_spike_copy_check, device_spike_store_size_multiple_of_total_neurons, proportion_of_device_spike_store_full_before_copy);
 
+	// A Struct (Present in the InputSpikingNeuron header) indicates with what style the stimuli should be shown to the network
+	Stimuli_Presentation_Struct* stimuli_presentation_parameters = new Stimuli_Presentation_Struct();
+	// If you wish to present with a random order: Reset_between_each_stimulus refers to a reset of the network state (i.e. membrane potential, conductances etc.)
+	stimuli_presentation_parameters->PRESENTATION_FORMAT = PRESENTATION_FORMAT_RANDOM_RESET_BETWEEN_EACH_STIMULUS;
 
-
-	bool simulate_network_to_test_untrained = true;
-	bool simulate_network_to_train_network = false;
-	bool simulate_network_to_test_trained = false;
-	float single_score_to_write_to_file_for_dakota_optimisation = 0.0;
-
-
-	/////////// SIMULATE NETWORK TO TEST UNTRAINED ///////////
-	float presentation_time_per_stimulus_per_epoch = 0.25f;
-	bool record_spikes = false;
-	bool save_recorded_spikes_to_file = false;
-	int number_of_bins = 3;
-	SpikeAnalyser * spike_analyser_for_untrained_network = new SpikeAnalyser(simulator.neurons, (ImagePoissonInputSpikingNeurons*)simulator.input_neurons);
-	if (simulate_network_to_test_untrained) {
-
-		simulator.RunSimulationToCountNeuronSpikes(presentation_time_per_stimulus_per_epoch, record_spikes, save_recorded_spikes_to_file, spike_analyser_for_untrained_network);		
-		
-		spike_analyser_for_untrained_network->calculate_various_neuron_spike_totals_and_averages(presentation_time_per_stimulus_per_epoch);
-		spike_analyser_for_untrained_network->calculate_single_cell_information_scores_for_neuron_group(EXCITATORY_NEURONS_LAYER_4, number_of_bins);
-		spike_analyser_for_untrained_network->calculate_combined_powered_distance_from_average_score();
-		// single_score_to_write_to_file_for_dakota_optimisation = spike_analyser_for_untrained_network->combined_powered_distance_from_average_score;
-		single_score_to_write_to_file_for_dakota_optimisation = spike_analyser_for_untrained_network->combined_powered_distance_from_average_score_for_each_neuron_group[optimisation_stage*2] + spike_analyser_for_untrained_network->combined_powered_distance_from_average_score_for_each_neuron_group[optimisation_stage*2 + 1];
-
-	}
-
-
-	/////////// SIMULATE NETWORK TRAINING ///////////
-	presentation_time_per_stimulus_per_epoch = 0.01f;
-	int stimulus_presentation_order_seed = 1;
-	int number_of_epochs = 1;
-	bool present_stimuli_in_random_order = true;
-	Stimuli_Presentation_Struct * stimuli_presentation_params = new Stimuli_Presentation_Struct();
-	stimuli_presentation_params->presentation_format = PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_OBJECTS;
-	stimuli_presentation_params->object_order = OBJECT_ORDER_RANDOM;
-	stimuli_presentation_params->transform_order = TRANSFORM_ORDER_RANDOM;
-	if (simulate_network_to_train_network) {
-		simulator.RunSimulationToTrainNetwork(presentation_time_per_stimulus_per_epoch, number_of_epochs, stimuli_presentation_params, stimulus_presentation_order_seed);
-	}
-
-
-
-	/////////// SIMULATE NETWORK TO TEST TRAINED ///////////
-	presentation_time_per_stimulus_per_epoch = 0.25f;
-	record_spikes = false;
-	save_recorded_spikes_to_file = false;
-	if (simulate_network_to_test_trained) {
-		SpikeAnalyser * spike_analyser_for_trained_network = new SpikeAnalyser(simulator.neurons, (ImagePoissonInputSpikingNeurons*)simulator.input_neurons);
-		simulator.RunSimulationToCountNeuronSpikes(presentation_time_per_stimulus_per_epoch, record_spikes, save_recorded_spikes_to_file, spike_analyser_for_trained_network);
-
-		spike_analyser_for_trained_network->calculate_various_neuron_spike_totals_and_averages(presentation_time_per_stimulus_per_epoch);
-		spike_analyser_for_trained_network->calculate_single_cell_information_scores_for_neuron_group(EXCITATORY_NEURONS_LAYER_4, number_of_bins);
-
-		Plotter * plotter = new Plotter();
-		plotter->plot_single_cell_information_analysis(spike_analyser_for_untrained_network, spike_analyser_for_trained_network);
-	}
-
-
-	/////////// WRITE NETWORK SCORE TO RESULTS FILE FOR DAKOTA OPTIMISATION ///////////
-	TimerWithMessages * writing_network_score_to_results_file_timer = new TimerWithMessages("Writing Network Score to Results File for Dakota Optimisation...\n");
-	// float combined_information_score_training_increase = spike_analyser_for_trained_network->maximum_information_score_count_multiplied_by_sum_of_information_scores - spike_analyser_for_untrained_network->maximum_information_score_count_multiplied_by_sum_of_information_scores;
-	// printf("combined_information_score_training_increase: %f\n", combined_information_score_training_increase);
-	std::ofstream resultsfile;
-	resultsfile.open(argv[1], std::ios::out | std::ios::binary);
-	resultsfile << std::to_string(single_score_to_write_to_file_for_dakota_optimisation) << std::endl;
-	resultsfile.close();
-
-	writing_network_score_to_results_file_timer->stop_timer_and_log_time_and_message("Network Score Written to File.", true);
-
-
-	/////////// END OF EXPERIMENT ///////////
-	experiment_timer->stop_timer_and_log_time_and_message("Experiment Completed.", true);
+	/*
+			RUN A SIMULATION
+	*/
+	// Before running the simulation, you must indicate
+	// Run the simulation!
+	simulator.RunSimulation(
+		0.1f,								// Presentation time per stimulus
+		1, 									// Number of Epochs to run the network for
+		true,								// flag indicating whether the spike times should be recorded
+		true,								// flag indicating whether the spike times should be saved to an outputs folder
+		true,								// flag indicating whether STDP should be active for this simulation (false when testing the network)
+		true,								// flag indicating whether the number of spikes for each neuron should be counted and displayed
+		stimuli_presentation_parameters,	// Pointer to the Stimuli Presentation Struct	
+		0,									// A seed for the random number generator which defines stimulus order
+		NULL)								// If using visual stimuli (ImagePoissonInputSpikingNeuron type), you can set up the spike_analyser and reference it here. Other input types are note yet supported.
 
 	return 0;
 }
