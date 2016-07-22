@@ -17,7 +17,7 @@ public:
 	RandomStateManager();
 	~RandomStateManager();
 
-	curandState_t* d_states = NULL;
+	curandState_t* d_states;
 
 	dim3 threads_per_block;
 	dim3 block_dimensions;

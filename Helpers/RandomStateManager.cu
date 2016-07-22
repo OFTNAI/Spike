@@ -18,6 +18,7 @@ RandomStateManager* RandomStateManager::inst = NULL;
 RandomStateManager::RandomStateManager() {
 
 	total_number_of_states = 0;
+	d_states = NULL;
 
 }
 

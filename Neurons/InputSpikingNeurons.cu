@@ -18,7 +18,7 @@ InputSpikingNeurons::~InputSpikingNeurons() {
 
 int InputSpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
 	int new_group_id = SpikingNeurons::AddGroup(group_params);
-	return (-1*neuron_group_id - 1);
+	return (-1*new_group_id - 1);
 };
 
 

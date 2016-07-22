@@ -24,19 +24,18 @@
 // #include "../Neurons/PoissonInputSpikingNeurons.h"		// Poisson Input Neurons allow you to set the Poisson Rate of the population of input neurons
 
 // Neuron Classes
-#include "../Neurons/SpikingSynapses.h"						// The Spiking Synapses parent class is used when passing references to the simulator
 #include "../Neurons/LIFSpikingNeurons.h"					// Leaky Integrate and Fire Implementation
 // #include "../Neurons/IzhikevichSpikingNeurons.h"			// Izhikevich Spiking Neuron Implementation
 
 
 // Synapse Classes
-#include "../Neurons/SpikingNeurons.h"
+#include "../Synapses/SpikingSynapses.h"						// The Spiking Synapses parent class is used when passing references to the simulator
 #include "../Synapses/CurrentSpikingSynapses.h"				// Current Spiking Synapses inject a square wave of current into a post-synaptic neuron when that synapse is active	
 // #include "../Synapses/ConductanceSpikingSynapses.h"		// Conductance Spiking Synapses have a decaying conductance associated with synapses to inject current into post-synaptic neurons with some decay
 
 // STDP Class
 #include "../STDP/STDP.h"									// STDP class used to pass references to the simulator
-#include "../STDP/Higgins.h"								// STDP rule used by Higgins in: http://biorxiv.org/content/early/2016/06/17/059428
+#include "../STDP/HigginsSTDP.h"								// STDP rule used by Higgins in: http://biorxiv.org/content/early/2016/06/17/059428
 // #include "../STDP/EvansSTDP.h"							// STDP rule used by Evans in: http://www.ncbi.nlm.nih.gov/pubmed/22848199
 
 // Spike Analyser class for information analyses
@@ -101,7 +100,7 @@ int main (int argc, char *argv[]){
 	input_neuron_params->group_shape[0] = 1;		// x-dimension of the input neuron layer
 	input_neuron_params->group_shape[1] = 10;		// y-dimension of the input neuron layer
 	// Create a group of input neurons. This function returns the ID of the input neuron group
-	int input_layer_ID = input_neurons.AddGroup(input_neuron_params);
+	int input_layer_ID = generator_input_neurons->AddGroup(input_neuron_params);
 
 	// We can now assign a set of spike times to neurons in the input layer
 	int num_spikes = 5;
@@ -124,20 +123,20 @@ int main (int argc, char *argv[]){
 
 	lif_spiking_neuron_parameters_struct * inhibitory_population_params = new lif_spiking_neuron_parameters_struct();
 	inhibitory_population_params->group_shape[0] = 1;
-	inhibitory_population_params->group_shape[1] = 25;
+	inhibitory_population_params->group_shape[1] = 100;
 	inhibitory_population_params->resting_potential_v0 = -0.082f;
 	inhibitory_population_params->threshold_for_action_potential_spike = -0.053f;
 	inhibitory_population_params->somatic_capcitance_Cm = 214.0*pow(10, -12);
 	inhibitory_population_params->somatic_leakage_conductance_g0 = 18.0*pow(10, -9);
 
 	// Create populations of excitatory and inhibitory neurons
-	excitatory_neuron_layer_ID = simulator.AddNeuronGroup(excitatory_population_params);
-	inhibitory_neuron_layer_ID = simulator.AddNeuronGroup(inhibitory_population_params);
+	int excitatory_neuron_layer_ID = lif_spiking_neurons->AddGroup(excitatory_population_params);
+	int inhibitory_neuron_layer_ID = lif_spiking_neurons->AddGroup(inhibitory_population_params);
 
 
 	// SETTING UP SYNAPSES
 	// Creating a synapses parameter structure for connections from the input neurons to the excitatory neurons
-	current_spiking_synapse_parameters_struct* input_to_excitatory_parameters = new current_spiking_synapse_parameters_struct();
+	spiking_synapse_parameters_struct* input_to_excitatory_parameters = new spiking_synapse_parameters_struct();
 	input_to_excitatory_parameters->weight_range_bottom = 0.5f;		// Create uniform distributions of weights [0.5, 10.0]
 	input_to_excitatory_parameters->weight_range_top = 10.0f;
 	input_to_excitatory_parameters->delay_range[0] = timestep;		// Create uniform distributions of delays [1 timestep, 5 timesteps]
@@ -152,7 +151,7 @@ int main (int argc, char *argv[]){
 	input_to_excitatory_parameters->stdp_on = true;
 
 	// Creating a set of synapse parameters for connections from the excitatory neurons to the inhibitory neurons
-	current_spiking_synapse_parameters_struct * excitatory_to_inhibitory_parameters = new current_spiking_synapse_parameters_struct();
+	spiking_synapse_parameters_struct * excitatory_to_inhibitory_parameters = new spiking_synapse_parameters_struct();
 	excitatory_to_inhibitory_parameters->weight_range_bottom = 10.0f;
 	excitatory_to_inhibitory_parameters->weight_range_top = 10.0f;
 	excitatory_to_inhibitory_parameters->delay_range[0] = 5.0*timestep;
@@ -161,9 +160,9 @@ int main (int argc, char *argv[]){
 	excitatory_to_inhibitory_parameters->stdp_on = false;
 
 	// Creating a set of synapse parameters from the inhibitory neurons to the excitatory neurons
-	conductance_spiking_synapse_parameters_struct * inhibitory_to_excitatory_parameters = new current_spiking_synapse_parameters_struct();
-	excitatory_to_inhibitory_parameters->weight_range_bottom = -10.0f;
-	excitatory_to_inhibitory_parameters->weight_range_top = -5.0f;
+	spiking_synapse_parameters_struct * inhibitory_to_excitatory_parameters = new spiking_synapse_parameters_struct();
+	excitatory_to_inhibitory_parameters->weight_range_bottom = -5.0f;
+	excitatory_to_inhibitory_parameters->weight_range_top = -2.5f;
 	inhibitory_to_excitatory_parameters->delay_range[0] = 5.0*timestep;
 	inhibitory_to_excitatory_parameters->delay_range[1] = 3.0f*pow(10, -3);
 	inhibitory_to_excitatory_parameters->connectivity_type = CONNECTIVITY_TYPE_ALL_TO_ALL;
@@ -180,7 +179,7 @@ int main (int argc, char *argv[]){
 	// SETTING UP STDP
 	// Getting the STDP parameter structure for this STDP type
 	higgins_stdp_parameters_struct * STDP_PARAMS = new higgins_stdp_parameters_struct();	// You can use the default Values
-	higgins_stdp->Set_STDP_Parameters((SpikingSynapses *) conductance_spiking_synapses, (SpikingNeurons *) izhikevich_spiking_neurons, (SpikingNeurons *) input_neurons, (stdp_parameters_struct *) STDP_PARAMS);
+	higgins_stdp->Set_STDP_Parameters((SpikingSynapses *) current_spiking_synapses, (SpikingNeurons *) lif_spiking_neurons, (SpikingNeurons *) generator_input_neurons, (stdp_parameters_struct *) STDP_PARAMS);
 	// evans_stdp_parameters_struct * STDP_PARAMS = new evans_stdp_parameters_struct(); 	// Or Define the parameters of the STDP model
 	// STDP_PARAMS->decay_term_tau_C = 0.015;
 	// STDP_PARAMS->decay_term_tau_D = 0.025;
@@ -209,7 +208,7 @@ int main (int argc, char *argv[]){
 	// A Struct (Present in the InputSpikingNeuron header) indicates with what style the stimuli should be shown to the network
 	Stimuli_Presentation_Struct* stimuli_presentation_parameters = new Stimuli_Presentation_Struct();
 	// If you wish to present with a random order: Reset_between_each_stimulus refers to a reset of the network state (i.e. membrane potential, conductances etc.)
-	stimuli_presentation_parameters->PRESENTATION_FORMAT = PRESENTATION_FORMAT_RANDOM_RESET_BETWEEN_EACH_STIMULUS;
+	stimuli_presentation_parameters->presentation_format = PRESENTATION_FORMAT_RANDOM_RESET_BETWEEN_EACH_STIMULUS;
 
 	/*
 			RUN A SIMULATION
@@ -225,7 +224,7 @@ int main (int argc, char *argv[]){
 		true,								// flag indicating whether the number of spikes for each neuron should be counted and displayed
 		stimuli_presentation_parameters,	// Pointer to the Stimuli Presentation Struct	
 		0,									// A seed for the random number generator which defines stimulus order
-		NULL)								// If using visual stimuli (ImagePoissonInputSpikingNeuron type), you can set up the spike_analyser and reference it here. Other input types are note yet supported.
+		NULL);								// If using visual stimuli (ImagePoissonInputSpikingNeuron type), you can set up the spike_analyser and reference it here. Other input types are note yet supported.
 
 	return 0;
 }
