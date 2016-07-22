@@ -88,148 +88,105 @@ int main (int argc, char *argv[]){
 
 	/*
 			SETUP PROPERTIES AND CREATE NETWORK:
+		
+		Note: 
+		All Neuron, Synapse and STDP types have associated parameters structures.
+		These structures are defined in the header file for that class and allow us to set properties.
 	*/
 
-	/////////// STDP SETUP ///////////
-	evans_stdp_parameters_struct * STDP_PARAMS = new evans_stdp_parameters_struct();
-	STDP_PARAMS->decay_term_tau_C = 0.015;
-	STDP_PARAMS->decay_term_tau_D = 0.025;
-	evans_stdp->Set_STDP_Parameters((SpikingSynapses *) conductance_spiking_synapses, (SpikingNeurons *) lif_spiking_neurons, (SpikingNeurons *) input_neurons, (stdp_parameters_struct *) STDP_PARAMS);
+	// SETTING UP INPUT NEURONS
+	// Creating an input neuron parameter structure
+	generator_input_spiking_neuron_parameters_struct* input_neuron_params = new generator_input_spiking_neuron_parameters_struct();
+	// Setting the dimensions of the input neuron layer
+	input_neuron_params->group_shape[0] = 1;		// x-dimension of the input neuron layer
+	input_neuron_params->group_shape[1] = 10;		// y-dimension of the input neuron layer
+	// Create a group of input neurons. This function returns the ID of the input neuron group
+	int input_layer_ID = input_neurons.AddGroup(input_neuron_params);
 
-	simulator.SetNeuronType(lif_spiking_neurons);
-	simulator.SetInputNeuronType(input_neurons);
-	simulator.SetSynapseType(conductance_spiking_synapses);
-	simulator.SetSTDPType(evans_stdp);
-
-	conductance_spiking_synapses->print_synapse_group_details = false;
-
-
-
-	/////////// ADD INPUT NEURONS ///////////
-	TimerWithMessages * adding_input_neurons_timer = new TimerWithMessages("Adding Input Neurons...\n");
-
-	input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "../../MatlabGaborFilter/Inputs/", 100.0f);
-	// input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "MatlabGaborFilter/Inputs/", 100.0f);
-	image_poisson_input_spiking_neuron_parameters_struct * image_poisson_input_spiking_group_params = new image_poisson_input_spiking_neuron_parameters_struct();
-	image_poisson_input_spiking_group_params->rate = 30.0f;
-	input_neurons->AddGroupForEachGaborType(image_poisson_input_spiking_group_params);
-
-	adding_input_neurons_timer->stop_timer_and_log_time_and_message("Input Neurons Added.", true);
+	// We can now assign a set of spike times to neurons in the input layer
+	int num_spikes = 5;
+	int neuron_ids[5] = {0, 1, 3, 6, 7};
+	float spike_times[5] = {0.1f, 0.3f, 0.2f, 0.5f, 0.9f};
+	// Adding this stimulus to the input neurons
+	generator_input_neurons->AddStimulus(num_spikes, neuron_ids, spike_times);
 
 
-	/////////// ADD NEURONS ///////////
-	TimerWithMessages * adding_neurons_timer = new TimerWithMessages("Adding Neurons...\n");
+	// SETTING UP NEURON GROUPS
+	// Creating an LIF parameter structure for an excitatory neuron population and an inhibitory
+	// 1 x 100 Layer
+	lif_spiking_neuron_parameters_struct * excitatory_population_params = new lif_spiking_neuron_parameters_struct();
+	excitatory_population_params->group_shape[0] = 1;
+	excitatory_population_params->group_shape[1] = 100;
+	excitatory_population_params->resting_potential_v0 = -0.074f;
+	excitatory_population_params->threshold_for_action_potential_spike = -0.053f;
+	excitatory_population_params->somatic_capcitance_Cm = 500.0*pow(10, -12);
+	excitatory_population_params->somatic_leakage_conductance_g0 = 25.0*pow(10, -9);
 
-	lif_spiking_neuron_parameters_struct * EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS = new lif_spiking_neuron_parameters_struct();
-	EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS->group_shape[0] = 32;
-	EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS->group_shape[1] = 32;
-	EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS->resting_potential_v0 = -0.074f;
-	EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS->threshold_for_action_potential_spike = -0.053f;
-	EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS->somatic_capcitance_Cm = 500.0*pow(10, -12);
-	EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS->somatic_leakage_conductance_g0 = 25.0*pow(10, -9);
+	lif_spiking_neuron_parameters_struct * inhibitory_population_params = new lif_spiking_neuron_parameters_struct();
+	inhibitory_population_params->group_shape[0] = 1;
+	inhibitory_population_params->group_shape[1] = 25;
+	inhibitory_population_params->resting_potential_v0 = -0.082f;
+	inhibitory_population_params->threshold_for_action_potential_spike = -0.053f;
+	inhibitory_population_params->somatic_capcitance_Cm = 214.0*pow(10, -12);
+	inhibitory_population_params->somatic_leakage_conductance_g0 = 18.0*pow(10, -9);
 
-
-	lif_spiking_neuron_parameters_struct * INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS = new lif_spiking_neuron_parameters_struct();
-	INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS->group_shape[0] = 16;
-	INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS->group_shape[1] = 16;
-	INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS->resting_potential_v0 = -0.082f;
-	INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS->threshold_for_action_potential_spike = -0.053f;
-	INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS->somatic_capcitance_Cm = 214.0*pow(10, -12);
-	INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS->somatic_leakage_conductance_g0 = 18.0*pow(10, -9);
-
-	int EXCITATORY_NEURONS_LAYER_1 = 0;
-	int EXCITATORY_NEURONS_LAYER_2 = 0;
-	int EXCITATORY_NEURONS_LAYER_3 = 0;
-	int EXCITATORY_NEURONS_LAYER_4 = 0;
-	int INHIBITORY_NEURONS_LAYER_1 = 0;
-	int INHIBITORY_NEURONS_LAYER_2 = 0;
-	int INHIBITORY_NEURONS_LAYER_3 = 0;
-	int INHIBITORY_NEURONS_LAYER_4 = 0;
-	if (optimisation_stage >= 0) {
-		EXCITATORY_NEURONS_LAYER_1 = simulator.AddNeuronGroup(EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS);
-		INHIBITORY_NEURONS_LAYER_1 = simulator.AddNeuronGroup(INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS);
-	}
-
-	if (optimisation_stage >= 1) {
-		EXCITATORY_NEURONS_LAYER_2 = simulator.AddNeuronGroup(EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS);
-		INHIBITORY_NEURONS_LAYER_2 = simulator.AddNeuronGroup(INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS);
-	}
-
-	if (optimisation_stage >= 2) {
-		EXCITATORY_NEURONS_LAYER_3 = simulator.AddNeuronGroup(EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS);
-		INHIBITORY_NEURONS_LAYER_3 = simulator.AddNeuronGroup(INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS);
-	}
-
-	if (optimisation_stage >= 3) {
-		EXCITATORY_NEURONS_LAYER_4 = simulator.AddNeuronGroup(EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS);
-		INHIBITORY_NEURONS_LAYER_4 = simulator.AddNeuronGroup(INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS);
-	}
-
-	adding_neurons_timer->stop_timer_and_log_time_and_message("Neurons Added.", true);
+	// Create populations of excitatory and inhibitory neurons
+	excitatory_neuron_layer_ID = simulator.AddNeuronGroup(excitatory_population_params);
+	inhibitory_neuron_layer_ID = simulator.AddNeuronGroup(inhibitory_population_params);
 
 
-	/////////// ADD SYNAPSES ///////////
-	TimerWithMessages * adding_synapses_timer = new TimerWithMessages("Adding Synapses...\n");
+	// SETTING UP SYNAPSES
+	// Creating a synapses parameter structure for connections from the input neurons to the excitatory neurons
+	current_spiking_synapse_parameters_struct* input_to_excitatory_parameters = new current_spiking_synapse_parameters_struct();
+	input_to_excitatory_parameters->weight_range_bottom = 0.5f;		// Create uniform distributions of weights [0.5, 10.0]
+	input_to_excitatory_parameters->weight_range_top = 10.0f;
+	input_to_excitatory_parameters->delay_range[0] = timestep;		// Create uniform distributions of delays [1 timestep, 5 timesteps]
+	input_to_excitatory_parameters->delay_range[1] = 5*timestep;
+	// The connectivity types for synapses include:
+		// CONNECTIVITY_TYPE_ALL_TO_ALL
+		// CONNECTIVITY_TYPE_ONE_TO_ONE
+		// CONNECTIVITY_TYPE_RANDOM
+		// CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE
+		// CONNECTIVITY_TYPE_SINGLE
+	input_to_excitatory_parameters->connectivity_type = CONNECTIVITY_TYPE_ALL_TO_ALL;
+	input_to_excitatory_parameters->stdp_on = true;
 
-	conductance_spiking_synapse_parameters_struct * G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS = new conductance_spiking_synapse_parameters_struct();
-	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[0] = timestep;
-	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[1] = timestep;
-	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->max_number_of_connections_per_pair = 5;			
-	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_per_postsynaptic_neuron = 50;
-	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = optimisation_parameters[0][0];
-	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->connectivity_type = CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE;
-	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->stdp_on = true;
-	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_standard_deviation = 10.0;
-	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->reversal_potential_Vhat = 0.0;
-	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->decay_term_tau_g = 0.15;
+	// Creating a set of synapse parameters for connections from the excitatory neurons to the inhibitory neurons
+	current_spiking_synapse_parameters_struct * excitatory_to_inhibitory = new current_spiking_synapse_parameters_struct();
+	excitatory_to_inhibitory_parameters->weight_range_bottom = 10.0f;
+	excitatory_to_inhibitory_parameters->weight_range_top = 10.0f;
+	excitatory_to_inhibitory_parameters->delay_range[0] = 5.0*timestep;
+	excitatory_to_inhibitory_parameters->delay_range[1] = 3.0f*pow(10, -3);
+	excitatory_to_inhibitory_parameters->connectivity_type = CONNECTIVITY_TYPE_ONE_TO_ONE;
+	excitatory_to_inhibitory_parameters->stdp_on = false;
 
-	conductance_spiking_synapse_parameters_struct * E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS = new conductance_spiking_synapse_parameters_struct();
-	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[0] = 5.0*timestep;
-	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[1] = 3.0f*pow(10, -3);
-	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->max_number_of_connections_per_pair = 5;			
-	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_per_postsynaptic_neuron = 50;
-	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = optimisation_parameters[1][0];
-	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->connectivity_type = CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE;
-	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->stdp_on = true;
-	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_standard_deviation = 10.0;
-	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->reversal_potential_Vhat = 0.0;
-	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->decay_term_tau_g = 0.15;
+	// Creating a set of synapse parameters from the inhibitory neurons to the excitatory neurons
+	conductance_spiking_synapse_parameters_struct * inhibitory_to_excitatory_parameters = new current_spiking_synapse_parameters_struct();
+	excitatory_to_inhibitory_parameters->weight_range_bottom = -10.0f;
+	excitatory_to_inhibitory_parameters->weight_range_top = -5.0f;
+	inhibitory_to_excitatory_parameters->delay_range[0] = 5.0*timestep;
+	inhibitory_to_excitatory_parameters->delay_range[1] = 3.0f*pow(10, -3);
+	inhibitory_to_excitatory_parameters->connectivity_type = CONNECTIVITY_TYPE_ALL_TO_ALL;
+	inhibitory_to_excitatory_parameters->stdp_on = false;
+	
 
-	conductance_spiking_synapse_parameters_struct * E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS = new conductance_spiking_synapse_parameters_struct();
-	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[0] = 5.0*timestep;
-	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[1] = 3.0f*pow(10, -3);
-	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->max_number_of_connections_per_pair = 5;
-	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_per_postsynaptic_neuron = 30;
-	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = optimisation_parameters[0][1];
-	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->connectivity_type = CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE;
-	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->stdp_on = false;
-	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_standard_deviation = 10.0;
-	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->reversal_potential_Vhat = 0.0;
-	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->decay_term_tau_g = 0.002;
+	// CREATING SYNAPSES
+	// When creating synapses, input neurons must be treated differently and hence there is a unique function for them.
+	// Input neurons can also only be 
+	simulator.AddSynapseGroupFromInputNeurons()
 
-	conductance_spiking_synapse_parameters_struct * I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS = new conductance_spiking_synapse_parameters_struct();
-	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[0] = 5.0*timestep;
-	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[1] = 3.0f*pow(10, -3);
-	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->max_number_of_connections_per_pair = 5;
-	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_per_postsynaptic_neuron = 30;
-	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = optimisation_parameters[0][2];
-	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->connectivity_type = CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE;
-	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->stdp_on = false;
-	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_standard_deviation = 10.0;
-	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->reversal_potential_Vhat = -70.0*pow(10, -3);
-	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->decay_term_tau_g = 0.005;
+	// SETTING UP STDP
+	// Getting the STDP parameter structure for this STDP type
+	higgins_stdp_parameters_struct * STDP_PARAMS = new higgins_stdp_parameters_struct();	// You can use the default Values
+	higgins_stdp->Set_STDP_Parameters((SpikingSynapses *) conductance_spiking_synapses, (SpikingNeurons *) izhikevich_spiking_neurons, (SpikingNeurons *) input_neurons, (stdp_parameters_struct *) STDP_PARAMS);
+	// evans_stdp_parameters_struct * STDP_PARAMS = new evans_stdp_parameters_struct(); 	// Or Define the parameters of the STDP model
+	// STDP_PARAMS->decay_term_tau_C = 0.015;
+	// STDP_PARAMS->decay_term_tau_D = 0.025;
+	// evans_stdp->Set_STDP_Parameters((SpikingSynapses *) conductance_spiking_synapses, (SpikingNeurons *) lif_spiking_neurons, (SpikingNeurons *) input_neurons, (stdp_parameters_struct *) STDP_PARAMS);
 
-	conductance_spiking_synapse_parameters_struct * E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS = new conductance_spiking_synapse_parameters_struct();
-	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[0] = 5.0*timestep;
-	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[1] = 3.0f*pow(10, -3);
-	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->max_number_of_connections_per_pair = 5;
-	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_per_postsynaptic_neuron = 20;
-	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = optimisation_parameters[0][3];
-	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->connectivity_type = CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE;
-	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->stdp_on = false;
-	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_standard_deviation = 10.0;
-	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->reversal_potential_Vhat = -70.0*pow(10, -3);
-	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->decay_term_tau_g = 0.005;
+
+
+
 
 	if (optimisation_stage >= 0) {
 		simulator.AddSynapseGroupsForNeuronGroupAndEachInputGroup(EXCITATORY_NEURONS_LAYER_1, G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
