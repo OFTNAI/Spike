@@ -11,13 +11,14 @@ CC = nvcc
 # --compiler-options -Wall = Warnings All. Give them to me.
 # Wall flag is inefficient
 CFLAGS = -c
+
 # CFLAGS += -lineinfo
 
 # Mac OS X 10.9+ uses libc++, which is an implementation of c++11 standard library. 
 # We must therefore specify c++11 as standard for out of the box compilation on Linux. 
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
-	CFLAGS += --std=c++11 
+	CFLAGS += -D_MWAITXINTRIN_H_INCLUDED
 endif
 
 
