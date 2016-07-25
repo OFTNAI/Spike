@@ -37,16 +37,29 @@ int main (int argc, char *argv[]){
 
 	int optimisation_stage = number_of_optimisation_stages;
 
+
+	//init parameters
+	for (int l = 0; l<4; l++){
+		if (l == 0)
+			optimisation_parameters[l][0] = 0.001;//G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS
+		else
+			optimisation_parameters[l][0] = 0.00001;//E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS
+		optimisation_parameters[l][1] = 0.00001; //E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS
+		optimisation_parameters[l][2]= 0.00001; //I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS
+		optimisation_parameters[l][3] = 0.00001; //E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS
+	}
+
+
 	if (argc > 1) {
 		command_line_arguments_passed = true;
 
 		is_optimisation = true;
 
 		optimisation_stage = std::stoi(argv[3]);
-		optimisation_parameters[optimisation_stage][0] = std::stof(argv[4]);
-		optimisation_parameters[optimisation_stage][1] = std::stof(argv[5]);
-		optimisation_parameters[optimisation_stage][2]= std::stof(argv[6]);
-		optimisation_parameters[optimisation_stage][3] = std::stof(argv[7]);
+//		optimisation_parameters[optimisation_stage][0] = std::stof(argv[4]); //G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS or E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS
+		optimisation_parameters[optimisation_stage][1] = std::stof(argv[4]); //E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS
+		optimisation_parameters[optimisation_stage][2]= std::stof(argv[5]); //I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS
+//		optimisation_parameters[optimisation_stage][3] = std::stof(argv[7]); //E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS
 	}
 
 
@@ -55,9 +68,10 @@ int main (int argc, char *argv[]){
 	for (int i = 0; i < optimisation_stage; i++) {
 		std::string file_name("../OptimalParameters/optimal_parameters_from_optimisation_iteration_" + std::to_string(i) + ".txt");
 		std::ifstream optimal_parameters_from_optimisation_iteration(file_name.c_str());
-		for (int j = 0; j < number_of_new_parameters_per_optimisation_stage; j++) {
+//		for (int j = 0; j < number_of_new_parameters_per_optimisation_stage; j++) {
+		for (int j = 0; j < 2; j++) {
 			std::getline(optimal_parameters_from_optimisation_iteration, parameter_from_file_as_string);
-			optimisation_parameters[i][j] = std::atof(parameter_from_file_as_string.c_str());
+			optimisation_parameters[i][j+1] = std::atof(parameter_from_file_as_string.c_str());
 		}
 	}
 	
@@ -291,28 +305,33 @@ int main (int argc, char *argv[]){
 
 
 	bool simulate_network_to_test_untrained = true;
-	bool simulate_network_to_train_network = false;
-	bool simulate_network_to_test_trained = false;
+	bool simulate_network_to_train_network = true;
+	bool simulate_network_to_test_trained = true;
 	bool human_readable_storage = true;
-	float single_score_to_write_to_file_for_dakota_optimisation = 0.0;
+	float single_score_to_write_to_file_for_dakota_optimisation_excit = 0.0;
+	float single_score_to_write_to_file_for_dakota_optimisation_inhib = 0.0;
 
 
 	/////////// SIMULATE NETWORK TO TEST UNTRAINED ///////////
 	float presentation_time_per_stimulus_per_epoch = 0.25f;
-	bool record_spikes = false;
-	bool save_recorded_spikes_to_file = false;
+	bool record_spikes = true;
+	bool save_recorded_spikes_and_states_to_file = true;
+
+	bool isTrained=false;
 	int number_of_bins = 3;
 	SpikeAnalyser * spike_analyser_for_untrained_network = new SpikeAnalyser(simulator.neurons, (ImagePoissonInputSpikingNeurons*)simulator.input_neurons);
 	if (simulate_network_to_test_untrained) {
-
-		simulator.RunSimulationToCountNeuronSpikes(presentation_time_per_stimulus_per_epoch, record_spikes, save_recorded_spikes_to_file, spike_analyser_for_untrained_network,human_readable_storage);
+		simulator.RunSimulationToCountNeuronSpikes(presentation_time_per_stimulus_per_epoch, record_spikes, save_recorded_spikes_and_states_to_file, spike_analyser_for_untrained_network,human_readable_storage,isTrained);
 		
 		spike_analyser_for_untrained_network->calculate_various_neuron_spike_totals_and_averages(presentation_time_per_stimulus_per_epoch);
 		spike_analyser_for_untrained_network->calculate_single_cell_information_scores_for_neuron_group(EXCITATORY_NEURONS_LAYER_4, number_of_bins);
+//		spike_analyser_for_untrained_network->calculate_combined_powered_distance_from_average_score();
 		spike_analyser_for_untrained_network->calculate_combined_powered_distance_from_average_score();
 		// single_score_to_write_to_file_for_dakota_optimisation = spike_analyser_for_untrained_network->combined_powered_distance_from_average_score;
-		single_score_to_write_to_file_for_dakota_optimisation = spike_analyser_for_untrained_network->combined_powered_distance_from_average_score_for_each_neuron_group[optimisation_stage*2] + spike_analyser_for_untrained_network->combined_powered_distance_from_average_score_for_each_neuron_group[optimisation_stage*2 + 1];
-
+		// single_score_to_write_to_file_for_dakota_optimisation_excit = spike_analyser_for_untrained_network->combined_powered_distance_from_average_score_for_each_neuron_group[optimisation_stage*2];
+		// single_score_to_write_to_file_for_dakota_optimisation_inhib = spike_analyser_for_untrained_network->combined_powered_distance_from_average_score_for_each_neuron_group[optimisation_stage*2 + 1];
+		single_score_to_write_to_file_for_dakota_optimisation_excit = spike_analyser_for_untrained_network->combined_powered_distance_from_average_score_for_each_neuron_group[optimisation_stage*2];
+		single_score_to_write_to_file_for_dakota_optimisation_inhib = spike_analyser_for_untrained_network->combined_powered_distance_from_average_score_for_each_neuron_group[optimisation_stage*2 + 1];
 	}
 
 
@@ -333,11 +352,14 @@ int main (int argc, char *argv[]){
 
 	/////////// SIMULATE NETWORK TO TEST TRAINED ///////////
 	presentation_time_per_stimulus_per_epoch = 0.25f;
-	record_spikes = false;
-	save_recorded_spikes_to_file = false;
+	record_spikes = true;
+	save_recorded_spikes_and_states_to_file = true;
+
+	isTrained = true;
 	if (simulate_network_to_test_trained) {
 		SpikeAnalyser * spike_analyser_for_trained_network = new SpikeAnalyser(simulator.neurons, (ImagePoissonInputSpikingNeurons*)simulator.input_neurons);
-		simulator.RunSimulationToCountNeuronSpikes(presentation_time_per_stimulus_per_epoch, record_spikes, save_recorded_spikes_to_file, spike_analyser_for_trained_network,human_readable_storage);
+
+		simulator.RunSimulationToCountNeuronSpikes(presentation_time_per_stimulus_per_epoch, record_spikes, save_recorded_spikes_and_states_to_file, spike_analyser_for_trained_network,human_readable_storage,isTrained);
 
 		spike_analyser_for_trained_network->calculate_various_neuron_spike_totals_and_averages(presentation_time_per_stimulus_per_epoch);
 		spike_analyser_for_trained_network->calculate_single_cell_information_scores_for_neuron_group(EXCITATORY_NEURONS_LAYER_4, number_of_bins);
@@ -353,7 +375,9 @@ int main (int argc, char *argv[]){
 	// printf("combined_information_score_training_increase: %f\n", combined_information_score_training_increase);
 	std::ofstream resultsfile;
 	resultsfile.open(argv[1], std::ios::out | std::ios::binary);
-	resultsfile << std::to_string(single_score_to_write_to_file_for_dakota_optimisation) << std::endl;
+//	resultsfile << std::to_string(single_score_to_write_to_file_for_dakota_optimisation_excit) << std::endl;
+//	resultsfile << std::to_string(single_score_to_write_to_file_for_dakota_optimisation_inhib) << std::endl;
+	resultsfile << std::to_string(single_score_to_write_to_file_for_dakota_optimisation_excit + single_score_to_write_to_file_for_dakota_optimisation_inhib) << std::endl;
 	resultsfile.close();
 
 	writing_network_score_to_results_file_timer->stop_timer_and_log_time_and_message("Network Score Written to File.", true);
