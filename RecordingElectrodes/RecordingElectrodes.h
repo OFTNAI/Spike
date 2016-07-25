@@ -56,7 +56,7 @@ public:
 	void write_spikes_to_file(int epoch_number, bool append_clock_to_filenames, bool human_readable_storage);
 
 	void write_initial_synaptic_weights_to_file(SpikingSynapses *synapses, bool human_readable_storage);
-	void save_network_state(SpikingSynapses *synapses, bool human_readable_storage);
+	void write_network_state_to_file(SpikingSynapses *synapses, bool human_readable_storage);
 
 	void add_spikes_to_per_neuron_spike_count(float current_time_in_seconds);
 

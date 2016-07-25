@@ -75,12 +75,14 @@ void SpikeAnalyser::calculate_combined_powered_distance_from_average_score() {
 		} else {
 			neuron_group_score += - pow((average_number_of_neuron_spikes_per_second_for_neuron_group - optimal_average_firing_rate), 2);
 		}
-
+		
 		combined_powered_distance_from_average_score_for_each_neuron_group[neuron_group_index] = neuron_group_score;
 		combined_powered_distance_from_average_score += neuron_group_score;
+		printf("Dakota: combined_powered_distance_from_average_score_for_each_neuron_group[%d]: %f score: %f \n", neuron_group_index, average_number_of_neuron_spikes_per_second_for_neuron_group, neuron_group_score);
 	}
 
 }
+
 
 void SpikeAnalyser::calculate_various_neuron_spike_totals_and_averages(float presentation_time_per_stimulus_per_epoch) {
 

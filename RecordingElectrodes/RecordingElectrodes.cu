@@ -311,7 +311,7 @@ void RecordingElectrodes::write_initial_synaptic_weights_to_file(SpikingSynapses
 }
 
 
-void RecordingElectrodes::save_network_state(SpikingSynapses *synapses, bool human_readable_storage) {
+void RecordingElectrodes::write_network_state_to_file(SpikingSynapses *synapses, bool human_readable_storage) {
 
 	clock_t save_network_state_start = clock();
 
