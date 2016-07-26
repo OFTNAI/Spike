@@ -13,37 +13,39 @@ class SpikePlot(object):
 #         fn_id = "../Results/Neurons_Epoch0_SpikeIDs.bin";
 #         fn_t = "../Results/Neurons_Epoch0_SpikeTimes.bin";
 
-        fn_id = "../output/Neurons_SpikeIDs_" + phases[0] + "_Epoch0.txt";
-        fn_t = "../output/Neurons_SpikeTimes_" + phases[0] + "_Epoch0.txt";
-        spikeIDs = np.loadtxt(fn_id);
-        spikeTimes = np.loadtxt(fn_t);
+        for phase in phases:
+#             fn_id = "../output/Neurons_SpikeIDs_" + phase + "_Epoch0.txt";
+#             fn_t = "../output/Neurons_SpikeTimes_" + phase + "_Epoch0.txt";
+#             spikeIDs = np.loadtxt(fn_id);
+#             spikeTimes = np.loadtxt(fn_t);
+    
+            fn_id = "../output/Neurons_SpikeIDs_" + phase + "_Epoch0.bin";
+            fn_t = "../output/Neurons_SpikeTimes_" + phase + "_Epoch0.bin";  
+            dtIDs = np.dtype('int32');
+            dtTimes = np.dtype('f4');
+            
+            spikeIDs = np.fromfile(fn_id, dtype=dtIDs);
+            spikeTimes = np.fromfile(fn_t, dtype=dtTimes);
 
-#         fn_id = "../output/Neurons_SpikeIDs_" + phases[0] + "_Epoch0.bin";
-#         fn_t = "../output/Neurons_SpikeTimes_" + phases[0] + "_Epoch0.bin";        
-#         spikeIDs = np.fromfile(fn_id, dtype=dt);
-#         spikeTimes = np.fromfile(fn_t, dtype=dt);
-#         
-        
-        
-        
-        #fig = plt.figure(0 , figsize=(300, 150),dpi=150);
-        fig = plt.figure(0 , figsize=(30, 15),dpi=150);
-
-        plt.plot(spikeTimes,spikeIDs,'.',color='k',markersize=2);
-        for l in range(nLayers):
-            plt.plot((0,np.max(spikeTimes)),(l*(exDim*exDim+inDim*inDim),l*(exDim*exDim+inDim*inDim)),'k-', color='k', linewidth=2.0);
-            plt.plot((0,np.max(spikeTimes)),(l*(exDim*exDim+inDim*inDim)+exDim*exDim,l*(exDim*exDim+inDim*inDim)+exDim*exDim),'k--', color='r', linewidth=2.0);
-        
-        plt.xlabel('time [s]');
-        plt.xlim((0,np.max(spikeTimes)))
-        plt.ylim((0,nLayers*(exDim*exDim+inDim*inDim)))
-        
-        fig.savefig("../output/rasterPlot.png");
-        fig.savefig("../output/rasterPlot.eps");
-        print("figure rasterPlot.png is exported in Results")
-        plt.hold(True)
-        
-        
+            
+            #fig = plt.figure(0 , figsize=(300, 150),dpi=150);
+            fig = plt.figure(0 , figsize=(30, 15),dpi=150);
+    
+            plt.plot(spikeTimes,spikeIDs,'.',color='k',markersize=2);
+            for l in range(nLayers):
+                plt.plot((0,np.max(spikeTimes)),(l*(exDim*exDim+inDim*inDim),l*(exDim*exDim+inDim*inDim)),'k-', color='k', linewidth=2.0);
+                plt.plot((0,np.max(spikeTimes)),(l*(exDim*exDim+inDim*inDim)+exDim*exDim,l*(exDim*exDim+inDim*inDim)+exDim*exDim),'k--', color='r', linewidth=2.0);
+            
+            plt.xlabel('time [s]');
+            plt.xlim((0,np.max(spikeTimes)))
+            plt.ylim((0,nLayers*(exDim*exDim+inDim*inDim)))
+            
+            fig.savefig("../output/rasterPlot_"+phase+".png");
+    #         fig.savefig("../output/rasterPlot.eps");
+            print("figure rasterPlot.png is exported in Results")
+            plt.hold(True)
+            
+            
         
         
         

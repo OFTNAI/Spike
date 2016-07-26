@@ -32,7 +32,8 @@ int main (int argc, char *argv[]){
 
 	// Parameters
 	int number_of_layers = 4;
-	int max_number_of_connections_per_pair = 1;
+	int max_number_of_connections_per_pair = 5;
+	float gaussian_synapses_standard_deviation_FF_G2E = 5.0;
 	float gaussian_synapses_standard_deviation_FF = 10.0;
 	float gaussian_synapses_standard_deviation_LAT = 5.0;
 	float biological_conductance_scaling_constant_lambda_G2E_FF = 0.001;
@@ -42,12 +43,12 @@ int main (int argc, char *argv[]){
 	bool simulate_network_to_test_untrained = true;
 	bool simulate_network_to_train_network = true;
 	bool simulate_network_to_test_trained = true;
-	bool human_readable_storage = true;
+	bool human_readable_storage = false;
 
 	// Parameters for testing
 	float presentation_time_per_stimulus_per_epoch_test = 0.5f;
 	bool record_spikes_test = true;
-	bool save_recorded_spikes_and_states_to_file_test = true;
+	bool save_recorded_spikes_and_states_to_file_test = false;
 
 	// Parameters for training
 	float presentation_time_per_stimulus_per_epoch_train = 0.1f;
@@ -200,10 +201,6 @@ int main (int argc, char *argv[]){
 	TimerWithMessages * adding_synapses_timer = new TimerWithMessages("Adding Synapses...\n");
 
 
-
-
-
-
 	conductance_spiking_synapse_parameters_struct * G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS = new conductance_spiking_synapse_parameters_struct();
 	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[0] = timestep;
 	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[1] = timestep;
@@ -212,7 +209,7 @@ int main (int argc, char *argv[]){
 	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = biological_conductance_scaling_constant_lambda_G2E_FF;
 	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->connectivity_type = CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE;
 	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->stdp_on = true;
-	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_standard_deviation = gaussian_synapses_standard_deviation_FF;
+	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_standard_deviation = gaussian_synapses_standard_deviation_FF_G2E;
 	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->reversal_potential_Vhat = 0.0;
 	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->decay_term_tau_g = 0.15;
 
@@ -273,9 +270,6 @@ int main (int argc, char *argv[]){
 
 
 	if (optimisation_stage >= 1) {
-
-//		cout<<"test: optimisation_parameters[1][0]:"<<optimisation_parameters[1][0]<<" optimisation_parameters[1][1]:" <<optimisation_parameters[1][1] << " optimisation_parameters[1][2]:"<<optimisation_parameters[1][2]<<" optimisation_parameters[1][3]:"<<optimisation_parameters[1][3]<<endl;
-
 		E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = biological_conductance_scaling_constant_lambda[1][0];
 		I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = biological_conductance_scaling_constant_lambda[1][1];
 
