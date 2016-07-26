@@ -23,11 +23,20 @@ class InfoAnalysis(object):
         phaseIndex = 1;
         for phase in phases:
 
-            fn_id = "../output/Neurons_SpikeIDs_" + phase + "_Epoch0.txt";
-            fn_t = "../output/Neurons_SpikeTimes_" + phase + "_Epoch0.txt";
+#             fn_id = "../output/Neurons_SpikeIDs_" + phase + "_Epoch0.txt";
+#             fn_t = "../output/Neurons_SpikeTimes_" + phase + "_Epoch0.txt";
+#             
+#             spikeIDs = np.loadtxt(fn_id);
+#             spikeTimes = np.loadtxt(fn_t);
             
-            spikeIDs = np.loadtxt(fn_id);
-            spikeTimes = np.loadtxt(fn_t);
+            fn_id = "../output/Neurons_SpikeIDs_" + phase + "_Epoch0.bin";
+            fn_t = "../output/Neurons_SpikeTimes_" + phase + "_Epoch0.bin";  
+            dtIDs = np.dtype('int32');
+            dtTimes = np.dtype('f4');
+            
+            spikeIDs = np.fromfile(fn_id, dtype=dtIDs);
+            spikeTimes = np.fromfile(fn_t, dtype=dtTimes);
+            
 
             FR = np.zeros((nObj, nTrans,nLayers, nCells));
             for l in range(nLayers):

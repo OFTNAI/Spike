@@ -16,5 +16,6 @@ import PolyGroup
 #PLOT SPIKES
 sp = SpikePlot.SpikePlot();
 sp.plotSpikes(['Untrained'],saveImage = True, showImage = False);
+# sp.plotSpikes(['Untrained', 'Trained'],saveImage = True, showImage = False);
 
 
