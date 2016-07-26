@@ -5,8 +5,7 @@ import PolyGroup
 
 #INFO ANALYSIS:
 # ia = InfoAnalysis.InfoAnalysis()
-# ia.singleCellInfoAnalysis(['Neurons_Epoch0_t25077681', 'Neurons_Epoch0_t74915752'],weightedAnalysis = 1,saveImage = True, showImage = True);
-# ia.singleCellInfoAnalysis(['Neurons_Epoch0_'],weightedAnalysis = 1,saveImage = True, showImage = False);
+# ia.singleCellInfoAnalysis(['Untrained', 'Trained'],weightedAnalysis = 1,saveImage = True, showImage = False);
 
 
 #Struct
@@ -16,6 +15,6 @@ import PolyGroup
 
 #PLOT SPIKES
 sp = SpikePlot.SpikePlot();
-sp.plotSpikes(['Neurons_Epoch0_t62631290'],saveImage = True, showImage = False);
+sp.plotSpikes(['Untrained'],saveImage = True, showImage = False);
 
 
