@@ -15,6 +15,7 @@ class InfoAnalysis(object):
         nTrans = 2;
         nLayers = 4;
         nCells = 32*32;
+        nInhibCells = 16*16;
         presentationTime = 1.0;
         targetLayerForObjFunc = 3;
         nInfoCalc = nCells;
@@ -22,15 +23,15 @@ class InfoAnalysis(object):
         phaseIndex = 1;
         for phase in phases:
 
-            fn_id = "../output/" + phase + "_SpikeIDs.txt";
-            fn_t = "../output/" + phase + "_SpikeTimes.txt";
+            fn_id = "../output/Neurons_SpikeIDs_" + phase + "_Epoch0.txt";
+            fn_t = "../output/Neurons_SpikeTimes_" + phase + "_Epoch0.txt";
             
             spikeIDs = np.loadtxt(fn_id);
             spikeTimes = np.loadtxt(fn_t);
 
             FR = np.zeros((nObj, nTrans,nLayers, nCells));
             for l in range(nLayers):
-                cond_ids = (l*nCells < spikeIDs) & (spikeIDs < (l+1)*nCells);
+                cond_ids = (l*(nCells+nInhibCells) < spikeIDs) & (spikeIDs < (l+1)*nCells+l*nInhibCells);
                 spikeIDs_layer = np.extract(cond_ids, spikeIDs);
                 spikeTimes_layer = np.extract(cond_ids, spikeTimes);
                 for obj in range(nObj):
@@ -136,5 +137,5 @@ class InfoAnalysis(object):
             plt.show();
         if saveImage:
             fig.savefig("../output/SingleCellInfo.png");
-            fig.savefig("../output/SingleCellInfo.eps");
+#             fig.savefig("../output/SingleCellInfo.eps");
             print("figure SingleCellInfo.png is exported in Results") 
