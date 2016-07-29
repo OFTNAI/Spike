@@ -2,6 +2,7 @@
 #define SpikeAnalyser_H
 
 #include <cuda.h>
+#include<vector>
 #include "../Neurons/Neurons.h"
 #include "../Neurons/ImagePoissonInputSpikingNeurons.h"
 
@@ -15,7 +16,9 @@ public:
 	Neurons * neurons;
 	ImagePoissonInputSpikingNeurons * input_neurons;
 	
-	int number_of_neurons_in_single_cell_analysis_group;
+	std::vector<int> number_of_neurons_in_single_cell_analysis_group_vec;
+	std::vector<std::vector<float> > descending_maximum_information_score_for_each_neuron_vec;
+	std::vector<std::vector<float> > maximum_information_score_for_each_neuron_vec;
 
 	int ** per_stimulus_per_neuron_spike_counts;
 

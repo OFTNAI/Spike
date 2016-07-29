@@ -21,6 +21,7 @@
 #include <string>
 #include <fstream>
 #include "../Plotting/Plotter.h"
+#include <vector>
 
 #include <iostream>
 using namespace std;
@@ -28,14 +29,17 @@ using namespace std;
 // The function which will autorun when the executable is created
 int main (int argc, char *argv[]){
 	TimerWithMessages * experiment_timer = new TimerWithMessages();
-
+	const int OPTIM_CONDUCTANCE = 1;
+	const int OPTIM_FANINRAD = 2;
+	const int OBJFUNC_AVGFR = 1;
+	const int OBJFUNC_INFO = 2;
 
 	// Parameters
 	int number_of_layers = 4;
 	int max_number_of_connections_per_pair = 5;
 	float gaussian_synapses_standard_deviation_FF_G2E = 5.0;
-	float gaussian_synapses_standard_deviation_FF = 10.0;
-	float gaussian_synapses_standard_deviation_LAT = 5.0;
+	float gaussian_synapses_standard_deviation_FF = 5.0;
+	float gaussian_synapses_standard_deviation_LAT = 2.0;
 	float biological_conductance_scaling_constant_lambda_G2E_FF = 0.001;
 	float biological_conductance_scaling_constant_lambda_E2E_FF = 0.00001;
 	float biological_conductance_scaling_constant_lambda_E2E_L = 0.00001;
@@ -46,19 +50,22 @@ int main (int argc, char *argv[]){
 	bool human_readable_storage = false;
 
 	// Parameters for testing
-	float presentation_time_per_stimulus_per_epoch_test = 0.5f;
+	float presentation_time_per_stimulus_per_epoch_test = 1.0f;
 	bool record_spikes_test = true;
-	bool save_recorded_spikes_and_states_to_file_test = false;
+	bool save_recorded_spikes_and_states_to_file_test = true;
 
 	// Parameters for training
-	float presentation_time_per_stimulus_per_epoch_train = 0.1f;
+	float presentation_time_per_stimulus_per_epoch_train = 0.5f;
 	int number_of_epochs_train = 10;
 
 	// Parameters for Information Analysis
 	int number_of_bins = 3;
 
 	// Parameters related to Dakota Optimization
+	int optimizationType = OPTIM_CONDUCTANCE;
 	int number_of_new_parameters_per_optimisation_stage = 2;
+	int objective_function = OBJFUNC_INFO;
+
 
 
 	// init parameters
@@ -76,10 +83,18 @@ int main (int argc, char *argv[]){
 
 	if (argc > 1) {
 		is_optimisation = true;
-
-		optimisation_stage = stoi(argv[3]);
-		biological_conductance_scaling_constant_lambda[optimisation_stage][0] = stof(argv[4]); //E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS
-		biological_conductance_scaling_constant_lambda[optimisation_stage][1]= stof(argv[5]); //I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS
+		switch (optimizationType){
+			case OPTIM_CONDUCTANCE:
+				optimisation_stage = stoi(argv[3]);
+				biological_conductance_scaling_constant_lambda[optimisation_stage][0] = stof(argv[4]); //E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS
+				biological_conductance_scaling_constant_lambda[optimisation_stage][1]= stof(argv[5]); //I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS
+				break;
+			case OPTIM_FANINRAD:
+				gaussian_synapses_standard_deviation_FF_G2E = stof(argv[4]);
+				gaussian_synapses_standard_deviation_FF = stof(argv[5]);
+				gaussian_synapses_standard_deviation_LAT = stof(argv[6]);
+				break;
+		}
 	}
 
 
@@ -174,24 +189,38 @@ int main (int argc, char *argv[]){
 	int INHIBITORY_NEURONS_LAYER_2 = 0;
 	int INHIBITORY_NEURONS_LAYER_3 = 0;
 	int INHIBITORY_NEURONS_LAYER_4 = 0;
+	vector<int> EXCITATORY_NEURONS;
+	vector<int> INHIBITORY_NEURONS;
 	if (optimisation_stage >= 0) {
 		EXCITATORY_NEURONS_LAYER_1 = simulator.AddNeuronGroup(EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS);
 		INHIBITORY_NEURONS_LAYER_1 = simulator.AddNeuronGroup(INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS);
+
+		EXCITATORY_NEURONS.push_back(EXCITATORY_NEURONS_LAYER_1);
+		INHIBITORY_NEURONS.push_back(INHIBITORY_NEURONS_LAYER_1);
 	}
 
 	if (optimisation_stage >= 1) {
 		EXCITATORY_NEURONS_LAYER_2 = simulator.AddNeuronGroup(EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS);
 		INHIBITORY_NEURONS_LAYER_2 = simulator.AddNeuronGroup(INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS);
+
+		EXCITATORY_NEURONS.push_back(EXCITATORY_NEURONS_LAYER_2);
+		INHIBITORY_NEURONS.push_back(INHIBITORY_NEURONS_LAYER_2);
 	}
 
 	if (optimisation_stage >= 2) {
 		EXCITATORY_NEURONS_LAYER_3 = simulator.AddNeuronGroup(EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS);
 		INHIBITORY_NEURONS_LAYER_3 = simulator.AddNeuronGroup(INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS);
+
+		EXCITATORY_NEURONS.push_back(EXCITATORY_NEURONS_LAYER_3);
+		INHIBITORY_NEURONS.push_back(INHIBITORY_NEURONS_LAYER_3);
 	}
 
 	if (optimisation_stage >= 3) {
 		EXCITATORY_NEURONS_LAYER_4 = simulator.AddNeuronGroup(EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS);
 		INHIBITORY_NEURONS_LAYER_4 = simulator.AddNeuronGroup(INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS);
+
+		EXCITATORY_NEURONS.push_back(EXCITATORY_NEURONS_LAYER_4);
+		INHIBITORY_NEURONS.push_back(INHIBITORY_NEURONS_LAYER_4);
 	}
 
 	adding_neurons_timer->stop_timer_and_log_time_and_message("Neurons Added.", true);
@@ -332,7 +361,9 @@ int main (int argc, char *argv[]){
 		simulator.RunSimulationToCountNeuronSpikes(presentation_time_per_stimulus_per_epoch, record_spikes, save_recorded_spikes_and_states_to_file, spike_analyser_for_untrained_network,human_readable_storage,isTrained);
 		
 		spike_analyser_for_untrained_network->calculate_various_neuron_spike_totals_and_averages(presentation_time_per_stimulus_per_epoch);
-		spike_analyser_for_untrained_network->calculate_single_cell_information_scores_for_neuron_group(EXCITATORY_NEURONS_LAYER_4, number_of_bins);
+		for(int l=0;l<optimisation_stage;l++)
+			spike_analyser_for_untrained_network->calculate_single_cell_information_scores_for_neuron_group(EXCITATORY_NEURONS[l], number_of_bins);
+
 		isTrained = true;
 	}
 
@@ -362,7 +393,8 @@ int main (int argc, char *argv[]){
 		simulator.RunSimulationToCountNeuronSpikes(presentation_time_per_stimulus_per_epoch, record_spikes, save_recorded_spikes_and_states_to_file, spike_analyser_for_trained_network,human_readable_storage,isTrained);
 
 		spike_analyser_for_trained_network->calculate_various_neuron_spike_totals_and_averages(presentation_time_per_stimulus_per_epoch);
-		spike_analyser_for_trained_network->calculate_single_cell_information_scores_for_neuron_group(EXCITATORY_NEURONS_LAYER_4, number_of_bins);
+		for(int l=0;l<optimisation_stage;l++)
+			spike_analyser_for_trained_network->calculate_single_cell_information_scores_for_neuron_group(EXCITATORY_NEURONS[l], number_of_bins);
 	}
 
 	/////////// PLOT INFOANALYSIS RESULTS //////////////////
@@ -375,22 +407,24 @@ int main (int argc, char *argv[]){
 
 	/////////// WRITE NETWORK SCORE TO RESULTS FILE FOR DAKOTA OPTIMISATION ///////////
 	if (is_optimisation){
-		//output combined powered distance as a objective function of the optimization
-		spike_analyser_for_untrained_network->calculate_combined_powered_distance_from_average_score();
-		single_score_to_write_to_file_for_dakota_optimisation_excit = spike_analyser_for_untrained_network->combined_powered_distance_from_average_score_for_each_neuron_group[optimisation_stage*2];
-		single_score_to_write_to_file_for_dakota_optimisation_inhib = spike_analyser_for_untrained_network->combined_powered_distance_from_average_score_for_each_neuron_group[optimisation_stage*2 + 1];
-
 		TimerWithMessages * writing_network_score_to_results_file_timer = new TimerWithMessages("Writing Network Score to Results File for Dakota Optimisation...\n");
-
-		float combined_information_score_training_increase = spike_analyser_for_trained_network->maximum_information_score_count_multiplied_by_sum_of_information_scores - spike_analyser_for_untrained_network->maximum_information_score_count_multiplied_by_sum_of_information_scores;
-		printf("combined_information_score_training_increase: %f\n", combined_information_score_training_increase);
 
 		ofstream resultsfile;
 		resultsfile.open(argv[1], ios::out | ios::binary);
-	//	resultsfile << to_string(single_score_to_write_to_file_for_dakota_optimisation_excit) << endl;
-	//	resultsfile << to_string(single_score_to_write_to_file_for_dakota_optimisation_inhib) << endl;
-		resultsfile << to_string(single_score_to_write_to_file_for_dakota_optimisation_excit + single_score_to_write_to_file_for_dakota_optimisation_inhib) << endl;
-		resultsfile << to_string(combined_information_score_training_increase)<<endl;
+
+		switch (objective_function){
+			case OBJFUNC_AVGFR:		//output combined powered distance as a objective function of the optimization
+				spike_analyser_for_untrained_network->calculate_combined_powered_distance_from_average_score();
+				single_score_to_write_to_file_for_dakota_optimisation_excit = spike_analyser_for_untrained_network->combined_powered_distance_from_average_score_for_each_neuron_group[optimisation_stage*2];
+				single_score_to_write_to_file_for_dakota_optimisation_inhib = spike_analyser_for_untrained_network->combined_powered_distance_from_average_score_for_each_neuron_group[optimisation_stage*2 + 1];
+				resultsfile << to_string(single_score_to_write_to_file_for_dakota_optimisation_excit + single_score_to_write_to_file_for_dakota_optimisation_inhib) << endl;
+				break;
+			case OBJFUNC_INFO:
+				float combined_information_score_training_increase = spike_analyser_for_trained_network->maximum_information_score_count_multiplied_by_sum_of_information_scores - spike_analyser_for_untrained_network->maximum_information_score_count_multiplied_by_sum_of_information_scores;
+				printf("combined_information_score_training_increase: %f\n", combined_information_score_training_increase);
+				resultsfile << to_string(combined_information_score_training_increase)<<endl;
+				break;
+		}
 		resultsfile.close();
 
 		writing_network_score_to_results_file_timer->stop_timer_and_log_time_and_message("Network Score Written to File.", true);

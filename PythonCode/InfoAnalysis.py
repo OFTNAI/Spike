@@ -9,16 +9,21 @@ class InfoAnalysis(object):
     
     def singleCellInfoAnalysis(self,phases,saveImage = True, showImage = True, nBins=3,weightedAnalysis = 0):
         fig=plt.figure(4 , figsize=(20, 5),dpi=150);
-        plotAllSingleCellInfo = 0;
+        
+#         Parameters
+        plotAllSingleCellInfo = False;
 
-        nObj = 2;
+        nExcitCells = 32*32;
+        nInhibCells = 16*16;
+        
+
+        nObj = 5;
         nTrans = 2;
         nLayers = 4;
-        nCells = 32*32;
-        nInhibCells = 16*16;
         presentationTime = 1.0;
-        targetLayerForObjFunc = 3;
-        nInfoCalc = nCells;
+        
+
+        nInfoCalc = nExcitCells;
         
         phaseIndex = 1;
         for phase in phases:
@@ -38,18 +43,18 @@ class InfoAnalysis(object):
             spikeTimes = np.fromfile(fn_t, dtype=dtTimes);
             
 
-            FR = np.zeros((nObj, nTrans,nLayers, nCells));
+            FR = np.zeros((nObj, nTrans,nLayers, nExcitCells));
             for l in range(nLayers):
-                cond_ids = (l*(nCells+nInhibCells) < spikeIDs) & (spikeIDs < (l+1)*nCells+l*nInhibCells);
+                cond_ids = (l*(nExcitCells+nInhibCells) < spikeIDs) & (spikeIDs < l*(nInhibCells+nExcitCells)+nExcitCells);
                 spikeIDs_layer = np.extract(cond_ids, spikeIDs);
                 spikeTimes_layer = np.extract(cond_ids, spikeTimes);
                 for obj in range(nObj):
                     for trans in range(nTrans):
                         cond_stim = ((presentationTime*(obj*nTrans+trans)) < spikeTimes_layer) & (spikeTimes_layer < (presentationTime*(obj*nTrans+trans+1)));
-                        spikeIDs_stim = np.extract(cond_stim,spikeIDs_layer)-(nCells*l);
+                        spikeIDs_stim = np.extract(cond_stim,spikeIDs_layer)-((nExcitCells+nInhibCells)*l);
                         for id in spikeIDs_stim:
                             FR[obj,trans,l,id]=FR[obj,trans,l,id]+1;
-#             FR = np.random.rand(nObj, nTrans,nLayers, nCells)
+#             FR = np.random.rand(nObj, nTrans,nLayers, nExcitCells)
                         
             
 #             print FR;
@@ -59,39 +64,40 @@ class InfoAnalysis(object):
             for l in range(nLayers):
                 #normalize
                 if FR[:,:,l,:].max()>0.001:
-                    FR_norm = (FR-FR[:,:,l,:].min())/(FR[:,:,l,:].max()-FR[:,:,l,:].min());
+#                     FR_norm = (FR-FR[:,:,l,:].min())/(FR[:,:,l,:].max()-FR[:,:,l,:].min());
+                    FR_norm = FR/FR[:,:,l,:].max();
+#                     FR_norm = FR/FR.max();
+                    
                     FR_tmp = FR_norm;
                 else:
                     FR_tmp = FR;
                     
-                infos = np.zeros(nCells);
+                infos = np.zeros(nExcitCells);
                 
-                sumPerBin = np.zeros((nCells,nBins));
+                sumPerBin = np.zeros((nExcitCells,nBins));
                 sumPerObj = nTrans;
                 sumPerCell = nTrans*nObj;
-                IRs = np.zeros((nObj,nCells));#I(R,s) single cell information
-                IRs_weighted = np.zeros((nObj,nCells));#I(R,s) single cell information
+                IRs = np.zeros((nObj,nExcitCells));#I(R,s) single cell information
+                IRs_weighted = np.zeros((nObj,nExcitCells));#I(R,s) single cell information
                 pq_r = np.zeros(nObj)#prob(s') temporally used in the decoing process
                 Ps = 1/nObj   #Prob(s) 
                 
                 
-                
                 print("**Loading data**")
-                binMatrix = np.zeros((nCells, nObj, nBins));# #number of times when fr is classified into a specific bin within a specific objs's transformations
-                binMatrixTrans = np.zeros((nCells, nObj, nBins, nTrans));  #TF table to show if a certain cell is classified into a certain bin at a certain transformation
+                binMatrix = np.zeros((nExcitCells, nObj, nBins));# #number of times when fr is classified into a specific bin within a specific objs's transformations
                 for obj in range(nObj):
                     print str(obj) + '/' + str(nObj);
                     for trans in range(nTrans):
-                        for cell in range(nCells):
-                            bin = np.around(FR_tmp[obj,trans,l,cell]*(nBins-1));
+                        for cell in range(nExcitCells):
+#                             bin = np.around(FR_tmp[obj,trans,l,cell]*(nBins-1));
+                            bin = min(np.floor((FR_tmp[obj,trans,l,cell]-eps)*(nBins)),nBins-1)
                             binMatrix[cell,obj,bin]=binMatrix[cell,obj,bin]+1;
-                            binMatrixTrans[cell,obj,bin,trans]=1;
                 
                 #print binMatrix;
                 
                 print "** single-cell information analysis **";
                 # Loop through all cells to calculate single cell information
-                for cell in range(nCells):
+                for cell in range(nExcitCells):
                     # For each cell, count the number of transforms per bin
                     for bin in range(nBins):
                         for obj in range(nObj):
@@ -110,32 +116,41 @@ class InfoAnalysis(object):
                 if (weightedAnalysis==1):
                     IRs = IRs_weighted;
                 
-                IRs = np.max(IRs,axis=0);
                 
-                IRs_sorted = np.transpose(np.sort(IRs));
-                reversed_arr = IRs_sorted[::-1]
-            
-            
-                infos = reversed_arr;
-            
-                plt.subplot(1,nLayers,l+1)
-                if phaseIndex==1:
-                    plt.plot(np.transpose(infos), linestyle='-', color='k');
-                else:
-                    plt.plot(np.transpose(infos), linestyle='--', color='k');
-                plt.ylim([-0.05, np.log2(nObj)+0.05]);
-                plt.xlim([0, nCells])
-                plt.title("Layer " + str(l));
-                plt.ylabel("Information [bit]");
-                plt.xlabel("Cell Rank");
-                plt.hold(True);
+                if (plotAllSingleCellInfo):
+                    IRs_sorted = np.sort(IRs*-1)*-1;
+                    plt.subplot(2,nLayers,(phaseIndex-1)*nLayers+(l+1));
+
+#                     plt.plot(np.transpose(IRs_sorted), color='k');
+                    plt.plot(np.transpose(IRs_sorted));
                     
-                if (l == targetLayerForObjFunc and phaseIndex==len(phases)):
-                    performanceMeasure = np.sum(reversed_arr);
-                    performanceMeasure = performanceMeasure*(len(reversed_arr[reversed_arr==np.log2(nObj)])+1);
-                    f = open("../output/performance.txt","w");
-                    f.write(str(-1*performanceMeasure));
-                    f.close();
+                    plt.ylim([-0.05, np.log2(nObj)+0.05]);
+                    plt.xlim([0, nExcitCells])
+                    plt.title("Layer " + str(l));
+                    plt.ylabel("Information [bit]");
+                    plt.xlabel("Cell Rank");
+                    
+                else:
+                    IRs = np.max(IRs,axis=0);
+                    
+                    IRs_sorted = np.transpose(np.sort(IRs));
+                    reversed_arr = IRs_sorted[::-1]
+                
+                
+                    infos = reversed_arr;
+                
+                    plt.subplot(1,nLayers,l+1)
+                    if phaseIndex==1:
+                        plt.plot(np.transpose(infos), linestyle='--', color='k');
+                    else:
+                        plt.plot(np.transpose(infos), linestyle='-', color='k');
+                    plt.ylim([-0.05, np.log2(nObj)+0.05]);
+                    plt.xlim([0, nExcitCells])
+                    plt.title("Layer " + str(l));
+                    plt.ylabel("Information [bit]");
+                    plt.xlabel("Cell Rank");
+                    plt.hold(True);
+                        
                 
 
 #         plt.savefig(os.path.split(os.path.realpath(__file__))[0] +"/Results/"+experimentName+"/singleCellInfo_bin"+str(nBins)+".png");
@@ -145,6 +160,11 @@ class InfoAnalysis(object):
         if showImage:
             plt.show();
         if saveImage:
-            fig.savefig("../output/SingleCellInfo.png");
-#             fig.savefig("../output/SingleCellInfo.eps");
+            if (plotAllSingleCellInfo):
+                fig.savefig("../output/SingleCellInfo_ALL.png");
+                fig.savefig("../output/SingleCellInfo_ALL.eps");
+            else:
+                  fig.savefig("../output/SingleCellInfo_MAX.png");
+                  fig.savefig("../output/SingleCellInfo_MAX.eps");              
+    
             print("figure SingleCellInfo.png is exported in Results") 

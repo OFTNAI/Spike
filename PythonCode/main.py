@@ -4,8 +4,8 @@ import PolyGroup
 
 
 #INFO ANALYSIS:
-# ia = InfoAnalysis.InfoAnalysis()
-# ia.singleCellInfoAnalysis(['Untrained', 'Trained'],weightedAnalysis = 1,saveImage = True, showImage = False);
+ia = InfoAnalysis.InfoAnalysis()
+ia.singleCellInfoAnalysis(['Untrained', 'Trained'],weightedAnalysis = True,saveImage = True, showImage = False);
 
 
 #Struct
@@ -14,8 +14,8 @@ import PolyGroup
 
 
 #PLOT SPIKES
-sp = SpikePlot.SpikePlot();
-sp.plotSpikes(['Untrained'],saveImage = True, showImage = False);
+# sp = SpikePlot.SpikePlot();
+# sp.plotSpikes(['Untrained'],saveImage = True, showImage = False);
 # sp.plotSpikes(['Untrained', 'Trained'],saveImage = True, showImage = False);
 
 
