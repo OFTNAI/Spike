@@ -47,9 +47,13 @@ void Plotter::plot_single_cell_information_analysis(SpikeAnalyser * spike_analys
 		 gr->SetRanges(0,number_of_neurons_in_single_cell_analysis_group,maximum_possible_information_score*-0.1,maximum_possible_information_score*1.1);
 
 		 gr->Axis();
-
-		 gr->Plot(dataUNTRAINED, "k-", "legend 'dataTRAINED'");
-		 gr->Plot(dataTRAINED, "k|", "legend 'dataUNTRAINED'");
+		 if (l==0){
+			 gr->Plot(dataUNTRAINED, "k|", "legend 'dataUNTRAINED'");
+			 gr->Plot(dataTRAINED, "k-", "legend 'dataTRAINED'");
+		 }else{
+			 gr->Plot(dataUNTRAINED, "k|");
+			 gr->Plot(dataTRAINED, "k-");
+		 }
 
 		 gr->Legend();
 	 }
