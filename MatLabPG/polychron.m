@@ -3,56 +3,80 @@
 % Created by Eugene M.Izhikevich.           November 21, 2005
 % Modified on April 2, 2008 based on suggestions of Petra Vertes (UK).
 
-% Main idea: for each mother neuron, consider various combinations of 
+% Main idea: for each mother neuron, consider various combinations of
 % pre-synatic (anchor) neurons and see whether any activity of a silent
-% network could emerge if these anchors are fired. 
+% network could emerge if these anchors are fired.
 
 initOn = 1;
-global a d N D pp s ppre dpre post pre delay T
+global a b c d N D pp s ppre dpre post pre delay T
 
-if initOn==1
-    % params to be tuned
-    sm = 18 ;%max synaptic weight
-    sm_threshold = 0.90*sm;
-    E_IsynEfficRatio = 1.0
-        
-    % val from the simulation
-    M = 50; %number of syn per neurons
-    ExcitDim = 32;
-    InhibDim = 16;
-    nLayers = 4;
-    N = (ExcitDim*ExcitDim+InhibDim*InhibDim)*nLayers;% N: num neurons
-    D = 30; % D: max delay
+if exist('networkStates.mat','file')
+    load('networkStates.mat');
+    disp('**ATN** network state data previously stored are loaded')
+end
 
-    % izhikevich model params:
-    a = zeros(N,1)+0.02;%todo check what this number is
-    d = zeros(N,1)+2;
+% parameters %
+% val from the simulation
+M = 50; %number of syn per neurons
+ExcitDim = 32;
+InhibDim = 16;
+nLayers = 4;
+N = (ExcitDim*ExcitDim+InhibDim*InhibDim)*nLayers;% N: num neurons
+D = 150; % D: max delay
+T= 1000;              % the max length of a group to be considered;
+
+% parameters to be provided
+anchor_width=3;     % the number of anchor neurons, from which a group starts
+min_group_path=7;   % discard all groups having shorter paths from the anchor neurons
+
+% izhikevich model params:
+a = zeros(N,1)+0.02; %decay rate [0.02, 0.1]
+b = 0.2; %sensitivity [0.25, 0.2]
+c = -65;%reset [-65,-55,-50] potential after spike
+d = zeros(N,1)+8; %reset [2,4,8]
+%http://www.izhikevich.org/publications/spikes.pdf
+
+sm = 17%18 ;%max synaptic weight
+sm_threshold = 0.90*sm;
+E_IsynEfficRatio = 10.0;
+
+saveImages = 0;
+
+
+if exist('networkStates.mat','file')==0
+    % loading data %
+    fileID = fopen('../output/Neurons_NetworkPre.bin');
+    preIDs_loaded = fread(fileID,'int32');
+    fclose(fileID);
     
-
-    % load data;
-    preIDs_loaded = load('../Results/Neurons_NetworkPre.bin');
-    postIDs_loaded = load('../Results/Neurons_NetworkPost.bin');
-    weights_loaded = load('../Results/Neurons_NetworkWeights.bin');
-    delays_loaded = load('../Results/Neurons_NetworkDelays.bin');
-
+    fileID = fopen('../output/Neurons_NetworkPost.bin');
+    postIDs_loaded = fread(fileID,'int32');
+    fclose(fileID);
+    
+    fileID = fopen('../output/Neurons_NetworkWeights.bin');
+    weights_loaded = fread(fileID,'float32');
+    fclose(fileID);
+    
+    fileID = fopen('../output/Neurons_NetworkDelays.bin');
+    delays_loaded = fread(fileID,'int32');
+    fclose(fileID);
+    
+    
     cond = find(preIDs_loaded>=0);
     preIDs_loaded = preIDs_loaded(cond)+1; %index start from 1 in matlab
     postIDs_loaded = postIDs_loaded(cond)+1;
     weights_loaded = weights_loaded(cond);
     delays_loaded = delays_loaded(cond);
-
+    
     %uncomment the command below to test the algorithm for shuffled (randomized e->e) synapses
     %e2e = find(s>=0 & post<Ne); s(e2e) = s(e2e(randperm(length(e2e))));
-
+    
     groups={};          % the list of all polychronous groups
-    anchor_width=3;     % the number of anchor neurons, from which a group starts
-    min_group_path=4%7;   % discard all groups having shorter paths from the anchor neurons 
-    T=150;              % the max length of a group to be considered;
-                        % longer groups will be cut at t=T
 
-
+    
+    
     % Make necessary initializations to speed-up simulations.
-
+    
     %find max numPostSynCon:
     maxNumPostSynCon = 0;
     for i=1:N
@@ -61,137 +85,144 @@ if initOn==1
             maxNumPostSynCon = postListLen;
         end
     end;
-
+    
     post = zeros(N,maxNumPostSynCon);
     delay = zeros(N,maxNumPostSynCon)+1;
     s = zeros(N,maxNumPostSynCon);
     
-
-    for i=1:N
-        cond = preIDs_loaded == i;
-
+    %ppre and pre contain lists of presynaptic ids connected to post synaptic
+    %cell i
+    pre = cell(1,N);%stores index of PreSynapse (nCells x nPreSynCons)
+    ppre = cell(1,N);
+    
+    for i_pre=1:N
+        cond = preIDs_loaded == i_pre;
+        
         delays_tmp = delays_loaded(cond);
-        delay(i,1:length(delays_tmp))=delays_tmp;
+        delay(i_pre,1:length(delays_tmp))=delays_tmp;
         % This matrix provides the delay values for each synapse.
         %delay values of synapses that are connected from each presynaptic id i;
         % ie delay{i} return a list of delays of synapses that is connected from i
-
+        
         post_tmp = postIDs_loaded(cond);
-        post(i,1:length(post_tmp))=post_tmp;
+        post(i_pre,1:length(post_tmp))=post_tmp;
         %post synaptic ids that are connected from each presynaptic id i;
         %ie post{i} return a list of ids of synapses that is connected from i
-
-        s_tmp = weights_loaded(cond);
-        s(i,1:length(s_tmp))=s_tmp*sm;
-    end
-
-    %This cell element tells who (indexes) the pre-synaptic neurons are; 
-    % for i=1:N
-    %     ppre{i}=mod( pre{i}, N);
-    % end;
-
-    %ppre and pre contain lists of presynaptic ids connected to post synaptic
-    %cell i
-    pre = cell(1,N);
-    ppre = cell(1,N);
-
-    for i=1:N
-        cond = postIDs_loaded==i;
-        ppre_tmp = preIDs_loaded(cond);
-        ppre{i}=ppre_tmp;
-
-        for j=1:length(ppre_tmp)
-            pre{i}(j,1)=ppre_tmp(j)+N*(j+1);
+        
+        for post_id_index = 1:length(post_tmp)
+            i_post=post_tmp(post_id_index);
+            pre{i_post}(length(pre{i_post})+1,1)=(i_pre+N*(post_id_index-1));
+            ppre{i_post}(length(ppre{i_post})+1,1)=i_pre;
         end
-    end;
-
-
-    % %This cell element tells what the presynaptic delay is; 
-    for i=1:N
-        dpre{i}=delay( pre{i} );
-    end;
-
-    %This cell element tells where to put PSPs in the matrix I (N by 1000)
-    for i=1:N
-        pp{i}=post(i,:)+N*(delay(i,:)-1);
-    end;
-
-    
-    %remove small values for the synaptic weights:
-    for l = 1:nLayers % set inhibitory synaptic weight negative
-        i_begin = ExcitDim*ExcitDim*l + (InhibDim*InhibDim)*(l-1) + 1;
-        i_end = (ExcitDim*ExcitDim+InhibDim*InhibDim)*l;
-        s(i_begin:i_end,:)=s(i_begin:i_end,:)*-1*E_IsynEfficRatio;
+        
+        s_tmp = weights_loaded(cond);
+        s(i_pre,1:length(s_tmp))=s_tmp;
     end
-    s(find(s>0 & s<=sm_threshold))=0;%remove small vals
     
+    
+    % %This cell element tells what the presynaptic delay is;
+    for i_post=1:N
+        dpre{i_post}=delay( pre{i_post} );
+    end;
+    
+    %This cell element tells where to put PSPs in the matrix I (N by 1000)
+    for i_post=1:N
+        pp{i}=post(i_post,:)+N*(delay(i_post,:)-1);
+    end;
+    
+    save('networkStates.mat');
 end
 
 
+
+
+% multiply the weight by a constance used in the original analysis
+s = s*sm;
+%remove small values for the synaptic weights:
+s(find(s>0 & s<=sm_threshold))=0;%remove small vals
+% set inhibitory synaptic weight negative
+for l = 1:nLayers 
+    i_begin = ExcitDim*ExcitDim*l + (InhibDim*InhibDim)*(l-1) + 1;
+    i_end = (ExcitDim*ExcitDim+InhibDim*InhibDim)*l;
+    s(i_begin:i_end,:)=s(i_begin:i_end,:)*-1*E_IsynEfficRatio;
+end
+
+
+fig = figure('position', [0, 0, 2000, 1500]);
 for i=1:(ExcitDim*ExcitDim)
     i
+    i_post = i + (ExcitDim*ExcitDim + InhibDim*InhibDim);%looking at the second layer
     anchors=1:anchor_width;                     % initial choice of anchor neurons
-    strong_pre=find(s(pre{i})>sm_threshold);    % candidates for anchor neurons
+    %pre_cells_FF = pre{i_post}(find(pre{i_post}<=ExcitDim*ExcitDim));
+    %strong_pre=find(s(pre_cells_FF)>sm_threshold);
+    strong_pre=find(s(pre{i_post})>sm_threshold);    % list of the indecies of candidates for anchor neurons
     if length(strong_pre) >= anchor_width       % must be enough candidates
-     while 1        % will get out of the loop via the 'break' command below 
-        gr=polygroup( ppre{i}(strong_pre(anchors)), D-dpre{i}(strong_pre(anchors)) ); 
-        
-        %Calculate the longest path from the first to the last spike
-        fired_path=sparse(N,1);        % the path length of the firing (from the anchor neurons)       
-        for j=1:length(gr.gr(:,2))
-            fired_path( gr.gr(j,4) ) = max( fired_path( gr.gr(j,4) ), 1+fired_path( gr.gr(j,2) ));
-        end;
-        
-        longest_path = max(fired_path);
-        
-        if longest_path>=min_group_path 
+        while 1        % will get out of the loop via the 'break' command below
+            maxDelay = max(dpre{i_post}(strong_pre(anchors)))+1;
+            gr=polygroup( ppre{i_post}(strong_pre(anchors)), maxDelay-dpre{i_post}(strong_pre(anchors)) );
             
-            gr.longest_path = longest_path(1,1); % the path is a cell
-            
-            % How many times were the spikes from the anchor neurons useful?
-            % (sometimes an anchor neuron does not participate in any
-            % firing, because the mother neuron does its job; such groups
-            % should be excluded. They are found when the mother neuron is
-            % an anchor neuron for some other neuron).
-            useful = zeros(1,anchor_width);
-            anch = ppre{i}(strong_pre(anchors));
-            for j=1:anchor_width
-                useful(j) = length( find(gr.gr(:,2) == anch(j) ) );
+            %Calculate the longest path from the first to the last spike
+            fired_path=sparse(N,1);        % the path length of the firing (from the anchor neurons)
+            for j=1:length(gr.gr(:,2))
+                fired_path( gr.gr(j,4) ) = max( fired_path( gr.gr(j,4) ), 1+fired_path( gr.gr(j,2) ));
             end;
-       
-            useful
+            longest_path = max(fired_path);
             
-            if all(useful>=2)
+            if longest_path>=min_group_path
                 
-                groups{end+1}=gr;           % add found group to the list
-                disp([num2str(round(100*i/N)) '%: groups=' num2str(length(groups)) ', size=' num2str(size(gr.firings,1)) ', path_length=' num2str(gr.longest_path)])   % display of the current status
-            
-                plot(gr.firings(:,1),gr.firings(:,2),'o');
-                hold on;
-                for j=1:size(gr.gr,1)
-                    plot(gr.gr(j,[1 3 5]),gr.gr(j,[2 4 4]),'.-');
+                gr.longest_path = longest_path(1,1); % the path is a cell
+                
+                % How many times were the spikes from the anchor neurons useful?
+                % (sometimes an anchor neuron does not participate in any
+                % firing, because the mother neuron does its job; such groups
+                % should be excluded. They are found when the mother neuron is
+                % an anchor neuron for some other neuron).
+                useful = zeros(1,anchor_width);
+                anch = ppre{i_post}(strong_pre(anchors));
+                for j=1:anchor_width
+                    useful(j) = length( find(gr.gr(:,2) == anch(j) ) );
                 end;
-                axis([0 T 0 N]);
-                hold off
-                drawnow;
+                
+                if all(useful>=2)
+%                     ppre{i_post}(strong_pre(anchors))
+                    groups{end+1}=gr;           % add found group to the list
+                    disp([num2str(round(100*i/(ExcitDim*ExcitDim))) '%: groups=' num2str(length(groups)) ', size=' num2str(size(gr.firings,1)) ', path_length=' num2str(gr.longest_path)])   % display of the current status
+                    
+                    plot(gr.firings(:,1),gr.firings(:,2),'o');
+                    hold on;
+                    for j=1:size(gr.gr,1)
+                        plot(gr.gr(j,[1 3 5]),gr.gr(j,[2 4 4]),'.-');
+                    end;
+                    for l=1:nLayers
+                        plot([0 T],[(ExcitDim*ExcitDim+InhibDim*InhibDim)*l (ExcitDim*ExcitDim+InhibDim*InhibDim)*l],'k');
+                        plot([0 T],[(ExcitDim*ExcitDim)*l+(InhibDim*InhibDim)*(l-1) (ExcitDim*ExcitDim)*l+(InhibDim*InhibDim)*(l-1)],'k--');
+                    end
+                    axis([0 T 0 N]);
+                    hold off
+                    drawnow;
+                    if(saveImages)
+                        saveas(fig,['poly_i_' num2str(i_post) strrep(mat2str(ppre{i_post}(strong_pre(anchors))), ';', '_') '.fig']);
+                        saveas(fig,['poly_i_' num2str(i_post) strrep(mat2str(ppre{i_post}(strong_pre(anchors))), ';', '_') '.png']);
+                    end
+                end;
+            end
+            
+            % Now, get a different combination of the anchor neurons
+            k=anchor_width;
+            while k>0 & anchors(k)==length(strong_pre)-(anchor_width-k)
+                k=k-1;
             end;
-        end
-
-        % Now, get a different combination of the anchor neurons
-        k=anchor_width;
-        while k>0 & anchors(k)==length(strong_pre)-(anchor_width-k)
-            k=k-1;
+            
+            if k==0, break, end;    % exhausted all possibilities
+            
+            anchors(k)=anchors(k)+1;
+            for j=k+1:anchor_width
+                anchors(j)=anchors(j-1)+1;
+            end;
+            
+            pause(0); % to avoid feezing when no groups are found for long time
+            
         end;
-        
-        if k==0, break, end;    % exhausted all possibilities
-        
-        anchors(k)=anchors(k)+1;
-        for j=k+1:anchor_width
-            anchors(j)=anchors(j-1)+1;
-        end;
-        
-        pause(0); % to avoid feezing when no groups are found for long time
-        
-     end;
     end;
 end;
+clear;
