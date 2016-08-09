@@ -47,6 +47,7 @@ for t=1:T
     
     for k=1:length(fired)
         I(pp{fired(k)}+t*N)=I(pp{fired(k)}+t*N)+s(fired(k),:);%increment by the size of synaptic weight
+%        I(1 + pp{fired(k)}+(t-1)*N)=I(1 + pp{fired(k)}+(t-1)*N)+s(fired(k),:);%increment by the size of synaptic weight
         
         %The times of arrival of PSPs to this neuron
         PSP_times= last_fired(ppre{fired(k)}) + dpre{fired(k)};
@@ -59,6 +60,8 @@ for t=1:T
                
         group.firings=[group.firings; t, fired(k)];
     end;
+%     [min(I(:)) max(I(:))]
+%     ['test'];
 end;
 
 %figure;

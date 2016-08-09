@@ -1,85 +1,84 @@
 import matplotlib.pyplot as plt #Changed from 'import pylab as plt'
 import numpy as np
-
-
-
-class PolyGroup(object):
-    def calcPG(self,saveImage = True, showImage = True):
-        
-#         nLayers = 4;
-#         exDim = 32;
-#         inDim = 16;
-        
-        fn_preIDs = "../Results/Neurons_NetworkPre.bin";
-        fn_postIDs = "../Results/Neurons_NetworkPost.bin";
-        fn_weights = "../Results/Neurons_Neurons_NetworkWeights.bin";
-        fn_delays = "../Results/Neurons_NetworkDelays.bin"
-        
-        
-
-        
-        preIDs = np.loadtxt(fn_preIDs);
-        postIDs = np.loadtxt(fn_postIDs);
-        weights = np.loadtxt(fn_weights);
-        delays = np.loadtxt(fn_delays);
-
-        #remove input neurons:
-        cond = preIDs>=0;
-        preIDs = np.extract(cond, preIDs);
-        postIDs = np.extract(cond, postIDs);
-        weights = np.extract(cond, weights);
-        delays = np.extract(cond, delays);
-        
-        
-        
-#         minPre = np.min(preIDs);
-#         preIDs = preIDs-minPre;
-#         postIDs = postIDs-minPre;
-        
-        
-# #         fn_id = "../Results/Neurons_Epoch0_SpikeIDs.bin";
-# #         fn_t = "../Results/Neurons_Epoch0_SpikeTimes.bin";
+import itertools
 # 
-#         fn_id = "../Results/Neurons_SpikeIDs.bin";
-#         fn_t = "../Results/Neurons_SpikeTimes.bin";
-#         
-#         spikeIDs = np.loadtxt(fn_id);
-#         spikeTimes = np.loadtxt(fn_t);
-#         
-#         #fig = plt.figure(0 , figsize=(300, 150),dpi=150);
-#         fig = plt.figure(0 , figsize=(30, 15),dpi=150);
-#         
-#         
-#         for l in range(nLayers):
-#             
-#             cond_ex = (l*exDim*exDim < spikeIDs) & (spikeIDs < (l+1)*exDim*exDim);
-#             spikeIDs_ex = np.extract((cond_ex), spikeIDs);
-#             spikeTimes_ex = np.extract(cond_ex, spikeTimes);
-#                 
-#             cond_in = ((nLayers*exDim*exDim + l*inDim*inDim) < spikeIDs) & (spikeIDs < (nLayers*exDim*exDim + (l+1)*inDim*inDim));
-#             spikeIDs_in = np.extract(cond_in, spikeIDs);
-#             spikeTimes_in = np.extract(cond_in, spikeTimes);
-#             
-#             spikeIDs_tmp = np.concatenate((spikeIDs_ex-(l*exDim*exDim),spikeIDs_in-((nLayers-1)*exDim*exDim+l*inDim*inDim)));
-#             spikeTimes_tmp = np.concatenate((spikeTimes_ex,spikeTimes_in));
-#             
-#             plt.subplot(nLayers,1,nLayers-l);
-#             
-#             plt.plot(spikeTimes_tmp,spikeIDs_tmp,'.',color='k',markersize=2)
-#         #     plt.plot(spikeTimes_in,spikeIDs_in-((nLayers-1)*exDim*exDim+l*inDim*inDim),'.',color='k',markersize=2)
-#             
-#             plt.hold(True)
-#             
-#             plt.plot((0,np.max(spikeTimes)),(exDim*exDim,exDim*exDim),'k--', color='r', linewidth=2.0);
-#             plt.xlabel('time [s]');
-#             plt.ylabel('cell index (Layer '+str(l) +')');
-#         #    plt.title('raster plot')
-#             plt.xlim((0,np.max(spikeTimes)))
-#             plt.ylim((0,exDim*exDim+inDim*inDim))
-#         
-#         if showImage:
-#             plt.show();
-#         if saveImage:
-#             fig.savefig("../Results/rasterPlot.png");
-#             fig.savefig("../Results/rasterPlot.eps");
-#             print("figure rasterPlot.png is exported in Results")
+# 
+# 
+# class PolyGroup(object):
+#     def calcPG(self,saveImage = True, showImage = True):
+nExcitCells = 32*32;
+nInhibCells = 16*16;
+
+nObj = 5;
+nTrans = 2;
+nLayers = 4;
+presentationTime = 1.0;
+
+triggerSize = 3;
+
+dt_int = np.dtype('int32');
+dt_float = np.dtype('f4');
+
+#loading network states
+fn_preIDs = "../output/Neurons_NetworkPre.bin";
+fn_postIDs = "../output/Neurons_NetworkPost.bin";  
+fn_weights = "../output/Neurons_NetworkWeights.bin";
+fn_delays = "../output/Neurons_NetworkDelays.bin"
+
+preIDs = np.fromfile(fn_preIDs, dtype=dt_int);
+postIDs = np.fromfile(fn_postIDs, dtype=dt_int);
+weights = np.fromfile(fn_weights, dtype=dt_float);
+delays = np.fromfile(fn_delays, dtype=dt_int);
+
+
+#loading spike trains
+phase = "Trained";
+fn_id = "../output/Neurons_SpikeIDs_" + phase + "_Epoch0.bin";
+fn_t = "../output/Neurons_SpikeTimes_" + phase + "_Epoch0.bin";  
+
+spikeIDs = np.fromfile(fn_id, dtype=dt_int);
+spikeTimes = np.fromfile(fn_t, dtype=dt_float);
+    
+
+#remove input neurons:
+cond = preIDs>=0;
+preIDs = np.extract(cond, preIDs);
+postIDs = np.extract(cond, postIDs);
+weights = np.extract(cond, weights);
+delays = np.extract(cond, delays);
+connectionIndex = np.arange(delays.size);
+
+maxWeights = np.max(weights);
+weightTh = 0.7;
+
+#structure of index:
+# excitCells in 1st layer, inhibCells in 1st layer, excitCells in 2nd layer, ...
+
+firstBegin = 0;
+firstEnd = nExcitCells-1;
+secondBegin = nExcitCells + nInhibCells;
+secondEnd = nExcitCells*2 + nInhibCells - 1;
+
+for i_post in range(secondBegin,secondEnd+1):
+    cond_post = postIDs == i_post;
+    cond_pre = preIDs<=firstEnd;
+    cond_weights = weights>maxWeights*weightTh;
+    cond_comb = cond_post & cond_pre & cond_weights;
+    connectionIndex_preSyn = np.extract(cond_comb,connectionIndex);
+    if connectionIndex_preSyn.size > triggerSize:
+        for triggers in np.array(list(itertools.combinations(connectionIndex_preSyn,triggerSize))):
+            maxDelay = delays[triggers].max();
+            i_pre_list = preIDs[triggers];
+            w_list[triggers];
+            
+                    
+                    
+                    
+                    
+                    
+                    
+                
+                
+            
+            
+        
