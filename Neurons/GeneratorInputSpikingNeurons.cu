@@ -30,7 +30,7 @@ GeneratorInputSpikingNeurons::~GeneratorInputSpikingNeurons() {
 int GeneratorInputSpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
 	
 	int new_group_id = InputSpikingNeurons::AddGroup(group_params);
-	return CORRECTED_PRESYNAPTIC_ID(new_group_id, true);
+	return new_group_id;
 
 }
 

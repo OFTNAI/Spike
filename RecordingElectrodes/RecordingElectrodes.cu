@@ -283,6 +283,7 @@ __global__ void collect_spikes_for_timestep_kernel(float* d_last_spike_time_of_e
 		if (d_last_spike_time_of_each_neuron[idx] == current_time_in_seconds) {
 			// Increase the number of spikes stored
 			int i = atomicAdd(&d_total_number_of_spikes_stored_on_device[0], 1);
+			__syncthreads();
 			// In the location, add the id and the time
 			d_neuron_ids_of_stored_spikes_on_device[i] = idx;
 			d_time_in_seconds_of_stored_spikes_on_device[i] = current_time_in_seconds;

@@ -32,7 +32,7 @@ int PoissonInputSpikingNeurons::AddGroup(neuron_parameters_struct * group_params
 		rates[i] = poisson_input_spiking_group_params->rate;
 	}
 
-	return CORRECTED_PRESYNAPTIC_ID(new_group_id, true);
+	return new_group_id;
 
 }
 
