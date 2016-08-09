@@ -1,21 +1,20 @@
 import InfoAnalysis
 import SpikePlot
-import PolyGroup
+# import PolyGroup
 
 
 #INFO ANALYSIS:
 ia = InfoAnalysis.InfoAnalysis()
-ia.singleCellInfoAnalysis(['Untrained', 'Trained'],weightedAnalysis = True,saveImage = True, showImage = False);
+ia.singleCellInfoAnalysis(['Untrained', 'Trained'],weightedAnalysis = False,saveImage = True, showImage = False);
 
 
 #Struct
 # pg = PolyGroup.PolyGroup();
-# pg.polyGroup(saveImage = True, showImage = False);
+# pg.calcPG(saveImage = True, showImage = False);
 
 
 #PLOT SPIKES
-# sp = SpikePlot.SpikePlot();
-# sp.plotSpikes(['Untrained'],saveImage = True, showImage = False);
-# sp.plotSpikes(['Untrained', 'Trained'],saveImage = True, showImage = False);
+sp = SpikePlot.SpikePlot();
+sp.plotSpikes(['Untrained', 'Trained'],saveImage = True, showImage = False);
 
 

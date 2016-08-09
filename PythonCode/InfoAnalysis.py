@@ -90,7 +90,7 @@ class InfoAnalysis(object):
                     for trans in range(nTrans):
                         for cell in range(nExcitCells):
 #                             bin = np.around(FR_tmp[obj,trans,l,cell]*(nBins-1));
-                            bin = min(np.floor((FR_tmp[obj,trans,l,cell]-eps)*(nBins)),nBins-1)
+                            bin = min(np.floor((FR_tmp[obj,trans,l,cell])*(nBins)),nBins-1)
                             binMatrix[cell,obj,bin]=binMatrix[cell,obj,bin]+1;
                 
                 #print binMatrix;
