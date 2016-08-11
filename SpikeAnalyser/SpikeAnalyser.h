@@ -23,6 +23,8 @@ public:
 	int ** per_stimulus_per_neuron_spike_counts;
 
 	float maximum_possible_information_score;
+	float optimal_average_firing_rate;
+	float optimal_max_firing_rate;
 
 	float ** information_scores_for_each_object_and_neuron;
 	float ** descending_information_scores_for_each_object_and_neuron;
@@ -33,11 +35,15 @@ public:
 	float ** average_number_of_spikes_per_stimulus_per_neuron_group_per_second;
 	int * total_number_of_spikes_per_neuron_group;
 	float * average_number_of_spikes_per_neuron_group_per_second;
+	float * max_number_of_spikes_per_neuron_group_per_second;
 	int total_number_of_neuron_spikes;
 	float average_number_of_neuron_spikes_per_second;
 
 	float combined_powered_distance_from_average_score;
 	float * combined_powered_distance_from_average_score_for_each_neuron_group;
+
+	float combined_powered_distance_from_max_score;
+	float * combined_powered_distance_from_max_score_for_each_neuron_group;
 
 	bool spike_totals_and_averages_were_calculated;
 
@@ -48,7 +54,7 @@ public:
 
 	void store_spike_counts_for_stimulus_index(int stimulus_index, int * d_neuron_spike_counts_for_stimulus);
 	void calculate_various_neuron_spike_totals_and_averages(float presentation_time_per_stimulus_per_epoch);
-	void calculate_combined_powered_distance_from_average_score();
+	void calculate_fitness_score();
 	void calculate_single_cell_information_scores_for_neuron_group(int neuron_group_index, int number_of_bins);
 
 };
