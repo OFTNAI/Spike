@@ -7,8 +7,8 @@
 % pre-synatic (anchor) neurons and see whether any activity of a silent
 % network could emerge if these anchors are fired.
 clear;
-% trainedNet = 0;
-for trainedNet = [0, 1]
+clearvars -global
+for trainedNet = [1]
     if (trainedNet)
         networkStatesName = 'networkStates_trained.mat'
     else
@@ -29,12 +29,14 @@ for trainedNet = [0, 1]
     InhibDim = 16;
     nLayers = 4;
     N = (ExcitDim*ExcitDim+InhibDim*InhibDim)*nLayers;% N: num neurons
-    D = 150; % D: max delay
-    T= 1000;              % the max length of a group to be considered;
-
+    timestep = 0.00002;
+    %D = int32(3/(timestep*1000)); % D: max delay
+    D = 3; % D: max delay
+    T= 100;              % the max length of a group to be considered;
+    
     % parameters to be provided
     anchor_width=3;     % the number of anchor neurons, from which a group starts
-    min_group_path=7;   % discard all groups having shorter paths from the anchor neurons
+    min_group_path=4;%7;   % discard all groups having shorter paths from the anchor neurons
 
     % izhikevich model params:
     a = zeros(N,1)+0.02; %decay rate [0.02, 0.1]
@@ -43,13 +45,14 @@ for trainedNet = [0, 1]
     d = zeros(N,1)+8; %reset [2,4,8]
     %http://www.izhikevich.org/publications/spikes.pdf
 
-    sm = 16.5;%18 ;%max synaptic weight
+    sm = 17.0%16.5;%18 ;%max synaptic weight
     sm_threshold = 0.90*sm;
     sm_threshold_input = 0.90*sm;
     E_IsynEfficRatio = 1;
 
 
     saveImages = 0;
+    plotFigure = 1;
 
 
     if exist(networkStatesName,'file')==0
@@ -83,6 +86,9 @@ for trainedNet = [0, 1]
         postIDs_loaded = postIDs_loaded(cond)+1;
         weights_loaded = weights_loaded(cond);
         delays_loaded = delays_loaded(cond);
+        
+        
+        delays_loaded = int32(delays_loaded*timestep*1000);
 
         %uncomment the command below to test the algorithm for shuffled (randomized e->e) synapses
         %e2e = find(s>=0 & post<Ne); s(e2e) = s(e2e(randperm(length(e2e))));
@@ -110,6 +116,8 @@ for trainedNet = [0, 1]
         %cell i
         pre = cell(1,N);%stores index of PreSynapse (nCells x nPreSynCons)
         ppre = cell(1,N);
+        dpre = cell(1,N);
+        pp = cell(1,N);
 
         for i_pre=1:N
             cond = preIDs_loaded == i_pre;
@@ -143,7 +151,7 @@ for trainedNet = [0, 1]
 
         %This cell element tells where to put PSPs in the matrix I (N by 1000)
         for i_post=1:N
-            pp{i}=post(i_post,:)+N*(delay(i_post,:)-1);
+            pp{i_post}=post(i_post,:)+N*(delay(i_post,:)-1);
         end;
 
         save(networkStatesName);
@@ -164,7 +172,9 @@ for trainedNet = [0, 1]
     end
 
 
-    fig = figure('position', [0, 0, 2000, 1500]);
+    if (plotFigure)
+        fig = figure('position', [0, 0, 2000, 1500]);
+    end
     for i=1:(ExcitDim*ExcitDim)
         i
         i_post = i + (ExcitDim*ExcitDim + InhibDim*InhibDim);%looking at the second layer
@@ -205,21 +215,22 @@ for trainedNet = [0, 1]
     %                     ppre{i_post}(strong_pre(anchors))
                         groups{end+1}=gr;           % add found group to the list
                         disp([num2str(round(100*i/(ExcitDim*ExcitDim))) '%: groups=' num2str(length(groups)) ', size=' num2str(size(gr.firings,1)) ', path_length=' num2str(gr.longest_path)])   % display of the current status
+                        if (plotFigure)
+                            plot(gr.firings(:,1),gr.firings(:,2),'o');
+                            hold on;
+                            for l=1:nLayers
+                                plot([0 T],[(ExcitDim*ExcitDim+InhibDim*InhibDim)*l (ExcitDim*ExcitDim+InhibDim*InhibDim)*l],'k');
+                                plot([0 T],[(ExcitDim*ExcitDim)*l+(InhibDim*InhibDim)*(l-1) (ExcitDim*ExcitDim)*l+(InhibDim*InhibDim)*(l-1)],'k--');
+                            end
+                            for j=1:size(gr.gr,1)
+                                plot(gr.gr(j,[1 3 5]),gr.gr(j,[2 4 4]),'.-');
+                            end;
 
-                        plot(gr.firings(:,1),gr.firings(:,2),'o');
-                        hold on;
-                        for l=1:nLayers
-                            plot([0 T],[(ExcitDim*ExcitDim+InhibDim*InhibDim)*l (ExcitDim*ExcitDim+InhibDim*InhibDim)*l],'k');
-                            plot([0 T],[(ExcitDim*ExcitDim)*l+(InhibDim*InhibDim)*(l-1) (ExcitDim*ExcitDim)*l+(InhibDim*InhibDim)*(l-1)],'k--');
+                            axis([0 T 0 N]);
+                            hold off
+                            drawnow;
                         end
-                        for j=1:size(gr.gr,1)
-                            plot(gr.gr(j,[1 3 5]),gr.gr(j,[2 4 4]),'.-');
-                        end;
-
-                        axis([0 T 0 N]);
-                        hold off
-                        drawnow;
-                        if(saveImages)
+                        if(plotFigure && saveImages)
                             saveas(fig,[num2str(trainedNet) '_poly_i_' num2str(i_post) strrep(mat2str(ppre{i_post}(strong_pre(anchors))), ';', '_') '.fig']);
                             saveas(fig,[num2str(trainedNet) '_poly_i_' num2str(i_post) strrep(mat2str(ppre{i_post}(strong_pre(anchors))), ';', '_') '.png']);
                         end
