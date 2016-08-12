@@ -29,24 +29,30 @@ using namespace std;
 // The function which will autorun when the executable is created
 int main (int argc, char *argv[]){
 	TimerWithMessages * experiment_timer = new TimerWithMessages();
-	const int OPTIM_CONDUCTANCE = 1;
-	const int OPTIM_FANINRAD = 2;
-	const int OPTIM_DECAY = 3;
+	const int OPTIM_BIO_CONST_LAT = 1;
+	const int OPTIM_BIO_CONST_FF = 2;
+	const int OPTIM_BIO_CONST_LAT_FF = 3;
+	const int OPTIM_FANINRAD = 4;
+	const int OPTIM_DECAY = 5;
 	const int OBJFUNC_AVGFR = 1;
 	const int OBJFUNC_MAXFR = 2;
 	const int OBJFUNC_INFO = 3;
 	const int OBJFUNC_AVGFR_AND_INFO = 4;
 
 	// Parameters related to Dakota Optimization
-	int optimizationType = OPTIM_CONDUCTANCE; //OPTIM_CONDUCTANCE_EACHLAYER, OPTIM_CONDUCTANCE_ALLLAYERS, OPTIM_FANINRAD, OPTIM_DECAY
-	int objective_function = OBJFUNC_MAXFR; //OBJFUNC_AVGFR, OBJFUNC_MAXFR, OBJFUNC_INFO, OBJFUNC_AVGFR_AND_INFO
-	int number_of_new_parameters_per_optimisation_stage = 3;
+	int optimizationType = OPTIM_FANINRAD; //OPTIM_BIO_CONST_LAT, OPTIM_BIO_CONST_FF, OPTIM_BIO_CONST_LAT_FF, OPTIM_FANINRAD, OPTIM_DECAY
+	int objective_function = OBJFUNC_INFO; //OBJFUNC_AVGFR, OBJFUNC_MAXFR, OBJFUNC_INFO, OBJFUNC_AVGFR_AND_INFO
 	float optimal_average_firing_rate = 10.0f;//set if optimizing based on avgfr
 	float optimal_max_firing_rate = 100.0f;//set if optimizing based on maxfr
 
-
-	// Parameters
+	// Simulator Parameters
 	float timestep = 0.00002;
+	bool simulate_network_to_test_untrained = true;
+	bool simulate_network_to_train_network = true;
+	bool simulate_network_to_test_trained = true;
+	bool human_readable_storage = false;
+
+	// Network Parameters
 	int number_of_layers = 4;
 	int max_number_of_connections_per_pair = 5;
 	int dim_excit_layer = 32;
@@ -54,25 +60,31 @@ int main (int argc, char *argv[]){
 	float gaussian_synapses_standard_deviation_FF_G2E = 15.0;
 	float gaussian_synapses_standard_deviation_FF = 5.0;
 	float gaussian_synapses_standard_deviation_LAT = 2.0;
-	float biological_conductance_scaling_constant_lambda_G2E_FF = 0.001;
-	float biological_conductance_scaling_constant_lambda_E2E_FF = 0.00001;
-	float biological_conductance_scaling_constant_lambda_E2E_L = 0.00001;
-	float biological_conductance_scaling_constant_lambda_E2I_L = 0.00001;
-	float biological_conductance_scaling_constant_lambda_I2E_L = 0.00001;
+	float biological_conductance_scaling_constant_lambda_G2E_FF = 0.0001;
+	float biological_conductance_scaling_constant_lambda_E2E_FF = 0.0000125;
+//	float biological_conductance_scaling_constant_lambda_E2E_L = 0;//0.00001;
+	float biological_conductance_scaling_constant_lambda_E2I_L = 0.0005;
+	float biological_conductance_scaling_constant_lambda_I2E_L = 0.0001;
 
+	// Neuronal Parameters
+	float max_FR_of_input_Gabor = 100.0f;
+	float absolute_refractory_period = 0.002;
+
+	//Synaptic Parameters
 	float weight_range_bottom = 0.0;
 	float weight_range_top = 1.0;
-
 	float learning_rate_rho = 100.0;// 0.1;
-	float decay_term_tau_C = 0.003;//0.25;//ms 0.015;(In Ben's model, tau_C/tau_D = 3/5 v 15/25 v 75/125, and the first one produces the best result)
-	float decay_term_tau_D = 0.005; //0.25;//ms 0.025;
-
+	float decay_term_tau_C = 0.003;//0.25; 0.015;(In Ben's model, tau_C/tau_D = 3/5 v 15/25 v 75/125, and the first one produces the best result)
+	float decay_term_tau_D = 0.005; //0.25; 0.025;
 	float I2E_decay_term_tau_g = 0.025;//0.005;//In Ben's model, 0.005 v 0.025 and latter produced better result
+	float E2E_FF_minDelay = 0.001;//5.0*timestep;
+	float E2E_FF_maxDelay = 0.02;//3.0f*pow(10, -3);
+	float E2I_L_minDelay = 0.001;//5.0*timestep;
+	float E2I_L_maxDelay = 0.02;//3.0f*pow(10, -3);
+	float I2E_L_minDelay = 0.001;//5.0*timestep;
+	float I2E_L_maxDelay = 0.02;//3.0f*pow(10, -3);
 
-	bool simulate_network_to_test_untrained = true;
-	bool simulate_network_to_train_network = true;
-	bool simulate_network_to_test_trained = true;
-	bool human_readable_storage = false;
+
 
 	// Parameters for testing
 	float presentation_time_per_stimulus_per_epoch_test = 1.0f;
@@ -89,7 +101,6 @@ int main (int argc, char *argv[]){
 
 	// init parameters
 	bool is_optimisation = false;
-	int optimisation_stage = number_of_layers;
 	bool isTrained=false;
 
 
@@ -98,10 +109,17 @@ int main (int argc, char *argv[]){
 		save_recorded_spikes_and_states_to_file_test = false;
 
 		switch (optimizationType){
-			case OPTIM_CONDUCTANCE:
+			case OPTIM_BIO_CONST_LAT:
 				biological_conductance_scaling_constant_lambda_E2I_L = stof(argv[4]); //E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS
 				biological_conductance_scaling_constant_lambda_I2E_L= stof(argv[5]); //I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS
-				biological_conductance_scaling_constant_lambda_E2E_FF= stof(argv[6]); //E2E_FF
+				break;
+			case OPTIM_BIO_CONST_FF:
+				biological_conductance_scaling_constant_lambda_E2E_FF= stof(argv[4]); //E2E_FF
+				break;
+			case OPTIM_BIO_CONST_LAT_FF:
+				biological_conductance_scaling_constant_lambda_E2E_FF= stof(argv[4]); //E2E_FF
+				biological_conductance_scaling_constant_lambda_E2I_L = stof(argv[5]); //E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS
+				biological_conductance_scaling_constant_lambda_I2E_L= stof(argv[6]); //I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS
 				break;
 			case OPTIM_FANINRAD:
 				gaussian_synapses_standard_deviation_FF_G2E = stof(argv[4]);
@@ -119,6 +137,7 @@ int main (int argc, char *argv[]){
 		switch(objective_function){
 			case OBJFUNC_AVGFR:
 			case OBJFUNC_MAXFR:
+				presentation_time_per_stimulus_per_epoch_test = 2.0f;//if the time is too short, it fails to capture actual FR at the last layer due to cummurative delays along FF
 				simulate_network_to_train_network = false;
 				simulate_network_to_test_trained = false;
 				break;
@@ -189,6 +208,7 @@ int main (int argc, char *argv[]){
 	EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS->threshold_for_action_potential_spike = -0.053f;
 	EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS->somatic_capcitance_Cm = 500.0*pow(10, -12);
 	EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS->somatic_leakage_conductance_g0 = 25.0*pow(10, -9);
+	EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS->absolute_refractory_period = absolute_refractory_period;
 
 
 	lif_spiking_neuron_parameters_struct * INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS = new lif_spiking_neuron_parameters_struct();
@@ -198,6 +218,7 @@ int main (int argc, char *argv[]){
 	INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS->threshold_for_action_potential_spike = -0.053f;
 	INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS->somatic_capcitance_Cm = 214.0*pow(10, -12);
 	INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS->somatic_leakage_conductance_g0 = 18.0*pow(10, -9);
+	INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS->absolute_refractory_period = absolute_refractory_period;
 
 	vector<int> EXCITATORY_NEURONS;
 	vector<int> INHIBITORY_NEURONS;
@@ -232,8 +253,8 @@ int main (int argc, char *argv[]){
 
 
 	conductance_spiking_synapse_parameters_struct * E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS = new conductance_spiking_synapse_parameters_struct();
-	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[0] = 5.0*timestep;
-	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[1] = 3.0f*pow(10, -3);
+	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[0] = E2E_FF_minDelay;//5.0*timestep;
+	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[1] = E2E_FF_maxDelay;//3.0f*pow(10, -3);
 	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->max_number_of_connections_per_pair = max_number_of_connections_per_pair;
 	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_per_postsynaptic_neuron = 50;
 	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = biological_conductance_scaling_constant_lambda_E2E_FF;
@@ -246,8 +267,8 @@ int main (int argc, char *argv[]){
 	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->weight_range_top = weight_range_top;
 
 	conductance_spiking_synapse_parameters_struct * E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS = new conductance_spiking_synapse_parameters_struct();
-	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[0] = 5.0*timestep;
-	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[1] = 3.0f*pow(10, -3);
+	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[0] = E2I_L_minDelay; //5.0*timestep;
+	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[1] = E2I_L_maxDelay; //3.0f*pow(10, -3);
 	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->max_number_of_connections_per_pair = max_number_of_connections_per_pair;
 	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_per_postsynaptic_neuron = 30;
 	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = biological_conductance_scaling_constant_lambda_E2I_L;
@@ -260,8 +281,8 @@ int main (int argc, char *argv[]){
 	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->weight_range_top = weight_range_top;
 
 	conductance_spiking_synapse_parameters_struct * I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS = new conductance_spiking_synapse_parameters_struct();
-	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[0] = 5.0*timestep;
-	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[1] = 3.0f*pow(10, -3);
+	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[0] = I2E_L_minDelay;//5.0*timestep;
+	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[1] = I2E_L_maxDelay;//3.0f*pow(10, -3);
 	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->max_number_of_connections_per_pair = 5;
 	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_per_postsynaptic_neuron = 30;
 	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = biological_conductance_scaling_constant_lambda_I2E_L;
@@ -273,19 +294,19 @@ int main (int argc, char *argv[]){
 	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->weight_range_bottom = weight_range_bottom;
 	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->weight_range_top = weight_range_top;
 
-	conductance_spiking_synapse_parameters_struct * E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS = new conductance_spiking_synapse_parameters_struct();
-	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[0] = 5.0*timestep;
-	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[1] = 3.0f*pow(10, -3);
-	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->max_number_of_connections_per_pair = 5;
-	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_per_postsynaptic_neuron = 20;
-	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = biological_conductance_scaling_constant_lambda_E2E_L;
-	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->connectivity_type = CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE;
-	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->stdp_on = false;
-	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_standard_deviation = gaussian_synapses_standard_deviation_LAT;
-	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->reversal_potential_Vhat = -70.0*pow(10, -3);
-	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->decay_term_tau_g = 0.005;
-	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->weight_range_bottom = weight_range_bottom;
-	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->weight_range_top = weight_range_top;
+//	conductance_spiking_synapse_parameters_struct * E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS = new conductance_spiking_synapse_parameters_struct();
+//	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[0] = 5.0*timestep;
+//	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[1] = 3.0f*pow(10, -3);
+//	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->max_number_of_connections_per_pair = 5;
+//	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_per_postsynaptic_neuron = 20;
+//	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = biological_conductance_scaling_constant_lambda_E2E_L;
+//	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->connectivity_type = CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE;
+//	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->stdp_on = false;
+//	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_standard_deviation = gaussian_synapses_standard_deviation_LAT;
+//	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->reversal_potential_Vhat = -70.0*pow(10, -3);
+//	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->decay_term_tau_g = 0.005;
+//	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->weight_range_bottom = weight_range_bottom;
+//	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->weight_range_top = weight_range_top;
 
 
 	for (int l=0; l<number_of_layers; l++){
@@ -295,7 +316,7 @@ int main (int argc, char *argv[]){
 			simulator.AddSynapseGroup(EXCITATORY_NEURONS[l-1], EXCITATORY_NEURONS[l], E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 		simulator.AddSynapseGroup(EXCITATORY_NEURONS[l], INHIBITORY_NEURONS[l], E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 		simulator.AddSynapseGroup(INHIBITORY_NEURONS[l], EXCITATORY_NEURONS[l], I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
-		simulator.AddSynapseGroup(EXCITATORY_NEURONS[l], EXCITATORY_NEURONS[l], E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
+//		simulator.AddSynapseGroup(EXCITATORY_NEURONS[l], EXCITATORY_NEURONS[l], E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 	}
 	
 	adding_synapses_timer->stop_timer_and_log_time_and_message("Synapses Added.", true);
@@ -329,7 +350,7 @@ int main (int argc, char *argv[]){
 		simulator.RunSimulationToCountNeuronSpikes(presentation_time_per_stimulus_per_epoch, record_spikes, save_recorded_spikes_and_states_to_file, spike_analyser_for_untrained_network,human_readable_storage,isTrained);
 		
 		spike_analyser_for_untrained_network->calculate_various_neuron_spike_totals_and_averages(presentation_time_per_stimulus_per_epoch);
-		for(int l=0;l<optimisation_stage;l++)
+		for(int l=0;l<number_of_layers;l++)
 			spike_analyser_for_untrained_network->calculate_single_cell_information_scores_for_neuron_group(EXCITATORY_NEURONS[l], number_of_bins);
 
 		isTrained = true;
@@ -363,7 +384,7 @@ int main (int argc, char *argv[]){
 		simulator.RunSimulationToCountNeuronSpikes(presentation_time_per_stimulus_per_epoch, record_spikes, save_recorded_spikes_and_states_to_file, spike_analyser_for_trained_network,human_readable_storage,isTrained);
 
 		spike_analyser_for_trained_network->calculate_various_neuron_spike_totals_and_averages(presentation_time_per_stimulus_per_epoch);
-		for(int l=0;l<optimisation_stage;l++)
+		for(int l=0;l<number_of_layers;l++)
 			spike_analyser_for_trained_network->calculate_single_cell_information_scores_for_neuron_group(EXCITATORY_NEURONS[l], number_of_bins);
 	}
 

@@ -371,7 +371,7 @@ void Simulator::per_timestep_instructions(float current_time_in_seconds, bool ap
 		stdp_rule->Run_STDP(neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds, timestep);
 	}
 
-	neurons->update_membrane_potentials(timestep);
-	input_neurons->update_membrane_potentials(timestep);
+	neurons->update_membrane_potentials(timestep,current_time_in_seconds);
+	input_neurons->update_membrane_potentials(timestep,current_time_in_seconds);
 
 }

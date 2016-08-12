@@ -7,11 +7,10 @@ import os;
 
 class InfoAnalysis(object):
     
-    def singleCellInfoAnalysis(self,phases,saveImage = True, showImage = True, nBins=3,weightedAnalysis = 0):
+    def singleCellInfoAnalysis(self,phases,saveImage = True, showImage = True, nBins=3,weightedAnalysis = False,plotAllSingleCellInfo = False):
         fig=plt.figure(4 , figsize=(20, 5),dpi=150);
         
 #         Parameters
-        plotAllSingleCellInfo = False;
 
         nExcitCells = 32*32;
         nInhibCells = 16*16;
@@ -64,8 +63,8 @@ class InfoAnalysis(object):
             for l in range(nLayers):
                 #normalize
                 if FR[:,:,l,:].max()>0.001:
-#                     FR_norm = (FR-FR[:,:,l,:].min())/(FR[:,:,l,:].max()-FR[:,:,l,:].min());
-                    FR_norm = FR/FR[:,:,l,:].max();
+                    FR_norm = (FR-FR[:,:,l,:].min())/(FR[:,:,l,:].max()-FR[:,:,l,:].min());
+#                     FR_norm = FR/FR[:,:,l,:].max();
 #                     FR_norm = FR/FR.max();
                     
                     FR_tmp = FR_norm;
@@ -113,7 +112,7 @@ class InfoAnalysis(object):
                                 #IRs(row,col,obj)=IRs(row,col,obj)+(Prs*(log2(Prs/Pr)))*((bin-1)/(nBins-1)); #could be added to weight the degree of firing rates.
                                 IRs_weighted[obj,cell]+=(Prs*(np.log2(Prs/Pr)))*((bin)/(nBins-1)); #could be added to weight the degree of firing rates.
              
-                if (weightedAnalysis==1):
+                if (weightedAnalysis):
                     IRs = IRs_weighted;
                 
                 
@@ -142,7 +141,7 @@ class InfoAnalysis(object):
                     plt.subplot(1,nLayers,l+1)
                     if phaseIndex==1:
                         plt.plot(np.transpose(infos), linestyle='--', color='k');
-                    else:
+                    elif phaseIndex==2:
                         plt.plot(np.transpose(infos), linestyle='-', color='k');
                     plt.ylim([-0.05, np.log2(nObj)+0.05]);
                     plt.xlim([0, nExcitCells])
