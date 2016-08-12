@@ -369,7 +369,7 @@ bool ImagePoissonInputSpikingNeurons::stimulus_is_new_object_for_object_by_objec
 }
 
 
-void ImagePoissonInputSpikingNeurons::update_membrane_potentials(float timestep) {
+void ImagePoissonInputSpikingNeurons::update_membrane_potentials(float timestep,float current_time_in_seconds) {
 
 	poisson_update_membrane_potentials_kernel<<<RandomStateManager::instance()->block_dimensions, RandomStateManager::instance()->threads_per_block>>>(RandomStateManager::instance()->d_states,
 														d_gabor_input_rates,

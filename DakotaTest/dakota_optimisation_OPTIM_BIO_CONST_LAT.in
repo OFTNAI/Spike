@@ -1,0 +1,34 @@
+# DAKOTA INPUT FILE: dakota_pstudy.in for parallel Case 1 (Massively Serial)
+
+environment,
+	graphics
+	tabular_data
+	results_output
+
+method
+	efficient_global
+	seed = 123456
+
+variables,
+
+	continuous_design = 2			
+	cdv_lower_bounds    0.000001     0.000001
+	cdv_upper_bounds    0.0001    0.0001
+	cdv_descriptor      'E2I_L_biolConst'      'I2E_L_biolConst'
+
+
+
+interface,
+	fork
+
+	  analysis_driver = 'single_simulation_driver'
+	    parameters_file = 'params.in'
+	    results_file = 'results.out'
+	    file_tag
+	    file_save
+
+responses,
+	objective_functions = 2
+	sense = 'max'
+	no_gradients
+	no_hessians
