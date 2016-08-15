@@ -34,16 +34,19 @@ int main (int argc, char *argv[]){
 	const int OPTIM_BIO_CONST_LAT_FF = 3;
 	const int OPTIM_FANINRAD = 4;
 	const int OPTIM_DECAY = 5;
+	const int OPTIM_STDP = 6;
+	const int OPTIM_FANINRAD_AND_SYNDECAY = 7;
 	const int OBJFUNC_AVGFR = 1;
 	const int OBJFUNC_MAXFR = 2;
 	const int OBJFUNC_INFO = 3;
 	const int OBJFUNC_AVGFR_AND_INFO = 4;
 
 	// Parameters related to Dakota Optimization
-	int optimizationType = OPTIM_FANINRAD; //OPTIM_BIO_CONST_LAT, OPTIM_BIO_CONST_FF, OPTIM_BIO_CONST_LAT_FF, OPTIM_FANINRAD, OPTIM_DECAY
+	int optimizationType = OPTIM_STDP; //OPTIM_BIO_CONST_LAT, OPTIM_BIO_CONST_FF, OPTIM_BIO_CONST_LAT_FF, OPTIM_FANINRAD, OPTIM_DECAY
 	int objective_function = OBJFUNC_INFO; //OBJFUNC_AVGFR, OBJFUNC_MAXFR, OBJFUNC_INFO, OBJFUNC_AVGFR_AND_INFO
-	float optimal_average_firing_rate = 10.0f;//set if optimizing based on avgfr
-	float optimal_max_firing_rate = 100.0f;//set if optimizing based on maxfr
+	float optimal_average_firing_rate = 10.0f;//set if optimizing based on avgfr : Spontaneous rate (spikes/sec) 4.9 +- 7.1 (*1)
+	float optimal_max_firing_rate = 100.0f;//set if optimizing based on maxfr //Maximum rate (spikes/sec) 87 +- 46  (*1)
+	//*1 Bair, W., & Movshon, J. A. (2004).  Adaptive Temporal Integration of Motion in Direction-Selective Neurons in Macaque Visual Cortex. The Journal of Neuroscience, 24(33), 7305–7323.
 
 	// Simulator Parameters
 	float timestep = 0.00002;
@@ -57,14 +60,14 @@ int main (int argc, char *argv[]){
 	int max_number_of_connections_per_pair = 5;
 	int dim_excit_layer = 32;
 	int dim_inhib_layer = 16;
-	float gaussian_synapses_standard_deviation_FF_G2E = 15.0;
-	float gaussian_synapses_standard_deviation_FF = 5.0;
-	float gaussian_synapses_standard_deviation_LAT = 2.0;
-	float biological_conductance_scaling_constant_lambda_G2E_FF = 0.0001;
-	float biological_conductance_scaling_constant_lambda_E2E_FF = 0.0000125;
+	float gaussian_synapses_standard_deviation_FF_G2E = 23.794473044;//10.0;//6.3254321152;//15.0;
+	float gaussian_synapses_standard_deviation_FF = 28.166444920;//10.0;//9.3631908834;//5.0;
+	float gaussian_synapses_standard_deviation_LAT = 17.921123322;//10.0;//2.0815531458;//2.0;
+	float biological_conductance_scaling_constant_lambda_G2E_FF = 0.000075;//0.0001;
+	float biological_conductance_scaling_constant_lambda_E2E_FF = 0.000025;
 //	float biological_conductance_scaling_constant_lambda_E2E_L = 0;//0.00001;
-	float biological_conductance_scaling_constant_lambda_E2I_L = 0.0005;
-	float biological_conductance_scaling_constant_lambda_I2E_L = 0.0001;
+	float biological_conductance_scaling_constant_lambda_E2I_L = 0.0007;
+	float biological_conductance_scaling_constant_lambda_I2E_L = 0.0007;//0.0007;//0.0001;
 
 	// Neuronal Parameters
 	float max_FR_of_input_Gabor = 100.0f;
@@ -73,18 +76,16 @@ int main (int argc, char *argv[]){
 	//Synaptic Parameters
 	float weight_range_bottom = 0.0;
 	float weight_range_top = 1.0;
-	float learning_rate_rho = 100.0;// 0.1;
-	float decay_term_tau_C = 0.003;//0.25; 0.015;(In Ben's model, tau_C/tau_D = 3/5 v 15/25 v 75/125, and the first one produces the best result)
-	float decay_term_tau_D = 0.005; //0.25; 0.025;
+	float learning_rate_rho = 100.0;//100.0;// 0.1;
+	float decay_term_tau_C = 1.1901834251e-01;//0.25;//0.003;//0.25;(In Ben's model, tau_C/tau_D = 3/5 v 15/25 v 75/125, and the first one produces the best result)
+	float decay_term_tau_D = 8.2942991090e-02;//0.25;//0.005;
 	float I2E_decay_term_tau_g = 0.025;//0.005;//In Ben's model, 0.005 v 0.025 and latter produced better result
-	float E2E_FF_minDelay = 0.001;//5.0*timestep;
-	float E2E_FF_maxDelay = 0.02;//3.0f*pow(10, -3);
-	float E2I_L_minDelay = 0.001;//5.0*timestep;
-	float E2I_L_maxDelay = 0.02;//3.0f*pow(10, -3);
-	float I2E_L_minDelay = 0.001;//5.0*timestep;
-	float I2E_L_maxDelay = 0.02;//3.0f*pow(10, -3);
-
-
+	float E2E_FF_minDelay = 5.0*timestep;
+	float E2E_FF_maxDelay = 0.01;//3.0f*pow(10, -3);
+	float E2I_L_minDelay = 5.0*timestep;
+	float E2I_L_maxDelay = 0.01;//3.0f*pow(10, -3);
+	float I2E_L_minDelay = 5.0*timestep;
+	float I2E_L_maxDelay = 0.01;//3.0f*pow(10, -3);
 
 	// Parameters for testing
 	float presentation_time_per_stimulus_per_epoch_test = 1.0f;
@@ -131,6 +132,20 @@ int main (int argc, char *argv[]){
 				decay_term_tau_C = stof(argv[5]);
 				decay_term_tau_D = stof(argv[6]);
 				break;
+			case OPTIM_STDP:
+//				learning_rate_rho = stof(argv[4]);
+				decay_term_tau_C = stof(argv[4]);
+//				decay_term_tau_D = stof(argv[5]);
+				decay_term_tau_D = stof(argv[5]);
+				break;
+			case OPTIM_FANINRAD_AND_SYNDECAY:
+				gaussian_synapses_standard_deviation_FF_G2E = stof(argv[4]);
+				gaussian_synapses_standard_deviation_FF = stof(argv[5]);
+				gaussian_synapses_standard_deviation_LAT = stof(argv[6]);
+				decay_term_tau_C = stof(argv[7]);
+				decay_term_tau_D = stof(argv[7]);
+				break;
+
 		}
 
 
@@ -446,7 +461,8 @@ int main (int argc, char *argv[]){
 				scoreMean_excit/=number_of_layers;
 				scoreMean_inhib/=number_of_layers;
 				printf("avgFR score ex: %f inhib: %f \n",scoreMean_excit, scoreMean_inhib);
-				resultsfile << to_string(scoreMean_excit) <<endl << to_string(scoreMean_inhib) << endl;
+				resultsfile << to_string((scoreMean_excit + scoreMean_inhib)/2) <<endl;
+
 				combined_information_score_training_increase = spike_analyser_for_trained_network->number_of_neurons_with_maximum_information_score_in_last_neuron_group - spike_analyser_for_untrained_network->number_of_neurons_with_maximum_information_score_in_last_neuron_group;
 				printf("combined_information_score_training_increase: %f\n", combined_information_score_training_increase);
 				resultsfile << to_string(combined_information_score_training_increase)<<endl;

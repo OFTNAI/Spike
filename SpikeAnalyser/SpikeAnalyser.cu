@@ -110,11 +110,11 @@ void SpikeAnalyser::calculate_fitness_score() {
 		
 		combined_powered_distance_from_average_score_for_each_neuron_group[neuron_group_index] = neuron_group_score;
 		combined_powered_distance_from_average_score += neuron_group_score;
-		printf("Dakota: combined_powered_distance_from_average_score_for_each_neuron_group[%d]: %f score: %f \n", neuron_group_index, average_number_of_neuron_spikes_per_second_for_neuron_group, neuron_group_score);
+//		printf("Dakota: combined_powered_distance_from_average_score_for_each_neuron_group[%d]: %f score: %f \n", neuron_group_index, average_number_of_neuron_spikes_per_second_for_neuron_group, neuron_group_score);
 
 		combined_powered_distance_from_max_score_for_each_neuron_group[neuron_group_index] = neuron_group_score2;
 		combined_powered_distance_from_max_score += neuron_group_score2;
-		printf("Dakota: combined_powered_distance_from_max_score_for_each_neuron_group[%d]: %f score: %f \n", neuron_group_index, max_number_of_neuron_spikes_per_second_for_neuron_group, neuron_group_score2);
+//		printf("Dakota: combined_powered_distance_from_max_score_for_each_neuron_group[%d]: %f score: %f \n", neuron_group_index, max_number_of_neuron_spikes_per_second_for_neuron_group, neuron_group_score2);
 
 	}
 
@@ -180,7 +180,7 @@ void SpikeAnalyser::calculate_various_neuron_spike_totals_and_averages(float pre
 	average_number_of_neuron_spikes_per_second = ((float)total_number_of_neuron_spikes / (float)neurons->total_number_of_neurons) / presentation_time_per_stimulus_per_epoch;
 
 	// printf("total_number_of_neuron_spikes: %d\n", total_number_of_neuron_spikes);
-	printf("average_number_of_neuron_spikes_per_second: %f\n", average_number_of_neuron_spikes_per_second);
+	printf("* average_number_of_neuron_spikes_per_second: %f\n", average_number_of_neuron_spikes_per_second);
 
 	spike_totals_and_averages_were_calculated = true;
 	timer->stop_timer_and_log_time_and_message("Total and per stimulus spikes per neuron group calculated.", true);

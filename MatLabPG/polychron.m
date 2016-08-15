@@ -8,7 +8,15 @@
 % network could emerge if these anchors are fired.
 clear;
 clearvars -global
-for trainedNet = [1]
+
+timestepMode=1;
+
+model_izhikevich = 1;
+model_conductanceLIAF = 2;
+neuronModel = model_conductanceLIAF;
+
+
+for trainedNet = [0,1]
     if (trainedNet)
         networkStatesName = 'networkStates_trained.mat'
     else
@@ -16,7 +24,7 @@ for trainedNet = [1]
     end
 
     initOn = 1;
-    global a b c d N D pp s ppre dpre post pre delay T
+    global a b c d N D pp s ppre dpre post pre delay T timestep di nLayers ExcitDim InhibDim
     if exist(networkStatesName,'file')
         load(networkStatesName);
         disp('**ATN** network state data previously stored are loaded')
@@ -30,25 +38,17 @@ for trainedNet = [1]
     nLayers = 4;
     N = (ExcitDim*ExcitDim+InhibDim*InhibDim)*nLayers;% N: num neurons
     timestep = 0.00002;
-    %D = int32(3/(timestep*1000)); % D: max delay
-    D = 3; % D: max delay
-    T= 100;              % the max length of a group to be considered;
     
+    D = 10; % D: max delay
+    T= 100;              % the max length of a group to be considered;
+    if(timestepMode==1)
+        T=5000;%1000;
+        D = int32(D/(timestep*1000));
+    end
     % parameters to be provided
     anchor_width=3;     % the number of anchor neurons, from which a group starts
     min_group_path=4;%7;   % discard all groups having shorter paths from the anchor neurons
 
-    % izhikevich model params:
-    a = zeros(N,1)+0.02; %decay rate [0.02, 0.1]
-    b = 0.2; %sensitivity [0.25, 0.2]
-    c = -65;%reset [-65,-55,-50] potential after spike
-    d = zeros(N,1)+8; %reset [2,4,8]
-    %http://www.izhikevich.org/publications/spikes.pdf
-
-    sm = 17.0%16.5;%18 ;%max synaptic weight
-    sm_threshold = 0.90*sm;
-    sm_threshold_input = 0.90*sm;
-    E_IsynEfficRatio = 1;
 
 
     saveImages = 0;
@@ -56,6 +56,7 @@ for trainedNet = [1]
 
 
     if exist(networkStatesName,'file')==0
+        
         % loading data %
         disp('**ATN** loading data')
 
@@ -87,9 +88,9 @@ for trainedNet = [1]
         weights_loaded = weights_loaded(cond);
         delays_loaded = delays_loaded(cond);
         
-        
-        delays_loaded = int32(delays_loaded*timestep*1000);
-
+        if(timestepMode==0)
+            delays_loaded = int32(delays_loaded*timestep*1000);
+        end
         %uncomment the command below to test the algorithm for shuffled (randomized e->e) synapses
         %e2e = find(s>=0 & post<Ne); s(e2e) = s(e2e(randperm(length(e2e))));
 
@@ -158,36 +159,78 @@ for trainedNet = [1]
     end
 
 
-
-
-    % multiply the weight by a constance used in the original analysis
-    s = s*sm;
-    %remove small values for the synaptic weights:
-    s(find(s>0 & s<=sm_threshold))=0;%remove small vals
-    % set inhibitory synaptic weight negative
-    for l = 1:nLayers 
-        i_begin = ExcitDim*ExcitDim*l + (InhibDim*InhibDim)*(l-1) + 1;
-        i_end = (ExcitDim*ExcitDim+InhibDim*InhibDim)*l;
-        s(i_begin:i_end,:)=s(i_begin:i_end,:)*-1*E_IsynEfficRatio;
+    
+    
+    if (neuronModel == model_conductanceLIAF)
+        sm = 0.000025*0.0055;%18 ;%biological scaling constant
+        %sm = 1.0;
+        sm_threshold = 0.6*sm;
+        sm_threshold_input = 0.90*sm;
+        Excit2InhibRatio = 1.0;
+        
+        s = s*sm;
+        s(find(s>0 & s<=sm_threshold))=0;%remove small vals
+        
+        di = s;
+        reversal_potential_Vhat_excit = 0.0;
+        reversal_potential_Vhat_inhib = -0.074;
+        for l = 1:nLayers 
+            excit_begin = (ExcitDim*ExcitDim+InhibDim*InhibDim)*(l-1)+1;
+            excit_end = ExcitDim*ExcitDim*l + (InhibDim*InhibDim)*(l-1);
+            di(excit_begin:excit_end,:)=s(excit_begin:excit_end,:)*reversal_potential_Vhat_excit;
+            
+            inhib_begin = ExcitDim*ExcitDim*l + (InhibDim*InhibDim)*(l-1) + 1;
+            inhib_end = (ExcitDim*ExcitDim+InhibDim*InhibDim)*l;
+            s(inhib_begin:inhib_end,:)=s(inhib_begin:inhib_end,:)*Excit2InhibRatio;
+            di(inhib_begin:inhib_end,:)=s(inhib_begin:inhib_end,:)*reversal_potential_Vhat_inhib;
+        end
+    elseif (neuronModel == model_izhikevich)
+        
+        % izhikevich model params:
+        a = zeros(N,1)+0.1;%0.02; %decay rate [0.02, 0.1]
+        b = 0.2; %sensitivity [0.25, 0.2]
+        c = -65;%reset [-65,-55,-50] potential after spike
+        d = zeros(N,1)+8; %reset [2,4,8]
+        %http://www.izhikevich.org/publications/spikes.pdf
+        
+        sm = 17.0;%18 ;%max synaptic weight
+        sm_threshold = 0.8*sm;
+        sm_threshold_input = 0.80*sm;
+        E_IsynEfficRatio = 1.0;
+    
+        % multiply the weight by a constance used in the original analysis
+        s = s*sm;
+        %remove small values for the synaptic weights:
+        s(find(s>0 & s<=sm_threshold))=0;%remove small vals
+        % set inhibitory synaptic weight negative
+        for l = 1:nLayers 
+            i_begin = ExcitDim*ExcitDim*l + (InhibDim*InhibDim)*(l-1) + 1;
+            i_end = (ExcitDim*ExcitDim+InhibDim*InhibDim)*l;
+            s(i_begin:i_end,:)=s(i_begin:i_end,:)*-1*E_IsynEfficRatio;
+        end
     end
+
+    
+    
 
 
     if (plotFigure)
         fig = figure('position', [0, 0, 2000, 1500]);
     end
-    for i=1:(ExcitDim*ExcitDim)
+    for i=500:(ExcitDim*ExcitDim)
         i
         i_post = i + (ExcitDim*ExcitDim + InhibDim*InhibDim);%looking at the second layer
         anchors=1:anchor_width;                     % initial choice of anchor neurons
 
         pre_cells_FF = pre{i_post}(find(ppre{i_post}<=ExcitDim*ExcitDim)); %to exlude input from lateral connections
+
         strong_pre=find(s(pre_cells_FF)>sm_threshold_input);
 
     %     strong_pre=find(s(pre{i_post})>sm_threshold);    % list of the indecies of candidates for anchor neurons
         if length(strong_pre) >= anchor_width       % must be enough candidates
             while 1        % will get out of the loop via the 'break' command below
                 maxDelay = max(dpre{i_post}(strong_pre(anchors)))+1;
-                gr=polygroup( ppre{i_post}(strong_pre(anchors)), maxDelay-dpre{i_post}(strong_pre(anchors)) );
+                gr=polygroup( ppre{i_post}(strong_pre(anchors)), maxDelay-dpre{i_post}(strong_pre(anchors)),neuronModel );
 
                 %Calculate the longest path from the first to the last spike
                 fired_path=sparse(N,1);        % the path length of the firing (from the anchor neurons)
@@ -214,22 +257,41 @@ for trainedNet = [1]
                     if all(useful>=2)
     %                     ppre{i_post}(strong_pre(anchors))
                         groups{end+1}=gr;           % add found group to the list
-                        disp([num2str(round(100*i/(ExcitDim*ExcitDim))) '%: groups=' num2str(length(groups)) ', size=' num2str(size(gr.firings,1)) ', path_length=' num2str(gr.longest_path)])   % display of the current status
+                        disp([num2str(round(100*i/(ExcitDim*ExcitDim))) '%: groups=' num2str(c) ', size=' num2str(size(gr.firings,1)) ', path_length=' num2str(gr.longest_path)])   % display of the current status
                         if (plotFigure)
-                            plot(gr.firings(:,1),gr.firings(:,2),'o');
+                            if(timestepMode)
+                                plot(gr.firings(:,1)*timestep*1000,gr.firings(:,2),'o');
+                            else
+                                plot(gr.firings(:,1),gr.firings(:,2),'o');
+                            end
                             hold on;
                             for l=1:nLayers
-                                plot([0 T],[(ExcitDim*ExcitDim+InhibDim*InhibDim)*l (ExcitDim*ExcitDim+InhibDim*InhibDim)*l],'k');
-                                plot([0 T],[(ExcitDim*ExcitDim)*l+(InhibDim*InhibDim)*(l-1) (ExcitDim*ExcitDim)*l+(InhibDim*InhibDim)*(l-1)],'k--');
+                                if(timestepMode)
+                                    plot([0 T*timestep*1000],[(ExcitDim*ExcitDim+InhibDim*InhibDim)*l (ExcitDim*ExcitDim+InhibDim*InhibDim)*l],'k');
+                                    plot([0 T*timestep*1000],[(ExcitDim*ExcitDim)*l+(InhibDim*InhibDim)*(l-1) (ExcitDim*ExcitDim)*l+(InhibDim*InhibDim)*(l-1)],'k--');
+                                else
+                                    plot([0 T],[(ExcitDim*ExcitDim+InhibDim*InhibDim)*l (ExcitDim*ExcitDim+InhibDim*InhibDim)*l],'k');
+                                    plot([0 T],[(ExcitDim*ExcitDim)*l+(InhibDim*InhibDim)*(l-1) (ExcitDim*ExcitDim)*l+(InhibDim*InhibDim)*(l-1)],'k--');
+                                end
                             end
                             for j=1:size(gr.gr,1)
-                                plot(gr.gr(j,[1 3 5]),gr.gr(j,[2 4 4]),'.-');
+                                if(timestepMode)
+                                    plot(gr.gr(j,[1 3 5])*timestep*1000,gr.gr(j,[2 4 4]),'.-');
+                                else
+                                    plot(gr.gr(j,[1 3 5]),gr.gr(j,[2 4 4]),'.-');
+                                end
                             end;
-
-                            axis([0 T 0 N]);
+                            if(timestepMode)
+                                axis([0 T*timestep*1000 0 N]);
+                            else
+                                axis([0 T 0 N]);
+                            end
                             hold off
                             drawnow;
                         end
+                        title('Polychroneous chains');
+                        ylabel('Cell Index');
+                        xlabel('Time [ms]')
                         if(plotFigure && saveImages)
                             saveas(fig,[num2str(trainedNet) '_poly_i_' num2str(i_post) strrep(mat2str(ppre{i_post}(strong_pre(anchors))), ';', '_') '.fig']);
                             saveas(fig,[num2str(trainedNet) '_poly_i_' num2str(i_post) strrep(mat2str(ppre{i_post}(strong_pre(anchors))), ';', '_') '.png']);

@@ -1,0 +1,35 @@
+# DAKOTA INPUT FILE: dakota_pstudy.in for parallel Case 1 (Massively Serial)
+
+environment,
+	graphics
+	tabular_data
+	results_output
+
+method
+	efficient_global
+	seed = 123456
+
+variables,
+
+	continuous_design = 4			
+	cdv_lower_bounds    1.0     1.0     1.0     0.003	
+	cdv_upper_bounds    15.0    15.0    15.0    0.300
+	cdv_descriptor      'gaussian_synapses_standard_deviation_FF_G2E'      'gaussian_synapses_standard_deviation_FF' 'gaussian_synapses_standard_deviation_LAT'  'decay_term_tau_C_AND_D'
+
+
+
+interface,
+	fork
+
+	  analysis_driver = 'single_simulation_driver'
+	    parameters_file = 'params.in'
+	    results_file = 'results.out'
+	    file_tag
+	    file_save
+
+responses,
+	objective_functions = 1
+	sense = 'max'
+	no_gradients
+	no_hessians
+	

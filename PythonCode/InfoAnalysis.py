@@ -16,7 +16,7 @@ class InfoAnalysis(object):
         nInhibCells = 16*16;
         
 
-        nObj = 5;
+        nObj = 3;
         nTrans = 2;
         nLayers = 4;
         presentationTime = 1.0;
