@@ -5,7 +5,7 @@ import SpikePlot
 
 #INFO ANALYSIS:
 ia = InfoAnalysis.InfoAnalysis()
-ia.singleCellInfoAnalysis(['Untrained', 'Trained'],weightedAnalysis = False, saveImage = True, showImage = False, nBins=5,plotAllSingleCellInfo = True);
+ia.singleCellInfoAnalysis(['Untrained', 'Trained'],weightedAnalysis = False, saveImage = True, showImage = False, nBins=5,plotAllSingleCellInfo = False);
 
 
 #Struct

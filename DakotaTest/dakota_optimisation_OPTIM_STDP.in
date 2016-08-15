@@ -11,16 +11,11 @@ method
 
 variables,
 
-	continuous_design = 3			
-	cdv_lower_bounds    10.0     10.0     10.0	
-	cdv_upper_bounds    30.0    30.0    30.0
-	cdv_descriptor      'gaussian_synapses_standard_deviation_FF_G2E'      'gaussian_synapses_standard_deviation_FF' 'gaussian_synapses_standard_deviation_LAT'
+	continuous_design = 2			
+	cdv_lower_bounds    0.003     0.003
+	cdv_upper_bounds    0.125    0.125
+	cdv_descriptor      'decay_term_tau_C'      'decay_term_tau_D'
 
-
-#	discrete_design_set_integer 3
-#	        set_values 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
-#	        descriptors 'gaussian_synapses_standard_deviation_FF_G2E' 'gaussian_synapses_standard_deviation_FF' 'gaussian_synapses_standard_deviation_LAT'
-				
 
 # Case 1 (Massively Serial): Run Dakota in parallel and launch M-1 serial
 #         analysis jobs at once.  Do not specify any evaluation concurrency
@@ -52,7 +47,7 @@ interface,
 	    file_save
 
 responses,
-	objective_functions = 2
+	objective_functions = 1
 	sense = 'max'
 	no_gradients
 	no_hessians
