@@ -64,6 +64,7 @@ void SpikeAnalyser::store_spike_counts_for_stimulus_index(int stimulus_index, in
 
 void SpikeAnalyser::calculate_fitness_score() {
 	int comparisonType = 1; //0:James, 1:aki
+	float maxScore = 10; //for aki
 	combined_powered_distance_from_average_score_for_each_neuron_group = new float[neurons->total_number_of_groups];
 	combined_powered_distance_from_max_score_for_each_neuron_group = new float[neurons->total_number_of_groups];
 			
@@ -75,45 +76,45 @@ void SpikeAnalyser::calculate_fitness_score() {
 		float average_number_of_neuron_spikes_per_second_for_neuron_group = average_number_of_spikes_per_neuron_group_per_second[neuron_group_index];
 		float max_number_of_neuron_spikes_per_second_for_neuron_group = max_number_of_spikes_per_neuron_group_per_second[neuron_group_index];
 
-		float neuron_group_score = 0.0;
-		float neuron_group_score2 = 0.0;
+		float neuron_group_score_based_on_avg = 0.0;
+		float neuron_group_score_based_on_max = 0.0;
 
 		if (comparisonType==0){
 			if (average_number_of_neuron_spikes_per_second_for_neuron_group < optimal_average_firing_rate) {
-				neuron_group_score += - pow((optimal_average_firing_rate - average_number_of_neuron_spikes_per_second_for_neuron_group), 6);
+				neuron_group_score_based_on_avg += - pow((optimal_average_firing_rate - average_number_of_neuron_spikes_per_second_for_neuron_group), 6);
 			} else {
-				neuron_group_score += - pow((average_number_of_neuron_spikes_per_second_for_neuron_group - optimal_average_firing_rate), 2);
+				neuron_group_score_based_on_avg += - pow((average_number_of_neuron_spikes_per_second_for_neuron_group - optimal_average_firing_rate), 2);
 			}
 			
 			if (max_number_of_neuron_spikes_per_second_for_neuron_group < optimal_max_firing_rate) {
-				neuron_group_score2 += - pow((optimal_max_firing_rate - max_number_of_neuron_spikes_per_second_for_neuron_group), 6);
+				neuron_group_score_based_on_max += - pow((optimal_max_firing_rate - max_number_of_neuron_spikes_per_second_for_neuron_group), 6);
 			} else {
-				neuron_group_score2 += - pow((max_number_of_neuron_spikes_per_second_for_neuron_group - optimal_max_firing_rate), 2);
+				neuron_group_score_based_on_max += - pow((max_number_of_neuron_spikes_per_second_for_neuron_group - optimal_max_firing_rate), 2);
 			}
 			
 		}else if(comparisonType==1){
 			if (average_number_of_neuron_spikes_per_second_for_neuron_group < optimal_average_firing_rate) {
-				neuron_group_score = 100 * (1- (optimal_average_firing_rate - average_number_of_neuron_spikes_per_second_for_neuron_group)/optimal_average_firing_rate);
+				neuron_group_score_based_on_avg = maxScore * (1- (optimal_average_firing_rate - average_number_of_neuron_spikes_per_second_for_neuron_group)/optimal_average_firing_rate);
 			} else {
-				neuron_group_score = 100.0/(abs(average_number_of_neuron_spikes_per_second_for_neuron_group - optimal_average_firing_rate)+1);
+				neuron_group_score_based_on_avg = maxScore/(abs(average_number_of_neuron_spikes_per_second_for_neuron_group - optimal_average_firing_rate)+1);
 			}
 //			neuron_group_score = 100.0/(abs(average_number_of_neuron_spikes_per_second_for_neuron_group - optimal_average_firing_rate)+1);
 
 			
 			if (max_number_of_neuron_spikes_per_second_for_neuron_group < optimal_max_firing_rate) {
-				neuron_group_score2 = 100 * (1- (optimal_max_firing_rate - max_number_of_neuron_spikes_per_second_for_neuron_group)/optimal_max_firing_rate);
+				neuron_group_score_based_on_max = maxScore * (1- (optimal_max_firing_rate - max_number_of_neuron_spikes_per_second_for_neuron_group)/optimal_max_firing_rate);
 			} else {
-				neuron_group_score2 = 100.0/(abs(max_number_of_neuron_spikes_per_second_for_neuron_group - optimal_max_firing_rate)+1);
+				neuron_group_score_based_on_max = maxScore/(abs(max_number_of_neuron_spikes_per_second_for_neuron_group - optimal_max_firing_rate)+1);
 			}
 		}
 		
 		
-		combined_powered_distance_from_average_score_for_each_neuron_group[neuron_group_index] = neuron_group_score;
-		combined_powered_distance_from_average_score += neuron_group_score;
+		combined_powered_distance_from_average_score_for_each_neuron_group[neuron_group_index] = neuron_group_score_based_on_avg;
+		combined_powered_distance_from_average_score += neuron_group_score_based_on_avg;
 //		printf("Dakota: combined_powered_distance_from_average_score_for_each_neuron_group[%d]: %f score: %f \n", neuron_group_index, average_number_of_neuron_spikes_per_second_for_neuron_group, neuron_group_score);
 
-		combined_powered_distance_from_max_score_for_each_neuron_group[neuron_group_index] = neuron_group_score2;
-		combined_powered_distance_from_max_score += neuron_group_score2;
+		combined_powered_distance_from_max_score_for_each_neuron_group[neuron_group_index] = neuron_group_score_based_on_max;
+		combined_powered_distance_from_max_score += neuron_group_score_based_on_max;
 //		printf("Dakota: combined_powered_distance_from_max_score_for_each_neuron_group[%d]: %f score: %f \n", neuron_group_index, max_number_of_neuron_spikes_per_second_for_neuron_group, neuron_group_score2);
 
 	}
@@ -141,13 +142,13 @@ void SpikeAnalyser::calculate_various_neuron_spike_totals_and_averages(float pre
 		int neuron_group_start_index = neurons->start_neuron_indices_for_each_group[neuron_group_index];
 		int neuron_group_end_index = neurons->last_neuron_indices_for_each_group[neuron_group_index];
 		int number_of_neurons_in_group = neuron_group_end_index - neuron_group_start_index + 1;
-		printf("number_of_neurons_in_group: %d\n", number_of_neurons_in_group);
+		printf("\n* neuron group %d (%d neurons) *\n", neuron_group_index,number_of_neurons_in_group);
 	
 		total_number_of_spikes_per_neuron_group[neuron_group_index] = 0;
 		
 		int tmp_max_number_of_neuron_spikes = 0;
 		for (int stimulus_index = 0; stimulus_index < input_neurons->total_number_of_input_stimuli; stimulus_index++) {
-
+			int tmp_max_number_of_neuron_spikes_per_stimulus = 0;
 			number_of_spikes_per_stimulus_per_neuron_group[neuron_group_index][stimulus_index] = 0;
 			for (int neuron_index_zeroed = 0; neuron_index_zeroed < number_of_neurons_in_group; neuron_index_zeroed++) {
 
@@ -155,10 +156,13 @@ void SpikeAnalyser::calculate_various_neuron_spike_totals_and_averages(float pre
 				number_of_spikes_per_stimulus_per_neuron_group[neuron_group_index][stimulus_index] += number_of_spikes;
 				
 				if (tmp_max_number_of_neuron_spikes<per_stimulus_per_neuron_spike_counts[stimulus_index][neuron_index_zeroed+neuron_group_start_index])
-						tmp_max_number_of_neuron_spikes = per_stimulus_per_neuron_spike_counts[stimulus_index][neuron_index_zeroed+neuron_group_start_index];
+					tmp_max_number_of_neuron_spikes = per_stimulus_per_neuron_spike_counts[stimulus_index][neuron_index_zeroed+neuron_group_start_index];
+				
+				if (tmp_max_number_of_neuron_spikes_per_stimulus<per_stimulus_per_neuron_spike_counts[stimulus_index][neuron_index_zeroed+neuron_group_start_index])
+					tmp_max_number_of_neuron_spikes_per_stimulus = per_stimulus_per_neuron_spike_counts[stimulus_index][neuron_index_zeroed+neuron_group_start_index];
 			}			
 			average_number_of_spikes_per_stimulus_per_neuron_group_per_second[neuron_group_index][stimulus_index] = ((float)number_of_spikes_per_stimulus_per_neuron_group[neuron_group_index][stimulus_index]/(float)number_of_neurons_in_group) / presentation_time_per_stimulus_per_epoch;
-			printf("average_number_of_spikes_per_stimulus_per_neuron_group_per_second[%d][%d]: %f\n", neuron_group_index, stimulus_index, average_number_of_spikes_per_stimulus_per_neuron_group_per_second[neuron_group_index][stimulus_index]);
+			printf("\tnumber of spikes per neuron for stimulus %d -- max: %f\tavg: %f\n", stimulus_index, ((float)tmp_max_number_of_neuron_spikes_per_stimulus)/presentation_time_per_stimulus_per_epoch,average_number_of_spikes_per_stimulus_per_neuron_group_per_second[neuron_group_index][stimulus_index]);
 
 			total_number_of_spikes_per_neuron_group[neuron_group_index] += number_of_spikes_per_stimulus_per_neuron_group[neuron_group_index][stimulus_index];
 
@@ -170,8 +174,7 @@ void SpikeAnalyser::calculate_various_neuron_spike_totals_and_averages(float pre
 		max_number_of_spikes_per_neuron_group_per_second[neuron_group_index] = ((float)tmp_max_number_of_neuron_spikes)/presentation_time_per_stimulus_per_epoch;
 		
 		average_number_of_spikes_per_neuron_group_per_second[neuron_group_index] = (((float)total_number_of_spikes_per_neuron_group[neuron_group_index] / (float)number_of_neurons_in_group) / presentation_time_per_stimulus_per_epoch) / (float)input_neurons->total_number_of_input_stimuli;
-		printf("+ average_number_of_spikes_per_neuron_group_per_second[%d]: %f\n", neuron_group_index, average_number_of_spikes_per_neuron_group_per_second[neuron_group_index]);
-		printf("+ max_number_of_spikes_per_neuron_group_per_second[%d]: %f\n",neuron_group_index, max_number_of_spikes_per_neuron_group_per_second[neuron_group_index]);
+		printf("-- summary -- number of spikes per neuron -- max: %f\tavg: %f\n", max_number_of_spikes_per_neuron_group_per_second[neuron_group_index], average_number_of_spikes_per_neuron_group_per_second[neuron_group_index]);
 
 		total_number_of_neuron_spikes += total_number_of_spikes_per_neuron_group[neuron_group_index];
 
@@ -203,10 +206,13 @@ void SpikeAnalyser::calculate_single_cell_information_scores_for_neuron_group(in
 	// 0. First initialise public variables. This is important to do first in case there are no spikes at step 1.
 	maximum_possible_information_score = log2((float)input_neurons->total_number_of_objects);
 	sum_of_information_scores_for_last_neuron_group = 0;
+	
 	number_of_neurons_with_maximum_information_score_in_last_neuron_group = 0;
 	maximum_information_score_count_multiplied_by_sum_of_information_scores = 0;
+	
 	information_scores_for_each_object_and_neuron = new float *[input_neurons->total_number_of_objects];
 	descending_information_scores_for_each_object_and_neuron = new float *[input_neurons->total_number_of_objects];
+	
 	for (int object_index = 0; object_index < input_neurons->total_number_of_objects; object_index++) {
 
 		information_scores_for_each_object_and_neuron[object_index] = new float[number_of_neurons_in_single_cell_analysis_group];
@@ -216,11 +222,20 @@ void SpikeAnalyser::calculate_single_cell_information_scores_for_neuron_group(in
 			descending_information_scores_for_each_object_and_neuron[object_index][neuron_index_zeroed] = 0.0;
 		}
 	}
+	
+	
+	
 	maximum_information_score_for_each_neuron = new float[number_of_neurons_in_single_cell_analysis_group];
 	descending_maximum_information_score_for_each_neuron = new float[number_of_neurons_in_single_cell_analysis_group];
+	average_information_score_for_each_neuron = new float[number_of_neurons_in_single_cell_analysis_group];
+	descending_average_information_score_for_each_neuron = new float[number_of_neurons_in_single_cell_analysis_group];
+		
+	
 	for (int neuron_index_zeroed = 0; neuron_index_zeroed < number_of_neurons_in_single_cell_analysis_group; neuron_index_zeroed++) {
 		maximum_information_score_for_each_neuron[neuron_index_zeroed] = 0.0f;
 		descending_maximum_information_score_for_each_neuron[neuron_index_zeroed] = 0.0f;
+		average_information_score_for_each_neuron[neuron_index_zeroed] = 0.0f;
+		descending_average_information_score_for_each_neuron[neuron_index_zeroed] = 0.0f;
 	}
 
 	// 1. Find max number of spikes
@@ -337,9 +352,11 @@ void SpikeAnalyser::calculate_single_cell_information_scores_for_neuron_group(in
 		}
 		maximum_information_score_for_each_neuron[neuron_index_zeroed] = maximum_score_for_current_neuron;
 		descending_maximum_information_score_for_each_neuron[neuron_index_zeroed] = maximum_score_for_current_neuron;
+		
 		// printf("maximum_information_score_for_each_neuron[neuron_index_zeroed]: %f\n", maximum_information_score_for_each_neuron[neuron_index_zeroed]);
 	}
 	std::sort(descending_maximum_information_score_for_each_neuron, descending_maximum_information_score_for_each_neuron + number_of_neurons_in_single_cell_analysis_group, std::greater<float>());
+	
 	sum_of_maximum_information_score_for_each_neuron = 0;
 	for (int neuron_index_zeroed = 0; neuron_index_zeroed < number_of_neurons_in_single_cell_analysis_group; neuron_index_zeroed++) {
 		sum_of_maximum_information_score_for_each_neuron += descending_maximum_information_score_for_each_neuron[neuron_index_zeroed];
@@ -361,21 +378,46 @@ void SpikeAnalyser::calculate_single_cell_information_scores_for_neuron_group(in
 	}
 	
 	
+	//calculate minimal number of cells that became to be tuned to a particular object
+	number_of_neurons_with_maximum_information_score_in_average_in_last_neuron_group = 0;
+
+	for (int neuron_index_zeroed = 0; neuron_index_zeroed < number_of_neurons_in_single_cell_analysis_group; neuron_index_zeroed++) {
+		float sum_score_for_current_neuron = 0.0;
+		for (int object_index = 0; object_index < input_neurons->total_number_of_objects; object_index++) {
+			sum_score_for_current_neuron+=descending_information_scores_for_each_object_and_neuron[object_index][neuron_index_zeroed];
+		}
+		average_information_score_for_each_neuron[neuron_index_zeroed] = sum_score_for_current_neuron/input_neurons->total_number_of_objects;
+		descending_average_information_score_for_each_neuron[neuron_index_zeroed] = sum_score_for_current_neuron/input_neurons->total_number_of_objects;
+		
+		if (maximum_possible_information_score <= average_information_score_for_each_neuron[neuron_index_zeroed])
+			number_of_neurons_with_maximum_information_score_in_average_in_last_neuron_group++;
+	}
+	
+	std::sort(descending_average_information_score_for_each_neuron, descending_average_information_score_for_each_neuron + number_of_neurons_in_single_cell_analysis_group, std::greater<float>());
+
 	
 	std::vector<float> maximum_information_score_for_each_neuron_tmp;
 	std::vector<float> descending_maximum_information_score_for_each_neuron_tmp;
+	std::vector<float> average_information_score_for_each_neuron_tmp;
+	std::vector<float> descending_average_information_score_for_each_neuron_tmp;
+		
 	for (int neuron_index_zeroed = 0; neuron_index_zeroed < number_of_neurons_in_single_cell_analysis_group; neuron_index_zeroed++) {
 		maximum_information_score_for_each_neuron_tmp.push_back(maximum_information_score_for_each_neuron[neuron_index_zeroed]);
 		descending_maximum_information_score_for_each_neuron_tmp.push_back(descending_maximum_information_score_for_each_neuron[neuron_index_zeroed]);
+		average_information_score_for_each_neuron_tmp.push_back(average_information_score_for_each_neuron[neuron_index_zeroed]);
+		descending_average_information_score_for_each_neuron_tmp.push_back(descending_average_information_score_for_each_neuron[neuron_index_zeroed]);
 	}
 	maximum_information_score_for_each_neuron_vec.push_back(maximum_information_score_for_each_neuron_tmp);
 	descending_maximum_information_score_for_each_neuron_vec.push_back(descending_maximum_information_score_for_each_neuron_tmp);
+	average_information_score_for_each_neuron_vec.push_back(average_information_score_for_each_neuron_tmp);
+	descending_average_information_score_for_each_neuron_vec.push_back(descending_average_information_score_for_each_neuron_tmp);
 	
 	
 	
 	single_cell_analysis_timer->stop_timer_and_log_time_and_message("Single Cell Information Scores Calulated Neuron Group.", false);
 	printf("--- sum_of_information_scores_for_last_neuron_group: %f\n", sum_of_information_scores_for_last_neuron_group);
 	printf("--- number_of_neurons_with_maximum_information_score_in_last_neuron_group: %d\n", number_of_neurons_with_maximum_information_score_in_last_neuron_group);
+	printf("--- number_of_neurons_with_maximum_information_score_in_average_in_last_neuron_group: %d\n", number_of_neurons_with_maximum_information_score_in_average_in_last_neuron_group);
 	printf("--- maximum_information_score_count_multiplied_by_sum_of_information_scores: %f\n", maximum_information_score_count_multiplied_by_sum_of_information_scores);
 	printf("--- sum_of_maximum_information_score_for_each_neuron: %f\n", sum_of_maximum_information_score_for_each_neuron);
 	print_line_of_dashes_with_blank_lines_either_side();

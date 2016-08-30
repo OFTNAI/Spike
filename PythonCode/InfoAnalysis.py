@@ -7,19 +7,19 @@ import os;
 
 class InfoAnalysis(object):
     
-    def singleCellInfoAnalysis(self,phases,saveImage = True, showImage = True, nBins=3,weightedAnalysis = False,plotAllSingleCellInfo = False):
+    def singleCellInfoAnalysis(self,phases,saveImage = True, showImage = True, nBins=3,weightedAnalysis = False,plotAllSingleCellInfo = True):
         fig=plt.figure(4 , figsize=(20, 5),dpi=150);
         
 #         Parameters
 
-        nExcitCells = 32*32;
-        nInhibCells = 16*16;
+        nExcitCells = 64*64;#32*32;
+        nInhibCells = 32*32;#16*16;
         
 
         nObj = 3;
         nTrans = 2;
         nLayers = 4;
-        presentationTime = 1.0;
+        presentationTime = 2.0;
         
 
         nInfoCalc = nExcitCells;
