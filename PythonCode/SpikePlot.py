@@ -7,8 +7,8 @@ class SpikePlot(object):
     def plotSpikes(self,phases,saveImage = True, showImage = True):
         
         nLayers = 4;
-        exDim = 32;
-        inDim = 16;
+        exDim = 64;
+        inDim = 32;
         
 #         fn_id = "../Results/Neurons_Epoch0_SpikeIDs.bin";
 #         fn_t = "../Results/Neurons_Epoch0_SpikeTimes.bin";

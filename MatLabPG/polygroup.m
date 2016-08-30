@@ -6,6 +6,7 @@ function group=polygroup(v0,t0,neuronModel)
 global a b c d N D pp s post ppre dpre pre delay T timestep di nLayers  ExcitDim InhibDim
 model_izhikevich = 1;
 model_conductanceLIAF = 2;
+maxFiringCount = 1000;
 
 if (neuronModel==model_conductanceLIAF)
     
@@ -100,6 +101,9 @@ if (neuronModel==model_conductanceLIAF)
 
             group.firings=[group.firings; t, fired(k)];
         end;
+        if(length(group.firings)>maxFiringCount)
+            break;
+        end
     %     [min(I(:)) max(I(:))]
     %     ['test'];
     end;
@@ -167,7 +171,11 @@ elseif(neuronModel==model_izhikevich)
         end;
     %     [min(I(:)) max(I(:))]
     %     ['test'];
+        if(length(group.firings)>maxFiringCount)
+            break;
+        end
     end;
+
 end
 
 %figure;

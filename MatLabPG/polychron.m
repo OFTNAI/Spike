@@ -33,8 +33,8 @@ for trainedNet = [0,1]
     % parameters %
     % val from the simulation
     M = 50; %number of syn per neurons
-    ExcitDim = 32;
-    InhibDim = 16;
+    ExcitDim = 64;
+    InhibDim = 32;
     nLayers = 4;
     N = (ExcitDim*ExcitDim+InhibDim*InhibDim)*nLayers;% N: num neurons
     timestep = 0.00002;
@@ -42,7 +42,7 @@ for trainedNet = [0,1]
     D = 10; % D: max delay
     T= 100;              % the max length of a group to be considered;
     if(timestepMode==1)
-        T=5000;%1000;
+        T=2500;%1000;
         D = int32(D/(timestep*1000));
     end
     % parameters to be provided
@@ -52,7 +52,7 @@ for trainedNet = [0,1]
 
 
     saveImages = 0;
-    plotFigure = 1;
+    plotFigure = 0;
 
 
     if exist(networkStatesName,'file')==0
@@ -91,6 +91,14 @@ for trainedNet = [0,1]
         if(timestepMode==0)
             delays_loaded = int32(delays_loaded*timestep*1000);
         end
+        
+        cond1 = mod(postIDs_loaded,(ExcitDim*ExcitDim+InhibDim*InhibDim))<=ExcitDim*ExcitDim;
+        cond2 = postIDs_loaded > preIDs_loaded;
+        FFWeights = weights_loaded(find(cond2==1 & cond1==1));
+        figure;
+        hist(FFWeights);
+        title('Feed Forward Weight Distributions');
+        
         %uncomment the command below to test the algorithm for shuffled (randomized e->e) synapses
         %e2e = find(s>=0 & post<Ne); s(e2e) = s(e2e(randperm(length(e2e))));
 
@@ -155,16 +163,18 @@ for trainedNet = [0,1]
             pp{i_post}=post(i_post,:)+N*(delay(i_post,:)-1);
         end;
 
+        %plotDistributions(ppre,nLayers,ExcitDim,InhibDim);
+        
         save(networkStatesName);
     end
 
-
+    plotDistributions(ppre,nLayers,ExcitDim,InhibDim);
     
     
     if (neuronModel == model_conductanceLIAF)
-        sm = 0.000025*0.0055;%18 ;%biological scaling constant
+        sm = 0.00004 * 0.0035;%0.0022;%18 ;%biological scaling constant
         %sm = 1.0;
-        sm_threshold = 0.6*sm;
+        sm_threshold = 0.7*sm;
         sm_threshold_input = 0.90*sm;
         Excit2InhibRatio = 1.0;
         
@@ -184,6 +194,8 @@ for trainedNet = [0,1]
             s(inhib_begin:inhib_end,:)=s(inhib_begin:inhib_end,:)*Excit2InhibRatio;
             di(inhib_begin:inhib_end,:)=s(inhib_begin:inhib_end,:)*reversal_potential_Vhat_inhib;
         end
+        
+        
     elseif (neuronModel == model_izhikevich)
         
         % izhikevich model params:
@@ -217,7 +229,8 @@ for trainedNet = [0,1]
     if (plotFigure)
         fig = figure('position', [0, 0, 2000, 1500]);
     end
-    for i=500:(ExcitDim*ExcitDim)
+    for i=1:(ExcitDim*ExcitDim)
+%    for i=ExcitDim*ExcitDim/2:(ExcitDim*ExcitDim)
         i
         i_post = i + (ExcitDim*ExcitDim + InhibDim*InhibDim);%looking at the second layer
         anchors=1:anchor_width;                     % initial choice of anchor neurons
@@ -229,6 +242,8 @@ for trainedNet = [0,1]
     %     strong_pre=find(s(pre{i_post})>sm_threshold);    % list of the indecies of candidates for anchor neurons
         if length(strong_pre) >= anchor_width       % must be enough candidates
             while 1        % will get out of the loop via the 'break' command below
+%                 anchors
+                
                 maxDelay = max(dpre{i_post}(strong_pre(anchors)))+1;
                 gr=polygroup( ppre{i_post}(strong_pre(anchors)), maxDelay-dpre{i_post}(strong_pre(anchors)),neuronModel );
 
@@ -298,6 +313,8 @@ for trainedNet = [0,1]
                         end
                     end;
                 end
+                
+%                 length(gr.firings)
 
                 % Now, get a different combination of the anchor neurons
                 k=anchor_width;
