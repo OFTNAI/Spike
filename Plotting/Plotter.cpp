@@ -27,7 +27,7 @@ void Plotter::plot_single_cell_information_analysis(SpikeAnalyser * spike_analys
 		return;
 
 	mglGraph *gr = new mglGraph();
-	gr->SetFontSize(0.8);
+	gr->SetFontSize(2.0);
 	gr->SetSize(8000,2000);
 
 	int number_of_layers = spike_analyser_for_untrained_network->descending_maximum_information_score_for_each_neuron_vec.size();
@@ -96,6 +96,7 @@ void Plotter::plot_single_cell_information_analysis(SpikeAnalyser * spike_analys
 	}
 
 	gr->WriteFrame("output/single_cell_information_analysis.png");
+	gr->WriteFrame("output/single_cell_information_analysis.eps");
 
 
 
@@ -122,6 +123,7 @@ void Plotter::multiple_subplots_test() {
 	gr->Axis();	gr->FPlot("x");	gr->Label('x',"x",1); gr->Label('y', "y = x",0);
 
 	gr->WriteFrame("test_plot.png");	// save it
+
 
 
 }

@@ -6,21 +6,25 @@ environment,
 	results_output
 
 method
-#	efficient_global
-    coliny_solis_wets
+	efficient_global
+#    coliny_solis_wets
 	seed = 123456
 
 variables,
 
-#	continuous_design = 2			
-#	cdv_lower_bounds    0.003     0.003
-#	cdv_upper_bounds    0.250    0.250
-#	cdv_descriptor      'decay_term_tau_C'      'decay_term_tau_D'
+#discrete_design_set_integer 1
+#	        set_values 0.001 0.005 0.01 0.05 0.1 0.5
+#	        descriptors 'decay_term_tau'
 
-	continuous_design = 1			
-	cdv_lower_bounds    0.003
-	cdv_upper_bounds    0.250
-	cdv_descriptor      'decay_term_tau'
+	continuous_design = 2			
+	cdv_lower_bounds    0.003     0.003
+	cdv_upper_bounds    0.250    0.250
+	cdv_descriptor      'decay_term_tau_C'      'decay_term_tau_D'
+
+#	continuous_design = 1			
+#	cdv_lower_bounds    0.003
+#	cdv_upper_bounds    0.250
+#	cdv_descriptor      'decay_term_tau'
 
 
 # Case 1 (Massively Serial): Run Dakota in parallel and launch M-1 serial
