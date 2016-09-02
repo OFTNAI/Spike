@@ -16,7 +16,7 @@ model_conductanceLIAF = 2;
 neuronModel = model_conductanceLIAF;
 
 
-for trainedNet = [0,1]
+for trainedNet = [1]
     if (trainedNet)
         networkStatesName = 'networkStates_trained.mat'
     else

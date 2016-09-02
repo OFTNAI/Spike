@@ -424,3 +424,4 @@ void SpikeAnalyser::calculate_single_cell_information_scores_for_neuron_group(in
 
 
 }
+

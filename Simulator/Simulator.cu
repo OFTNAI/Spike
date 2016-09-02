@@ -232,7 +232,7 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 	srand(stimulus_presentation_order_seed);
 
 //	recording_electrodes->write_initial_synaptic_weights_to_file(synapses, human_readable_storage);
-	// recording_electrodes->delete_and_reset_recorded_spikes();
+	recording_electrodes->delete_and_reset_recorded_spikes();
 
 	for (int epoch_number = 0; epoch_number < number_of_epochs; epoch_number++) {
 	

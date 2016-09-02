@@ -6,20 +6,26 @@ import os;
 
 
 class InfoAnalysis(object):
+    def loadParams(self,borrowed_globals):
+        globals().update(borrowed_globals);
+    
     
     def singleCellInfoAnalysis(self,phases,saveImage = True, showImage = True, nBins=3,weightedAnalysis = False,plotAllSingleCellInfo = True):
         fig=plt.figure(4 , figsize=(20, 5),dpi=150);
         
+#         plotFRMap = True;
 #         Parameters
 
-        nExcitCells = 64*64;#32*32;
-        nInhibCells = 32*32;#16*16;
-        
-
-        nObj = 3;
-        nTrans = 2;
-        nLayers = 4;
-        presentationTime = 2.0;
+        nExcitCells = exDim*exDim;#32*32;
+        nInhibCells = inDim*inDim;#16*16;
+#         
+#         dimExcitLayers = 64;
+#         
+# 
+#         nObj = 3;
+#         nTrans = 2;
+#         nLayers = 4;
+#         presentationTime = 3.0;
         
 
         nInfoCalc = nExcitCells;
@@ -54,7 +60,25 @@ class InfoAnalysis(object):
                         for id in spikeIDs_stim:
                             FR[obj,trans,l,id]=FR[obj,trans,l,id]+1;
 #             FR = np.random.rand(nObj, nTrans,nLayers, nExcitCells)
-                        
+        
+        
+#             if(plotFRMap):
+#                 for obj in range(nObj):
+#                     for l in range(nLayers):
+#                         for trans in range(nTrans):
+#                             plt.subplot(nLayers, nTrans*nObj, (nLayers-l-1)*(nTrans*nObj)+(obj*nTrans)+trans+1);
+#                             plt.title('Firing Rate Map: obj ' + str(obj) )
+#                             
+#                             FRMap = np.zeros((exDim,exDim));
+#                             for y in range(exDim):
+#                                 for x in range(exDim):
+#                                     id = x*exDim + y;
+#                                     FRMap[y,x] = FR[obj,trans,l,id];
+#                             Rmax = 200;
+#                             plt.imshow(FRMap, cmap='jet', interpolation='none', vmin=0, vmax=Rmax)
+#                             plt.colorbar();
+#                 plt.show();
+#                 fig.savefig("../output/AvgFR.png");
             
 #             print FR;
                         
@@ -71,6 +95,7 @@ class InfoAnalysis(object):
                 else:
                     FR_tmp = FR;
                     
+                    
                 infos = np.zeros(nExcitCells);
                 
                 sumPerBin = np.zeros((nExcitCells,nBins));
@@ -84,15 +109,28 @@ class InfoAnalysis(object):
                 
                 print("**Loading data**")
                 binMatrix = np.zeros((nExcitCells, nObj, nBins));# #number of times when fr is classified into a specific bin within a specific objs's transformations
+#                 for obj in range(nObj):
+#                     print str(obj) + '/' + str(nObj);
+#                     for trans in range(nTrans):
+#                         for cell in range(nExcitCells):
+# #                             bin = np.around(FR_tmp[obj,trans,l,cell]*(nBins-1));
+#                             bin = min(np.floor((FR_tmp[obj,trans,l,cell])*(nBins)),nBins-1)
+#                             binMatrix[cell,obj,bin]=binMatrix[cell,obj,bin]+1;
+#                             
+#                             
+                
+                
+                #print binMatrix;
                 for obj in range(nObj):
                     print str(obj) + '/' + str(nObj);
                     for trans in range(nTrans):
                         for cell in range(nExcitCells):
-#                             bin = np.around(FR_tmp[obj,trans,l,cell]*(nBins-1));
-                            bin = min(np.floor((FR_tmp[obj,trans,l,cell])*(nBins)),nBins-1)
-                            binMatrix[cell,obj,bin]=binMatrix[cell,obj,bin]+1;
+                            hist = np.histogram(FR[obj,:,l,cell], bins=range(nBins+1));
+                            for bin in range(nBins):
+#                                 if(bin==2 and hist[0][bin]!=0):
+#                                     print('test');
+                                binMatrix[cell,obj,bin]=hist[0][bin];
                 
-                #print binMatrix;
                 
                 print "** single-cell information analysis **";
                 # Loop through all cells to calculate single cell information
