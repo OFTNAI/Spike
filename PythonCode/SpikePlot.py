@@ -24,6 +24,7 @@ class SpikePlot(object):
 #         inDim = 32;
         nExcitCells = exDim*exDim;#32*32;
         nInhibCells = inDim*inDim;#16*16;
+        zoomConst = 5;
         
 #         fn_id = "../Results/Neurons_Epoch0_SpikeIDs.bin";
 #         fn_t = "../Results/Neurons_Epoch0_SpikeTimes.bin";
@@ -68,7 +69,7 @@ class SpikePlot(object):
         if plotAvgFR:
             for phase in phases:
 #                 fig=plt.figure(4 , figsize=(20, 5),dpi=150);
-                zoomConst = 3;
+                
                 fig=plt.figure(4 , figsize=(zoomConst*2.5*nTrans*nObj, zoomConst*2*nLayers), dpi=1000);
                 
                 fn_id = "../output/Neurons_SpikeIDs_" + phase + "_Epoch0.bin";
@@ -95,8 +96,18 @@ class SpikePlot(object):
                 FR/=presentationTime;
     #             FR = np.random.rand(nObj, nTrans,nLayers, nExcitCells)
             
-                for obj in range(nObj):
-                    for l in range(nLayers):
+                for l in range(nLayers):
+#                     FRMap_mean = np.zeros((exDim,exDim));
+#                     for obj in range(nObj):
+#                         for trans in range(nTrans):
+#                             for y in range(exDim):
+#                                 for x in range(exDim):
+#                                     id = x*exDim + y;
+#                                     FRMap_mean[y,x] += FR[obj,trans,l,id];
+#                     FRMap_mean/=nObj;
+#                     FRMap_mean/=nTrans;
+                    
+                    for obj in range(nObj):
                         for trans in range(nTrans):
                             plt.subplot(nLayers, nTrans*nObj, (nLayers-l-1)*(nTrans*nObj)+(obj*nTrans)+trans+1);
                             plt.title('Firing Rate Map: obj ' + str(obj) )
@@ -112,7 +123,7 @@ class SpikePlot(object):
                             plt.colorbar();
 #                     plt.show();
                 fig.savefig("../output/AvgFR_"+phase+".png");
-                fig.savefig("../output/AvgFR_"+phase+".eps");
+#                 fig.savefig("../output/AvgFR_"+phase+".eps");
                 print("figure AvgFR.png is exported in output")
                 plt.clf();
                 
@@ -132,10 +143,9 @@ class SpikePlot(object):
                             for id in spikeIDs_stim:
                                 FR[obj,trans,l,id]=FR[obj,trans,l,id]+1;
                 FR/=presentationTime;
-    #             FR = np.random.rand(nObj, nTrans,nLayers, nExcitCells)
-            
-                for obj in range(nObj):
-                    for l in range(nLayers):
+                
+                for l in range(nLayers):
+                    for obj in range(nObj):
                         for trans in range(nTrans):
                             plt.subplot(nLayers, nTrans*nObj, (nLayers-l-1)*(nTrans*nObj)+(obj*nTrans)+trans+1);
                             plt.title('Firing Rate Map: obj ' + str(obj) )
@@ -151,7 +161,7 @@ class SpikePlot(object):
                             plt.colorbar();
 #                     plt.show();
                 fig.savefig("../output/AvgFR_"+phase+"_inhib.png");
-                fig.savefig("../output/AvgFR_"+phase+"_inhib.eps");
+#                 fig.savefig("../output/AvgFR_"+phase+"_inhib.eps");
                 print("figure AvgFR_inhib.png is exported in output")
                 plt.clf();
             

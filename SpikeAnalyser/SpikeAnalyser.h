@@ -61,7 +61,7 @@ public:
 	void store_spike_counts_for_stimulus_index(int stimulus_index, int * d_neuron_spike_counts_for_stimulus);
 	void calculate_various_neuron_spike_totals_and_averages(float presentation_time_per_stimulus_per_epoch);
 	void calculate_fitness_score();
-	void calculate_single_cell_information_scores_for_neuron_group(int neuron_group_index, int number_of_bins);
+	void calculate_single_cell_information_scores_for_neuron_group(int neuron_group_index, int number_of_bins, bool useThresholdForMaxFR,float optimal_max_firing_rate);
 
 };
 

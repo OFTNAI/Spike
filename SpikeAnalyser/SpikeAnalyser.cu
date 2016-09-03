@@ -190,7 +190,7 @@ void SpikeAnalyser::calculate_various_neuron_spike_totals_and_averages(float pre
 
 }
 
-void SpikeAnalyser::calculate_single_cell_information_scores_for_neuron_group(int neuron_group_index, int number_of_bins) {
+void SpikeAnalyser::calculate_single_cell_information_scores_for_neuron_group(int neuron_group_index, int number_of_bins, bool useThresholdForMaxFR, float max_firing_rate) {
 
 	TimerWithMessages * single_cell_analysis_timer = new TimerWithMessages();
 	float sum_of_maximum_information_score_for_each_neuron = 0;
@@ -240,11 +240,15 @@ void SpikeAnalyser::calculate_single_cell_information_scores_for_neuron_group(in
 
 	// 1. Find max number of spikes
 	int max_number_of_spikes = 0;
-	for (int stimulus_index = 0; stimulus_index < input_neurons->total_number_of_input_stimuli; stimulus_index++) {
-		for (int neuron_index = neuron_group_start_index; neuron_index <= neuron_group_end_index; neuron_index++) {
-			int number_of_spikes = per_stimulus_per_neuron_spike_counts[stimulus_index][neuron_index];
-			if (max_number_of_spikes < number_of_spikes) {
-				max_number_of_spikes = number_of_spikes;
+	if(useThresholdForMaxFR){
+		max_number_of_spikes = max_firing_rate;
+	}else{
+		for (int stimulus_index = 0; stimulus_index < input_neurons->total_number_of_input_stimuli; stimulus_index++) {
+			for (int neuron_index = neuron_group_start_index; neuron_index <= neuron_group_end_index; neuron_index++) {
+				int number_of_spikes = per_stimulus_per_neuron_spike_counts[stimulus_index][neuron_index];
+				if (max_number_of_spikes < number_of_spikes) {
+					max_number_of_spikes = number_of_spikes;
+				}
 			}
 		}
 	}

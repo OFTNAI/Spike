@@ -12,9 +12,10 @@ method
 
 variables,
 
-#discrete_design_set_integer 1
-#	        set_values 0.001 0.005 0.01 0.05 0.1 0.5
-#	        descriptors 'decay_term_tau'
+#discrete_design_set_real 2
+#        num_set_values 5 5
+#        set_values 0.0025 0.005 0.025 0.05 0.25 0.0025 0.005 0.025 0.05 0.25
+#        descriptors 'decay_term_tau_C' 'decay_term_tau_D'
 
 	continuous_design = 2			
 	cdv_lower_bounds    0.003     0.003

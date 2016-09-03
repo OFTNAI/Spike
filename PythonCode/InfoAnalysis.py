@@ -18,6 +18,10 @@ class InfoAnalysis(object):
 
         nExcitCells = exDim*exDim;#32*32;
         nInhibCells = inDim*inDim;#16*16;
+        
+        useMaxFRTh = True;
+        
+        maxFRTh = 100;
 #         
 #         dimExcitLayers = 64;
 #         
@@ -83,15 +87,15 @@ class InfoAnalysis(object):
 #             print FR;
                         
             performanceMeasure = 0.0;
+            FR/=presentationTime;
             
             for l in range(nLayers):
-                #normalize
+                if(not useMaxFRTh):
+                    maxFRTh = FR[:,:,l,:].max()
+                print(" Maximum Firing Rate Threshold of " + str(maxFRTh) +" is used");
+                
                 if FR[:,:,l,:].max()>0.001:
-                    FR_norm = (FR-FR[:,:,l,:].min())/(FR[:,:,l,:].max()-FR[:,:,l,:].min());
-#                     FR_norm = FR/FR[:,:,l,:].max();
-#                     FR_norm = FR/FR.max();
-                    
-                    FR_tmp = FR_norm;
+                    FR_tmp = FR/maxFRTh;
                 else:
                     FR_tmp = FR;
                     
@@ -106,30 +110,31 @@ class InfoAnalysis(object):
                 pq_r = np.zeros(nObj)#prob(s') temporally used in the decoing process
                 Ps = 1/nObj   #Prob(s) 
                 
+
                 
                 print("**Loading data**")
                 binMatrix = np.zeros((nExcitCells, nObj, nBins));# #number of times when fr is classified into a specific bin within a specific objs's transformations
-#                 for obj in range(nObj):
-#                     print str(obj) + '/' + str(nObj);
-#                     for trans in range(nTrans):
-#                         for cell in range(nExcitCells):
-# #                             bin = np.around(FR_tmp[obj,trans,l,cell]*(nBins-1));
-#                             bin = min(np.floor((FR_tmp[obj,trans,l,cell])*(nBins)),nBins-1)
-#                             binMatrix[cell,obj,bin]=binMatrix[cell,obj,bin]+1;
+                for obj in range(nObj):
+                    print str(obj) + '/' + str(nObj);
+                    for trans in range(nTrans):
+                        for cell in range(nExcitCells):
+#                             bin = np.around(FR_tmp[obj,trans,l,cell]*(nBins-1));
+                            bin = min(np.floor((FR_tmp[obj,trans,l,cell])*(nBins)),nBins-1)
+                            binMatrix[cell,obj,bin]=binMatrix[cell,obj,bin]+1;
 #                             
 #                             
                 
                 
                 #print binMatrix;
-                for obj in range(nObj):
-                    print str(obj) + '/' + str(nObj);
-                    for trans in range(nTrans):
-                        for cell in range(nExcitCells):
-                            hist = np.histogram(FR[obj,:,l,cell], bins=range(nBins+1));
-                            for bin in range(nBins):
-#                                 if(bin==2 and hist[0][bin]!=0):
-#                                     print('test');
-                                binMatrix[cell,obj,bin]=hist[0][bin];
+#                 for obj in range(nObj):
+#                     print str(obj) + '/' + str(nObj);
+#                     for trans in range(nTrans):
+#                         for cell in range(nExcitCells):                            
+# 
+#                             hist = np.histogram(FR[obj,:,l,cell], bins=range(nBins+1), range=(0,maxFRTh));
+#                             for bin in range(nBins):
+#                                 binMatrix[cell,obj,bin]=hist[0][bin];
+                                    
                 
                 
                 print "** single-cell information analysis **";
@@ -199,9 +204,11 @@ class InfoAnalysis(object):
         if saveImage:
             if (plotAllSingleCellInfo):
                 fig.savefig("../output/SingleCellInfo_ALL.png");
-                fig.savefig("../output/SingleCellInfo_ALL.eps");
+#                 fig.savefig("../output/SingleCellInfo_ALL.eps");
             else:
                   fig.savefig("../output/SingleCellInfo_MAX.png");
-                  fig.savefig("../output/SingleCellInfo_MAX.eps");              
+#                   fig.savefig("../output/SingleCellInfo_MAX.eps");              
     
             print("figure SingleCellInfo.png is exported in Results") 
+        
+        plt.close();
