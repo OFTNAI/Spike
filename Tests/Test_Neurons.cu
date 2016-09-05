@@ -353,7 +353,7 @@ TEST_CASE("Izhikevich Spiking Neurons Class") {
 			}
 		}
 
-		cast_test_neurons->update_membrane_potentials(timestep);
+		cast_test_neurons->update_membrane_potentials(timestep, current_time);
 
 		SECTION("Membrane Potential Update"){
 			// Computing what I expect the values to be:
@@ -446,8 +446,10 @@ TEST_CASE("Poisson Input Spiking Neurons Class") {
 		cast_test_neurons->copy_constants_to_device();
 		cast_test_neurons->reset_neuron_activities();
 
+		float current_time = 0.9f;
+
 		// Running the network for many timesteps and checking rate
-		cast_test_neurons->update_membrane_potentials(timestep);
+		cast_test_neurons->update_membrane_potentials(timestep, current_time);
 
 		// Copying the membrane potentials back
 		float* membrane_potentials;

@@ -202,12 +202,12 @@ TEST_CASE("RecordingElectrode") {
 		
 		SECTION("Human Readable Spike Write Test"){
 			// Save the spikes to file
-			test_record.write_spikes_to_file(0, false, true);
+			test_record.write_spikes_to_file(0, true, false);
 			// Open the saved spikes and check contents
 			std::ifstream savedspikeids;
 			std::ifstream savedspiketimes;
-			savedspikeids.open("./output/test_Epoch0_SpikeIDs.txt", std::ios::binary);
-			savedspiketimes.open("./output/test_Epoch0_SpikeTimes.txt", std::ios::binary);
+			savedspikeids.open("./output/test_SpikeIDs_Untrained_Epoch0.txt", std::ios::binary);
+			savedspiketimes.open("./output/test_SpikeTimes_Untrained_Epoch0.txt", std::ios::binary);
 			
 			// Check values
 			for (int i=0; i < 5; i++){
@@ -237,8 +237,8 @@ TEST_CASE("RecordingElectrode") {
 			// Open the saved spikes and check contents
 			std::ifstream savedspikeids;
 			std::ifstream savedspiketimes;
-			savedspikeids.open("./output/test_Epoch0_SpikeIDs.bin", std::ios::binary);
-			savedspiketimes.open("./output/test_Epoch0_SpikeTimes.bin", std::ios::binary);
+			savedspikeids.open("./output/test_SpikeIDs_Untrained_Epoch0.bin", std::ios::binary);
+			savedspiketimes.open("./output/test_SpikeTimes_Untrained_Epoch0.bin", std::ios::binary);
 			
 			// Check values
 			for (int i=0; i < 5; i++){
@@ -267,7 +267,7 @@ TEST_CASE("RecordingElectrode") {
 	SECTION("Save Network State"){
 		SECTION("Human Readable Network State Storage"){
 			// Save the network to files
-			test_record.save_network_state(&test_synapses, true);
+			test_record.write_network_state_to_file(&test_synapses, true);
 			// Open the various file outputs and check the values
 
 			std::ifstream weightfile, delayfile, prefile, postfile;
@@ -295,7 +295,7 @@ TEST_CASE("RecordingElectrode") {
 		}
 		SECTION("Machine Readable Network State Storage"){
 			// Save the network to files
-			test_record.save_network_state(&test_synapses, false);
+			test_record.write_network_state_to_file(&test_synapses, false);
 			// Open the various file outputs and check the values
 
 			std::ifstream weightfile, delayfile, prefile, postfile;
