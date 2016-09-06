@@ -112,14 +112,15 @@ for i = 1:length(content)
             
             % Dump to file list
             fprintf(iList, '%s\n', fname);
-            
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            % Workaround James wanted, it is required for infoanalysis to
-            % work: if each object as one transform, then add duplicate
-            if nrOfTransforms == 1,
-                fprintf(iList, '%s\n', fname);
-            end            
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+           
+            %% Section Removed for Spike 
+            % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            % % Workaround James wanted, it is required for infoanalysis to
+            % % work: if each object as one transform, then add duplicate
+            % if nrOfTransforms == 1,
+            %     fprintf(iList, '%s\n', fname);
+            % end            
+            % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             
             % Output star if we are going from one object to the next
             filesOutputted = filesOutputted + 1;
