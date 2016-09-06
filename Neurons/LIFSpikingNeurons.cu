@@ -27,6 +27,8 @@ int LIFSpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
 
 	lif_spiking_neuron_parameters_struct * lif_spiking_group_params = (lif_spiking_neuron_parameters_struct*)group_params;
 
+	refractory_period_in_seconds = lif_spiking_group_params->refractory_period_in_seconds;
+
 	membrane_time_constants_tau_m = (float*)realloc(membrane_time_constants_tau_m, total_number_of_neurons*sizeof(float));
 	membrane_resistances_R = (float*)realloc(membrane_resistances_R, total_number_of_neurons*sizeof(float));
 
@@ -72,8 +74,7 @@ void LIFSpikingNeurons::update_membrane_potentials(float timestep, float current
 																	d_current_injections,
 																	timestep,
 																	current_time_in_seconds,
-																	// 0.002, 
-																	0.0,
+																	refractory_period_in_seconds,
 																	total_number_of_neurons);
 
 	CudaCheckError();
@@ -88,7 +89,7 @@ __global__ void lif_update_membrane_potentials(float *d_membrane_potentials_v,
 								float* d_current_injections,
 								float timestep,
 								float current_time_in_seconds,
-								float refactory_period_in_seconds,
+								float refractory_period_in_seconds,
 								size_t total_number_of_neurons){
 
 	
@@ -96,7 +97,7 @@ __global__ void lif_update_membrane_potentials(float *d_membrane_potentials_v,
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	while (idx < total_number_of_neurons) {
 
-		if ((current_time_in_seconds - d_last_spike_time_of_each_neuron[idx]) >= refactory_period_in_seconds){
+		if ((current_time_in_seconds - d_last_spike_time_of_each_neuron[idx]) >= refractory_period_in_seconds){
 			float equation_constant = timestep / d_membrane_time_constants_tau_m[idx];
 			float membrane_potential_Vi = d_membrane_potentials_v[idx];
 			float current_injection_Ii = d_current_injections[idx];
