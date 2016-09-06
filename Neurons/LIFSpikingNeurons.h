@@ -7,10 +7,11 @@
 
 
 struct lif_spiking_neuron_parameters_struct : spiking_neuron_parameters_struct {
-	lif_spiking_neuron_parameters_struct() : somatic_capcitance_Cm(0.0f), somatic_leakage_conductance_g0(0.0f)  { spiking_neuron_parameters_struct(); }
+	lif_spiking_neuron_parameters_struct() : somatic_capcitance_Cm(0.0f), somatic_leakage_conductance_g0(0.0f), refractory_period_in_seconds(0.002f)  { spiking_neuron_parameters_struct(); }
 
 	float somatic_capcitance_Cm;
 	float somatic_leakage_conductance_g0;
+	float refractory_period_in_seconds;
 
 };
 
@@ -26,6 +27,8 @@ public:
 
 	float * d_membrane_time_constants_tau_m;
 	float * d_membrane_resistances_R;
+
+	float refractory_period_in_seconds;
 
 
 	virtual int AddGroup(neuron_parameters_struct * group_params);
