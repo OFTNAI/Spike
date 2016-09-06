@@ -28,7 +28,7 @@ public:
 	virtual int AddGroup(neuron_parameters_struct * group_params);
 	void AddGroupForEachGaborType(neuron_parameters_struct * group_params);
 
-	virtual void update_membrane_potentials(float timestep,float current_time_in_seconds);
+	virtual void update_membrane_potentials(float timestep, float current_time_in_seconds);
 	virtual int* setup_stimuli_presentation_order(Stimuli_Presentation_Struct * stimuli_presentation_params);
 	virtual bool stimulus_is_new_object_for_object_by_object_presentation(int stimulus_index);
 

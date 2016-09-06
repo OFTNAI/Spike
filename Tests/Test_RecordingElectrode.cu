@@ -149,6 +149,7 @@ TEST_CASE("RecordingElectrode") {
 					if (checked[i] == false){
 						checked[i] = true;
 						REQUIRE(spiked_neuron_ids[i] == indices[j]);
+						// printf("spiked_neuron_times[i]: %f\n", spiked_neuron_times[i]);
 						REQUIRE(spiked_neuron_times[i] == current_time);
 					} else {
 						printf("Multiple copies of a single spike!");

@@ -98,7 +98,7 @@ void SpikingNeurons::reset_neuron_activities() {
 }
 
 
-void SpikingNeurons::update_membrane_potentials(float timestep,float current_time_in_seconds) {
+void SpikingNeurons::update_membrane_potentials(float timestep, float current_time_in_seconds) {
 	
 }
 

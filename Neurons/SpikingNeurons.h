@@ -50,7 +50,7 @@ public:
 	virtual void copy_constants_to_device();
 	virtual void reset_neuron_activities();
 
-	virtual void update_membrane_potentials(float timestep,float current_time_in_seconds);
+	virtual void update_membrane_potentials(float timestep, float current_time_in_seconds);
 	virtual void check_for_neuron_spikes(float current_time_in_seconds, float timestep);
 
 };

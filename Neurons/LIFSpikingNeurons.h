@@ -45,6 +45,7 @@ __global__ void lif_update_membrane_potentials(float *d_membrane_potentials_v,
 								float* d_current_injections,
 								float timestep,
 								float current_time_in_seconds,
+								float refactory_period_in_seconds,
 								size_t total_number_of_neurons);
 
 #endif
