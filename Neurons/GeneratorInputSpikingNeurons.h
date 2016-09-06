@@ -35,7 +35,7 @@ public:
 	virtual void set_threads_per_block_and_blocks_per_grid(int threads);
 
 	virtual void check_for_neuron_spikes(float current_time_in_seconds, float timestep);
-	virtual void update_membrane_potentials(float timestep);
+	virtual void update_membrane_potentials(float timestep, float current_time_in_seconds);
 
 	void AddStimulus(int spikenumber, int* ids, float* spiketimes);
 };

@@ -62,7 +62,7 @@ void LIFSpikingNeurons::copy_constants_to_device() {
 
 
 
-void LIFSpikingNeurons::update_membrane_potentials(float timestep,float current_time_in_seconds) {
+void LIFSpikingNeurons::update_membrane_potentials(float timestep, float current_time_in_seconds) {
 
 	lif_update_membrane_potentials<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_membrane_potentials_v,
 																	d_last_spike_time_of_each_neuron,
@@ -72,6 +72,8 @@ void LIFSpikingNeurons::update_membrane_potentials(float timestep,float current_
 																	d_current_injections,
 																	timestep,
 																	current_time_in_seconds,
+																	// 0.002, 
+																	0.0,
 																	total_number_of_neurons);
 
 	CudaCheckError();
@@ -86,14 +88,15 @@ __global__ void lif_update_membrane_potentials(float *d_membrane_potentials_v,
 								float* d_current_injections,
 								float timestep,
 								float current_time_in_seconds,
+								float refactory_period_in_seconds,
 								size_t total_number_of_neurons){
 
 	
 	// // Get thread IDs
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	while (idx < total_number_of_neurons) {//reflactory period
+	while (idx < total_number_of_neurons) {
 
-		if ((current_time_in_seconds-d_last_spike_time_of_each_neuron[idx])>0.002){
+		if ((current_time_in_seconds - d_last_spike_time_of_each_neuron[idx]) >= refactory_period_in_seconds){
 			float equation_constant = timestep / d_membrane_time_constants_tau_m[idx];
 			float membrane_potential_Vi = d_membrane_potentials_v[idx];
 			float current_injection_Ii = d_current_injections[idx];
