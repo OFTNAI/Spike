@@ -1,4 +1,8 @@
 function [] = filterImageSet(inputDirectory, nrOfObjects, nrOfTransforms, imageSize, filterScale)
+%% JI INSTRUCTIONS FOR SPIKE
+% 1. In MatlabGaborFilter directory create Input directory
+% 2. Within Input directory create Images directory with images to be filtered
+% 3. From MatlabGaborFiler directory run: matlab -nodesktop -nosplash -r "filterImageSet('Inputs', 2, 1, 128, 2)"
 
 %inputDirectory = Directory where we look for /Images folder with
 %input pictures, and where we save /Filtered folder with output and
