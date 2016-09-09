@@ -77,7 +77,7 @@ FourLayerVisionSpikingModel::~FourLayerVisionSpikingModel () {
 
 
 
-void FourLayerVisionSpikingModel::step_1() {
+void FourLayerVisionSpikingModel::finalise_model(bool is_optimisation) {
 
 	lif_spiking_neurons = new LIFSpikingNeurons();
 	image_poisson_input_spiking_neurons = new ImagePoissonInputSpikingNeurons();
@@ -100,10 +100,6 @@ void FourLayerVisionSpikingModel::step_1() {
 
 	conductance_spiking_synapses->print_synapse_group_details = false;
 
-}
-
-
-void FourLayerVisionSpikingModel::step_2(bool is_optimisation) {
 
 	/////////// ADD INPUT NEURONS ///////////
 	TimerWithMessages * adding_image_poisson_input_spiking_neurons_timer = new TimerWithMessages("Adding Input Neurons...\n");
@@ -266,9 +262,5 @@ void FourLayerVisionSpikingModel::step_2(bool is_optimisation) {
 	}
 	
 	adding_synapses_timer->stop_timer_and_log_time_and_message("Synapses Added.", true);
-
-
-
-
 
 }

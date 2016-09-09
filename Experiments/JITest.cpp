@@ -54,6 +54,7 @@ using namespace std;
 // The function which will autorun when the executable is created
 int main (int argc, char *argv[]){
 	TimerWithMessages * experiment_timer = new TimerWithMessages();
+
 	const int OPTIM_BIO_CONST_LAT = 1;
 	const int OPTIM_BIO_CONST_FF = 2;
 	const int OPTIM_BIO_CONST_LAT_FF = 3;
@@ -89,8 +90,8 @@ int main (int argc, char *argv[]){
 	bool writeInformation = true;
 
 
-	FourLayerVisionSpikingModel * four_layer_vision_model = new FourLayerVisionSpikingModel();
-	four_layer_vision_model->SetTimestep(timestep);
+	FourLayerVisionSpikingModel * four_layer_vision_spiking_model = new FourLayerVisionSpikingModel();
+	four_layer_vision_spiking_model->SetTimestep(timestep);
 
 
 	// Parameters for testing
@@ -133,7 +134,7 @@ int main (int argc, char *argv[]){
 		// 		break;
 		// 	case OPTIM_FANINRAD:
 		// 		gaussian_synapses_standard_deviation_G2E_FF = stof(argv[4]);
-		// 		for (int l=1;l<four_layer_vision_model->number_of_layers-1;l++)
+		// 		for (int l=1;l<four_layer_vision_spiking_model->number_of_layers-1;l++)
 		// 			gaussian_synapses_standard_deviation_E2E_FF[l] = stof(argv[5]);
 		// 		gaussian_synapses_standard_deviation_E2I_L = stof(argv[6]);
 		// 		gaussian_synapses_standard_deviation_I2E_L = stof(argv[6]);
@@ -155,7 +156,7 @@ int main (int argc, char *argv[]){
 		// 		break;
 		// 	case OPTIM_FANINRAD_AND_SYNDECAY:
 		// 		gaussian_synapses_standard_deviation_G2E_FF = stof(argv[4]);
-		// 		for (int l=1;l<four_layer_vision_model->number_of_layers-1;l++)
+		// 		for (int l=1;l<four_layer_vision_spiking_model->number_of_layers-1;l++)
 		// 			gaussian_synapses_standard_deviation_E2E_FF[l] = stof(argv[5]);
 		// 		gaussian_synapses_standard_deviation_E2I_L = stof(argv[6]);
 		// 		gaussian_synapses_standard_deviation_I2E_L = stof(argv[6]);
@@ -164,7 +165,7 @@ int main (int argc, char *argv[]){
 		// 		decay_term_tau_D = stof(argv[7]);
 		// 		break;
 		// 	case OPTIM_FF:
-		// 		for (int l=1;l<four_layer_vision_model->number_of_layers-1;l++)
+		// 		for (int l=1;l<four_layer_vision_spiking_model->number_of_layers-1;l++)
 		// 			gaussian_synapses_standard_deviation_E2E_FF[l] = stof(argv[4]);
 		// 		biological_conductance_scaling_constant_lambda_E2E_FF = stof(argv[5]);
 		// 		break;
@@ -196,19 +197,19 @@ int main (int argc, char *argv[]){
 	}
 
 
-	four_layer_vision_model->step_1();
+	int random_states_threads_per_block_x = 128;
+	int random_states_number_of_blocks_x = 64;
+	RandomStateManager::instance()->set_up_random_states(random_states_threads_per_block_x, random_states_number_of_blocks_x, 9);
 
 
+	four_layer_vision_spiking_model->finalise_model(is_optimisation);
 
 	// Create an instance of the Simulator and set the timestep
 	Simulator simulator;
-	simulator.SetSpikingModel(four_layer_vision_model);
+	simulator.SetSpikingModel(four_layer_vision_spiking_model);
 	simulator.high_fidelity_spike_storage = true;
 
-
-	four_layer_vision_model->step_2(is_optimisation);
-
-	four_layer_vision_model->copy_model_to_device(simulator.high_fidelity_spike_storage);
+	four_layer_vision_spiking_model->copy_model_to_device(simulator.high_fidelity_spike_storage);
 
 
 	/////////// SETUP RECORDING ELECTRODES ///////////
@@ -228,15 +229,15 @@ int main (int argc, char *argv[]){
 	bool save_recorded_spikes_and_states_to_file = save_recorded_spikes_and_states_to_file_test;
 
 
-	SpikeAnalyser * spike_analyser_for_untrained_network = new SpikeAnalyser(four_layer_vision_model->spiking_neurons, four_layer_vision_model->image_poisson_input_spiking_neurons);
+	SpikeAnalyser * spike_analyser_for_untrained_network = new SpikeAnalyser(four_layer_vision_spiking_model->spiking_neurons, four_layer_vision_spiking_model->image_poisson_input_spiking_neurons);
 	spike_analyser_for_untrained_network->optimal_average_firing_rate = optimal_average_firing_rate;
 	spike_analyser_for_untrained_network->optimal_max_firing_rate = optimal_max_firing_rate;
 	if (simulate_network_to_test_untrained) {
 		simulator.RunSimulationToCountNeuronSpikes(presentation_time_per_stimulus_per_epoch, record_spikes, save_recorded_spikes_and_states_to_file, spike_analyser_for_untrained_network,human_readable_storage,isTrained);
 		
 		spike_analyser_for_untrained_network->calculate_various_neuron_spike_totals_and_averages(presentation_time_per_stimulus_per_epoch);
-		for(int l=0;l<four_layer_vision_model->number_of_layers;l++)
-			spike_analyser_for_untrained_network->calculate_single_cell_information_scores_for_neuron_group(four_layer_vision_model->EXCITATORY_NEURONS[l], number_of_bins, useThresholdForMaxFR,max_firing_rate);
+		for(int l=0;l<four_layer_vision_spiking_model->number_of_layers;l++)
+			spike_analyser_for_untrained_network->calculate_single_cell_information_scores_for_neuron_group(four_layer_vision_spiking_model->EXCITATORY_NEURONS[l], number_of_bins, useThresholdForMaxFR,max_firing_rate);
 
 		isTrained = true;
 	}
@@ -258,7 +259,7 @@ int main (int argc, char *argv[]){
 
 
 	/////////// SIMULATE NETWORK TO TEST TRAINED ///////////
-	SpikeAnalyser * spike_analyser_for_trained_network = new SpikeAnalyser(four_layer_vision_model->spiking_neurons, four_layer_vision_model->image_poisson_input_spiking_neurons);
+	SpikeAnalyser * spike_analyser_for_trained_network = new SpikeAnalyser(four_layer_vision_spiking_model->spiking_neurons, four_layer_vision_spiking_model->image_poisson_input_spiking_neurons);
 	spike_analyser_for_trained_network->optimal_average_firing_rate = optimal_average_firing_rate;
 	spike_analyser_for_trained_network->optimal_max_firing_rate = optimal_max_firing_rate;
 	if (simulate_network_to_test_trained) {
@@ -269,8 +270,8 @@ int main (int argc, char *argv[]){
 		simulator.RunSimulationToCountNeuronSpikes(presentation_time_per_stimulus_per_epoch, record_spikes, save_recorded_spikes_and_states_to_file, spike_analyser_for_trained_network,human_readable_storage,isTrained);
 
 		spike_analyser_for_trained_network->calculate_various_neuron_spike_totals_and_averages(presentation_time_per_stimulus_per_epoch);
-		for(int l=0;l<four_layer_vision_model->number_of_layers;l++)
-			spike_analyser_for_trained_network->calculate_single_cell_information_scores_for_neuron_group(four_layer_vision_model->EXCITATORY_NEURONS[l], number_of_bins,useThresholdForMaxFR,max_firing_rate);
+		for(int l=0;l<four_layer_vision_spiking_model->number_of_layers;l++)
+			spike_analyser_for_trained_network->calculate_single_cell_information_scores_for_neuron_group(four_layer_vision_spiking_model->EXCITATORY_NEURONS[l], number_of_bins,useThresholdForMaxFR,max_firing_rate);
 	}
 
 	/////////// PLOT INFOANALYSIS RESULTS //////////////////
@@ -300,23 +301,23 @@ int main (int argc, char *argv[]){
 			case OBJFUNC_AVGFR:		//output combined powered distance as a objective function of the optimization
 				spike_analyser_for_untrained_network->calculate_fitness_score();
 
-				for (int l=0;l<four_layer_vision_model->number_of_layers;l++){
+				for (int l=0;l<four_layer_vision_spiking_model->number_of_layers;l++){
 					scoreMean_excit += spike_analyser_for_untrained_network->combined_powered_distance_from_average_score_for_each_neuron_group[l*2];
 					scoreMean_inhib += spike_analyser_for_untrained_network->combined_powered_distance_from_average_score_for_each_neuron_group[l*2 + 1];
 				}
-				scoreMean_excit/=four_layer_vision_model->number_of_layers;
-				scoreMean_inhib/=four_layer_vision_model->number_of_layers;
+				scoreMean_excit/=four_layer_vision_spiking_model->number_of_layers;
+				scoreMean_inhib/=four_layer_vision_spiking_model->number_of_layers;
 				printf("avgFR score ex: %f inhib: %f \n",scoreMean_excit, scoreMean_inhib);
 				resultsfile << to_string(scoreMean_excit) <<endl << to_string(scoreMean_inhib) << endl;
 				break;
 			case OBJFUNC_MAXFR:
 				spike_analyser_for_untrained_network->calculate_fitness_score();
-				for (int l=0;l<four_layer_vision_model->number_of_layers;l++){
+				for (int l=0;l<four_layer_vision_spiking_model->number_of_layers;l++){
 					scoreMax_excit += spike_analyser_for_untrained_network->combined_powered_distance_from_max_score_for_each_neuron_group[l*2];
 					scoreMax_inhib += spike_analyser_for_untrained_network->combined_powered_distance_from_max_score_for_each_neuron_group[l*2 + 1];
 				}
-				scoreMax_excit/=four_layer_vision_model->number_of_layers;
-				scoreMax_inhib/=four_layer_vision_model->number_of_layers;
+				scoreMax_excit/=four_layer_vision_spiking_model->number_of_layers;
+				scoreMax_inhib/=four_layer_vision_spiking_model->number_of_layers;
 				printf("maxFR score ex: %f inhib: %f \n",scoreMax_excit, scoreMax_inhib);
 				resultsfile << to_string(scoreMax_excit) <<endl << to_string(scoreMax_inhib) << endl;
 				break;
@@ -334,12 +335,12 @@ int main (int argc, char *argv[]){
 				break;
 			case OBJFUNC_AVGFR_AND_MAXINFO:
 				spike_analyser_for_untrained_network->calculate_fitness_score();
-				for (int l=0;l<four_layer_vision_model->number_of_layers;l++){
+				for (int l=0;l<four_layer_vision_spiking_model->number_of_layers;l++){
 					scoreMean_excit += spike_analyser_for_untrained_network->combined_powered_distance_from_average_score_for_each_neuron_group[l*2];
 					scoreMean_inhib += spike_analyser_for_untrained_network->combined_powered_distance_from_average_score_for_each_neuron_group[l*2 + 1];
 				}
-				scoreMean_excit/=four_layer_vision_model->number_of_layers;
-				scoreMean_inhib/=four_layer_vision_model->number_of_layers;
+				scoreMean_excit/=four_layer_vision_spiking_model->number_of_layers;
+				scoreMean_inhib/=four_layer_vision_spiking_model->number_of_layers;
 				printf("avgFR score ex: %f inhib: %f \n",scoreMean_excit, scoreMean_inhib);
 				resultsfile << to_string((scoreMean_excit + scoreMean_inhib)/2) <<endl;
 
@@ -350,12 +351,12 @@ int main (int argc, char *argv[]){
 
 			case OBJFUNC_AVGFR_AND_AVGINFO:
 				spike_analyser_for_untrained_network->calculate_fitness_score();
-				for (int l=0;l<four_layer_vision_model->number_of_layers;l++){
+				for (int l=0;l<four_layer_vision_spiking_model->number_of_layers;l++){
 					scoreMean_excit += spike_analyser_for_untrained_network->combined_powered_distance_from_average_score_for_each_neuron_group[l*2];
 					scoreMean_inhib += spike_analyser_for_untrained_network->combined_powered_distance_from_average_score_for_each_neuron_group[l*2 + 1];
 				}
-				scoreMean_excit/=four_layer_vision_model->number_of_layers;
-				scoreMean_inhib/=four_layer_vision_model->number_of_layers;
+				scoreMean_excit/=four_layer_vision_spiking_model->number_of_layers;
+				scoreMean_inhib/=four_layer_vision_spiking_model->number_of_layers;
 				printf("avgFR score ex: %f inhib: %f \n",scoreMean_excit, scoreMean_inhib);
 				resultsfile << to_string((scoreMean_excit + scoreMean_inhib)/2) <<endl;
 
@@ -366,7 +367,7 @@ int main (int argc, char *argv[]){
 
 			case OBJFUNC_MAXFR_AND_AVGINFO:
 				spike_analyser_for_trained_network->calculate_fitness_score();
-				scoreMean_excit += spike_analyser_for_trained_network->combined_powered_distance_from_max_score_for_each_neuron_group[(four_layer_vision_model->number_of_layers-1)*2];
+				scoreMean_excit += spike_analyser_for_trained_network->combined_powered_distance_from_max_score_for_each_neuron_group[(four_layer_vision_spiking_model->number_of_layers-1)*2];
 				printf("maxFR score excit in the last layer: %f \n",scoreMean_excit);
 				resultsfile << to_string(scoreMean_excit) <<endl;
 
@@ -380,7 +381,7 @@ int main (int argc, char *argv[]){
 				printf("increase in number of cells with maximum info in average: %f\n", combined_information_score_training_increase);
 				resultsfile << to_string(combined_information_score_training_increase)<<endl;
 				//spike_analyser_for_trained_network->calculate_fitness_score();
-				//scoreMean_excit += spike_analyser_for_trained_network->combined_powered_distance_from_max_score_for_each_neuron_group[(four_layer_vision_model->number_of_layers-1)*2];
+				//scoreMean_excit += spike_analyser_for_trained_network->combined_powered_distance_from_max_score_for_each_neuron_group[(four_layer_vision_spiking_model->number_of_layers-1)*2];
 				//printf("maxFR score excit in the last layer: %f \n",scoreMean_excit);
 				//resultsfile << to_string(scoreMean_excit) <<endl;
 				break;
