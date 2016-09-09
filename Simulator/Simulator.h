@@ -29,6 +29,7 @@
 #include "../RecordingElectrodes/RecordingElectrodes.h"
 #include "../SpikeAnalyser/SpikeAnalyser.h"
 #include "../STDP/STDP.h"
+#include "../Models/SpikingModel.h"
 
 
 // Simulator Class for running of the simulations
@@ -38,10 +39,6 @@ public:
 	Simulator();
 	~Simulator();
 
-	SpikingNeurons * neurons;
-	SpikingSynapses * synapses;
-	InputSpikingNeurons * input_neurons;
-	STDP* stdp_rule; 
 
 	RecordingElectrodes * recording_electrodes;
 	RecordingElectrodes * input_recording_electrodes;
@@ -53,20 +50,8 @@ public:
 	float timestep;
 	void SetTimestep(float timest);
 
-	void SetNeuronType(SpikingNeurons * neurons_parameter);
-	void SetInputNeuronType(InputSpikingNeurons * neurons_parameter);
-	void SetSynapseType(SpikingSynapses * synapses_parameter);
-	void SetSTDPType(STDP* stdp_parameter);
-
-	int AddNeuronGroup(neuron_parameters_struct * group_params);
-	int AddInputNeuronGroup(neuron_parameters_struct * group_params);
-	
-	void AddSynapseGroup(int presynaptic_group_id, 
-							int postsynaptic_group_id, 
-							synapse_parameters_struct * synapse_params);
-
-	void AddSynapseGroupsForNeuronGroupAndEachInputGroup(int postsynaptic_group_id, 
-							synapse_parameters_struct * synapse_params);
+	SpikingModel * spiking_model;
+	void SetSpikingModel(SpikingModel * spiking_model_parameter);
 
 
 	void LoadWeights(int numWeights, float* newWeights);

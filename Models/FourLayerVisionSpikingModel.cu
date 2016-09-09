@@ -1,16 +1,20 @@
 #include "FourLayerVisionSpikingModel.h"
 
 
-// FourLayerVisionSpikingModel Constructor
-FourLayerVisionSpikingModel::FourLayerVisionSpikingModel (float timestep) {
+FourLayerVisionSpikingModel::FourLayerVisionSpikingModel() {
 
+}
+
+
+// FourLayerVisionSpikingModel Constructor
+FourLayerVisionSpikingModel::FourLayerVisionSpikingModel (float timestep) : SpikingModel(timestep) {  // Constructor initialization list used to call parameterised superclass constructor
 
 	E2E_L_ON = true;
 	E2E_FB_ON = false;
 	E2E_L_STDP_ON = false;
 
 	// Network Parameters
-	// const int number_of_layers = 4;
+	number_of_layers = 4;
 	max_number_of_connections_per_pair = 5;
 	dim_excit_layer = 64;
 	dim_inhib_layer = 32;
@@ -23,7 +27,8 @@ FourLayerVisionSpikingModel::FourLayerVisionSpikingModel (float timestep) {
 	fanInCount_E2E_FB = 10;
 
 	gaussian_synapses_standard_deviation_G2E_FF = 1.0;
-	gaussian_synapses_standard_deviation_E2E_FF[number_of_layers-1] = {8.0, 12.0, 16.0};
+	gaussian_synapses_standard_deviation_E2E_FF = (float*)realloc(gaussian_synapses_standard_deviation_E2E_FF, (number_of_layers - 1)*sizeof(float)); //{8.0, 12.0, 16.0};
+	// gaussian_synapses_standard_deviation_E2E_FF[number_of_layers-1] = {8.0, 12.0, 16.0};
 	gaussian_synapses_standard_deviation_E2I_L = 1.0;
 	gaussian_synapses_standard_deviation_I2E_L = 8.0;
 	gaussian_synapses_standard_deviation_E2E_L = 4.0;
@@ -77,41 +82,47 @@ FourLayerVisionSpikingModel::~FourLayerVisionSpikingModel () {
 
 
 
-FourLayerVisionSpikingModel::step_1() {
+void FourLayerVisionSpikingModel::step_1() {
 
 	lif_spiking_neurons = new LIFSpikingNeurons();
-	input_neurons = new ImagePoissonInputSpikingNeurons();
+	image_poisson_input_spiking_neurons = new ImagePoissonInputSpikingNeurons();
 	conductance_spiking_synapses = new ConductanceSpikingSynapses();
 	evans_stdp = new EvansSTDP();
+
+	spiking_neurons = lif_spiking_neurons;
+	spiking_synapses = conductance_spiking_synapses;
+	input_spiking_neurons = image_poisson_input_spiking_neurons;
+	stdp_rule = evans_stdp; 
 
 	/////////// STDP SETUP ///////////
 	evans_stdp_parameters_struct * STDP_PARAMS = new evans_stdp_parameters_struct();
 	STDP_PARAMS->decay_term_tau_C = decay_term_tau_C;
 	STDP_PARAMS->decay_term_tau_D = decay_term_tau_D;
 	STDP_PARAMS->learning_rate_rho = learning_rate_rho;
-	evans_stdp->Set_STDP_Parameters((SpikingSynapses *) conductance_spiking_synapses, (SpikingNeurons *) lif_spiking_neurons, (SpikingNeurons *) input_neurons, (stdp_parameters_struct *) STDP_PARAMS);
+	evans_stdp->Set_STDP_Parameters((SpikingSynapses *) conductance_spiking_synapses, (SpikingNeurons *) lif_spiking_neurons, (SpikingNeurons *) image_poisson_input_spiking_neurons, (stdp_parameters_struct *) STDP_PARAMS);
+
+
+
+	conductance_spiking_synapses->print_synapse_group_details = false;
 
 }
 
 
-FourLayerVisionSpikingModel::step_2 () {
-
-
-	/// PROBABLY NEED TO INITIALISE RANDOM STATES BEFORE THIS
+void FourLayerVisionSpikingModel::step_2(bool is_optimisation) {
 
 	/////////// ADD INPUT NEURONS ///////////
-	TimerWithMessages * adding_input_neurons_timer = new TimerWithMessages("Adding Input Neurons...\n");
+	TimerWithMessages * adding_image_poisson_input_spiking_neurons_timer = new TimerWithMessages("Adding Input Neurons...\n");
 
 	if (is_optimisation)
-		input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "../../MatlabGaborFilter/Inputs/", 100.0f);
+		image_poisson_input_spiking_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "../../MatlabGaborFilter/Inputs/", 100.0f);
 	else
-		input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "MatlabGaborFilter/Inputs/", 100.0f);
+		image_poisson_input_spiking_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "MatlabGaborFilter/Inputs/", 100.0f);
 
 	image_poisson_input_spiking_neuron_parameters_struct * image_poisson_input_spiking_group_params = new image_poisson_input_spiking_neuron_parameters_struct();
 	image_poisson_input_spiking_group_params->rate = 30.0f; // ??????
-	input_neurons->AddGroupForEachGaborType(image_poisson_input_spiking_group_params);
+	image_poisson_input_spiking_neurons->AddGroupForEachGaborType(image_poisson_input_spiking_group_params);
 
-	adding_input_neurons_timer->stop_timer_and_log_time_and_message("Input Neurons Added.", true);
+	adding_image_poisson_input_spiking_neurons_timer->stop_timer_and_log_time_and_message("Input Neurons Added.", true);
 
 
 
@@ -139,8 +150,8 @@ FourLayerVisionSpikingModel::step_2 () {
 
 	
 	for (int l=0;l<number_of_layers;l++){
-		EXCITATORY_NEURONS.push_back(simulator.AddNeuronGroup(EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS));
-		INHIBITORY_NEURONS.push_back(simulator.AddNeuronGroup(INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS));
+		EXCITATORY_NEURONS.push_back(AddNeuronGroup(EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS));
+		INHIBITORY_NEURONS.push_back(AddNeuronGroup(INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS));
 		cout<<"Neuron Group "<<EXCITATORY_NEURONS[l]<<": Excitatory layer "<<l<<endl;
 		cout<<"Neuron Group "<<INHIBITORY_NEURONS[l]<<": Inhibitory layer "<<l<<endl;
 	}
@@ -243,5 +254,26 @@ FourLayerVisionSpikingModel::step_2 () {
 		E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->weight_range_bottom = weight_range_bottom;
 		E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->weight_range_top = weight_range_top;
 	}
+
+	for (int l=0; l<number_of_layers; l++){
+	if(l==0)
+		AddSynapseGroupsForNeuronGroupAndEachInputGroup(EXCITATORY_NEURONS[l], G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
+	else{
+		E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_standard_deviation = gaussian_synapses_standard_deviation_E2E_FF[l-1];
+		AddSynapseGroup(EXCITATORY_NEURONS[l-1], EXCITATORY_NEURONS[l], E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
+		if(E2E_FB_ON)
+			AddSynapseGroup(EXCITATORY_NEURONS[l], EXCITATORY_NEURONS[l-1], E2E_FB_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
+	}
+	AddSynapseGroup(EXCITATORY_NEURONS[l], INHIBITORY_NEURONS[l], E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
+	AddSynapseGroup(INHIBITORY_NEURONS[l], EXCITATORY_NEURONS[l], I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
+	if(E2E_L_ON)
+		AddSynapseGroup(EXCITATORY_NEURONS[l], EXCITATORY_NEURONS[l], E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
+	}
+	
+	adding_synapses_timer->stop_timer_and_log_time_and_message("Synapses Added.", true);
+
+
+
+
 
 }
