@@ -1,34 +1,15 @@
 #ifndef FourLayerVisionSpikingModel_H
 #define FourLayerVisionSpikingModel_H
 
-#include <cuda.h>
-#include <stdio.h>
-#include "../Simulator/Simulator.h"
-#include "../Synapses/ConductanceSpikingSynapses.h"
-#include "../STDP/STDP.h"
-#include "../STDP/EvansSTDP.h"
-#include "../Neurons/Neurons.h"
-#include "../Neurons/SpikingNeurons.h"
-#include "../Neurons/LIFSpikingNeurons.h"
-#include "../Neurons/ImagePoissonInputSpikingNeurons.h"
-#include "../Helpers/TerminalHelpers.h"
-#include "../SpikeAnalyser/SpikeAnalyser.h"
-#include "../Helpers/TimerWithMessages.h"
-#include "../Helpers/RandomStateManager.h"
-#include <string>
-#include <fstream>
-#include "../Plotting/Plotter.h"
-#include <vector>
-
-#include <iostream>
-using namespace std;
+#include "SpikingModel.h"
 
 
-class FourLayerVisionSpikingModel : public Neurons {
+class FourLayerVisionSpikingModel : public SpikingModel {
 
 public:
 
 	// Constructor/Destructor
+	FourLayerVisionSpikingModel();
 	FourLayerVisionSpikingModel(float timestep);
 	~FourLayerVisionSpikingModel();
 
@@ -37,7 +18,7 @@ public:
 	bool E2E_L_STDP_ON;
 
 	// Network Parameters
-	const int number_of_layers;
+	int number_of_layers;
 	int max_number_of_connections_per_pair;
 	int dim_excit_layer;
 	int dim_inhib_layer;
@@ -50,7 +31,7 @@ public:
 	int fanInCount_E2E_FB;
 
 	float gaussian_synapses_standard_deviation_G2E_FF;
-	float gaussian_synapses_standard_deviation_E2E_FF[number_of_layers-1] = {8.0, 12.0, 16.0};
+	float * gaussian_synapses_standard_deviation_E2E_FF;
 	float gaussian_synapses_standard_deviation_E2I_L;
 	float gaussian_synapses_standard_deviation_I2E_L;
 	float gaussian_synapses_standard_deviation_E2E_L;
@@ -97,16 +78,18 @@ public:
 
 
 	LIFSpikingNeurons * lif_spiking_neurons;
-	ImagePoissonInputSpikingNeurons * input_neurons;
+	ImagePoissonInputSpikingNeurons * image_poisson_input_spiking_neurons;
 	ConductanceSpikingSynapses * conductance_spiking_synapses;
 	EvansSTDP * evans_stdp;
 
 
 
-
-
 	vector<int> EXCITATORY_NEURONS;
 	vector<int> INHIBITORY_NEURONS;
+
+
+	void step_1();
+	void step_2(bool is_optimisation);
 
 
 };
