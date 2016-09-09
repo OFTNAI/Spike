@@ -20,7 +20,9 @@ def corr2(a,b):
         r = (a*b).sum();
     return r        
 
-experimentName = '20160904_FF_successful';
+# experimentName = '20160904_FF_successful';
+# experimentName = '20160908_FF_LAT';
+experimentName = '20160909_FF_noLat';
 phases = ['Untrained','Trained'];
 # phases = ['Untrained'];
 # phases = ['Trained'];
@@ -45,6 +47,14 @@ weightedAnalysis = False;
 plotAllSingleCellInfo = True;
 
 fig=plt.figure(4 , figsize=(20, 5),dpi=150);
+
+# I = np.zeros((nObj*nTrans,nObj*nTrans));
+# for obj in range(nObj):
+#     for index_r in range(obj*nTrans,obj*nTrans+nTrans):
+#         for index_c in range(obj*nTrans,obj*nTrans+nTrans):
+#             I[index_r,index_c] = 1.0;
+
+
 phaseIndex=1;
 for phase in phases:
     maxSCindex=np.zeros((nObj,nTrans,4,nExcitCells));
@@ -61,6 +71,11 @@ for phase in phases:
          
         spikeIDs = np.fromfile(fn_id, dtype=dtIDs);
         spikeTimes = (np.fromfile(fn_t, dtype=dtTimes)*1000).astype(int);
+        
+        cond = spikeTimes>0;
+        spikeIDs = np.extract(cond,spikeIDs);
+        spikeTimes = np.extract(cond, spikeTimes)
+        
          
         cond_ids = (l*(nExcitCells+nInhibCells) < spikeIDs) & (spikeIDs < l*(nInhibCells+nExcitCells)+nExcitCells) & (spikeTimes<presentationTime*nObj*nTrans);
         spikeIDs_layer = np.extract(cond_ids, spikeIDs)-l*(nExcitCells+nInhibCells);
@@ -137,7 +152,8 @@ for phase in phases:
     for obj in range(nObj):
         for trans in range(nTrans):
             labels.append('obj:'+str(obj)+', trans:'+str(trans));
-    
+
+
     for row in range(nObj*nTrans):#row = obj*trans+i
         print(str(round(row*100.0/(nObj*nTrans))));
         row_trans_i = row%nTrans;
@@ -156,126 +172,38 @@ for phase in phases:
 
     
     RSM/=RSM.max();
+    
+    
+    
+    measure = 0.0;
+    count = 0;
+    for row in range(nObj*nTrans):
+        for col in range(row+1,nObj*nTrans):
+            print(str(row)+' '+str(col));
+            if math.floor(row/nTrans)==math.floor(col/nTrans):
+                measure+=(1-RSM[row,col]);
+#                 print('plus');
+            else:
+                measure+=(RSM[row,col]-0);
+#                 print('minus');
+            count+=1;
+            
+    measure/=count;
+    print(1-measure);
+    
+    
     plt.subplot(1,2,phaseIndex);
     plt.imshow(RSM,interpolation='none');
-    plt.title(phase);
+    plt.title(phase + ' (' +str(1-measure)+')');
     x = range(nObj*nTrans);
     y = range(nObj*nTrans);
     plt.xticks(x, labels, rotation='vertical')
     plt.yticks(y, labels, rotation='horizontal')
-    
-#     performanceMeasure = 0.0;
-#     
-#     if(not useMaxFRTh):
-#         maxFRTh = maxSCindex[:,:,l,:].max()
-#     print(" Maximum Firing Rate Threshold of " + str(maxFRTh) +" is used");
-#     
-#     if maxSCindex[:,:,l,:].max()!=0:
-#         FR_tmp = maxSCindex/maxFRTh;
-#     else:
-#         FR_tmp = maxSCindex;
-#         
-#         
-#     infos = np.zeros(nExcitCells);
-#     
-#     sumPerBin = np.zeros((nExcitCells,nBins));
-#     sumPerObj = nTrans;
-#     sumPerCell = nTrans*nObj;
-#     IRs = np.zeros((nObj,nExcitCells));#I(R,s) single cell information
-#     IRs_weighted = np.zeros((nObj,nExcitCells));#I(R,s) single cell information
-#     pq_r = np.zeros(nObj)#prob(s') temporally used in the decoing process
-#     Ps = 1/nObj   #Prob(s) 
-#     
-# 
-#     
-#     print("**Loading data**")
-#     binMatrix = np.zeros((nExcitCells, nObj, nBins));# #number of times when fr is classified into a specific bin within a specific objs's transformations
-#     for obj in range(nObj):
-#         print str(obj) + '/' + str(nObj);
-#         for trans in range(nTrans):
-#             for cell in range(nExcitCells):
-# #                             bin = np.around(FR_tmp[obj,trans,l,cell]*(nBins-1));
-#                 bin = min(np.floor((FR_tmp[obj,trans,l,cell])*(nBins)),nBins-1)
-#                 binMatrix[cell,obj,bin]=binMatrix[cell,obj,bin]+1;
-# 
-#     
-#     print "** single-cell information analysis **";
-#     # Loop through all cells to calculate single cell information
-#     for cell in range(nExcitCells):
-#         # For each cell, count the number of transforms per bin
-#         for bin in range(nBins):
-#             for obj in range(nObj):
-#                 sumPerBin[cell,bin]+=binMatrix[cell,obj,bin];
-# 
-#         # Calculate the information for cell_x cell_y per stimulus
-#         for obj in range(nObj):
-#             for bin in range(nBins):
-#                 Pr = sumPerBin[cell,bin]/sumPerCell;
-#                 Prs = binMatrix[cell,obj,bin]/sumPerObj;
-#                 if(Pr!=0 and Prs!=0 and Pr<Prs):
-#                     IRs[obj,cell]+=(Prs*(np.log2(Prs/Pr)));#*((bin-1)/(nBins-1)); #could be added to weight the degree of firing rates.
-#                     #IRs(row,col,obj)=IRs(row,col,obj)+(Prs*(log2(Prs/Pr)))*((bin-1)/(nBins-1)); #could be added to weight the degree of firing rates.
-#                     IRs_weighted[obj,cell]+=(Prs*(np.log2(Prs/Pr)))*((bin)/(nBins-1)); #could be added to weight the degree of firing rates.
-#  
-#     if (weightedAnalysis):
-#         IRs = IRs_weighted;
-#     
-#     
-#     if (plotAllSingleCellInfo):
-#         IRs_sorted = np.sort(IRs*-1)*-1;
-# #         plt.subplot(2,nLayers,(phaseIndex-1)*nLayers+(l+1));
-#         plt.subplot(1,2,phaseIndex);
-# 
-# #                     plt.plot(np.transpose(IRs_sorted), color='k');
-#         plt.plot(np.transpose(IRs_sorted));
-#         
-#         plt.ylim([-0.05, np.log2(nObj)+0.05]);
-#         plt.xlim([0, nExcitCells])
-#         plt.title("Layer " + str(l));
-#         plt.ylabel("Information [bit]");
-#         plt.xlabel("Cell Rank");
-#         
-#     else:
-#         IRs = np.max(IRs,axis=0);
-#         
-#         IRs_sorted = np.transpose(np.sort(IRs));
-#         reversed_arr = IRs_sorted[::-1]
-#     
-#     
-#         infos = reversed_arr;
-#     
-# #         plt.subplot(1,nLayers,l+1);
-# 
-#         if phaseIndex==1:
-#             plt.plot(np.transpose(infos), linestyle='--', color='k');
-#         elif phaseIndex==2:
-#             plt.plot(np.transpose(infos), linestyle='-', color='k');
-#         plt.ylim([-0.05, np.log2(nObj)+0.05]);
-#         plt.xlim([0, nExcitCells])
-#         plt.title("Layer " + str(l));
-#         plt.ylabel("Information [bit]");
-#         plt.xlabel("Cell Rank");
-#         plt.hold( );
-                
-        
-
-#         plt.savefig(os.path.split(os.path.realpath(__file__))[0] +"/Results/"+experimentName+"/singleCellInfo_bin"+str(nBins)+".png");
-#         plt.savefig(os.path.split(os.path.realpath(__file__))[0] +"/Results/"+experimentName+"/singleCellInfo_bin"+str(nBins)+".eps");
+#     print(corr2(RSM,I));
     phaseIndex+=1;
-plt.show();
-# if showImage:
-#     plt.show();
-# if saveImage:
-#     if (plotAllSingleCellInfo):
-#         fig.savefig("../output/"+experimentName+"/Chain_SingleCellInfo_ALL.png");
-# #                 fig.savefig("../output/SingleCellInfo_ALL.eps");
-#     else:
-#           fig.savefig("../output/"+experimentName+"/Chain_SingleCellInfo_MAX.png");
-# #                   fig.savefig("../output/SingleCellInfo_MAX.eps");              
-# 
-#     print("figure SingleCellInfo.png is exported in Results") 
-# 
-# plt.close();
+fig.savefig("../output/"+experimentName+"/SpikeChain_RSA.png");
+fig.savefig("../output/"+experimentName+"/SpikeChain_RSA.eps");
+# plt.show();
 
 
 
