@@ -28,11 +28,11 @@ public:
 
 	// Constructor/Destructor
 	SpikingModel();
-	SpikingModel(float timestep_parameter);
 	~SpikingModel();
 
 
 	float timestep;
+	void SetTimestep(float timestep_parameter);
 
 	SpikingNeurons * spiking_neurons;
 	SpikingSynapses * spiking_synapses;

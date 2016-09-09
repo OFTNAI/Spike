@@ -47,8 +47,6 @@ public:
 	bool high_fidelity_spike_storage;
 
 	// Parameters
-	float timestep;
-	void SetTimestep(float timest);
 
 	SpikingModel * spiking_model;
 	void SetSpikingModel(SpikingModel * spiking_model_parameter);

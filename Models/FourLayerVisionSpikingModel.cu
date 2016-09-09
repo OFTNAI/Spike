@@ -1,13 +1,8 @@
 #include "FourLayerVisionSpikingModel.h"
 
 
-FourLayerVisionSpikingModel::FourLayerVisionSpikingModel() {
-
-}
-
-
 // FourLayerVisionSpikingModel Constructor
-FourLayerVisionSpikingModel::FourLayerVisionSpikingModel (float timestep) : SpikingModel(timestep) {  // Constructor initialization list used to call parameterised superclass constructor
+FourLayerVisionSpikingModel::FourLayerVisionSpikingModel () { 
 
 	E2E_L_ON = true;
 	E2E_FB_ON = false;
