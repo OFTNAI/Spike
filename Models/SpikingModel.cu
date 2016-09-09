@@ -82,14 +82,7 @@ void SpikingModel::AddSynapseGroupsForNeuronGroupAndEachInputGroup(int postsynap
 
 
 
-
-
-void SpikingModel::step_1() {
-
-}
-
-
-void SpikingModel::step_2 (bool is_optimisation) {
+void SpikingModel::finalise_model(bool is_optimisation) {
 
 }
 
