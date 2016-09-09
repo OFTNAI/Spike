@@ -10,7 +10,6 @@ public:
 
 	// Constructor/Destructor
 	FourLayerVisionSpikingModel();
-	FourLayerVisionSpikingModel(float timestep);
 	~FourLayerVisionSpikingModel();
 
 	bool E2E_L_ON;

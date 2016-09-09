@@ -89,7 +89,8 @@ int main (int argc, char *argv[]){
 	bool writeInformation = true;
 
 
-	FourLayerVisionSpikingModel * four_layer_vision_model = new FourLayerVisionSpikingModel(timestep);
+	FourLayerVisionSpikingModel * four_layer_vision_model = new FourLayerVisionSpikingModel();
+	four_layer_vision_model->SetTimestep(timestep);
 
 
 	// Parameters for testing
@@ -202,7 +203,6 @@ int main (int argc, char *argv[]){
 	// Create an instance of the Simulator and set the timestep
 	Simulator simulator;
 	simulator.SetSpikingModel(four_layer_vision_model);
-	simulator.SetTimestep(timestep);
 	simulator.high_fidelity_spike_storage = true;
 
 

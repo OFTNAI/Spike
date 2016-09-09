@@ -22,7 +22,6 @@
 Simulator::Simulator(){
 
 	// Default parameters
-	timestep = 0.0001f;
 
 	recording_electrodes = NULL;
 	input_recording_electrodes = NULL;
@@ -48,17 +47,6 @@ Simulator::Simulator(){
 // Destructor
 Simulator::~Simulator(){
 
-}
-
-
-
-void Simulator::SetTimestep(float timest){
-
-	if ((spiking_model->spiking_synapses == NULL) || (spiking_model->spiking_synapses->total_number_of_synapses == 0)) {
-		timestep = timest;
-	} else {
-		print_message_and_exit("You must set the timestep before creating any synapses.");
-	}
 }
 
 
@@ -136,7 +124,7 @@ void Simulator::RunSimulationToTrainNetwork(float presentation_time_per_stimulus
 
 void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, bool record_spikes, bool save_recorded_spikes_and_states_to_file, bool apply_stdp_to_relevant_synapses, bool count_spikes_per_neuron, Stimuli_Presentation_Struct * stimuli_presentation_params, int stimulus_presentation_order_seed, SpikeAnalyser *spike_analyser, bool human_readable_storage, bool isTrained){
 
-	check_for_epochs_and_begin_simulation_message(timestep, spiking_model->input_spiking_neurons->total_number_of_input_stimuli, number_of_epochs, record_spikes, save_recorded_spikes_and_states_to_file, spiking_model->spiking_neurons->total_number_of_neurons, spiking_model->input_spiking_neurons->total_number_of_neurons, spiking_model->spiking_synapses->total_number_of_synapses);
+	check_for_epochs_and_begin_simulation_message(spiking_model->timestep, spiking_model->input_spiking_neurons->total_number_of_input_stimuli, number_of_epochs, record_spikes, save_recorded_spikes_and_states_to_file, spiking_model->spiking_neurons->total_number_of_neurons, spiking_model->input_spiking_neurons->total_number_of_neurons, spiking_model->spiking_synapses->total_number_of_synapses);
 	// Should print something about stimuli_presentation_params as old stuff removed from check_for_epochs...
 	TimerWithMessages * simulation_timer = new TimerWithMessages();
 
@@ -197,7 +185,7 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 			spiking_model->input_spiking_neurons->current_stimulus_index = stimuli_presentation_order[stimulus_index];
 			spiking_model->input_spiking_neurons->reset_neuron_activities();
 
-			int number_of_timesteps_per_stimulus_per_epoch = presentation_time_per_stimulus_per_epoch / timestep;
+			int number_of_timesteps_per_stimulus_per_epoch = presentation_time_per_stimulus_per_epoch / spiking_model->timestep;
 		
 			for (int timestep_index = 0; timestep_index < number_of_timesteps_per_stimulus_per_epoch; timestep_index++){
 				
@@ -224,7 +212,7 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 					}
 				}
 
-				current_time_in_seconds += float(timestep);
+				current_time_in_seconds += float(spiking_model->timestep);
 
 			}
 
@@ -272,18 +260,18 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 
 void Simulator::per_timestep_instructions(float current_time_in_seconds, bool apply_stdp_to_relevant_synapses){
 
-	spiking_model->spiking_neurons->check_for_neuron_spikes(current_time_in_seconds, timestep);
-	spiking_model->input_spiking_neurons->check_for_neuron_spikes(current_time_in_seconds, timestep);
+	spiking_model->spiking_neurons->check_for_neuron_spikes(current_time_in_seconds, spiking_model->timestep);
+	spiking_model->input_spiking_neurons->check_for_neuron_spikes(current_time_in_seconds, spiking_model->timestep);
 
-	spiking_model->spiking_synapses->interact_spikes_with_synapses(spiking_model->spiking_neurons, spiking_model->input_spiking_neurons, current_time_in_seconds, timestep);
+	spiking_model->spiking_synapses->interact_spikes_with_synapses(spiking_model->spiking_neurons, spiking_model->input_spiking_neurons, current_time_in_seconds, spiking_model->timestep);
 
-	spiking_model->spiking_synapses->calculate_postsynaptic_current_injection(spiking_model->spiking_neurons, current_time_in_seconds, timestep);
+	spiking_model->spiking_synapses->calculate_postsynaptic_current_injection(spiking_model->spiking_neurons, current_time_in_seconds, spiking_model->timestep);
 
 	if (apply_stdp_to_relevant_synapses){
-		spiking_model->stdp_rule->Run_STDP(spiking_model->spiking_neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds, timestep);
+		spiking_model->stdp_rule->Run_STDP(spiking_model->spiking_neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds, spiking_model->timestep);
 	}
 
-	spiking_model->spiking_neurons->update_membrane_potentials(timestep,current_time_in_seconds);
-	spiking_model->input_spiking_neurons->update_membrane_potentials(timestep,current_time_in_seconds);
+	spiking_model->spiking_neurons->update_membrane_potentials(spiking_model->timestep, current_time_in_seconds);
+	spiking_model->input_spiking_neurons->update_membrane_potentials(spiking_model->timestep, current_time_in_seconds);
 
 }
