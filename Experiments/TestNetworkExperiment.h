@@ -7,20 +7,15 @@
 #include "../Simulator/Simulator.h"
 #include "../Models/FourLayerVisionSpikingModel.h"
 #include "../SpikeAnalyser/SpikeAnalyser.h"
+#include "NetworkExperiment.h"
 
-
-class TestNetworkExperiment {
+class TestNetworkExperiment : public NetworkExperiment {
 public:
 	// Constructor/Destructor
 	TestNetworkExperiment();
 	~TestNetworkExperiment();
 
-	Simulator * simulator;
-	FourLayerVisionSpikingModel * four_layer_vision_spiking_model;
 	SpikeAnalyser * spike_analyser;
-
-	bool experiment_prepared;
-	bool experiment_run;
 
 	float presentation_time_per_stimulus_per_epoch;
 
