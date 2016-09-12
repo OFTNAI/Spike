@@ -138,7 +138,7 @@ FourLayerVisionSpikingModel::~FourLayerVisionSpikingModel () {
 
 
 
-void FourLayerVisionSpikingModel::finalise_model(bool is_optimisation) {
+void FourLayerVisionSpikingModel::finalise_model() {
 
 	lif_spiking_neurons = new LIFSpikingNeurons();
 	image_poisson_input_spiking_neurons = new ImagePoissonInputSpikingNeurons();
@@ -165,9 +165,9 @@ void FourLayerVisionSpikingModel::finalise_model(bool is_optimisation) {
 	/////////// ADD INPUT NEURONS ///////////
 	TimerWithMessages * adding_image_poisson_input_spiking_neurons_timer = new TimerWithMessages("Adding Input Neurons...\n");
 
-	if (is_optimisation)
-		image_poisson_input_spiking_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "../../MatlabGaborFilter/Inputs/", 100.0f);
-	else
+	// if (is_optimisation)
+	// 	image_poisson_input_spiking_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "../../MatlabGaborFilter/Inputs/", 100.0f);
+	// else
 		image_poisson_input_spiking_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "MatlabGaborFilter/Inputs/", 100.0f);
 
 	image_poisson_input_spiking_neuron_parameters_struct * image_poisson_input_spiking_group_params = new image_poisson_input_spiking_neuron_parameters_struct();

@@ -90,7 +90,7 @@ public:
 	vector<int> INHIBITORY_NEURONS;
 
 
-	void finalise_model(bool is_optimisation);
+	virtual void finalise_model();
 
 
 };

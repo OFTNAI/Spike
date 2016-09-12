@@ -46,7 +46,7 @@ public:
 	void AddSynapseGroup(int presynaptic_group_id, int postsynaptic_group_id, synapse_parameters_struct * synapse_params);
 	void AddSynapseGroupsForNeuronGroupAndEachInputGroup(int postsynaptic_group_id, synapse_parameters_struct * synapse_params);
 
-	void finalise_model(bool is_optimisation);
+	virtual void finalise_model();
 	void copy_model_to_device(bool high_fidelity_spike_storage);
 
 };
