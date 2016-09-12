@@ -57,8 +57,6 @@ public:
 
 
 	//Synaptic Parameters
-	float weight_range_bottom;
-	float weight_range_top;
 	float learning_rate_rho;//100.0;// 0.1;
 	float decay_term_tau_C;
 	float decay_term_tau_D;
