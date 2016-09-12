@@ -6,6 +6,7 @@ FourLayerVisionSpikingModel::FourLayerVisionSpikingModel () {
 
 	E2E_L_ON = true;
 	E2E_FB_ON = false;
+	LI_ON = true;
 	E2E_L_STDP_ON = false;
 
 	// Network Parameters
@@ -21,13 +22,35 @@ FourLayerVisionSpikingModel::FourLayerVisionSpikingModel () {
 	fanInCount_E2E_L = 10;
 	fanInCount_E2E_FB = 10;
 
-	gaussian_synapses_standard_deviation_G2E_FF = 1.0;
-	gaussian_synapses_standard_deviation_E2E_FF = (float*)realloc(gaussian_synapses_standard_deviation_E2E_FF, (number_of_layers - 1)*sizeof(float)); //{8.0, 12.0, 16.0};
-	// gaussian_synapses_standard_deviation_E2E_FF[number_of_layers-1] = {8.0, 12.0, 16.0};
-	gaussian_synapses_standard_deviation_E2I_L = 1.0;
-	gaussian_synapses_standard_deviation_I2E_L = 8.0;
-	gaussian_synapses_standard_deviation_E2E_L = 4.0;
-	gaussian_synapses_standard_deviation_E2E_FB = 16.0;
+	gaussian_synapses_sd_G2E_FF = 1.0;
+	LBL_gaussian_synapses_sd_E2E_FF = (float*)realloc(LBL_gaussian_synapses_sd_E2E_FF, (number_of_layers - 1)*sizeof(float));
+	LBL_gaussian_synapses_sd_E2E_FF[0] = 8.0;
+	LBL_gaussian_synapses_sd_E2E_FF[1] = 12.0;
+	LBL_gaussian_synapses_sd_E2E_FF[2] = 16.0;
+	LBL_gaussian_synapses_sd_E2I_L = (float*)realloc(LBL_gaussian_synapses_sd_E2I_L, (number_of_layers - 1)*sizeof(float));
+	LBL_gaussian_synapses_sd_E2I_L[0] = 1.0;
+	LBL_gaussian_synapses_sd_E2I_L[1] = 1.0;
+	LBL_gaussian_synapses_sd_E2I_L[2] = 1.0;
+	LBL_gaussian_synapses_sd_I2E_L = (float*)realloc(LBL_gaussian_synapses_sd_I2E_L, (number_of_layers - 1)*sizeof(float));
+	LBL_gaussian_synapses_sd_I2E_L[0] = 8.0;
+	LBL_gaussian_synapses_sd_I2E_L[1] = 8.0;
+	LBL_gaussian_synapses_sd_I2E_L[2] = 8.0;
+	LBL_gaussian_synapses_sd_E2E_L = (float*)realloc(LBL_gaussian_synapses_sd_E2E_L, (number_of_layers - 1)*sizeof(float));
+	LBL_gaussian_synapses_sd_E2E_L[0] = 4.0;
+	LBL_gaussian_synapses_sd_E2E_L[1] = 4.0;
+	LBL_gaussian_synapses_sd_E2E_L[2] = 4.0;
+	LBL_gaussian_synapses_sd_E2E_FB = (float*)realloc(LBL_gaussian_synapses_sd_E2E_FB, (number_of_layers - 1)*sizeof(float));
+	LBL_gaussian_synapses_sd_E2E_FB[0] = 16.0;
+	LBL_gaussian_synapses_sd_E2E_FB[1] = 16.0;
+	LBL_gaussian_synapses_sd_E2E_FB[2] = 16.0;
+
+	for (int i = 3; i < number_of_layers - 1; i++) {
+		LBL_gaussian_synapses_sd_E2E_FF[i] = 16.0;
+		LBL_gaussian_synapses_sd_E2I_L[i] = 1.0;
+		LBL_gaussian_synapses_sd_I2E_L[i] = 8.0;
+		LBL_gaussian_synapses_sd_E2E_L[i] = 4.0;
+		LBL_gaussian_synapses_sd_E2E_FB[i] = 16.0;
+	} 
 
 	biological_conductance_scaling_constant_lambda_G2E_FF = 0.00002;
 	biological_conductance_scaling_constant_lambda_E2E_FF = 0.0001;
@@ -163,7 +186,7 @@ void FourLayerVisionSpikingModel::finalise_model(bool is_optimisation) {
 	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = biological_conductance_scaling_constant_lambda_G2E_FF;
 	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->connectivity_type = CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE;
 	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->stdp_on = false;
-	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_standard_deviation = gaussian_synapses_standard_deviation_G2E_FF;
+	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_standard_deviation = gaussian_synapses_sd_G2E_FF;
 	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->reversal_potential_Vhat = 0.0;
 	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->decay_term_tau_g = decay_term_tau_g_G2E_FF;
 	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->weight_range_bottom = weight_range_bottom;
@@ -178,7 +201,6 @@ void FourLayerVisionSpikingModel::finalise_model(bool is_optimisation) {
 	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = biological_conductance_scaling_constant_lambda_E2E_FF;
 	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->connectivity_type = CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE;
 	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->stdp_on = true;
-//	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_standard_deviation = gaussian_synapses_standard_deviation_E2E_FF[0];
 	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->reversal_potential_Vhat = 0.0;
 	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->decay_term_tau_g = decay_term_tau_g_E2E_FF;
 	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->weight_range_bottom = weight_range_bottom;
@@ -194,7 +216,6 @@ void FourLayerVisionSpikingModel::finalise_model(bool is_optimisation) {
 		E2E_FB_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = biological_conductance_scaling_constant_lambda_E2E_FB;
 		E2E_FB_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->connectivity_type = CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE;
 		E2E_FB_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->stdp_on = true;
-		E2E_FB_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_standard_deviation = gaussian_synapses_standard_deviation_E2E_FB;
 		E2E_FB_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->reversal_potential_Vhat = 0.0;
 		E2E_FB_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->decay_term_tau_g = decay_term_tau_g_E2E_FB;
 		E2E_FB_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->weight_range_bottom = weight_range_bottom;
@@ -210,7 +231,6 @@ void FourLayerVisionSpikingModel::finalise_model(bool is_optimisation) {
 	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = biological_conductance_scaling_constant_lambda_E2I_L;
 	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->connectivity_type = CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE;
 	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->stdp_on = false;
-	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_standard_deviation = gaussian_synapses_standard_deviation_E2I_L;
 	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->reversal_potential_Vhat = 0.0;
 	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->decay_term_tau_g = decay_term_tau_g_E2I_L;
 	E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->weight_range_bottom = weight_range_bottom;
@@ -224,7 +244,6 @@ void FourLayerVisionSpikingModel::finalise_model(bool is_optimisation) {
 	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = biological_conductance_scaling_constant_lambda_I2E_L;
 	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->connectivity_type = CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE;
 	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->stdp_on = false;
-	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_standard_deviation = gaussian_synapses_standard_deviation_I2E_L;
 	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->reversal_potential_Vhat = -70.0*pow(10, -3);
 	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->decay_term_tau_g = decay_term_tau_g_I2E_L;
 	I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->weight_range_bottom = weight_range_bottom;
@@ -239,26 +258,55 @@ void FourLayerVisionSpikingModel::finalise_model(bool is_optimisation) {
 		E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = biological_conductance_scaling_constant_lambda_E2E_L;
 		E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->connectivity_type = CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE;
 		E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->stdp_on = E2E_L_STDP_ON;
-		E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_standard_deviation = gaussian_synapses_standard_deviation_E2E_L;
 		E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->reversal_potential_Vhat = 0.0;
 		E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->decay_term_tau_g = decay_term_tau_g_E2E_L;
 		E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->weight_range_bottom = weight_range_bottom;
 		E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->weight_range_top = weight_range_top;
 	}
 
-	for (int l=0; l<number_of_layers; l++){
-	if(l==0)
-		AddSynapseGroupsForNeuronGroupAndEachInputGroup(EXCITATORY_NEURONS[l], G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
-	else{
-		E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_standard_deviation = gaussian_synapses_standard_deviation_E2E_FF[l-1];
-		AddSynapseGroup(EXCITATORY_NEURONS[l-1], EXCITATORY_NEURONS[l], E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
-		if(E2E_FB_ON)
-			AddSynapseGroup(EXCITATORY_NEURONS[l], EXCITATORY_NEURONS[l-1], E2E_FB_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
-	}
-	AddSynapseGroup(EXCITATORY_NEURONS[l], INHIBITORY_NEURONS[l], E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
-	AddSynapseGroup(INHIBITORY_NEURONS[l], EXCITATORY_NEURONS[l], I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
-	if(E2E_L_ON)
-		AddSynapseGroup(EXCITATORY_NEURONS[l], EXCITATORY_NEURONS[l], E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
+
+
+	
+
+	for (int layer_index = 0; layer_index < number_of_layers; layer_index++) {
+
+
+		if (layer_index == 0) {
+
+			AddSynapseGroupsForNeuronGroupAndEachInputGroup(EXCITATORY_NEURONS[0], G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
+
+		} else {
+
+			E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_standard_deviation = LBL_gaussian_synapses_sd_E2E_FF[layer_index - 1];
+			AddSynapseGroup(EXCITATORY_NEURONS[layer_index - 1], EXCITATORY_NEURONS[layer_index], E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
+
+		}
+
+
+		if (LI_ON) {
+
+			E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_standard_deviation = LBL_gaussian_synapses_sd_E2I_L[layer_index - 1];
+			AddSynapseGroup(EXCITATORY_NEURONS[layer_index], INHIBITORY_NEURONS[layer_index], E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
+
+			I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_standard_deviation = LBL_gaussian_synapses_sd_I2E_L[layer_index - 1];
+			AddSynapseGroup(INHIBITORY_NEURONS[layer_index], EXCITATORY_NEURONS[layer_index], I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
+
+		}
+		
+		if(E2E_L_ON) {
+
+			E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_standard_deviation = LBL_gaussian_synapses_sd_E2E_L[layer_index - 1];
+			AddSynapseGroup(EXCITATORY_NEURONS[layer_index], EXCITATORY_NEURONS[layer_index], E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
+
+		}
+
+		if (E2E_FB_ON) {
+
+			E2E_FB_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_standard_deviation = LBL_gaussian_synapses_sd_E2E_FB[layer_index - 1];
+			AddSynapseGroup(EXCITATORY_NEURONS[layer_index], EXCITATORY_NEURONS[layer_index - 1], E2E_FB_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
+
+		}
+		
 	}
 	
 	adding_synapses_timer->stop_timer_and_log_time_and_message("Synapses Added.", true);

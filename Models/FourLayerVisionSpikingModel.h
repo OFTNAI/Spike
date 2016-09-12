@@ -14,6 +14,7 @@ public:
 
 	bool E2E_L_ON;
 	bool E2E_FB_ON;
+	bool LI_ON;
 	bool E2E_L_STDP_ON;
 
 	// Network Parameters
@@ -29,12 +30,12 @@ public:
 	int fanInCount_E2E_L;
 	int fanInCount_E2E_FB;
 
-	float gaussian_synapses_standard_deviation_G2E_FF;
-	float * gaussian_synapses_standard_deviation_E2E_FF;
-	float gaussian_synapses_standard_deviation_E2I_L;
-	float gaussian_synapses_standard_deviation_I2E_L;
-	float gaussian_synapses_standard_deviation_E2E_L;
-	float gaussian_synapses_standard_deviation_E2E_FB;
+	float gaussian_synapses_sd_G2E_FF;
+	float * LBL_gaussian_synapses_sd_E2E_FF;
+	float * LBL_gaussian_synapses_sd_E2I_L;
+	float * LBL_gaussian_synapses_sd_I2E_L;
+	float * LBL_gaussian_synapses_sd_E2E_L;
+	float * LBL_gaussian_synapses_sd_E2E_FB;
 
 	float biological_conductance_scaling_constant_lambda_G2E_FF;
 	float biological_conductance_scaling_constant_lambda_E2E_FF;
