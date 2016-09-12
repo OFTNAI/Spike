@@ -35,9 +35,6 @@ SpikeAnalyser::SpikeAnalyser(Neurons * neurons_parameter, ImagePoissonInputSpiki
 
 	per_stimulus_per_neuron_spike_counts = new int*[input_neurons->total_number_of_input_stimuli];
 	
-	
-	optimal_average_firing_rate = 10.0f;
-	optimal_max_firing_rate = 100.0f;	
 
 	for (int stimulus_index = 0; stimulus_index < input_neurons->total_number_of_input_stimuli; stimulus_index++) {
 		per_stimulus_per_neuron_spike_counts[stimulus_index] = new int[neurons->total_number_of_neurons];
@@ -62,7 +59,7 @@ void SpikeAnalyser::store_spike_counts_for_stimulus_index(int stimulus_index, in
 }
 
 
-void SpikeAnalyser::calculate_fitness_score() {
+void SpikeAnalyser::calculate_fitness_score(float optimal_average_firing_rate, float optimal_max_firing_rate) {
 	int comparisonType = 1; //0:James, 1:aki
 	float maxScore = 10; //for aki
 	combined_powered_distance_from_average_score_for_each_neuron_group = new float[neurons->total_number_of_groups];
