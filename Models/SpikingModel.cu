@@ -88,7 +88,6 @@ void SpikingModel::finalise_model() {
 
 void SpikingModel::copy_model_to_device(bool high_fidelity_spike_storage) {
 
-		// PUT IN SpikingModel.cu
 	TimerWithMessages * timer = new TimerWithMessages("Setting Up Network...\n");
 
 	int threads_per_block_neurons = 512;

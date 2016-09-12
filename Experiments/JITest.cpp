@@ -20,6 +20,7 @@ using namespace std;
 
 #include "../Models/FourLayerVisionSpikingModel.h"
 #include "../Experiments/TestNetworkExperiment.h"
+#include "../Experiments/TestTrainTestExperimentSet.h"
 
 
 
@@ -86,6 +87,8 @@ int main (int argc, char *argv[]){
 
 	// Simulator Parameters
 	float timestep = 0.00002;
+	bool high_fidelity_spike_storage = true;
+
 	bool simulate_network_to_test_untrained = true;
 	bool simulate_network_to_train_network = true;
 	bool simulate_network_to_test_trained = true;
@@ -96,13 +99,11 @@ int main (int argc, char *argv[]){
 	bool writeInformation = true;
 
 
-	FourLayerVisionSpikingModel * four_layer_vision_spiking_model = new FourLayerVisionSpikingModel();
-	four_layer_vision_spiking_model->SetTimestep(timestep);
-
+	
 
 	// Parameters for testing
 	const float presentation_time_per_stimulus_per_epoch_test = 2.0f;
-	bool record_spikes_test = true;
+	bool record_test_spikes = true;
 	bool save_recorded_spikes_and_states_to_file_test = true;
 
 	// Parameters for training
@@ -202,51 +203,20 @@ int main (int argc, char *argv[]){
 		// }
 	// }
 
-
 	int random_states_threads_per_block_x = 128;
 	int random_states_number_of_blocks_x = 64;
 	RandomStateManager::instance()->set_up_random_states(random_states_threads_per_block_x, random_states_number_of_blocks_x, 9);
 
+
+	FourLayerVisionSpikingModel * four_layer_vision_spiking_model = new FourLayerVisionSpikingModel();
+	four_layer_vision_spiking_model->SetTimestep(timestep);
 	four_layer_vision_spiking_model->finalise_model();
-
-	bool high_fidelity_spike_storage = true;
-	
+	four_layer_vision_spiking_model->copy_model_to_device(high_fidelity_spike_storage);
 
 
-	/////////// SIMULATE NETWORK TO TEST UNTRAINED ///////////
-	if (simulate_network_to_test_untrained) {
+	TestTrainTestExperimentSet * test_train_test_experiment_set = new TestTrainTestExperimentSet();
+	test_train_test_experiment_set->run_experiment_set_for_model(four_layer_vision_spiking_model, presentation_time_per_stimulus_per_epoch_test, record_test_spikes, save_recorded_spikes_and_states_to_file_test, human_readable_storage, high_fidelity_spike_storage, number_of_bins, useThresholdForMaxFR, max_firing_rate, presentation_time_per_stimulus_per_epoch_train, number_of_training_epochs);
 
-		TestNetworkExperiment * test_untrained_network_experiment = new TestNetworkExperiment();
-		test_untrained_network_experiment->prepare_experiment(four_layer_vision_spiking_model, high_fidelity_spike_storage);
-		test_untrained_network_experiment->run_experiment(presentation_time_per_stimulus_per_epoch_test, record_spikes_test, save_recorded_spikes_and_states_to_file_test, human_readable_storage, network_is_trained);
-		test_untrained_network_experiment->calculate_spike_totals_averages_and_information(number_of_bins, useThresholdForMaxFR, max_firing_rate);
-
-	}
-
-
-	// /////////// SIMULATE NETWORK TRAINING ///////////
-	if (simulate_network_to_train_network) {
-
-		int stimulus_presentation_order_seed = 1;
-
-		Stimuli_Presentation_Struct * stimuli_presentation_params = new Stimuli_Presentation_Struct();
-		stimuli_presentation_params->presentation_format = PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_OBJECTS;
-		stimuli_presentation_params->object_order = OBJECT_ORDER_ORIGINAL;//OBJECT_ORDER_RANDOM;
-		stimuli_presentation_params->transform_order = TRANSFORM_ORDER_RANDOM;
-
-		simulator->RunSimulationToTrainNetwork(presentation_time_per_stimulus_per_epoch_train, number_of_training_epochs, stimuli_presentation_params, stimulus_presentation_order_seed);
-
-		network_is_trained = true;
-	}
-
-
-	/////////// SIMULATE NETWORK TO TEST TRAINED ///////////
-	if (simulate_network_to_test_trained && network_is_trained) {
-		TestNetworkExperiment * test_trained_network_experiment = new TestNetworkExperiment();
-		test_trained_network_experiment->prepare_experiment(four_layer_vision_spiking_model, high_fidelity_spike_storage);
-		test_trained_network_experiment->run_experiment(presentation_time_per_stimulus_per_epoch_test, record_spikes_test, save_recorded_spikes_and_states_to_file_test, human_readable_storage, network_is_trained);
-		test_trained_network_experiment->calculate_spike_totals_averages_and_information(number_of_bins, useThresholdForMaxFR, max_firing_rate);
-	}
 
 	/////////// PLOT INFOANALYSIS RESULTS //////////////////
 	// if (simulate_network_to_test_untrained && simulate_network_to_test_trained && plotInfoAnalysis){

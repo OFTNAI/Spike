@@ -46,35 +46,35 @@ FourLayerVisionSpikingModel::FourLayerVisionSpikingModel () {
 
 
 	// Layer-by-layer parameter arrays
-	LBL_max_number_of_connections_per_pair_E2E_FF = (int*)realloc(LBL_max_number_of_connections_per_pair_E2E_FF, number_of_non_input_layers * sizeof(int));
-	LBL_max_number_of_connections_per_pair_E2I_L = (int*)realloc(LBL_max_number_of_connections_per_pair_E2I_L, number_of_non_input_layers * sizeof(int));	
-	LBL_max_number_of_connections_per_pair_I2E_L = (int*)realloc(LBL_max_number_of_connections_per_pair_I2E_L, number_of_non_input_layers * sizeof(int));
-	LBL_max_number_of_connections_per_pair_E2E_L = (int*)realloc(LBL_max_number_of_connections_per_pair_E2E_L, number_of_non_input_layers * sizeof(int));
-	LBL_max_number_of_connections_per_pair_E2E_FB = (int*)realloc(LBL_max_number_of_connections_per_pair_E2E_FB, number_of_non_input_layers * sizeof(int));
+	LBL_max_number_of_connections_per_pair_E2E_FF = (int*)malloc(number_of_non_input_layers * sizeof(int));
+	LBL_max_number_of_connections_per_pair_E2I_L = (int*)malloc(number_of_non_input_layers * sizeof(int));	
+	LBL_max_number_of_connections_per_pair_I2E_L = (int*)malloc(number_of_non_input_layers * sizeof(int));
+	LBL_max_number_of_connections_per_pair_E2E_L = (int*)malloc(number_of_non_input_layers * sizeof(int));
+	LBL_max_number_of_connections_per_pair_E2E_FB = (int*)malloc(number_of_non_input_layers * sizeof(int));
 
-	LBL_fanInCount_E2E_FF = (int*)realloc(LBL_fanInCount_E2E_FF, number_of_non_input_layers * sizeof(int));
-	LBL_fanInCount_E2I_L = (int*)realloc(LBL_fanInCount_E2I_L, number_of_non_input_layers * sizeof(int));	
-	LBL_fanInCount_I2E_L = (int*)realloc(LBL_fanInCount_I2E_L, number_of_non_input_layers * sizeof(int));
-	LBL_fanInCount_E2E_L = (int*)realloc(LBL_fanInCount_E2E_L, number_of_non_input_layers * sizeof(int));
-	LBL_fanInCount_E2E_FB = (int*)realloc(LBL_fanInCount_E2E_FB, number_of_non_input_layers * sizeof(int));
+	LBL_fanInCount_E2E_FF = (int*)malloc(number_of_non_input_layers * sizeof(int));
+	LBL_fanInCount_E2I_L = (int*)malloc(number_of_non_input_layers * sizeof(int));	
+	LBL_fanInCount_I2E_L = (int*)malloc(number_of_non_input_layers * sizeof(int));
+	LBL_fanInCount_E2E_L = (int*)malloc(number_of_non_input_layers * sizeof(int));
+	LBL_fanInCount_E2E_FB = (int*)malloc(number_of_non_input_layers * sizeof(int));
 
-	LBL_gaussian_synapses_sd_E2E_FF = (float*)realloc(LBL_gaussian_synapses_sd_E2E_FF, number_of_non_input_layers * sizeof(float));
-	LBL_gaussian_synapses_sd_E2I_L = (float*)realloc(LBL_gaussian_synapses_sd_E2I_L, number_of_non_input_layers * sizeof(float));
-	LBL_gaussian_synapses_sd_I2E_L = (float*)realloc(LBL_gaussian_synapses_sd_I2E_L, number_of_non_input_layers * sizeof(float));
-	LBL_gaussian_synapses_sd_E2E_L = (float*)realloc(LBL_gaussian_synapses_sd_E2E_L, number_of_non_input_layers * sizeof(float));
-	LBL_gaussian_synapses_sd_E2E_FB = (float*)realloc(LBL_gaussian_synapses_sd_E2E_FB, number_of_non_input_layers * sizeof(float));
+	LBL_gaussian_synapses_sd_E2E_FF = (float*)malloc(number_of_non_input_layers * sizeof(float));
+	LBL_gaussian_synapses_sd_E2I_L = (float*)malloc(number_of_non_input_layers * sizeof(float));
+	LBL_gaussian_synapses_sd_I2E_L = (float*)malloc(number_of_non_input_layers * sizeof(float));
+	LBL_gaussian_synapses_sd_E2E_L = (float*)malloc(number_of_non_input_layers * sizeof(float));
+	LBL_gaussian_synapses_sd_E2E_FB = (float*)malloc(number_of_non_input_layers * sizeof(float));
 
-	LBL_biological_conductance_scaling_constant_lambda_E2E_FF = (float*)realloc(LBL_biological_conductance_scaling_constant_lambda_E2E_FF, number_of_non_input_layers * sizeof(float));
-	LBL_biological_conductance_scaling_constant_lambda_E2I_L = (float*)realloc(LBL_biological_conductance_scaling_constant_lambda_E2I_L, number_of_non_input_layers * sizeof(float));
-	LBL_biological_conductance_scaling_constant_lambda_I2E_L = (float*)realloc(LBL_biological_conductance_scaling_constant_lambda_I2E_L, number_of_non_input_layers * sizeof(float));
-	LBL_biological_conductance_scaling_constant_lambda_E2E_L = (float*)realloc(LBL_biological_conductance_scaling_constant_lambda_E2E_L, number_of_non_input_layers * sizeof(float));
-	LBL_biological_conductance_scaling_constant_lambda_E2E_FB = (float*)realloc(LBL_biological_conductance_scaling_constant_lambda_E2E_FB, number_of_non_input_layers * sizeof(float));
+	LBL_biological_conductance_scaling_constant_lambda_E2E_FF = (float*)malloc(number_of_non_input_layers * sizeof(float));
+	LBL_biological_conductance_scaling_constant_lambda_E2I_L = (float*)malloc(number_of_non_input_layers * sizeof(float));
+	LBL_biological_conductance_scaling_constant_lambda_I2E_L = (float*)malloc(number_of_non_input_layers * sizeof(float));
+	LBL_biological_conductance_scaling_constant_lambda_E2E_L = (float*)malloc(number_of_non_input_layers * sizeof(float));
+	LBL_biological_conductance_scaling_constant_lambda_E2E_FB = (float*)malloc(number_of_non_input_layers * sizeof(float));
 
-	LBL_decay_term_tau_g_E2E_FF = (float*)realloc(LBL_decay_term_tau_g_E2E_FF, number_of_non_input_layers * sizeof(float));
-	LBL_decay_term_tau_g_E2I_L = (float*)realloc(LBL_decay_term_tau_g_E2I_L, number_of_non_input_layers * sizeof(float));
-	LBL_decay_term_tau_g_I2E_L = (float*)realloc(LBL_decay_term_tau_g_I2E_L, number_of_non_input_layers * sizeof(float));
-	LBL_decay_term_tau_g_E2E_L = (float*)realloc(LBL_decay_term_tau_g_E2E_L, number_of_non_input_layers * sizeof(float));
-	LBL_decay_term_tau_g_E2E_FB = (float*)realloc(LBL_decay_term_tau_g_E2E_FB, number_of_non_input_layers * sizeof(float));
+	LBL_decay_term_tau_g_E2E_FF = (float*)malloc(number_of_non_input_layers * sizeof(float));
+	LBL_decay_term_tau_g_E2I_L = (float*)malloc(number_of_non_input_layers * sizeof(float));
+	LBL_decay_term_tau_g_I2E_L = (float*)malloc(number_of_non_input_layers * sizeof(float));
+	LBL_decay_term_tau_g_E2E_L = (float*)malloc(number_of_non_input_layers * sizeof(float));
+	LBL_decay_term_tau_g_E2E_FB = (float*)malloc(number_of_non_input_layers * sizeof(float));
 
 
 	for (int layer_index = 0; layer_index  < number_of_non_input_layers; layer_index ++) {
