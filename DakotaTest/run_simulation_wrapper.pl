@@ -79,7 +79,7 @@
 
 
 	# Use when optimising entire network layer by layer.
-	system("../../Experiments/bin/ConductanceExperiment1 $outdir $simulation_index $optimisation_iteration_index $par1 $par2 $par3 $par4 1");
+	system("../../Experiments/binaries/ConductanceExperiment1 $outdir $simulation_index $optimisation_iteration_index $par1 $par2 $par3 $par4 1");
 
 	# Use when optimising particular layer.
 	# system("../../Experiments/bin/ConductanceExperiment1 $outdir $simulation_index 0 $par1 $par2 $par3 $par4 0");
