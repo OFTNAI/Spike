@@ -103,14 +103,14 @@ int main (int argc, char *argv[]){
 
 	// Parameters for testing
 	// const float presentation_time_per_stimulus_per_epoch_test = 2.0f;
-	const float presentation_time_per_stimulus_per_epoch_test = 0.01f;
+	const float presentation_time_per_stimulus_per_epoch_test = 0.5f;
 
 	bool record_test_spikes = true;
 	bool save_recorded_spikes_and_states_to_file_test = true;
 
 	// Parameters for training
 	// float presentation_time_per_stimulus_per_epoch_train = 2.0f;//0.5f;
-	float presentation_time_per_stimulus_per_epoch_train = 0.01f;//0.5f;
+	float presentation_time_per_stimulus_per_epoch_train = 0.5f;//0.5f;
 
 	int number_of_training_epochs = 10;
 
@@ -218,8 +218,43 @@ int main (int argc, char *argv[]){
 	four_layer_vision_spiking_model->copy_model_to_device(high_fidelity_spike_storage);
 
 
-	TestTrainTestExperimentSet * test_train_test_experiment_set = new TestTrainTestExperimentSet();
-	test_train_test_experiment_set->run_experiment_set_for_model(four_layer_vision_spiking_model, presentation_time_per_stimulus_per_epoch_test, record_test_spikes, save_recorded_spikes_and_states_to_file_test, human_readable_storage, high_fidelity_spike_storage, number_of_bins, useThresholdForMaxFR, max_firing_rate, presentation_time_per_stimulus_per_epoch_train, number_of_training_epochs);
+
+	/////////// SIMULATE NETWORK TO TEST UNTRAINED ///////////
+	TestNetworkExperiment * test_untrained_network_experiment = new TestNetworkExperiment();
+	test_untrained_network_experiment->four_layer_vision_spiking_model = four_layer_vision_spiking_model;
+	test_untrained_network_experiment->prepare_experiment(four_layer_vision_spiking_model, high_fidelity_spike_storage);
+	test_untrained_network_experiment->run_experiment(presentation_time_per_stimulus_per_epoch_test, record_test_spikes, save_recorded_spikes_and_states_to_file_test, human_readable_storage, network_is_trained);
+	test_untrained_network_experiment->calculate_spike_totals_averages_and_information(number_of_bins, useThresholdForMaxFR, max_firing_rate);
+
+
+	int number_of_stimuli = test_untrained_network_experiment->spike_analyser->input_neurons->total_number_of_input_stimuli;
+	int number_of_neurons = four_layer_vision_spiking_model->spiking_neurons->total_number_of_neurons;
+
+	bool *** neuron_events_for_each_stimuli_and_neuron = new bool **[number_of_stimuli];
+
+	for (int stimulus_index = 0; stimulus_index < number_of_stimuli; stimulus_index++) {
+
+		neuron_events_for_each_stimuli_and_neuron[stimulus_index] = new bool * [number_of_neurons];
+
+		for (int neuron_index = 0; neuron_index < number_of_neurons; neuron_index++) {
+
+			int number_of_spikes_for_neuron_and_stimulus = test_untrained_network_experiment->spike_analyser->per_stimulus_per_neuron_spike_counts[stimulus_index][neuron_index];
+
+			neuron_events_for_each_stimuli_and_neuron[stimulus_index][neuron_index] = new bool[number_of_spikes_for_neuron_and_stimulus];
+
+			printf("number_of_spikes_for_neuron_and_stimulus: %d\n", number_of_spikes_for_neuron_and_stimulus);
+
+
+		}
+
+		
+
+	}
+
+
+
+	// TestTrainTestExperimentSet * test_train_test_experiment_set = new TestTrainTestExperimentSet();
+	// test_train_test_experiment_set->run_experiment_set_for_model(four_layer_vision_spiking_model, presentation_time_per_stimulus_per_epoch_test, record_test_spikes, save_recorded_spikes_and_states_to_file_test, human_readable_storage, high_fidelity_spike_storage, number_of_bins, useThresholdForMaxFR, max_firing_rate, presentation_time_per_stimulus_per_epoch_train, number_of_training_epochs);
 
 
 	/////////// PLOT INFOANALYSIS RESULTS //////////////////
