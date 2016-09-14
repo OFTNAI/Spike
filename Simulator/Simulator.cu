@@ -207,6 +207,29 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 				
 				spiking_model->spiking_neurons->reset_current_injections();
 
+
+				// JI PSEUDO CODE FOR COLLECTING EVENTS START
+
+				// DO ON DEVICE
+				// iterate through old h_time_in_seconds_of_stored_spikes_on_host
+					// for each time
+						// if time is greater than current_time_in_seconds - window
+							// set d_neuron_should_be_collecting[corresponding_neuron_id] = true;
+
+
+				// ON DEVICE
+				// if d_neuron_should_be_collecting[corresponding_neuron_id] == true
+					// if spike arrives at neuron from synapse
+						// set neuron_events_for_each_stimuli_and_neuron[stimulus_index][neuron_index][recording_electrodes->d_per_neuron_spike_counts[postsynaptic_neuron_id]] = true;
+
+
+
+
+
+				// JI PSEUDO CODE FOR COLLECTING EVENTS START
+
+
+
 				// Carry out the per-timestep computations			
 				per_timestep_instructions(current_time_in_seconds, apply_stdp_to_relevant_synapses);
 

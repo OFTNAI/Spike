@@ -254,6 +254,8 @@ int main (int argc, char *argv[]){
 	collect_events_experiment_set->prepare_experiment(four_layer_vision_spiking_model, high_fidelity_spike_storage);
 	collect_events_experiment_set->run_experiment(presentation_time_per_stimulus_per_epoch_test, network_is_trained);
 
+	// PASS LAST RUN SPIKE_TIMES + IDS
+
 
 
 	// TestTrainTestExperimentSet * test_train_test_experiment_set = new TestTrainTestExperimentSet();
