@@ -42,8 +42,6 @@ void TestNetworkExperiment::run_experiment(float presentation_time_per_stimulus_
 
 	if (experiment_prepared == false) print_message_and_exit("Please run prepare_experiment before running the experiment.");
 
-	SpikeAnalyser * spike_analyser = new SpikeAnalyser(four_layer_vision_spiking_model->spiking_neurons, four_layer_vision_spiking_model->image_poisson_input_spiking_neurons);
-
 	simulator->RunSimulationToCountNeuronSpikes(presentation_time_per_stimulus_per_epoch, record_spikes, save_recorded_spikes_and_states_to_file, spike_analyser, human_readable_storage, isTrained);
 
 	experiment_run = true;

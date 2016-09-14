@@ -29,12 +29,12 @@ Simulator::Simulator(){
 	// Default low fidelity spike storage
 	high_fidelity_spike_storage = false;
 	
-	#ifndef QUIETSTART
-		print_line_of_dashes_with_blank_lines_either_side();
-		printf("Welcome to the SPIKE.\n");
-		print_line_of_dashes_with_blank_lines_either_side();
-		fflush(stdout);
-	#endif
+	// #ifndef QUIETSTART
+	// 	print_line_of_dashes_with_blank_lines_either_side();
+	// 	printf("Welcome to the SPIKE.\n");
+	// 	print_line_of_dashes_with_blank_lines_either_side();
+	// 	fflush(stdout);
+	// #endif
 		
 }
 
@@ -125,8 +125,8 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 	// Set seed for stimulus presentation order
 	srand(stimulus_presentation_order_seed);
 
-//	recording_electrodes->write_initial_synaptic_weights_to_file(spiking_model->spiking_synapses, human_readable_storage);
-	recording_electrodes->delete_and_reset_recorded_spikes();
+
+	if (recording_electrodes) recording_electrodes->delete_and_reset_recorded_spikes();
 
 	for (int epoch_number = 0; epoch_number < number_of_epochs; epoch_number++) {
 	
@@ -189,9 +189,7 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 				per_timestep_instructions(current_time_in_seconds, apply_stdp_to_relevant_synapses);
 
 				if (count_spikes_per_neuron) {
-					if (recording_electrodes) {
-						recording_electrodes->add_spikes_to_per_neuron_spike_count(current_time_in_seconds);
-					}
+					if (recording_electrodes) recording_electrodes->add_spikes_to_per_neuron_spike_count(current_time_in_seconds);
 				}
 
 				// // Only save the spikes if necessary
@@ -213,7 +211,7 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 			if (count_spikes_per_neuron) {
 				if (spike_analyser) {
 					spike_analyser->store_spike_counts_for_stimulus_index(spiking_model->input_spiking_neurons->current_stimulus_index, recording_electrodes->d_per_neuron_spike_counts);
-					recording_electrodes->reset_pointers_for_spike_count();
+					if (recording_electrodes) recording_electrodes->reset_pointers_for_spike_count();
 				}
 			}
 
