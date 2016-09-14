@@ -84,6 +84,10 @@ public:
 
 	bool print_synapse_group_details;
 
+	// Used for event count
+	int * synapse_postsynaptic_neuron_count_index;
+	int * d_synapse_postsynaptic_neuron_count_index;
+
 	// Synapse Functions
 	virtual void AddGroup(int presynaptic_group_id, 
 						int postsynaptic_group_id, 

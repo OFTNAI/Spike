@@ -23,6 +23,8 @@ Neurons::Neurons() {
 	start_neuron_indices_for_each_group = NULL;
 	last_neuron_indices_for_each_group = NULL;
 
+	per_neuron_afferent_synapse_count = NULL;
+
 }
 
 
@@ -65,6 +67,13 @@ int Neurons::AddGroup(neuron_parameters_struct * group_params){
 	group_shapes[new_group_id] = (int*)malloc(2*sizeof(int));
 	group_shapes[new_group_id][0] = group_params->group_shape[0];
 	group_shapes[new_group_id][1] = group_params->group_shape[1];
+
+	// Used for event count
+	per_neuron_afferent_synapse_count = (int*)realloc(per_neuron_afferent_synapse_count,(total_number_of_neurons*sizeof(int)));
+	for (int i = total_number_of_neurons - number_of_neurons_in_new_group; i < total_number_of_neurons; i++) {
+		per_neuron_afferent_synapse_count[i] = 0;
+	}
+
 	
 	return new_group_id;
 }
@@ -73,10 +82,11 @@ int Neurons::AddGroup(neuron_parameters_struct * group_params){
 void Neurons::allocate_device_pointers(int maximum_axonal_delay_in_timesteps,  bool high_fidelity_spike_storage) {
 
 	CudaSafeCall(cudaMalloc((void **)&d_current_injections, sizeof(float)*total_number_of_neurons));
+	CudaSafeCall(cudaMalloc((void **)&d_per_neuron_afferent_synapse_count, sizeof(int)*total_number_of_neurons));
 }
 
 void Neurons::copy_constants_to_device() {
-
+	CudaSafeCall(cudaMemcpy(d_per_neuron_afferent_synapse_count, per_neuron_afferent_synapse_count, sizeof(int)*total_number_of_neurons, cudaMemcpyHostToDevice));
 }
 
 void Neurons::reset_neuron_activities() {

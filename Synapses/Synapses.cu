@@ -46,6 +46,10 @@ Synapses::Synapses() {
 
 	print_synapse_group_details = false;
 
+	synapse_postsynaptic_neuron_count_index = NULL;
+	d_synapse_postsynaptic_neuron_count_index = NULL;
+
+
 	// On construction, seed
 	srand(42);	// Seeding the random numbers
 }
@@ -263,6 +267,10 @@ void Synapses::AddGroup(int presynaptic_group_id,
 
 		original_synapse_indices[i] = i;
 
+		// Used for event count
+		synapse_postsynaptic_neuron_count_index[postsynaptic_neuron_indices[i]] = neurons->per_neuron_afferent_synapse_count[postsynaptic_neuron_indices[i]];
+		neurons->per_neuron_afferent_synapse_count[postsynaptic_neuron_indices[i]] ++;
+
 	}
 
 }
@@ -275,6 +283,7 @@ void Synapses::increment_number_of_synapses(int increment) {
     postsynaptic_neuron_indices = (int*)realloc(postsynaptic_neuron_indices, total_number_of_synapses * sizeof(int));
     synaptic_efficacies_or_weights = (float*)realloc(synaptic_efficacies_or_weights, total_number_of_synapses * sizeof(float));
     original_synapse_indices = (int*)realloc(original_synapse_indices, total_number_of_synapses * sizeof(int));
+    synapse_postsynaptic_neuron_count_index = (int*)realloc(synapse_postsynaptic_neuron_count_index, total_number_of_synapses * sizeof(int));
     
 }
 
@@ -286,6 +295,7 @@ void Synapses::allocate_device_pointers() {
 	CudaSafeCall(cudaMalloc((void **)&d_presynaptic_neuron_indices, sizeof(int)*total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&d_postsynaptic_neuron_indices, sizeof(int)*total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&d_synaptic_efficacies_or_weights, sizeof(float)*total_number_of_synapses));
+	CudaSafeCall(cudaMalloc((void **)&d_synapse_postsynaptic_neuron_count_index, sizeof(float)*total_number_of_synapses));
 
 }
 
@@ -297,6 +307,7 @@ void Synapses::copy_constants_and_initial_efficacies_to_device() {
 	CudaSafeCall(cudaMemcpy(d_presynaptic_neuron_indices, presynaptic_neuron_indices, sizeof(int)*total_number_of_synapses, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_postsynaptic_neuron_indices, postsynaptic_neuron_indices, sizeof(int)*total_number_of_synapses, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_synaptic_efficacies_or_weights, synaptic_efficacies_or_weights, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
+	CudaSafeCall(cudaMemcpy(d_synapse_postsynaptic_neuron_count_index, synapse_postsynaptic_neuron_count_index, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
 
 }
 

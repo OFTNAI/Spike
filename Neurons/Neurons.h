@@ -36,6 +36,9 @@ public:
 	int *start_neuron_indices_for_each_group;
 	int *last_neuron_indices_for_each_group;
 
+	int * per_neuron_afferent_synapse_count; // Used for event count
+	int * d_per_neuron_afferent_synapse_count;
+
 	int number_of_neurons_in_new_group;
 
 	float* d_current_injections;
