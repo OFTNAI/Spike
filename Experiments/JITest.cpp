@@ -21,7 +21,7 @@ using namespace std;
 #include "../Models/FourLayerVisionSpikingModel.h"
 #include "../Experiments/TestNetworkExperiment.h"
 #include "../Experiments/TestTrainTestExperimentSet.h"
-
+#include "../Experiments/CollectEventsNetworkExperiment.h"
 
 
 // make FILE='JITest' EXPERIMENT_DIRECTORY='TestNetworkExperiments'  model -j8
@@ -242,14 +242,17 @@ int main (int argc, char *argv[]){
 
 			neuron_events_for_each_stimuli_and_neuron[stimulus_index][neuron_index] = new bool[number_of_spikes_for_neuron_and_stimulus];
 
-			printf("number_of_spikes_for_neuron_and_stimulus: %d\n", number_of_spikes_for_neuron_and_stimulus);
+			// printf("number_of_spikes_for_neuron_and_stimulus: %d\n", number_of_spikes_for_neuron_and_stimulus);
 
-
-		}
-
-		
+		}		
 
 	}
+
+	/////////// SIMULATE NETWORK TO TEST UNTRAINED ///////////
+	CollectEventsNetworkExperiment * collect_events_experiment_set = new CollectEventsNetworkExperiment();
+	collect_events_experiment_set->four_layer_vision_spiking_model = four_layer_vision_spiking_model;
+	collect_events_experiment_set->prepare_experiment(four_layer_vision_spiking_model, high_fidelity_spike_storage);
+	collect_events_experiment_set->run_experiment(presentation_time_per_stimulus_per_epoch_test, network_is_trained);
 
 
 

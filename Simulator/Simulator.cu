@@ -104,6 +104,28 @@ void Simulator::RunSimulationToCountNeuronSpikes(float presentation_time_per_sti
 
 }
 
+
+void Simulator::RunSimulationToCollectEvents(float presentation_time_per_stimulus_per_epoch, bool isTrained) {
+	bool number_of_epochs = 1;
+	bool apply_stdp_to_relevant_synapses = false;
+	bool count_spikes_per_neuron = true;
+	int stimulus_presentation_order_seed = 0; // Shouldn't be needed if stimuli presentation not random
+	Stimuli_Presentation_Struct * stimuli_presentation_params = new Stimuli_Presentation_Struct();
+	// stimuli_presentation_params->presentation_format = PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_OBJECTS;
+	stimuli_presentation_params->presentation_format = PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_STIMULI;
+	stimuli_presentation_params->object_order = OBJECT_ORDER_ORIGINAL;
+	stimuli_presentation_params->transform_order = TRANSFORM_ORDER_ORIGINAL;
+
+	bool record_spikes = false;
+	bool save_recorded_spikes_and_states_to_file = false;
+
+	SpikeAnalyser * spike_analyser = NULL;
+	bool human_readable_storage = false;
+	
+	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, record_spikes, save_recorded_spikes_and_states_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, stimuli_presentation_params, stimulus_presentation_order_seed, spike_analyser,human_readable_storage,isTrained);
+	
+}
+
 void Simulator::RunSimulationToTrainNetwork(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, Stimuli_Presentation_Struct * stimuli_presentation_params, int stimulus_presentation_order_seed) {
 
 	bool apply_stdp_to_relevant_synapses = true;
