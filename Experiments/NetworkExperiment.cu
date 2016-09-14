@@ -31,8 +31,6 @@ void NetworkExperiment::prepare_experiment(FourLayerVisionSpikingModel * four_la
 	simulator = new Simulator();
 	simulator->SetSpikingModel(four_layer_vision_spiking_model);
 	simulator->high_fidelity_spike_storage = high_fidelity_spike_storage;
-
-	four_layer_vision_spiking_model->copy_model_to_device(simulator->high_fidelity_spike_storage);
 	
 	experiment_prepared = true;
 

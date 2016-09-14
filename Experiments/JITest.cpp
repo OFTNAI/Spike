@@ -103,14 +103,14 @@ int main (int argc, char *argv[]){
 
 	// Parameters for testing
 	// const float presentation_time_per_stimulus_per_epoch_test = 2.0f;
-	const float presentation_time_per_stimulus_per_epoch_test = 0.001f;
+	const float presentation_time_per_stimulus_per_epoch_test = 0.01f;
 
 	bool record_test_spikes = true;
 	bool save_recorded_spikes_and_states_to_file_test = true;
 
 	// Parameters for training
 	// float presentation_time_per_stimulus_per_epoch_train = 2.0f;//0.5f;
-	float presentation_time_per_stimulus_per_epoch_train = 0.001f;//0.5f;
+	float presentation_time_per_stimulus_per_epoch_train = 0.01f;//0.5f;
 
 	int number_of_training_epochs = 10;
 
