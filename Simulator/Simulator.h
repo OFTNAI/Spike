@@ -46,6 +46,9 @@ public:
 	// Flag: Enable for high accuracy spike storage, Disable for speed
 	bool high_fidelity_spike_storage;
 
+	float* d_time_in_seconds_of_spikes_from_last_simulation;
+	int* d_neuron_ids_of_spikes_from_last_simulation;
+
 	// Parameters
 
 	SpikingModel * spiking_model;
@@ -62,6 +65,9 @@ public:
 	void RunSimulationToCountNeuronSpikes(float presentation_time_per_stimulus_per_epoch, bool record_spikes, bool save_recorded_spikes_and_states_to_file, SpikeAnalyser *spike_analyser, bool human_readable_storage, bool isTrained);
 	void RunSimulationToCollectEvents(float presentation_time_per_stimulus_per_epoch, bool isTrained);
 	void RunSimulationToTrainNetwork(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, Stimuli_Presentation_Struct * stimuli_presentation_params, int stimulus_presentation_order_seed);
+
+	void set_device_spike_ids_and_times_from_last_simulation(float * h_time_in_seconds_of_spikes_from_last_simulation, int * h_neuron_ids_of_spikes_from_last_simulation, int total_number_of_spikes_from_last5_simulation);
+
 
 protected: 
 	void per_timestep_instructions(float current_time_in_seconds, bool apply_stdp_to_relevant_synapses);

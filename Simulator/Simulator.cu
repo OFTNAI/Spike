@@ -28,6 +28,10 @@ Simulator::Simulator(){
 
 	// Default low fidelity spike storage
 	high_fidelity_spike_storage = false;
+
+	d_time_in_seconds_of_spikes_from_last_simulation = NULL;
+	d_neuron_ids_of_spikes_from_last_simulation = NULL;
+
 	
 	// #ifndef QUIETSTART
 	// 	print_line_of_dashes_with_blank_lines_either_side();
@@ -80,6 +84,15 @@ void Simulator::setup_recording_electrodes_for_input_neurons(int number_of_times
 	input_recording_electrodes->reset_pointers_for_spike_count();
 
 	timer->stop_timer_and_log_time_and_message("Recording Electrodes Setup For Input Neurons.", true);
+}
+
+
+void Simulator::set_device_spike_ids_and_times_from_last_simulation(float * h_time_in_seconds_of_spikes_from_last_simulation, int * h_neuron_ids_of_spikes_from_last_simulation, int total_number_of_spikes_from_last_simulation) {
+	CudaSafeCall(cudaMalloc((void **)&d_time_in_seconds_of_spikes_from_last_simulation, sizeof(int)*total_number_of_spikes_from_last_simulation));
+	CudaSafeCall(cudaMalloc((void **)&d_neuron_ids_of_spikes_from_last_simulation, sizeof(float)*total_number_of_spikes_from_last_simulation));
+
+	CudaSafeCall(cudaMemcpy(d_time_in_seconds_of_spikes_from_last_simulation, h_time_in_seconds_of_spikes_from_last_simulation, sizeof(int)*total_number_of_spikes_from_last_simulation, cudaMemcpyHostToDevice));
+	CudaSafeCall(cudaMemcpy(d_neuron_ids_of_spikes_from_last_simulation, h_neuron_ids_of_spikes_from_last_simulation, sizeof(float)*total_number_of_spikes_from_last_simulation, cudaMemcpyHostToDevice));
 }
 
 
@@ -212,6 +225,8 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 
 				// DO ON DEVICE
 				// iterate through old h_time_in_seconds_of_stored_spikes_on_host
+
+				
 					// for each time
 						// if time is greater than current_time_in_seconds - window
 							// set d_neuron_should_be_collecting[corresponding_neuron_id] = true;
@@ -226,7 +241,7 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 
 
 
-				// JI PSEUDO CODE FOR COLLECTING EVENTS START
+				// JI PSEUDO CODE FOR COLLECTING EVENTS END
 
 
 
