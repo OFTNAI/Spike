@@ -245,6 +245,18 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 
 
 
+				// JI PSEUDO CODE FOR COLLECTING EVENTS START 2
+
+				// if (current_time_in_seconds > (d_ordered_spike_times_for_each_neuron[d_per_neuron_spike_counts[neuron_index]] - window)) {
+					// if synapse_spike_arrived
+						 // set neuron_events_for_each_stimuli_and_neuron[stimulus_index][neuron_index][recording_electrodes->d_per_neuron_spike_counts[postsynaptic_neuron_id]] = true;
+				// }
+
+
+				// JI PSEUDO CODE FOR COLLECTING EVENTS END
+
+
+
 				// Carry out the per-timestep computations			
 				per_timestep_instructions(current_time_in_seconds, apply_stdp_to_relevant_synapses);
 

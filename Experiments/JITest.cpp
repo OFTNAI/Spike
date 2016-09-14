@@ -261,54 +261,24 @@ int main (int argc, char *argv[]){
 		ordered_spike_times_for_each_neuron[neuron_index] = new float[number_of_spikes_for_neuron];
 		temp_index_store[neuron_index] = 0;
 
-		// printf("number_of_spikes_for_neuron_and_stimulus: %d\n", number_of_spikes_for_neuron_and_stimulus);
-
 	}	
-
-
-
-	// for (int stimulus_index = 0; stimulus_index < number_of_stimuli; stimulus_index++) {
-
-	// 	neuron_events_for_each_stimuli_and_neuron[stimulus_index] = new bool * [number_of_neurons];
-		// int number_of_spikes_for_neuron_and_stimulus = test_untrained_network_experiment->spike_analyser->per_stimulus_per_neuron_spike_counts[neuron_index];
-			
-
-	// }
-
-	
 
 
 	int total_number_of_spikes = test_untrained_network_experiment->simulator->recording_electrodes->h_total_number_of_spikes_stored_on_host;
 
 	for (int spike_id = 0; spike_id < total_number_of_spikes; spike_id++) {
 
-		// printf("total_number_of_spikes: %d, spike_id: %d\n", total_number_of_spikes, spike_id);
-
-
-
 		int neuron_index = test_untrained_network_experiment->simulator->recording_electrodes->h_neuron_ids_of_stored_spikes_on_host[spike_id];
 		float spike_time = test_untrained_network_experiment->simulator->recording_electrodes->h_time_in_seconds_of_stored_spikes_on_host[spike_id];
 
-		// printf("neuron_index: %d\n", neuron_index);
-
 		int number_of_spikes_for_neuron = spikes_per_neuron[neuron_index];
-		// printf("number_of_spikes_for_neuron: %d\n", number_of_spikes_for_neuron);
-		// printf("temp_index_store[neuron_index]: %d\n", temp_index_store[neuron_index]);
-
 
 		ordered_spike_times_for_each_neuron[neuron_index][temp_index_store[neuron_index]] = spike_time;
 
-
-
-
 		temp_index_store[neuron_index]++;
 
-		// printf("spike_id: %d\n", spike_id);
-
 	}
-
-	printf("hey 2\n");
-
+	
 
 	/////////// SIMULATE NETWORK TO TEST UNTRAINED ///////////
 	// CollectEventsNetworkExperiment * collect_events_experiment_set = new CollectEventsNetworkExperiment();

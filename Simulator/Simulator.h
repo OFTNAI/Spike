@@ -49,6 +49,8 @@ public:
 	float* d_time_in_seconds_of_spikes_from_last_simulation;
 	int* d_neuron_ids_of_spikes_from_last_simulation;
 
+	float ** ordered_spike_times_for_each_neuron;
+
 	// Parameters
 
 	SpikingModel * spiking_model;
