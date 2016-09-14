@@ -38,6 +38,8 @@ int main (int argc, char *argv[]){
 	const int OPTIM_STDP_TAU = 7;
 	const int OPTIM_FANINRAD_AND_SYNDECAY = 8;
 	const int OPTIM_FF = 9;
+	const int OPTIM_E2E_LAT = 10;
+	const int OPTIM_E2E_FB = 11;
 	const int OBJFUNC_AVGFR = 1;
 	const int OBJFUNC_MAXFR = 2;
 	const int OBJFUNC_MAXINFO = 3;
@@ -47,14 +49,17 @@ int main (int argc, char *argv[]){
 	const int OBJFUNC_MAXFR_AND_AVGINFO = 7;
 	const int OBJFUNC_MAXFR_AND_AVGINFO_TRAINEDONLY = 8;
 
+
+
 	// Parameters related to Dakota Optimization
-	int optimizationType = OPTIM_STDP_TAU; //OPTIM_BIO_CONST_LAT, OPTIM_BIO_CONST_FF, OPTIM_BIO_CONST_LAT_FF, OPTIM_FANINRAD, OPTIM_DECAY
+	int optimizationType = OPTIM_E2E_LAT; //OPTIM_BIO_CONST_LAT, OPTIM_BIO_CONST_FF, OPTIM_BIO_CONST_LAT_FF, OPTIM_FANINRAD, OPTIM_DECAY
 	int objective_function = OBJFUNC_MAXFR_AND_AVGINFO_TRAINEDONLY; //OBJFUNC_AVGFR, OBJFUNC_MAXFR, OBJFUNC_INFO, OBJFUNC_AVGFR_AND_INFO
 	float optimal_average_firing_rate = 10.0f;//set if optimizing based on avgfr : Spontaneous rate (spikes/sec) 4.9 +- 7.1 (*1)
 	const float optimal_max_firing_rate = 100.0f;//set if optimizing based on maxfr //Maximum rate (spikes/sec) 87 +- 46  (*1)
 	//*1 Bair, W., & Movshon, J. A. (2004).  Adaptive Temporal Integration of Motion in Direction-Selective Neurons in Macaque Visual Cortex. The Journal of Neuroscience, 24(33), 7305遯ｶ�ｿｽ7323.
 
 	// Simulator Parameters
+	string experimentName = "4--FF_LAT4_wx2";
 	float timestep = 0.00002;
 	bool simulate_network_to_test_untrained = true;
 	bool simulate_network_to_train_network = true;
@@ -66,11 +71,11 @@ int main (int argc, char *argv[]){
 	bool E2E_L_ON = true;
 	bool E2E_FB_ON = false;
 
-	bool E2E_L_STDP_ON = false;
+	bool E2E_L_STDP_ON = true;
 
 	// Network Parameters
 	const int number_of_layers = 4;
-	int max_number_of_connections_per_pair = 5;
+	int max_number_of_connections_per_pair = 1;
 	int dim_excit_layer = 64;
 	int dim_inhib_layer = 32;
 
@@ -78,23 +83,23 @@ int main (int argc, char *argv[]){
 	int fanInCount_E2E_FF = 100;
 	int fanInCount_E2I_L = 30;
 	int fanInCount_I2E_L = 30;
-	int fanInCount_E2E_L = 10;
-	int fanInCount_E2E_FB = 10;
+	int fanInCount_E2E_L = 30;
+	int fanInCount_E2E_FB = 30;
 
-	float gaussian_synapses_standard_deviation_G2E_FF = 1.0;//23.794473044;//6.3254321152;//15.0;
+	float gaussian_synapses_standard_deviation_G2E_FF = 1.0;
 //	float gaussian_synapses_standard_deviation_E2E_FF = 8.0; //15.0;//10.0;//28.166444920;//10.0;//9.3631908834;//5.0;
 	float gaussian_synapses_standard_deviation_E2E_FF[number_of_layers-1] = {8.0, 12.0, 16.0};
-	float gaussian_synapses_standard_deviation_E2I_L = 1.0;//30.0;//17.921123322;//10.0;//2.0815531458;//2.0;
-	float gaussian_synapses_standard_deviation_I2E_L = 8.0;//30.0;//17.921123322;//10.0;//2.0815531458;//2.0;
-	float gaussian_synapses_standard_deviation_E2E_L = 4.0;//30.0;//17.921123322;//10.0;//2.0815531458;//2.0;
-	float gaussian_synapses_standard_deviation_E2E_FB = 16.0;//10.0;//28.166444920;//10.0;//9.3631908834;//5.0;
+	float gaussian_synapses_standard_deviation_E2I_L = 1.0;
+	float gaussian_synapses_standard_deviation_I2E_L = 8.0;
+	float gaussian_synapses_standard_deviation_E2E_L = 4.0;
+	float gaussian_synapses_standard_deviation_E2E_FB = 12.0;
 
-	float biological_conductance_scaling_constant_lambda_G2E_FF = 0.00002;//0.00005;//0.00002;//0.000075;//0.0001;
-	float biological_conductance_scaling_constant_lambda_E2E_FF = 0.0001;//0.00008;
+	float biological_conductance_scaling_constant_lambda_G2E_FF = 0.00002;
+	float biological_conductance_scaling_constant_lambda_E2E_FF = 0.0001;//0.0001;
 	float biological_conductance_scaling_constant_lambda_E2I_L = 0.002;
-	float biological_conductance_scaling_constant_lambda_I2E_L = 0.004;//0.005;//0.0007;//0.0001;
-	float biological_conductance_scaling_constant_lambda_E2E_L = 0.0001;//0.00001;
-	float biological_conductance_scaling_constant_lambda_E2E_FB = 0.00001;
+	float biological_conductance_scaling_constant_lambda_I2E_L = 0.004;
+	float biological_conductance_scaling_constant_lambda_E2E_L = 0.00004;
+	float biological_conductance_scaling_constant_lambda_E2E_FB = 0.00004;
 
 	float decay_term_tau_g_G2E_FF = 0.15;
 	float decay_term_tau_g_E2E_FF = 0.15;
@@ -112,8 +117,8 @@ int main (int argc, char *argv[]){
 	float weight_range_bottom = 0.0;
 	float weight_range_top = 1.0;
 	float learning_rate_rho = 0.1/timestep;//100.0;// 0.1;
-	float decay_term_tau_C = 0.3;//0.125;//0.121.1901834251e-01;//0.25;//0.003;//0.25;(In Ben's model, tau_C/tau_D = 3/5 v 15/25 v 75/125, and the first one produces the best result)
-	float decay_term_tau_D = 0.3;//8.2942991090e-02;//0.25;//0.005;
+	float decay_term_tau_C = 0.3;//(In Ben's model, tau_C/tau_D = 3/5 v 15/25 v 75/125, and the first one produces the best result)
+	float decay_term_tau_D = 0.3;
 
 	float E2E_FF_minDelay = 5.0*timestep;
 	float E2E_FF_maxDelay = 0.01;//3.0f*pow(10, -3);
@@ -201,7 +206,12 @@ int main (int argc, char *argv[]){
 					gaussian_synapses_standard_deviation_E2E_FF[l] = stof(argv[4]);
 				biological_conductance_scaling_constant_lambda_E2E_FF = stof(argv[5]);
 				break;
-
+			case OPTIM_E2E_LAT:
+				gaussian_synapses_standard_deviation_E2E_L = stof(argv[4]);
+				break;
+			case OPTIM_E2E_FB:
+				gaussian_synapses_standard_deviation_E2E_FB = stof(argv[4]);
+				break;
 		}
 
 
@@ -234,6 +244,7 @@ int main (int argc, char *argv[]){
 	// Create an instance of the Simulator and set the timestep
 	Simulator simulator;
 	simulator.SetTimestep(timestep);
+	simulator.InitExperimentName(experimentName);
 	simulator.high_fidelity_spike_storage = true;
 
 	LIFSpikingNeurons * lif_spiking_neurons = new LIFSpikingNeurons();

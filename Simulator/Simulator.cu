@@ -8,6 +8,8 @@
 #include <cmath>
 #include <algorithm> // For random shuffle
 #include <time.h>
+#include <string>
+#include <sys/stat.h>
 
 #include "Simulator.h"
 #include "../Neurons/InputSpikingNeurons.h"
@@ -17,6 +19,10 @@
 #include "../Helpers/TimerWithMessages.h"
 #include "../Helpers/RandomStateManager.h"
 
+using namespace std;
+
+//string RESULTS_DIRECTORY ("output/");
+
 
 // Constructor
 Simulator::Simulator(){
@@ -24,6 +30,7 @@ Simulator::Simulator(){
 	synapses = NULL;
 	neurons = NULL;
 	input_neurons = NULL;
+	RESULTS_DIRECTORY = "output/";
 
 	// Default parameters
 	timestep = 0.0001f;
@@ -52,6 +59,14 @@ Simulator::Simulator(){
 // Destructor
 Simulator::~Simulator(){
 
+}
+
+void Simulator::InitExperimentName(string experimentName_param){
+	if (mkdir(("output/"+experimentName_param).c_str(),S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH)==0)
+		printf("\nDirectory created\n");
+	else
+		print_message_and_exit("\nERROR: You must set a different experiment name to avoid overwriting the results\n");
+	RESULTS_DIRECTORY = "output/"+experimentName_param+"/";
 }
 
 
@@ -166,8 +181,7 @@ void Simulator::setup_network() {
 void Simulator::setup_recording_electrodes_for_neurons(int number_of_timesteps_per_device_spike_copy_check_param, int device_spike_store_size_multiple_of_total_neurons_param, float proportion_of_device_spike_store_full_before_copy_param) {
 
 	TimerWithMessages * timer = new TimerWithMessages("Setting up recording electrodes for neurons...\n");
-
-	recording_electrodes = new RecordingElectrodes(neurons, "Neurons", number_of_timesteps_per_device_spike_copy_check_param, device_spike_store_size_multiple_of_total_neurons_param, proportion_of_device_spike_store_full_before_copy_param);
+	recording_electrodes = new RecordingElectrodes(neurons, RESULTS_DIRECTORY,"Neurons", number_of_timesteps_per_device_spike_copy_check_param, device_spike_store_size_multiple_of_total_neurons_param, proportion_of_device_spike_store_full_before_copy_param);
 	
 	recording_electrodes->allocate_pointers_for_spike_store();
 	recording_electrodes->reset_pointers_for_spike_store();
@@ -182,8 +196,7 @@ void Simulator::setup_recording_electrodes_for_neurons(int number_of_timesteps_p
 void Simulator::setup_recording_electrodes_for_input_neurons(int number_of_timesteps_per_device_spike_copy_check_param, int device_spike_store_size_multiple_of_total_neurons_param, float proportion_of_device_spike_store_full_before_copy_param) {
 
 	TimerWithMessages * timer = new TimerWithMessages("Setting Up recording electrodes for input neurons...\n");
-
-	input_recording_electrodes = new RecordingElectrodes(input_neurons, "Input_Neurons", number_of_timesteps_per_device_spike_copy_check_param, device_spike_store_size_multiple_of_total_neurons_param, proportion_of_device_spike_store_full_before_copy_param);
+	input_recording_electrodes = new RecordingElectrodes(input_neurons, RESULTS_DIRECTORY, "Input_Neurons", number_of_timesteps_per_device_spike_copy_check_param, device_spike_store_size_multiple_of_total_neurons_param, proportion_of_device_spike_store_full_before_copy_param);
 	
 	input_recording_electrodes->allocate_pointers_for_spike_store();
 	input_recording_electrodes->reset_pointers_for_spike_store();
