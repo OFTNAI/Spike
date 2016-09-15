@@ -179,21 +179,28 @@ void RecordingElectrodes::add_spikes_to_per_neuron_spike_count(float current_tim
 
 
 
-void RecordingElectrodes::write_spikes_to_file(int epoch_number, bool append_clock_to_filenames, bool human_readable_storage) {
+void RecordingElectrodes::write_spikes_to_file(int epoch_number, bool human_readable_storage, bool isTrained) {
 
 	clock_t write_spikes_to_file_start = clock();
 
 	// Get the names
-	string file = RESULTS_DIRECTORY + prefix_string + "_Epoch" + to_string(epoch_number) + "_";
+	string phase = "";
+	if (isTrained)
+		phase = "Trained";
+	else
+		phase = "Untrained";
+	
+	string file_IDs = RESULTS_DIRECTORY + prefix_string + "_SpikeIDs_" + phase + "_Epoch" + to_string(epoch_number);
+	string file_Times = RESULTS_DIRECTORY + prefix_string + "_SpikeTimes_" + phase + "_Epoch" + to_string(epoch_number);
 
-	// Append the clock to the file if flag
-	if (append_clock_to_filenames){ file = file + to_string(clock()); }
+//	// Append the clock to the file if flag
+//	if (append_clock_to_filenames){ file = file + "t" + to_string(clock()) + "_"; }
 
 	if (human_readable_storage){
 		// Open the files
 		ofstream spikeidfile, spiketimesfile;
-		spikeidfile.open((file + "SpikeIDs.txt"), ios::out | ios::binary);
-		spiketimesfile.open((file + "SpikeTimes.txt"), ios::out | ios::binary);
+		spikeidfile.open((file_IDs + ".txt"), ios::out | ios::binary);
+		spiketimesfile.open((file_Times + ".txt"), ios::out | ios::binary);
 		
 
 		// Send the data
@@ -208,8 +215,8 @@ void RecordingElectrodes::write_spikes_to_file(int epoch_number, bool append_clo
 	} else {
 		// Open the files
 		ofstream spikeidfile, spiketimesfile;
-		spikeidfile.open((file + "SpikeIDs.bin"), ios::out | ios::binary);
-		spiketimesfile.open((file + "SpikeTimes.bin"), ios::out | ios::binary);
+		spikeidfile.open((file_IDs + ".bin"), ios::out | ios::binary);
+		spiketimesfile.open((file_Times + ".bin"), ios::out | ios::binary);
 		
 
 		// Send the data
@@ -284,9 +291,10 @@ __global__ void collect_spikes_for_timestep_kernel(float* d_last_spike_time_of_e
 			// Increase the number of spikes stored
 			int i = atomicAdd(&d_total_number_of_spikes_stored_on_device[0], 1);
 			__syncthreads();
+
 			// In the location, add the id and the time
-			d_neuron_ids_of_stored_spikes_on_device[i] = idx;
-			d_time_in_seconds_of_stored_spikes_on_device[i] = current_time_in_seconds;
+			d_neuron_ids_of_stored_spikes_on_device[i - 1] = idx;
+			d_time_in_seconds_of_stored_spikes_on_device[i - 1] = current_time_in_seconds;
 		}
 		idx += blockDim.x * gridDim.x;
 	}
@@ -312,7 +320,7 @@ void RecordingElectrodes::write_initial_synaptic_weights_to_file(SpikingSynapses
 }
 
 
-void RecordingElectrodes::save_network_state(SpikingSynapses *synapses, bool human_readable_storage) {
+void RecordingElectrodes::write_network_state_to_file(SpikingSynapses *synapses, bool human_readable_storage) {
 
 	clock_t save_network_state_start = clock();
 

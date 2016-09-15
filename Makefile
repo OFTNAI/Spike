@@ -29,6 +29,8 @@ endif
 # Include all of the folders from which we want to include files
 # CU
 SIM_FILES := $(wildcard Simulator/*.cu)
+MODEL_FILES := $(wildcard Models/*.cu)
+EXPERIMENT_FILES := $(wildcard Experiments/*.cu)
 NEUR_FILES := $(wildcard Neurons/*.cu)
 STDP_FILES := $(wildcard STDP/*.cu)
 HELP_FILES := $(wildcard Helpers/*.cu)
@@ -41,7 +43,7 @@ HELP_CPP_FILES := $(wildcard Helpers/*.cpp)
 PLOTTING_FILES := $(wildcard Plotting/*.cpp)
 
 # COMBINE LISTS
-CU_FILES := $(SIM_FILES) $(NEUR_FILES) $(STDP_FILES) $(HELP_FILES) $(SYNS_FILES) $(REC_FILES) $(ANALY_FILES)
+CU_FILES := $(SIM_FILES) $(NEUR_FILES) $(EXPERIMENT_FILES) $(STDP_FILES) $(HELP_FILES) $(SYNS_FILES) $(REC_FILES) $(ANALY_FILES) $(MODEL_FILES)
 CPP_FILES := $(HELP_CPP_FILES) $(PLOTTING_FILES)
 
 # Create Objects

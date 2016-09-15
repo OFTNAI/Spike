@@ -1,4 +1,8 @@
-function [] = filterImageSet(inputDirectory, nrOfObjects, nrOfTransforms, imageSize, filterScale, paddingGrayScaleColor)
+function [] = filterImageSet(inputDirectory, nrOfObjects, nrOfTransforms, imageSize, filterScale)
+%% JI INSTRUCTIONS FOR SPIKE
+% 1. In MatlabGaborFilter directory create Input directory
+% 2. Within Input directory create Images directory with images to be filtered
+% 3. From MatlabGaborFiler directory run: matlab -nodesktop -nosplash -r "filterImageSet('Inputs', 2, 1, 128, 2)"
 
 %inputDirectory = Directory where we look for /Images folder with
 %input pictures, and where we save /Filtered folder with output and
@@ -108,18 +112,19 @@ for i = 1:length(content)
             end
             
             % Filter
-            filtering(imgFile, psi, scale, orient, bw, gamma, set, paddingGrayScaleColor);
+            filtering(imgFile, psi, scale, orient, bw, gamma, set);
             
             % Dump to file list
             fprintf(iList, '%s\n', fname);
-            
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            % Workaround James wanted, it is required for infoanalysis to
-            % work: if each object as one transform, then add duplicate
-            if nrOfTransforms == 1,
-                fprintf(iList, '%s\n', fname);
-            end            
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+           
+            %% Section Removed for Spike 
+            % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            % % Workaround James wanted, it is required for infoanalysis to
+            % % work: if each object as one transform, then add duplicate
+            % if nrOfTransforms == 1,
+            %     fprintf(iList, '%s\n', fname);
+            % end            
+            % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             
             % Output star if we are going from one object to the next
             filesOutputted = filesOutputted + 1;

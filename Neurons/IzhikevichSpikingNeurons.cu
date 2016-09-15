@@ -95,7 +95,7 @@ void IzhikevichSpikingNeurons::check_for_neuron_spikes(float current_time_in_sec
 	CudaCheckError();
 }
 
-void IzhikevichSpikingNeurons::update_membrane_potentials(float timestep) {
+void IzhikevichSpikingNeurons::update_membrane_potentials(float timestep, float current_time_in_seconds) {
 
 	izhikevich_update_membrane_potentials_kernel<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_membrane_potentials_v,
 																	d_states_u,

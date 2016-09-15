@@ -5,35 +5,19 @@ environment,
 	tabular_data
 	results_output
 
-# method,                                         
-# #	conmin_frcg				
-# 	efficient_global
-# 	seed = 123456
-
 method
-	max_iterations = 100000
-	max_function_evaluations = 200000
-	coliny_ea
-		population_size = 100
-		fitness_type merit_function
-		mutation_type offset_normal
-		mutation_rate 0.2 				# Probability of a mutation
-		crossover_type blend
-		crossover_rate 0.2				# Probability of a crossover
-		replacement_type chc = 50
-		solution_target = 100
+	efficient_global
+	seed = 123456
 
-model
-	single
+variables,
 
+	continuous_design = 2			
+	cdv_lower_bounds    1.e-6	1.e-6
+	cdv_upper_bounds    5.e-3	5.e-3
 
-variables,					
-	continuous_design = 4			
-	cdv_lower_bounds    1.e-6	1.e-6      1.e-6      1.e-6
-	cdv_upper_bounds    5.e-3	5.e-3      5.e-3      5.e-3
+	cdv_descriptor      'E2I_L_biological_conductance_scaling_constant_lambda'      'I2E_L_biological_conductance_scaling_constant_lambda'
 
-	cdv_descriptor      'E2E_FF_biological_conductance_scaling_constant_lambda' 'E2I_L_biological_conductance_scaling_constant_lambda'      'I2E_L_biological_conductance_scaling_constant_lambda'  'E2E_L_biological_conductance_scaling_constant_lambda'
-
+				
 
 # Case 1 (Massively Serial): Run Dakota in parallel and launch M-1 serial
 #         analysis jobs at once.  Do not specify any evaluation concurrency
@@ -65,8 +49,7 @@ interface,
 	    file_save
 
 responses,
-	objective_functions = 1
+	objective_functions = 2
 	sense = 'max'
-	#nonlinear_inequality_constraints = 2
 	no_gradients
 	no_hessians

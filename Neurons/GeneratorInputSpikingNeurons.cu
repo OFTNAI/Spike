@@ -78,7 +78,7 @@ void GeneratorInputSpikingNeurons::check_for_neuron_spikes(float current_time_in
 	CudaCheckError();
 }
 
-void GeneratorInputSpikingNeurons::update_membrane_potentials(float timestep){
+void GeneratorInputSpikingNeurons::update_membrane_potentials(float timestep, float current_time_in_seconds){
 }
 
 void GeneratorInputSpikingNeurons::AddStimulus(int spikenumber, int* ids, float* spiketimes){
