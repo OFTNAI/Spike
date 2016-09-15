@@ -97,7 +97,7 @@ void AdExSpikingNeurons::reset_neuron_activities() {
 
 
 
-void AdExSpikingNeurons::update_membrane_potentials(float timestep) {
+void AdExSpikingNeurons::update_membrane_potentials(float timestep, float current_time_in_seconds) {
 
 	AdEx_update_membrane_potentials<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(
 																	d_membrane_potentials_v,

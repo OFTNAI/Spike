@@ -19,6 +19,7 @@ CFLAGS = -c
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
 	CFLAGS += -D_MWAITXINTRIN_H_INCLUDED
+	CFLAGS += -std=c++11
 endif
 
 
