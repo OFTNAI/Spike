@@ -22,6 +22,7 @@
 #include <fstream>
 #include "../Plotting/Plotter.h"
 #include <vector>
+#include <fstream>
 
 #include <iostream>
 using namespace std;
@@ -48,18 +49,20 @@ int main (int argc, char *argv[]){
 	const int OBJFUNC_AVGFR_AND_AVGINFO = 6;
 	const int OBJFUNC_MAXFR_AND_AVGINFO = 7;
 	const int OBJFUNC_MAXFR_AND_AVGINFO_TRAINEDONLY = 8;
+	const int OBJFUNC_AVGINFO_TRAINEDONLY = 9;
+	const int OBJFUNC_AVGINFO_INPUT_TRAINEDONLY = 10;
 
 
 
 	// Parameters related to Dakota Optimization
 	int optimizationType = OPTIM_E2E_LAT; //OPTIM_BIO_CONST_LAT, OPTIM_BIO_CONST_FF, OPTIM_BIO_CONST_LAT_FF, OPTIM_FANINRAD, OPTIM_DECAY
-	int objective_function = OBJFUNC_MAXFR_AND_AVGINFO_TRAINEDONLY; //OBJFUNC_AVGFR, OBJFUNC_MAXFR, OBJFUNC_INFO, OBJFUNC_AVGFR_AND_INFO
+	int objective_function = OBJFUNC_AVGINFO_TRAINEDONLY; //OBJFUNC_AVGFR, OBJFUNC_MAXFR, OBJFUNC_INFO, OBJFUNC_AVGFR_AND_INFO
 	float optimal_average_firing_rate = 10.0f;//set if optimizing based on avgfr : Spontaneous rate (spikes/sec) 4.9 +- 7.1 (*1)
 	const float optimal_max_firing_rate = 100.0f;//set if optimizing based on maxfr //Maximum rate (spikes/sec) 87 +- 46  (*1)
 	//*1 Bair, W., & Movshon, J. A. (2004).  Adaptive Temporal Integration of Motion in Direction-Selective Neurons in Macaque Visual Cortex. The Journal of Neuroscience, 24(33), 7305遯ｶ�ｿｽ7323.
 
 	// Simulator Parameters
-	string experimentName = "4--FF_LAT4_wx2";
+	string experimentName = "4--FF_LAT4_10con_wx2";
 	float timestep = 0.00002;
 	bool simulate_network_to_test_untrained = true;
 	bool simulate_network_to_train_network = true;
@@ -83,8 +86,8 @@ int main (int argc, char *argv[]){
 	int fanInCount_E2E_FF = 100;
 	int fanInCount_E2I_L = 30;
 	int fanInCount_I2E_L = 30;
-	int fanInCount_E2E_L = 30;
-	int fanInCount_E2E_FB = 30;
+	int fanInCount_E2E_L = 10;
+	int fanInCount_E2E_FB = 10;
 
 	float gaussian_synapses_standard_deviation_G2E_FF = 1.0;
 //	float gaussian_synapses_standard_deviation_E2E_FF = 8.0; //15.0;//10.0;//28.166444920;//10.0;//9.3631908834;//5.0;
@@ -98,8 +101,8 @@ int main (int argc, char *argv[]){
 	float biological_conductance_scaling_constant_lambda_E2E_FF = 0.0001;//0.0001;
 	float biological_conductance_scaling_constant_lambda_E2I_L = 0.002;
 	float biological_conductance_scaling_constant_lambda_I2E_L = 0.004;
-	float biological_conductance_scaling_constant_lambda_E2E_L = 0.00004;
-	float biological_conductance_scaling_constant_lambda_E2E_FB = 0.00004;
+	float biological_conductance_scaling_constant_lambda_E2E_L = 0.0001;
+	float biological_conductance_scaling_constant_lambda_E2E_FB = 0.0001;
 
 	float decay_term_tau_g_G2E_FF = 0.15;
 	float decay_term_tau_g_E2E_FF = 0.15;
@@ -231,6 +234,8 @@ int main (int argc, char *argv[]){
 				break;
 
 			case OBJFUNC_MAXFR_AND_AVGINFO_TRAINEDONLY:
+			case OBJFUNC_AVGINFO_TRAINEDONLY:
+			case OBJFUNC_AVGINFO_INPUT_TRAINEDONLY:
 				simulate_network_to_test_untrained = false;
 				simulate_network_to_train_network = true;
 				simulate_network_to_test_trained = true;
@@ -239,12 +244,20 @@ int main (int argc, char *argv[]){
 	}
 
 
-
+	// copy cpp file to save parameters for future references
+	if (!is_optimisation){
+		string source = "Experiments/ConductanceExperiment1.cpp";
+		string destination = "output/"+experimentName+"/ConductanceExperiment1.cpp";
+		ifstream srce(source.c_str(), ios::binary ) ;
+		ofstream dest(destination.c_str(), ios::binary ) ;
+		dest << srce.rdbuf() ;
+	}
 
 	// Create an instance of the Simulator and set the timestep
 	Simulator simulator;
 	simulator.SetTimestep(timestep);
-	simulator.InitExperimentName(experimentName);
+	if (!is_optimisation)
+		simulator.InitExperimentName(experimentName);
 	simulator.high_fidelity_spike_storage = true;
 
 	LIFSpikingNeurons * lif_spiking_neurons = new LIFSpikingNeurons();
@@ -505,7 +518,7 @@ int main (int argc, char *argv[]){
 
 	/////////// PLOT INFOANALYSIS RESULTS //////////////////
 	if (simulate_network_to_test_untrained && simulate_network_to_test_trained && plotInfoAnalysis){
-		Plotter * plotter = new Plotter();
+		Plotter * plotter = new Plotter(experimentName);
 		plotter->plot_single_cell_information_analysis(spike_analyser_for_untrained_network, spike_analyser_for_trained_network);
 
 	}
@@ -609,10 +622,25 @@ int main (int argc, char *argv[]){
 				combined_information_score_training_increase = spike_analyser_for_trained_network->number_of_neurons_with_maximum_information_score_in_average_in_last_neuron_group;
 				printf("increase in number of cells with maximum info in average: %f\n", combined_information_score_training_increase);
 				resultsfile << to_string(combined_information_score_training_increase)<<endl;
-				//spike_analyser_for_trained_network->calculate_fitness_score();
-				//scoreMean_excit += spike_analyser_for_trained_network->combined_powered_distance_from_max_score_for_each_neuron_group[(number_of_layers-1)*2];
-				//printf("maxFR score excit in the last layer: %f \n",scoreMean_excit);
-				//resultsfile << to_string(scoreMean_excit) <<endl;
+
+				spike_analyser_for_trained_network->calculate_fitness_score();
+				scoreMean_excit += spike_analyser_for_trained_network->combined_powered_distance_from_max_score_for_each_neuron_group[(number_of_layers-1)*2];
+				printf("maxFR score excit in the last layer: %f \n",scoreMean_excit);
+				resultsfile << to_string(scoreMean_excit) <<endl;
+				break;
+
+			case OBJFUNC_AVGINFO_TRAINEDONLY:
+				combined_information_score_training_increase = spike_analyser_for_trained_network->number_of_neurons_with_maximum_information_score_in_average_in_last_neuron_group;
+				printf("Number of cells with maximum info in average: %f\n", combined_information_score_training_increase);
+				resultsfile << to_string(combined_information_score_training_increase)<<endl;
+			break;
+
+			case OBJFUNC_AVGINFO_INPUT_TRAINEDONLY:
+				spike_analyser_for_trained_network->calculate_single_cell_information_scores_for_neuron_group(0, number_of_bins,useThresholdForMaxFR,max_firing_rate);
+				combined_information_score_training_increase = spike_analyser_for_trained_network->number_of_neurons_with_maximum_information_score_in_average_in_last_neuron_group;
+				printf("Number of cells with maximum info in average (input layer): %f\n", combined_information_score_training_increase);
+				resultsfile << to_string(combined_information_score_training_increase)<<endl;
+
 				break;
 
 		}

@@ -3,9 +3,12 @@
 // #include "../SpikeAnalyser/SpikeAnalyser.h"
 
 #include "../Helpers/TerminalHelpers.h"
+#include <string>
 
+using namespace std;
 // Plotter Constructor
-Plotter::Plotter() {
+Plotter::Plotter(string experimentName_param) {
+	RESULTS_DIRECTORY = "output/"+experimentName_param+"/";
 
 }
 
@@ -95,8 +98,8 @@ void Plotter::plot_single_cell_information_analysis(SpikeAnalyser * spike_analys
 
 	}
 
-	gr->WriteFrame("output/single_cell_information_analysis.png");
-	gr->WriteFrame("output/single_cell_information_analysis.eps");
+	gr->WriteFrame((RESULTS_DIRECTORY+"single_cell_information_analysis.png").c_str());
+	gr->WriteFrame((RESULTS_DIRECTORY+"single_cell_information_analysis.eps").c_str());
 
 
 
