@@ -45,9 +45,6 @@ int AdExSpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
 	adaptation_coupling_coefficients_a = (float*)realloc(adaptation_coupling_coefficients_a, total_number_of_neurons*sizeof(float));
 	adaptation_time_constants_tau_w = (float*)realloc(adaptation_time_constants_tau_w, total_number_of_neurons*sizeof(float));
 
-
-	float membrane_time_constant_tau_m = AdEx_spiking_group_params->somatic_capcitance_Cm / AdEx_spiking_group_params->somatic_leakage_conductance_g0;
-	float membrane_resistance_R = 1 / AdEx_spiking_group_params->somatic_leakage_conductance_g0;
 	
 	for (int i = total_number_of_neurons - number_of_neurons_in_new_group; i < total_number_of_neurons; i++) {
 		adaptation_values_w[i] = 0.0f;
@@ -90,7 +87,7 @@ void AdExSpikingNeurons::copy_constants_to_device() {
 	CudaSafeCall(cudaMemcpy(d_adaptation_time_constants_tau_w, adaptation_time_constants_tau_w, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
 }
 
-void SpikingNeurons::reset_neuron_activities() {
+void AdExSpikingNeurons::reset_neuron_activities() {
 
 	SpikingNeurons::reset_neuron_activities();
 
@@ -148,8 +145,8 @@ __global__ void AdEx_update_membrane_potentials(float *d_membrane_potentials_v,
 		float new_membrane_potential = inverse_capacitance*(membrane_leakage + slope_adaptation - d_adaptation_values_w[idx] + d_current_injections[idx]);
 
 		// Updating the adaptation parameter
-		float inverse_tau_w = (1 / d_adaptation_time_constants_tau_w[i]);
-		float adaptation_change = d_adaptation_coupling_coefficients_a[i]*membrane_leak_diff;
+		float inverse_tau_w = (1 / d_adaptation_time_constants_tau_w[idx]);
+		float adaptation_change = d_adaptation_coupling_coefficients_a[idx]*membrane_leak_diff;
 
 		float new_adaptation_value = inverse_tau_w*(adaptation_change - d_adaptation_values_w[idx]);
 
