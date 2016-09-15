@@ -184,10 +184,15 @@ void RecordingElectrodes::write_spikes_to_file(int epoch_number, bool append_clo
 	clock_t write_spikes_to_file_start = clock();
 
 	// Get the names
+<<<<<<< HEAD
+//	string file = RESULTS_DIRECTORY + prefix_string + "_Epoch" + to_string(epoch_number) + "_" + to_string(clock());
+	string file = RESULTS_DIRECTORY + prefix_string + "_";
+=======
 	string file = RESULTS_DIRECTORY + prefix_string + "_Epoch" + to_string(epoch_number) + "_";
+>>>>>>> refs/remotes/origin/ji_master
 
 	// Append the clock to the file if flag
-	if (append_clock_to_filenames){ file = file + "t" + to_string(clock()) + "_"; }
+	if (append_clock_to_filenames){ file = file + to_string(clock()); }
 
 	if (human_readable_storage){
 		// Open the files
@@ -318,6 +323,21 @@ void RecordingElectrodes::save_network_state(SpikingSynapses *synapses, bool hum
 	// Copy back the data that we might want:
 	CudaSafeCall(cudaMemcpy(synapses->synaptic_efficacies_or_weights, synapses->d_synaptic_efficacies_or_weights, sizeof(float)*synapses->total_number_of_synapses, cudaMemcpyDeviceToHost));
 	
+<<<<<<< HEAD
+	// Writing the data
+//	weightfile.write((char *)synapses->synaptic_efficacies_or_weights, synapses->total_number_of_synapses*sizeof(float));
+//	delayfile.write((char *)synapses->delays, synapses->total_number_of_synapses*sizeof(int));
+//	synapsepre.write((char *)synapses->presynaptic_neuron_indices, synapses->total_number_of_synapses*sizeof(int));
+//	synapsepost.write((char *)synapses->postsynaptic_neuron_indices, synapses->total_number_of_synapses*sizeof(int));
+	
+	for (int i=0; i< synapses->total_number_of_synapses; i++){
+		weightfile << to_string(synapses->synaptic_efficacies_or_weights[i]) <<endl;
+		delayfile << to_string(synapses->delays[i])<<endl;
+		synapsepre << to_string(synapses->presynaptic_neuron_indices[i])<<endl;
+		synapsepost << to_string(synapses->postsynaptic_neuron_indices[i])<<endl;
+	}
+	
+=======
 	if (human_readable_storage){
 		// Creating and Opening all the files
 		ofstream synapsepre, synapsepost, weightfile, delayfile;
@@ -332,6 +352,7 @@ void RecordingElectrodes::save_network_state(SpikingSynapses *synapses, bool hum
 			delayfile << to_string(synapses->delays[i]) << endl;
 			synapsepre << to_string(synapses->presynaptic_neuron_indices[i]) << endl;
 			synapsepost << to_string(synapses->postsynaptic_neuron_indices[i]) << endl;
+>>>>>>> refs/remotes/origin/ji_master
 
 		}
 

@@ -189,7 +189,7 @@ void Simulator::setup_recording_electrodes_for_input_neurons(int number_of_times
 }
 
 
-void Simulator::RunSimulationToCountNeuronSpikes(float presentation_time_per_stimulus_per_epoch, bool record_spikes, bool save_recorded_spikes_to_file, SpikeAnalyser *spike_analyser) {
+void Simulator::RunSimulationToCountNeuronSpikes(float presentation_time_per_stimulus_per_epoch, bool record_spikes, bool save_recorded_spikes_to_file, SpikeAnalyser *spike_analyser, bool human_readable_storage) {
 	bool number_of_epochs = 1;
 	bool apply_stdp_to_relevant_synapses = false;
 	bool count_spikes_per_neuron = true;
@@ -199,7 +199,7 @@ void Simulator::RunSimulationToCountNeuronSpikes(float presentation_time_per_sti
 	stimuli_presentation_params->presentation_format = PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_STIMULI;
 	stimuli_presentation_params->object_order = OBJECT_ORDER_ORIGINAL;
 	stimuli_presentation_params->transform_order = TRANSFORM_ORDER_ORIGINAL;
-	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, record_spikes, save_recorded_spikes_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, stimuli_presentation_params, stimulus_presentation_order_seed, spike_analyser);
+	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, record_spikes, save_recorded_spikes_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, stimuli_presentation_params, stimulus_presentation_order_seed, spike_analyser,human_readable_storage);
 }
 
 void Simulator::RunSimulationToTrainNetwork(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, Stimuli_Presentation_Struct * stimuli_presentation_params, int stimulus_presentation_order_seed) {
@@ -209,12 +209,12 @@ void Simulator::RunSimulationToTrainNetwork(float presentation_time_per_stimulus
 	bool record_spikes = false;
 	bool save_recorded_spikes_to_file = false;
 
-	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, record_spikes, save_recorded_spikes_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, stimuli_presentation_params, stimulus_presentation_order_seed, NULL);
+	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, record_spikes, save_recorded_spikes_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, stimuli_presentation_params, stimulus_presentation_order_seed, NULL, false);
 }
 
 
 
-void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, bool record_spikes, bool save_recorded_spikes_to_file, bool apply_stdp_to_relevant_synapses, bool count_spikes_per_neuron, Stimuli_Presentation_Struct * stimuli_presentation_params, int stimulus_presentation_order_seed, SpikeAnalyser *spike_analyser){
+void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, bool record_spikes, bool save_recorded_spikes_to_file, bool apply_stdp_to_relevant_synapses, bool count_spikes_per_neuron, Stimuli_Presentation_Struct * stimuli_presentation_params, int stimulus_presentation_order_seed, SpikeAnalyser *spike_analyser, bool human_readable_storage){
 
 	check_for_epochs_and_begin_simulation_message(timestep, input_neurons->total_number_of_input_stimuli, number_of_epochs, record_spikes, save_recorded_spikes_to_file, neurons->total_number_of_neurons, input_neurons->total_number_of_neurons, synapses->total_number_of_synapses);
 	// Should print something about stimuli_presentation_params as old stuff removed from check_for_epochs...
@@ -332,8 +332,8 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 		// Only save the spikes if necessary
 		if (record_spikes && save_recorded_spikes_to_file){
 			printf("Write to file\n");
-			if (recording_electrodes) recording_electrodes->write_spikes_to_file(epoch_number, true, true);
-			if (input_recording_electrodes) input_recording_electrodes->write_spikes_to_file(epoch_number, true, true);
+			if (recording_electrodes) recording_electrodes->write_spikes_to_file(epoch_number, true, human_readable_storage);
+			if (input_recording_electrodes) input_recording_electrodes->write_spikes_to_file(epoch_number, true, human_readable_storage);
 		}
 	}
 	
@@ -342,7 +342,7 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 	simulation_timer->stop_timer_and_log_time_and_message("Simulation Complete!", true);
 	#endif
 
-	recording_electrodes->save_network_state(synapses, false);
+	recording_electrodes->save_network_state(synapses, human_readable_storage);
 
 	// delete recording_electrodes;
 	// delete input_recording_electrodes;
