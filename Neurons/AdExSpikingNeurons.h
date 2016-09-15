@@ -53,12 +53,12 @@ public:
 
 __global__ void AdEx_update_membrane_potentials(float *d_membrane_potentials_v,
 								float * d_adaptation_values_w,
-								float * d_membrane_capacitances_Cm;
-								float * d_membrane_leakage_conductances_g0;
-								float * d_leak_reversal_potentials_E_L;
-								float * d_slope_factors_Delta_T;
-								float * d_adaptation_coupling_coefficients_a;
-								float * d_adaptation_time_constants_tau_w;
+								float * d_membrane_capacitances_Cm,
+								float * d_membrane_leakage_conductances_g0,
+								float * d_leak_reversal_potentials_E_L,
+								float * d_slope_factors_Delta_T,
+								float * d_adaptation_coupling_coefficients_a,
+								float * d_adaptation_time_constants_tau_w,
 								float* d_current_injections,
 								float * d_thresholds_for_action_potential_spikes,
 								float timestep,
