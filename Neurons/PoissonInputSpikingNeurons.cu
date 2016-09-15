@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "../Helpers/CUDAErrorCheckHelpers.h"
+#include "../Helpers/TerminalHelpers.h"
 #include <algorithm> // For random shuffle
 using namespace std;
 
@@ -43,12 +44,17 @@ void PoissonInputSpikingNeurons::allocate_device_pointers(int maximum_axonal_del
 
 }
 
-
-void PoissonInputSpikingNeurons::reset_neurons() {
-
-	InputSpikingNeurons::reset_neurons();
+void PoissonInputSpikingNeurons::copy_constants_to_device() {
+	InputSpikingNeurons::copy_constants_to_device();
 
 	CudaSafeCall(cudaMemcpy(d_rates, rates, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
+}
+
+
+void PoissonInputSpikingNeurons::reset_neuron_activities() {
+
+	InputSpikingNeurons::reset_neuron_activities();
+
 }
 
 
@@ -56,6 +62,19 @@ void PoissonInputSpikingNeurons::set_threads_per_block_and_blocks_per_grid(int t
 	
 	InputSpikingNeurons::set_threads_per_block_and_blocks_per_grid(threads);
 
+}
+
+int* PoissonInputSpikingNeurons::setup_stimuli_presentation_order(Stimuli_Presentation_Struct * stimuli_presentation_params) {
+	
+	int* stimuli_presentation_order = InputSpikingNeurons::setup_stimuli_presentation_order(stimuli_presentation_params);
+
+	return stimuli_presentation_order;
+}
+
+
+bool PoissonInputSpikingNeurons::stimulus_is_new_object_for_object_by_object_presentation(int stimulus_index) {
+	print_message_and_exit("Object by object presentation currently unsupported at PoissonInputSpikingNeurons level. Please use ImagePoissonInputSpikingNeurons.");
+	return false;
 }
 
 

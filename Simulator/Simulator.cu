@@ -20,18 +20,13 @@
 
 // Constructor
 Simulator::Simulator(){
-	// Spike Generators
 
 	synapses = NULL;
 	neurons = NULL;
 	input_neurons = NULL;
 
-	number_of_stimuli = 0;
-	numEntries = NULL;
-	genids = NULL;
-	gentimes = NULL;
 	// Default parameters
-	timestep = 0.001f;
+	timestep = 0.0001f;
 
 	recording_electrodes = NULL;
 	input_recording_electrodes = NULL;
@@ -51,13 +46,6 @@ Simulator::Simulator(){
 // Destructor
 Simulator::~Simulator(){
 
-	free(neurons);
-	free(input_neurons);
-	free(synapses);
-
-	free(numEntries);
-	free(genids);
-	free(gentimes);
 }
 
 
@@ -116,9 +104,7 @@ int Simulator::AddInputNeuronGroup(neuron_parameters_struct * group_params) {
 
 void Simulator::AddSynapseGroup(int presynaptic_group_id, 
 							int postsynaptic_group_id, 
-							synapse_parameters_struct * synapse_params,
-							float parameter,
-							float parameter_two) {
+							synapse_parameters_struct * synapse_params) {
 
 	if (synapses == NULL) print_message_and_exit("Please call SetSynapseType before adding synapses.");
 
@@ -127,23 +113,17 @@ void Simulator::AddSynapseGroup(int presynaptic_group_id,
 							neurons,
 							input_neurons,
 							timestep,
-							synapse_params,
-							parameter,
-							parameter_two);
+							synapse_params);
 }
 
 void Simulator::AddSynapseGroupsForNeuronGroupAndEachInputGroup(int postsynaptic_group_id, 
-							synapse_parameters_struct * synapse_params,
-							float parameter,
-							float parameter_two) {
+							synapse_parameters_struct * synapse_params) {
 
 	for (int i = 0; i < input_neurons->total_number_of_groups; i++) {
 
 		AddSynapseGroup(CORRECTED_PRESYNAPTIC_ID(i, true), 
 							postsynaptic_group_id,
-							synapse_params,
-							parameter,
-							parameter_two);
+							synapse_params);
 
 	}
 
@@ -165,19 +145,14 @@ void Simulator::setup_network() {
 	// Randomising order of synapses means that each block is accessing a larger number of points in memory.
 	// if (temp_model_type == 1) synapses->shuffle_synapses();
 
+	synapses->allocate_device_pointers();
 	neurons->allocate_device_pointers(synapses->maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
 	input_neurons->allocate_device_pointers(synapses->maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
-	synapses->allocate_device_pointers();
 	stdp_rule->allocate_device_pointers();
 
-	printf("HELLO\n");
-	for (int i=0; i < synapses->total_number_of_synapses; i++){
-		if (synapses->delays[i] > synapses->maximum_axonal_delay_in_timesteps){
-			printf("%d, %d\n", i, synapses->delays[i]);
-		}
-	}
-	// printf("InputNeuronNum: %d\n", input_neurons->total_number_of_neurons);
-	printf("BYE\n");
+	synapses->copy_constants_and_initial_efficacies_to_device();
+	neurons->copy_constants_to_device();
+	input_neurons->copy_constants_to_device();
 
 	timer->stop_timer_and_log_time_and_message("Network Setup.", true);
 }
@@ -187,8 +162,12 @@ void Simulator::setup_recording_electrodes_for_neurons(int number_of_timesteps_p
 	TimerWithMessages * timer = new TimerWithMessages("Setting up recording electrodes for neurons...\n");
 
 	recording_electrodes = new RecordingElectrodes(neurons, "Neurons", number_of_timesteps_per_device_spike_copy_check_param, device_spike_store_size_multiple_of_total_neurons_param, proportion_of_device_spike_store_full_before_copy_param);
-	recording_electrodes->initialise_device_pointers();
-	recording_electrodes->initialise_host_pointers();
+	
+	recording_electrodes->allocate_pointers_for_spike_store();
+	recording_electrodes->reset_pointers_for_spike_store();
+
+	recording_electrodes->allocate_pointers_for_spike_count();
+	recording_electrodes->reset_pointers_for_spike_count();
 
 	timer->stop_timer_and_log_time_and_message("Recording Electrodes Setup For Neurons.", true);
 }
@@ -199,8 +178,12 @@ void Simulator::setup_recording_electrodes_for_input_neurons(int number_of_times
 	TimerWithMessages * timer = new TimerWithMessages("Setting Up recording electrodes for input neurons...\n");
 
 	input_recording_electrodes = new RecordingElectrodes(input_neurons, "Input_Neurons", number_of_timesteps_per_device_spike_copy_check_param, device_spike_store_size_multiple_of_total_neurons_param, proportion_of_device_spike_store_full_before_copy_param);
-	input_recording_electrodes->initialise_device_pointers();
-	input_recording_electrodes->initialise_host_pointers();
+	
+	input_recording_electrodes->allocate_pointers_for_spike_store();
+	input_recording_electrodes->reset_pointers_for_spike_store();
+
+	input_recording_electrodes->allocate_pointers_for_spike_count();
+	input_recording_electrodes->reset_pointers_for_spike_count();
 
 	timer->stop_timer_and_log_time_and_message("Recording Electrodes Setup For Input Neurons.", true);
 }
@@ -210,42 +193,37 @@ void Simulator::RunSimulationToCountNeuronSpikes(float presentation_time_per_sti
 	bool number_of_epochs = 1;
 	bool apply_stdp_to_relevant_synapses = false;
 	bool count_spikes_per_neuron = true;
-	bool present_stimuli_in_random_order = false;
-
-	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, record_spikes, save_recorded_spikes_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, present_stimuli_in_random_order, spike_analyser);
+	int stimulus_presentation_order_seed = 0; // Shouldn't be needed if stimuli presentation not random
+	Stimuli_Presentation_Struct * stimuli_presentation_params = new Stimuli_Presentation_Struct();
+	// stimuli_presentation_params->presentation_format = PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_OBJECTS;
+	stimuli_presentation_params->presentation_format = PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_STIMULI;
+	stimuli_presentation_params->object_order = OBJECT_ORDER_ORIGINAL;
+	stimuli_presentation_params->transform_order = TRANSFORM_ORDER_ORIGINAL;
+	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, record_spikes, save_recorded_spikes_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, stimuli_presentation_params, stimulus_presentation_order_seed, spike_analyser);
 }
 
-void Simulator::RunSimulationToTrainNetwork(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, bool present_stimuli_in_random_order) {
+void Simulator::RunSimulationToTrainNetwork(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, Stimuli_Presentation_Struct * stimuli_presentation_params, int stimulus_presentation_order_seed) {
 
 	bool apply_stdp_to_relevant_synapses = true;
 	bool count_spikes_per_neuron = false;
 	bool record_spikes = false;
 	bool save_recorded_spikes_to_file = false;
 
-	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, record_spikes, save_recorded_spikes_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, present_stimuli_in_random_order, NULL);
+	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, record_spikes, save_recorded_spikes_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, stimuli_presentation_params, stimulus_presentation_order_seed, NULL);
 }
 
 
 
-void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, bool record_spikes, bool save_recorded_spikes_to_file, bool apply_stdp_to_relevant_synapses, bool count_spikes_per_neuron, bool present_stimuli_in_random_order, SpikeAnalyser *spike_analyser){
-	
-	int number_of_stimuli = input_neurons->total_number_of_input_stimuli;
-	begin_simulation_message(timestep, number_of_stimuli, number_of_epochs, record_spikes, save_recorded_spikes_to_file, present_stimuli_in_random_order, neurons->total_number_of_neurons, input_neurons->total_number_of_neurons, synapses->total_number_of_synapses);
+void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, bool record_spikes, bool save_recorded_spikes_to_file, bool apply_stdp_to_relevant_synapses, bool count_spikes_per_neuron, Stimuli_Presentation_Struct * stimuli_presentation_params, int stimulus_presentation_order_seed, SpikeAnalyser *spike_analyser){
+
+	check_for_epochs_and_begin_simulation_message(timestep, input_neurons->total_number_of_input_stimuli, number_of_epochs, record_spikes, save_recorded_spikes_to_file, neurons->total_number_of_neurons, input_neurons->total_number_of_neurons, synapses->total_number_of_synapses);
+	// Should print something about stimuli_presentation_params as old stuff removed from check_for_epochs...
 	TimerWithMessages * simulation_timer = new TimerWithMessages();
 
-	if (number_of_epochs == 0) print_message_and_exit("Error. There must be at least one epoch.");
+	// Set seed for stimulus presentation order
+	srand(stimulus_presentation_order_seed);
 
-	// SEEDING
-	srand(43);
-
-	// STIMULUS ORDER (Put into function + variable)
-	int* stimuli_presentation_order;
-	stimuli_presentation_order = (int*)malloc(number_of_stimuli*sizeof(int));
-	for (int i = 0; i < number_of_stimuli; i++){
-		stimuli_presentation_order[i] = i;
-	}
-
-	recording_electrodes->write_initial_synaptic_weights_to_file(synapses);
+	recording_electrodes->write_initial_synaptic_weights_to_file(synapses, false);
 	// recording_electrodes->delete_and_reset_recorded_spikes();
 
 	for (int epoch_number = 0; epoch_number < number_of_epochs; epoch_number++) {
@@ -253,24 +231,51 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 		TimerWithMessages * epoch_timer = new TimerWithMessages();
 		printf("Starting Epoch: %d\n", epoch_number);
 
-		if (present_stimuli_in_random_order) {
-			std::random_shuffle(&stimuli_presentation_order[0], &stimuli_presentation_order[number_of_stimuli]);
-		}
-
-		neurons->reset_neurons();
-		synapses->reset_synapse_spikes();
-		stdp_rule->Reset_STDP();
+		neurons->reset_neuron_activities();
+		synapses->reset_synapse_activities();
+		stdp_rule->reset_STDP_activities();
 
 		float current_time_in_seconds = 0.0f;
 
-		// Running through every Stimulus
-		for (int stimulus_index = 0; stimulus_index < number_of_stimuli; stimulus_index++){
+		int* stimuli_presentation_order = input_neurons->setup_stimuli_presentation_order(stimuli_presentation_params);
+		for (int stimulus_index = 0; stimulus_index < input_neurons->total_number_of_input_stimuli; stimulus_index++) {
 
 			printf("Stimulus: %d, Current time in seconds: %1.2f\n", stimuli_presentation_order[stimulus_index], current_time_in_seconds);
+			printf("stimuli_presentation_params->presentation_format: %d\n", stimuli_presentation_params->presentation_format);
+
+			switch (stimuli_presentation_params->presentation_format) {
+				case PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_STIMULI: case PRESENTATION_FORMAT_RANDOM_RESET_BETWEEN_EACH_STIMULUS:
+				{
+					neurons->reset_neuron_activities();
+					input_neurons->reset_neuron_activities();
+					synapses->reset_synapse_activities();
+					stdp_rule->reset_STDP_activities();
+
+					break;
+				}
+				case PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_OBJECTS:
+				{
+					bool stimulus_is_new_object = input_neurons->stimulus_is_new_object_for_object_by_object_presentation(stimulus_index);
+					(stimulus_is_new_object) ? printf("stimulus_is_new_object\n") : printf("stimulus_is_NOT_new_object\n");
+
+					if (stimulus_is_new_object) {
+						neurons->reset_neuron_activities();
+						input_neurons->reset_neuron_activities();
+						synapses->reset_synapse_activities();
+						stdp_rule->reset_STDP_activities();
+					}
+
+					break;
+				}
+				default:
+					break;
+
+			}
+
 
 			// These statements have been placed in this order for the Spike Generator Neurons so that they can set up for the next timestep
 			input_neurons->current_stimulus_index = stimuli_presentation_order[stimulus_index];
-			input_neurons->reset_neurons();
+			input_neurons->reset_neuron_activities();
 
 			int number_of_timesteps_per_stimulus_per_epoch = presentation_time_per_stimulus_per_epoch / timestep;
 		
@@ -306,6 +311,7 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 			if (count_spikes_per_neuron) {
 				if (spike_analyser) {
 					spike_analyser->store_spike_counts_for_stimulus_index(input_neurons->current_stimulus_index, recording_electrodes->d_per_neuron_spike_counts);
+					recording_electrodes->reset_pointers_for_spike_count();
 				}
 			}
 
@@ -326,8 +332,8 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 		// Only save the spikes if necessary
 		if (record_spikes && save_recorded_spikes_to_file){
 			printf("Write to file\n");
-			if (recording_electrodes) recording_electrodes->write_spikes_to_file(epoch_number);
-			if (input_recording_electrodes) input_recording_electrodes->write_spikes_to_file(epoch_number);
+			if (recording_electrodes) recording_electrodes->write_spikes_to_file(epoch_number, true, true);
+			if (input_recording_electrodes) input_recording_electrodes->write_spikes_to_file(epoch_number, true, true);
 		}
 	}
 	
@@ -336,7 +342,7 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 	simulation_timer->stop_timer_and_log_time_and_message("Simulation Complete!", true);
 	#endif
 
-	recording_electrodes->save_network_state(synapses);
+	recording_electrodes->save_network_state(synapses, false);
 
 	// delete recording_electrodes;
 	// delete input_recording_electrodes;
@@ -361,20 +367,3 @@ void Simulator::per_timestep_instructions(float current_time_in_seconds, bool ap
 	input_neurons->update_membrane_potentials(timestep);
 
 }
-
-
-// // Synapse weight loading
-// // INPUT:
-// //		Number of weights that you are inputting
-// //		The array in which the weights are located
-// void Simulator::LoadWeights(int numWeights,
-// 						float* newWeights){
-// 	// Check if you have the correct number of weights
-// 	if (numWeights != synconnects.numsynapses){
-// 		print_message_and_exit("The number of weights being loaded is not equivalent to the model.");
-// 	}
-// 	// Continuing and applying the weights
-// 	for (int i=0; i < numWeights; i++){
-// 		synconnects.weights[i] = newWeights[i];
-// 	}
-// }

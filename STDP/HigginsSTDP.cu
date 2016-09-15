@@ -20,7 +20,7 @@ HigginsSTDP::~HigginsSTDP() {
 }
 
 // Implementation of the STDP Rule for Irina's Model
-void HigginsSTDP::Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons* neurons, stdp_parameters_struct* stdp_parameters){
+void HigginsSTDP::Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons* neurons, SpikingNeurons* input_neurons, stdp_parameters_struct* stdp_parameters){
 	stdp_params = (higgins_stdp_parameters_struct *)stdp_parameters;
 	syns = synapses;
 }

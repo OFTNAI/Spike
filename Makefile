@@ -21,6 +21,10 @@ ifeq ($(UNAME_S),Linux)
 endif
 
 
+# mkdir -p ${EXPERIMENT_DIRECTORY}/bin
+# test -d ${EXPERIMENT_DIRECTORY}/bin || mkdir ${EXPERIMENT_DIRECTORY}/bin
+
+
 # Include all of the folders from which we want to include files
 # CU
 SIM_FILES := $(wildcard Simulator/*.cu)
@@ -30,34 +34,39 @@ HELP_FILES := $(wildcard Helpers/*.cu)
 SYNS_FILES := $(wildcard Synapses/*.cu)
 REC_FILES := $(wildcard RecordingElectrodes/*.cu)
 ANALY_FILES := $(wildcard SpikeAnalyser/*.cu)
+# PLOTTING_FILES := $(wildcard Plotting/*.cu)
 # CPP
 HELP_CPP_FILES := $(wildcard Helpers/*.cpp)
+PLOTTING_FILES := $(wildcard Plotting/*.cpp)
 
 # COMBINE LISTS
 CU_FILES := $(SIM_FILES) $(NEUR_FILES) $(STDP_FILES) $(HELP_FILES) $(SYNS_FILES) $(REC_FILES) $(ANALY_FILES)
-CPP_FILES := $(HELP_CPP_FILES)
+CPP_FILES := $(HELP_CPP_FILES) $(PLOTTING_FILES)
 
 # Create Objects
-CU_OBJ_FILES := $(addprefix ObjectFiles/,$(notdir $(CU_FILES:.cu=.o)))
-CPP_OBJ_FILES := $(addprefix ObjectFiles/,$(notdir $(CPP_FILES:.cpp=.o)))
+CU_OBJ_FILES := $(addprefix obj/,$(notdir $(CU_FILES:.cu=.o)))
+CPP_OBJ_FILES := $(addprefix obj/,$(notdir $(CPP_FILES:.cpp=.o)))
 
 
 # Default
 model: ${FILE}
 directory: ${EXPERIMENT_DIRECTORY}
 
-${FILE}: ObjectFiles/${FILE}.o $(CU_OBJ_FILES) $(CPP_OBJ_FILES)
-	$(CC) -lineinfo  -lpython2.7 ObjectFiles/${FILE}.o $(CU_OBJ_FILES) $(CPP_OBJ_FILES) -o ${EXPERIMENT_DIRECTORY}/bin/${FILE}
+
+${FILE}: obj/${FILE}.o $(CU_OBJ_FILES) $(CPP_OBJ_FILES)
+	test -d ${EXPERIMENT_DIRECTORY}/bin || mkdir ${EXPERIMENT_DIRECTORY}/bin
+	$(CC) -lineinfo -lmgl obj/${FILE}.o $(CU_OBJ_FILES) $(CPP_OBJ_FILES) -o ${EXPERIMENT_DIRECTORY}/bin/${FILE}
 
 # Compiling the Model file
-ObjectFiles/${FILE}.o: ${EXPERIMENT_DIRECTORY}/${FILE}.cpp
+obj/${FILE}.o: ${EXPERIMENT_DIRECTORY}/${FILE}.cpp
 	$(CC) $(CFLAGS) ${EXPERIMENT_DIRECTORY}/${FILE}.cpp -o $@
 
 # CUDA
-ObjectFiles/%.o: */%.cu
+obj/%.o: */%.cu
 	$(CC) $(CFLAGS) -o $@ $<
+
 # CPP
-ObjectFiles/%.o: Helpers/%.cpp
+obj/%.o: */%.cpp
 	$(CC) $(CFLAGS) -o $@ $<
 
 
@@ -68,7 +77,7 @@ TEST_CPP_FILES := $(wildcard Tests/*.cu)
 TEST_OBJ_FILES := $(addprefix Tests/obj/,$(notdir $(TEST_CPP_FILES:.cu=.o)))
 
 test: ${TEST_OBJ_FILES} $(CU_OBJ_FILES) $(CPP_OBJ_FILES)
-	$(CC)  -lineinfo  -lpython2.7 ${TEST_OBJ_FILES} $(CU_OBJ_FILES) $(CPP_OBJ_FILES) -o Tests/unittests
+	$(CC) -lineinfo -lmgl ${TEST_OBJ_FILES} $(CU_OBJ_FILES) $(CPP_OBJ_FILES) -o Tests/unittests
 
 # Test Compilation
 Tests/obj/%.o: Tests/%.cu
@@ -76,10 +85,10 @@ Tests/obj/%.o: Tests/%.cu
 
 # Cleaning tests
 cleantest:
-	rm Tests/obj/* Tests/unittests
+	rm Tests/obj/* Tests/unittests Tests/output/*
 
 
 
 # Removing all created files
 clean:
-	rm ObjectFiles/*.o ${EXPERIMENT_DIRECTORY}/bin/* Tests/obj/*
+	rm obj/*.o Tests/obj/*

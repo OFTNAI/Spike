@@ -46,12 +46,6 @@ public:
 	RecordingElectrodes * recording_electrodes;
 	RecordingElectrodes * input_recording_electrodes;
 
-	// Spike Generator related Data
-	int number_of_stimuli;
-	int* numEntries;
-	int** genids;
-	float** gentimes;
-
 	// Flag: Enable for high accuracy spike storage, Disable for speed
 	bool high_fidelity_spike_storage;
 
@@ -69,17 +63,11 @@ public:
 	
 	void AddSynapseGroup(int presynaptic_group_id, 
 							int postsynaptic_group_id, 
-							synapse_parameters_struct * synapse_params,
-							float parameter = 0.0f,
-							float parameter_two = 0.0f);
+							synapse_parameters_struct * synapse_params);
 
 	void AddSynapseGroupsForNeuronGroupAndEachInputGroup(int postsynaptic_group_id, 
-							synapse_parameters_struct * synapse_params,
-							float parameter = 0.0f,
-							float parameter_two = 0.0f);
+							synapse_parameters_struct * synapse_params);
 
-
-	void CreateGenerator(int popID, int stimulusid, int spikenumber, int* ids, float* spiketimes);
 
 	void LoadWeights(int numWeights, float* newWeights);
 
@@ -87,12 +75,11 @@ public:
 	void setup_recording_electrodes_for_neurons(int number_of_timesteps_per_device_spike_copy_check_param, int device_spike_store_size_multiple_of_total_neurons_param, float proportion_of_device_spike_store_full_before_copy_param);
 	void setup_recording_electrodes_for_input_neurons(int number_of_timesteps_per_device_spike_copy_check_param, int device_spike_store_size_multiple_of_total_neurons_param, float proportion_of_device_spike_store_full_before_copy_param);
 
-	void RunSimulation(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, bool record_spikes, bool save_recorded_spikes_to_file, bool apply_stdp_to_relevant_synapses, bool count_spikes_per_neuron_for_single_cell_analysis, bool present_stimuli_in_random_order, SpikeAnalyser *spike_analyser);
+	void RunSimulation(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, bool record_spikes, bool save_recorded_spikes_to_file, bool apply_stdp_to_relevant_synapses, bool count_spikes_per_neuron_for_single_cell_analysis, Stimuli_Presentation_Struct * stimuli_presentation_params, int stimulus_presentation_order_seed, SpikeAnalyser *spike_analyser);
 	void RunSimulationToCountNeuronSpikes(float presentation_time_per_stimulus_per_epoch, bool record_spikes, bool save_recorded_spikes_to_file, SpikeAnalyser *spike_analyser);
-	void RunSimulationToTrainNetwork(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, bool present_stimuli_in_random_order);
+	void RunSimulationToTrainNetwork(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, Stimuli_Presentation_Struct * stimuli_presentation_params, int stimulus_presentation_order_seed);
 
 protected: 
 	void per_timestep_instructions(float current_time_in_seconds, bool apply_stdp_to_relevant_synapses);
-
 };
 #endif

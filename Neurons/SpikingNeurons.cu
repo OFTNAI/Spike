@@ -50,7 +50,6 @@ void SpikingNeurons::allocate_device_pointers(int maximum_axonal_delay_in_timest
 	Neurons::allocate_device_pointers(maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
 
 	CudaSafeCall(cudaMalloc((void **)&d_last_spike_time_of_each_neuron, sizeof(float)*total_number_of_neurons));
-
 	CudaSafeCall(cudaMalloc((void **)&d_membrane_potentials_v, sizeof(float)*total_number_of_neurons));
 	CudaSafeCall(cudaMalloc((void **)&d_thresholds_for_action_potential_spikes, sizeof(float)*total_number_of_neurons));
 	CudaSafeCall(cudaMalloc((void **)&d_resting_potentials, sizeof(float)*total_number_of_neurons));
@@ -69,9 +68,19 @@ void SpikingNeurons::allocate_device_pointers(int maximum_axonal_delay_in_timest
 	}
 }
 
-void SpikingNeurons::reset_neurons() {
 
-	Neurons::reset_neurons();
+void SpikingNeurons::copy_constants_to_device() {
+
+	Neurons::copy_constants_to_device();
+
+	CudaSafeCall(cudaMemcpy(d_thresholds_for_action_potential_spikes, thresholds_for_action_potential_spikes, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
+	CudaSafeCall(cudaMemcpy(d_resting_potentials, after_spike_reset_membrane_potentials_c, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
+}
+
+
+void SpikingNeurons::reset_neuron_activities() {
+
+	Neurons::reset_neuron_activities();
 
 	// Set last spike times to -1000 so that the times do not affect current simulation.
 	float* last_spike_times;
@@ -79,11 +88,10 @@ void SpikingNeurons::reset_neurons() {
 	for (int i=0; i < total_number_of_neurons; i++){
 		last_spike_times[i] = -1000.0f;
 	}
-	CudaSafeCall(cudaMemcpy(d_last_spike_time_of_each_neuron, last_spike_times, total_number_of_neurons*sizeof(float), cudaMemcpyHostToDevice));
 
+	CudaSafeCall(cudaMemcpy(d_last_spike_time_of_each_neuron, last_spike_times, total_number_of_neurons*sizeof(float), cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_membrane_potentials_v, after_spike_reset_membrane_potentials_c, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemcpy(d_thresholds_for_action_potential_spikes, thresholds_for_action_potential_spikes, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemcpy(d_resting_potentials, after_spike_reset_membrane_potentials_c, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
+
 	if (high_fidelity_spike_flag){
 		CudaSafeCall(cudaMemcpy(d_bitarray_of_neuron_spikes, bitarray_of_neuron_spikes, sizeof(unsigned char)*bitarray_length*total_number_of_neurons, cudaMemcpyHostToDevice));
 	}

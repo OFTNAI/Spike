@@ -39,9 +39,7 @@ void ConductanceSpikingSynapses::AddGroup(int presynaptic_group_id,
 						Neurons * neurons,
 						Neurons * input_neurons,
 						float timestep,
-						synapse_parameters_struct * synapse_params,
-						float parameter,
-						float parameter_two) {
+						synapse_parameters_struct * synapse_params) {
 	
 	
 	SpikingSynapses::AddGroup(presynaptic_group_id, 
@@ -49,9 +47,7 @@ void ConductanceSpikingSynapses::AddGroup(int presynaptic_group_id,
 							neurons,
 							input_neurons,
 							timestep,
-							synapse_params,
-							parameter,
-							parameter_two);
+							synapse_params);
 
 	conductance_spiking_synapse_parameters_struct * conductance_spiking_synapse_group_params = (conductance_spiking_synapse_parameters_struct*)synapse_params;
 
@@ -80,22 +76,30 @@ void ConductanceSpikingSynapses::allocate_device_pointers() {
 
 	SpikingSynapses::allocate_device_pointers();
 
-	CudaSafeCall(cudaMalloc((void **)&d_synaptic_conductances_g, sizeof(float)*total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&d_biological_conductance_scaling_constants_lambda, sizeof(float)*total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&d_reversal_potentials_Vhat, sizeof(float)*total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&d_decay_terms_tau_g, sizeof(float)*total_number_of_synapses));
 
+	CudaSafeCall(cudaMalloc((void **)&d_synaptic_conductances_g, sizeof(float)*total_number_of_synapses));
+
 }
 
-void ConductanceSpikingSynapses::reset_synapse_spikes() {
+void ConductanceSpikingSynapses::copy_constants_and_initial_efficacies_to_device() {
+	
+	SpikingSynapses::copy_constants_and_initial_efficacies_to_device();
 
-	SpikingSynapses::reset_synapse_spikes();
-
-	// CudaSafeCall(cudaMemset(d_synaptic_conductances_g, 0.0f, sizeof(float)*total_number_of_synapses));
-	CudaSafeCall(cudaMemcpy(d_synaptic_conductances_g, synaptic_conductances_g, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_biological_conductance_scaling_constants_lambda, biological_conductance_scaling_constants_lambda, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_reversal_potentials_Vhat, reversal_potentials_Vhat, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_decay_terms_tau_g, decay_terms_tau_g, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
+
+}
+
+
+void ConductanceSpikingSynapses::reset_synapse_activities() {
+
+	SpikingSynapses::reset_synapse_activities();
+
+	CudaSafeCall(cudaMemcpy(d_synaptic_conductances_g, synaptic_conductances_g, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
 
 }
 

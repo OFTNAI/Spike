@@ -46,9 +46,7 @@ void SpikingSynapses::AddGroup(int presynaptic_group_id,
 						Neurons * neurons,
 						Neurons * input_neurons,
 						float timestep,
-						synapse_parameters_struct * synapse_params,
-						float parameter,
-						float parameter_two) {
+						synapse_parameters_struct * synapse_params) {
 	
 	
 	Synapses::AddGroup(presynaptic_group_id, 
@@ -56,9 +54,7 @@ void SpikingSynapses::AddGroup(int presynaptic_group_id,
 							neurons,
 							input_neurons,
 							timestep,
-							synapse_params,
-							parameter,
-							parameter_two);
+							synapse_params);
 
 	spiking_synapse_parameters_struct * spiking_synapse_group_params = (spiking_synapse_parameters_struct*)synapse_params;
 
@@ -109,18 +105,36 @@ void SpikingSynapses::allocate_device_pointers() {
 	Synapses::allocate_device_pointers();
 
 	CudaSafeCall(cudaMalloc((void **)&d_delays, sizeof(int)*total_number_of_synapses));
-	CudaSafeCall(cudaMalloc((void **)&d_spikes_travelling_to_synapse, sizeof(int)*total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&d_stdp, sizeof(bool)*total_number_of_synapses));
+
+	CudaSafeCall(cudaMalloc((void **)&d_spikes_travelling_to_synapse, sizeof(int)*total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&d_time_of_last_spike_to_reach_synapse, sizeof(float)*total_number_of_synapses));
+
+	
+}
+
+
+void SpikingSynapses::copy_constants_and_initial_efficacies_to_device() {
+	
+	Synapses::copy_constants_and_initial_efficacies_to_device();
 
 	CudaSafeCall(cudaMemcpy(d_delays, delays, sizeof(int)*total_number_of_synapses, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_stdp, stdp, sizeof(bool)*total_number_of_synapses, cudaMemcpyHostToDevice));
+
 }
 
-void SpikingSynapses::reset_synapse_spikes() {
+
+void SpikingSynapses::reset_synapse_activities() {
 	
 	CudaSafeCall(cudaMemset(d_spikes_travelling_to_synapse, 0, sizeof(int)*total_number_of_synapses));
-	CudaSafeCall(cudaMemset(d_time_of_last_spike_to_reach_synapse, -1000.0f, sizeof(float)*total_number_of_synapses));
+	// Set last spike times to -1000 so that the times do not affect current simulation.
+	float* last_spike_to_reach_synapse;
+	last_spike_to_reach_synapse = (float*)malloc(sizeof(float)*total_number_of_synapses);
+	for (int i=0; i < total_number_of_synapses; i++){
+		last_spike_to_reach_synapse[i] = -1000.0f;
+	}
+	CudaSafeCall(cudaMemcpy(d_time_of_last_spike_to_reach_synapse, last_spike_to_reach_synapse, total_number_of_synapses*sizeof(float), cudaMemcpyHostToDevice));
+
 }
 
 

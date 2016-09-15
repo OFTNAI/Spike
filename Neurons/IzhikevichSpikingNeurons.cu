@@ -54,20 +54,29 @@ void IzhikevichSpikingNeurons::allocate_device_pointers(int maximum_axonal_delay
  	CudaSafeCall(cudaMalloc((void **)&d_param_a, sizeof(float)*total_number_of_neurons));
  	CudaSafeCall(cudaMalloc((void **)&d_param_b, sizeof(float)*total_number_of_neurons));
  	CudaSafeCall(cudaMalloc((void **)&d_param_d, sizeof(float)*total_number_of_neurons));
-
  	CudaSafeCall(cudaMalloc((void **)&d_states_u, sizeof(float)*total_number_of_neurons));
  	
  	
 }
 
-void IzhikevichSpikingNeurons::reset_neurons() {
 
-	SpikingNeurons::reset_neurons();	
+void IzhikevichSpikingNeurons::copy_constants_to_device() {
+
+	SpikingNeurons::copy_constants_to_device();
 
 	CudaSafeCall(cudaMemcpy(d_param_a, param_a, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_param_b, param_b, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_param_d, param_d, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
 	
+
+}
+
+
+
+void IzhikevichSpikingNeurons::reset_neuron_activities() {
+
+	SpikingNeurons::reset_neuron_activities();	
+
 	CudaSafeCall(cudaMemset(d_states_u, 0.0f, sizeof(float)*total_number_of_neurons));
 
 }
@@ -83,6 +92,7 @@ void IzhikevichSpikingNeurons::check_for_neuron_spikes(float current_time_in_sec
 								d_last_spike_time_of_each_neuron,
 								current_time_in_seconds,
 								total_number_of_neurons);
+	CudaCheckError();
 }
 
 void IzhikevichSpikingNeurons::update_membrane_potentials(float timestep) {
@@ -132,7 +142,7 @@ __global__ void izhikevich_update_membrane_potentials_kernel(float *d_membrane_p
 	float eqtimestep = timestep*1000.0f;
 	// Get thread IDs
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	if (idx < total_number_of_neurons) {
+	while (idx < total_number_of_neurons) {
 		// Update the neuron states according to the Izhikevich equations
 		float v_update = 0.04f*d_membrane_potentials_v[idx]*d_membrane_potentials_v[idx] 
 							+ 5.0f*d_membrane_potentials_v[idx]
@@ -143,6 +153,8 @@ __global__ void izhikevich_update_membrane_potentials_kernel(float *d_membrane_p
 		d_membrane_potentials_v[idx] += eqtimestep*v_update;
 		d_states_u[idx] += eqtimestep*(d_param_a[idx] * (d_param_b[idx] * d_membrane_potentials_v[idx] - 
 							d_states_u[idx]));
+
+		idx += blockDim.x * gridDim.x;
 	}
 	__syncthreads();
 }

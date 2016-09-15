@@ -29,7 +29,7 @@ EvansSTDP::~EvansSTDP() {
 }
 
 // Implementation of the STDP Rule for Irina's Model
-void EvansSTDP::Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons* neurons, stdp_parameters_struct* stdp_parameters){
+void EvansSTDP::Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons* neurons, SpikingNeurons* input_neurons, stdp_parameters_struct* stdp_parameters){
 	stdp_params = (evans_stdp_parameters_struct *)stdp_parameters;
 	syns = synapses;
 	neurs = neurons;
@@ -63,7 +63,7 @@ void EvansSTDP::Run_STDP(float* d_last_spike_time_of_each_neuron, float current_
 }
 
 // Reset the STDP
-void EvansSTDP::Reset_STDP(){
+void EvansSTDP::reset_STDP_activities(){
 	CudaSafeCall(cudaMemcpy(d_recent_presynaptic_activities_C, recent_presynaptic_activities_C, sizeof(float)*syns->total_number_of_synapses, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_recent_postsynaptic_activities_D, recent_postsynaptic_activities_D, sizeof(float)*neurs->total_number_of_neurons, cudaMemcpyHostToDevice));
 

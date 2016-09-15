@@ -13,7 +13,7 @@
 
 // As recommended by Catch, this source file shall contain only these definitions
 #define CATCH_CONFIG_MAIN
-#include "../catch.hpp"
+#include "catch.hpp"
 
 
 
