@@ -15,7 +15,7 @@
 #include "../Helpers/CUDAErrorCheckHelpers.h"
 #include "../Helpers/TerminalHelpers.h"
 #include "../Helpers/TimerWithMessages.h"
-
+#include "../Helpers/RandomStateManager.h"
 
 
 // Constructor
@@ -40,6 +40,12 @@ Simulator::Simulator(){
 		print_line_of_dashes_with_blank_lines_either_side();
 		fflush(stdout);
 	#endif
+
+	// Set up random state manager if not already done so
+	int random_states_threads_per_block_x = 128;
+	int random_states_number_of_blocks_x = 64;
+	RandomStateManager::instance()->set_up_random_states(random_states_threads_per_block_x, random_states_number_of_blocks_x, 9);
+
 }
 
 

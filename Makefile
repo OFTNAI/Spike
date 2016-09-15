@@ -11,13 +11,14 @@ CC = nvcc
 # --compiler-options -Wall = Warnings All. Give them to me.
 # Wall flag is inefficient
 CFLAGS = -c
+
 # CFLAGS += -lineinfo
 
 # Mac OS X 10.9+ uses libc++, which is an implementation of c++11 standard library. 
 # We must therefore specify c++11 as standard for out of the box compilation on Linux. 
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
-	CFLAGS += --std=c++11 
+	CFLAGS += -D_MWAITXINTRIN_H_INCLUDED
 endif
 
 
@@ -54,8 +55,9 @@ directory: ${EXPERIMENT_DIRECTORY}
 
 
 ${FILE}: obj/${FILE}.o $(CU_OBJ_FILES) $(CPP_OBJ_FILES)
-	test -d ${EXPERIMENT_DIRECTORY}/bin || mkdir ${EXPERIMENT_DIRECTORY}/bin
-	$(CC) -lineinfo -lmgl obj/${FILE}.o $(CU_OBJ_FILES) $(CPP_OBJ_FILES) -o ${EXPERIMENT_DIRECTORY}/bin/${FILE}
+	test -d ${EXPERIMENT_DIRECTORY}/binaries || mkdir ${EXPERIMENT_DIRECTORY}/binaries
+	$(CC) -lineinfo -lmgl obj/${FILE}.o $(CU_OBJ_FILES) $(CPP_OBJ_FILES) -o ${EXPERIMENT_DIRECTORY}/binaries/${FILE}
+
 
 # Compiling the Model file
 obj/${FILE}.o: ${EXPERIMENT_DIRECTORY}/${FILE}.cpp
