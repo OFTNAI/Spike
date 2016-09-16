@@ -55,14 +55,14 @@ int main (int argc, char *argv[]){
 
 
 	// Parameters related to Dakota Optimization
-	int optimizationType = OPTIM_E2E_LAT; //OPTIM_BIO_CONST_LAT, OPTIM_BIO_CONST_FF, OPTIM_BIO_CONST_LAT_FF, OPTIM_FANINRAD, OPTIM_DECAY
-	int objective_function = OBJFUNC_AVGINFO_TRAINEDONLY; //OBJFUNC_AVGFR, OBJFUNC_MAXFR, OBJFUNC_INFO, OBJFUNC_AVGFR_AND_INFO
+	int optimizationType = OPTIM_E2E_FB; //OPTIM_BIO_CONST_LAT, OPTIM_BIO_CONST_FF, OPTIM_BIO_CONST_LAT_FF, OPTIM_FANINRAD, OPTIM_DECAY
+	int objective_function = OBJFUNC_AVGINFO_INPUT_TRAINEDONLY; //OBJFUNC_AVGFR, OBJFUNC_MAXFR, OBJFUNC_INFO, OBJFUNC_AVGFR_AND_INFO
 	float optimal_average_firing_rate = 10.0f;//set if optimizing based on avgfr : Spontaneous rate (spikes/sec) 4.9 +- 7.1 (*1)
 	const float optimal_max_firing_rate = 100.0f;//set if optimizing based on maxfr //Maximum rate (spikes/sec) 87 +- 46  (*1)
 	//*1 Bair, W., & Movshon, J. A. (2004).  Adaptive Temporal Integration of Motion in Direction-Selective Neurons in Macaque Visual Cortex. The Journal of Neuroscience, 24(33), 7305遯ｶ�ｿｽ7323.
 
 	// Simulator Parameters
-	string experimentName = "4--FF_LAT4_10con_wx2";
+	string experimentName = "5.1--FF--0.00005";
 	float timestep = 0.00002;
 	bool simulate_network_to_test_untrained = true;
 	bool simulate_network_to_train_network = true;
@@ -71,10 +71,9 @@ int main (int argc, char *argv[]){
 	bool plotInfoAnalysis = true;
 	bool writeInformation = true;
 
-	bool E2E_L_ON = true;
 	bool E2E_FB_ON = false;
-
-	bool E2E_L_STDP_ON = true;
+	bool E2E_L_ON = false;
+	bool E2E_L_STDP_ON = false;
 
 	// Network Parameters
 	const int number_of_layers = 4;
@@ -95,14 +94,14 @@ int main (int argc, char *argv[]){
 	float gaussian_synapses_standard_deviation_E2I_L = 1.0;
 	float gaussian_synapses_standard_deviation_I2E_L = 8.0;
 	float gaussian_synapses_standard_deviation_E2E_L = 4.0;
-	float gaussian_synapses_standard_deviation_E2E_FB = 12.0;
+	float gaussian_synapses_standard_deviation_E2E_FB = 8.0;
 
 	float biological_conductance_scaling_constant_lambda_G2E_FF = 0.00002;
-	float biological_conductance_scaling_constant_lambda_E2E_FF = 0.0001;//0.0001;
+	float biological_conductance_scaling_constant_lambda_E2E_FF = 0.00005;//0.0001;
 	float biological_conductance_scaling_constant_lambda_E2I_L = 0.002;
 	float biological_conductance_scaling_constant_lambda_I2E_L = 0.004;
-	float biological_conductance_scaling_constant_lambda_E2E_L = 0.0001;
-	float biological_conductance_scaling_constant_lambda_E2E_FB = 0.0001;
+	float biological_conductance_scaling_constant_lambda_E2E_L = 0.00005;
+	float biological_conductance_scaling_constant_lambda_E2E_FB = 0.00005;
 
 	float decay_term_tau_g_G2E_FF = 0.15;
 	float decay_term_tau_g_E2E_FF = 0.15;
@@ -244,21 +243,20 @@ int main (int argc, char *argv[]){
 	}
 
 
-	// copy cpp file to save parameters for future references
-	if (!is_optimisation){
+	// Create an instance of the Simulator and set the timestep
+	Simulator simulator;
+	simulator.SetTimestep(timestep);
+	if (!is_optimisation){ 	// copy cpp file to save parameters for future references
+		simulator.InitExperimentName(experimentName);
 		string source = "Experiments/ConductanceExperiment1.cpp";
 		string destination = "output/"+experimentName+"/ConductanceExperiment1.cpp";
 		ifstream srce(source.c_str(), ios::binary ) ;
 		ofstream dest(destination.c_str(), ios::binary ) ;
 		dest << srce.rdbuf() ;
 	}
-
-	// Create an instance of the Simulator and set the timestep
-	Simulator simulator;
-	simulator.SetTimestep(timestep);
-	if (!is_optimisation)
-		simulator.InitExperimentName(experimentName);
 	simulator.high_fidelity_spike_storage = true;
+
+
 
 	LIFSpikingNeurons * lif_spiking_neurons = new LIFSpikingNeurons();
 	ImagePoissonInputSpikingNeurons* input_neurons = new ImagePoissonInputSpikingNeurons();
