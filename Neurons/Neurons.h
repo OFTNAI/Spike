@@ -12,6 +12,7 @@
 
 #include <cuda.h>
 #include <stdio.h>
+#include <vector_types.h>
 
 
 struct neuron_parameters_struct {
