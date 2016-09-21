@@ -8,7 +8,7 @@ class SpikePlot(object):
         globals().update(borrowed_globals);
     
     
-    def plotSpikes(self,experimentName,phases,saveImage = True, showImage = True, nLayers=4):
+    def plotSpikes(self,phases,saveImage = True, showImage = True, nLayers=4):
         plotAvgFR = True;
         plotSpikes = True;
         
@@ -36,17 +36,14 @@ class SpikePlot(object):
     #             spikeIDs = np.loadtxt(fn_id);
     #             spikeTimes = np.loadtxt(fn_t);
         
-                fn_id = "../output/" + experimentName + "/Neurons_SpikeIDs_" + phase + "_Epoch0.bin";
-                fn_t = "../output/" + experimentName + "/Neurons_SpikeTimes_" + phase + "_Epoch0.bin";  
+                fn_id = "../output/Neurons_SpikeIDs_" + phase + "_Epoch0.bin";
+                fn_t = "../output/Neurons_SpikeTimes_" + phase + "_Epoch0.bin";  
                 dtIDs = np.dtype('int32');
                 dtTimes = np.dtype('f4');
                 
                 spikeIDs = np.fromfile(fn_id, dtype=dtIDs);
                 spikeTimes = np.fromfile(fn_t, dtype=dtTimes);
     
-                cond = spikeTimes>0;
-                spikeIDs = np.extract(cond,spikeIDs);
-                spikeTimes = np.extract(cond, spikeTimes)
                 
                 #fig = plt.figure(0 , figsize=(300, 150),dpi=150);
                 fig = plt.figure(0 , figsize=(30, 15),dpi=150);
@@ -64,7 +61,7 @@ class SpikePlot(object):
                 plt.xlim((0,np.max(spikeTimes)))
                 plt.ylim((0,nLayers*(exDim*exDim+inDim*inDim)))
                 
-                fig.savefig("../output/"+experimentName+"/rasterPlot_"+phase+".png");
+                fig.savefig("../output/rasterPlot_"+phase+".png");
         #         fig.savefig("../output/rasterPlot.eps");
                 print("figure rasterPlot.png is exported in output")
                 plt.clf();
@@ -75,17 +72,13 @@ class SpikePlot(object):
                 
                 fig=plt.figure(4 , figsize=(zoomConst*2.5*nTrans*nObj, zoomConst*2*nLayers), dpi=1000);
                 
-                fn_id = "../output/"+experimentName+"/Neurons_SpikeIDs_" + phase + "_Epoch0.bin";
-                fn_t = "../output/"+experimentName+"/Neurons_SpikeTimes_" + phase + "_Epoch0.bin";  
+                fn_id = "../output/Neurons_SpikeIDs_" + phase + "_Epoch0.bin";
+                fn_t = "../output/Neurons_SpikeTimes_" + phase + "_Epoch0.bin";  
                 dtIDs = np.dtype('int32');
                 dtTimes = np.dtype('f4');
                 
                 spikeIDs = np.fromfile(fn_id, dtype=dtIDs);
                 spikeTimes = np.fromfile(fn_t, dtype=dtTimes);
-                
-                cond = spikeTimes>0;
-                spikeIDs = np.extract(cond,spikeIDs);
-                spikeTimes = np.extract(cond, spikeTimes)
                 
                 
                 #plot Excitatory
@@ -129,7 +122,7 @@ class SpikePlot(object):
                             plt.imshow(FRMap, cmap='jet', interpolation='none', vmin=0, vmax=Rmax)
                             plt.colorbar();
 #                     plt.show();
-                fig.savefig("../output/"+experimentName+"/AvgFR_"+phase+".png");
+                fig.savefig("../output/AvgFR_"+phase+".png");
 #                 fig.savefig("../output/AvgFR_"+phase+".eps");
                 print("figure AvgFR.png is exported in output")
                 plt.clf();
@@ -167,7 +160,7 @@ class SpikePlot(object):
                             plt.imshow(FRMap, cmap='jet', interpolation='none', vmin=0, vmax=Rmax)
                             plt.colorbar();
 #                     plt.show();
-                fig.savefig("../output/"+experimentName+"/AvgFR_"+phase+"_inhib.png");
+                fig.savefig("../output/AvgFR_"+phase+"_inhib.png");
 #                 fig.savefig("../output/AvgFR_"+phase+"_inhib.eps");
                 print("figure AvgFR_inhib.png is exported in output")
                 plt.clf();

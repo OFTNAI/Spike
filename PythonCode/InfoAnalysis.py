@@ -1,3 +1,16 @@
+Skip to content
+Personal Open source Business Explore
+Sign upSign inPricingBlogSupport
+This repository
+Search
+ Watch 6  Star 7  Fork 0 OFTNAI/Spike
+ Code  Issues 0  Pull requests 0  Projects 0  Pulse  Graphs
+Branch: nas_master Find file Copy pathSpike/PythonCode/InfoAnalysis.py
+5976d01  6 days ago
+@aeguchi aeguchi 1. revised infoAnalysis in spike analyser to give an option to set max
+1 contributor
+RawBlameHistory     
+215 lines (164 sloc)  9.35 KB
 import numpy as np
 import pylab as plt
 import pickle
@@ -10,7 +23,7 @@ class InfoAnalysis(object):
         globals().update(borrowed_globals);
     
     
-    def singleCellInfoAnalysis(self,experimentName,phases,saveImage = True, showImage = True, nBins=3,weightedAnalysis = False,plotAllSingleCellInfo = True):
+    def singleCellInfoAnalysis(self,phases,saveImage = True, showImage = True, nBins=3,weightedAnalysis = False,plotAllSingleCellInfo = True):
         fig=plt.figure(4 , figsize=(20, 5),dpi=150);
         
 #         plotFRMap = True;
@@ -43,8 +56,8 @@ class InfoAnalysis(object):
 #             spikeIDs = np.loadtxt(fn_id);
 #             spikeTimes = np.loadtxt(fn_t);
             
-            fn_id = "../output/"+experimentName+"/Neurons_SpikeIDs_" + phase + "_Epoch0.bin";
-            fn_t = "../output/"+experimentName+"/Neurons_SpikeTimes_" + phase + "_Epoch0.bin";  
+            fn_id = "../output/Neurons_SpikeIDs_" + phase + "_Epoch0.bin";
+            fn_t = "../output/Neurons_SpikeTimes_" + phase + "_Epoch0.bin";  
             dtIDs = np.dtype('int32');
             dtTimes = np.dtype('f4');
             
@@ -203,12 +216,14 @@ class InfoAnalysis(object):
             plt.show();
         if saveImage:
             if (plotAllSingleCellInfo):
-                fig.savefig("../output/"+experimentName+"/SingleCellInfo_ALL.png");
+                fig.savefig("../output/SingleCellInfo_ALL.png");
 #                 fig.savefig("../output/SingleCellInfo_ALL.eps");
             else:
-                  fig.savefig("../output/"+experimentName+"/SingleCellInfo_MAX.png");
+                  fig.savefig("../output/SingleCellInfo_MAX.png");
 #                   fig.savefig("../output/SingleCellInfo_MAX.eps");              
     
             print("figure SingleCellInfo.png is exported in Results") 
         
         plt.close();
+Contact GitHub API Training Shop Blog About
+© 2016 GitHub, Inc. Terms Privacy Security Status Help
