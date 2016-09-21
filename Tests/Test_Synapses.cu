@@ -7,10 +7,19 @@
 **/
 #include "../Synapses/Synapses.h"
 #include "../Neurons/Neurons.h"
+
+#include "../Helpers/RandomStateManager.h"
+
+
 TEST_CASE("Synapses Class Tests") {
 	Synapses test_synapses;
 	Neurons test_neurons;
 	float timestep = 0.1f;
+
+	////////// SET UP STATES FOR RANDOM STATE MANAGER SINGLETON ///////////
+	int random_states_threads_per_block_x = 128;
+	int random_states_number_of_blocks_x = 64;
+	RandomStateManager::instance()->set_up_random_states(random_states_threads_per_block_x, random_states_number_of_blocks_x, 9);
 
 	// Pre-synaptic Population
 	neuron_parameters_struct neuron_params_1;
@@ -261,6 +270,11 @@ TEST_CASE("Synapses Class Tests") {
 TEST_CASE("Spiking Synapses Class Tests") {
 	SpikingSynapses test_synapses;
 	SpikingNeurons test_neurons;
+
+	////////// SET UP STATES FOR RANDOM STATE MANAGER SINGLETON ///////////
+	int random_states_threads_per_block_x = 128;
+	int random_states_number_of_blocks_x = 64;
+	RandomStateManager::instance()->set_up_random_states(random_states_threads_per_block_x, random_states_number_of_blocks_x, 9);
 	
 	SECTION("Constructor"){
 		REQUIRE(test_synapses.maximum_axonal_delay_in_timesteps == 0);
@@ -528,6 +542,11 @@ TEST_CASE("Spiking Synapses Class Tests") {
 TEST_CASE("Current Spiking Synapses Class Tests") {
 	CurrentSpikingSynapses test_synapses;
 	SpikingNeurons test_neurons;
+
+	////////// SET UP STATES FOR RANDOM STATE MANAGER SINGLETON ///////////
+	int random_states_threads_per_block_x = 128;
+	int random_states_number_of_blocks_x = 64;
+	RandomStateManager::instance()->set_up_random_states(random_states_threads_per_block_x, random_states_number_of_blocks_x, 9);
 
 	// Pre-synaptic Population
 	neuron_parameters_struct neuron_params_1;
