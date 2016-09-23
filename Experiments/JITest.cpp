@@ -88,7 +88,7 @@ int main (int argc, char *argv[]){
 
 	// Simulator Parameters
 	// float timestep = 0.00002;
-	float timestep = 0.0002;
+	float timestep = 0.00002;
 	bool high_fidelity_spike_storage = true;
 
 	bool simulate_network_to_test_untrained = true;
@@ -232,11 +232,11 @@ int main (int argc, char *argv[]){
 
 
 
-	CollectEventsNetworkExperiment * collect_events_experiment_set = new CollectEventsNetworkExperiment();
-	collect_events_experiment_set->four_layer_vision_spiking_model = four_layer_vision_spiking_model;
-	collect_events_experiment_set->prepare_experiment(four_layer_vision_spiking_model, high_fidelity_spike_storage);
-	collect_events_experiment_set->prepare_arrays_for_event_collection(test_untrained_network_experiment);
-	collect_events_experiment_set->run_experiment(presentation_time_per_stimulus_per_epoch_test, network_is_trained);
+//	CollectEventsNetworkExperiment * collect_events_experiment_set = new CollectEventsNetworkExperiment();
+//	collect_events_experiment_set->four_layer_vision_spiking_model = four_layer_vision_spiking_model;
+//	collect_events_experiment_set->prepare_experiment(four_layer_vision_spiking_model, high_fidelity_spike_storage);
+//	collect_events_experiment_set->prepare_arrays_for_event_collection(test_untrained_network_experiment);
+//	collect_events_experiment_set->run_experiment(presentation_time_per_stimulus_per_epoch_test, network_is_trained);
 
 	// PASS LAST RUN SPIKE_TIMES + IDS
 
