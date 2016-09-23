@@ -229,63 +229,14 @@ int main (int argc, char *argv[]){
 	test_untrained_network_experiment->calculate_spike_totals_averages_and_information(number_of_bins, useThresholdForMaxFR, max_firing_rate);
 
 
-	int number_of_stimuli = test_untrained_network_experiment->spike_analyser->input_neurons->total_number_of_input_stimuli;
-	int number_of_neurons = four_layer_vision_spiking_model->spiking_neurons->total_number_of_neurons;
-
-	int* spikes_per_neuron = (int*)malloc(sizeof(int)*number_of_neurons);
-	int* temp_index_store = (int*)malloc(sizeof(int)*number_of_neurons);
-	// CudaSafeCall(cudaMemcpy(spikes_per_neuron, test_untrained_network_experiment->simulator->recording_electrodes->d_per_neuron_spike_counts, sizeof(int)*number_of_neurons, cudaMemcpyDeviceToHost));
 
 
-	bool *** neuron_events_for_each_neuron = new bool **[number_of_neurons];
-	float ** ordered_spike_times_for_each_neuron = new float *[number_of_neurons];
 
-	for (int neuron_index = 0; neuron_index < number_of_neurons; neuron_index++) {
-
-		int number_of_spikes_for_neuron = 0;
-		for (int stimulus_index = 0; stimulus_index < number_of_stimuli; stimulus_index++) {
-			number_of_spikes_for_neuron += test_untrained_network_experiment->spike_analyser->per_stimulus_per_neuron_spike_counts[stimulus_index][neuron_index];
-		}
-
-		spikes_per_neuron[neuron_index] = number_of_spikes_for_neuron;
-
-		printf("number_of_spikes_for_neuron: %d\n", number_of_spikes_for_neuron);
-
-		neuron_events_for_each_neuron[neuron_index] = new bool *[number_of_spikes_for_neuron];
-
-		for (int neuron_spike_number = 0; neuron_spike_number < number_of_spikes_for_neuron; neuron_spike_number++) {
-			neuron_events_for_each_neuron[neuron_index][neuron_spike_number] = new bool[four_layer_vision_spiking_model->spiking_neurons->per_neuron_afferent_synapse_count[neuron_index]];
-
-		}
-
-		ordered_spike_times_for_each_neuron[neuron_index] = new float[number_of_spikes_for_neuron];
-		temp_index_store[neuron_index] = 0;
-
-	}	
-
-
-	int total_number_of_spikes = test_untrained_network_experiment->simulator->recording_electrodes->h_total_number_of_spikes_stored_on_host;
-
-	for (int spike_id = 0; spike_id < total_number_of_spikes; spike_id++) {
-
-		int neuron_index = test_untrained_network_experiment->simulator->recording_electrodes->h_neuron_ids_of_stored_spikes_on_host[spike_id];
-		float spike_time = test_untrained_network_experiment->simulator->recording_electrodes->h_time_in_seconds_of_stored_spikes_on_host[spike_id];
-
-		int number_of_spikes_for_neuron = spikes_per_neuron[neuron_index];
-
-		ordered_spike_times_for_each_neuron[neuron_index][temp_index_store[neuron_index]] = spike_time;
-
-		temp_index_store[neuron_index]++;
-
-	}
-	
-
-	/////////// SIMULATE NETWORK TO TEST UNTRAINED ///////////
-	// CollectEventsNetworkExperiment * collect_events_experiment_set = new CollectEventsNetworkExperiment();
-	// collect_events_experiment_set->four_layer_vision_spiking_model = four_layer_vision_spiking_model;
-	// collect_events_experiment_set->prepare_experiment(four_layer_vision_spiking_model, high_fidelity_spike_storage);
-	// collect_events_experiment_set->simulator->set_device_spike_ids_and_times_from_last_simulation(test_untrained_network_experiment->simulator->recording_electrodes->h_time_in_seconds_of_stored_spikes_on_host, test_untrained_network_experiment->simulator->recording_electrodes->h_neuron_ids_of_stored_spikes_on_host, test_untrained_network_experiment->simulator->recording_electrodes->h_total_number_of_spikes_stored_on_host);
-	// collect_events_experiment_set->run_experiment(presentation_time_per_stimulus_per_epoch_test, network_is_trained);
+	CollectEventsNetworkExperiment * collect_events_experiment_set = new CollectEventsNetworkExperiment();
+	collect_events_experiment_set->four_layer_vision_spiking_model = four_layer_vision_spiking_model;
+	collect_events_experiment_set->prepare_experiment(four_layer_vision_spiking_model, high_fidelity_spike_storage);
+	collect_events_experiment_set->prepare_arrays_for_event_collection(test_untrained_network_experiment);
+	collect_events_experiment_set->run_experiment(presentation_time_per_stimulus_per_epoch_test, network_is_trained);
 
 	// PASS LAST RUN SPIKE_TIMES + IDS
 

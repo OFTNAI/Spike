@@ -143,14 +143,25 @@ void RecordingElectrodes::copy_spikes_from_device_to_host_and_reset_device_spike
 									d_time_in_seconds_of_stored_spikes_on_device, 
 									sizeof(float)*h_total_number_of_spikes_stored_on_device[0], 
 									cudaMemcpyDeviceToHost));
+
+			// printf("h_neuron_ids_of_stored_spikes_on_device[h_total_number_of_spikes_stored_on_device[0]]: %d\n", h_neuron_ids_of_stored_spikes_on_device[h_total_number_of_spikes_stored_on_device[0]]);
+
+
 			// Pop all of the times where they need to be:
 			for (int l = 0; l < h_total_number_of_spikes_stored_on_device[0]; l++){
+				if (h_neuron_ids_of_stored_spikes_on_device[l] == -1) {
+					printf("l: %d, h_total_number_of_spikes_stored_on_device[0]: %d\n", l, h_total_number_of_spikes_stored_on_device[0]);
+				}
 				h_neuron_ids_of_stored_spikes_on_host[h_total_number_of_spikes_stored_on_host + l] = h_neuron_ids_of_stored_spikes_on_device[l];
 				h_time_in_seconds_of_stored_spikes_on_host[h_total_number_of_spikes_stored_on_host + l] = h_time_in_seconds_of_stored_spikes_on_device[l];
 			}
 			
 			// Reset the number on the device
 			CudaSafeCall(cudaMemset(&(d_total_number_of_spikes_stored_on_device[0]), 0, sizeof(int)));
+
+
+
+			// THIS SHOULD BE DONE ONCE!!!
 			// Resetting with arrays
 			int* reset_neuron_ids = (int *)malloc(sizeof(int)*size_of_device_spike_store);
 			float* reset_neuron_times = (float *)malloc(sizeof(float)*size_of_device_spike_store);
@@ -158,6 +169,9 @@ void RecordingElectrodes::copy_spikes_from_device_to_host_and_reset_device_spike
 				reset_neuron_ids[i] = -1;
 				reset_neuron_times[i] = -1.0f;
 			}
+
+
+
 			CudaSafeCall(cudaMemcpy(d_neuron_ids_of_stored_spikes_on_device, reset_neuron_ids, sizeof(int)*size_of_device_spike_store, cudaMemcpyHostToDevice));
 			CudaSafeCall(cudaMemcpy(d_time_in_seconds_of_stored_spikes_on_device, reset_neuron_times, sizeof(float)*size_of_device_spike_store, cudaMemcpyHostToDevice));
 			// Increase the number on host
@@ -290,11 +304,13 @@ __global__ void collect_spikes_for_timestep_kernel(float* d_last_spike_time_of_e
 		if (d_last_spike_time_of_each_neuron[idx] == current_time_in_seconds) {
 			// Increase the number of spikes stored
 			int i = atomicAdd(&d_total_number_of_spikes_stored_on_device[0], 1);
-			__syncthreads();
+			// __syncthreads();
 
 			// In the location, add the id and the time
-			d_neuron_ids_of_stored_spikes_on_device[i - 1] = idx;
-			d_time_in_seconds_of_stored_spikes_on_device[i - 1] = current_time_in_seconds;
+			// d_neuron_ids_of_stored_spikes_on_device[i - 1] = idx;
+			// d_time_in_seconds_of_stored_spikes_on_device[i - 1] = current_time_in_seconds;
+			d_neuron_ids_of_stored_spikes_on_device[i] = idx;
+			d_time_in_seconds_of_stored_spikes_on_device[i] = current_time_in_seconds;
 		}
 		idx += blockDim.x * gridDim.x;
 	}

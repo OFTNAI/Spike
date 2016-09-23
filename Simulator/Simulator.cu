@@ -29,8 +29,8 @@ Simulator::Simulator(){
 	// Default low fidelity spike storage
 	high_fidelity_spike_storage = false;
 
-	d_time_in_seconds_of_spikes_from_last_simulation = NULL;
-	d_neuron_ids_of_spikes_from_last_simulation = NULL;
+	// d_time_in_seconds_of_spikes_from_last_simulation = NULL;
+	// d_neuron_ids_of_spikes_from_last_simulation = NULL;
 
 	
 	// #ifndef QUIETSTART
@@ -87,13 +87,21 @@ void Simulator::setup_recording_electrodes_for_input_neurons(int number_of_times
 }
 
 
-void Simulator::set_device_spike_ids_and_times_from_last_simulation(float * h_time_in_seconds_of_spikes_from_last_simulation, int * h_neuron_ids_of_spikes_from_last_simulation, int total_number_of_spikes_from_last_simulation) {
-	CudaSafeCall(cudaMalloc((void **)&d_time_in_seconds_of_spikes_from_last_simulation, sizeof(int)*total_number_of_spikes_from_last_simulation));
-	CudaSafeCall(cudaMalloc((void **)&d_neuron_ids_of_spikes_from_last_simulation, sizeof(float)*total_number_of_spikes_from_last_simulation));
+// void Simulator::copy_arrays_for_event_collection_to_device(float ** ordered_spike_times_for_each_neuron, bool *** neuron_events_for_each_neuron) {
 
-	CudaSafeCall(cudaMemcpy(d_time_in_seconds_of_spikes_from_last_simulation, h_time_in_seconds_of_spikes_from_last_simulation, sizeof(int)*total_number_of_spikes_from_last_simulation, cudaMemcpyHostToDevice));
-	CudaSafeCall(cudaMemcpy(d_neuron_ids_of_spikes_from_last_simulation, h_neuron_ids_of_spikes_from_last_simulation, sizeof(float)*total_number_of_spikes_from_last_simulation, cudaMemcpyHostToDevice));
-}
+// 	CudaSafeCall(cudaMalloc((void **)&d_ordered_spike_times_for_each_neuron, sizeof(int)*total_number_of_spikes_from_last_simulation));
+// 	CudaSafeCall(cudaMalloc((void **)&d_neuron_events_for_each_neuron, sizeof(float)*total_number_of_spikes_from_last_simulation));
+
+// }
+
+
+// void Simulator::set_device_spike_ids_and_times_from_last_simulation(float * h_time_in_seconds_of_spikes_from_last_simulation, int * h_neuron_ids_of_spikes_from_last_simulation, int total_number_of_spikes_from_last_simulation) {
+// 	CudaSafeCall(cudaMalloc((void **)&d_time_in_seconds_of_spikes_from_last_simulation, sizeof(int)*total_number_of_spikes_from_last_simulation));
+// 	CudaSafeCall(cudaMalloc((void **)&d_neuron_ids_of_spikes_from_last_simulation, sizeof(float)*total_number_of_spikes_from_last_simulation));
+
+// 	CudaSafeCall(cudaMemcpy(d_time_in_seconds_of_spikes_from_last_simulation, h_time_in_seconds_of_spikes_from_last_simulation, sizeof(int)*total_number_of_spikes_from_last_simulation, cudaMemcpyHostToDevice));
+// 	CudaSafeCall(cudaMemcpy(d_neuron_ids_of_spikes_from_last_simulation, h_neuron_ids_of_spikes_from_last_simulation, sizeof(float)*total_number_of_spikes_from_last_simulation, cudaMemcpyHostToDevice));
+// }
 
 
 void Simulator::RunSimulationToCountNeuronSpikes(float presentation_time_per_stimulus_per_epoch, bool record_spikes, bool save_recorded_spikes_and_states_to_file, SpikeAnalyser *spike_analyser, bool human_readable_storage, bool isTrained) {
@@ -135,7 +143,7 @@ void Simulator::RunSimulationToCollectEvents(float presentation_time_per_stimulu
 	SpikeAnalyser * spike_analyser = NULL;
 	bool human_readable_storage = false;
 	
-	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, record_spikes, save_recorded_spikes_and_states_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, stimuli_presentation_params, stimulus_presentation_order_seed, spike_analyser,human_readable_storage,isTrained);
+	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, record_spikes, save_recorded_spikes_and_states_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, stimuli_presentation_params, stimulus_presentation_order_seed, spike_analyser, human_readable_storage,isTrained);
 	
 }
 
@@ -239,8 +247,6 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 
 
 
-
-
 				// JI PSEUDO CODE FOR COLLECTING EVENTS END
 
 
@@ -257,12 +263,31 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 
 
 
+
+
+
+
+
+
+
 				// Carry out the per-timestep computations			
 				per_timestep_instructions(current_time_in_seconds, apply_stdp_to_relevant_synapses);
+
+
+
+
+
 
 				if (count_spikes_per_neuron) {
 					if (recording_electrodes) recording_electrodes->add_spikes_to_per_neuron_spike_count(current_time_in_seconds);
 				}
+
+
+				// JI PSEUDO CODE FOR COLLECTING EVENTS START 3
+
+
+				// JI PSEUDO CODE FOR COLLECTING EVENTS END 3
+
 
 				// // Only save the spikes if necessary
 				if (record_spikes){
