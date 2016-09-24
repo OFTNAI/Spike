@@ -135,9 +135,10 @@ TEST_CASE("RecordingElectrode") {
 		test_record.collect_spikes_for_timestep(current_time);
 		// Copy spikes back and ensure that the values are correct
 		int* number_of_spikes = (int*)malloc(sizeof(int));
+		CudaSafeCall(cudaMemcpy(number_of_spikes, test_record.d_total_number_of_spikes_stored_on_device, sizeof(int), cudaMemcpyDeviceToHost));
+
 		int* spiked_neuron_ids = (int*)malloc(sizeof(int)*number_of_spikes[0]);
 		float* spiked_neuron_times = (float*)malloc(sizeof(float)*number_of_spikes[0]);
-		CudaSafeCall(cudaMemcpy(number_of_spikes, test_record.d_total_number_of_spikes_stored_on_device, sizeof(int), cudaMemcpyDeviceToHost));
 		CudaSafeCall(cudaMemcpy(spiked_neuron_ids, test_record.d_neuron_ids_of_stored_spikes_on_device, sizeof(int)*number_of_spikes[0], cudaMemcpyDeviceToHost));
 		CudaSafeCall(cudaMemcpy(spiked_neuron_times, test_record.d_time_in_seconds_of_stored_spikes_on_device, sizeof(float)*number_of_spikes[0], cudaMemcpyDeviceToHost));
 
