@@ -88,7 +88,7 @@ int main (int argc, char *argv[]){
 
 	// Simulator Parameters
 	// float timestep = 0.00002;
-	float timestep = 0.00002;
+	float timestep = 0.0002;
 	bool high_fidelity_spike_storage = true;
 
 	bool simulate_network_to_test_untrained = true;

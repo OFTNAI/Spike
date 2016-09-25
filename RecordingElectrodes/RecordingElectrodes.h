@@ -25,11 +25,9 @@ public:
 	int size_of_device_spike_store;
 
 	int* d_neuron_ids_of_stored_spikes_on_device;
-	int* h_neuron_ids_of_stored_spikes_on_device;
 	int* h_neuron_ids_of_stored_spikes_on_host;
 
 	float* d_time_in_seconds_of_stored_spikes_on_device;
-	float* h_time_in_seconds_of_stored_spikes_on_device;
 	float* h_time_in_seconds_of_stored_spikes_on_host;
 
 	// Various spikes stored totals
@@ -61,6 +59,10 @@ public:
 	void add_spikes_to_per_neuron_spike_count(float current_time_in_seconds);
 
 	void delete_and_reset_recorded_spikes();
+
+private:
+	int* reset_neuron_ids;
+	float* reset_neuron_times;
 
 };
 
