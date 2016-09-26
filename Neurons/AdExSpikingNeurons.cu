@@ -144,9 +144,9 @@ __global__ void AdEx_update_membrane_potentials(float *d_membrane_potentials_v,
 	while (idx < total_number_of_neurons) {
 
 		// Updating the membrane potential
-		float inverse_capacitance = (1 / d_membrane_capacitances_Cm[idx]);
+		float inverse_capacitance = (1.0f / d_membrane_capacitances_Cm[idx]);
 		float membrane_leak_diff = (d_membrane_potentials_v[idx] - d_leak_reversal_potentials_E_L[idx]);
-		float membrane_leakage = - d_membrane_leakage_conductances_g0[idx]*membrane_leak_diff;
+		float membrane_leakage = -1.0 * d_membrane_leakage_conductances_g0[idx]*membrane_leak_diff;
 		float membrane_thresh_diff = (d_membrane_potentials_v[idx] - d_thresholds_for_action_potential_spikes[idx]);
 		
 		// Checking for limit of Delta_T => 0
@@ -158,7 +158,7 @@ __global__ void AdEx_update_membrane_potentials(float *d_membrane_potentials_v,
 		float new_membrane_potential = inverse_capacitance*(membrane_leakage + slope_adaptation - d_adaptation_values_w[idx] + d_current_injections[idx]);
 
 		// Updating the adaptation parameter
-		float inverse_tau_w = (1 / d_adaptation_time_constants_tau_w[idx]);
+		float inverse_tau_w = (1.0f / d_adaptation_time_constants_tau_w[idx]);
 		float adaptation_change = d_adaptation_coupling_coefficients_a[idx]*membrane_leak_diff;
 
 		float new_adaptation_value = inverse_tau_w*(adaptation_change - d_adaptation_values_w[idx]);
