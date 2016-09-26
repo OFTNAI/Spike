@@ -155,18 +155,18 @@ __global__ void AdEx_update_membrane_potentials(float *d_membrane_potentials_v,
 			slope_adaptation = d_membrane_leakage_conductances_g0[idx]*d_slope_factors_Delta_T[idx]*expf(membrane_thresh_diff / d_slope_factors_Delta_T[idx]);
 		}
 
-		float new_membrane_potential = inverse_capacitance*(membrane_leakage + slope_adaptation - d_adaptation_values_w[idx] + d_current_injections[idx]);
+		float update_membrane_potential = inverse_capacitance*(membrane_leakage + slope_adaptation - d_adaptation_values_w[idx] + d_current_injections[idx]);
 
 		// Updating the adaptation parameter
 		float inverse_tau_w = (1.0f / d_adaptation_time_constants_tau_w[idx]);
 		float adaptation_change = d_adaptation_coupling_coefficients_a[idx]*membrane_leak_diff;
 
-		float new_adaptation_value = inverse_tau_w*(adaptation_change - d_adaptation_values_w[idx]);
+		float update_adaptation_value = inverse_tau_w*(adaptation_change - d_adaptation_values_w[idx]);
 
 
 		// 
-		d_adaptation_values_w[idx] = new_adaptation_value;
-		d_membrane_potentials_v[idx] = new_membrane_potential;
+		d_adaptation_values_w[idx] += timestep*update_adaptation_value;
+		d_membrane_potentials_v[idx] += timestep*update_membrane_potential;
 
 		idx += blockDim.x * gridDim.x;
 
