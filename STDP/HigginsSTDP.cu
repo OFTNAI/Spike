@@ -84,7 +84,7 @@ __global__ void izhikevich_apply_ltp_to_synapse_weights_kernel(int* d_postsyns,
 			// Update weights
 			d_synaptic_efficacies_or_weights[idx] += weightchange;
 		}
-		idx += blockDim.x + gridDim.x;
+		idx += blockDim.x * gridDim.x;
 
 	}
 }
@@ -112,6 +112,6 @@ __global__ void izhikevich_apply_ltd_to_synapse_weights_kernel(float* d_time_of_
 			// Now scale the weight (using an inverted column/row)
 			d_synaptic_efficacies_or_weights[idx] += weightscale; 
 		}
-		idx += blockDim.x + gridDim.x;
+		idx += blockDim.x * gridDim.x;
 	}
 }
