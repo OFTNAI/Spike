@@ -157,7 +157,7 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 					spiking_model->stdp_rule->reset_STDP_activities();
 
 					// Reset time (Useful for Generator Neurons Specifically)
-					float current_time_in_seconds = 0.0f;
+					current_time_in_seconds = 0.0f;
 
 					break;
 				}
