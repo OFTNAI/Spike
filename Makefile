@@ -59,7 +59,7 @@ directory: ${EXPERIMENT_DIRECTORY}
 
 ${FILE}: obj/${FILE}.o $(CU_OBJ_FILES) $(CPP_OBJ_FILES)
 	test -d ${EXPERIMENT_DIRECTORY}/binaries || mkdir ${EXPERIMENT_DIRECTORY}/binaries
-	$(CC) -lineinfo -lmgl obj/${FILE}.o $(CU_OBJ_FILES) $(CPP_OBJ_FILES) -o ${EXPERIMENT_DIRECTORY}/binaries/${FILE}
+	$(CC) -lineinfo obj/${FILE}.o $(CU_OBJ_FILES) $(CPP_OBJ_FILES) -o ${EXPERIMENT_DIRECTORY}/binaries/${FILE}
 
 # Compiling the Model file
 obj/${FILE}.o: ${EXPERIMENT_DIRECTORY}/${FILE}.cpp
@@ -81,7 +81,7 @@ TEST_CPP_FILES := $(wildcard Tests/*.cu)
 TEST_OBJ_FILES := $(addprefix Tests/obj/,$(notdir $(TEST_CPP_FILES:.cu=.o)))
 
 test: ${TEST_OBJ_FILES} $(CU_OBJ_FILES) $(CPP_OBJ_FILES)
-	$(CC) -lineinfo -lmgl ${TEST_OBJ_FILES} $(CU_OBJ_FILES) $(CPP_OBJ_FILES) -o Tests/unittests
+	$(CC) -lineinfo ${TEST_OBJ_FILES} $(CU_OBJ_FILES) $(CPP_OBJ_FILES) -o Tests/unittests
 
 # Test Compilation
 Tests/obj/%.o: Tests/%.cu

@@ -25,7 +25,7 @@ using namespace std;
 #include "../Experiments/CollectEventsNetworkExperiment.h"
 
 
-// make FILE='JITest' EXPERIMENT_DIRECTORY='TestNetworkExperiments'  model -j8
+// make FILE='JITest' EXPERIMENT_DIRECTORY='Experiments'  model -j8
 
 
 // enum OPTIMISATION_VARIABLES { // E2E ????
@@ -88,7 +88,7 @@ int main (int argc, char *argv[]){
 
 	// Simulator Parameters
 	// float timestep = 0.00002;
-	float timestep = 0.0002;
+	float timestep = 0.00002;
 	bool high_fidelity_spike_storage = true;
 
 	bool simulate_network_to_test_untrained = true;
