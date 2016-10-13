@@ -7,6 +7,7 @@
 #include "../STDP/STDP.h"
 #include "../STDP/EvansSTDP.h"
 #include "../STDP/HigginsSTDP.h"
+#include "../STDP/MasquelierSTDP.h"
 #include "../Neurons/Neurons.h"
 #include "../Neurons/SpikingNeurons.h"
 #include "../Neurons/LIFSpikingNeurons.h"

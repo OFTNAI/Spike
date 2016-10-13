@@ -48,6 +48,8 @@ int AdExSpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
 	adaptation_time_constants_tau_w = (float*)realloc(adaptation_time_constants_tau_w, total_number_of_neurons*sizeof(float));
 	adaptation_changes_b = (float*)realloc(adaptation_changes_b, total_number_of_neurons*sizeof(float));
 
+	absolute_refractory_period = AdEx_spiking_group_params->absolute_refractory_period;
+
 	
 	for (int i = total_number_of_neurons - number_of_neurons_in_new_group; i < total_number_of_neurons; i++) {
 		adaptation_values_w[i] = 0.0f;
@@ -117,6 +119,9 @@ void AdExSpikingNeurons::update_membrane_potentials(float timestep, float curren
 																	d_adaptation_time_constants_tau_w,
 																	d_current_injections,
 																	d_thresholds_for_action_potential_spikes,
+																	d_last_spike_time_of_each_neuron,
+																	absolute_refractory_period,
+																	current_time_in_seconds,
 																	timestep,
 																	total_number_of_neurons);
 
@@ -135,6 +140,9 @@ __global__ void AdEx_update_membrane_potentials(float *d_membrane_potentials_v,
 								float * d_adaptation_time_constants_tau_w,
 								float * d_current_injections,
 								float * d_thresholds_for_action_potential_spikes,
+								float * d_last_spike_time_of_each_neuron,
+								float absolute_refractory_period,
+								float current_time_in_seconds,
 								float timestep,
 								size_t total_number_of_neurons){
 
@@ -142,32 +150,35 @@ __global__ void AdEx_update_membrane_potentials(float *d_membrane_potentials_v,
 	// // Get thread IDs
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	while (idx < total_number_of_neurons) {
+		// Check for refractory period:
+		if ((current_time_in_seconds - d_last_spike_time_of_each_neuron[idx]) >= absolute_refractory_period){
 
-		// Updating the membrane potential
-		float inverse_capacitance = (1 / d_membrane_capacitances_Cm[idx]);
-		float membrane_leak_diff = (d_membrane_potentials_v[idx] - d_leak_reversal_potentials_E_L[idx]);
-		float membrane_leakage = - d_membrane_leakage_conductances_g0[idx]*membrane_leak_diff;
-		float membrane_thresh_diff = (d_membrane_potentials_v[idx] - d_thresholds_for_action_potential_spikes[idx]);
-		
-		// Checking for limit of Delta_T => 0
-		float slope_adaptation = 0.0f;
-		if (d_slope_factors_Delta_T[idx] != 0.0f){
-			slope_adaptation = d_membrane_leakage_conductances_g0[idx]*d_slope_factors_Delta_T[idx]*expf(membrane_thresh_diff / d_slope_factors_Delta_T[idx]);
+			// Updating the membrane potential
+			float inverse_capacitance = (1.0f / d_membrane_capacitances_Cm[idx]);
+			float membrane_leak_diff = (d_membrane_potentials_v[idx] - d_leak_reversal_potentials_E_L[idx]);
+			float membrane_leakage = -1.0 * d_membrane_leakage_conductances_g0[idx]*membrane_leak_diff;
+			float membrane_thresh_diff = (d_membrane_potentials_v[idx] - d_thresholds_for_action_potential_spikes[idx]);
+			
+			// Checking for limit of Delta_T => 0
+			float slope_adaptation = 0.0f;
+			if (d_slope_factors_Delta_T[idx] != 0.0f){
+				slope_adaptation = d_membrane_leakage_conductances_g0[idx]*d_slope_factors_Delta_T[idx]*expf(membrane_thresh_diff / d_slope_factors_Delta_T[idx]);
+			}
+
+			float update_membrane_potential = inverse_capacitance*(membrane_leakage + slope_adaptation - d_adaptation_values_w[idx] + d_current_injections[idx]);
+
+			// Updating the adaptation parameter
+			float inverse_tau_w = (1.0f / d_adaptation_time_constants_tau_w[idx]);
+			float adaptation_change = d_adaptation_coupling_coefficients_a[idx]*membrane_leak_diff;
+
+			float update_adaptation_value = inverse_tau_w*(adaptation_change - d_adaptation_values_w[idx]);
+
+
+			// 
+			d_adaptation_values_w[idx] += timestep*update_adaptation_value;
+			d_membrane_potentials_v[idx] += timestep*update_membrane_potential;
+
 		}
-
-		float new_membrane_potential = inverse_capacitance*(membrane_leakage + slope_adaptation - d_adaptation_values_w[idx] + d_current_injections[idx]);
-
-		// Updating the adaptation parameter
-		float inverse_tau_w = (1 / d_adaptation_time_constants_tau_w[idx]);
-		float adaptation_change = d_adaptation_coupling_coefficients_a[idx]*membrane_leak_diff;
-
-		float new_adaptation_value = inverse_tau_w*(adaptation_change - d_adaptation_values_w[idx]);
-
-
-		// 
-		d_adaptation_values_w[idx] = new_adaptation_value;
-		d_membrane_potentials_v[idx] = new_membrane_potential;
-
 		idx += blockDim.x * gridDim.x;
 
 	}
