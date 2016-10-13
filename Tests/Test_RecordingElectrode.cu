@@ -170,11 +170,11 @@ TEST_CASE("RecordingElectrode") {
 
 		for (int i=0; i < 5; i++){
 			for (int j=0; j < 5; j++){
-				if (test_record.h_neuron_ids_of_stored_spikes_on_device[i] == indices[j]){
+				if (test_record.h_neuron_ids_of_stored_spikes_on_host[i] == indices[j]){
 					if (checked[i] == false){
 						checked[i] = true;
-						REQUIRE(test_record.h_neuron_ids_of_stored_spikes_on_device[i] == indices[j]);
-						REQUIRE(test_record.h_time_in_seconds_of_stored_spikes_on_device[i] == current_time);
+						REQUIRE(test_record.h_neuron_ids_of_stored_spikes_on_host[i] == indices[j]);
+						REQUIRE(test_record.h_time_in_seconds_of_stored_spikes_on_host[i] == current_time);
 					} else {
 						printf("Multiple copies of a single spike!");
 						REQUIRE(true == false);
