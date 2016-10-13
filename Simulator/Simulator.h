@@ -40,6 +40,8 @@ public:
 	~Simulator();
 
 
+	std::string RESULTS_DIRECTORY;
+
 	RecordingElectrodes * recording_electrodes;
 	RecordingElectrodes * input_recording_electrodes;
 
@@ -51,6 +53,26 @@ public:
 
 	SpikingModel * spiking_model;
 	void SetSpikingModel(SpikingModel * spiking_model_parameter);
+
+	// Parameters
+	float timestep;
+	void SetTimestep(float timest);
+
+	void InitExperimentName(std::string experimentName_param);
+	void SetNeuronType(SpikingNeurons * neurons_parameter);
+	void SetInputNeuronType(InputSpikingNeurons * neurons_parameter);
+	void SetSynapseType(SpikingSynapses * synapses_parameter);
+	void SetSTDPType(STDP* stdp_parameter);
+
+	int AddNeuronGroup(neuron_parameters_struct * group_params);
+	int AddInputNeuronGroup(neuron_parameters_struct * group_params);
+	
+	void AddSynapseGroup(int presynaptic_group_id, 
+							int postsynaptic_group_id, 
+							synapse_parameters_struct * synapse_params);
+
+	void AddSynapseGroupsForNeuronGroupAndEachInputGroup(int postsynaptic_group_id, 
+							synapse_parameters_struct * synapse_params);
 
 
 	void LoadWeights(int numWeights, float* newWeights);

@@ -16,13 +16,14 @@
 #include <time.h>
 using namespace std;
 
-const string RESULTS_DIRECTORY ("output/");
+//const string RESULTS_DIRECTORY ("output/");
 
 
 // RecordingElectrodes Constructor
-RecordingElectrodes::RecordingElectrodes(SpikingNeurons * neurons_parameter, const char * prefix_string_param, int number_of_timesteps_per_device_spike_copy_check_param, int device_spike_store_size_multiple_of_total_neurons_param, float proportion_of_device_spike_store_full_before_copy_param) {
+RecordingElectrodes::RecordingElectrodes(SpikingNeurons * neurons_parameter, string RESULTS_DIRECTORY_param, const char * prefix_string_param, int number_of_timesteps_per_device_spike_copy_check_param, int device_spike_store_size_multiple_of_total_neurons_param, float proportion_of_device_spike_store_full_before_copy_param) {
 
 	neurons = neurons_parameter;
+	RESULTS_DIRECTORY = RESULTS_DIRECTORY_param;
 	prefix_string = prefix_string_param;
 
 	number_of_timesteps_per_device_spike_copy_check = number_of_timesteps_per_device_spike_copy_check_param;
