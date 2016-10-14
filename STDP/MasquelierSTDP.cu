@@ -32,6 +32,7 @@ void MasquelierSTDP::Run_STDP(float* d_last_spike_time_of_each_neuron, float cur
 
 
 void MasquelierSTDP::apply_stdp_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds) {
+
 	apply_stdp_to_synapse_weights_kernel<<<syns->number_of_synapse_blocks_per_grid, syns->threads_per_block>>>(
 																	syns->d_postsynaptic_neuron_indices,
 																	d_last_spike_time_of_each_neuron,
@@ -41,10 +42,8 @@ void MasquelierSTDP::apply_stdp_to_synapse_weights(float* d_last_spike_time_of_e
 																	*stdp_params, 
 																	current_time_in_seconds,
 																	syns->total_number_of_synapses);
-
 	CudaCheckError();
 }
-
 
 
 // STDP on synapses
@@ -71,22 +70,28 @@ __global__ void apply_stdp_to_synapse_weights_kernel(int* d_postsyns,
 				// Get the last active time / weight of the synapse
 				// Calc time difference and weight change
 				float diff = currtime - last_syn_spike;
-				float weightchange = stdp_vars.a_plus * expf(-diff / stdp_vars.tau_plus);
-				// Update weights
-				new_syn_weight += weightchange;
-				// Ensure that the weights are clipped to 1.0f
-				new_syn_weight = min(new_syn_weight, 1.0f);
+				// Only carry out LTP if the difference is in some range
+				if (diff < 7*stdp_vars.tau_plus && diff > 0){
+						float weightchange = stdp_vars.a_plus * expf(-diff / stdp_vars.tau_plus);
+						// Update weights
+						new_syn_weight += weightchange;
+					// Ensure that the weights are clipped to 1.0f
+					new_syn_weight = min(new_syn_weight, 1.0f);
+				}
 			}
 
 			// Get the synapses upon which to do LTD
 			if (last_syn_spike == currtime) {
 				// STDP Update Rule
 				float diff = currtime - last_post_spike;
-				float weightchange = stdp_vars.a_minus * expf(-diff / stdp_vars.tau_minus);
-				// Update the weights
-				new_syn_weight -= weightchange;
-				// Ensure that the weights are clipped to 0.0f
-				new_syn_weight = max(new_syn_weight, 0.0f);
+				// Only carry out LTD if the difference is in some range
+				if (diff < 7*stdp_vars.tau_minus && diff > 0){
+					float weightchange = stdp_vars.a_minus * expf(-diff / stdp_vars.tau_minus);
+					// Update the weights
+					new_syn_weight -= weightchange;
+					// Ensure that the weights are clipped to 0.0f
+					new_syn_weight = max(new_syn_weight, 0.0f);
+				}
 			}
 
 			d_synaptic_efficacies_or_weights[idx] = new_syn_weight;
