@@ -82,8 +82,6 @@ __global__ void apply_stdp_to_synapse_weights_kernel(int* d_postsyns,
 							float currtime,
 							int total_number_of_post_neurons,
 							size_t total_number_of_synapse){
-	// Setting up some shared memory for on the fly storage:
-	// extern __shared__ int indices[];
 	// Global Index
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	int tid = threadIdx.x;
@@ -158,16 +156,25 @@ __global__ void use_indices_to_apply_stdp(int* d_postsyns,
 		for (unsigned int s=synblock/2; s>0; s>>=1){
 			if (tid < s && idx < total_number_of_synapse){
 				// Find MIN for LTP
-				float diff1 = currtime - d_time_of_last_spike_to_reach_synapse[indices[idx*blockDim.x + tid]];
-				float diff2 = currtime - d_time_of_last_spike_to_reach_synapse[indices[idx*blockDim.x + tid + s]];
+				float diff1 = 1000;
+				if (indices[idx*blockDim.x + tid] >= 0)
+					diff1 = currtime - d_time_of_last_spike_to_reach_synapse[indices[idx*blockDim.x + tid]];
+				float diff2 = 1000;
+				if (indices[idx*blockDim.x + tid + s] >= 0)
+					diff2 = currtime - d_time_of_last_spike_to_reach_synapse[indices[idx*blockDim.x + tid + s]];
+				
 				if (diff2 <= diff1){
 					indices[idx*blockDim.x + tid] = indices[idx*blockDim.x + tid + s];
 				}
 
 				// Find MIN for LTD
-				diff1 = currtime - d_last_spike_time_of_each_neuron[
+				diff1 = 1000;
+				if (indices[total_number_of_post_neurons*blockDim.x + idx*blockDim.x + tid] >= 0)
+					diff1 = currtime - d_last_spike_time_of_each_neuron[
 													d_postsyns[indices[total_number_of_post_neurons*blockDim.x + idx*blockDim.x + tid]]];
-				diff2 = currtime - d_last_spike_time_of_each_neuron[
+				diff2 = 1000;
+				if (indices[total_number_of_post_neurons*blockDim.x + idx*blockDim.x + tid + s] >= 0)
+					diff2 = currtime - d_last_spike_time_of_each_neuron[
 													d_postsyns[indices[total_number_of_post_neurons*blockDim.x + idx*blockDim.x + tid + s]]];
 				if (diff2 <= diff1){
 					indices[total_number_of_post_neurons*blockDim.x + idx*blockDim.x + tid] = indices[total_number_of_post_neurons*blockDim.x + idx*blockDim.x + tid + s];
@@ -199,7 +206,7 @@ __global__ void use_indices_to_apply_stdp(int* d_postsyns,
 			}
 		}
 		// If this neuron actually had some spike in the past LTD
-		if ((indices[total_number_of_post_neurons*synblock + idx*synblock] >= 0) && indices[total_number_of_post_neurons*synblock + idx*synblock]){
+		if ((indices[total_number_of_post_neurons*synblock + idx*synblock] >= 0) && (d_stdp[indices[total_number_of_post_neurons*synblock + idx*synblock]] == true)){
 			float diff = currtime - d_last_spike_time_of_each_neuron[
 												d_postsyns[indices[total_number_of_post_neurons*synblock + idx*synblock]]];
 			float new_syn_weight = d_synaptic_efficacies_or_weights[indices[total_number_of_post_neurons*synblock + idx*synblock]];
