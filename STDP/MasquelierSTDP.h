@@ -51,7 +51,11 @@ public:
 
 	struct masquelier_stdp_parameters_struct* stdp_params;
 	SpikingSynapses* syns;
+	SpikingNeurons* neurs;
+	int* d_temp_indices;
 
+	// Pointers
+	virtual void allocate_device_pointers();
 	// Set STDP Parameters
 	virtual void Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons* neurons, SpikingNeurons* input_neurons, stdp_parameters_struct* stdp_parameters);
 	// STDP
@@ -68,8 +72,22 @@ __global__ void apply_stdp_to_synapse_weights_kernel(int* d_postsyns,
 							bool* d_stdp,
 							float* d_time_of_last_spike_to_reach_synapse,
 							float* d_synaptic_efficacies_or_weights,
+							int* indices,
 							struct masquelier_stdp_parameters_struct stdp_vars,
 							float currtime,
+							int total_number_of_post_neurons,
 							size_t total_number_of_synapse);
+
+__global__ void use_indices_to_apply_stdp(int* d_postsyns,
+							float* d_last_spike_time_of_each_neuron,
+							bool* d_stdp,
+							float* d_time_of_last_spike_to_reach_synapse,
+							float* d_synaptic_efficacies_or_weights,
+							int* indices,
+							struct masquelier_stdp_parameters_struct stdp_vars,
+							float currtime,
+							int synblock,
+							int total_number_of_synapse,
+							size_t total_number_of_post_neurons);
 
 #endif
