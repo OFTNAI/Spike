@@ -2,8 +2,11 @@
 #include "../Helpers/CUDAErrorCheckHelpers.h"
 #include <iostream>
 #include <stdio.h>
+#include <stdlib.h>
 #include <fstream>
 #include <string>
+#include <sys/stat.h>
+// using namespace std;
 
 /**
 		RECORDINGELECTRODES.CU Test Set
@@ -56,8 +59,12 @@ TEST_CASE("RecordingElectrode") {
 		timestep,
 		&synapse_params);
 
+
+	mkdir("output/",S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH);
+
+
 	// Checking for spikes on every timestep, with a store of length the number of neurons. Save spikes whenever they come.
-	RecordingElectrodes test_record = RecordingElectrodes(&test_neurons, "test", 1, 1, 0.0f);
+	RecordingElectrodes test_record = RecordingElectrodes(&test_neurons, "output/", "test", 1, 1, 0.0f);
 
 	// Setting up simulation
 	test_neurons.set_threads_per_block_and_blocks_per_grid(512);

@@ -60,16 +60,16 @@ public:
 
 	curandState_t* d_states_for_random_number_generation;
 
-	// Full Matrices
 	int* presynaptic_neuron_indices;
 	int* postsynaptic_neuron_indices; 
 	float* synaptic_efficacies_or_weights;
+	int *original_synapse_indices;
 
 	int * d_temp_presynaptic_neuron_indices;
 	int* d_temp_postsynaptic_neuron_indices; 
 	float* d_temp_synaptic_efficacies_or_weights;
 
-	int *original_synapse_indices;
+	
 
 	// Device pointers
 	int* d_presynaptic_neuron_indices;

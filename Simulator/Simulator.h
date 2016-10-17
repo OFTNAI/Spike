@@ -40,7 +40,7 @@ public:
 	~Simulator();
 
 
-	std::string RESULTS_DIRECTORY;
+	std::string full_directory_name_for_simulation_data_files;
 
 	RecordingElectrodes * recording_electrodes;
 	RecordingElectrodes * input_recording_electrodes;
@@ -58,7 +58,7 @@ public:
 	float timestep;
 	void SetTimestep(float timest);
 
-	void CreateDirectoryForSimulationDataFiles(std::string directory_name_param);
+	void CreateDirectoryForSimulationDataFiles(std::string directory_name_for_simulation_data_files);
 	void SetNeuronType(SpikingNeurons * neurons_parameter);
 	void SetInputNeuronType(InputSpikingNeurons * neurons_parameter);
 	void SetSynapseType(SpikingSynapses * synapses_parameter);

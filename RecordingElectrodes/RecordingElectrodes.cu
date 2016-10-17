@@ -16,14 +16,11 @@
 #include <time.h>
 using namespace std;
 
-//const string RESULTS_DIRECTORY ("output/");
-
-
 // RecordingElectrodes Constructor
-RecordingElectrodes::RecordingElectrodes(SpikingNeurons * neurons_parameter, string RESULTS_DIRECTORY_param, const char * prefix_string_param, int number_of_timesteps_per_device_spike_copy_check_param, int device_spike_store_size_multiple_of_total_neurons_param, float proportion_of_device_spike_store_full_before_copy_param) {
+RecordingElectrodes::RecordingElectrodes(SpikingNeurons * neurons_parameter, string full_directory_name_for_simulation_data_files_param, const char * prefix_string_param, int number_of_timesteps_per_device_spike_copy_check_param, int device_spike_store_size_multiple_of_total_neurons_param, float proportion_of_device_spike_store_full_before_copy_param) {
 
 	neurons = neurons_parameter;
-	RESULTS_DIRECTORY = RESULTS_DIRECTORY_param;
+	full_directory_name_for_simulation_data_files = full_directory_name_for_simulation_data_files_param;
 	prefix_string = prefix_string_param;
 
 	number_of_timesteps_per_device_spike_copy_check = number_of_timesteps_per_device_spike_copy_check_param;
@@ -182,8 +179,8 @@ void RecordingElectrodes::write_spikes_to_file(int epoch_number, bool human_read
 	else
 		phase = "Untrained";
 	
-	string file_IDs = RESULTS_DIRECTORY + prefix_string + "_SpikeIDs_" + phase + "_Epoch" + to_string(epoch_number);
-	string file_Times = RESULTS_DIRECTORY + prefix_string + "_SpikeTimes_" + phase + "_Epoch" + to_string(epoch_number);
+	string file_IDs = full_directory_name_for_simulation_data_files + prefix_string + "_SpikeIDs_" + phase + "_Epoch" + to_string(epoch_number);
+	string file_Times = full_directory_name_for_simulation_data_files + prefix_string + "_SpikeTimes_" + phase + "_Epoch" + to_string(epoch_number);
 
 //	// Append the clock to the file if flag
 //	if (append_clock_to_filenames){ file = file + "t" + to_string(clock()) + "_"; }
@@ -300,14 +297,14 @@ __global__ void collect_spikes_for_timestep_kernel(float* d_last_spike_time_of_e
 void RecordingElectrodes::write_initial_synaptic_weights_to_file(SpikingSynapses *synapses, bool human_readable_storage) {
 	ofstream initweightfile;
 	if (human_readable_storage){
-		initweightfile.open(RESULTS_DIRECTORY + prefix_string + "_NetworkWeights_Initial.txt", ios::out | ios::binary);
+		initweightfile.open(full_directory_name_for_simulation_data_files + prefix_string + "_NetworkWeights_Initial.txt", ios::out | ios::binary);
 		for (int i=0; i < synapses->total_number_of_synapses; i++){
 			initweightfile << to_string(synapses->synaptic_efficacies_or_weights[i]) << endl;
 
 		}
 		initweightfile.close();
 	} else {
-		initweightfile.open(RESULTS_DIRECTORY + prefix_string + "_NetworkWeights_Initial.bin", ios::out | ios::binary);
+		initweightfile.open(full_directory_name_for_simulation_data_files + prefix_string + "_NetworkWeights_Initial.bin", ios::out | ios::binary);
 		initweightfile.write((char *)synapses->synaptic_efficacies_or_weights, synapses->total_number_of_synapses*sizeof(float));
 		initweightfile.close();
 	}
@@ -324,10 +321,10 @@ void RecordingElectrodes::write_network_state_to_file(SpikingSynapses *synapses,
 	if (human_readable_storage){
 		// Creating and Opening all the files
 		ofstream synapsepre, synapsepost, weightfile, delayfile;
-		weightfile.open(RESULTS_DIRECTORY + prefix_string + "_NetworkWeights.txt", ios::out | ios::binary);
-		delayfile.open(RESULTS_DIRECTORY + prefix_string + "_NetworkDelays.txt", ios::out | ios::binary);
-		synapsepre.open(RESULTS_DIRECTORY + prefix_string + "_NetworkPre.txt", ios::out | ios::binary);
-		synapsepost.open(RESULTS_DIRECTORY + prefix_string + "_NetworkPost.txt", ios::out | ios::binary);
+		weightfile.open(full_directory_name_for_simulation_data_files + prefix_string + "_NetworkWeights.txt", ios::out | ios::binary);
+		delayfile.open(full_directory_name_for_simulation_data_files + prefix_string + "_NetworkDelays.txt", ios::out | ios::binary);
+		synapsepre.open(full_directory_name_for_simulation_data_files + prefix_string + "_NetworkPre.txt", ios::out | ios::binary);
+		synapsepost.open(full_directory_name_for_simulation_data_files + prefix_string + "_NetworkPost.txt", ios::out | ios::binary);
 		
 		// Writing the data
 		for (int i=0; i < synapses->total_number_of_synapses; i++){
@@ -345,10 +342,10 @@ void RecordingElectrodes::write_network_state_to_file(SpikingSynapses *synapses,
 	} else {
 		// Creating and Opening all the files
 		ofstream synapsepre, synapsepost, weightfile, delayfile;
-		weightfile.open(RESULTS_DIRECTORY + prefix_string + "_NetworkWeights.bin", ios::out | ios::binary);
-		delayfile.open(RESULTS_DIRECTORY + prefix_string + "_NetworkDelays.bin", ios::out | ios::binary);
-		synapsepre.open(RESULTS_DIRECTORY + prefix_string + "_NetworkPre.bin", ios::out | ios::binary);
-		synapsepost.open(RESULTS_DIRECTORY + prefix_string + "_NetworkPost.bin", ios::out | ios::binary);
+		weightfile.open(full_directory_name_for_simulation_data_files + prefix_string + "_NetworkWeights.bin", ios::out | ios::binary);
+		delayfile.open(full_directory_name_for_simulation_data_files + prefix_string + "_NetworkDelays.bin", ios::out | ios::binary);
+		synapsepre.open(full_directory_name_for_simulation_data_files + prefix_string + "_NetworkPre.bin", ios::out | ios::binary);
+		synapsepost.open(full_directory_name_for_simulation_data_files + prefix_string + "_NetworkPost.bin", ios::out | ios::binary);
 		
 		// Writing the data
 		weightfile.write((char *)synapses->synaptic_efficacies_or_weights, synapses->total_number_of_synapses*sizeof(float));

@@ -25,7 +25,7 @@ public:
 
 	int size_of_device_spike_store;
 
-	std::string RESULTS_DIRECTORY;
+	std::string full_directory_name_for_simulation_data_files;
 
 	int* d_neuron_ids_of_stored_spikes_on_device;
 	int* h_neuron_ids_of_stored_spikes_on_host;
@@ -43,7 +43,7 @@ public:
 	SpikingNeurons * neurons;
 
 	// Constructor/Destructor
-	RecordingElectrodes(SpikingNeurons * neurons_parameter, std::string RESULTS_DIRECTORY_param, const char * prefix_string_param, int number_of_timesteps_per_device_spike_copy_check_param, int device_spike_store_size_multiple_of_total_neurons_param, float proportion_of_device_spike_store_full_before_copy_param);
+	RecordingElectrodes(SpikingNeurons * neurons_parameter, std::string full_directory_name_for_simulation_data_files_param, const char * prefix_string_param, int number_of_timesteps_per_device_spike_copy_check_param, int device_spike_store_size_multiple_of_total_neurons_param, float proportion_of_device_spike_store_full_before_copy_param);
 	~RecordingElectrodes();
 
 	void allocate_pointers_for_spike_store();

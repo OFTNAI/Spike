@@ -62,7 +62,7 @@ int main (int argc, char *argv[]){
 	//*1 Bair, W., & Movshon, J. A. (2004).  Adaptive Temporal Integration of Motion in Direction-Selective Neurons in Macaque Visual Cortex. The Journal of Neuroscience, 24(33), 7305遯ｶ�ｿｽ7323.
 
 	// Simulator Parameters
-	string experimentName = "5.1--FF--0.00005";
+	string directory_name_for_simulation_data_files = "5.1--FF--0.00005";
 	float timestep = 0.00002;
 	bool simulate_network_to_test_untrained = true;
 	bool simulate_network_to_train_network = true;
@@ -247,9 +247,9 @@ int main (int argc, char *argv[]){
 	Simulator simulator;
 	simulator.SetTimestep(timestep);
 	if (!is_optimisation){ 	// copy cpp file to save parameters for future references
-		simulator.CreateDirectoryForSimulationDataFiles(experimentName);
+		simulator.CreateDirectoryForSimulationDataFiles(directory_name_for_simulation_data_files);
 		string source = "Experiments/ConductanceExperiment1.cpp";
-		string destination = "output/"+experimentName+"/ConductanceExperiment1.cpp";
+		string destination = "output/"+directory_name_for_simulation_data_files+"/ConductanceExperiment1.cpp";
 		ifstream srce(source.c_str(), ios::binary ) ;
 		ofstream dest(destination.c_str(), ios::binary ) ;
 		dest << srce.rdbuf() ;
@@ -516,7 +516,7 @@ int main (int argc, char *argv[]){
 
 	/////////// PLOT INFOANALYSIS RESULTS //////////////////
 	if (simulate_network_to_test_untrained && simulate_network_to_test_trained && plotInfoAnalysis){
-		Plotter * plotter = new Plotter(experimentName);
+		Plotter * plotter = new Plotter(directory_name_for_simulation_data_files);
 		plotter->plot_single_cell_information_analysis(spike_analyser_for_untrained_network, spike_analyser_for_trained_network);
 
 	}
