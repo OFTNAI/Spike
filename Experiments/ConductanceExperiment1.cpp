@@ -247,7 +247,7 @@ int main (int argc, char *argv[]){
 	Simulator simulator;
 	simulator.SetTimestep(timestep);
 	if (!is_optimisation){ 	// copy cpp file to save parameters for future references
-		simulator.InitExperimentName(experimentName);
+		simulator.CreateDirectoryForSimulationDataFiles(experimentName);
 		string source = "Experiments/ConductanceExperiment1.cpp";
 		string destination = "output/"+experimentName+"/ConductanceExperiment1.cpp";
 		ifstream srce(source.c_str(), ios::binary ) ;

@@ -56,12 +56,12 @@ Simulator::~Simulator(){
 
 }
 
-void Simulator::InitExperimentName(string experimentName_param){
-	if (mkdir(("output/"+experimentName_param).c_str(),S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH)==0)
+void Simulator::CreateDirectoryForSimulationDataFiles(string directory_name_param){
+	if (mkdir(("output/"+directory_name_param).c_str(),S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH)==0)
 		printf("\nDirectory created\n");
 	else
 		print_message_and_exit("\nERROR: You must set a different experiment name to avoid overwriting the results\n");
-	RESULTS_DIRECTORY = "output/"+experimentName_param+"/";
+	RESULTS_DIRECTORY = "output/"+directory_name_param+"/";
 }
 
 

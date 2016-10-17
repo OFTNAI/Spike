@@ -58,7 +58,7 @@ public:
 	float timestep;
 	void SetTimestep(float timest);
 
-	void InitExperimentName(std::string experimentName_param);
+	void CreateDirectoryForSimulationDataFiles(std::string directory_name_param);
 	void SetNeuronType(SpikingNeurons * neurons_parameter);
 	void SetInputNeuronType(InputSpikingNeurons * neurons_parameter);
 	void SetSynapseType(SpikingSynapses * synapses_parameter);
