@@ -51,7 +51,18 @@ public:
 
 	struct masquelier_stdp_parameters_struct* stdp_params;
 	SpikingSynapses* syns;
+	SpikingNeurons* neurs;
+	int* index_of_last_afferent_synapse_to_spike;
+	int* d_index_of_last_afferent_synapse_to_spike;
+	bool* isindexed_ltd_synapse_spike;
+	bool* d_isindexed_ltd_synapse_spike;
+	int* index_of_first_synapse_spiked_after_postneuron;
+	int* d_index_of_first_synapse_spiked_after_postneuron;
 
+	// Pointers
+	virtual void allocate_device_pointers();
+	// Pointers
+	virtual void reset_STDP_activities();
 	// Set STDP Parameters
 	virtual void Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons* neurons, SpikingNeurons* input_neurons, stdp_parameters_struct* stdp_parameters);
 	// STDP
@@ -68,7 +79,20 @@ __global__ void apply_stdp_to_synapse_weights_kernel(int* d_postsyns,
 							bool* d_stdp,
 							float* d_time_of_last_spike_to_reach_synapse,
 							float* d_synaptic_efficacies_or_weights,
+							int* d_index_of_last_afferent_synapse_to_spike,
+							bool* d_isindexed_ltd_synapse_spike,
+							int* d_index_of_first_synapse_spiked_after_postneuron,
 							struct masquelier_stdp_parameters_struct stdp_vars,
+							float currtime,
+							size_t total_number_of_post_neurons);
+
+__global__ void get_indices_to_apply_stdp(int* d_postsyns,
+							float* d_last_spike_time_of_each_neuron,
+							bool* d_stdp,
+							float* d_time_of_last_spike_to_reach_synapse,
+							int* d_index_of_last_afferent_synapse_to_spike,
+							bool* d_isindexed_ltd_synapse_spike,
+							int* d_index_of_first_synapse_spiked_after_postneuron,
 							float currtime,
 							size_t total_number_of_synapse);
 
