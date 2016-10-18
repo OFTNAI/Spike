@@ -56,7 +56,7 @@ Simulator::~Simulator(){
 
 }
 
-void Simulator::CreateDirectoryForSimulationDataFiles(string directory_name_for_simulation_data_files){
+void Simulator::CreateDirectoryForSimulationDataFiles(string directory_name_for_simulation_data_files) {
 	if (mkdir(("output/"+directory_name_for_simulation_data_files).c_str(),S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH)==0)
 		printf("\nDirectory created\n");
 	else

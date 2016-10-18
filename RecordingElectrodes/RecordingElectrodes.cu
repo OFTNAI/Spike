@@ -22,7 +22,7 @@ RecordingElectrodes::RecordingElectrodes(SpikingNeurons * neurons_parameter, str
 	// Variables
 	number_of_timesteps_per_device_spike_copy_check = number_of_timesteps_per_device_spike_copy_check_param;
 	device_spike_store_size_multiple_of_total_neurons = device_spike_store_size_multiple_of_total_neurons_param;
-	size_of_device_spike_store = device_spike_store_size_multiple_of_total_neurons * neurons->total_number_of_neurons;
+	size_of_device_spike_store = device_spike_store_size_multiple_of_total_neurons * neurons_parameter->total_number_of_neurons;
 	h_total_number_of_spikes_stored_on_host = 0;
 	proportion_of_device_spike_store_full_before_copy = proportion_of_device_spike_store_full_before_copy_param;
 	full_directory_name_for_simulation_data_files = full_directory_name_for_simulation_data_files_param;

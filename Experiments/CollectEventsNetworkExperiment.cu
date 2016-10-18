@@ -12,6 +12,11 @@ CollectEventsNetworkExperiment::CollectEventsNetworkExperiment() {
 
 	spike_analyser = NULL;
 
+	d_events_as_bools_per_neuron_and_spike_data = NULL;
+	d_ordered_spike_times_data = NULL;
+	d_beginning_event_bool_indices_per_neuron = NULL;
+	d_beginning_spike_time_int_indices_per_neuron = NULL;
+
 	presentation_time_per_stimulus_per_epoch = 0.0;
 
 }
@@ -78,95 +83,32 @@ void CollectEventsNetworkExperiment::prepare_arrays_for_event_collection(TestNet
 	}
 
 
-	bool * events_as_bools_per_neuron_and_spike_data = new bool[total_number_of_event_bools];
+	// bool * events_as_bools_per_neuron_and_spike_data = new bool[total_number_of_event_bools];
 	float * ordered_spike_times_data = new float[total_number_of_spikes];
-
-
-	// TO DO:
-	// PUT SPIKE TIMES INTO ordered_spike_times_data
-		// use 
-			// beginning_spike_time_int_indices_per_neuron
-
-	// COPY ANYTHING USEFUL TO DEVICE
-	// - events_as_bools_per_neuron_and_spike_data
-	// - ordered_spike_times_data
-	// - beginning_event_bool_indices_per_neuron
-	// - beginning_spike_time_int_indices_per_neuron
-
-		
-	// for (int spike_id = 0; spike_id < total_number_of_spikes; spike_id++) {
-	// 	int neuron_index = test_network_experiment->simulator->recording_electrodes->h_neuron_ids_of_stored_spikes_on_host[spike_id];
-	// 	printf("neuron_index: %d\n", neuron_index);
-
-	// 	float spike_time = test_network_experiment->simulator->recording_electrodes->h_time_in_seconds_of_stored_spikes_on_host[spike_id];
-	// 	printf("spike_time: %f\n", spike_time);
-	// }
 
 
 	for (int spike_id = 0; spike_id < total_number_of_spikes; spike_id++) {
 
 		int neuron_index = test_network_experiment->simulator->recording_electrodes->h_neuron_ids_of_stored_spikes_on_host[spike_id];
 		float spike_time = test_network_experiment->simulator->recording_electrodes->h_time_in_seconds_of_stored_spikes_on_host[spike_id];
-
-		printf("neuron_index: %d\n", neuron_index);
-		printf("beginning_spike_time_int_indices_per_neuron[neuron_index]: %d\n", beginning_spike_time_int_indices_per_neuron[neuron_index]);
-		printf("temp_index_of_latest_spike_per_neuron[neuron_index]: %d\n", temp_index_of_latest_spike_per_neuron[neuron_index]);
-
-
 		int data_index = beginning_spike_time_int_indices_per_neuron[neuron_index] + temp_index_of_latest_spike_per_neuron[neuron_index];
 
-		// printf("spike_time: %f\n", spike_time);
-		printf("data_index: %d\n", data_index);
+		// printf("neuron_index: %d\n", neuron_index);
+		// printf("beginning_spike_time_int_indices_per_neuron[neuron_index]: %d\n", beginning_spike_time_int_indices_per_neuron[neuron_index]);
+		// printf("temp_index_of_latest_spike_per_neuron[neuron_index]: %d\n", temp_index_of_latest_spike_per_neuron[neuron_index]);
+		// printf("data_index: %d\n", data_index);
 
 		ordered_spike_times_data[data_index] = spike_time;
 
 		temp_index_of_latest_spike_per_neuron[neuron_index]++;
 
-
-
 	}
+	
 
-
-
-
-
-	// for (int neuron_index = 0; neuron_index < number_of_neurons; neuron_index++) {
-
-
-	// 	neuron_events_for_each_neuron[neuron_index] = new bool *[number_of_spikes_for_neuron];
-
-
-	// 	for (int neuron_spike_number = 0; neuron_spike_number < number_of_spikes_for_neuron; neuron_spike_number++) {
-	// 		int number_of_afferent_synapses_for_neuron = four_layer_vision_spiking_model->spiking_neurons->per_neuron_afferent_synapse_count[neuron_index];
-	// 		neuron_events_for_each_neuron[neuron_index][neuron_spike_number] = new bool[number_of_afferent_synapses_for_neuron];
-	// 	}
-
-	// 	ordered_spike_times_for_each_neuron[neuron_index] = new float[number_of_spikes_for_neuron];
-	// 	temp_index_of_latest_spike_per_neuron[neuron_index] = 0;
-
-	// }	
-
-	// // cudaMemcpy(d_ordered_spike_times_for_each_neuron, hd_ordered_spike_times_for_each_neuron, number_of_neurons*sizeof(int*), cudaMemcpyHostToDevice);
-
-
-	// int total_number_of_spikes = test_network_experiment->simulator->recording_electrodes->h_total_number_of_spikes_stored_on_host;
-
-	// for (int spike_id = 0; spike_id < total_number_of_spikes; spike_id++) {
-
-	// 	int neuron_index = test_network_experiment->simulator->recording_electrodes->h_neuron_ids_of_stored_spikes_on_host[spike_id];
-	// 	float spike_time = test_network_experiment->simulator->recording_electrodes->h_time_in_seconds_of_stored_spikes_on_host[spike_id];
-
-	// 	ordered_spike_times_for_each_neuron[neuron_index][temp_index_of_latest_spike_per_neuron[neuron_index]] = spike_time;
-
-	// 	temp_index_of_latest_spike_per_neuron[neuron_index]++;
-
-	// }
-
-
-
-	// // cudaMemcpy(d_neuron_events_for_each_neuron, neuron_events_for_each_neuron, number_of_neurons*sizeof(bool **), cudaMemcpyHostToDevice);
-	// // cudaMemcpy(d_ordered_spike_times_for_each_neuron, ordered_spike_times_for_each_neuron, number_of_neurons*sizeof(float *), cudaMemcpyHostToDevice);
-
+	CudaSafeCall(cudaMalloc((void **)&d_events_as_bools_per_neuron_and_spike_data, sizeof(bool)*total_number_of_event_bools));
+	CudaSafeCall(cudaMalloc((void **)&d_ordered_spike_times_data, sizeof(float)*total_number_of_spikes));
+	CudaSafeCall(cudaMalloc((void **)&d_beginning_event_bool_indices_per_neuron, sizeof(int)*number_of_neurons));	
+	CudaSafeCall(cudaMalloc((void **)&d_beginning_spike_time_int_indices_per_neuron, sizeof(int)*number_of_neurons));
 
 
 }

@@ -19,6 +19,11 @@ public:
 
 	SpikeAnalyser * spike_analyser;
 
+	bool * d_events_as_bools_per_neuron_and_spike_data;
+	float * d_ordered_spike_times_data;
+	int* d_beginning_event_bool_indices_per_neuron;
+	int* d_beginning_spike_time_int_indices_per_neuron; 
+
 	float presentation_time_per_stimulus_per_epoch;
 
 	void prepare_arrays_for_event_collection(TestNetworkExperiment * test_network_experiment);

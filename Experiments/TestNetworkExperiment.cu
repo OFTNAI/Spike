@@ -24,6 +24,8 @@ void TestNetworkExperiment::prepare_experiment(FourLayerVisionSpikingModel * fou
 
 	NetworkExperiment::prepare_experiment(four_layer_vision_spiking_model, high_fidelity_spike_storage);
 
+	simulator->CreateDirectoryForSimulationDataFiles("heytest");
+
 	setup_recording_electrodes_for_simulator();
 
 	spike_analyser = new SpikeAnalyser(four_layer_vision_spiking_model->spiking_neurons, four_layer_vision_spiking_model->image_poisson_input_spiking_neurons);

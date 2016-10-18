@@ -28,32 +28,6 @@ using namespace std;
 // make FILE='JITest' EXPERIMENT_DIRECTORY='Experiments'  model -j8
 
 
-// enum OPTIMISATION_VARIABLES { // E2E ????
-// 	OPTIMISATION_VARIABLES_BIOLOGICAL_SCALING_CONSTANT_G2E,
-// 	OPTIMISATION_VARIABLES_BIOLOGICAL_SCALING_CONSTANT_E2I,
-// 	OPTIMISATION_VARIABLES_BIOLOGICAL_SCALING_CONSTANT_I2E,
-// 	OPTIMISATION_VARIABLES_BIOLOGICAL_SCALING_CONSTANT_FF,
-// 	OPTIMISATION_VARIABLES_FAN_IN_RADIUS,
-// 	OPTIMISATION_VARIABLES_DECAY,
-// 	OPTIMISATION_VARIABLES_,
-// 	OPTIMISATION_VARIABLES_,
-// 	OPTIMISATION_VARIABLES_
-// };
-
-
-// enum OPTIMISATION_OBJECTIVE_FUNCTIONS {
-// 	OPTIMISATION_OBJECTIVE_FUNCTIONS_AVERAGE_FIRING_RATE,
-// 	OPTIMISATION_OBJECTIVE_FUNCTIONS_MAX_FIRING_RATE,
-// 	OPTIMISATION_OBJECTIVE_FUNCTIONS_,
-// 	OPTIMISATION_OBJECTIVE_FUNCTIONS_,
-// 	OPTIMISATION_OBJECTIVE_FUNCTIONS_,
-// 	OPTIMISATION_OBJECTIVE_FUNCTIONS_,
-// 	OPTIMISATION_OBJECTIVE_FUNCTIONS_,
-// 	OPTIMISATION_OBJECTIVE_FUNCTIONS_
-// };
-
-
-
 // The function which will autorun when the executable is created
 int main (int argc, char *argv[]){
 	TimerWithMessages * experiment_timer = new TimerWithMessages();
@@ -121,6 +95,13 @@ int main (int argc, char *argv[]){
 	test_untrained_network_experiment->prepare_experiment(four_layer_vision_spiking_model, high_fidelity_spike_storage);
 	test_untrained_network_experiment->run_experiment(presentation_time_per_stimulus_per_epoch_test, record_test_spikes, save_recorded_spikes_and_states_to_file_test, human_readable_storage, network_is_trained);
 	test_untrained_network_experiment->calculate_spike_totals_averages_and_information(number_of_bins, useThresholdForMaxFR, max_firing_rate);
+
+
+	CollectEventsNetworkExperiment * collect_events_experiment_set = new CollectEventsNetworkExperiment();
+	collect_events_experiment_set->four_layer_vision_spiking_model = four_layer_vision_spiking_model;
+	collect_events_experiment_set->prepare_experiment(four_layer_vision_spiking_model, high_fidelity_spike_storage);
+	collect_events_experiment_set->prepare_arrays_for_event_collection(test_untrained_network_experiment);
+	collect_events_experiment_set->run_experiment(presentation_time_per_stimulus_per_epoch_test, network_is_trained);
 
 
 	/////////// END OF EXPERIMENT ///////////
