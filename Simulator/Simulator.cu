@@ -253,62 +253,25 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 
 				// JI PSEUDO CODE FOR COLLECTING EVENTS START
 
-				// DO ON DEVICE
-				// iterate through old h_time_in_seconds_of_stored_spikes_on_host
+				// if synapse_spike_arrived
 
-				
-					// for each time
-						// if time is greater than current_time_in_seconds - window
-							// set d_neuron_should_be_collecting[corresponding_neuron_id] = true;
+				// 	int neuron_spike_count_for_postsynaptic_neuron = recording_electrodes->d_per_neuron_spike_counts[postsynaptic_neuron_id];
 
-
-				// ON DEVICE
-				// if d_neuron_should_be_collecting[corresponding_neuron_id] == true
-					// if spike arrives at neuron from synapse
-						// set neuron_events_for_each_stimuli_and_neuron[stimulus_index][neuron_index][recording_electrodes->d_per_neuron_spike_counts[postsynaptic_neuron_id]] = true;
-
-
-
-				// JI PSEUDO CODE FOR COLLECTING EVENTS END
-
-
-
-				// JI PSEUDO CODE FOR COLLECTING EVENTS START 2
-
-				// if (current_time_in_seconds > (d_ordered_spike_times_for_each_neuron[d_per_neuron_spike_counts[neuron_index]] - window)) {
-					// if synapse_spike_arrived
-						 // set neuron_events_for_each_stimuli_and_neuron[stimulus_index][neuron_index][recording_electrodes->d_per_neuron_spike_counts[postsynaptic_neuron_id]] = true;
+				// 	if (current_time_in_seconds > (d_ordered_spike_times_data[d_beginning_spike_time_int_indices_per_neuron[neuron_index] + neuron_spike_count_for_postsynaptic_neuron] - window) {
+				// 		d_events_as_bools_per_neuron_and_spike_data[d_beginning_event_bool_indices_per_neuron + neuron_spike_count_for_postsynaptic_neuron * neurons->per_neuron_afferent_synapse_count[postsynaptic_neuron_index] + synapses->d_synapse_postsynaptic_neuron_count_index[synapse_index]] = true;
 				// }
 
 
 				// JI PSEUDO CODE FOR COLLECTING EVENTS END
 
 
-
-
-
-
-
-
-
-
 				// Carry out the per-timestep computations			
 				per_timestep_instructions(current_time_in_seconds, apply_stdp_to_relevant_synapses);
-
-
-
-
 
 
 				if (count_spikes_per_neuron) {
 					if (recording_electrodes) recording_electrodes->add_spikes_to_per_neuron_spike_count(current_time_in_seconds);
 				}
-
-
-				// JI PSEUDO CODE FOR COLLECTING EVENTS START 3
-
-
-				// JI PSEUDO CODE FOR COLLECTING EVENTS END 3
 
 
 				// // Only save the spikes if necessary
