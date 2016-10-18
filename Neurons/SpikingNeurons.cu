@@ -6,24 +6,39 @@
 // SpikingNeurons Constructor
 SpikingNeurons::SpikingNeurons() {
 
+	// Variables
+	bitarray_length = 0;
+	bitarray_maximum_axonal_delay_in_timesteps = 0;
+	high_fidelity_spike_flag = false;
+
+	// Host Pointers
 	after_spike_reset_membrane_potentials_c = NULL;
 	thresholds_for_action_potential_spikes = NULL;
+	bitarray_of_neuron_spikes = NULL;
 
+	// Device Pointers
 	d_last_spike_time_of_each_neuron = NULL;
 	d_membrane_potentials_v = NULL;
 	d_thresholds_for_action_potential_spikes = NULL;
 	d_resting_potentials = NULL;
-
 	d_bitarray_of_neuron_spikes = NULL;
-	bitarray_of_neuron_spikes = NULL;
-	bitarray_length = 0;
-	high_fidelity_spike_flag = false;
-
+	
 }
 
 
 // SpikingNeurons Destructor
 SpikingNeurons::~SpikingNeurons() {
+
+	free(after_spike_reset_membrane_potentials_c);
+	free(thresholds_for_action_potential_spikes);
+	free(bitarray_of_neuron_spikes);
+
+	CudaSafeCall(cudaFree(d_last_spike_time_of_each_neuron));
+	CudaSafeCall(cudaFree(d_membrane_potentials_v));
+	CudaSafeCall(cudaFree(d_thresholds_for_action_potential_spikes));
+	CudaSafeCall(cudaFree(d_resting_potentials));
+	CudaSafeCall(cudaFree(d_bitarray_of_neuron_spikes));
+
 }
 
 

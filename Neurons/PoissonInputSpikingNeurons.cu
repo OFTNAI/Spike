@@ -9,7 +9,9 @@ using namespace std;
 
 // PoissonInputSpikingNeurons Constructor
 PoissonInputSpikingNeurons::PoissonInputSpikingNeurons() {
+
 	rates = NULL;
+	
 	d_rates = NULL;
 
 }
@@ -17,6 +19,10 @@ PoissonInputSpikingNeurons::PoissonInputSpikingNeurons() {
 
 // PoissonInputSpikingNeurons Destructor
 PoissonInputSpikingNeurons::~PoissonInputSpikingNeurons() {
+
+	free(rates);
+
+	CudaSafeCall(cudaFree(d_rates));
 
 }
 

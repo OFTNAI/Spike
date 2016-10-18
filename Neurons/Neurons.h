@@ -30,24 +30,26 @@ public:
 	Neurons();
 	~Neurons();
 
+	// Variables
 	int total_number_of_neurons;
 	int total_number_of_groups;
-
-	int **group_shapes;
-	int *start_neuron_indices_for_each_group;
-	int *last_neuron_indices_for_each_group;
-
-	int * per_neuron_afferent_synapse_count; // Used for event count
-	int * d_per_neuron_afferent_synapse_count;
-
 	int number_of_neurons_in_new_group;
 
+	// Host Pointers
+	int *start_neuron_indices_for_each_group;
+	int *last_neuron_indices_for_each_group;
+	int * per_neuron_afferent_synapse_count; // Used for event count
+	int **group_shapes;
+
+	// Device Pointers
+	int * d_per_neuron_afferent_synapse_count;
 	float* d_current_injections;
 
+	// CUDA Specific
 	dim3 number_of_neuron_blocks_per_grid;
 	dim3 threads_per_block;
 
-
+	// Functions
 	virtual int AddGroup(neuron_parameters_struct * group_params);
 	virtual void allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage);
 	virtual void copy_constants_to_device();

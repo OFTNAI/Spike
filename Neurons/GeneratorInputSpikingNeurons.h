@@ -17,14 +17,17 @@ public:
 	GeneratorInputSpikingNeurons();
 	~GeneratorInputSpikingNeurons();
 
+	// Variables
+	int length_of_longest_stimulus;
+
+	// Host Pointers
+	int* number_of_spikes_in_stimuli;
 	int** neuron_id_matrix_for_stimuli;
 	float** spike_times_matrix_for_stimuli;
-	int* number_of_spikes_in_stimuli;
-
+	
+	// Device Pointers
 	int* d_neuron_ids_for_stimulus;
 	float* d_spike_times_for_stimulus;
-
-	int length_of_longest_stimulus;
 
 
 	virtual int AddGroup(neuron_parameters_struct * group_params);

@@ -22,34 +22,28 @@ public:
 	SpikingNeurons();
 	~SpikingNeurons();
 
-	//Group-wise parameters
-	float * after_spike_reset_membrane_potentials_c;
-	float * thresholds_for_action_potential_spikes;
-
-	//Changing device variables
-	float * d_last_spike_time_of_each_neuron;
-	float * d_membrane_potentials_v;
-
-	//Device group-wise parameters
-	float * d_thresholds_for_action_potential_spikes;
-	float * d_resting_potentials;
-
-	// Spike Array to have length: (number of neurons) * (maximum delay in timsteps)
+	// Variables
 	int bitarray_length;
-	unsigned char * bitarray_of_neuron_spikes;
+	int bitarray_maximum_axonal_delay_in_timesteps;
+	bool high_fidelity_spike_flag;
+	
+	// Host Pointers
+	float* after_spike_reset_membrane_potentials_c;
+	float* thresholds_for_action_potential_spikes;
+	unsigned char* bitarray_of_neuron_spikes;
+
+	// Device Pointers
+	float* d_last_spike_time_of_each_neuron;
+	float* d_membrane_potentials_v;
+	float* d_thresholds_for_action_potential_spikes;
+	float* d_resting_potentials;
 	unsigned char * d_bitarray_of_neuron_spikes;
 
-	// High fidelity spikes
-	bool high_fidelity_spike_flag;
-	int bitarray_maximum_axonal_delay_in_timesteps;
-
-
+	// Functions
 	virtual int AddGroup(neuron_parameters_struct * group_params);
-
 	virtual void allocate_device_pointers(int maximum_axonal_delay_in_timesteps,  bool high_fidelity_spike_flag);
 	virtual void copy_constants_to_device();
 	virtual void reset_neuron_activities();
-
 	virtual void update_membrane_potentials(float timestep, float current_time_in_seconds);
 	virtual void check_for_neuron_spikes(float current_time_in_seconds, float timestep);
 

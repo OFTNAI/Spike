@@ -139,12 +139,29 @@ TEST_CASE("Synapses Class Tests") {
 
 	}
 
-	SECTION("AddGroup Single Connectivity"){
-		synapse_parameters_struct synapse_params;
-		synapse_params.connectivity_type = CONNECTIVITY_TYPE_SINGLE;
-		synapse_params.pairwise_connect_presynaptic = 25;
-		synapse_params.pairwise_connect_postsynaptic = 10;
+	// SECTION("AddGroup Single Connectivity"){
+	// 	synapse_parameters_struct synapse_params;
+	// 	synapse_params.connectivity_type = CONNECTIVITY_TYPE_SINGLE;
+	// 	synapse_params.pairwise_connect_presynaptic = 25;
+	// 	synapse_params.pairwise_connect_postsynaptic = 10;
 		
+	// 	test_synapses.AddGroup(
+	// 		presynaptic_population,
+	// 		postsynaptic_population,
+	// 		&test_neurons,
+	// 		&test_neurons,
+	// 		timestep,
+	// 		&synapse_params);
+
+	// 	REQUIRE(test_synapses.presynaptic_neuron_indices[0] == 25);
+	// 	REQUIRE(test_synapses.postsynaptic_neuron_indices[0] == 10 + 100);
+	// }
+
+	SECTION("Constant Weight Range"){
+		synapse_parameters_struct synapse_params;
+		synapse_params.connectivity_type = CONNECTIVITY_TYPE_ALL_TO_ALL;
+		synapse_params.weight_range_bottom = 2.7f;
+		synapse_params.weight_range_top = 2.7f;
 		test_synapses.AddGroup(
 			presynaptic_population,
 			postsynaptic_population,
@@ -153,58 +170,39 @@ TEST_CASE("Synapses Class Tests") {
 			timestep,
 			&synapse_params);
 
-		REQUIRE(test_synapses.presynaptic_neuron_indices[0] == 25);
-		REQUIRE(test_synapses.postsynaptic_neuron_indices[0] == 10 + 100);
+		// Check the created connections
+		for(int i=0; i < test_neurons.group_shapes[presynaptic_population][1]; i++){
+			for(int j=0; j < test_neurons.group_shapes[postsynaptic_population][1]; j++){
+				REQUIRE(test_synapses.synaptic_efficacies_or_weights[j + i*test_neurons.group_shapes[postsynaptic_population][1]] == synapse_params.weight_range_bottom);
+			}
+		}
 	}
+	SECTION("Uniform Weight Range"){
+		synapse_parameters_struct synapse_params;
+		synapse_params.connectivity_type = CONNECTIVITY_TYPE_ALL_TO_ALL;
+		synapse_params.weight_range_bottom = 0.0f;
+		synapse_params.weight_range_top = 10.0f;
+		test_synapses.AddGroup(
+			presynaptic_population,
+			postsynaptic_population,
+			&test_neurons,
+			&test_neurons,
+			timestep,
+			&synapse_params);
 
-	SECTION("Weight Range Test"){
-		SECTION("Constant Weight Range"){
-			synapse_parameters_struct synapse_params;
-			synapse_params.connectivity_type = CONNECTIVITY_TYPE_ALL_TO_ALL;
-			synapse_params.weight_range_bottom = 2.7f;
-			synapse_params.weight_range_top = 2.7f;
-			test_synapses.AddGroup(
-				presynaptic_population,
-				postsynaptic_population,
-				&test_neurons,
-				&test_neurons,
-				timestep,
-				&synapse_params);
-
-			// Check the created connections
-			for(int i=0; i < test_neurons.group_shapes[presynaptic_population][1]; i++){
-				for(int j=0; j < test_neurons.group_shapes[postsynaptic_population][1]; j++){
-					REQUIRE(test_synapses.synaptic_efficacies_or_weights[j + i*test_neurons.group_shapes[postsynaptic_population][1]] == synapse_params.weight_range_bottom);
-				}
+		float mean_weight = 0.0f;
+		// Check the created connections
+		for(int i=0; i < test_neurons.group_shapes[presynaptic_population][1]; i++){
+			for(int j=0; j < test_neurons.group_shapes[postsynaptic_population][1]; j++){
+				mean_weight += test_synapses.synaptic_efficacies_or_weights[j + i*test_neurons.group_shapes[postsynaptic_population][1]];
+				REQUIRE(test_synapses.synaptic_efficacies_or_weights[j + i*test_neurons.group_shapes[postsynaptic_population][1]] >= synapse_params.weight_range_bottom);
+				REQUIRE(test_synapses.synaptic_efficacies_or_weights[j + i*test_neurons.group_shapes[postsynaptic_population][1]] <= synapse_params.weight_range_top);
 			}
 		}
-		SECTION("Uniform Weight Range"){
-			synapse_parameters_struct synapse_params;
-			synapse_params.connectivity_type = CONNECTIVITY_TYPE_ALL_TO_ALL;
-			synapse_params.weight_range_bottom = 0.0f;
-			synapse_params.weight_range_top = 10.0f;
-			test_synapses.AddGroup(
-				presynaptic_population,
-				postsynaptic_population,
-				&test_neurons,
-				&test_neurons,
-				timestep,
-				&synapse_params);
 
-			float mean_weight = 0.0f;
-			// Check the created connections
-			for(int i=0; i < test_neurons.group_shapes[presynaptic_population][1]; i++){
-				for(int j=0; j < test_neurons.group_shapes[postsynaptic_population][1]; j++){
-					mean_weight += test_synapses.synaptic_efficacies_or_weights[j + i*test_neurons.group_shapes[postsynaptic_population][1]];
-					REQUIRE(test_synapses.synaptic_efficacies_or_weights[j + i*test_neurons.group_shapes[postsynaptic_population][1]] >= synapse_params.weight_range_bottom);
-					REQUIRE(test_synapses.synaptic_efficacies_or_weights[j + i*test_neurons.group_shapes[postsynaptic_population][1]] <= synapse_params.weight_range_top);
-				}
-			}
-
-			mean_weight /= test_neurons.group_shapes[presynaptic_population][1]*test_neurons.group_shapes[postsynaptic_population][1];
-			// Check the mean is within 10% of what it should be
-			REQUIRE(std::abs(mean_weight - synapse_params.weight_range_top / 2.0f) < 0.01*synapse_params.weight_range_top);
-		}
+		mean_weight /= test_neurons.group_shapes[presynaptic_population][1]*test_neurons.group_shapes[postsynaptic_population][1];
+		// Check the mean is within 10% of what it should be
+		REQUIRE(std::abs(mean_weight - synapse_params.weight_range_top / 2.0f) < 0.01*synapse_params.weight_range_top);
 	}
 
 	SECTION("Input Neuron Indices Check"){

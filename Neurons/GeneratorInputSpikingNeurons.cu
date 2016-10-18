@@ -19,9 +19,11 @@ GeneratorInputSpikingNeurons::GeneratorInputSpikingNeurons() {
 
 // GeneratorInputSpikingNeurons Destructor
 GeneratorInputSpikingNeurons::~GeneratorInputSpikingNeurons() {
+
 	free(neuron_id_matrix_for_stimuli);
 	free(spike_times_matrix_for_stimuli);
 	free(number_of_spikes_in_stimuli);
+	
 	CudaSafeCall(cudaFree(d_neuron_ids_for_stimulus));
 	CudaSafeCall(cudaFree(d_spike_times_for_stimulus));
 }

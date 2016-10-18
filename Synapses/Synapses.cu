@@ -19,34 +19,26 @@
 // Synapses Constructor
 Synapses::Synapses() {
 
+	// Variables
 	total_number_of_synapses = 0;
 	temp_number_of_synapses_in_last_group = 0;
-
 	largest_synapse_group_size = 0;
-	old_largest_number_of_blocks_x = 0;
-
-	neuron_indices_set_up_on_device = false;
-
-	original_synapse_indices = NULL;
-
-	// Full Matrices
-	presynaptic_neuron_indices = NULL;
-	postsynaptic_neuron_indices = NULL;
-	synaptic_efficacies_or_weights = NULL;
-
-	d_temp_presynaptic_neuron_indices = NULL;
-	d_temp_postsynaptic_neuron_indices = NULL;
-	d_temp_synaptic_efficacies_or_weights = NULL;
-
-	d_presynaptic_neuron_indices = NULL;
-	d_postsynaptic_neuron_indices = NULL;
-	d_synaptic_efficacies_or_weights = NULL;
-
-	d_states_for_random_number_generation = NULL;
-
 	print_synapse_group_details = false;
 
+	// Host Pointers
+	presynaptic_neuron_indices = NULL;
+	postsynaptic_neuron_indices = NULL;
+	original_synapse_indices = NULL;
+	synaptic_efficacies_or_weights = NULL;
 	synapse_postsynaptic_neuron_count_index = NULL;
+
+	// Device Pointers
+	d_presynaptic_neuron_indices = NULL;
+	d_postsynaptic_neuron_indices = NULL;
+	d_temp_presynaptic_neuron_indices = NULL;
+	d_temp_postsynaptic_neuron_indices = NULL;
+	d_synaptic_efficacies_or_weights = NULL;
+	d_temp_synaptic_efficacies_or_weights = NULL;
 	d_synapse_postsynaptic_neuron_count_index = NULL;
 
 
@@ -60,10 +52,18 @@ Synapses::~Synapses() {
 	free(presynaptic_neuron_indices);
 	free(postsynaptic_neuron_indices);
 	free(synaptic_efficacies_or_weights);
+	free(original_synapse_indices);
+	free(synapse_postsynaptic_neuron_count_index);
 
 	CudaSafeCall(cudaFree(d_presynaptic_neuron_indices));
 	CudaSafeCall(cudaFree(d_postsynaptic_neuron_indices));
+	CudaSafeCall(cudaFree(d_temp_presynaptic_neuron_indices));
+	CudaSafeCall(cudaFree(d_temp_postsynaptic_neuron_indices));
 	CudaSafeCall(cudaFree(d_synaptic_efficacies_or_weights));
+	CudaSafeCall(cudaFree(d_temp_synaptic_efficacies_or_weights));
+	CudaSafeCall(cudaFree(d_synapse_postsynaptic_neuron_count_index));
+
+	// free(number_of_synapse_blocks_per_grid);
 
 }
 
@@ -235,7 +235,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 			// If we desire a single connection
 			this->increment_number_of_synapses(1);
 
-			// Setup Synapses
+			// // Setup Synapses
 			presynaptic_neuron_indices[original_number_of_synapses] = CORRECTED_PRESYNAPTIC_ID(prestart + int(synapse_params->pairwise_connect_presynaptic), presynaptic_group_is_input);
 			postsynaptic_neuron_indices[original_number_of_synapses] = poststart + int(synapse_params->pairwise_connect_postsynaptic);
 
@@ -268,6 +268,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 		original_synapse_indices[i] = i;
 
 		// Used for event count
+		// printf("postsynaptic_neuron_indices[i]: %d\n", postsynaptic_neuron_indices[i]);
 		synapse_postsynaptic_neuron_count_index[postsynaptic_neuron_indices[i]] = neurons->per_neuron_afferent_synapse_count[postsynaptic_neuron_indices[i]];
 		neurons->per_neuron_afferent_synapse_count[postsynaptic_neuron_indices[i]] ++;
 

@@ -56,39 +56,34 @@ public:
 	Synapses();
 	~Synapses();
 
+
+	// Variables
 	int total_number_of_synapses;
-
-	curandState_t* d_states_for_random_number_generation;
-
+	int temp_number_of_synapses_in_last_group;
+	int largest_synapse_group_size;
+	bool print_synapse_group_details;
+	
+	// Host Pointers
 	int* presynaptic_neuron_indices;
 	int* postsynaptic_neuron_indices; 
+	int* original_synapse_indices;
+	int* synapse_postsynaptic_neuron_count_index;
 	float* synaptic_efficacies_or_weights;
-	int *original_synapse_indices;
-
-	int * d_temp_presynaptic_neuron_indices;
-	int* d_temp_postsynaptic_neuron_indices; 
-	float* d_temp_synaptic_efficacies_or_weights;
-
-	
 
 	// Device pointers
 	int* d_presynaptic_neuron_indices;
 	int* d_postsynaptic_neuron_indices;
-	float* d_synaptic_efficacies_or_weights;
-
-	int temp_number_of_synapses_in_last_group;
-	int largest_synapse_group_size;
-	int old_largest_number_of_blocks_x;
-
-	bool neuron_indices_set_up_on_device;
-
-	bool print_synapse_group_details;
-
-	// Used for event count
-	int * synapse_postsynaptic_neuron_count_index;
+	int* d_temp_presynaptic_neuron_indices;
+	int* d_temp_postsynaptic_neuron_indices;
 	int * d_synapse_postsynaptic_neuron_count_index;
+	float* d_synaptic_efficacies_or_weights;
+	float* d_temp_synaptic_efficacies_or_weights;
 
-	// Synapse Functions
+	// CUDA Specific
+	dim3 number_of_synapse_blocks_per_grid;
+	dim3 threads_per_block;
+
+	// Functions
 	virtual void AddGroup(int presynaptic_group_id, 
 						int postsynaptic_group_id, 
 						Neurons * neurons,
@@ -104,8 +99,7 @@ public:
 	virtual void increment_number_of_synapses(int increment);
 	virtual void shuffle_synapses();
 
-	dim3 number_of_synapse_blocks_per_grid;
-	dim3 threads_per_block;
+	
 
 	
 };

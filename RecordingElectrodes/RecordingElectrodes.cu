@@ -19,26 +19,28 @@ using namespace std;
 // RecordingElectrodes Constructor
 RecordingElectrodes::RecordingElectrodes(SpikingNeurons * neurons_parameter, string full_directory_name_for_simulation_data_files_param, const char * prefix_string_param, int number_of_timesteps_per_device_spike_copy_check_param, int device_spike_store_size_multiple_of_total_neurons_param, float proportion_of_device_spike_store_full_before_copy_param) {
 
-	neurons = neurons_parameter;
+	// Variables
+	number_of_timesteps_per_device_spike_copy_check = number_of_timesteps_per_device_spike_copy_check_param;
+	device_spike_store_size_multiple_of_total_neurons = device_spike_store_size_multiple_of_total_neurons_param;
+	size_of_device_spike_store = device_spike_store_size_multiple_of_total_neurons * neurons->total_number_of_neurons;
+	h_total_number_of_spikes_stored_on_host = 0;
+	proportion_of_device_spike_store_full_before_copy = proportion_of_device_spike_store_full_before_copy_param;
 	full_directory_name_for_simulation_data_files = full_directory_name_for_simulation_data_files_param;
 	prefix_string = prefix_string_param;
 
-	number_of_timesteps_per_device_spike_copy_check = number_of_timesteps_per_device_spike_copy_check_param;
-	device_spike_store_size_multiple_of_total_neurons = device_spike_store_size_multiple_of_total_neurons_param;
-	proportion_of_device_spike_store_full_before_copy = proportion_of_device_spike_store_full_before_copy_param;
-	size_of_device_spike_store = device_spike_store_size_multiple_of_total_neurons * neurons->total_number_of_neurons;
-
-	d_per_neuron_spike_counts = NULL;
-	
-	d_neuron_ids_of_stored_spikes_on_device = NULL;
+	// Host Pointers
+	neurons = neurons_parameter;
 	h_neuron_ids_of_stored_spikes_on_host = NULL;
-	
-	d_time_in_seconds_of_stored_spikes_on_device= NULL;
+	h_total_number_of_spikes_stored_on_device = NULL;
 	h_time_in_seconds_of_stored_spikes_on_host = NULL;
 
+	// Device Pointers
+	d_per_neuron_spike_counts = NULL;
+	d_neuron_ids_of_stored_spikes_on_device = NULL;
 	d_total_number_of_spikes_stored_on_device = NULL;
-	h_total_number_of_spikes_stored_on_host = 0;
+	d_time_in_seconds_of_stored_spikes_on_device= NULL;
 
+	// Private Host Pointeres
 	reset_neuron_ids = NULL;
 	reset_neuron_times = NULL;
 
@@ -48,13 +50,18 @@ RecordingElectrodes::RecordingElectrodes(SpikingNeurons * neurons_parameter, str
 // RecordingElectrodes Destructor
 RecordingElectrodes::~RecordingElectrodes() {
 
-	CudaSafeCall(cudaFree(d_total_number_of_spikes_stored_on_device));
-	CudaSafeCall(cudaFree(d_neuron_ids_of_stored_spikes_on_device));
-	CudaSafeCall(cudaFree(d_time_in_seconds_of_stored_spikes_on_device));
-
 	free(h_neuron_ids_of_stored_spikes_on_host);
 	free(h_time_in_seconds_of_stored_spikes_on_host);
 	free(h_total_number_of_spikes_stored_on_device);
+
+	CudaSafeCall(cudaFree(d_per_neuron_spike_counts));
+	CudaSafeCall(cudaFree(d_neuron_ids_of_stored_spikes_on_device));
+	CudaSafeCall(cudaFree(d_total_number_of_spikes_stored_on_device));
+	CudaSafeCall(cudaFree(d_time_in_seconds_of_stored_spikes_on_device));
+
+	free(reset_neuron_ids);
+	free(reset_neuron_times);
+
 
 }
 

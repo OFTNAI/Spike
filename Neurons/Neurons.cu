@@ -12,18 +12,20 @@
 // Neurons Constructor
 Neurons::Neurons() {
 
-	d_current_injections = NULL;
-
-	// Set totals to zero
+	// Variables
 	total_number_of_neurons = 0;
 	total_number_of_groups = 0;
+	number_of_neurons_in_new_group = 0;
 
-	// Initialise pointers
-	group_shapes = NULL;
+	// Host Pointers
 	start_neuron_indices_for_each_group = NULL;
 	last_neuron_indices_for_each_group = NULL;
-
 	per_neuron_afferent_synapse_count = NULL;
+	group_shapes = NULL;
+
+	// Device Pointers
+	d_per_neuron_afferent_synapse_count = NULL;
+	d_current_injections = NULL;
 
 }
 
@@ -31,10 +33,13 @@ Neurons::Neurons() {
 // Neurons Destructor
 Neurons::~Neurons() {
 
-	// Free up memory
-	free(group_shapes);
 	free(start_neuron_indices_for_each_group);
 	free(last_neuron_indices_for_each_group);
+	free(per_neuron_afferent_synapse_count);
+	free(group_shapes);
+
+	CudaSafeCall(cudaFree(d_per_neuron_afferent_synapse_count));
+	CudaSafeCall(cudaFree(d_current_injections));
 
 }
 
