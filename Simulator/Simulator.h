@@ -1,14 +1,3 @@
-// 	Simulator Class Header
-// 	Simulator.h
-//
-//	Original Author: Nasir Ahmad
-//	Date: 8/12/2015
-//	Originally Spike.h
-//  
-//  Adapted by Nasir Ahmad and James Isbister
-//	Date: 6/4/2016
-
-
 #ifndef Simulator_H
 #define Simulator_H
 // Silences the printfs
@@ -26,10 +15,26 @@
 #include "../Synapses/SpikingSynapses.h"
 #include "../Neurons/InputSpikingNeurons.h"
 #include "../Neurons/SpikingNeurons.h"
-#include "../RecordingElectrodes/RecordingElectrodes.h"
+#include "../RecordingElectrodes/CountNeuronSpikesRecordingElectrodes.h"
+#include "../RecordingElectrodes/CollectNeuronSpikesRecordingElectrodes.h"
 #include "../SpikeAnalyser/SpikeAnalyser.h"
 #include "../STDP/STDP.h"
 #include "../Models/SpikingModel.h"
+
+
+
+struct Simulator_Recroding_Electrodes_To_Use_Struct {
+
+	bool count_neuron_spikes_recording_electrodes_bool;
+	bool input_count_neuron_spikes_recording_electrodes_bool;
+	bool collect_neuron_spikes_recording_electrodes_bool;
+	bool input_collect_neuron_spikes_recording_electrodes_bool;
+
+};
+
+
+
+
 
 
 // Simulator Class for running of the simulations
@@ -42,14 +47,13 @@ public:
 
 	std::string full_directory_name_for_simulation_data_files;
 
-	RecordingElectrodes * recording_electrodes;
-	RecordingElectrodes * input_recording_electrodes;
+	CountNeuronSpikesRecordingElectrodes* count_neuron_spikes_recording_electrodes;
+	CountNeuronSpikesRecordingElectrodes* input_count_neuron_spikes_recording_electrodes;
+	CollectNeuronSpikesRecordingElectrodes* collect_neuron_spikes_recording_electrodes;
+	CollectNeuronSpikesRecordingElectrodes* input_collect_neuron_spikes_recording_electrodes;
 
 	// Flag: Enable for high accuracy spike storage, Disable for speed
 	bool high_fidelity_spike_storage;
-	// float* d_time_in_seconds_of_spikes_from_last_simulation;
-	// int* d_neuron_ids_of_spikes_from_last_simulation;
-	// float ** ordered_spike_times_for_each_neuron;
 
 	SpikingModel * spiking_model;
 	void SetSpikingModel(SpikingModel * spiking_model_parameter);
@@ -78,8 +82,7 @@ public:
 	void LoadWeights(int numWeights, float* newWeights);
 
 	void setup_network();
-	void setup_recording_electrodes_for_neurons(int number_of_timesteps_per_device_spike_copy_check_param, int device_spike_store_size_multiple_of_total_neurons_param, float proportion_of_device_spike_store_full_before_copy_param);
-	void setup_recording_electrodes_for_input_neurons(int number_of_timesteps_per_device_spike_copy_check_param, int device_spike_store_size_multiple_of_total_neurons_param, float proportion_of_device_spike_store_full_before_copy_param);
+	void prepare_recording_electrodes(Simulator_Recroding_Electrodes_To_Use_Struct * recording_electrodes_to_use_struct);
 
 	void RunSimulation(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, bool record_spikes, bool save_recorded_spikes_and_states_to_file, bool apply_stdp_to_relevant_synapses, bool count_spikes_per_neuron_for_single_cell_analysis, Stimuli_Presentation_Struct * stimuli_presentation_params, int stimulus_presentation_order_seed, SpikeAnalyser *spike_analyser,bool human_readable_storage, bool isTrained);
 	void RunSimulationToCountNeuronSpikes(float presentation_time_per_stimulus_per_epoch, bool record_spikes, bool save_recorded_spikes_and_states_to_file, SpikeAnalyser *spike_analyser, bool human_readable_storage, bool isTrained);

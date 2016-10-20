@@ -31,23 +31,14 @@ Simulator::Simulator(){
 
 	// Default parameters
 
-	recording_electrodes = NULL;
-	input_recording_electrodes = NULL;
+	count_neuron_spikes_recording_electrodes = NULL;
+	input_count_neuron_spikes_recording_electrodes = NULL;
+	collect_neuron_spikes_recording_electrodes = NULL;
+	input_collect_neuron_spikes_recording_electrodes = NULL;
 
 	// Default low fidelity spike storage
 	high_fidelity_spike_storage = false;
 
-	// d_time_in_seconds_of_spikes_from_last_simulation = NULL;
-	// d_neuron_ids_of_spikes_from_last_simulation = NULL;
-
-	
-	// #ifndef QUIETSTART
-	// 	print_line_of_dashes_with_blank_lines_either_side();
-	// 	printf("Welcome to the SPIKE.\n");
-	// 	print_line_of_dashes_with_blank_lines_either_side();
-	// 	fflush(stdout);
-	// #endif
-		
 }
 
 
@@ -70,54 +61,38 @@ void Simulator::SetSpikingModel(SpikingModel * spiking_model_parameter) {
 }
 
 
+Simulator::prepare_recording_electrodes(Simulator_Recroding_Electrodes_To_Use_Struct * recording_electrodes_to_use_struct) {
 
-void Simulator::setup_recording_electrodes_for_neurons(int number_of_timesteps_per_device_spike_copy_check_param, int device_spike_store_size_multiple_of_total_neurons_param, float proportion_of_device_spike_store_full_before_copy_param) {
 
-	TimerWithMessages * timer = new TimerWithMessages("Setting up recording electrodes for neurons...\n");
+	TimerWithMessages * timer = new TimerWithMessages("Setting up recording electrodes...");
 
-	recording_electrodes = new RecordingElectrodes(spiking_model->spiking_neurons, full_directory_name_for_simulation_data_files, "Neurons", number_of_timesteps_per_device_spike_copy_check_param, device_spike_store_size_multiple_of_total_neurons_param, proportion_of_device_spike_store_full_before_copy_param);
-	
-	recording_electrodes->allocate_pointers_for_spike_store();
-	recording_electrodes->reset_pointers_for_spike_store();
 
-	recording_electrodes->allocate_pointers_for_spike_count();
-	recording_electrodes->reset_pointers_for_spike_count();
+	if (recording_electrodes_to_use_struct->count_neuron_spikes_recording_electrode_bool) {
+		count_neuron_spikes_recording_electrodes = CountNeuronSpikesRecordingElectrodes(spiking_model->spiking_neurons, spiking_model->spiking_synapses, full_directory_name_for_simulation_data_files, "Neurons");
+		count_neuron_spikes_recording_electrodes->initialise_count_neuron_spikes_recording_electrodes();
+	}
 
-	timer->stop_timer_and_log_time_and_message("Recording Electrodes Setup For Neurons.", true);
+	if (recording_electrodes_to_use_struct->input_count_neuron_spikes_recording_electrodes_bool) {
+		input_count_neuron_spikes_recording_electrodes = CountNeuronSpikesRecordingElectrodes(spiking_model->input_spiking_neurons, spiking_model->spiking_synapses, full_directory_name_for_simulation_data_files, "Input_Neurons");
+		input_count_neuron_spikes_recording_electrodes->initialise_count_neuron_spikes_recording_electrodes();
+	}
+
+	if (recording_electrodes_to_use_struct->collect_neuron_spikes_recording_electrodes_bool) {
+		collect_neuron_spikes_recording_electrodes = CollectNeuronSpikesRecordingElectrodes(spiking_model->spiking_neurons, spiking_model->spiking_synapses, full_directory_name_for_simulation_data_files, "Neurons");
+		collect_neuron_spikes_recording_electrodes->initialise_collect_neuron_spikes_recording_electrodes(number_of_timesteps_per_device_spike_copy_check_param, device_spike_store_size_multiple_of_total_neurons_param, proportion_of_device_spike_store_full_before_copy_param);
+	}
+
+	if (recording_electrodes_to_use_struct->input_collect_neuron_spikes_recording_electrodes_bool) {
+		input_collect_neuron_spikes_recording_electrodes = CollectNeuronSpikesRecordingElectrodes(spiking_model->input_spiking_neurons, spiking_model->spiking_synapses, full_directory_name_for_simulation_data_files, "Input_Neurons");
+		input_collect_neuron_spikes_recording_electrodes->initialise_collect_neuron_spikes_recording_electrodes(number_of_timesteps_per_device_spike_copy_check_param, device_spike_store_size_multiple_of_total_neurons_param, proportion_of_device_spike_store_full_before_copy_param);
+	}
+
+
+	timer->stop_timer_and_log_time_and_message("Recording electrodes setup.", true);
+
+
 }
 
-
-void Simulator::setup_recording_electrodes_for_input_neurons(int number_of_timesteps_per_device_spike_copy_check_param, int device_spike_store_size_multiple_of_total_neurons_param, float proportion_of_device_spike_store_full_before_copy_param) {
-
-	TimerWithMessages * timer = new TimerWithMessages("Setting Up recording electrodes for input neurons...\n");
-
-	input_recording_electrodes = new RecordingElectrodes(spiking_model->input_spiking_neurons, full_directory_name_for_simulation_data_files, "Input_Neurons", number_of_timesteps_per_device_spike_copy_check_param, device_spike_store_size_multiple_of_total_neurons_param, proportion_of_device_spike_store_full_before_copy_param);
-	
-	input_recording_electrodes->allocate_pointers_for_spike_store();
-	input_recording_electrodes->reset_pointers_for_spike_store();
-
-	input_recording_electrodes->allocate_pointers_for_spike_count();
-	input_recording_electrodes->reset_pointers_for_spike_count();
-
-	timer->stop_timer_and_log_time_and_message("Recording Electrodes Setup For Input Neurons.", true);
-}
-
-
-// void Simulator::copy_arrays_for_event_collection_to_device(float ** ordered_spike_times_for_each_neuron, bool *** neuron_events_for_each_neuron) {
-
-// 	CudaSafeCall(cudaMalloc((void **)&d_ordered_spike_times_for_each_neuron, sizeof(int)*total_number_of_spikes_from_last_simulation));
-// 	CudaSafeCall(cudaMalloc((void **)&d_neuron_events_for_each_neuron, sizeof(float)*total_number_of_spikes_from_last_simulation));
-
-// }
-
-
-// void Simulator::set_device_spike_ids_and_times_from_last_simulation(float * h_time_in_seconds_of_spikes_from_last_simulation, int * h_neuron_ids_of_spikes_from_last_simulation, int total_number_of_spikes_from_last_simulation) {
-// 	CudaSafeCall(cudaMalloc((void **)&d_time_in_seconds_of_spikes_from_last_simulation, sizeof(int)*total_number_of_spikes_from_last_simulation));
-// 	CudaSafeCall(cudaMalloc((void **)&d_neuron_ids_of_spikes_from_last_simulation, sizeof(float)*total_number_of_spikes_from_last_simulation));
-
-// 	CudaSafeCall(cudaMemcpy(d_time_in_seconds_of_spikes_from_last_simulation, h_time_in_seconds_of_spikes_from_last_simulation, sizeof(int)*total_number_of_spikes_from_last_simulation, cudaMemcpyHostToDevice));
-// 	CudaSafeCall(cudaMemcpy(d_neuron_ids_of_spikes_from_last_simulation, h_neuron_ids_of_spikes_from_last_simulation, sizeof(float)*total_number_of_spikes_from_last_simulation, cudaMemcpyHostToDevice));
-// }
 
 
 void Simulator::RunSimulationToCountNeuronSpikes(float presentation_time_per_stimulus_per_epoch, bool record_spikes, bool save_recorded_spikes_and_states_to_file, SpikeAnalyser *spike_analyser, bool human_readable_storage, bool isTrained) {
