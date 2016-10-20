@@ -31,6 +31,9 @@ Simulator::Simulator(){
 
 	high_fidelity_spike_storage = false;
 
+
+	number_of_simulations_run = 0;
+
 }
 
 
@@ -53,7 +56,7 @@ void Simulator::SetSpikingModel(SpikingModel * spiking_model_parameter) {
 }
 
 
-Simulator::prepare_recording_electrodes(Simulator_Recording_Electrodes_To_Use_Struct * recording_electrodes_to_use_struct_param) {
+void Simulator::prepare_recording_electrodes(Simulator_Recording_Electrodes_To_Use_Struct * recording_electrodes_to_use_struct_param) {
 
 
 	TimerWithMessages * timer = new TimerWithMessages("Setting up recording electrodes...");
@@ -91,64 +94,83 @@ Simulator::prepare_recording_electrodes(Simulator_Recording_Electrodes_To_Use_St
 
 }
 
+void Simulator::reset_all_recording_electrodes() {
 
+	if (recording_electrodes_to_use_struct->count_neuron_spikes_recording_electrodes_bool) {
+		count_neuron_spikes_recording_electrodes->reset_pointers_for_spike_count();
+	}
 
-void Simulator::RunSimulationToCountNeuronSpikes(float presentation_time_per_stimulus_per_epoch, bool collect_spikes, bool save_collected_spikes_and_states_to_file, SpikeAnalyser *spike_analyser, bool human_readable_storage, bool isTrained) {
-	bool number_of_epochs = 1;
-	bool apply_stdp_to_relevant_synapses = false;
-	bool count_spikes_per_neuron = true;
-	int stimulus_presentation_order_seed = 0; // Shouldn't be needed if stimuli presentation not random
-	Stimuli_Presentation_Struct * stimuli_presentation_params = new Stimuli_Presentation_Struct();
-	// stimuli_presentation_params->presentation_format = PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_OBJECTS;
-	stimuli_presentation_params->presentation_format = PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_STIMULI;
-	stimuli_presentation_params->object_order = OBJECT_ORDER_ORIGINAL;
-	stimuli_presentation_params->transform_order = TRANSFORM_ORDER_ORIGINAL;
-	
-	if (!isTrained)
-		recording_electrodes->write_initial_synaptic_weights_to_file(spiking_model->spiking_synapses, human_readable_storage);
-	
-	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, collect_spikes, save_collected_spikes_and_states_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, stimuli_presentation_params, stimulus_presentation_order_seed, spike_analyser,human_readable_storage,isTrained);
-	
-	if (isTrained)
-		recording_electrodes->write_network_state_to_file(spiking_model->spiking_synapses, human_readable_storage);
+	if (recording_electrodes_to_use_struct->input_count_neuron_spikes_recording_electrodes_bool) {
+		input_count_neuron_spikes_recording_electrodes->reset_pointers_for_spike_count();
+	}
+
+	if (recording_electrodes_to_use_struct->collect_neuron_spikes_recording_electrodes_bool) {
+		collect_neuron_spikes_recording_electrodes->delete_and_reset_collected_spikes();
+
+	if (recording_electrodes_to_use_struct->input_collect_neuron_spikes_recording_electrodes_bool) {
+		input_collect_neuron_spikes_recording_electrodes->delete_and_reset_collected_spikes();
+	}
 
 }
 
 
-void Simulator::RunSimulationToCollectEvents(float presentation_time_per_stimulus_per_epoch, bool isTrained) {
-	bool number_of_epochs = 1;
-	bool apply_stdp_to_relevant_synapses = false;
-	bool count_spikes_per_neuron = true;
-	int stimulus_presentation_order_seed = 0; // Shouldn't be needed if stimuli presentation not random
-	Stimuli_Presentation_Struct * stimuli_presentation_params = new Stimuli_Presentation_Struct();
-	// stimuli_presentation_params->presentation_format = PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_OBJECTS;
-	stimuli_presentation_params->presentation_format = PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_STIMULI;
-	stimuli_presentation_params->object_order = OBJECT_ORDER_ORIGINAL;
-	stimuli_presentation_params->transform_order = TRANSFORM_ORDER_ORIGINAL;
 
-	bool collect_spikes = false;
-	bool save_collected_spikes_and_states_to_file = false;
-
-	SpikeAnalyser * spike_analyser = NULL;
-	bool human_readable_storage = false;
+// void Simulator::RunSimulationToCountNeuronSpikes(float presentation_time_per_stimulus_per_epoch, bool collect_spikes, bool save_collected_spikes_and_states_to_file, SpikeAnalyser *spike_analyser, bool human_readable_storage, bool isTrained) {
+// 	bool number_of_epochs = 1;
+// 	bool apply_stdp_to_relevant_synapses = false;
+// 	bool count_spikes_per_neuron = true;
+// 	int stimulus_presentation_order_seed = 0; // Shouldn't be needed if stimuli presentation not random
+// 	Stimuli_Presentation_Struct * stimuli_presentation_params = new Stimuli_Presentation_Struct();
+// 	// stimuli_presentation_params->presentation_format = PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_OBJECTS;
+// 	stimuli_presentation_params->presentation_format = PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_STIMULI;
+// 	stimuli_presentation_params->object_order = OBJECT_ORDER_ORIGINAL;
+// 	stimuli_presentation_params->transform_order = TRANSFORM_ORDER_ORIGINAL;
 	
-	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, collect_spikes, save_collected_spikes_and_states_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, stimuli_presentation_params, stimulus_presentation_order_seed, spike_analyser, human_readable_storage,isTrained);
+// 	if (!isTrained)
+// 		recording_electrodes->write_initial_synaptic_weights_to_file(spiking_model->spiking_synapses, human_readable_storage);
 	
-}
+// 	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, collect_spikes, save_collected_spikes_and_states_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, stimuli_presentation_params, stimulus_presentation_order_seed, spike_analyser,human_readable_storage,isTrained);
+	
+// 	if (isTrained)
+// 		recording_electrodes->write_network_state_to_file(spiking_model->spiking_synapses, human_readable_storage);
 
-void Simulator::RunSimulationToTrainNetwork(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, Stimuli_Presentation_Struct * stimuli_presentation_params, int stimulus_presentation_order_seed) {
-
-	bool apply_stdp_to_relevant_synapses = true;
-	bool count_spikes_per_neuron = false;
-	bool collect_spikes = false;
-	bool save_collected_spikes_and_states_to_file = false;
-
-	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, collect_spikes, save_collected_spikes_and_states_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, stimuli_presentation_params, stimulus_presentation_order_seed, NULL, false, false);
-}
+// }
 
 
+// void Simulator::RunSimulationToCollectEvents(float presentation_time_per_stimulus_per_epoch, bool isTrained) {
+// 	bool number_of_epochs = 1;
+// 	bool apply_stdp_to_relevant_synapses = false;
+// 	bool count_spikes_per_neuron = true;
+// 	int stimulus_presentation_order_seed = 0; // Shouldn't be needed if stimuli presentation not random
+// 	Stimuli_Presentation_Struct * stimuli_presentation_params = new Stimuli_Presentation_Struct();
+// 	// stimuli_presentation_params->presentation_format = PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_OBJECTS;
+// 	stimuli_presentation_params->presentation_format = PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_STIMULI;
+// 	stimuli_presentation_params->object_order = OBJECT_ORDER_ORIGINAL;
+// 	stimuli_presentation_params->transform_order = TRANSFORM_ORDER_ORIGINAL;
 
-void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, bool collect_spikes, bool save_collected_spikes_and_states_to_file, bool apply_stdp_to_relevant_synapses, bool count_spikes_per_neuron, Stimuli_Presentation_Struct * stimuli_presentation_params, int stimulus_presentation_order_seed, SpikeAnalyser *spike_analyser, bool human_readable_storage, bool isTrained){
+// 	bool collect_spikes = false;
+// 	bool save_collected_spikes_and_states_to_file = false;
+
+// 	SpikeAnalyser * spike_analyser = NULL;
+// 	bool human_readable_storage = false;
+	
+// 	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, collect_spikes, save_collected_spikes_and_states_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, stimuli_presentation_params, stimulus_presentation_order_seed, spike_analyser, human_readable_storage,isTrained);
+	
+// }
+
+// void Simulator::RunSimulationToTrainNetwork(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, Stimuli_Presentation_Struct * stimuli_presentation_params, int stimulus_presentation_order_seed) {
+
+// 	bool apply_stdp_to_relevant_synapses = true;
+// 	bool count_spikes_per_neuron = false;
+// 	bool collect_spikes = false;
+// 	bool save_collected_spikes_and_states_to_file = false;
+
+// 	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, collect_spikes, save_collected_spikes_and_states_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, stimuli_presentation_params, stimulus_presentation_order_seed, NULL, false, false);
+// }
+
+
+
+void Simulator::RunSimulation(Simulator_File_Storage_Options_Struct simulator_file_storage_options_struct, float presentation_time_per_stimulus_per_epoch, int number_of_epochs, bool save_collected_spikes_and_states_to_file, bool apply_stdp_to_relevant_synapses, Stimuli_Presentation_Struct * stimuli_presentation_params, int stimulus_presentation_order_seed, SpikeAnalyser *spike_analyser, bool human_readable_storage, bool isTrained){
 
 	check_for_epochs_and_begin_simulation_message(spiking_model->timestep, spiking_model->input_spiking_neurons->total_number_of_input_stimuli, number_of_epochs, collect_spikes, save_collected_spikes_and_states_to_file, spiking_model->spiking_neurons->total_number_of_neurons, spiking_model->input_spiking_neurons->total_number_of_neurons, spiking_model->spiking_synapses->total_number_of_synapses);
 	// Should print something about stimuli_presentation_params as old stuff removed from check_for_epochs...
@@ -158,11 +180,14 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 	srand(stimulus_presentation_order_seed);
 
 
-	if (recording_electrodes) {
-		recording_electrodes->delete_and_reset_collected_spikes();
-		if (!isTrained)
-			recording_electrodes->write_initial_synaptic_weights_to_file(spiking_model->spiking_synapses, human_readable_storage);
+	if (number_of_simulations_run > 0) reset_all_recording_electrodes();
+
+	if (simulator_file_storage_options_struct->write_initial_synaptic_weights_to_file_bool) {
+	
+		network_state_archive_recording_electrodes->write_initial_synaptic_weights_to_file(spiking_model->spiking_synapses, human_readable_storage);
+	
 	}
+
 	for (int epoch_number = 0; epoch_number < number_of_epochs; epoch_number++) {
 
 		TimerWithMessages * epoch_timer = new TimerWithMessages();
@@ -307,23 +332,15 @@ void Simulator::perform_post_stimulus_presentation_instructions() {
 
 void Simulator::perform_post_epoch_instructions() {
 
-	#ifndef QUIETSTART
 	printf("Epoch %d, Complete.\n", epoch_number);
 	epoch_timer->stop_timer_and_log_time_and_message(" ", true);
 	
-	if (collect_spikes) {
-		if (recording_electrodes) printf(" Number of Spikes: %d\n", recording_electrodes->h_total_number_of_spikes_stored_on_host);
-		if (input_recording_electrodes) printf(" Number of Input Spikes: %d\n", input_recording_electrodes->h_total_number_of_spikes_stored_on_host);
-	}
+	if (recording_electrodes_to_use_struct->collect_neuron_spikes_recording_electrodes_bool) printf(" Number of Spikes: %d\n", collect_neuron_spikes_recording_electrodes->h_total_number_of_spikes_stored_on_host);
+	if (recording_electrodes_to_use_struct->collect_input_neuron_spikes_recording_electrodes_bool) printf(" Number of Input Spikes: %d\n", collect_input_neuron_spikes_recording_electrodes->h_total_number_of_spikes_stored_on_host);
 
-	#endif
-	// Output Spikes list after each epoch:
-	// Only save the spikes if necessary
-	if (collect_spikes && save_collected_spikes_and_states_to_file){
-		printf("Write to file\n");
-		if (recording_electrodes) recording_electrodes->write_spikes_to_file(epoch_number, human_readable_storage, isTrained);
-		if (input_recording_electrodes) input_recording_electrodes->write_spikes_to_file(epoch_number, human_readable_storage,isTrained);
-	}
+	if (simulator_file_storage_options_struct->save_recorded_neuron_spikes_to_file) collect_neuron_spikes_recording_electrodes->write_spikes_to_file(epoch_number, human_readable_storage, isTrained);
+	if (simulator_file_storage_options_struct->save_recorded_input_neuron_spikes_to_file) collect_input_neuron_spikes_recording_electrodes->write_spikes_to_file(epoch_number, human_readable_storage,isTrained);
+
 }
 
 
@@ -336,5 +353,7 @@ void Simulator::perform_end_of_simulation_instructions() {
 		network_state_archive_recording_electrodes->write_network_state_to_file(spiking_model->spiking_synapses, human_readable_storage);
 
 	}
+
+	number_of_simulations_run++;
 
 }

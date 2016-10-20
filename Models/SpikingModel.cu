@@ -126,7 +126,7 @@ void SpikingModel::reset_model_activities() {
 }
 
 
-void Simulator::perform_per_timestep_model_instructions(float current_time_in_seconds, bool apply_stdp_to_relevant_synapses){
+void SpikingModel::perform_per_timestep_model_instructions(float current_time_in_seconds, bool apply_stdp_to_relevant_synapses){
 
 	spiking_neurons->reset_current_injections();
 

@@ -20,7 +20,7 @@
 
 struct Simulator_Recording_Electrodes_To_Use_Struct {
 
-	synapse_parameters_struct(): count_neuron_spikes_recording_electrodes_bool(false), input_count_neuron_spikes_recording_electrodes_bool(false), collect_neuron_spikes_recording_electrodes_bool(false), input_collect_neuron_spikes_recording_electrodes_bool(false), network_state_archive_recording_electrodes_bool(false)  {}
+	Simulator_Recording_Electrodes_To_Use_Struct(): count_neuron_spikes_recording_electrodes_bool(false), input_count_neuron_spikes_recording_electrodes_bool(false), collect_neuron_spikes_recording_electrodes_bool(false), input_collect_neuron_spikes_recording_electrodes_bool(false), network_state_archive_recording_electrodes_bool(false)  {}
 
 	bool count_neuron_spikes_recording_electrodes_bool;
 	bool input_count_neuron_spikes_recording_electrodes_bool;
@@ -29,6 +29,17 @@ struct Simulator_Recording_Electrodes_To_Use_Struct {
 	bool network_state_archive_recording_electrodes_bool;
 
 };
+
+
+struct Simulator_File_Storage_Options {
+
+	Simulator_File_Storage_Options(): save_recorded_neuron_spikes_to_file(false), save_recorded_input_neuron_spikes_to_file(false), write_initial_synaptic_weights_to_file_bool(false) {}
+
+	bool save_recorded_neuron_spikes_to_file;
+	bool save_recorded_input_neuron_spikes_to_file;
+	bool write_initial_synaptic_weights_to_file_bool;
+
+}
 
 
 // Simulator Class for running of the simulations
@@ -43,6 +54,7 @@ public:
 	float timestep;
 	std::string full_directory_name_for_simulation_data_files;
 	bool high_fidelity_spike_storage; // Flag: Enable for high accuracy spike storage, Disable for speed
+	int number_of_simulations_run;
 
 	// Host Pointers
 	SpikingModel * spiking_model;
@@ -61,10 +73,10 @@ public:
 	
 	void prepare_recording_electrodes(Simulator_Recording_Electrodes_To_Use_Struct * recording_electrodes_to_use_struct);
 
-	void RunSimulation(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, bool collect_spikes, bool save_collected_spikes_and_states_to_file, bool apply_stdp_to_relevant_synapses, bool count_spikes_per_neuron_for_single_cell_analysis, Stimuli_Presentation_Struct * stimuli_presentation_params, int stimulus_presentation_order_seed, SpikeAnalyser *spike_analyser, bool human_readable_storage, bool isTrained);
-	void RunSimulationToCountNeuronSpikes(float presentation_time_per_stimulus_per_epoch, bool collect_spikes, bool save_collected_spikes_and_states_to_file, SpikeAnalyser *spike_analyser, bool human_readable_storage, bool isTrained);
-	void RunSimulationToCollectEvents(float presentation_time_per_stimulus_per_epoch, bool isTrained);
-	void RunSimulationToTrainNetwork(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, Stimuli_Presentation_Struct * stimuli_presentation_params, int stimulus_presentation_order_seed);
+	// void RunSimulationToCountNeuronSpikes(float presentation_time_per_stimulus_per_epoch, bool collect_spikes, bool save_collected_spikes_and_states_to_file, SpikeAnalyser *spike_analyser, bool human_readable_storage, bool isTrained);
+	// void RunSimulationToCollectEvents(float presentation_time_per_stimulus_per_epoch, bool isTrained);
+	// void RunSimulationToTrainNetwork(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, Stimuli_Presentation_Struct * stimuli_presentation_params, int stimulus_presentation_order_seed);
+	void RunSimulation(Simulator_File_Storage_Options_Struct simulator_file_storage_options_struct, float presentation_time_per_stimulus_per_epoch, int number_of_epochs, bool save_collected_spikes_and_states_to_file, bool apply_stdp_to_relevant_synapses, bool count_spikes_per_neuron_for_single_cell_analysis, Stimuli_Presentation_Struct * stimuli_presentation_params, int stimulus_presentation_order_seed, SpikeAnalyser *spike_analyser, bool human_readable_storage, bool isTrained);
 
 
 protected: 
