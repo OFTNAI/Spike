@@ -12,11 +12,15 @@
 // STDP Constructor
 HigginsSTDP::HigginsSTDP() {
 
+	stdp_params = NULL;
+	syns = NULL;
+
 }
 
 // STDP Destructor
 HigginsSTDP::~HigginsSTDP() {
-
+	// free(stdp_params);
+	// free(syns);
 }
 
 // Implementation of the STDP Rule for Irina's Model

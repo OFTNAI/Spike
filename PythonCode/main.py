@@ -35,5 +35,3 @@ sp.loadParams(globals());
 # sp.plotSpikes(['Untrained', 'Trained'],saveImage = True, showImage = False);
 # sp.plotSpikes(['Trained'],saveImage = True, showImage = False, nLayers = 4);
 # sp.plotSpikes(['Untrained'],saveImage = True, showImage = False, nLayers = 4);
-
-

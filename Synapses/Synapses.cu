@@ -19,32 +19,28 @@
 // Synapses Constructor
 Synapses::Synapses() {
 
+	// Variables
 	total_number_of_synapses = 0;
 	temp_number_of_synapses_in_last_group = 0;
-
 	largest_synapse_group_size = 0;
-	old_largest_number_of_blocks_x = 0;
+	print_synapse_group_details = false;
 
-	neuron_indices_set_up_on_device = false;
-
-	original_synapse_indices = NULL;
-
-	// Full Matrices
+	// Host Pointers
 	presynaptic_neuron_indices = NULL;
 	postsynaptic_neuron_indices = NULL;
+	original_synapse_indices = NULL;
 	synaptic_efficacies_or_weights = NULL;
+	synapse_postsynaptic_neuron_count_index = NULL;
 
-	d_temp_presynaptic_neuron_indices = NULL;
-	d_temp_postsynaptic_neuron_indices = NULL;
-	d_temp_synaptic_efficacies_or_weights = NULL;
-
+	// Device Pointers
 	d_presynaptic_neuron_indices = NULL;
 	d_postsynaptic_neuron_indices = NULL;
+	d_temp_presynaptic_neuron_indices = NULL;
+	d_temp_postsynaptic_neuron_indices = NULL;
 	d_synaptic_efficacies_or_weights = NULL;
+	d_temp_synaptic_efficacies_or_weights = NULL;
+	d_synapse_postsynaptic_neuron_count_index = NULL;
 
-	d_states_for_random_number_generation = NULL;
-
-	print_synapse_group_details = false;
 
 	// On construction, seed
 	srand(42);	// Seeding the random numbers
@@ -56,10 +52,18 @@ Synapses::~Synapses() {
 	free(presynaptic_neuron_indices);
 	free(postsynaptic_neuron_indices);
 	free(synaptic_efficacies_or_weights);
+	free(original_synapse_indices);
+	free(synapse_postsynaptic_neuron_count_index);
 
 	CudaSafeCall(cudaFree(d_presynaptic_neuron_indices));
 	CudaSafeCall(cudaFree(d_postsynaptic_neuron_indices));
+	CudaSafeCall(cudaFree(d_temp_presynaptic_neuron_indices));
+	CudaSafeCall(cudaFree(d_temp_postsynaptic_neuron_indices));
 	CudaSafeCall(cudaFree(d_synaptic_efficacies_or_weights));
+	CudaSafeCall(cudaFree(d_temp_synaptic_efficacies_or_weights));
+	CudaSafeCall(cudaFree(d_synapse_postsynaptic_neuron_count_index));
+
+	// free(number_of_synapse_blocks_per_grid);
 
 }
 
@@ -231,7 +235,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 			// If we desire a single connection
 			this->increment_number_of_synapses(1);
 
-			// Setup Synapses
+			// // Setup Synapses
 			presynaptic_neuron_indices[original_number_of_synapses] = CORRECTED_PRESYNAPTIC_ID(prestart + int(synapse_params->pairwise_connect_presynaptic), presynaptic_group_is_input);
 			postsynaptic_neuron_indices[original_number_of_synapses] = poststart + int(synapse_params->pairwise_connect_postsynaptic);
 
@@ -263,6 +267,11 @@ void Synapses::AddGroup(int presynaptic_group_id,
 
 		original_synapse_indices[i] = i;
 
+		// Used for event count
+		// printf("postsynaptic_neuron_indices[i]: %d\n", postsynaptic_neuron_indices[i]);
+		synapse_postsynaptic_neuron_count_index[postsynaptic_neuron_indices[i]] = neurons->per_neuron_afferent_synapse_count[postsynaptic_neuron_indices[i]];
+		neurons->per_neuron_afferent_synapse_count[postsynaptic_neuron_indices[i]] ++;
+
 	}
 
 }
@@ -271,11 +280,28 @@ void Synapses::increment_number_of_synapses(int increment) {
 
 	total_number_of_synapses += increment;
 
-	presynaptic_neuron_indices = (int*)realloc(presynaptic_neuron_indices, total_number_of_synapses * sizeof(int));
-    postsynaptic_neuron_indices = (int*)realloc(postsynaptic_neuron_indices, total_number_of_synapses * sizeof(int));
-    synaptic_efficacies_or_weights = (float*)realloc(synaptic_efficacies_or_weights, total_number_of_synapses * sizeof(float));
-    original_synapse_indices = (int*)realloc(original_synapse_indices, total_number_of_synapses * sizeof(int));
-    
+	if (total_number_of_synapses - increment == 0) {
+		presynaptic_neuron_indices = (int*)malloc(total_number_of_synapses * sizeof(int));
+		postsynaptic_neuron_indices = (int*)malloc(total_number_of_synapses * sizeof(int));
+		synaptic_efficacies_or_weights = (float*)malloc(total_number_of_synapses * sizeof(float));
+		original_synapse_indices = (int*)malloc(total_number_of_synapses * sizeof(int));
+		synapse_postsynaptic_neuron_count_index = (int*)malloc(total_number_of_synapses * sizeof(int));
+	} else {
+		int* temp_presynaptic_neuron_indices = (int*)realloc(presynaptic_neuron_indices, total_number_of_synapses * sizeof(int));
+	    int* temp_postsynaptic_neuron_indices = (int*)realloc(postsynaptic_neuron_indices, total_number_of_synapses * sizeof(int));
+	    float* temp_synaptic_efficacies_or_weights = (float*)realloc(synaptic_efficacies_or_weights, total_number_of_synapses * sizeof(float));
+	    int* temp_original_synapse_indices = (int*)realloc(original_synapse_indices, total_number_of_synapses * sizeof(int));
+	    int* temp_synapse_postsynaptic_neuron_count_index = (int*)realloc(synapse_postsynaptic_neuron_count_index, total_number_of_synapses * sizeof(int));
+
+	    if (temp_presynaptic_neuron_indices != NULL) presynaptic_neuron_indices = temp_presynaptic_neuron_indices;
+	    if (temp_postsynaptic_neuron_indices != NULL) postsynaptic_neuron_indices = temp_postsynaptic_neuron_indices;
+	    if (temp_synaptic_efficacies_or_weights != NULL) synaptic_efficacies_or_weights = temp_synaptic_efficacies_or_weights;
+	    if (temp_original_synapse_indices != NULL) original_synapse_indices = temp_original_synapse_indices;
+	    if (temp_synapse_postsynaptic_neuron_count_index != NULL) synapse_postsynaptic_neuron_count_index = temp_synapse_postsynaptic_neuron_count_index;
+	}
+
+	
+
 }
 
 
@@ -286,6 +312,7 @@ void Synapses::allocate_device_pointers() {
 	CudaSafeCall(cudaMalloc((void **)&d_presynaptic_neuron_indices, sizeof(int)*total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&d_postsynaptic_neuron_indices, sizeof(int)*total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&d_synaptic_efficacies_or_weights, sizeof(float)*total_number_of_synapses));
+	CudaSafeCall(cudaMalloc((void **)&d_synapse_postsynaptic_neuron_count_index, sizeof(float)*total_number_of_synapses));
 
 }
 
@@ -297,6 +324,7 @@ void Synapses::copy_constants_and_initial_efficacies_to_device() {
 	CudaSafeCall(cudaMemcpy(d_presynaptic_neuron_indices, presynaptic_neuron_indices, sizeof(int)*total_number_of_synapses, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_postsynaptic_neuron_indices, postsynaptic_neuron_indices, sizeof(int)*total_number_of_synapses, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_synaptic_efficacies_or_weights, synaptic_efficacies_or_weights, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
+	CudaSafeCall(cudaMemcpy(d_synapse_postsynaptic_neuron_count_index, synapse_postsynaptic_neuron_count_index, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
 
 }
 

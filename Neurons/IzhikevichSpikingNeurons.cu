@@ -22,6 +22,14 @@ IzhikevichSpikingNeurons::IzhikevichSpikingNeurons() {
 
 // IzhikevichSpikingNeurons Destructor
 IzhikevichSpikingNeurons::~IzhikevichSpikingNeurons() {
+	free(param_a);
+	free(param_b);
+	free(param_d);
+
+	CudaSafeCall(cudaFree(d_param_a));
+	CudaSafeCall(cudaFree(d_param_b));
+	CudaSafeCall(cudaFree(d_param_d));
+	CudaSafeCall(cudaFree(d_states_u));
 
 }
 

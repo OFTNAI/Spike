@@ -47,8 +47,11 @@ void RandomStateManager::set_up_random_states(int threads_per_blocks_x, int numb
 	total_number_of_states = threads_per_blocks_x * number_of_blocks_x;
 
 	// In case it has already been allocated
-	CudaSafeCall(cudaFree(d_states));
-	d_states = NULL;
+	if (d_states != NULL) {
+		CudaSafeCall(cudaFree(d_states));
+		d_states = NULL;
+	}
+	
 
 	// Allocate the random states
 	CudaSafeCall(cudaMalloc((void**) &d_states, sizeof(curandState_t)*threads_per_blocks_x*number_of_blocks_x));

@@ -21,14 +21,15 @@ public:
 	IzhikevichSpikingNeurons();
 	~IzhikevichSpikingNeurons();
 
+	// Host Pointers
 	float * param_a;
 	float * param_b;
 	float * param_d;
 
+	// Device Pointers
 	float * d_param_a;
 	float * d_param_b;
 	float * d_param_d;
-
 	float * d_states_u;
 
 	virtual int AddGroup(neuron_parameters_struct * group_params);

@@ -21,14 +21,13 @@ public:
 	SpikingSynapses();
 	~SpikingSynapses();
 
-	// Full Matrices
+	// Host Pointers
 	int* delays;
 	bool* stdp;
 
 	// Device pointers
 	int* d_delays;
 	bool* d_stdp;
-	
 	int* d_spikes_travelling_to_synapse;
 	float* d_time_of_last_spike_to_reach_synapse;
 

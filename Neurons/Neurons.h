@@ -41,26 +41,26 @@ public:/**
 	Neurons();
 	~Neurons();
 
-	int total_number_of_neurons;				/**< Tracks the total neuron population size. */
-	int total_number_of_groups;					/**< Tracks the number of groups (the total neuron population is split into groups e.g. layers or excitatory/inh). */
-	int number_of_neurons_in_new_group;			/**< Keeps the number of neurons in the latest group. */
+	// Variables
+	int total_number_of_neurons;
+	int total_number_of_groups;
+	int number_of_neurons_in_new_group;
 
-	int **group_shapes;							/**< The 2D shape of each group. */
-	int *start_neuron_indices_for_each_group;	/**< Indices of the beginnings of each group in the total population. */	
-	int *last_neuron_indices_for_each_group;	/**< Indices of the final neuron in each group. */
+	// Host Pointers
+	int *start_neuron_indices_for_each_group;
+	int *last_neuron_indices_for_each_group;
+	int * per_neuron_afferent_synapse_count; // Used for event count
+	int **group_shapes;
 
-	float* d_current_injections;				/**< Device array for the storage of current to be injected into each neuron on each timestep. */
+	// Device Pointers
+	int * d_per_neuron_afferent_synapse_count;
+	float* d_current_injections;
 
-	dim3 number_of_neuron_blocks_per_grid;		/**< CUDA Device number of blocks */
-	dim3 threads_per_block;						/**< CUDA Device number of threads */
+	// CUDA Specific
+	dim3 number_of_neuron_blocks_per_grid;
+	dim3 threads_per_block;
 
-	/**  
-     *  Determines the total number of neurons by which the simulation should increase.
-     This is a virtual function to allow polymorphism in the methods of various SpikingNeuron implementations.
-     	Allocates memory as necessary for group size and indices storage.
-		\param group_params A neuron_parameters_struct instance describing a 2D neuron population size.
-		\return The unique ID for the population which was requested for creation.
-     */
+	// Functions
 	virtual int AddGroup(neuron_parameters_struct * group_params);
 
 	/**  

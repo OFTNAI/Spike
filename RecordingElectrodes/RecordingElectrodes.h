@@ -9,6 +9,7 @@
 #define RecordingElectrodes_H
 
 #include <cuda.h>
+#include <string>
 
 #include "../Neurons/SpikingNeurons.h"
 #include "../Synapses/SpikingSynapses.h"
@@ -16,33 +17,30 @@
 class RecordingElectrodes{
 public:
 
-	int * d_per_neuron_spike_counts;
-
+	// Variables
 	int number_of_timesteps_per_device_spike_copy_check;
 	int device_spike_store_size_multiple_of_total_neurons;
-	float proportion_of_device_spike_store_full_before_copy;
-
 	int size_of_device_spike_store;
-
-	int* d_neuron_ids_of_stored_spikes_on_device;
-	int* h_neuron_ids_of_stored_spikes_on_device;
-	int* h_neuron_ids_of_stored_spikes_on_host;
-
-	float* d_time_in_seconds_of_stored_spikes_on_device;
-	float* h_time_in_seconds_of_stored_spikes_on_device;
-	float* h_time_in_seconds_of_stored_spikes_on_host;
-
-	// Various spikes stored totals
-	int* d_total_number_of_spikes_stored_on_device;
-	int* h_total_number_of_spikes_stored_on_device;
 	int h_total_number_of_spikes_stored_on_host;
-
+	float proportion_of_device_spike_store_full_before_copy;
+	std::string full_directory_name_for_simulation_data_files;
 	const char * prefix_string;
 
+	// Host Pointers
 	SpikingNeurons * neurons;
+	int* h_neuron_ids_of_stored_spikes_on_host;
+	int* h_total_number_of_spikes_stored_on_device;
+	float* h_time_in_seconds_of_stored_spikes_on_host;
+
+	// Device Pointers
+	int * d_per_neuron_spike_counts;
+	int* d_neuron_ids_of_stored_spikes_on_device;
+	int* d_total_number_of_spikes_stored_on_device;
+	float* d_time_in_seconds_of_stored_spikes_on_device;
+
 
 	// Constructor/Destructor
-	RecordingElectrodes(SpikingNeurons * neurons_parameter, const char * prefix_string_param, int number_of_timesteps_per_device_spike_copy_check_param, int device_spike_store_size_multiple_of_total_neurons_param, float proportion_of_device_spike_store_full_before_copy_param);
+	RecordingElectrodes(SpikingNeurons * neurons_parameter, std::string full_directory_name_for_simulation_data_files_param, const char * prefix_string_param, int number_of_timesteps_per_device_spike_copy_check_param, int device_spike_store_size_multiple_of_total_neurons_param, float proportion_of_device_spike_store_full_before_copy_param);
 	~RecordingElectrodes();
 
 	void allocate_pointers_for_spike_store();
@@ -61,6 +59,12 @@ public:
 	void add_spikes_to_per_neuron_spike_count(float current_time_in_seconds);
 
 	void delete_and_reset_recorded_spikes();
+
+private:
+
+	// Host Pointers
+	int* reset_neuron_ids;
+	float* reset_neuron_times;
 
 };
 

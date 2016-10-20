@@ -38,10 +38,10 @@ HELP_FILES := $(wildcard Helpers/*.cu)
 SYNS_FILES := $(wildcard Synapses/*.cu)
 REC_FILES := $(wildcard RecordingElectrodes/*.cu)
 ANALY_FILES := $(wildcard SpikeAnalyser/*.cu)
-# PLOTTING_FILES := $(wildcard Plotting/*.cu)
 # CPP
 HELP_CPP_FILES := $(wildcard Helpers/*.cpp)
-PLOTTING_FILES := $(wildcard Plotting/*.cpp)
+# PLOTTING_FILES := $(wildcard Plotting/*.cpp)
+PLOTTING_FILES := $
 
 # COMBINE LISTS
 CU_FILES := $(SIM_FILES) $(NEUR_FILES) $(EXPERIMENT_FILES) $(STDP_FILES) $(HELP_FILES) $(SYNS_FILES) $(REC_FILES) $(ANALY_FILES) $(MODEL_FILES)
@@ -59,7 +59,7 @@ directory: ${EXPERIMENT_DIRECTORY}
 
 ${FILE}: obj/${FILE}.o $(CU_OBJ_FILES) $(CPP_OBJ_FILES)
 	test -d ${EXPERIMENT_DIRECTORY}/binaries || mkdir ${EXPERIMENT_DIRECTORY}/binaries
-	$(CC) -lineinfo -lmgl obj/${FILE}.o $(CU_OBJ_FILES) $(CPP_OBJ_FILES) -o ${EXPERIMENT_DIRECTORY}/binaries/${FILE}
+	$(CC) -lineinfo obj/${FILE}.o $(CU_OBJ_FILES) $(CPP_OBJ_FILES) -o ${EXPERIMENT_DIRECTORY}/binaries/${FILE}
 
 # Compiling the Model file
 obj/${FILE}.o: ${EXPERIMENT_DIRECTORY}/${FILE}.cpp
@@ -81,7 +81,7 @@ TEST_CPP_FILES := $(wildcard Tests/*.cu)
 TEST_OBJ_FILES := $(addprefix Tests/obj/,$(notdir $(TEST_CPP_FILES:.cu=.o)))
 
 test: ${TEST_OBJ_FILES} $(CU_OBJ_FILES) $(CPP_OBJ_FILES)
-	$(CC) -lineinfo -lmgl ${TEST_OBJ_FILES} $(CU_OBJ_FILES) $(CPP_OBJ_FILES) -o Tests/unittests
+	$(CC) -lineinfo ${TEST_OBJ_FILES} $(CU_OBJ_FILES) $(CPP_OBJ_FILES) -o Tests/unittests
 
 # Test Compilation
 Tests/obj/%.o: Tests/%.cu

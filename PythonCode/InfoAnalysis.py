@@ -1,3 +1,16 @@
+Skip to content
+Personal Open source Business Explore
+Sign upSign inPricingBlogSupport
+This repository
+Search
+ Watch 6  Star 7  Fork 0 OFTNAI/Spike
+ Code  Issues 0  Pull requests 0  Projects 0  Pulse  Graphs
+Branch: nas_master Find file Copy pathSpike/PythonCode/InfoAnalysis.py
+5976d01  6 days ago
+@aeguchi aeguchi 1. revised infoAnalysis in spike analyser to give an option to set max
+1 contributor
+RawBlameHistory     
+215 lines (164 sloc)  9.35 KB
 import numpy as np
 import pylab as plt
 import pickle
@@ -212,3 +225,5 @@ class InfoAnalysis(object):
             print("figure SingleCellInfo.png is exported in Results") 
         
         plt.close();
+Contact GitHub API Training Shop Blog About
+© 2016 GitHub, Inc. Terms Privacy Security Status Help

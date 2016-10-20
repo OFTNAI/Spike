@@ -22,7 +22,10 @@ public:
 	PoissonInputSpikingNeurons();
 	~PoissonInputSpikingNeurons();
 
+	// Host Pointers
 	float * rates;
+
+	// Device Pointers
 	float * d_rates;
 
 	virtual int AddGroup(neuron_parameters_struct * group_params);
