@@ -52,13 +52,15 @@ void Simulator::SetSpikingModel(SpikingModel * spiking_model_parameter) {
 }
 
 
-Simulator::prepare_recording_electrodes(Simulator_Recroding_Electrodes_To_Use_Struct * recording_electrodes_to_use_struct) {
+Simulator::prepare_recording_electrodes(Simulator_Recroding_Electrodes_To_Use_Struct * recording_electrodes_to_use_struct_param) {
 
 
 	TimerWithMessages * timer = new TimerWithMessages("Setting up recording electrodes...");
 
+	recording_electrodes_to_use_struct = recording_electrodes_to_use_struct_param;
 
-	if (recording_electrodes_to_use_struct->count_neuron_spikes_recording_electrode_bool) {
+
+	if (recording_electrodes_to_use_struct->count_neuron_spikes_recording_electrodes_bool) {
 		count_neuron_spikes_recording_electrodes = CountNeuronSpikesRecordingElectrodes(spiking_model->spiking_neurons, spiking_model->spiking_synapses, full_directory_name_for_simulation_data_files, "Neurons");
 		count_neuron_spikes_recording_electrodes->initialise_count_neuron_spikes_recording_electrodes();
 	}
@@ -86,7 +88,7 @@ Simulator::prepare_recording_electrodes(Simulator_Recroding_Electrodes_To_Use_St
 
 
 
-void Simulator::RunSimulationToCountNeuronSpikes(float presentation_time_per_stimulus_per_epoch, bool record_spikes, bool save_recorded_spikes_and_states_to_file, SpikeAnalyser *spike_analyser, bool human_readable_storage, bool isTrained) {
+void Simulator::RunSimulationToCountNeuronSpikes(float presentation_time_per_stimulus_per_epoch, bool collect_spikes, bool save_collected_spikes_and_states_to_file, SpikeAnalyser *spike_analyser, bool human_readable_storage, bool isTrained) {
 	bool number_of_epochs = 1;
 	bool apply_stdp_to_relevant_synapses = false;
 	bool count_spikes_per_neuron = true;
@@ -100,7 +102,7 @@ void Simulator::RunSimulationToCountNeuronSpikes(float presentation_time_per_sti
 	if (!isTrained)
 		recording_electrodes->write_initial_synaptic_weights_to_file(spiking_model->spiking_synapses, human_readable_storage);
 	
-	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, record_spikes, save_recorded_spikes_and_states_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, stimuli_presentation_params, stimulus_presentation_order_seed, spike_analyser,human_readable_storage,isTrained);
+	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, collect_spikes, save_collected_spikes_and_states_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, stimuli_presentation_params, stimulus_presentation_order_seed, spike_analyser,human_readable_storage,isTrained);
 	
 	if (isTrained)
 		recording_electrodes->write_network_state_to_file(spiking_model->spiking_synapses, human_readable_storage);
@@ -119,13 +121,13 @@ void Simulator::RunSimulationToCollectEvents(float presentation_time_per_stimulu
 	stimuli_presentation_params->object_order = OBJECT_ORDER_ORIGINAL;
 	stimuli_presentation_params->transform_order = TRANSFORM_ORDER_ORIGINAL;
 
-	bool record_spikes = false;
-	bool save_recorded_spikes_and_states_to_file = false;
+	bool collect_spikes = false;
+	bool save_collected_spikes_and_states_to_file = false;
 
 	SpikeAnalyser * spike_analyser = NULL;
 	bool human_readable_storage = false;
 	
-	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, record_spikes, save_recorded_spikes_and_states_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, stimuli_presentation_params, stimulus_presentation_order_seed, spike_analyser, human_readable_storage,isTrained);
+	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, collect_spikes, save_collected_spikes_and_states_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, stimuli_presentation_params, stimulus_presentation_order_seed, spike_analyser, human_readable_storage,isTrained);
 	
 }
 
@@ -133,17 +135,17 @@ void Simulator::RunSimulationToTrainNetwork(float presentation_time_per_stimulus
 
 	bool apply_stdp_to_relevant_synapses = true;
 	bool count_spikes_per_neuron = false;
-	bool record_spikes = false;
-	bool save_recorded_spikes_and_states_to_file = false;
+	bool collect_spikes = false;
+	bool save_collected_spikes_and_states_to_file = false;
 
-	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, record_spikes, save_recorded_spikes_and_states_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, stimuli_presentation_params, stimulus_presentation_order_seed, NULL, false, false);
+	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, collect_spikes, save_collected_spikes_and_states_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, stimuli_presentation_params, stimulus_presentation_order_seed, NULL, false, false);
 }
 
 
 
-void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, bool record_spikes, bool save_recorded_spikes_and_states_to_file, bool apply_stdp_to_relevant_synapses, bool count_spikes_per_neuron, Stimuli_Presentation_Struct * stimuli_presentation_params, int stimulus_presentation_order_seed, SpikeAnalyser *spike_analyser, bool human_readable_storage, bool isTrained){
+void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, bool collect_spikes, bool save_collected_spikes_and_states_to_file, bool apply_stdp_to_relevant_synapses, bool count_spikes_per_neuron, Stimuli_Presentation_Struct * stimuli_presentation_params, int stimulus_presentation_order_seed, SpikeAnalyser *spike_analyser, bool human_readable_storage, bool isTrained){
 
-	check_for_epochs_and_begin_simulation_message(spiking_model->timestep, spiking_model->input_spiking_neurons->total_number_of_input_stimuli, number_of_epochs, record_spikes, save_recorded_spikes_and_states_to_file, spiking_model->spiking_neurons->total_number_of_neurons, spiking_model->input_spiking_neurons->total_number_of_neurons, spiking_model->spiking_synapses->total_number_of_synapses);
+	check_for_epochs_and_begin_simulation_message(spiking_model->timestep, spiking_model->input_spiking_neurons->total_number_of_input_stimuli, number_of_epochs, collect_spikes, save_collected_spikes_and_states_to_file, spiking_model->spiking_neurons->total_number_of_neurons, spiking_model->input_spiking_neurons->total_number_of_neurons, spiking_model->spiking_synapses->total_number_of_synapses);
 	// Should print something about stimuli_presentation_params as old stuff removed from check_for_epochs...
 	TimerWithMessages * simulation_timer = new TimerWithMessages();
 
@@ -152,7 +154,7 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 
 
 	if (recording_electrodes) {
-		recording_electrodes->delete_and_reset_recorded_spikes();
+		recording_electrodes->delete_and_reset_collected_spikes();
 		if (!isTrained)
 			recording_electrodes->write_initial_synaptic_weights_to_file(spiking_model->spiking_synapses, human_readable_storage);
 	}
@@ -212,49 +214,20 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 
 			int number_of_timesteps_per_stimulus_per_epoch = presentation_time_per_stimulus_per_epoch / spiking_model->timestep;
 		
+
+
+
 			for (int timestep_index = 0; timestep_index < number_of_timesteps_per_stimulus_per_epoch; timestep_index++){
 				
-				spiking_model->spiking_neurons->reset_current_injections();
+				perform_per_timestep_model_instructions(current_time_in_seconds, apply_stdp_to_relevant_synapses);
 
-
-				// JI PSEUDO CODE FOR COLLECTING EVENTS START
-
-				// if synapse_spike_arrived
-
-				// 	int neuron_spike_count_for_postsynaptic_neuron = recording_electrodes->d_per_neuron_spike_counts[postsynaptic_neuron_id];
-
-				// 	if (current_time_in_seconds > (d_ordered_spike_times_data[d_beginning_spike_time_int_indices_per_neuron[neuron_index] + neuron_spike_count_for_postsynaptic_neuron] - window) {
-				// 		d_events_as_bools_per_neuron_and_spike_data[d_beginning_event_bool_indices_per_neuron + neuron_spike_count_for_postsynaptic_neuron * neurons->per_neuron_afferent_synapse_count[postsynaptic_neuron_index] + synapses->d_synapse_postsynaptic_neuron_count_index[synapse_index]] = true;
-				// }
-
-
-				// JI PSEUDO CODE FOR COLLECTING EVENTS END
-
-
-				// Carry out the per-timestep computations			
-				per_timestep_instructions(current_time_in_seconds, apply_stdp_to_relevant_synapses);
-
-
-				if (count_spikes_per_neuron) {
-					if (recording_electrodes) recording_electrodes->add_spikes_to_per_neuron_spike_count(current_time_in_seconds);
-				}
-
-
-				// // Only save the spikes if necessary
-				if (record_spikes){
-					if (recording_electrodes) {
-						recording_electrodes->collect_spikes_for_timestep(current_time_in_seconds);
-						recording_electrodes->copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(current_time_in_seconds, timestep_index, number_of_timesteps_per_stimulus_per_epoch );
-					}
-					if (input_recording_electrodes) {
-						input_recording_electrodes->collect_spikes_for_timestep(current_time_in_seconds);
-						input_recording_electrodes->copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(current_time_in_seconds, timestep_index, number_of_timesteps_per_stimulus_per_epoch );
-					}
-				}
+				perform_per_timestep_recording_electrode_instructions()
 
 				current_time_in_seconds += float(spiking_model->timestep);
 
 			}
+
+
 
 			if (count_spikes_per_neuron) {
 				if (spike_analyser) {
@@ -270,7 +243,7 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 		printf("Epoch %d, Complete.\n", epoch_number);
 		epoch_timer->stop_timer_and_log_time_and_message(" ", true);
 		
-		if (record_spikes) {
+		if (collect_spikes) {
 			if (recording_electrodes) printf(" Number of Spikes: %d\n", recording_electrodes->h_total_number_of_spikes_stored_on_host);
 			if (input_recording_electrodes) printf(" Number of Input Spikes: %d\n", input_recording_electrodes->h_total_number_of_spikes_stored_on_host);
 		}
@@ -278,7 +251,7 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 		#endif
 		// Output Spikes list after each epoch:
 		// Only save the spikes if necessary
-		if (record_spikes && save_recorded_spikes_and_states_to_file){
+		if (collect_spikes && save_collected_spikes_and_states_to_file){
 			printf("Write to file\n");
 			if (recording_electrodes) recording_electrodes->write_spikes_to_file(epoch_number, human_readable_storage, isTrained);
 			if (input_recording_electrodes) input_recording_electrodes->write_spikes_to_file(epoch_number, human_readable_storage,isTrained);
@@ -302,7 +275,9 @@ void Simulator::RunSimulation(float presentation_time_per_stimulus_per_epoch, in
 }
 
 
-void Simulator::per_timestep_instructions(float current_time_in_seconds, bool apply_stdp_to_relevant_synapses){
+void Simulator::perform_per_timestep_model_instructions(float current_time_in_seconds, bool apply_stdp_to_relevant_synapses){
+
+	spiking_model->spiking_neurons->reset_current_injections();
 
 	spiking_model->spiking_neurons->check_for_neuron_spikes(current_time_in_seconds, spiking_model->timestep);
 	spiking_model->input_spiking_neurons->check_for_neuron_spikes(current_time_in_seconds, spiking_model->timestep);
@@ -317,5 +292,53 @@ void Simulator::per_timestep_instructions(float current_time_in_seconds, bool ap
 
 	spiking_model->spiking_neurons->update_membrane_potentials(spiking_model->timestep, current_time_in_seconds);
 	spiking_model->input_spiking_neurons->update_membrane_potentials(spiking_model->timestep, current_time_in_seconds);
+
+}
+
+void Simulator::perform_per_timestep_recording_electrode_instructions(float current_time_in_seconds, int timestep_index, int number_of_timesteps_per_stimulus_per_epoch) {
+
+	// Do various recording electrode operations
+
+
+	// JI PSEUDO CODE FOR COLLECTING EVENTS START
+
+	// if synapse_spike_arrived
+
+	// 	int neuron_spike_count_for_postsynaptic_neuron = recording_electrodes->d_per_neuron_spike_counts[postsynaptic_neuron_id];
+
+	// 	if (current_time_in_seconds > (d_ordered_spike_times_data[d_beginning_spike_time_int_indices_per_neuron[neuron_index] + neuron_spike_count_for_postsynaptic_neuron] - window) {
+	// 		d_events_as_bools_per_neuron_and_spike_data[d_beginning_event_bool_indices_per_neuron + neuron_spike_count_for_postsynaptic_neuron * neurons->per_neuron_afferent_synapse_count[postsynaptic_neuron_index] + synapses->d_synapse_postsynaptic_neuron_count_index[synapse_index]] = true;
+	// }
+
+
+	// JI PSEUDO CODE FOR COLLECTING EVENTS END
+
+
+
+	if (count_neuron_spikes_recording_electrodes_to_use_struct->count_neuron_spikes_recording_electrodes_bool) {
+	
+		count_neuron_spikes_recording_electrodes->add_spikes_to_per_neuron_spike_count(current_time_in_seconds);
+	
+	}
+
+	if (count_input_neuron_spikes_recording_electrodes_to_use_struct->count_neuron_spikes_recording_electrodes_bool) {
+	
+		count_input_neuron_spikes_recording_electrodes->add_spikes_to_per_neuron_spike_count(current_time_in_seconds);
+	
+	}
+
+	if (recording_electrodes_to_use_struct->collect_neuron_spikes_recording_electrodes_bool){
+
+		collect_neuron_spikes_recording_electrodes->collect_spikes_for_timestep(current_time_in_seconds);
+		collect_neuron_spikes_recording_electrodes->copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(current_time_in_seconds, timestep_index, number_of_timesteps_per_stimulus_per_epoch );
+	
+	}
+
+	if (recording_electrodes_to_use_struct->collect_input_neuron_spikes_recording_electrodes_bool) {
+		
+		collect_input_neuron_spikes_recording_electrodes->collect_spikes_for_timestep(current_time_in_seconds);
+		collect_input_neuron_spikes_recording_electrodes->copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(current_time_in_seconds, timestep_index, number_of_timesteps_per_stimulus_per_epoch );
+
+	}
 
 }
