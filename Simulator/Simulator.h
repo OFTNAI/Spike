@@ -10,17 +10,10 @@
 //	CUDA library
 #include <cuda.h>
 
-// #include "CUDAcode.h"
-#include "../Neurons/Neurons.h"
-#include "../Synapses/SpikingSynapses.h"
-#include "../Neurons/InputSpikingNeurons.h"
-#include "../Neurons/SpikingNeurons.h"
 #include "../RecordingElectrodes/CountNeuronSpikesRecordingElectrodes.h"
 #include "../RecordingElectrodes/CollectNeuronSpikesRecordingElectrodes.h"
 #include "../SpikeAnalyser/SpikeAnalyser.h"
-#include "../STDP/STDP.h"
 #include "../Models/SpikingModel.h"
-
 
 
 struct Simulator_Recroding_Electrodes_To_Use_Struct {
@@ -33,10 +26,6 @@ struct Simulator_Recroding_Electrodes_To_Use_Struct {
 };
 
 
-
-
-
-
 // Simulator Class for running of the simulations
 class Simulator{
 public:
@@ -45,51 +34,31 @@ public:
 	~Simulator();
 
 
+	// Variables
+	float timestep;
 	std::string full_directory_name_for_simulation_data_files;
+	bool high_fidelity_spike_storage; // Flag: Enable for high accuracy spike storage, Disable for speed
 
+	// Host Pointers
+	SpikingModel * spiking_model;
 	CountNeuronSpikesRecordingElectrodes* count_neuron_spikes_recording_electrodes;
 	CountNeuronSpikesRecordingElectrodes* input_count_neuron_spikes_recording_electrodes;
 	CollectNeuronSpikesRecordingElectrodes* collect_neuron_spikes_recording_electrodes;
 	CollectNeuronSpikesRecordingElectrodes* input_collect_neuron_spikes_recording_electrodes;
 
-	// Flag: Enable for high accuracy spike storage, Disable for speed
-	bool high_fidelity_spike_storage;
-
-	SpikingModel * spiking_model;
+	
+	// Functions
+	void SetTimestep(float timest);
 	void SetSpikingModel(SpikingModel * spiking_model_parameter);
 
-	// Parameters
-	float timestep;
-	void SetTimestep(float timest);
-
 	void CreateDirectoryForSimulationDataFiles(std::string directory_name_for_simulation_data_files);
-	void SetNeuronType(SpikingNeurons * neurons_parameter);
-	void SetInputNeuronType(InputSpikingNeurons * neurons_parameter);
-	void SetSynapseType(SpikingSynapses * synapses_parameter);
-	void SetSTDPType(STDP* stdp_parameter);
-
-	int AddNeuronGroup(neuron_parameters_struct * group_params);
-	int AddInputNeuronGroup(neuron_parameters_struct * group_params);
 	
-	void AddSynapseGroup(int presynaptic_group_id, 
-							int postsynaptic_group_id, 
-							synapse_parameters_struct * synapse_params);
-
-	void AddSynapseGroupsForNeuronGroupAndEachInputGroup(int postsynaptic_group_id, 
-							synapse_parameters_struct * synapse_params);
-
-
-	void LoadWeights(int numWeights, float* newWeights);
-
-	void setup_network();
 	void prepare_recording_electrodes(Simulator_Recroding_Electrodes_To_Use_Struct * recording_electrodes_to_use_struct);
 
 	void RunSimulation(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, bool record_spikes, bool save_recorded_spikes_and_states_to_file, bool apply_stdp_to_relevant_synapses, bool count_spikes_per_neuron_for_single_cell_analysis, Stimuli_Presentation_Struct * stimuli_presentation_params, int stimulus_presentation_order_seed, SpikeAnalyser *spike_analyser,bool human_readable_storage, bool isTrained);
 	void RunSimulationToCountNeuronSpikes(float presentation_time_per_stimulus_per_epoch, bool record_spikes, bool save_recorded_spikes_and_states_to_file, SpikeAnalyser *spike_analyser, bool human_readable_storage, bool isTrained);
 	void RunSimulationToCollectEvents(float presentation_time_per_stimulus_per_epoch, bool isTrained);
 	void RunSimulationToTrainNetwork(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, Stimuli_Presentation_Struct * stimuli_presentation_params, int stimulus_presentation_order_seed);
-
-	// void set_device_spike_ids_and_times_from_last_simulation(float * h_time_in_seconds_of_spikes_from_last_simulation, int * h_neuron_ids_of_spikes_from_last_simulation, int total_number_of_spikes_from_last5_simulation);
 
 
 protected: 

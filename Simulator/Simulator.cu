@@ -1,8 +1,3 @@
-// 	Simulator Class
-// 	Simulator.cu
-
-//	Authors: Nasir Ahmad (7/12/2015), James Isbister (23/3/2016)
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <cmath>
@@ -12,7 +7,6 @@
 #include <sys/stat.h>
 
 #include "Simulator.h"
-#include "../Neurons/InputSpikingNeurons.h"
 
 #include "../Helpers/CUDAErrorCheckHelpers.h"
 #include "../Helpers/TerminalHelpers.h"
@@ -29,14 +23,11 @@ Simulator::Simulator(){
 
 	full_directory_name_for_simulation_data_files = "output/";
 
-	// Default parameters
-
 	count_neuron_spikes_recording_electrodes = NULL;
 	input_count_neuron_spikes_recording_electrodes = NULL;
 	collect_neuron_spikes_recording_electrodes = NULL;
 	input_collect_neuron_spikes_recording_electrodes = NULL;
 
-	// Default low fidelity spike storage
 	high_fidelity_spike_storage = false;
 
 }
