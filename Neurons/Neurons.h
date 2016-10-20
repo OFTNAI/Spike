@@ -42,25 +42,32 @@ public:/**
 	~Neurons();
 
 	// Variables
-	int total_number_of_neurons;
-	int total_number_of_groups;
-	int number_of_neurons_in_new_group;
+	int total_number_of_neurons;				/**< Tracks the total neuron population size. */
+	int total_number_of_groups;					/**< Tracks the number of groups (the total neuron population is split into groups e.g. layers or excitatory/inh). */
+	int number_of_neurons_in_new_group;			/**< Stores number of neurons in most recently added group */
 
 	// Host Pointers
-	int *start_neuron_indices_for_each_group;
-	int *last_neuron_indices_for_each_group;
-	int * per_neuron_afferent_synapse_count; // Used for event count
-	int **group_shapes;
+	int *start_neuron_indices_for_each_group;	/**< Indices of the beginnings of each group in the total population. */
+	int *last_neuron_indices_for_each_group;	/**< Indices of the final neuron in each group. */
+	int * per_neuron_afferent_synapse_count;	/**< A (host-side) count of the number of afferent synapses for each neuron */
+	int **group_shapes;							/**< The 2D shape of each group. */
 
 	// Device Pointers
-	int * d_per_neuron_afferent_synapse_count;
-	float* d_current_injections;
+	int * d_per_neuron_afferent_synapse_count;	/**< A (device-side) count of the number of afferent synapses for each neuron */
+	float* d_current_injections;				/**< Device array for the storage of current to be injected into each neuron on each timestep. */
 
 	// CUDA Specific
-	dim3 number_of_neuron_blocks_per_grid;
-	dim3 threads_per_block;
+	dim3 number_of_neuron_blocks_per_grid;		/**< CUDA Device number of blocks */
+	dim3 threads_per_block;						/**< CUDA Device number of threads */
 
 	// Functions
+	/**  
+     *  Determines the total number of neurons by which the simulation should increase.
+     This is a virtual function to allow polymorphism in the methods of various SpikingNeuron implementations.
+     	Allocates memory as necessary for group size and indices storage.
+		\param group_params A neuron_parameters_struct instance describing a 2D neuron population size.
+		\return The unique ID for the population which was requested for creation.
+     */
 	virtual int AddGroup(neuron_parameters_struct * group_params);
 
 	/**  
