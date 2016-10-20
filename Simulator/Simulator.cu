@@ -27,6 +27,7 @@ Simulator::Simulator(){
 	input_count_neuron_spikes_recording_electrodes = NULL;
 	collect_neuron_spikes_recording_electrodes = NULL;
 	input_collect_neuron_spikes_recording_electrodes = NULL;
+	network_state_archive_recording_electrodes = NULL;
 
 	high_fidelity_spike_storage = false;
 
@@ -78,6 +79,10 @@ Simulator::prepare_recording_electrodes(Simulator_Recroding_Electrodes_To_Use_St
 	if (recording_electrodes_to_use_struct->input_collect_neuron_spikes_recording_electrodes_bool) {
 		input_collect_neuron_spikes_recording_electrodes = CollectNeuronSpikesRecordingElectrodes(spiking_model->input_spiking_neurons, spiking_model->spiking_synapses, full_directory_name_for_simulation_data_files, "Input_Neurons");
 		input_collect_neuron_spikes_recording_electrodes->initialise_collect_neuron_spikes_recording_electrodes(number_of_timesteps_per_device_spike_copy_check_param, device_spike_store_size_multiple_of_total_neurons_param, proportion_of_device_spike_store_full_before_copy_param);
+	}
+
+	if (recording_electrodes_to_use_struct->network_state_archive_recording_electrodes_bool) {
+		network_state_archive_recording_electrodes = NetworkStateArchiveRecordingElectrodes(spiking_model->spiking_neurons, spiking_model->spiking_synapses, full_directory_name_for_simulation_data_files, "Synapses");
 	}
 
 

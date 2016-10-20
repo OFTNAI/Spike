@@ -12,16 +12,21 @@
 
 #include "../RecordingElectrodes/CountNeuronSpikesRecordingElectrodes.h"
 #include "../RecordingElectrodes/CollectNeuronSpikesRecordingElectrodes.h"
+#include "../RecordingElectrodes/NetworkStateArchiveRecordingElectrodes.h"
+
 #include "../SpikeAnalyser/SpikeAnalyser.h"
 #include "../Models/SpikingModel.h"
 
 
 struct Simulator_Recroding_Electrodes_To_Use_Struct {
 
+	synapse_parameters_struct(): count_neuron_spikes_recording_electrodes_bool(false), input_count_neuron_spikes_recording_electrodes_bool(false), collect_neuron_spikes_recording_electrodes_bool(false), input_collect_neuron_spikes_recording_electrodes_bool(false), network_state_archive_recording_electrodes_bool(false)  {}
+
 	bool count_neuron_spikes_recording_electrodes_bool;
 	bool input_count_neuron_spikes_recording_electrodes_bool;
 	bool collect_neuron_spikes_recording_electrodes_bool;
 	bool input_collect_neuron_spikes_recording_electrodes_bool;
+	bool network_state_archive_recording_electrodes_bool;
 
 };
 
@@ -46,6 +51,7 @@ public:
 	CountNeuronSpikesRecordingElectrodes* input_count_neuron_spikes_recording_electrodes;
 	CollectNeuronSpikesRecordingElectrodes* collect_neuron_spikes_recording_electrodes;
 	CollectNeuronSpikesRecordingElectrodes* input_collect_neuron_spikes_recording_electrodes;
+	NetworkStateArchiveRecordingElectrodes* network_state_archive_recording_electrodes;
 	
 	// Functions
 	void SetTimestep(float timest);

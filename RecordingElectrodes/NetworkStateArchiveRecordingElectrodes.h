@@ -1,5 +1,5 @@
-#ifndef NetworkArchiver_H
-#define NetworkArchiver_H
+#ifndef NetworkStateArchiveRecordingElectrodes_H
+#define NetworkStateArchiveRecordingElectrodes_H
 
 #include <cuda.h>
 #include <string>
@@ -7,7 +7,7 @@
 #include "../Neurons/SpikingNeurons.h"
 #include "../Synapses/SpikingSynapses.h"
 
-class NetworkArchiver {
+class NetworkStateArchiveRecordingElectrodes  : public RecordingElectrodes {
 public:
 
 	// Variables
@@ -22,8 +22,8 @@ public:
 
 
 	// Constructor/Destructor
-	NetworkArchiver(SpikingNeurons * neurons_parameter, SpikingSynapses * spiking_synapses, string full_directory_name_for_simulation_data_files_param, const char * prefix_string_param);
-	~NetworkArchiver();
+	NetworkStateArchiveRecordingElectrodes(SpikingNeurons * neurons_parameter, SpikingSynapses * spiking_synapses, string full_directory_name_for_simulation_data_files_param, const char * prefix_string_param);
+	~NetworkStateArchiveRecordingElectrodes();
 
 	void write_initial_synaptic_weights_to_file(SpikingSynapses *synapses, bool human_readable_storage);
 	void write_network_state_to_file(SpikingSynapses *synapses, bool human_readable_storage);

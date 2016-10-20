@@ -7,7 +7,7 @@
 #include "../Neurons/SpikingNeurons.h"
 #include "../Synapses/SpikingSynapses.h"
 
-class CountNeuronSpikesRecordingElectrodes{
+class CountNeuronSpikesRecordingElectrodes : public RecordingElectrodes {
 public:
 
 	// Variables
