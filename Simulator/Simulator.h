@@ -18,7 +18,7 @@
 #include "../Models/SpikingModel.h"
 
 
-struct Simulator_Recroding_Electrodes_To_Use_Struct {
+struct Simulator_Recording_Electrodes_To_Use_Struct {
 
 	synapse_parameters_struct(): count_neuron_spikes_recording_electrodes_bool(false), input_count_neuron_spikes_recording_electrodes_bool(false), collect_neuron_spikes_recording_electrodes_bool(false), input_collect_neuron_spikes_recording_electrodes_bool(false), network_state_archive_recording_electrodes_bool(false)  {}
 
@@ -46,7 +46,7 @@ public:
 
 	// Host Pointers
 	SpikingModel * spiking_model;
-	Simulator_Recroding_Electrodes_To_Use_Struct * recording_electrodes_to_use_struct;
+	Simulator_Recording_Electrodes_To_Use_Struct * recording_electrodes_to_use_struct;
 	CountNeuronSpikesRecordingElectrodes* count_neuron_spikes_recording_electrodes;
 	CountNeuronSpikesRecordingElectrodes* input_count_neuron_spikes_recording_electrodes;
 	CollectNeuronSpikesRecordingElectrodes* collect_neuron_spikes_recording_electrodes;
@@ -59,7 +59,7 @@ public:
 
 	void CreateDirectoryForSimulationDataFiles(std::string directory_name_for_simulation_data_files);
 	
-	void prepare_recording_electrodes(Simulator_Recroding_Electrodes_To_Use_Struct * recording_electrodes_to_use_struct);
+	void prepare_recording_electrodes(Simulator_Recording_Electrodes_To_Use_Struct * recording_electrodes_to_use_struct);
 
 	void RunSimulation(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, bool collect_spikes, bool save_collected_spikes_and_states_to_file, bool apply_stdp_to_relevant_synapses, bool count_spikes_per_neuron_for_single_cell_analysis, Stimuli_Presentation_Struct * stimuli_presentation_params, int stimulus_presentation_order_seed, SpikeAnalyser *spike_analyser, bool human_readable_storage, bool isTrained);
 	void RunSimulationToCountNeuronSpikes(float presentation_time_per_stimulus_per_epoch, bool collect_spikes, bool save_collected_spikes_and_states_to_file, SpikeAnalyser *spike_analyser, bool human_readable_storage, bool isTrained);
@@ -68,7 +68,10 @@ public:
 
 
 protected: 
-	void per_timestep_instructions(float current_time_in_seconds, bool apply_stdp_to_relevant_synapses);
 	void perform_per_timestep_recording_electrode_instructions(float current_time_in_seconds, int timestep_index, int number_of_timesteps_per_stimulus_per_epoch);
+	void perform_pre_stimulus_presentation_instructions();
+	void perform_post_stimulus_presentation_instructions();
+	void perform_post_epoch_instructions();
+	void perform_end_of_simulation_instructions();
 };
 #endif

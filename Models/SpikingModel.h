@@ -43,12 +43,14 @@ public:
 	InputSpikingNeurons * input_spiking_neurons;
 	STDP* stdp_rule; 
 
-
 	int AddNeuronGroup(neuron_parameters_struct * group_params);
 	int AddInputNeuronGroup(neuron_parameters_struct * group_params);
 	
 	void AddSynapseGroup(int presynaptic_group_id, int postsynaptic_group_id, synapse_parameters_struct * synapse_params);
 	void AddSynapseGroupsForNeuronGroupAndEachInputGroup(int postsynaptic_group_id, synapse_parameters_struct * synapse_params);
+
+	void reset_model_activities();
+	void perform_per_timestep_model_instructions(float current_time_in_seconds, bool apply_stdp_to_relevant_synapses);
 
 	virtual void finalise_model();
 	void copy_model_to_device(bool high_fidelity_spike_storage);
