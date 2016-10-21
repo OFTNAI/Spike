@@ -472,7 +472,7 @@ TEST_CASE("Poisson Input Spiking Neurons Class") {
 /**
 		LIFSPIKINGNEURONS.CU Test Set
 **/
-// TO DO (JI)
+// TO DO
 #include "../Neurons/LIFSpikingNeurons.h"
 TEST_CASE("LIF Spiking Neurons Class") {
 }
@@ -480,8 +480,16 @@ TEST_CASE("LIF Spiking Neurons Class") {
 /**
 		IMAGEPOISSONINPUTSPIKINGNEURONS.CU Test Set
 **/
-// TO DO (JI)
+// TO DO
 #include "../Neurons/ImagePoissonInputSpikingNeurons.h"
 TEST_CASE("Image Poisson Input Spiking Neurons Class") {
+}
+
+/**
+		ADEXSPIKINGNEURONS.CU Test Set
+**/
+// TO DO
+#include "../Neurons/AdExSpikingNeurons.h"
+TEST_CASE("Adaptive Exponential Spiking Neurons Class") {
 }
 
