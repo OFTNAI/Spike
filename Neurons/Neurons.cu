@@ -1,7 +1,4 @@
-//	Neurons Class C++/CUDA
-//	Neurons.cu
-//
-//	Authors: Nasir Ahmad (7/12/2015), James Isbister (6/4/2016)
+
 
 #include "Neurons.h"
 #include <stdlib.h>
