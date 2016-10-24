@@ -17,6 +17,7 @@
 #include "../SpikeAnalyser/SpikeAnalyser.h"
 #include "../Models/SpikingModel.h"
 
+#include "../Helpers/TimerWithMessages.h"
 
 struct Simulator_Run_Simulation_General_Options {
 
@@ -27,6 +28,7 @@ struct Simulator_Run_Simulation_General_Options {
 	int number_of_epochs;
 	bool apply_stdp_to_relevant_synapses;
 	int stimulus_presentation_order_seed;
+	bool reset_current_time_between_each_stimulus;
 
 };
 
@@ -92,14 +94,14 @@ public:
 	// void RunSimulationToCountNeuronSpikes(float presentation_time_per_stimulus_per_epoch, bool collect_spikes, bool save_collected_spikes_and_states_to_file, SpikeAnalyser *spike_analyser, bool human_readable_storage, bool isTrained);
 	// void RunSimulationToCollectEvents(float presentation_time_per_stimulus_per_epoch, bool isTrained);
 	// void RunSimulationToTrainNetwork(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, Stimuli_Presentation_Struct * stimuli_presentation_params, int stimulus_presentation_order_seed);
-	void RunSimulation(Simulator_Run_Simulation_General_Options * simulator_run_simulation_general_options_struct, Stimuli_Presentation_Struct * stimuli_presentation_params, Simulator_File_Storage_Options_Struct * simulator_file_storage_options_struct, SpikeAnalyser *spike_analyser, bool isTrained);
+	void RunSimulation(Simulator_Run_Simulation_General_Options * simulator_run_simulation_general_options_struct, Stimuli_Presentation_Struct * stimuli_presentation_params, Simulator_File_Storage_Options_Struct * simulator_file_storage_options_struct, SpikeAnalyser *spike_analyser);
 
 
 protected: 
 	void perform_per_timestep_recording_electrode_instructions(float current_time_in_seconds, int timestep_index, int number_of_timesteps_per_stimulus_per_epoch);
-	void perform_pre_stimulus_presentation_instructions();
-	void perform_post_stimulus_presentation_instructions();
-	void perform_post_epoch_instructions(int epoch_number, Simulator_File_Storage_Options_Struct * simulator_file_storage_options_struct);
-	void perform_end_of_simulation_instructions();
+	void perform_pre_stimulus_presentation_instructions(int stimulus_index, Stimuli_Presentation_Struct * stimuli_presentation_params);
+	void perform_post_stimulus_presentation_instructions(SpikeAnalyser* spike_analyser);
+	void perform_post_epoch_instructions(int epoch_number, TimerWithMessages * epoch_timer, Simulator_File_Storage_Options_Struct * simulator_file_storage_options_struct);
+	void perform_end_of_simulation_instructions(TimerWithMessages * simulation_timer);
 };
 #endif

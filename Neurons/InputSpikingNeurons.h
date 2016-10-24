@@ -28,9 +28,12 @@ enum TRANSFORM_ORDER {
 
 struct Stimuli_Presentation_Struct {
 
+	Stimuli_Presentation_Struct(): reset_current_time_between_each_stimulus(false) {}
+
 	PRESENTATION_FORMAT presentation_format;
 	OBJECT_ORDER object_order;
 	TRANSFORM_ORDER transform_order;
+	bool reset_current_time_between_each_stimulus;
 
 };
 
