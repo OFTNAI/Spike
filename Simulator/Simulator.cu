@@ -65,27 +65,27 @@ void Simulator::prepare_recording_electrodes(Simulator_Recording_Electrodes_To_U
 
 
 	if (recording_electrodes_to_use_struct->count_neuron_spikes_recording_electrodes_bool) {
-		count_neuron_spikes_recording_electrodes = CountNeuronSpikesRecordingElectrodes(spiking_model->spiking_neurons, spiking_model->spiking_synapses, full_directory_name_for_simulation_data_files, "Neurons");
+		count_neuron_spikes_recording_electrodes = new CountNeuronSpikesRecordingElectrodes(spiking_model->spiking_neurons, spiking_model->spiking_synapses, full_directory_name_for_simulation_data_files, "Neurons");
 		count_neuron_spikes_recording_electrodes->initialise_count_neuron_spikes_recording_electrodes();
 	}
 
 	if (recording_electrodes_to_use_struct->input_count_neuron_spikes_recording_electrodes_bool) {
-		input_count_neuron_spikes_recording_electrodes = CountNeuronSpikesRecordingElectrodes(spiking_model->input_spiking_neurons, spiking_model->spiking_synapses, full_directory_name_for_simulation_data_files, "Input_Neurons");
+		input_count_neuron_spikes_recording_electrodes = new CountNeuronSpikesRecordingElectrodes(spiking_model->input_spiking_neurons, spiking_model->spiking_synapses, full_directory_name_for_simulation_data_files, "Input_Neurons");
 		input_count_neuron_spikes_recording_electrodes->initialise_count_neuron_spikes_recording_electrodes();
 	}
 
 	if (recording_electrodes_to_use_struct->collect_neuron_spikes_recording_electrodes_bool) {
-		collect_neuron_spikes_recording_electrodes = CollectNeuronSpikesRecordingElectrodes(spiking_model->spiking_neurons, spiking_model->spiking_synapses, full_directory_name_for_simulation_data_files, "Neurons");
+		collect_neuron_spikes_recording_electrodes = new CollectNeuronSpikesRecordingElectrodes(spiking_model->spiking_neurons, spiking_model->spiking_synapses, full_directory_name_for_simulation_data_files, "Neurons");
 		collect_neuron_spikes_recording_electrodes->initialise_collect_neuron_spikes_recording_electrodes(number_of_timesteps_per_device_spike_copy_check_param, device_spike_store_size_multiple_of_total_neurons_param, proportion_of_device_spike_store_full_before_copy_param);
 	}
 
 	if (recording_electrodes_to_use_struct->input_collect_neuron_spikes_recording_electrodes_bool) {
-		input_collect_neuron_spikes_recording_electrodes = CollectNeuronSpikesRecordingElectrodes(spiking_model->input_spiking_neurons, spiking_model->spiking_synapses, full_directory_name_for_simulation_data_files, "Input_Neurons");
+		input_collect_neuron_spikes_recording_electrodes = new CollectNeuronSpikesRecordingElectrodes(spiking_model->input_spiking_neurons, spiking_model->spiking_synapses, full_directory_name_for_simulation_data_files, "Input_Neurons");
 		input_collect_neuron_spikes_recording_electrodes->initialise_collect_neuron_spikes_recording_electrodes(number_of_timesteps_per_device_spike_copy_check_param, device_spike_store_size_multiple_of_total_neurons_param, proportion_of_device_spike_store_full_before_copy_param);
 	}
 
 	if (recording_electrodes_to_use_struct->network_state_archive_recording_electrodes_bool) {
-		network_state_archive_recording_electrodes = NetworkStateArchiveRecordingElectrodes(spiking_model->spiking_neurons, spiking_model->spiking_synapses, full_directory_name_for_simulation_data_files, "Synapses");
+		network_state_archive_recording_electrodes = new NetworkStateArchiveRecordingElectrodes(spiking_model->spiking_neurons, spiking_model->spiking_synapses, full_directory_name_for_simulation_data_files, "Synapses");
 	}
 
 
@@ -106,6 +106,7 @@ void Simulator::reset_all_recording_electrodes() {
 
 	if (recording_electrodes_to_use_struct->collect_neuron_spikes_recording_electrodes_bool) {
 		collect_neuron_spikes_recording_electrodes->delete_and_reset_collected_spikes();
+	}
 
 	if (recording_electrodes_to_use_struct->input_collect_neuron_spikes_recording_electrodes_bool) {
 		input_collect_neuron_spikes_recording_electrodes->delete_and_reset_collected_spikes();
@@ -170,7 +171,8 @@ void Simulator::reset_all_recording_electrodes() {
 
 
 
-void Simulator::RunSimulation(Simulator_File_Storage_Options_Struct simulator_file_storage_options_struct, float presentation_time_per_stimulus_per_epoch, int number_of_epochs, bool save_collected_spikes_and_states_to_file, bool apply_stdp_to_relevant_synapses, Stimuli_Presentation_Struct * stimuli_presentation_params, int stimulus_presentation_order_seed, SpikeAnalyser *spike_analyser, bool human_readable_storage, bool isTrained){
+
+void Simulator::RunSimulation(Simulator_File_Storage_Options_Struct simulator_file_storage_options_struct, float presentation_time_per_stimulus_per_epoch, int number_of_epochs, bool save_collected_spikes_and_states_to_file, bool apply_stdp_to_relevant_synapses, Stimuli_Presentation_Struct * stimuli_presentation_params, int stimulus_presentation_order_seed, SpikeAnalyser *spike_analyser, bool human_readable_storage, bool isTrained) {
 
 	check_for_epochs_and_begin_simulation_message(spiking_model->timestep, spiking_model->input_spiking_neurons->total_number_of_input_stimuli, number_of_epochs, collect_spikes, save_collected_spikes_and_states_to_file, spiking_model->spiking_neurons->total_number_of_neurons, spiking_model->input_spiking_neurons->total_number_of_neurons, spiking_model->spiking_synapses->total_number_of_synapses);
 	// Should print something about stimuli_presentation_params as old stuff removed from check_for_epochs...
@@ -209,7 +211,7 @@ void Simulator::RunSimulation(Simulator_File_Storage_Options_Struct simulator_fi
 				
 				spiking_model->perform_per_timestep_model_instructions(current_time_in_seconds, apply_stdp_to_relevant_synapses);
 
-				perform_per_timestep_recording_electrode_instructions()
+				perform_per_timestep_recording_electrode_instructions();
 
 				current_time_in_seconds += float(spiking_model->timestep);
 

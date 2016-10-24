@@ -1,11 +1,9 @@
 #ifndef CollectNeuronSpikesRecordingElectrodes_H
 #define CollectNeuronSpikesRecordingElectrodes_H
 
-#include <cuda.h>
-#include <string>
 
-#include "../Neurons/SpikingNeurons.h"
-#include "../Synapses/SpikingSynapses.h"
+#include "../RecordingElectrodes/RecordingElectrodes.h"
+
 
 class CollectNeuronSpikesRecordingElectrodes : public RecordingElectrodes {
 public:

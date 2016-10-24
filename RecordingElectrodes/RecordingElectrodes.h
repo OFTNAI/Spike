@@ -3,6 +3,7 @@
 
 #include <cuda.h>
 #include <string>
+using namespace std;
 
 #include "../Neurons/SpikingNeurons.h"
 #include "../Synapses/SpikingSynapses.h"

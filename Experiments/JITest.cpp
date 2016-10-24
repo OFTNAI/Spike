@@ -90,18 +90,18 @@ int main (int argc, char *argv[]){
 
 
 	/////////// SIMULATE NETWORK TO TEST UNTRAINED ///////////
-	TestNetworkExperiment * test_untrained_network_experiment = new TestNetworkExperiment();
-	test_untrained_network_experiment->four_layer_vision_spiking_model = four_layer_vision_spiking_model;
-	test_untrained_network_experiment->prepare_experiment(four_layer_vision_spiking_model, high_fidelity_spike_storage);
-	test_untrained_network_experiment->run_experiment(presentation_time_per_stimulus_per_epoch_test, record_test_spikes, save_recorded_spikes_and_states_to_file_test, human_readable_storage, network_is_trained);
-	test_untrained_network_experiment->calculate_spike_totals_averages_and_information(number_of_bins, useThresholdForMaxFR, max_firing_rate);
+	// TestNetworkExperiment * test_untrained_network_experiment = new TestNetworkExperiment();
+	// test_untrained_network_experiment->four_layer_vision_spiking_model = four_layer_vision_spiking_model;
+	// test_untrained_network_experiment->prepare_experiment(four_layer_vision_spiking_model, high_fidelity_spike_storage);
+	// test_untrained_network_experiment->run_experiment(presentation_time_per_stimulus_per_epoch_test, record_test_spikes, save_recorded_spikes_and_states_to_file_test, human_readable_storage, network_is_trained);
+	// test_untrained_network_experiment->calculate_spike_totals_averages_and_information(number_of_bins, useThresholdForMaxFR, max_firing_rate);
 
 
-	CollectEventsNetworkExperiment * collect_events_experiment_set = new CollectEventsNetworkExperiment();
-	collect_events_experiment_set->four_layer_vision_spiking_model = four_layer_vision_spiking_model;
-	collect_events_experiment_set->prepare_experiment(four_layer_vision_spiking_model, high_fidelity_spike_storage);
-	collect_events_experiment_set->prepare_arrays_for_event_collection(test_untrained_network_experiment);
-	collect_events_experiment_set->run_experiment(presentation_time_per_stimulus_per_epoch_test, network_is_trained);
+	// CollectEventsNetworkExperiment * collect_events_experiment_set = new CollectEventsNetworkExperiment();
+	// collect_events_experiment_set->four_layer_vision_spiking_model = four_layer_vision_spiking_model;
+	// collect_events_experiment_set->prepare_experiment(four_layer_vision_spiking_model, high_fidelity_spike_storage);
+	// collect_events_experiment_set->prepare_arrays_for_event_collection(test_untrained_network_experiment);
+	// collect_events_experiment_set->run_experiment(presentation_time_per_stimulus_per_epoch_test, network_is_trained);
 
 
 	/////////// END OF EXPERIMENT ///////////

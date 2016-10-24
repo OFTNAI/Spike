@@ -1,11 +1,8 @@
 #ifndef CountNeuronSpikesRecordingElectrodes_H
 #define CountNeuronSpikesRecordingElectrodes_H
 
-#include <cuda.h>
-#include <string>
 
-#include "../Neurons/SpikingNeurons.h"
-#include "../Synapses/SpikingSynapses.h"
+#include "../RecordingElectrodes/RecordingElectrodes.h"
 
 class CountNeuronSpikesRecordingElectrodes : public RecordingElectrodes {
 public:

@@ -5,9 +5,8 @@
 #include <fstream>
 #include "../Helpers/CUDAErrorCheckHelpers.h"
 #include "../Helpers/TerminalHelpers.h"
-#include <string>
 #include <time.h>
-using namespace std;
+
 
 // RecordingElectrodes Constructor
 RecordingElectrodes::RecordingElectrodes(SpikingNeurons * neurons_parameter, SpikingSynapses * spiking_synapses, string full_directory_name_for_simulation_data_files_param, const char * prefix_string_param) {

@@ -1,11 +1,9 @@
 #ifndef NetworkStateArchiveRecordingElectrodes_H
 #define NetworkStateArchiveRecordingElectrodes_H
 
-#include <cuda.h>
-#include <string>
 
-#include "../Neurons/SpikingNeurons.h"
-#include "../Synapses/SpikingSynapses.h"
+#include "../RecordingElectrodes/RecordingElectrodes.h"
+
 
 class NetworkStateArchiveRecordingElectrodes  : public RecordingElectrodes {
 public:
