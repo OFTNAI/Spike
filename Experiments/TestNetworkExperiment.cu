@@ -30,9 +30,9 @@ void TestNetworkExperiment::prepare_test_network_experiment(FourLayerVisionSpiki
 	Simulator_Recording_Electrodes_To_Use_Struct * recording_electrodes_to_use_struct = new Recordine_Electrodes_To_Use_Struct();
 	recording_electrodes_to_use_struct->collect_neuron_spikes_recording_electrodes_bool = true;
 
-	prepare_recording_electrodes(recording_electrodes_to_use_struct, collect_neuron_spikes_optional_parameters);
+	simulator->prepare_recording_electrodes(recording_electrodes_to_use_struct, collect_neuron_spikes_optional_parameters, collect_input_neuron_spikes_optional_parameters, network_state_archive_optional_parameters);
 
-	spike_analyser = new SpikeAnalyser(four_layer_vision_spiking_model->spiking_neurons, four_layer_vision_spiking_model->image_poisson_input_spiking_neurons, collect_input_neuron_spikes_optional_parameters, network_state_archive_optional_parameters);
+	spike_analyser = new SpikeAnalyser(four_layer_vision_spiking_model->spiking_neurons, four_layer_vision_spiking_model->image_poisson_input_spiking_neurons);
 
 }
 
