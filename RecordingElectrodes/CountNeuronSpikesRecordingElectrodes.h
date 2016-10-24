@@ -16,7 +16,7 @@ public:
 
 
 	// Constructor/Destructor
-	CountNeuronSpikesRecordingElectrodes(SpikingNeurons * neurons_parameter, SpikingSynapses * spiking_synapses, string full_directory_name_for_simulation_data_files_param, const char * prefix_string_param);
+	CountNeuronSpikesRecordingElectrodes(SpikingNeurons * neurons_parameter, SpikingSynapses * synapses_parameter, string full_directory_name_for_simulation_data_files_param, const char * prefix_string_param);
 	~CountNeuronSpikesRecordingElectrodes();
 
 	void initialise_count_neuron_spikes_recording_electrodes();

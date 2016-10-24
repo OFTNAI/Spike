@@ -39,12 +39,11 @@ public:
 
 
 	// Constructor/Destructor
-	CollectNeuronSpikesRecordingElectrodes(SpikingNeurons * neurons_parameter, SpikingSynapses * spiking_synapses, string full_directory_name_for_simulation_data_files_param, const char * prefix_string_param);
+	CollectNeuronSpikesRecordingElectrodes(SpikingNeurons * neurons_parameter, SpikingSynapses * synapses_parameter, string full_directory_name_for_simulation_data_files_param, const char * prefix_string_param);
 	~CollectNeuronSpikesRecordingElectrodes();
 
 	void initialise_collect_neuron_spikes_recording_electrodes(Collect_Neuron_Spikes_Optional_Parameters * collect_neuron_spikes_optional_parameters_param);
-	void allocate_pointers_for_spike_count();
-	void reset_pointers_for_spike_count();
+	void allocate_pointers_for_spike_store();
 
 	void collect_spikes_for_timestep(float current_time_in_seconds);
 	void copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(float current_time_in_seconds, int timestep_index, int number_of_timesteps_per_epoch);

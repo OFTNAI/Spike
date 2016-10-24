@@ -10,10 +10,10 @@
 using namespace std;
 
 // CollectNeuronSpikesRecordingElectrodes Constructor
-CollectNeuronSpikesRecordingElectrodes::CollectNeuronSpikesRecordingElectrodes(SpikingNeurons * neurons_parameter, SpikingSynapses * spiking_synapses, string full_directory_name_for_simulation_data_files_param, const char * prefix_string_param) {}
+CollectNeuronSpikesRecordingElectrodes::CollectNeuronSpikesRecordingElectrodes(SpikingNeurons * neurons_parameter, SpikingSynapses * synapses_parameter, string full_directory_name_for_simulation_data_files_param, const char * prefix_string_param) {
 
 	// Variables
-	size_of_device_spike_store = 0
+	size_of_device_spike_store = 0;
 	h_total_number_of_spikes_stored_on_host = 0;
 
 	// Host Pointers
@@ -60,7 +60,7 @@ void CollectNeuronSpikesRecordingElectrodes::initialise_collect_neuron_spikes_re
 	size_of_device_spike_store = collect_neuron_spikes_optional_parameters->device_spike_store_size_multiple_of_total_neurons * neurons->total_number_of_neurons;
 
 	allocate_pointers_for_spike_store();
-	reset_pointers_for_spike_store();
+	delete_and_reset_collected_spikes();
 
 }
 
@@ -205,6 +205,16 @@ void CollectNeuronSpikesRecordingElectrodes::write_spikes_to_file(int epoch_numb
 }
 
 
+void CollectNeuronSpikesRecordingElectrodes::collect_spikes_for_timestep(float current_time_in_seconds) {
+	collect_spikes_for_timestep_kernel<<<neurons->number_of_neuron_blocks_per_grid, neurons->threads_per_block>>>(neurons->d_last_spike_time_of_each_neuron,
+														d_total_number_of_spikes_stored_on_device,
+														d_neuron_ids_of_stored_spikes_on_device,
+														d_time_in_seconds_of_stored_spikes_on_device,
+														current_time_in_seconds,
+														neurons->total_number_of_neurons);
+
+	CudaCheckError();
+}
 
 
 

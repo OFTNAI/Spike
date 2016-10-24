@@ -21,6 +21,7 @@ using namespace std;
 
 #include "../Models/FourLayerVisionSpikingModel.h"
 #include "../Experiments/TestNetworkExperiment.h"
+#include "../Experiments/TrainNetworkExperiment.h"
 #include "../Experiments/TestTrainTestExperimentSet.h"
 #include "../Experiments/CollectEventsNetworkExperiment.h"
 
@@ -92,11 +93,34 @@ int main (int argc, char *argv[]){
 	/////////// SIMULATE NETWORK TO TEST UNTRAINED ///////////
 	
 
-	TestNetworkExperiment * test_untrained_network_experiment = new TestNetworkExperiment();
-	test_untrained_network_experiment->four_layer_vision_spiking_model = four_layer_vision_spiking_model;
-	test_untrained_network_experiment->prepare_test_network_experiment(four_layer_vision_spiking_model, high_fidelity_spike_storage, NULL, NULL, NULL);
-	test_untrained_network_experiment->run_experiment(presentation_time_per_stimulus_per_epoch_test, record_test_spikes, save_recorded_spikes_and_states_to_file_test, human_readable_storage, network_is_trained);
-	test_untrained_network_experiment->calculate_spike_totals_averages_and_information(number_of_bins, useThresholdForMaxFR, max_firing_rate);
+	// TestNetworkExperiment * test_untrained_network_experiment = new TestNetworkExperiment();
+	// test_untrained_network_experiment->four_layer_vision_spiking_model = four_layer_vision_spiking_model;
+	// test_untrained_network_experiment->prepare_test_network_experiment(four_layer_vision_spiking_model, high_fidelity_spike_storage, NULL, NULL, NULL);
+	// test_untrained_network_experiment->run_experiment(presentation_time_per_stimulus_per_epoch_test, record_test_spikes, save_recorded_spikes_and_states_to_file_test, human_readable_storage, network_is_trained);
+	// test_untrained_network_experiment->calculate_spike_totals_averages_and_information(number_of_bins, useThresholdForMaxFR, max_firing_rate);
+
+	// TrainNetworkExperiment * train_network_experiment = new TrainNetworkExperiment();
+	// train_network_experiment->prepare_train_network_experiment(four_layer_vision_spiking_model);
+
+
+	Simulator * simulator = new Simulator();
+	simulator->SetSpikingModel(four_layer_vision_spiking_model);
+
+	Simulator_Run_Simulation_General_Options * train_network_general_simulator_options = new Simulator_Run_Simulation_General_Options();
+	train_network_general_simulator_options->presentation_time_per_stimulus_per_epoch = 0.2;
+	train_network_general_simulator_options->number_of_epochs = 10;
+	train_network_general_simulator_options->apply_stdp_to_relevant_synapses = true;
+	train_network_general_simulator_options->stimulus_presentation_order_seed = 8;
+
+	Stimuli_Presentation_Struct * stimuli_presentation_params = new Stimuli_Presentation_Struct();
+	stimuli_presentation_params->presentation_format = PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_OBJECTS;
+	stimuli_presentation_params->object_order = OBJECT_ORDER_ORIGINAL;
+	stimuli_presentation_params->transform_order = TRANSFORM_ORDER_RANDOM;
+
+	Simulator_File_Storage_Options_Struct * training_file_storage_options = new Simulator_File_Storage_Options_Struct();
+
+	simulator->RunSimulation(train_network_general_simulator_options, stimuli_presentation_params, training_file_storage_options, NULL);
+
 
 
 	// CollectEventsNetworkExperiment * collect_events_experiment_set = new CollectEventsNetworkExperiment();

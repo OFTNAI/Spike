@@ -9,7 +9,12 @@
 
 
 // RecordingElectrodes Constructor
-RecordingElectrodes::RecordingElectrodes(SpikingNeurons * neurons_parameter, SpikingSynapses * spiking_synapses, string full_directory_name_for_simulation_data_files_param, const char * prefix_string_param) {
+
+RecordingElectrodes::RecordingElectrodes() {
+	
+}
+
+RecordingElectrodes::RecordingElectrodes(SpikingNeurons * neurons_parameter, SpikingSynapses * synapses_parameter, string full_directory_name_for_simulation_data_files_param, const char * prefix_string_param) {
 
 	// Variables
 	full_directory_name_for_simulation_data_files = full_directory_name_for_simulation_data_files_param;

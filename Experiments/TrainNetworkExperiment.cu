@@ -18,14 +18,14 @@
 	
 // }
 
-// void TrainNetworkExperiment::prepare_experiment(FourLayerVisionSpikingModel * four_layer_vision_spiking_model_param, bool high_fidelity_spike_storage) {
+// void TrainNetworkExperiment::prepare_train_network_experiment(FourLayerVisionSpikingModel * four_layer_vision_spiking_model_param) {
 
-// 	NetworkExperiment::prepare_experiment(four_layer_vision_spiking_model, high_fidelity_spike_storage);
+// 	NetworkExperiment::prepare_network_experiment(four_layer_vision_spiking_model);
 
 // }
 
 
-// void TrainNetworkExperiment::run_experiment(float presentation_time_per_stimulus_per_epoch_param, int number_of_training_epochs) {
+// void TrainNetworkExperiment::train_model(Simulator_Run_Simulation_General_Options * simulator_run_simulation_general_options_struct) {
 
 // 	presentation_time_per_stimulus_per_epoch = presentation_time_per_stimulus_per_epoch_param;
 

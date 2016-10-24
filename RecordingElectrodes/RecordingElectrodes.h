@@ -8,7 +8,7 @@ using namespace std;
 #include "../Neurons/SpikingNeurons.h"
 #include "../Synapses/SpikingSynapses.h"
 
-class RecordingElectrodes{
+class RecordingElectrodes {
 public:
 
 	// Variables
@@ -23,7 +23,8 @@ public:
 
 
 	// Constructor/Destructor
-	RecordingElectrodes(SpikingNeurons * neurons_parameter, SpikingSynapses * spiking_synapses, string full_directory_name_for_simulation_data_files_param, const char * prefix_string_param);
+	RecordingElectrodes();
+	RecordingElectrodes(SpikingNeurons * neurons_parameter, SpikingSynapses * synapses_parameter, string full_directory_name_for_simulation_data_files_param, const char * prefix_string_param);
 	~RecordingElectrodes();
 
 

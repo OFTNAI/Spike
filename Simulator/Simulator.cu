@@ -22,14 +22,13 @@ Simulator::Simulator(){
 
 	full_directory_name_for_simulation_data_files = "output/";
 
+	recording_electrodes_to_use_struct = new Simulator_Recording_Electrodes_To_Use_Struct();
+
 	count_neuron_spikes_recording_electrodes = NULL;
 	count_input_neuron_spikes_recording_electrodes = NULL;
 	collect_neuron_spikes_recording_electrodes = NULL;
 	collect_input_neuron_spikes_recording_electrodes = NULL;
 	network_state_archive_recording_electrodes = NULL;
-
-	high_fidelity_spike_storage = false;
-
 
 	number_of_simulations_run = 0;
 
@@ -168,7 +167,6 @@ void Simulator::reset_all_recording_electrodes() {
 
 // 	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, collect_spikes, save_collected_spikes_and_states_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, stimuli_presentation_params, stimulus_presentation_order_seed, NULL, false, false);
 // }
-
 
 
 

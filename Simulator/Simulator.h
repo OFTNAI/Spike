@@ -70,7 +70,6 @@ public:
 	// Variables
 	float timestep;
 	std::string full_directory_name_for_simulation_data_files;
-	bool high_fidelity_spike_storage; // Flag: Enable for high accuracy spike storage, Disable for speed
 	int number_of_simulations_run;
 
 	// Host Pointers
@@ -83,7 +82,6 @@ public:
 	NetworkStateArchiveRecordingElectrodes* network_state_archive_recording_electrodes;
 	
 	// Functions
-	void SetTimestep(float timest);
 	void SetSpikingModel(SpikingModel * spiking_model_parameter);
 
 	void CreateDirectoryForSimulationDataFiles(std::string directory_name_for_simulation_data_files);

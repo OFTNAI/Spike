@@ -10,7 +10,7 @@
 using namespace std;
 
 // NetworkStateArchiveRecordingElectrodes Constructor
-NetworkStateArchiveRecordingElectrodes::NetworkStateArchiveRecordingElectrodes(SpikingNeurons * neurons_parameter, SpikingSynapses * spiking_synapses, string full_directory_name_for_simulation_data_files_param, const char * prefix_string_param) {
+NetworkStateArchiveRecordingElectrodes::NetworkStateArchiveRecordingElectrodes(SpikingNeurons * neurons_parameter, SpikingSynapses * synapses_parameter, string full_directory_name_for_simulation_data_files_param, const char * prefix_string_param) {
 
 	network_state_archive_optional_parameters = new Network_State_Archive_Optional_Parameters();
 

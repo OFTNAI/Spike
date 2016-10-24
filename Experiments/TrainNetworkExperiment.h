@@ -17,9 +17,9 @@
 
 // 	float presentation_time_per_stimulus_per_epoch;
 
-// 	void prepare_experiment(FourLayerVisionSpikingModel * four_layer_vision_spiking_model, bool high_fidelity_spike_storage);
+// 	void prepare_test_network_experiment(FourLayerVisionSpikingModel * four_layer_vision_spiking_model);
 
-// 	void run_experiment(float presentation_time_per_stimulus_per_epoch_param, int number_of_training_epochs);
+// 	void train_model(Simulator_Run_Simulation_General_Options * simulator_run_simulation_general_options_struct);
 
 
 // };
