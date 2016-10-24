@@ -12,6 +12,8 @@ using namespace std;
 // NetworkStateArchiveRecordingElectrodes Constructor
 NetworkStateArchiveRecordingElectrodes::NetworkStateArchiveRecordingElectrodes(SpikingNeurons * neurons_parameter, SpikingSynapses * spiking_synapses, string full_directory_name_for_simulation_data_files_param, const char * prefix_string_param) {
 
+	network_state_archive_optional_parameters = new Network_State_Archive_Optional_Parameters();
+
 }
 
 
@@ -22,9 +24,18 @@ NetworkStateArchiveRecordingElectrodes::~NetworkStateArchiveRecordingElectrodes(
 }
 
 
-void NetworkStateArchiveRecordingElectrodes::write_initial_synaptic_weights_to_file(SpikingSynapses *synapses, bool human_readable_storage) {
+void NetworkStateArchiveRecordingElectrodes::initialise_network_state_archive_recording_electrodes(Network_State_Archive_Optional_Parameters * network_state_archive_optional_parameters_param) {
+
+	if (network_state_archive_optional_parameters_param != NULL) {
+		network_state_archive_optional_parameters = network_state_archive_optional_parameters_param;
+	}
+	
+}
+
+
+void NetworkStateArchiveRecordingElectrodes::write_initial_synaptic_weights_to_file() {
 	ofstream initweightfile;
-	if (human_readable_storage){
+	if (network_state_archive_optional_parameters->human_readable_storage){
 		initweightfile.open(full_directory_name_for_simulation_data_files + prefix_string + "_NetworkWeights_Initial.txt", ios::out | ios::binary);
 		for (int i=0; i < synapses->total_number_of_synapses; i++){
 			initweightfile << to_string(synapses->synaptic_efficacies_or_weights[i]) << endl;
@@ -39,14 +50,14 @@ void NetworkStateArchiveRecordingElectrodes::write_initial_synaptic_weights_to_f
 }
 
 
-void NetworkStateArchiveRecordingElectrodes::write_network_state_to_file(SpikingSynapses *synapses, bool human_readable_storage) {
+void NetworkStateArchiveRecordingElectrodes::write_network_state_to_file() {
 
 	clock_t save_network_state_start = clock();
 
 	// Copy back the data that we might want:
 	CudaSafeCall(cudaMemcpy(synapses->synaptic_efficacies_or_weights, synapses->d_synaptic_efficacies_or_weights, sizeof(float)*synapses->total_number_of_synapses, cudaMemcpyDeviceToHost));
 	
-	if (human_readable_storage){
+	if (network_state_archive_optional_parameters->human_readable_storage){
 		// Creating and Opening all the files
 		ofstream synapsepre, synapsepost, weightfile, delayfile;
 		weightfile.open(full_directory_name_for_simulation_data_files + prefix_string + "_NetworkWeights.txt", ios::out | ios::binary);
@@ -96,5 +107,3 @@ void NetworkStateArchiveRecordingElectrodes::write_network_state_to_file(Spiking
 	#endif
 
 }
-
-

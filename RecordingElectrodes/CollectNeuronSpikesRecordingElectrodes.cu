@@ -13,13 +13,11 @@ using namespace std;
 CollectNeuronSpikesRecordingElectrodes::CollectNeuronSpikesRecordingElectrodes(SpikingNeurons * neurons_parameter, SpikingSynapses * spiking_synapses, string full_directory_name_for_simulation_data_files_param, const char * prefix_string_param) {}
 
 	// Variables
-	number_of_timesteps_per_device_spike_copy_check = 0;
-	device_spike_store_size_multiple_of_total_neurons = 0;
 	size_of_device_spike_store = 0
 	h_total_number_of_spikes_stored_on_host = 0;
-	proportion_of_device_spike_store_full_before_copy = proportion_of_device_spike_store_full_before_copy_param;
 
 	// Host Pointers
+	collect_neuron_spikes_optional_parameters = new Collect_Neuron_Spikes_Optional_Parameters();
 	h_neuron_ids_of_stored_spikes_on_host = NULL;
 	h_total_number_of_spikes_stored_on_device = NULL;
 	h_time_in_seconds_of_stored_spikes_on_host = NULL;
@@ -53,12 +51,13 @@ CollectNeuronSpikesRecordingElectrodes::~CollectNeuronSpikesRecordingElectrodes(
 }
 
 
-void CollectNeuronSpikesRecordingElectrodes::initialise_collect_neuron_spikes_recording_electrodes(Collect_Neuron_Spikes_Optional_Parameters * collect_neuron_spikes_optional_parameters) {
+void CollectNeuronSpikesRecordingElectrodes::initialise_collect_neuron_spikes_recording_electrodes(Collect_Neuron_Spikes_Optional_Parameters * collect_neuron_spikes_optional_parameters_param) {
 
-	number_of_timesteps_per_device_spike_copy_check = collect_neuron_spikes_optional_parameters->number_of_timesteps_per_device_spike_copy_check_param;
-	device_spike_store_size_multiple_of_total_neurons = collect_neuron_spikes_optional_parameters->device_spike_store_size_multiple_of_total_neurons_param;
-	size_of_device_spike_store = device_spike_store_size_multiple_of_total_neurons * neurons->total_number_of_neurons;
-	proportion_of_device_spike_store_full_before_copy = collect_neuron_spikes_optional_parameters->proportion_of_device_spike_store_full_before_copy_param;
+	if (collect_neuron_spikes_optional_parameters_param != NULL) {
+		collect_neuron_spikes_optional_parameters = collect_neuron_spikes_optional_parameters_param;
+	}
+
+	size_of_device_spike_store = collect_neuron_spikes_optional_parameters->device_spike_store_size_multiple_of_total_neurons * neurons->total_number_of_neurons;
 
 	allocate_pointers_for_spike_store();
 	reset_pointers_for_spike_store();
@@ -108,7 +107,7 @@ void CollectNeuronSpikesRecordingElectrodes::delete_and_reset_collected_spikes()
 
 void CollectNeuronSpikesRecordingElectrodes::copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(float current_time_in_seconds, int timestep_index, int number_of_timesteps_per_epoch) {
 
-	if (((timestep_index % number_of_timesteps_per_device_spike_copy_check) == 0) || (timestep_index == (number_of_timesteps_per_epoch-1))){
+	if (((timestep_index % collect_neuron_spikes_optional_parameters->number_of_timesteps_per_device_spike_copy_check) == 0) || (timestep_index == (number_of_timesteps_per_epoch-1))){
 
 		// Finally, we want to get the spikes back. Every few timesteps check the number of spikes:
 		CudaSafeCall(cudaMemcpy(&(h_total_number_of_spikes_stored_on_device[0]), &(d_total_number_of_spikes_stored_on_device[0]), (sizeof(int)), cudaMemcpyDeviceToHost));
@@ -119,7 +118,7 @@ void CollectNeuronSpikesRecordingElectrodes::copy_spikes_from_device_to_host_and
 		}
 
 		// Deal with them!
-		if ((h_total_number_of_spikes_stored_on_device[0] >= (proportion_of_device_spike_store_full_before_copy * size_of_device_spike_store)) ||  (timestep_index == (number_of_timesteps_per_epoch - 1))){
+		if ((h_total_number_of_spikes_stored_on_device[0] >= (collect_neuron_spikes_optional_parameters->proportion_of_device_spike_store_full_before_copy * size_of_device_spike_store)) ||  (timestep_index == (number_of_timesteps_per_epoch - 1))){
 
 			// Reallocate host spike arrays to accommodate for new device spikes.
 			h_neuron_ids_of_stored_spikes_on_host = (int*)realloc(h_neuron_ids_of_stored_spikes_on_host, sizeof(int)*(h_total_number_of_spikes_stored_on_host + h_total_number_of_spikes_stored_on_device[0]));
@@ -149,7 +148,7 @@ void CollectNeuronSpikesRecordingElectrodes::copy_spikes_from_device_to_host_and
 
 
 
-void CollectNeuronSpikesRecordingElectrodes::write_spikes_to_file(int epoch_number, bool human_readable_storage, bool isTrained) {
+void CollectNeuronSpikesRecordingElectrodes::write_spikes_to_file(int epoch_number, bool isTrained) {
 
 	clock_t write_spikes_to_file_start = clock();
 
@@ -166,7 +165,7 @@ void CollectNeuronSpikesRecordingElectrodes::write_spikes_to_file(int epoch_numb
 //	// Append the clock to the file if flag
 //	if (append_clock_to_filenames){ file = file + "t" + to_string(clock()) + "_"; }
 
-	if (human_readable_storage){
+	if (collect_neuron_spikes_optional_parameters->human_readable_storage){
 		// Open the files
 		ofstream spikeidfile, spiketimesfile;
 		spikeidfile.open((file_IDs + ".txt"), ios::out | ios::binary);

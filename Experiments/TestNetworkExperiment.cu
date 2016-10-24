@@ -20,7 +20,7 @@ TestNetworkExperiment::~TestNetworkExperiment() {
 	
 }
 
-void TestNetworkExperiment::prepare_test_network_experiment(FourLayerVisionSpikingModel * four_layer_vision_spiking_model_param, bool high_fidelity_spike_storage, Collect_Neuron_Spikes_Optional_Parameters * collect_neuron_spikes_optional_parameters) {
+void TestNetworkExperiment::prepare_test_network_experiment(FourLayerVisionSpikingModel * four_layer_vision_spiking_model_param, bool high_fidelity_spike_storage, Collect_Neuron_Spikes_Optional_Parameters * collect_neuron_spikes_optional_parameters, Collect_Neuron_Spikes_Optional_Parameters * collect_input_neuron_spikes_optional_parameters, Network_State_Archive_Optional_Parameters * network_state_archive_optional_parameters) {
 
 	NetworkExperiment::prepare_network_experiment(four_layer_vision_spiking_model, high_fidelity_spike_storage);
 

@@ -5,16 +5,22 @@
 #include "../RecordingElectrodes/RecordingElectrodes.h"
 
 
+struct Network_State_Archive_Optional_Parameters {
+
+	Network_State_Archive_Optional_Parameters(): human_readable_storage(false) {}
+
+		bool human_readable_storage;
+	
+};
+
+
 class NetworkStateArchiveRecordingElectrodes  : public RecordingElectrodes {
 public:
 
 	// Variables
-	std::string full_directory_name_for_simulation_data_files;
-	const char * prefix_string;
 
 	// Host Pointers
-	SpikingNeurons * neurons;
-	SpikingSynapses * synapses;
+	Network_State_Archive_Optional_Parameters * network_state_archive_optional_parameters;
 
 	// Device Pointers
 
@@ -23,8 +29,10 @@ public:
 	NetworkStateArchiveRecordingElectrodes(SpikingNeurons * neurons_parameter, SpikingSynapses * spiking_synapses, string full_directory_name_for_simulation_data_files_param, const char * prefix_string_param);
 	~NetworkStateArchiveRecordingElectrodes();
 
-	void write_initial_synaptic_weights_to_file(SpikingSynapses *synapses, bool human_readable_storage);
-	void write_network_state_to_file(SpikingSynapses *synapses, bool human_readable_storage);
+	void initialise_network_state_archive_recording_electrodes(Network_State_Archive_Optional_Parameters * network_state_archive_optional_parameters_param);
+
+	void write_initial_synaptic_weights_to_file();
+	void write_network_state_to_file();
 
 
 private:
