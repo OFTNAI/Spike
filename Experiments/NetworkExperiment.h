@@ -21,9 +21,7 @@ public:
 	bool experiment_prepared;
 	bool experiment_run;
 
-	virtual void prepare_experiment(FourLayerVisionSpikingModel * four_layer_vision_spiking_model, bool high_fidelity_spike_storage);
-
-	void setup_recording_electrodes_for_simulator();
+	virtual void prepare_network_experiment(FourLayerVisionSpikingModel * four_layer_vision_spiking_model, bool high_fidelity_spike_storage);
 
 };
 

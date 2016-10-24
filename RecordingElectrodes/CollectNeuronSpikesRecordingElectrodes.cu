@@ -53,12 +53,12 @@ CollectNeuronSpikesRecordingElectrodes::~CollectNeuronSpikesRecordingElectrodes(
 }
 
 
-void CollectNeuronSpikesRecordingElectrodes::initialise_collect_neuron_spikes_recording_electrodes(int number_of_timesteps_per_device_spike_copy_check_param, int device_spike_store_size_multiple_of_total_neurons_param, float proportion_of_device_spike_store_full_before_copy_param) {
+void CollectNeuronSpikesRecordingElectrodes::initialise_collect_neuron_spikes_recording_electrodes(Collect_Neuron_Spikes_Optional_Parameters * collect_neuron_spikes_optional_parameters) {
 
-	number_of_timesteps_per_device_spike_copy_check = number_of_timesteps_per_device_spike_copy_check_param;
-	device_spike_store_size_multiple_of_total_neurons = device_spike_store_size_multiple_of_total_neurons_param;
+	number_of_timesteps_per_device_spike_copy_check = collect_neuron_spikes_optional_parameters->number_of_timesteps_per_device_spike_copy_check_param;
+	device_spike_store_size_multiple_of_total_neurons = collect_neuron_spikes_optional_parameters->device_spike_store_size_multiple_of_total_neurons_param;
 	size_of_device_spike_store = device_spike_store_size_multiple_of_total_neurons * neurons->total_number_of_neurons;
-	proportion_of_device_spike_store_full_before_copy = proportion_of_device_spike_store_full_before_copy_param;
+	proportion_of_device_spike_store_full_before_copy = collect_neuron_spikes_optional_parameters->proportion_of_device_spike_store_full_before_copy_param;
 
 	allocate_pointers_for_spike_store();
 	reset_pointers_for_spike_store();
@@ -84,20 +84,7 @@ void CollectNeuronSpikesRecordingElectrodes::allocate_pointers_for_spike_store()
 }
 
 
-void CollectNeuronSpikesRecordingElectrodes::reset_pointers_for_spike_store() {
-
-	h_total_number_of_spikes_stored_on_device[0] = 0;
-	h_total_number_of_spikes_stored_on_host = 0;
-
-	CudaSafeCall(cudaMemset(d_neuron_ids_of_stored_spikes_on_device, -1, sizeof(int)*size_of_device_spike_store));
-	CudaSafeCall(cudaMemset(d_time_in_seconds_of_stored_spikes_on_device, -1.0f, sizeof(float)*size_of_device_spike_store));
-	CudaSafeCall(cudaMemset(d_total_number_of_spikes_stored_on_device, 0, sizeof(int)));
-
-}
-
-
-
-void CollectNeuronSpikesRecordingElectrodes::delete_and_reset_recorded_spikes() {
+void CollectNeuronSpikesRecordingElectrodes::delete_and_reset_collected_spikes() {
 
 	// Reset the spike store
 	// Host values

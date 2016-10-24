@@ -5,6 +5,19 @@
 #include "../RecordingElectrodes/RecordingElectrodes.h"
 
 
+struct Collect_Neuron_Spikes_Optional_Parameters {
+
+	Collect_Neuron_Spikes_Optional_Parameters(): number_of_timesteps_per_device_spike_copy_check_param(50), device_spike_store_size_multiple_of_total_neurons_param(52), proportion_of_device_spike_store_full_before_copy_param(0.2) {}
+
+	int number_of_timesteps_per_device_spike_copy_check_param;
+	int device_spike_store_size_multiple_of_total_neurons_param;
+	float proportion_of_device_spike_store_full_before_copy_param;
+
+};
+
+
+
+
 class CollectNeuronSpikesRecordingElectrodes : public RecordingElectrodes {
 public:
 
@@ -30,7 +43,7 @@ public:
 	CollectNeuronSpikesRecordingElectrodes(SpikingNeurons * neurons_parameter, SpikingSynapses * spiking_synapses, string full_directory_name_for_simulation_data_files_param, const char * prefix_string_param);
 	~CollectNeuronSpikesRecordingElectrodes();
 
-	void initialise_collect_neuron_spikes_recording_electrodes(int number_of_timesteps_per_device_spike_copy_check_param, int device_spike_store_size_multiple_of_total_neurons_param, float proportion_of_device_spike_store_full_before_copy_param);
+	void initialise_collect_neuron_spikes_recording_electrodes(Collect_Neuron_Spikes_Optional_Parameters * collect_neuron_spikes_optional_parameters);
 	void allocate_pointers_for_spike_count();
 	void reset_pointers_for_spike_count();
 
@@ -40,7 +53,7 @@ public:
 
 	void add_spikes_to_per_neuron_spike_count(float current_time_in_seconds);
 
-	void delete_and_reset_recorded_spikes();
+	void delete_and_reset_collected_spikes();
 
 private:
 

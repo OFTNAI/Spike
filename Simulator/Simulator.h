@@ -71,7 +71,7 @@ public:
 
 	void CreateDirectoryForSimulationDataFiles(std::string directory_name_for_simulation_data_files);
 	
-	void prepare_recording_electrodes(Simulator_Recording_Electrodes_To_Use_Struct * recording_electrodes_to_use_struct);
+	void prepare_recording_electrodes(Simulator_Recording_Electrodes_To_Use_Struct * recording_electrodes_to_use_struct, Collect_Neuron_Spikes_Optional_Parameters * collect_neuron_spikes_optional_parameters);
 	void reset_all_recording_electrodes();
 
 	// void RunSimulationToCountNeuronSpikes(float presentation_time_per_stimulus_per_epoch, bool collect_spikes, bool save_collected_spikes_and_states_to_file, SpikeAnalyser *spike_analyser, bool human_readable_storage, bool isTrained);

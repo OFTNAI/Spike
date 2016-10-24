@@ -80,7 +80,7 @@ TEST_CASE("RecordingElectrode") {
 
 	// Setting up the recording electrode
 	test_record.allocate_pointers_for_spike_store();
-	test_record.reset_pointers_for_spike_store();
+	test_record.delete_and_reset_collected_spikes(); // From new CollectNeuronSpikesRecordingElectrodes. (RE Tests need updating for new classes)
 
 	test_record.allocate_pointers_for_spike_count();
 	test_record.reset_pointers_for_spike_count();

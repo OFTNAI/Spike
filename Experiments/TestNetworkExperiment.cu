@@ -20,13 +20,17 @@ TestNetworkExperiment::~TestNetworkExperiment() {
 	
 }
 
-void TestNetworkExperiment::prepare_experiment(FourLayerVisionSpikingModel * four_layer_vision_spiking_model_param, bool high_fidelity_spike_storage) {
+void TestNetworkExperiment::prepare_test_network_experiment(FourLayerVisionSpikingModel * four_layer_vision_spiking_model_param, bool high_fidelity_spike_storage, Collect_Neuron_Spikes_Optional_Parameters * collect_neuron_spikes_optional_parameters) {
 
-	NetworkExperiment::prepare_experiment(four_layer_vision_spiking_model, high_fidelity_spike_storage);
+	NetworkExperiment::prepare_network_experiment(four_layer_vision_spiking_model, high_fidelity_spike_storage);
 
 	simulator->CreateDirectoryForSimulationDataFiles("heytest");
 
-	setup_recording_electrodes_for_simulator();
+
+	Simulator_Recording_Electrodes_To_Use_Struct * recording_electrodes_to_use_struct = new Recordine_Electrodes_To_Use_Struct();
+	recording_electrodes_to_use_struct->collect_neuron_spikes_recording_electrodes_bool = true;
+
+	prepare_recording_electrodes(recording_electrodes_to_use_struct, collect_neuron_spikes_optional_parameters);
 
 	spike_analyser = new SpikeAnalyser(four_layer_vision_spiking_model->spiking_neurons, four_layer_vision_spiking_model->image_poisson_input_spiking_neurons);
 
