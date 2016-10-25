@@ -23,6 +23,7 @@ public:
 	~PoissonInputSpikingNeurons();
 
 	// Host Pointers
+	float rate;
 	float * rates;
 
 	// Device Pointers

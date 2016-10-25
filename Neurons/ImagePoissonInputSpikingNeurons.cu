@@ -42,11 +42,10 @@ int ImagePoissonInputSpikingNeurons::AddGroup(neuron_parameters_struct * group_p
 
 	int new_group_id = PoissonInputSpikingNeurons::AddGroup(group_params);
 
+	// Not currently used
 	// image_poisson_input_spiking_neuron_parameters_struct * image_poisson_input_spiking_group_params = (image_poisson_input_spiking_neuron_parameters_struct*)group_params;
-
-	for (int i = total_number_of_neurons - number_of_neurons_in_new_group; i < total_number_of_neurons; i++) {
-
-	}
+	// for (int i = total_number_of_neurons - number_of_neurons_in_new_group; i < total_number_of_neurons; i++) {
+	// }
 
 	return new_group_id;
 
@@ -102,8 +101,6 @@ void ImagePoissonInputSpikingNeurons::load_image_names_from_file_list(const char
 	// cout << "Reading file list:" << endl;
 	
 	while(getline(fileListStream, dirNameBase)) { 	// Read line from file list
-
-		// printf("total_number_of_transformations_per_object: %d\n", total_number_of_transformations_per_object);
 		
 		if(dirNameBase.compare("") == 0) {
 			continue; // Last line may just be empty bcs of matlab script, should be break; really, but what the hell		
@@ -309,54 +306,56 @@ int ImagePoissonInputSpikingNeurons::calculate_gabor_index(int orientationIndex,
 
 
 
-int* ImagePoissonInputSpikingNeurons::setup_stimuli_presentation_order(Stimuli_Presentation_Struct * stimuli_presentation_params) {
+// MOVE SIMILAR TO SIMULATOR (ALREADY CALLED BY SIMULATOR)
+// COMBINE WITH INPUT SPIKING NEURON VIRTUAL CALL
+// int* ImagePoissonInputSpikingNeurons::setup_stimuli_presentation_order(Stimuli_Presentation_Struct * stimuli_presentation_params) {
 	
-	int* stimuli_presentation_order = PoissonInputSpikingNeurons::setup_stimuli_presentation_order(stimuli_presentation_params);
+// 	int* stimuli_presentation_order = PoissonInputSpikingNeurons::setup_stimuli_presentation_order(stimuli_presentation_params);
 	
-	switch (stimuli_presentation_params->presentation_format) {
+// 	switch (stimuli_presentation_params->presentation_format) {
 		
-		case PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_OBJECTS: case PRESENTATION_FORMAT_OBJECT_BY_OBJECT_NO_RESET:
-		{
-			int* object_order_indices = (int*)malloc(total_number_of_objects * sizeof(int));
+// 		case PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_OBJECTS: case PRESENTATION_FORMAT_OBJECT_BY_OBJECT_NO_RESET:
+// 		{
+// 			int* object_order_indices = (int*)malloc(total_number_of_objects * sizeof(int));
 
-			for (int object_index = 0; object_index < total_number_of_objects; object_index++) {
-				object_order_indices[object_index] = object_index;			
-			}
+// 			for (int object_index = 0; object_index < total_number_of_objects; object_index++) {
+// 				object_order_indices[object_index] = object_index;			
+// 			}
 
-			switch (stimuli_presentation_params->object_order) {
+// 			switch (stimuli_presentation_params->object_order) {
 		
-				case OBJECT_ORDER_ORIGINAL:
+// 				case OBJECT_ORDER_ORIGINAL:
 
-					break;
+// 					break;
 
-				case OBJECT_ORDER_RANDOM:
-					std::random_shuffle(&object_order_indices[0], &object_order_indices[total_number_of_objects]);
-					break;
+// 				case OBJECT_ORDER_RANDOM:
+// 					std::random_shuffle(&object_order_indices[0], &object_order_indices[total_number_of_objects]);
+// 					break;
 
-			}
+// 			}
 
-			int* transform_order_indices = (int*)malloc(total_number_of_transformations_per_object * sizeof(int));
-			for (int transform_index = 0; transform_index < total_number_of_transformations_per_object; transform_index++) {
-				transform_order_indices[transform_index] = transform_index;			
-			}
+// 			int* transform_order_indices = (int*)malloc(total_number_of_transformations_per_object * sizeof(int));
+// 			for (int transform_index = 0; transform_index < total_number_of_transformations_per_object; transform_index++) {
+// 				transform_order_indices[transform_index] = transform_index;			
+// 			}
 
-			for (int object_index = 0; object_index < total_number_of_objects; object_index++) {
+// 			for (int object_index = 0; object_index < total_number_of_objects; object_index++) {
 				
-				if (stimuli_presentation_params->transform_order == TRANSFORM_ORDER_RANDOM) std::random_shuffle(&transform_order_indices[0], &transform_order_indices[total_number_of_transformations_per_object]);
+// 				if (stimuli_presentation_params->transform_order == TRANSFORM_ORDER_RANDOM) std::random_shuffle(&transform_order_indices[0], &transform_order_indices[total_number_of_transformations_per_object]);
 
-				for (int transform_index = 0; transform_index < total_number_of_transformations_per_object; transform_index++) {
-					stimuli_presentation_order[object_index * total_number_of_transformations_per_object + transform_index] = object_order_indices[object_index] * total_number_of_transformations_per_object + transform_order_indices[transform_index]; 
-				}					
-			}
+// 				for (int transform_index = 0; transform_index < total_number_of_transformations_per_object; transform_index++) {
+// 					stimuli_presentation_order[object_index * total_number_of_transformations_per_object + transform_index] = object_order_indices[object_index] * total_number_of_transformations_per_object + transform_order_indices[transform_index]; 
+// 				}					
+// 			}
 
-		}
+// 		}
 
-		default:
-			break;
-	}
+// 		default:
+// 			break;
+// 	}
 
-	return stimuli_presentation_order;
-}
+// 	return stimuli_presentation_order;
+// }
 
 
 bool ImagePoissonInputSpikingNeurons::stimulus_is_new_object_for_object_by_object_presentation(int stimulus_index) {
