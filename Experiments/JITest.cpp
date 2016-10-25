@@ -103,23 +103,24 @@ int main (int argc, char *argv[]){
 	// train_network_experiment->prepare_train_network_experiment(four_layer_vision_spiking_model);
 
 
-	Simulator * simulator = new Simulator();
-	simulator->SetSpikingModel(four_layer_vision_spiking_model);
+	Simulator_Options * simulator_options = new Simulator_Options();
+	simulator_options->run_simulation_general_options->presentation_time_per_stimulus_per_epoch = 0.2;
+	simulator_options->run_simulation_general_options->number_of_epochs = 10;
+	simulator_options->run_simulation_general_options->apply_stdp_to_relevant_synapses = true;
+	simulator_options->run_simulation_general_options->stimulus_presentation_order_seed = 8;
 
-	Simulator_Run_Simulation_General_Options * train_network_general_simulator_options = new Simulator_Run_Simulation_General_Options();
-	train_network_general_simulator_options->presentation_time_per_stimulus_per_epoch = 0.2;
-	train_network_general_simulator_options->number_of_epochs = 10;
-	train_network_general_simulator_options->apply_stdp_to_relevant_synapses = true;
-	train_network_general_simulator_options->stimulus_presentation_order_seed = 8;
+
+	Simulator * simulator = new Simulator(four_layer_vision_spiking_model, simulator_options);
+
+
 
 	Stimuli_Presentation_Struct * stimuli_presentation_params = new Stimuli_Presentation_Struct();
 	stimuli_presentation_params->presentation_format = PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_OBJECTS;
 	stimuli_presentation_params->object_order = OBJECT_ORDER_ORIGINAL;
 	stimuli_presentation_params->transform_order = TRANSFORM_ORDER_RANDOM;
 
-	Simulator_File_Storage_Options_Struct * training_file_storage_options = new Simulator_File_Storage_Options_Struct();
 
-	simulator->RunSimulation(train_network_general_simulator_options, stimuli_presentation_params, training_file_storage_options, NULL);
+	simulator->RunSimulation(stimuli_presentation_params, NULL);
 
 
 
