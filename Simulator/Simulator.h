@@ -19,9 +19,40 @@
 
 #include "../Helpers/TimerWithMessages.h"
 
+
+
+struct Simulator_Recording_Electrodes_To_Use_Struct {
+
+	Simulator_Recording_Electrodes_To_Use_Struct(): count_neuron_spikes_recording_electrodes_bool(false), 
+													count_input_neuron_spikes_recording_electrodes_bool(false), 
+													collect_neuron_spikes_recording_electrodes_bool(false), 
+													collect_input_neuron_spikes_recording_electrodes_bool(false), 
+													network_state_archive_recording_electrodes_bool(false), 
+													collect_neuron_spikes_optional_parameters(new Collect_Neuron_Spikes_Optional_Parameters()),
+													collect_input_neuron_spikes_optional_parameters(new Collect_Neuron_Spikes_Optional_Parameters()),
+													network_state_archive_optional_parameters(new Network_State_Archive_Optional_Parameters()) 
+													{}
+
+	bool count_neuron_spikes_recording_electrodes_bool;
+	bool count_input_neuron_spikes_recording_electrodes_bool;
+	bool collect_neuron_spikes_recording_electrodes_bool;
+	bool collect_input_neuron_spikes_recording_electrodes_bool;
+	bool network_state_archive_recording_electrodes_bool;
+
+	Collect_Neuron_Spikes_Optional_Parameters * collect_neuron_spikes_optional_parameters;
+	Collect_Neuron_Spikes_Optional_Parameters * collect_input_neuron_spikes_optional_parameters;
+	Network_State_Archive_Optional_Parameters * network_state_archive_optional_parameters;
+
+};
+
+
 struct Simulator_Run_Simulation_General_Options {
 
-	Simulator_Run_Simulation_General_Options(): presentation_time_per_stimulus_per_epoch(), number_of_epochs(1), apply_stdp_to_relevant_synapses(false), stimulus_presentation_order_seed(1) {}
+	Simulator_Run_Simulation_General_Options(): presentation_time_per_stimulus_per_epoch(0.1), 
+												number_of_epochs(1), 
+												apply_stdp_to_relevant_synapses(false), 
+												stimulus_presentation_order_seed(1) 
+												{}
 
 
 	float presentation_time_per_stimulus_per_epoch; 
@@ -33,22 +64,14 @@ struct Simulator_Run_Simulation_General_Options {
 };
 
 
-struct Simulator_Recording_Electrodes_To_Use_Struct {
-
-	Simulator_Recording_Electrodes_To_Use_Struct(): count_neuron_spikes_recording_electrodes_bool(false), count_input_neuron_spikes_recording_electrodes_bool(false), collect_neuron_spikes_recording_electrodes_bool(false), collect_input_neuron_spikes_recording_electrodes_bool(false), network_state_archive_recording_electrodes_bool(false)  {}
-
-	bool count_neuron_spikes_recording_electrodes_bool;
-	bool count_input_neuron_spikes_recording_electrodes_bool;
-	bool collect_neuron_spikes_recording_electrodes_bool;
-	bool collect_input_neuron_spikes_recording_electrodes_bool;
-	bool network_state_archive_recording_electrodes_bool;
-
-};
-
-
 struct Simulator_File_Storage_Options_Struct {
 
-	Simulator_File_Storage_Options_Struct(): save_recorded_neuron_spikes_to_file(false), save_recorded_input_neuron_spikes_to_file(false), write_initial_synaptic_weights_to_file_bool(false), human_readable_storage(false), network_is_trained(false) {}
+	Simulator_File_Storage_Options_Struct(): save_recorded_neuron_spikes_to_file(false), 
+											save_recorded_input_neuron_spikes_to_file(false), 
+											write_initial_synaptic_weights_to_file_bool(false), 
+											human_readable_storage(false), 
+											network_is_trained(false) 
+											{}
 
 	bool save_recorded_neuron_spikes_to_file;
 	bool save_recorded_input_neuron_spikes_to_file;
@@ -56,6 +79,18 @@ struct Simulator_File_Storage_Options_Struct {
 	bool human_readable_storage;
 	bool network_is_trained;
 
+};
+
+
+struct Simulator_Options {
+	Simulator_Options(): run_simulation_general_options(new Simulator_Run_Simulation_General_Options()), 
+						recording_electrodes_options(new Simulator_Recording_Electrodes_To_Use_Struct()), 
+						file_storage_options(new Simulator_File_Storage_Options_Struct()) 
+						{}
+
+	Simulator_Run_Simulation_General_Options * run_simulation_general_options;
+	Simulator_Recording_Electrodes_To_Use_Struct * recording_electrodes_options;
+	Simulator_File_Storage_Options_Struct * file_storage_options;
 };
 
 
@@ -86,7 +121,7 @@ public:
 
 	void CreateDirectoryForSimulationDataFiles(std::string directory_name_for_simulation_data_files);
 	
-	void prepare_recording_electrodes(Simulator_Recording_Electrodes_To_Use_Struct * recording_electrodes_to_use_struct, Collect_Neuron_Spikes_Optional_Parameters * collect_neuron_spikes_optional_parameters, Collect_Neuron_Spikes_Optional_Parameters * collect_input_neuron_spikes_optional_parameters, Network_State_Archive_Optional_Parameters * network_state_archive_optional_parameters);
+	void prepare_recording_electrodes(Simulator_Recording_Electrodes_To_Use_Struct * recording_electrodes_to_use_struct);
 	void reset_all_recording_electrodes();
 
 	// void RunSimulationToCountNeuronSpikes(float presentation_time_per_stimulus_per_epoch, bool collect_spikes, bool save_collected_spikes_and_states_to_file, SpikeAnalyser *spike_analyser, bool human_readable_storage, bool isTrained);
