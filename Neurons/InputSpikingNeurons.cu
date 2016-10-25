@@ -7,7 +7,11 @@
 
 // InputSpikingNeurons Constructor
 InputSpikingNeurons::InputSpikingNeurons() {
+
+	total_number_of_transformations_per_object = 0;
+	total_number_of_objects = 0;
 	total_number_of_input_stimuli = 0;
+
 	current_stimulus_index = 0;
 }
 

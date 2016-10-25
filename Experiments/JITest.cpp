@@ -49,6 +49,7 @@ int main (int argc, char *argv[]){
 	//*1 Bair, W., & Movshon, J. A. (2004).  Adaptive Temporal Integration of Motion in Direction-Selective Neurons in Macaque Visual Cortex. The Journal of Neuroscience, 24(33), 7305遯ｶ�ｿｽ7323.
 	int number_of_bins = 5;
 	bool useThresholdForMaxFR = true;
+	const float presentation_time_per_stimulus_per_epoch_test = 0.5f;
 	float max_firing_rate = optimal_max_firing_rate*presentation_time_per_stimulus_per_epoch_test;
 
 

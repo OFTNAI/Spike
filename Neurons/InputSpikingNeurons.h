@@ -49,8 +49,12 @@ public:
 	InputSpikingNeurons();
 	~InputSpikingNeurons();
 
-	int total_number_of_input_stimuli;
+	
 	int current_stimulus_index;
+
+	int total_number_of_input_stimuli;
+	int total_number_of_objects;
+	int total_number_of_transformations_per_object;
 
 	virtual int AddGroup(neuron_parameters_struct * group_params);
 	virtual int* setup_stimuli_presentation_order(Stimuli_Presentation_Struct * stimuli_presentation_params);

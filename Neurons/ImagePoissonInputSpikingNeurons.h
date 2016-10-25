@@ -52,7 +52,6 @@ public:
 	int total_number_of_rates_per_image;
 
 	int total_number_of_gabor_types;
-	int total_number_of_objects;
 
 	//OLD VARIABLES
 	std::vector<std::string> inputNames;
@@ -62,7 +61,7 @@ public:
 	std::vector<float> * filterOrientations;
 	
 
-	int total_number_of_transformations_per_object;
+	
 	
 };
 

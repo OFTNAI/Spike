@@ -15,11 +15,6 @@ using namespace std;
 // ImagePoissonInputSpikingNeurons Constructor
 ImagePoissonInputSpikingNeurons::ImagePoissonInputSpikingNeurons() {
 
-	//JI
-	total_number_of_transformations_per_object = 0;
-	total_number_of_objects = 0;
-	total_number_of_input_stimuli = 0;
-
 	total_number_of_phases = 0;
 	total_number_of_wavelengths = 0;
 	total_number_of_orientations = 0;
