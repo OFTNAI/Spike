@@ -41,7 +41,7 @@ int PoissonInputSpikingNeurons::AddGroup(neuron_parameters_struct * group_params
 }
 
 
-int PoissonInputSpikingNeurons::set_up_rates() {
+void PoissonInputSpikingNeurons::set_up_rates() {
 
 	rates = (float*)realloc(rates, sizeof(float)*total_number_of_neurons);
 	for (int i = total_number_of_neurons - number_of_neurons_in_new_group; i < total_number_of_neurons; i++) {
@@ -67,7 +67,9 @@ void PoissonInputSpikingNeurons::allocate_device_pointers(int maximum_axonal_del
 void PoissonInputSpikingNeurons::copy_constants_to_device() {
 	InputSpikingNeurons::copy_constants_to_device();
 
-	CudaSafeCall(cudaMemcpy(d_rates, rates, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
+	if (rates != NULL) {
+		CudaSafeCall(cudaMemcpy(d_rates, rates, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
+	}
 }
 
 
@@ -82,13 +84,6 @@ void PoissonInputSpikingNeurons::set_threads_per_block_and_blocks_per_grid(int t
 	
 	InputSpikingNeurons::set_threads_per_block_and_blocks_per_grid(threads);
 
-}
-
-int* PoissonInputSpikingNeurons::setup_stimuli_presentation_order(Stimuli_Presentation_Struct * stimuli_presentation_params) {
-	
-	int* stimuli_presentation_order = InputSpikingNeurons::setup_stimuli_presentation_order(stimuli_presentation_params);
-
-	return stimuli_presentation_order;
 }
 
 

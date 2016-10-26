@@ -110,16 +110,16 @@ void Simulator::reset_all_recording_electrodes() {
 // 	bool apply_stdp_to_relevant_synapses = false;
 // 	bool count_spikes_per_neuron = true;
 // 	int stimulus_presentation_order_seed = 0; // Shouldn't be needed if stimuli presentation not random
-// 	Stimuli_Presentation_Struct * stimuli_presentation_params = new Stimuli_Presentation_Struct();
-// 	// stimuli_presentation_params->presentation_format = PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_OBJECTS;
-// 	stimuli_presentation_params->presentation_format = PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_STIMULI;
-// 	stimuli_presentation_params->object_order = OBJECT_ORDER_ORIGINAL;
-// 	stimuli_presentation_params->transform_order = TRANSFORM_ORDER_ORIGINAL;
+// 	Stimuli_Presentation_Struct * simulator_options->stimuli_presentation_options = new Stimuli_Presentation_Struct();
+// 	// simulator_options->stimuli_presentation_options->presentation_format = PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_OBJECTS;
+// 	simulator_options->stimuli_presentation_options->presentation_format = PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_STIMULI;
+// 	simulator_options->stimuli_presentation_options->object_order = OBJECT_ORDER_ORIGINAL;
+// 	simulator_options->stimuli_presentation_options->transform_order = TRANSFORM_ORDER_ORIGINAL;
 	
 // 	if (!network_is_trained)
 // 		recording_electrodes->write_initial_synaptic_weights_to_file(spiking_model->spiking_synapses, human_readable_storage);
 	
-// 	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, collect_spikes, save_collected_spikes_and_states_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, stimuli_presentation_params, stimulus_presentation_order_seed, spike_analyser,human_readable_storage,network_is_trained);
+// 	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, collect_spikes, save_collected_spikes_and_states_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, simulator_options->stimuli_presentation_options, stimulus_presentation_order_seed, spike_analyser,human_readable_storage,network_is_trained);
 	
 // 	if (network_is_trained)
 // 		recording_electrodes->write_network_state_to_file(spiking_model->spiking_synapses, human_readable_storage);
@@ -132,11 +132,11 @@ void Simulator::reset_all_recording_electrodes() {
 // 	bool apply_stdp_to_relevant_synapses = false;
 // 	bool count_spikes_per_neuron = true;
 // 	int stimulus_presentation_order_seed = 0; // Shouldn't be needed if stimuli presentation not random
-// 	Stimuli_Presentation_Struct * stimuli_presentation_params = new Stimuli_Presentation_Struct();
-// 	// stimuli_presentation_params->presentation_format = PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_OBJECTS;
-// 	stimuli_presentation_params->presentation_format = PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_STIMULI;
-// 	stimuli_presentation_params->object_order = OBJECT_ORDER_ORIGINAL;
-// 	stimuli_presentation_params->transform_order = TRANSFORM_ORDER_ORIGINAL;
+// 	Stimuli_Presentation_Struct * simulator_options->stimuli_presentation_options = new Stimuli_Presentation_Struct();
+// 	// simulator_options->stimuli_presentation_options->presentation_format = PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_OBJECTS;
+// 	simulator_options->stimuli_presentation_options->presentation_format = PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_STIMULI;
+// 	simulator_options->stimuli_presentation_options->object_order = OBJECT_ORDER_ORIGINAL;
+// 	simulator_options->stimuli_presentation_options->transform_order = TRANSFORM_ORDER_ORIGINAL;
 
 // 	bool collect_spikes = false;
 // 	bool save_collected_spikes_and_states_to_file = false;
@@ -144,26 +144,26 @@ void Simulator::reset_all_recording_electrodes() {
 // 	SpikeAnalyser * spike_analyser = NULL;
 // 	bool human_readable_storage = false;
 	
-// 	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, collect_spikes, save_collected_spikes_and_states_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, stimuli_presentation_params, stimulus_presentation_order_seed, spike_analyser, human_readable_storage,network_is_trained);
+// 	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, collect_spikes, save_collected_spikes_and_states_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, simulator_options->stimuli_presentation_options, stimulus_presentation_order_seed, spike_analyser, human_readable_storage,network_is_trained);
 	
 // }
 
-// void Simulator::RunSimulationToTrainNetwork(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, Stimuli_Presentation_Struct * stimuli_presentation_params, int stimulus_presentation_order_seed) {
+// void Simulator::RunSimulationToTrainNetwork(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, Stimuli_Presentation_Struct * simulator_options->stimuli_presentation_options, int stimulus_presentation_order_seed) {
 
 // 	bool apply_stdp_to_relevant_synapses = true;
 // 	bool count_spikes_per_neuron = false;
 // 	bool collect_spikes = false;
 // 	bool save_collected_spikes_and_states_to_file = false;
 
-// 	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, collect_spikes, save_collected_spikes_and_states_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, stimuli_presentation_params, stimulus_presentation_order_seed, NULL, false, false);
+// 	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, collect_spikes, save_collected_spikes_and_states_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, simulator_options->stimuli_presentation_options, stimulus_presentation_order_seed, NULL, false, false);
 // }
 
 
 
-void Simulator::RunSimulation(Stimuli_Presentation_Struct * stimuli_presentation_params, SpikeAnalyser *spike_analyser) {
+void Simulator::RunSimulation(SpikeAnalyser *spike_analyser) {
 
 	// check_for_epochs_and_begin_simulation_message(spiking_model->timestep, spiking_model->input_spiking_neurons->total_number_of_input_stimuli, number_of_epochs, collect_spikes, save_collected_spikes_and_states_to_file, spiking_model->spiking_neurons->total_number_of_neurons, spiking_model->input_spiking_neurons->total_number_of_neurons, spiking_model->spiking_synapses->total_number_of_synapses);
-	// Should print something about stimuli_presentation_params as old stuff removed from check_for_epochs...
+	// Should print something about simulator_options->stimuli_presentation_options as old stuff removed from check_for_epochs...
 	TimerWithMessages * simulation_timer = new TimerWithMessages();
 
 	// Set seed for stimulus presentation order
@@ -187,12 +187,12 @@ void Simulator::RunSimulation(Stimuli_Presentation_Struct * stimuli_presentation
 
 		float current_time_in_seconds = 0.0f;
 
-		int* stimuli_presentation_order = spiking_model->input_spiking_neurons->setup_stimuli_presentation_order(stimuli_presentation_params);
+		int* stimuli_presentation_order = setup_stimuli_presentation_order();
 		for (int stimulus_index = 0; stimulus_index < spiking_model->input_spiking_neurons->total_number_of_input_stimuli; stimulus_index++) {
 
-			if (stimuli_presentation_params->reset_current_time_between_each_stimulus) current_time_in_seconds = 0.0f; // For GeneratorInputSpikingNeurons?
+			if (simulator_options->stimuli_presentation_options->reset_current_time_between_each_stimulus) current_time_in_seconds = 0.0f; // For GeneratorInputSpikingNeurons?
 
-			perform_pre_stimulus_presentation_instructions(stimuli_presentation_order[stimulus_index], stimuli_presentation_params);
+			perform_pre_stimulus_presentation_instructions(stimuli_presentation_order[stimulus_index]);
 
 			int number_of_timesteps_per_stimulus_per_epoch = simulator_options->run_simulation_general_options->presentation_time_per_stimulus_per_epoch / spiking_model->timestep;
 		
@@ -217,6 +217,73 @@ void Simulator::RunSimulation(Stimuli_Presentation_Struct * stimuli_presentation
 	
 	perform_end_of_simulation_instructions(simulation_timer);
 	
+}
+
+
+int* Simulator::setup_stimuli_presentation_order() {
+
+	int total_number_of_input_stimuli = spiking_model->input_spiking_neurons->total_number_of_input_stimuli;
+	int total_number_of_objects = spiking_model->input_spiking_neurons->total_number_of_objects;
+	int total_number_of_transformations_per_object = spiking_model->input_spiking_neurons->total_number_of_transformations_per_object;
+	
+	int* stimuli_presentation_order = (int*)malloc(total_number_of_input_stimuli*sizeof(int));
+
+	// From InputSpikingNeurons
+	
+	for (int i = 0; i < total_number_of_input_stimuli; i++){
+		stimuli_presentation_order[i] = i;
+	}
+
+	switch (simulator_options->stimuli_presentation_options->presentation_format) {
+
+		case PRESENTATION_FORMAT_RANDOM_RESET_BETWEEN_EACH_STIMULUS: case PRESENTATION_FORMAT_RANDOM_NO_RESET: {
+			std::random_shuffle(&stimuli_presentation_order[0], &stimuli_presentation_order[total_number_of_input_stimuli]);
+			break;
+		}
+
+		case PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_OBJECTS: case PRESENTATION_FORMAT_OBJECT_BY_OBJECT_NO_RESET: {
+			
+			int* object_order_indices = (int*)malloc(total_number_of_objects * sizeof(int));
+
+			for (int object_index = 0; object_index < total_number_of_objects; object_index++) {
+				object_order_indices[object_index] = object_index;			
+			}
+
+			switch (simulator_options->stimuli_presentation_options->object_order) {
+		
+				case OBJECT_ORDER_ORIGINAL:
+
+					break;
+
+				case OBJECT_ORDER_RANDOM:
+					std::random_shuffle(&object_order_indices[0], &object_order_indices[total_number_of_objects]);
+					break;
+
+			}
+
+			int* transform_order_indices = (int*)malloc(total_number_of_transformations_per_object * sizeof(int));
+			for (int transform_index = 0; transform_index < total_number_of_transformations_per_object; transform_index++) {
+				transform_order_indices[transform_index] = transform_index;			
+			}
+
+			for (int object_index = 0; object_index < total_number_of_objects; object_index++) {
+				
+				if (simulator_options->stimuli_presentation_options->transform_order == TRANSFORM_ORDER_RANDOM) std::random_shuffle(&transform_order_indices[0], &transform_order_indices[total_number_of_transformations_per_object]);
+
+				for (int transform_index = 0; transform_index < total_number_of_transformations_per_object; transform_index++) {
+					stimuli_presentation_order[object_index * total_number_of_transformations_per_object + transform_index] = object_order_indices[object_index] * total_number_of_transformations_per_object + transform_order_indices[transform_index]; 
+				}					
+			}
+
+			break;
+
+		}
+
+		default:
+			break;
+	}
+
+	return stimuli_presentation_order;
 }
 
 
@@ -270,12 +337,12 @@ void Simulator::perform_per_timestep_recording_electrode_instructions(float curr
 }
 
 
-void Simulator::perform_pre_stimulus_presentation_instructions(int stimulus_index, Stimuli_Presentation_Struct * stimuli_presentation_params) {
+void Simulator::perform_pre_stimulus_presentation_instructions(int stimulus_index) {
 
 	printf("Stimulus Index: %d\n", stimulus_index);
-	printf("stimuli_presentation_params->presentation_format: %d\n", stimuli_presentation_params->presentation_format);
+	printf("simulator_options->stimuli_presentation_options->presentation_format: %d\n", simulator_options->stimuli_presentation_options->presentation_format);
 
-	switch (stimuli_presentation_params->presentation_format) {
+	switch (simulator_options->stimuli_presentation_options->presentation_format) {
 		case PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_STIMULI: case PRESENTATION_FORMAT_RANDOM_RESET_BETWEEN_EACH_STIMULUS:
 		{
 			spiking_model->reset_model_activities();

@@ -82,7 +82,7 @@ int main (int argc, char *argv[]){
 	stimuli_presentation_params->transform_order = TRANSFORM_ORDER_RANDOM;
 
 	// RUN SIMULATION
-	simulator->RunSimulation(stimuli_presentation_params, NULL);
+	simulator->RunSimulation(NULL);
 
 
 	/////////// END OF EXPERIMENT ///////////

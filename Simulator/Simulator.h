@@ -81,16 +81,51 @@ struct Simulator_File_Storage_Options_Struct {
 
 };
 
+enum PRESENTATION_FORMAT {
+		PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_STIMULI,
+		PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_OBJECTS,
+		PRESENTATION_FORMAT_OBJECT_BY_OBJECT_NO_RESET,
+		PRESENTATION_FORMAT_RANDOM_RESET_BETWEEN_EACH_STIMULUS,
+		PRESENTATION_FORMAT_RANDOM_NO_RESET
+	};
+
+enum OBJECT_ORDER {
+	OBJECT_ORDER_ORIGINAL,
+	OBJECT_ORDER_RANDOM
+};
+
+enum TRANSFORM_ORDER {
+	TRANSFORM_ORDER_ORIGINAL,
+	TRANSFORM_ORDER_RANDOM
+};
+
+struct Stimuli_Presentation_Struct {
+
+	Stimuli_Presentation_Struct(): presentation_format(PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_STIMULI), 
+								object_order(OBJECT_ORDER_ORIGINAL), 
+								transform_order(TRANSFORM_ORDER_ORIGINAL), 
+								reset_current_time_between_each_stimulus(false) 
+								{}
+
+	PRESENTATION_FORMAT presentation_format;
+	OBJECT_ORDER object_order;
+	TRANSFORM_ORDER transform_order;
+	bool reset_current_time_between_each_stimulus;
+
+};
+
 
 struct Simulator_Options {
 	Simulator_Options(): run_simulation_general_options(new Simulator_Run_Simulation_General_Options()), 
 						recording_electrodes_options(new Simulator_Recording_Electrodes_To_Use_Struct()), 
-						file_storage_options(new Simulator_File_Storage_Options_Struct()) 
+						file_storage_options(new Simulator_File_Storage_Options_Struct()),
+						stimuli_presentation_options(new Stimuli_Presentation_Struct())
 						{}
 
 	Simulator_Run_Simulation_General_Options * run_simulation_general_options;
 	Simulator_Recording_Electrodes_To_Use_Struct * recording_electrodes_options;
 	Simulator_File_Storage_Options_Struct * file_storage_options;
+	Stimuli_Presentation_Struct * stimuli_presentation_options;
 };
 
 
@@ -126,12 +161,14 @@ public:
 	// void RunSimulationToCountNeuronSpikes(float presentation_time_per_stimulus_per_epoch, bool collect_spikes, bool save_collected_spikes_and_states_to_file, SpikeAnalyser *spike_analyser, bool human_readable_storage, bool isTrained);
 	// void RunSimulationToCollectEvents(float presentation_time_per_stimulus_per_epoch, bool isTrained);
 	// void RunSimulationToTrainNetwork(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, Stimuli_Presentation_Struct * stimuli_presentation_params, int stimulus_presentation_order_seed);
-	void RunSimulation(Stimuli_Presentation_Struct * stimuli_presentation_params, SpikeAnalyser *spike_analyser);
+	void RunSimulation(SpikeAnalyser *spike_analyser);
 
 
 protected: 
+	int* setup_stimuli_presentation_order();
+
 	void perform_per_timestep_recording_electrode_instructions(float current_time_in_seconds, int timestep_index, int number_of_timesteps_per_stimulus_per_epoch);
-	void perform_pre_stimulus_presentation_instructions(int stimulus_index, Stimuli_Presentation_Struct * stimuli_presentation_params);
+	void perform_pre_stimulus_presentation_instructions(int stimulus_index);
 	void perform_post_stimulus_presentation_instructions(SpikeAnalyser* spike_analyser);
 	void perform_post_epoch_instructions(int epoch_number, TimerWithMessages * epoch_timer);
 	void perform_end_of_simulation_instructions(TimerWithMessages * simulation_timer);
