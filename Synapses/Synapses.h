@@ -20,6 +20,8 @@
 #include <curand.h>
 #include <curand_kernel.h>
 
+#include "../Helpers/RandomStateManager.h"
+
 
 enum CONNECTIVITY_TYPE
 {
@@ -99,7 +101,8 @@ public:
 	virtual void increment_number_of_synapses(int increment);
 	virtual void shuffle_synapses();
 
-	
+protected:
+	RandomStateManager * random_state_manager;
 
 	
 };

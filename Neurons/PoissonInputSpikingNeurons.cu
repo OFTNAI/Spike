@@ -10,6 +10,8 @@ using namespace std;
 // PoissonInputSpikingNeurons Constructor
 PoissonInputSpikingNeurons::PoissonInputSpikingNeurons() {
 
+	random_state_manager = NULL;
+
 	rate = 0;
 	rates = NULL;
 	
@@ -20,6 +22,8 @@ PoissonInputSpikingNeurons::PoissonInputSpikingNeurons() {
 
 // PoissonInputSpikingNeurons Destructor
 PoissonInputSpikingNeurons::~PoissonInputSpikingNeurons() {
+
+	free(random_state_manager);
 
 	free(rates);
 
@@ -54,7 +58,11 @@ void PoissonInputSpikingNeurons::set_up_rates() {
 }
 
 
+void PoissonInputSpikingNeurons::setup_random_states_on_device() {
+	random_state_manager = new RandomStateManager();
 
+	random_state_manager->setup_random_states();
+}
 
 void PoissonInputSpikingNeurons::allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage) {
 
@@ -94,7 +102,7 @@ bool PoissonInputSpikingNeurons::stimulus_is_new_object_for_object_by_object_pre
 
 void PoissonInputSpikingNeurons::update_membrane_potentials(float timestep, float current_time_in_seconds) {
 
-	poisson_update_membrane_potentials_kernel<<<RandomStateManager::instance()->block_dimensions, RandomStateManager::instance()->threads_per_block>>>(RandomStateManager::instance()->d_states,
+	poisson_update_membrane_potentials_kernel<<<random_state_manager->block_dimensions, random_state_manager->threads_per_block>>>(random_state_manager->d_states,
 														d_rates,
 														d_membrane_potentials_v,
 														timestep,

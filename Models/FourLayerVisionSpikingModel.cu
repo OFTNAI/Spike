@@ -174,6 +174,8 @@ void FourLayerVisionSpikingModel::finalise_model() {
 	image_poisson_input_spiking_group_params->rate = 30.0f; // ??????
 	image_poisson_input_spiking_neurons->AddGroupForEachGaborType(image_poisson_input_spiking_group_params);
 
+	image_poisson_input_spiking_neurons->setup_random_states_on_device();
+
 	adding_image_poisson_input_spiking_neurons_timer->stop_timer_and_log_time_and_message("Input Neurons Added.", true);
 
 

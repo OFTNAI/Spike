@@ -3,7 +3,7 @@
 
 #include "../SpikeAnalyser/SpikeAnalyser.h"
 #include "../Helpers/TimerWithMessages.h"
-#include "../Helpers/RandomStateManager.h"
+
 
 // Use the following line to compile the binary
 // make FILE='JITest' EXPERIMENT_DIRECTORY='Experiments'  model -j8
@@ -31,12 +31,6 @@ int main (int argc, char *argv[]){
 	bool useThresholdForMaxFR = true;
 	const float presentation_time_per_stimulus_per_epoch_test = 0.5f;
 	float max_firing_rate = optimal_max_firing_rate*presentation_time_per_stimulus_per_epoch_test;
-
-
-	// RANDOM STATES (SHOULDN'T BE HERE!!!)
-	int random_states_threads_per_block_x = 128;
-	int random_states_number_of_blocks_x = 64;
-	RandomStateManager::instance()->set_up_random_states(random_states_threads_per_block_x, random_states_number_of_blocks_x, 9);
 
 
 	// MODEL
