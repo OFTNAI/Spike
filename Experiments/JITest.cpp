@@ -1,31 +1,11 @@
 #include "../Simulator/Simulator.h"
-#include "../Synapses/ConductanceSpikingSynapses.h"
-#include "../STDP/STDP.h"
-#include "../STDP/EvansSTDP.h"
-#include "../Neurons/Neurons.h"
-#include "../Neurons/SpikingNeurons.h"
-#include "../Neurons/LIFSpikingNeurons.h"
-#include "../Neurons/ImagePoissonInputSpikingNeurons.h"
-#include "../Helpers/TerminalHelpers.h"
+#include "../Models/FourLayerVisionSpikingModel.h"
+
 #include "../SpikeAnalyser/SpikeAnalyser.h"
 #include "../Helpers/TimerWithMessages.h"
 #include "../Helpers/RandomStateManager.h"
-#include <string>
-#include <fstream>
-// #include "../Plotting/Plotter.h"
-#include <vector>
-#include "../Helpers/CUDAErrorCheckHelpers.h"
 
-#include <iostream>
-using namespace std;
-
-#include "../Models/FourLayerVisionSpikingModel.h"
-#include "../Experiments/TestNetworkExperiment.h"
-#include "../Experiments/TrainNetworkExperiment.h"
-#include "../Experiments/TestTrainTestExperimentSet.h"
-#include "../Experiments/CollectEventsNetworkExperiment.h"
-
-
+// Use the following line to compile the binary
 // make FILE='JITest' EXPERIMENT_DIRECTORY='Experiments'  model -j8
 
 
@@ -39,9 +19,9 @@ int main (int argc, char *argv[]){
 	float timestep = 0.00002;
 	bool high_fidelity_spike_storage = true;
 
-	bool simulate_network_to_test_untrained = true;
-	bool simulate_network_to_train_network = true;
-	bool simulate_network_to_test_trained = true;
+	// bool simulate_network_to_test_untrained = true;
+	// bool simulate_network_to_train_network = true;
+	// bool simulate_network_to_test_trained = true;
 	
 
 	// Parameters for OPTIMISATION + Information Analysis
@@ -90,4 +70,3 @@ int main (int argc, char *argv[]){
 
 	return 0;
 }
-//
