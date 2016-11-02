@@ -23,14 +23,13 @@ int main (int argc, char *argv[]){
 	// bool simulate_network_to_train_network = true;
 	// bool simulate_network_to_test_trained = true;
 	
-
-	// Parameters for OPTIMISATION + Information Analysis
-	const float optimal_max_firing_rate = 100.0f;//set if optimizing based on maxfr //Maximum rate (spikes/sec) 87 +- 46  (*1)
-	//*1 Bair, W., & Movshon, J. A. (2004).  Adaptive Temporal Integration of Motion in Direction-Selective Neurons in Macaque Visual Cortex. The Journal of Neuroscience, 24(33), 7305遯ｶ�ｿｽ7323.
-	int number_of_bins = 5;
-	bool useThresholdForMaxFR = true;
-	const float presentation_time_per_stimulus_per_epoch_test = 0.5f;
-	float max_firing_rate = optimal_max_firing_rate*presentation_time_per_stimulus_per_epoch_test;
+	// // Parameters for OPTIMISATION + Information Analysis
+	// const float optimal_max_firing_rate = 100.0f;//set if optimizing based on maxfr //Maximum rate (spikes/sec) 87 +- 46  (*1)
+	// //*1 Bair, W., & Movshon, J. A. (2004).  Adaptive Temporal Integration of Motion in Direction-Selective Neurons in Macaque Visual Cortex. The Journal of Neuroscience, 24(33), 7305遯ｶ�ｿｽ7323.
+	// int number_of_bins = 5;
+	// bool useThresholdForMaxFR = true;
+	// const float presentation_time_per_stimulus_per_epoch_test = 0.5f;
+	// float max_firing_rate = optimal_max_firing_rate*presentation_time_per_stimulus_per_epoch_test;
 
 
 	// MODEL
@@ -42,18 +41,18 @@ int main (int argc, char *argv[]){
 
 	// SIMULATOR OPTIONS
 	Simulator_Options * simulator_options = new Simulator_Options();
+
 	simulator_options->run_simulation_general_options->presentation_time_per_stimulus_per_epoch = 0.2;
 	simulator_options->run_simulation_general_options->number_of_epochs = 10;
 	simulator_options->run_simulation_general_options->apply_stdp_to_relevant_synapses = true;
 	simulator_options->run_simulation_general_options->stimulus_presentation_order_seed = 8;
 
+	simulator_options->stimuli_presentation_options->presentation_format = PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_OBJECTS;
+	simulator_options->stimuli_presentation_options->object_order = OBJECT_ORDER_ORIGINAL;
+	simulator_options->stimuli_presentation_options->transform_order = TRANSFORM_ORDER_RANDOM;
+
 	// CREATE SIMULATOR
 	Simulator * simulator = new Simulator(four_layer_vision_spiking_model, simulator_options);
-
-	Stimuli_Presentation_Struct * stimuli_presentation_params = new Stimuli_Presentation_Struct();
-	stimuli_presentation_params->presentation_format = PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_OBJECTS;
-	stimuli_presentation_params->object_order = OBJECT_ORDER_ORIGINAL;
-	stimuli_presentation_params->transform_order = TRANSFORM_ORDER_RANDOM;
 
 	// RUN SIMULATION
 	simulator->RunSimulation(NULL);
