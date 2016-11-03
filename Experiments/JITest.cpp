@@ -62,8 +62,8 @@ int main (int argc, char *argv[]){
 		FourLayerVisionSpikingModel * four_layer_vision_spiking_model = new FourLayerVisionSpikingModel();
 		four_layer_vision_spiking_model->SetTimestep(timestep);
 
-		four_layer_vision_spiking_model->number_of_non_input_layers = 1;
-
+		four_layer_vision_spiking_model->number_of_non_input_layers = 4;
+		four_layer_vision_spiking_model->INHIBITORY_NEURONS_ON = true;
 
 		float test_optimisation_parameter_value = (optimisation_parameter_max - optimisation_parameter_min) / 2.0;
 

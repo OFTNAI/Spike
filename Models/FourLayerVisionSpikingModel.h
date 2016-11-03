@@ -13,9 +13,12 @@ public:
 	~FourLayerVisionSpikingModel();
 
 	// Network Parameters
-	bool E2E_L_ON;
-	bool E2E_FB_ON;
-	bool LI_ON;
+	bool INHIBITORY_NEURONS_ON;
+
+	bool E2I_L_SYNAPSES_ON;
+	bool I2E_L_SYNAPSES_ON;
+	bool E2E_L_SYNAPSES_ON;
+	bool E2E_FB_SYNAPSES_ON;
 
 	bool E2E_L_STDP_ON;
 	
