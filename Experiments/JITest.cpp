@@ -33,10 +33,13 @@ int main (int argc, char *argv[]){
 	// float max_firing_rate = optimal_max_firing_rate*presentation_time_per_stimulus_per_epoch_test;
 
 
+	float presentation_time_per_stimulus_per_epoch = 0.2;
+
+
 	// SIMULATOR OPTIONS
 	Simulator_Options * simulator_options = new Simulator_Options();
 
-	simulator_options->run_simulation_general_options->presentation_time_per_stimulus_per_epoch = 0.2;
+	simulator_options->run_simulation_general_options->presentation_time_per_stimulus_per_epoch = presentation_time_per_stimulus_per_epoch;
 	simulator_options->run_simulation_general_options->number_of_epochs = 1;
 	simulator_options->run_simulation_general_options->apply_stdp_to_relevant_synapses = false;
 	simulator_options->run_simulation_general_options->stimulus_presentation_order_seed = 1;
@@ -59,7 +62,10 @@ int main (int argc, char *argv[]){
 		FourLayerVisionSpikingModel * four_layer_vision_spiking_model = new FourLayerVisionSpikingModel();
 		four_layer_vision_spiking_model->SetTimestep(timestep);
 
-		float test_optimisation_parameter_value = optimisation_parameter_max - optimisation_parameter_min;
+		four_layer_vision_spiking_model->number_of_non_input_layers = 1;
+
+
+		float test_optimisation_parameter_value = (optimisation_parameter_max - optimisation_parameter_min) / 2.0;
 
 		four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2E_FF[0] = test_optimisation_parameter_value;
 
@@ -70,18 +76,17 @@ int main (int argc, char *argv[]){
 		Simulator * simulator = new Simulator(four_layer_vision_spiking_model, simulator_options);
 
 		// RUN SIMULATION
-		simulator->RunSimulation(NULL);
+		SpikeAnalyser * spike_analyser = new SpikeAnalyser(four_layer_vision_spiking_model->spiking_neurons, four_layer_vision_spiking_model->input_spiking_neurons);
+		simulator->RunSimulation(spike_analyser);
+
+		spike_analyser->calculate_various_neuron_spike_totals_and_averages(presentation_time_per_stimulus_per_epoch);
+
 
 	}
-	
-
-	
-
-	
 
 
 	/////////// END OF EXPERIMENT ///////////
-	experiment_timer->stop_timer_and_log_time_and_message("TestNetworkExperiment Completed.", true);
+	experiment_timer->stop_timer_and_log_time_and_message("Experiment Completed.", true);
 
 	return 0;
 }

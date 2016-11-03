@@ -170,7 +170,7 @@ void Simulator::RunSimulation(SpikeAnalyser *spike_analyser) {
 	srand(simulator_options->run_simulation_general_options->stimulus_presentation_order_seed);
 
 
-	if (simulations_run_count > 0) reset_all_recording_electrodes();
+	reset_all_recording_electrodes();
 
 	if (simulator_options->file_storage_options->write_initial_synaptic_weights_to_file_bool) {
 	
