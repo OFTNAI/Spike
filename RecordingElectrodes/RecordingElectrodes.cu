@@ -16,6 +16,8 @@ RecordingElectrodes::RecordingElectrodes() {
 
 RecordingElectrodes::RecordingElectrodes(SpikingNeurons * neurons_parameter, SpikingSynapses * synapses_parameter, string full_directory_name_for_simulation_data_files_param, const char * prefix_string_param) {
 
+	printf("Super Constructor Called\n");
+
 	// Variables
 	full_directory_name_for_simulation_data_files = full_directory_name_for_simulation_data_files_param;
 	prefix_string = prefix_string_param;

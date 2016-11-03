@@ -27,7 +27,7 @@ Simulator::Simulator(SpikingModel * spiking_model_param, Simulator_Options * sim
 
 	full_directory_name_for_simulation_data_files = "output/"; // Put into struct!!
 
-	TimerWithMessages * timer = new TimerWithMessages("Setting up recording electrodes...");
+	TimerWithMessages * timer = new TimerWithMessages("Setting up recording electrodes...\n");
 
 	if (simulator_options->recording_electrodes_options->count_neuron_spikes_recording_electrodes_bool) {
 		count_neuron_spikes_recording_electrodes = new CountNeuronSpikesRecordingElectrodes(spiking_model->spiking_neurons, spiking_model->spiking_synapses, full_directory_name_for_simulation_data_files, "Neurons");
@@ -65,7 +65,7 @@ Simulator::Simulator(SpikingModel * spiking_model_param, Simulator_Options * sim
 	}
 
 
-	timer->stop_timer_and_log_time_and_message("Recording electrodes setup.", true);
+	timer->stop_timer_and_log_time_and_message("Recording electrodes setup.\n", true);
 
 }
 

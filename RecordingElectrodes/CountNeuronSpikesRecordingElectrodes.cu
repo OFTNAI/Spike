@@ -10,7 +10,10 @@
 using namespace std;
 
 // CountNeuronSpikesRecordingElectrodes Constructor
-CountNeuronSpikesRecordingElectrodes::CountNeuronSpikesRecordingElectrodes(SpikingNeurons * neurons_parameter, SpikingSynapses * synapses_parameter, string full_directory_name_for_simulation_data_files_param, const char * prefix_string_param) {
+CountNeuronSpikesRecordingElectrodes::CountNeuronSpikesRecordingElectrodes(SpikingNeurons * neurons_parameter, SpikingSynapses * synapses_parameter, string full_directory_name_for_simulation_data_files_param, const char * prefix_string_param) 
+		: RecordingElectrodes(neurons_parameter, synapses_parameter, full_directory_name_for_simulation_data_files_param, prefix_string_param) {
+
+	printf("Constructor Called\n");
 
 	// Variables
 
@@ -42,9 +45,9 @@ void CountNeuronSpikesRecordingElectrodes::initialise_count_neuron_spikes_record
 
 
 void CountNeuronSpikesRecordingElectrodes::allocate_pointers_for_spike_count() {
-	//For counting spikes
+
 	CudaSafeCall(cudaMalloc((void **)&d_per_neuron_spike_counts, sizeof(int) * neurons->total_number_of_neurons));
-	
+
 }
 
 void CountNeuronSpikesRecordingElectrodes::reset_pointers_for_spike_count() {
