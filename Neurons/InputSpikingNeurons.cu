@@ -26,6 +26,13 @@ int InputSpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
 };
 
 
+void InputSpikingNeurons::reset_neuron_activities() {
+
+	SpikingNeurons::reset_neuron_activities();
+
+}
+
+
 bool InputSpikingNeurons::stimulus_is_new_object_for_object_by_object_presentation(int stimulus_index) {
 	return true;
 }

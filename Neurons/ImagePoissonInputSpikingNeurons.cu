@@ -214,7 +214,7 @@ void ImagePoissonInputSpikingNeurons::load_gabor_filter_parameters(const char * 
 	total_number_of_rates_per_image = total_number_of_gabor_types * image_width * image_width;
 	total_number_of_rates = total_number_of_input_stimuli * total_number_of_rates_per_image;
 
-	// printf("\ntotal_number_of_rates: %d\n", total_number_of_rates);
+	printf("\ntotal_number_of_rates: %d\n", total_number_of_rates);
 }
 
 

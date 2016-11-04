@@ -59,6 +59,9 @@ void PoissonInputSpikingNeurons::set_up_rates() {
 
 
 void PoissonInputSpikingNeurons::setup_random_states_on_device() {
+
+
+	
 	random_state_manager = new RandomStateManager();
 
 	random_state_manager->setup_random_states();

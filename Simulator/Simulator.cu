@@ -12,6 +12,8 @@
 #include "../Helpers/TerminalHelpers.h"
 #include "../Helpers/RandomStateManager.h"
 
+#include "../Models/FourLayerVisionSpikingModel.h"
+
 using namespace std;
 
 // Constructors
@@ -72,8 +74,6 @@ Simulator::Simulator(SpikingModel * spiking_model_param, Simulator_Options * sim
 // Destructor
 Simulator::~Simulator(){
 
-	printf("Simulator Destructor\n");
-
 	delete count_neuron_spikes_recording_electrodes;
 	delete count_input_neuron_spikes_recording_electrodes;
 	delete collect_neuron_spikes_recording_electrodes;
@@ -112,62 +112,6 @@ void Simulator::reset_all_recording_electrodes() {
 }
 
 
-
-// void Simulator::RunSimulationToCountNeuronSpikes(float presentation_time_per_stimulus_per_epoch, bool collect_spikes, bool save_collected_spikes_and_states_to_file, SpikeAnalyser *spike_analyser, bool human_readable_storage, bool network_is_trained) {
-// 	bool number_of_epochs = 1;
-// 	bool apply_stdp_to_relevant_synapses = false;
-// 	bool count_spikes_per_neuron = true;
-// 	int stimulus_presentation_order_seed = 0; // Shouldn't be needed if stimuli presentation not random
-// 	Stimuli_Presentation_Struct * simulator_options->stimuli_presentation_options = new Stimuli_Presentation_Struct();
-// 	// simulator_options->stimuli_presentation_options->presentation_format = PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_OBJECTS;
-// 	simulator_options->stimuli_presentation_options->presentation_format = PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_STIMULI;
-// 	simulator_options->stimuli_presentation_options->object_order = OBJECT_ORDER_ORIGINAL;
-// 	simulator_options->stimuli_presentation_options->transform_order = TRANSFORM_ORDER_ORIGINAL;
-	
-// 	if (!network_is_trained)
-// 		recording_electrodes->write_initial_synaptic_weights_to_file(spiking_model->spiking_synapses, human_readable_storage);
-	
-// 	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, collect_spikes, save_collected_spikes_and_states_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, simulator_options->stimuli_presentation_options, stimulus_presentation_order_seed, spike_analyser,human_readable_storage,network_is_trained);
-	
-// 	if (network_is_trained)
-// 		recording_electrodes->write_network_state_to_file(spiking_model->spiking_synapses, human_readable_storage);
-
-// }
-
-
-// void Simulator::RunSimulationToCollectEvents(float presentation_time_per_stimulus_per_epoch, bool network_is_trained) {
-// 	bool number_of_epochs = 1;
-// 	bool apply_stdp_to_relevant_synapses = false;
-// 	bool count_spikes_per_neuron = true;
-// 	int stimulus_presentation_order_seed = 0; // Shouldn't be needed if stimuli presentation not random
-// 	Stimuli_Presentation_Struct * simulator_options->stimuli_presentation_options = new Stimuli_Presentation_Struct();
-// 	// simulator_options->stimuli_presentation_options->presentation_format = PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_OBJECTS;
-// 	simulator_options->stimuli_presentation_options->presentation_format = PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_STIMULI;
-// 	simulator_options->stimuli_presentation_options->object_order = OBJECT_ORDER_ORIGINAL;
-// 	simulator_options->stimuli_presentation_options->transform_order = TRANSFORM_ORDER_ORIGINAL;
-
-// 	bool collect_spikes = false;
-// 	bool save_collected_spikes_and_states_to_file = false;
-
-// 	SpikeAnalyser * spike_analyser = NULL;
-// 	bool human_readable_storage = false;
-	
-// 	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, collect_spikes, save_collected_spikes_and_states_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, simulator_options->stimuli_presentation_options, stimulus_presentation_order_seed, spike_analyser, human_readable_storage,network_is_trained);
-	
-// }
-
-// void Simulator::RunSimulationToTrainNetwork(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, Stimuli_Presentation_Struct * simulator_options->stimuli_presentation_options, int stimulus_presentation_order_seed) {
-
-// 	bool apply_stdp_to_relevant_synapses = true;
-// 	bool count_spikes_per_neuron = false;
-// 	bool collect_spikes = false;
-// 	bool save_collected_spikes_and_states_to_file = false;
-
-// 	RunSimulation(presentation_time_per_stimulus_per_epoch, number_of_epochs, collect_spikes, save_collected_spikes_and_states_to_file, apply_stdp_to_relevant_synapses, count_spikes_per_neuron, simulator_options->stimuli_presentation_options, stimulus_presentation_order_seed, NULL, false, false);
-// }
-
-
-
 void Simulator::RunSimulation(SpikeAnalyser *spike_analyser) {
 
 	// check_for_epochs_and_begin_simulation_message(spiking_model->timestep, spiking_model->input_spiking_neurons->total_number_of_input_stimuli, number_of_epochs, collect_spikes, save_collected_spikes_and_states_to_file, spiking_model->spiking_neurons->total_number_of_neurons, spiking_model->input_spiking_neurons->total_number_of_neurons, spiking_model->spiking_synapses->total_number_of_synapses);
@@ -201,6 +145,10 @@ void Simulator::RunSimulation(SpikeAnalyser *spike_analyser) {
 			if (simulator_options->stimuli_presentation_options->reset_current_time_between_each_stimulus) current_time_in_seconds = 0.0f; // For GeneratorInputSpikingNeurons?
 
 			perform_pre_stimulus_presentation_instructions(stimuli_presentation_order[stimulus_index]);
+
+			//TEMP 
+			delete ((FourLayerVisionSpikingModel*)spiking_model)->image_poisson_input_spiking_neurons->random_state_manager;
+			((FourLayerVisionSpikingModel*)spiking_model)->image_poisson_input_spiking_neurons->setup_random_states_on_device();
 
 			int number_of_timesteps_per_stimulus_per_epoch = simulator_options->run_simulation_general_options->presentation_time_per_stimulus_per_epoch / spiking_model->timestep;
 		
@@ -360,7 +308,7 @@ void Simulator::perform_pre_stimulus_presentation_instructions(int stimulus_inde
 		case PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_OBJECTS:
 		{
 			bool stimulus_is_new_object = spiking_model->input_spiking_neurons->stimulus_is_new_object_for_object_by_object_presentation(stimulus_index);
-			(stimulus_is_new_object) ? printf("stimulus_is_new_object\n") : printf("stimulus_is_NOT_new_object\n");
+			(stimulus_is_new_object) ? printf("Stimulus is new object\n") : printf("Stimulus is not new object\n");
 
 			if (stimulus_is_new_object) {
 				spiking_model->reset_model_activities();

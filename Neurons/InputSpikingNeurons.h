@@ -25,6 +25,7 @@ public:
 	int total_number_of_transformations_per_object;
 
 	virtual int AddGroup(neuron_parameters_struct * group_params);
+	virtual void reset_neuron_activities();
 	virtual bool stimulus_is_new_object_for_object_by_object_presentation(int stimulus_index);
 
 };

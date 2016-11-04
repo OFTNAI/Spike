@@ -22,6 +22,8 @@ RandomStateManager::RandomStateManager() {
 // RandomStateManager Destructor
 RandomStateManager::~RandomStateManager() {
 
+	CudaSafeCall(cudaFree(d_states));
+
 }
 
 void RandomStateManager::setup_random_states(int threads_per_blocks_x, int number_of_blocks_x, int seed) {

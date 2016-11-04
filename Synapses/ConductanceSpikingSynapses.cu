@@ -23,8 +23,6 @@ ConductanceSpikingSynapses::ConductanceSpikingSynapses() {
 // ConductanceSpikingSynapses Destructor
 ConductanceSpikingSynapses::~ConductanceSpikingSynapses() {
 
-	printf("ConductanceSpikingSynapses Destructor.\n");
-
 	free(synaptic_conductances_g);
 	free(biological_conductance_scaling_constants_lambda);
 	free(reversal_potentials_Vhat);

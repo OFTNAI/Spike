@@ -29,8 +29,6 @@ CountNeuronSpikesRecordingElectrodes::CountNeuronSpikesRecordingElectrodes(Spiki
 // CountNeuronSpikesRecordingElectrodes Destructor
 CountNeuronSpikesRecordingElectrodes::~CountNeuronSpikesRecordingElectrodes() {
 
-	printf("CountNeuronSpikesRecordingElectrodes Destructor.\n");
-
 	CudaSafeCall(cudaFree(d_per_neuron_spike_counts));
 
 }

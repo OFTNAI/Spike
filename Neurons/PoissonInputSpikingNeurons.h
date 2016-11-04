@@ -25,6 +25,7 @@ public:
 	// Host Pointers
 	float rate;
 	float * rates;
+	RandomStateManager * random_state_manager;
 
 	// Device Pointers
 	float * d_rates;
@@ -43,7 +44,7 @@ public:
 	virtual void setup_random_states_on_device();
 
 protected:
-	RandomStateManager * random_state_manager;
+	
 
 
 };

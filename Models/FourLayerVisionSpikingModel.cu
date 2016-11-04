@@ -5,11 +5,11 @@
 FourLayerVisionSpikingModel::FourLayerVisionSpikingModel () { 
 
 	// Network Parameters
-	INHIBITORY_NEURONS_ON = true;
+	INHIBITORY_NEURONS_ON = false;
 
-	E2I_L_SYNAPSES_ON = true;
-	I2E_L_SYNAPSES_ON = true;
-	E2E_L_SYNAPSES_ON = true;
+	E2I_L_SYNAPSES_ON = false;
+	I2E_L_SYNAPSES_ON = false;
+	E2E_L_SYNAPSES_ON = false;
 	E2E_FB_SYNAPSES_ON = false;
 
 	// Network size parameters
@@ -109,7 +109,7 @@ FourLayerVisionSpikingModel::FourLayerVisionSpikingModel () {
 		LBL_gaussian_synapses_sd_E2I_L[layer_index] = 1.0;
 		LBL_gaussian_synapses_sd_I2E_L[layer_index] = 8.0;
 		LBL_gaussian_synapses_sd_E2E_L[layer_index] = 4.0;
-		LBL_gaussian_synapses_sd_E2E_FB[layer_index] = 16.0;
+		LBL_gaussian_synapses_sd_E2E_FB[layer_index] = 8.0;
 
 
 		// BIOLOGICAL SCALING CONSTANTS
@@ -134,8 +134,6 @@ FourLayerVisionSpikingModel::FourLayerVisionSpikingModel () {
 
 // FourLayerVisionSpikingModel Destructor
 FourLayerVisionSpikingModel::~FourLayerVisionSpikingModel () {
-
-	printf("FourLayerVisionSpikingModel Destructor\n");
 
 	delete lif_spiking_neurons;
 	delete image_poisson_input_spiking_neurons;

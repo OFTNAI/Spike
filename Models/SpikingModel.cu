@@ -18,8 +18,6 @@ SpikingModel::SpikingModel () {
 // SpikingModel Destructor
 SpikingModel::~SpikingModel () {
 
-	printf("SpikingModel Destructor.\n");
-
 }
 
 

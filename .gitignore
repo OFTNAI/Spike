@@ -3,7 +3,7 @@
 *.o
 /Tests/catch.hpp
 /Tests/unittests
-/MatlabGaborFilter/Inputs/*
+/MatlabGaborFilter/Inputs*/*
 /matlab.mat
 **/*.pyc
 .cproject
