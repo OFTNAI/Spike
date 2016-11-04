@@ -135,6 +135,12 @@ FourLayerVisionSpikingModel::FourLayerVisionSpikingModel () {
 // FourLayerVisionSpikingModel Destructor
 FourLayerVisionSpikingModel::~FourLayerVisionSpikingModel () {
 
+	printf("FourLayerVisionSpikingModel Destructor\n");
+
+	delete lif_spiking_neurons;
+	delete image_poisson_input_spiking_neurons;
+	delete conductance_spiking_synapses;
+	delete evans_stdp;
 
 }
 

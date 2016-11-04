@@ -15,6 +15,10 @@ using namespace std;
 // ImagePoissonInputSpikingNeurons Constructor
 ImagePoissonInputSpikingNeurons::ImagePoissonInputSpikingNeurons() {
 
+	gabor_input_rates = NULL;
+
+	d_gabor_input_rates = NULL;
+
 	total_number_of_phases = 0;
 	total_number_of_wavelengths = 0;
 	total_number_of_orientations = 0;
@@ -35,6 +39,9 @@ ImagePoissonInputSpikingNeurons::ImagePoissonInputSpikingNeurons() {
 // ImagePoissonInputSpikingNeurons Destructor
 ImagePoissonInputSpikingNeurons::~ImagePoissonInputSpikingNeurons() {
 
+	free(gabor_input_rates);
+
+	CudaSafeCall(cudaFree(d_gabor_input_rates));
 }
 
 

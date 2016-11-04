@@ -4,6 +4,7 @@
 #include "../SpikeAnalyser/SpikeAnalyser.h"
 #include "../Helpers/TimerWithMessages.h"
 #include "../Helpers/TerminalHelpers.h"
+#include "../Helpers/MemoryUsage.h"
 
 #include "cuda_profiler_api.h"
 
@@ -104,6 +105,8 @@ int main (int argc, char *argv[]){
 		// while (true) {
 		for (int temp_i = 0; temp_i < 3; temp_i++) {
 
+			print_memory_usage();
+
 			number_of_iterations_for_optimisation_stage++;
 			
 
@@ -202,38 +205,14 @@ int main (int argc, char *argv[]){
 
 			print_line_of_dashes_with_blank_lines_either_side();
 
-			free(four_layer_vision_spiking_model);
-			free(simulator);
+			delete four_layer_vision_spiking_model;
+			delete simulator;
+			delete spike_analyser;
 
 			previous_optimisation_output_score = optimisation_output_score;
 
 
-			// show memory usage of GPU
-
-	        size_t free_byte ;
-
-	        size_t total_byte ;
-
-	       	cudaError_t cuda_status = cudaMemGetInfo( &free_byte, &total_byte ) ;
-
-	        if ( cudaSuccess != cuda_status ){
-
-	            printf("Error: cudaMemGetInfo fails, %s \n", cudaGetErrorString(cuda_status) );
-
-	            exit(1);
-
-	        }
-
-
-	        double free_db = (double)free_byte ;
-
-	        double total_db = (double)total_byte ;
-
-	        double used_db = total_db - free_db ;
-
-	        printf("GPU memory usage: used = %f, free = %f MB, total = %f MB\n",
-
-	            used_db/1024.0/1024.0, free_db/1024.0/1024.0, total_db/1024.0/1024.0);
+			print_memory_usage();
 			
 		}	
 

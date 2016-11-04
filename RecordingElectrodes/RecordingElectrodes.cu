@@ -30,6 +30,7 @@ RecordingElectrodes::RecordingElectrodes(SpikingNeurons * neurons_parameter, Spi
 // RecordingElectrodes Destructor
 RecordingElectrodes::~RecordingElectrodes() {
 
+	printf("RecordingElectrodes Destructor.\n");
 
 }
 

@@ -17,7 +17,12 @@ LIFSpikingNeurons::LIFSpikingNeurons() {
 
 // LIFSpikingNeurons Destructor
 LIFSpikingNeurons::~LIFSpikingNeurons() {
-	
+
+	free(membrane_time_constants_tau_m);
+	free(membrane_resistances_R);
+
+	CudaSafeCall(cudaFree(d_membrane_time_constants_tau_m));
+	CudaSafeCall(cudaFree(d_membrane_resistances_R));
 }
 
 

@@ -72,6 +72,14 @@ Simulator::Simulator(SpikingModel * spiking_model_param, Simulator_Options * sim
 // Destructor
 Simulator::~Simulator(){
 
+	printf("Simulator Destructor\n");
+
+	delete count_neuron_spikes_recording_electrodes;
+	delete count_input_neuron_spikes_recording_electrodes;
+	delete collect_neuron_spikes_recording_electrodes;
+	delete collect_input_neuron_spikes_recording_electrodes;
+	delete network_state_archive_recording_electrodes;
+
 }
 
 void Simulator::CreateDirectoryForSimulationDataFiles(string directory_name_for_simulation_data_files) {
