@@ -5,6 +5,8 @@
 #include "../Helpers/TimerWithMessages.h"
 #include "../Helpers/TerminalHelpers.h"
 
+#include "cuda_profiler_api.h"
+
 
 // Use the following line to compile the binary
 // make FILE='JITest' EXPERIMENT_DIRECTORY='Experiments'  model -j8
@@ -53,27 +55,37 @@ int main (int argc, char *argv[]){
 
 
 	// OPTIMISATION
-	int number_of_optimisation_stages = 5;
+	int number_of_optimisation_stages = 1;
 	int* indices_of_neuron_group_of_interest_for_each_optimisation_stage = (int*)malloc(number_of_optimisation_stages*sizeof(int));
 	float* ideal_output_scores_for_each_optimisation_stage = (float*)malloc(number_of_optimisation_stages*sizeof(float));
 	float* final_optimal_parameter_for_each_optimisation_stage = (float*)malloc(number_of_optimisation_stages*sizeof(float));
 
-	indices_of_neuron_group_of_interest_for_each_optimisation_stage[0] = 0;
-	indices_of_neuron_group_of_interest_for_each_optimisation_stage[1] = 0;
-	indices_of_neuron_group_of_interest_for_each_optimisation_stage[2] = 1;
-	indices_of_neuron_group_of_interest_for_each_optimisation_stage[3] = 0;
-	indices_of_neuron_group_of_interest_for_each_optimisation_stage[4] = 2;
+	
 
-
-	ideal_output_scores_for_each_optimisation_stage[0] = 100.0;
-	ideal_output_scores_for_each_optimisation_stage[1] = 150.0;
-	ideal_output_scores_for_each_optimisation_stage[2] = 150.0;
-	ideal_output_scores_for_each_optimisation_stage[3] = 100.0;
-	ideal_output_scores_for_each_optimisation_stage[4] = 100.0;
-
+	if (number_of_optimisation_stages >= 1) {
+		indices_of_neuron_group_of_interest_for_each_optimisation_stage[0] = 0;
+		ideal_output_scores_for_each_optimisation_stage[0] = 100.0;
+	}
+	if (number_of_optimisation_stages >= 2) {
+		indices_of_neuron_group_of_interest_for_each_optimisation_stage[1] = 0;
+		ideal_output_scores_for_each_optimisation_stage[1] = 150.0;
+	}
+	if (number_of_optimisation_stages >= 3) {
+		indices_of_neuron_group_of_interest_for_each_optimisation_stage[2] = 1;
+		ideal_output_scores_for_each_optimisation_stage[2] = 150.0;
+	}
+	if (number_of_optimisation_stages >= 4) {
+		indices_of_neuron_group_of_interest_for_each_optimisation_stage[3] = 0;
+		ideal_output_scores_for_each_optimisation_stage[3] = 100.0;
+	}
+	if (number_of_optimisation_stages >= 5) {
+		indices_of_neuron_group_of_interest_for_each_optimisation_stage[4] = 2;
+		ideal_output_scores_for_each_optimisation_stage[4] = 100.0;
+	}
+	
 
 	float initial_optimisation_parameter_min = 1.0f*pow(10, -12);;
-	float initial_optimisation_parameter_max = 1.0*pow(10, 1);
+	float initial_optimisation_parameter_max = 1.0*pow(10, -3);
 	
 
 	float optimisation_ideal_output_score = 100.0;
@@ -89,7 +101,8 @@ int main (int argc, char *argv[]){
 
 		float previous_optimisation_output_score = -1.0;
 
-		while (true) {
+		// while (true) {
+		for (int temp_i = 0; temp_i < 3; temp_i++) {
 
 			number_of_iterations_for_optimisation_stage++;
 			
@@ -114,6 +127,12 @@ int main (int argc, char *argv[]){
 				four_layer_vision_spiking_model->E2E_L_SYNAPSES_ON = true;
 
 				four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2E_FF[0] = final_optimal_parameter_for_each_optimisation_stage[0];
+			four_layer_vision_spiking_model->finalise_model();
+			four_layer_vision_spiking_model->copy_model_to_device(high_fidelity_spike_storage);
+
+			// CREATE SIMULATOR
+			Simulator * simulator = new Simulator(four_layer_vision_spiking_model, simulator_options);
+
 				four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2E_L[0] = test_optimisation_parameter_value;
 			}
 
@@ -155,12 +174,12 @@ int main (int argc, char *argv[]){
 
 			float optimisation_output_score = spike_analyser->max_number_of_spikes_per_neuron_group_per_second[indices_of_neuron_group_of_interest_for_each_optimisation_stage[optimisation_stage]];
 
-			// printf("previous_optimisation_output_score: %f\n", previous_optimisation_output_score);
-			// printf("number_of_iterations_for_optimisation_stage: %d\n", number_of_iterations_for_optimisation_stage);
-			// printf("optimisation_parameter_max: %.12f\n", optimisation_parameter_max);
-			// printf("optimisation_parameter_min: %.12f\n", optimisation_parameter_min);
-			// printf("test_optimisation_parameter_value: %.12f\n", test_optimisation_parameter_value);
-			// printf("optimisation_output_score: %f\n", optimisation_output_score);			
+			printf("previous_optimisation_output_score: %f\n", previous_optimisation_output_score);
+			printf("number_of_iterations_for_optimisation_stage: %d\n", number_of_iterations_for_optimisation_stage);
+			printf("optimisation_parameter_max: %.12f\n", optimisation_parameter_max);
+			printf("optimisation_parameter_min: %.12f\n", optimisation_parameter_min);
+			printf("test_optimisation_parameter_value: %.12f\n", test_optimisation_parameter_value);
+			printf("optimisation_output_score: %f\n", optimisation_output_score);			
 
 			if (optimisation_output_score <= optimisation_ideal_output_score) {
 
@@ -183,8 +202,8 @@ int main (int argc, char *argv[]){
 
 			}
 
-			// printf("NEW optimisation_parameter_max: %.12f\n", optimisation_parameter_max);
-			// printf("NEW optimisation_parameter_min: %.12f\n", optimisation_parameter_min);
+			printf("NEW optimisation_parameter_max: %.12f\n", optimisation_parameter_max);
+			printf("NEW optimisation_parameter_min: %.12f\n", optimisation_parameter_min);
 
 
 			print_line_of_dashes_with_blank_lines_either_side();
@@ -193,6 +212,34 @@ int main (int argc, char *argv[]){
 			free(simulator);
 
 			previous_optimisation_output_score = optimisation_output_score;
+
+
+			// show memory usage of GPU
+
+	        size_t free_byte ;
+
+	        size_t total_byte ;
+
+	       	cudaError_t cuda_status = cudaMemGetInfo( &free_byte, &total_byte ) ;
+
+	        if ( cudaSuccess != cuda_status ){
+
+	            printf("Error: cudaMemGetInfo fails, %s \n", cudaGetErrorString(cuda_status) );
+
+	            exit(1);
+
+	        }
+
+
+	        double free_db = (double)free_byte ;
+
+	        double total_db = (double)total_byte ;
+
+	        double used_db = total_db - free_db ;
+
+	        printf("GPU memory usage: used = %f, free = %f MB, total = %f MB\n",
+
+	            used_db/1024.0/1024.0, free_db/1024.0/1024.0, total_db/1024.0/1024.0);
 			
 		}	
 
@@ -212,6 +259,8 @@ int main (int argc, char *argv[]){
 
 	/////////// END OF EXPERIMENT ///////////
 	experiment_timer->stop_timer_and_log_time_and_message("Experiment Completed.", true);
+
+	cudaProfilerStop();
 
 	return 0;
 }
