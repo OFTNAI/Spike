@@ -154,44 +154,22 @@ int main (int argc, char *argv[]){
 
 			for (int optimisation_stage_index = 0; optimisation_stage_index < optimisation_stage; optimisation_stage_index++) {
 
-				*synapse_bool_pointers_to_turn_on_for_each_optimisation_stage[optimisation_stage] = true;
+				*synapse_bool_pointers_to_turn_on_for_each_optimisation_stage[optimisation_stage_index] = true;
 
 
 				if (optimisation_stage_index < optimisation_stage) {
 
 					*model_pointers_to_be_optimised_for_each_optimisation_stage[optimisation_stage_index] = final_optimal_parameter_for_each_optimisation_stage[optimisation_stage_index];
 				
-				} else {
-
-					float test_optimisation_parameter_value = (optimisation_parameter_max + optimisation_parameter_min) / 2.0;
-					*model_pointers_to_be_optimised_for_each_optimisation_stage[optimisation_stage] = test_optimisation_parameter_value;
-
-					four_layer_vision_spiking_model->INHIBITORY_NEURONS_ON = use_inhibitory_neurons_for_each_optimisation_stage[optimisation_stage];
-					four_layer_vision_spiking_model->number_of_non_input_layers_to_simulate = number_of_non_input_layers_to_simulate_for_each_optimisation_stage[optimisation_stage];
-
 				}
 
-
 			}
 
-			
+			float test_optimisation_parameter_value = (optimisation_parameter_max + optimisation_parameter_min) / 2.0;
+			*model_pointers_to_be_optimised_for_each_optimisation_stage[optimisation_stage] = test_optimisation_parameter_value;
 
-			
-
-
-			
-			if (optimisation_stage >= 1) {
-				four_layer_vision_spiking_model->E2I_L_SYNAPSES_ON = true;
-			}
-
-			if (optimisation_stage >= 2) {
-				four_layer_vision_spiking_model->I2E_L_SYNAPSES_ON = true;;
-			}
-
-			if (optimisation_stage >= 3) {
-				four_layer_vision_spiking_model->E2E_L_SYNAPSES_ON = true;
-			}
-
+			four_layer_vision_spiking_model->INHIBITORY_NEURONS_ON = use_inhibitory_neurons_for_each_optimisation_stage[optimisation_stage];
+			four_layer_vision_spiking_model->number_of_non_input_layers_to_simulate = number_of_non_input_layers_to_simulate_for_each_optimisation_stage[optimisation_stage];
 
 
 			four_layer_vision_spiking_model->finalise_model();
