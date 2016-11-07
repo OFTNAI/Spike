@@ -23,7 +23,6 @@ int main (int argc, char *argv[]){
 
 	
 	// Simulator Parameters
-	// float timestep = 0.00002;
 	float timestep = 0.00002;
 	bool high_fidelity_spike_storage = true;
 
@@ -76,9 +75,6 @@ int main (int argc, char *argv[]){
 
 	float upper = 20.0;
 	float lower = 10.0;
-	float initial_optimisation_parameter_min = 1.0f*pow(10, -12);
-	float initial_optimisation_parameter_max = 1.0*pow(10, -1);
-
 
 	if (number_of_optimisation_stages >= 1) {
 		model_pointers_to_be_optimised_for_each_optimisation_stage[0] = &four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2E_FF[0];
@@ -129,16 +125,13 @@ int main (int argc, char *argv[]){
 		model_pointers_to_be_optimised_for_each_optimisation_stage[4] = &four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2E_FF[1];
 		synapse_bool_pointers_to_turn_on_for_each_optimisation_stage[4] = &four_layer_vision_spiking_model->E2E_FF_SYNAPSES_ON;
 		use_inhibitory_neurons_for_each_optimisation_stage[4] = true;
-		number_of_non_input_layers_to_simulate_for_each_optimisation_stage[2] = 1;
+		number_of_non_input_layers_to_simulate_for_each_optimisation_stage[4] = 2;
 		indices_of_neuron_group_of_interest_for_each_optimisation_stage[4] = 2;
 		ideal_output_scores_for_each_optimisation_stage[4] = upper;
 		optimisation_minimum_error_for_each_optimisation_stage[4] = 1.0;
 		initial_optimisation_parameter_min_for_each_optimisation_stage[4] = 1.0f*pow(10, -12);
 		initial_optimisation_parameter_max_for_each_optimisation_stage[4] = 1.0*pow(10, -1);
 	}
-	
-
-	// *model_pointers_to_be_optimised_for_each_optimisation_stage[0] = 123.4;
 
 
 	printf("four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2E_FF[0]: %f\n", four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2E_FF[0]);
@@ -229,7 +222,6 @@ int main (int argc, char *argv[]){
 
 			print_line_of_dashes_with_blank_lines_either_side();
 
-			// delete four_layer_vision_spiking_model;
 			delete simulator;
 			delete spike_analyser;
 
