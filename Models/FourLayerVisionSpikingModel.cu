@@ -80,6 +80,7 @@ void FourLayerVisionSpikingModel::set_default_parameter_values() {
 	dim_inhib_layer = 32;
 	INHIBITORY_NEURONS_ON = false;
 
+	E2E_FF_SYNAPSES_ON = true;
 	E2I_L_SYNAPSES_ON = false;
 	I2E_L_SYNAPSES_ON = false;
 	E2E_L_SYNAPSES_ON = false;

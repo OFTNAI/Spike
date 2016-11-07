@@ -67,6 +67,7 @@ int main (int argc, char *argv[]){
 	// OPTIMISATION
 	int number_of_optimisation_stages = 5;
 	float** model_pointers_to_be_optimised_for_each_optimisation_stage = (float**)malloc(number_of_optimisation_stages*sizeof(float*));
+	bool** synapse_bool_pointers_to_turn_on_for_each_optimisation_stage = (bool**)malloc(number_of_optimisation_stages*sizeof(bool*));
 	bool* use_inhibitory_neurons_for_each_optimisation_stage = (bool*)malloc(number_of_optimisation_stages*sizeof(bool));
 	int* number_of_non_input_layers_to_simulate_for_each_optimisation_stage = (int*)malloc(number_of_optimisation_stages*sizeof(int));
 	int* indices_of_neuron_group_of_interest_for_each_optimisation_stage = (int*)malloc(number_of_optimisation_stages*sizeof(int));
@@ -82,6 +83,7 @@ int main (int argc, char *argv[]){
 
 	if (number_of_optimisation_stages >= 1) {
 		model_pointers_to_be_optimised_for_each_optimisation_stage[0] = &four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2E_FF[0];
+		synapse_bool_pointers_to_turn_on_for_each_optimisation_stage[0] = &four_layer_vision_spiking_model->E2E_FF_SYNAPSES_ON;
 		use_inhibitory_neurons_for_each_optimisation_stage[0] = false;
 		number_of_non_input_layers_to_simulate_for_each_optimisation_stage[0] = 1;
 		indices_of_neuron_group_of_interest_for_each_optimisation_stage[0] = 0;
@@ -89,6 +91,7 @@ int main (int argc, char *argv[]){
 	}
 	if (number_of_optimisation_stages >= 2) {
 		model_pointers_to_be_optimised_for_each_optimisation_stage[1] = &four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2I_L[0];
+		synapse_bool_pointers_to_turn_on_for_each_optimisation_stage[1] = &four_layer_vision_spiking_model->E2I_L_SYNAPSES_ON;
 		use_inhibitory_neurons_for_each_optimisation_stage[1] = true;
 		number_of_non_input_layers_to_simulate_for_each_optimisation_stage[1] = 1;
 		indices_of_neuron_group_of_interest_for_each_optimisation_stage[1] = 1;
@@ -96,6 +99,7 @@ int main (int argc, char *argv[]){
 	}
 	if (number_of_optimisation_stages >= 3) {
 		model_pointers_to_be_optimised_for_each_optimisation_stage[2] = &four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_I2E_L[0];
+		synapse_bool_pointers_to_turn_on_for_each_optimisation_stage[2] = &four_layer_vision_spiking_model->I2E_L_SYNAPSES_ON;
 		use_inhibitory_neurons_for_each_optimisation_stage[2] = true;
 		number_of_non_input_layers_to_simulate_for_each_optimisation_stage[2] = 1;
 		indices_of_neuron_group_of_interest_for_each_optimisation_stage[2] = 0;
@@ -103,6 +107,7 @@ int main (int argc, char *argv[]){
 	}
 	if (number_of_optimisation_stages >= 4) {
 		model_pointers_to_be_optimised_for_each_optimisation_stage[3] = &four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2E_L[0];
+		synapse_bool_pointers_to_turn_on_for_each_optimisation_stage[3] = &four_layer_vision_spiking_model->E2E_L_SYNAPSES_ON;
 		use_inhibitory_neurons_for_each_optimisation_stage[3] = true;
 		number_of_non_input_layers_to_simulate_for_each_optimisation_stage[3] = 1;
 		indices_of_neuron_group_of_interest_for_each_optimisation_stage[3] = 0;
@@ -110,6 +115,7 @@ int main (int argc, char *argv[]){
 	}
 	if (number_of_optimisation_stages >= 5) {
 		model_pointers_to_be_optimised_for_each_optimisation_stage[4] = &four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2E_FF[1];
+		synapse_bool_pointers_to_turn_on_for_each_optimisation_stage[4] = &four_layer_vision_spiking_model->E2E_FF_SYNAPSES_ON;
 		use_inhibitory_neurons_for_each_optimisation_stage[4] = true;
 		number_of_non_input_layers_to_simulate_for_each_optimisation_stage[2] = 1;
 		indices_of_neuron_group_of_interest_for_each_optimisation_stage[4] = 2;
@@ -146,15 +152,31 @@ int main (int argc, char *argv[]){
 			four_layer_vision_spiking_model->set_default_parameter_values();
 
 
-			for (int previous_optimisation_stage_index = 0; previous_optimisation_stage_index < optimisation_stage; previous_optimisation_stage_index++) {
-				*model_pointers_to_be_optimised_for_each_optimisation_stage[previous_optimisation_stage_index] = final_optimal_parameter_for_each_optimisation_stage[previous_optimisation_stage_index];
+			for (int optimisation_stage_index = 0; optimisation_stage_index < optimisation_stage; optimisation_stage_index++) {
+
+				*synapse_bool_pointers_to_turn_on_for_each_optimisation_stage[optimisation_stage] = true;
+
+
+				if (optimisation_stage_index < optimisation_stage) {
+
+					*model_pointers_to_be_optimised_for_each_optimisation_stage[optimisation_stage_index] = final_optimal_parameter_for_each_optimisation_stage[optimisation_stage_index];
+				
+				} else {
+
+					float test_optimisation_parameter_value = (optimisation_parameter_max + optimisation_parameter_min) / 2.0;
+					*model_pointers_to_be_optimised_for_each_optimisation_stage[optimisation_stage] = test_optimisation_parameter_value;
+
+					four_layer_vision_spiking_model->INHIBITORY_NEURONS_ON = use_inhibitory_neurons_for_each_optimisation_stage[optimisation_stage];
+					four_layer_vision_spiking_model->number_of_non_input_layers_to_simulate = number_of_non_input_layers_to_simulate_for_each_optimisation_stage[optimisation_stage];
+
+				}
+
+
 			}
 
-			float test_optimisation_parameter_value = (optimisation_parameter_max + optimisation_parameter_min) / 2.0;
-			*model_pointers_to_be_optimised_for_each_optimisation_stage[optimisation_stage] = test_optimisation_parameter_value;
+			
 
-			four_layer_vision_spiking_model->INHIBITORY_NEURONS_ON = use_inhibitory_neurons_for_each_optimisation_stage[optimisation_stage];
-			four_layer_vision_spiking_model->number_of_non_input_layers_to_simulate = number_of_non_input_layers_to_simulate_for_each_optimisation_stage[optimisation_stage];
+			
 
 
 			

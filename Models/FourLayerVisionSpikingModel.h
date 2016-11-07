@@ -15,6 +15,7 @@ public:
 	// Network Parameters
 	bool INHIBITORY_NEURONS_ON;
 
+	bool E2E_FF_SYNAPSES_ON;
 	bool E2E_L_SYNAPSES_ON;
 	bool E2I_L_SYNAPSES_ON;
 	bool I2E_L_SYNAPSES_ON;
