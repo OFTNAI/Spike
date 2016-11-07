@@ -40,7 +40,7 @@ int main (int argc, char *argv[]){
 	// float max_firing_rate = optimal_max_firing_rate*presentation_time_per_stimulus_per_epoch_test;
 
 
-	float presentation_time_per_stimulus_per_epoch = 2.0;
+	float presentation_time_per_stimulus_per_epoch = 0.01;
 
 
 	// SIMULATOR OPTIONS
@@ -58,58 +58,69 @@ int main (int argc, char *argv[]){
 	simulator_options->stimuli_presentation_options->transform_order = TRANSFORM_ORDER_ORIGINAL;
 
 
+
+	// MODEL
+	FourLayerVisionSpikingModel * four_layer_vision_spiking_model = new FourLayerVisionSpikingModel();
+	four_layer_vision_spiking_model->SetTimestep(timestep);
+
+
 	// OPTIMISATION
 	int number_of_optimisation_stages = 5;
+	float** model_pointers_to_be_optimised_for_each_optimisation_stage = (float**)malloc(number_of_optimisation_stages*sizeof(float*));
+	bool* use_inhibitory_neurons_for_each_optimisation_stage = (bool*)malloc(number_of_optimisation_stages*sizeof(bool));
+	int* number_of_non_input_layers_to_simulate_for_each_optimisation_stage = (int*)malloc(number_of_optimisation_stages*sizeof(int));
 	int* indices_of_neuron_group_of_interest_for_each_optimisation_stage = (int*)malloc(number_of_optimisation_stages*sizeof(int));
 	float* ideal_output_scores_for_each_optimisation_stage = (float*)malloc(number_of_optimisation_stages*sizeof(float));
 	float* final_optimal_parameter_for_each_optimisation_stage = (float*)malloc(number_of_optimisation_stages*sizeof(float));
-
 
 	float upper = 20.0;
 	float lower = 10.0;
 	float optimisation_threshold = 1.0;
 	float initial_optimisation_parameter_min = 1.0f*pow(10, -12);;
 	float initial_optimisation_parameter_max = 1.0*pow(10, -1);
-	
 
-	
 
 	if (number_of_optimisation_stages >= 1) {
+		model_pointers_to_be_optimised_for_each_optimisation_stage[0] = &four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2E_FF[0];
+		use_inhibitory_neurons_for_each_optimisation_stage[0] = false;
+		number_of_non_input_layers_to_simulate_for_each_optimisation_stage[0] = 1;
 		indices_of_neuron_group_of_interest_for_each_optimisation_stage[0] = 0;
 		ideal_output_scores_for_each_optimisation_stage[0] = upper;
 	}
 	if (number_of_optimisation_stages >= 2) {
+		model_pointers_to_be_optimised_for_each_optimisation_stage[1] = &four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2I_L[0];
+		use_inhibitory_neurons_for_each_optimisation_stage[1] = true;
+		number_of_non_input_layers_to_simulate_for_each_optimisation_stage[1] = 1;
 		indices_of_neuron_group_of_interest_for_each_optimisation_stage[1] = 1;
 		ideal_output_scores_for_each_optimisation_stage[1] = upper;
 	}
 	if (number_of_optimisation_stages >= 3) {
+		model_pointers_to_be_optimised_for_each_optimisation_stage[2] = &four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_I2E_L[0];
+		use_inhibitory_neurons_for_each_optimisation_stage[2] = true;
+		number_of_non_input_layers_to_simulate_for_each_optimisation_stage[2] = 1;
 		indices_of_neuron_group_of_interest_for_each_optimisation_stage[2] = 0;
 		ideal_output_scores_for_each_optimisation_stage[2] = lower;
 	}
 	if (number_of_optimisation_stages >= 4) {
+		model_pointers_to_be_optimised_for_each_optimisation_stage[3] = &four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2E_L[0];
+		use_inhibitory_neurons_for_each_optimisation_stage[3] = true;
+		number_of_non_input_layers_to_simulate_for_each_optimisation_stage[3] = 1;
 		indices_of_neuron_group_of_interest_for_each_optimisation_stage[3] = 0;
 		ideal_output_scores_for_each_optimisation_stage[3] = upper;
 	}
 	if (number_of_optimisation_stages >= 5) {
+		model_pointers_to_be_optimised_for_each_optimisation_stage[4] = &four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2E_FF[1];
+		use_inhibitory_neurons_for_each_optimisation_stage[4] = true;
+		number_of_non_input_layers_to_simulate_for_each_optimisation_stage[2] = 1;
 		indices_of_neuron_group_of_interest_for_each_optimisation_stage[4] = 2;
 		ideal_output_scores_for_each_optimisation_stage[4] = upper;
 	}
-
-
-
-
 	
-	// MODEL
-	FourLayerVisionSpikingModel * four_layer_vision_spiking_model = new FourLayerVisionSpikingModel();
-	four_layer_vision_spiking_model->SetTimestep(timestep);
+
+	// *model_pointers_to_be_optimised_for_each_optimisation_stage[0] = 123.4;
 
 
-
-	float* model_pointers_to_be_optimised_for_each_optimisation_stage = (float*)malloc(number_of_optimisation_stages*sizeof(float));
-
-
-
-	
+	printf("four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2E_FF[0]: %f\n", four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2E_FF[0]);
 	
 	for (int optimisation_stage = 0; optimisation_stage < number_of_optimisation_stages; optimisation_stage++) {
 
@@ -133,49 +144,30 @@ int main (int argc, char *argv[]){
 			// print_memory_usage();
 
 			four_layer_vision_spiking_model->set_default_parameter_values();
-			
 
-			
+
+			for (int previous_optimisation_stage_index = 0; previous_optimisation_stage_index < optimisation_stage; previous_optimisation_stage_index++) {
+				*model_pointers_to_be_optimised_for_each_optimisation_stage[previous_optimisation_stage_index] = final_optimal_parameter_for_each_optimisation_stage[previous_optimisation_stage_index];
+			}
 
 			float test_optimisation_parameter_value = (optimisation_parameter_max + optimisation_parameter_min) / 2.0;
-			
-			if (optimisation_stage >= 0) {
-				four_layer_vision_spiking_model->number_of_non_input_layers = 1;
-				four_layer_vision_spiking_model->INHIBITORY_NEURONS_ON = false;
+			*model_pointers_to_be_optimised_for_each_optimisation_stage[optimisation_stage] = test_optimisation_parameter_value;
 
-				four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2E_FF[0] = test_optimisation_parameter_value;
-			}
+			four_layer_vision_spiking_model->INHIBITORY_NEURONS_ON = use_inhibitory_neurons_for_each_optimisation_stage[optimisation_stage];
+			four_layer_vision_spiking_model->number_of_non_input_layers_to_simulate = number_of_non_input_layers_to_simulate_for_each_optimisation_stage[optimisation_stage];
+
+
 			
 			if (optimisation_stage >= 1) {
-				four_layer_vision_spiking_model->INHIBITORY_NEURONS_ON = true;
 				four_layer_vision_spiking_model->E2I_L_SYNAPSES_ON = true;
-
-				// four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2E_L[0] = final_optimal_parameter_for_each_optimisation_stage[0];
-				printf("final_optimal_parameter_for_each_optimisation_stage[0]: %.12f\n", final_optimal_parameter_for_each_optimisation_stage[0]);
-				four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2E_FF[0] = final_optimal_parameter_for_each_optimisation_stage[0];
-				four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2I_L[0] = test_optimisation_parameter_value;
 			}
 
 			if (optimisation_stage >= 2) {
-				four_layer_vision_spiking_model->I2E_L_SYNAPSES_ON = true;
-
-				four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2I_L[0] = final_optimal_parameter_for_each_optimisation_stage[1];
-				four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_I2E_L[0] = test_optimisation_parameter_value;
+				four_layer_vision_spiking_model->I2E_L_SYNAPSES_ON = true;;
 			}
 
 			if (optimisation_stage >= 3) {
 				four_layer_vision_spiking_model->E2E_L_SYNAPSES_ON = true;
-
-				four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_I2E_L[0] = final_optimal_parameter_for_each_optimisation_stage[2];
-				four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2E_L[0] = test_optimisation_parameter_value;
-			}
-
-
-			if (optimisation_stage >= 4) {
-				four_layer_vision_spiking_model->number_of_non_input_layers = 2;
-
-				four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2E_L[0] = final_optimal_parameter_for_each_optimisation_stage[3];
-				four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2E_FF[1] = test_optimisation_parameter_value;
 			}
 
 

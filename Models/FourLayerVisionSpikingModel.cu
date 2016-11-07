@@ -181,6 +181,8 @@ void FourLayerVisionSpikingModel::finalise_model() {
 	conductance_spiking_synapses = new ConductanceSpikingSynapses();
 	evans_stdp = new EvansSTDP();
 
+
+
 	spiking_neurons = lif_spiking_neurons;
 	spiking_synapses = conductance_spiking_synapses;
 	input_spiking_neurons = image_poisson_input_spiking_neurons;

@@ -56,7 +56,8 @@ Synapses::~Synapses() {
 	free(synaptic_efficacies_or_weights);
 	free(original_synapse_indices);
 	free(synapse_postsynaptic_neuron_count_index);
-	free(random_state_manager);
+	
+	delete random_state_manager;
 
 	CudaSafeCall(cudaFree(d_presynaptic_neuron_indices));
 	CudaSafeCall(cudaFree(d_postsynaptic_neuron_indices));
