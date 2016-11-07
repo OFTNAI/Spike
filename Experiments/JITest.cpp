@@ -27,9 +27,6 @@ int main (int argc, char *argv[]){
 	float timestep = 0.00002;
 	bool high_fidelity_spike_storage = true;
 
-	// bool simulate_network_to_test_untrained = true;
-	// bool simulate_network_to_train_network = true;
-	// bool simulate_network_to_test_trained = true;
 	
 	// // Parameters for OPTIMISATION + Information Analysis
 	// const float optimal_max_firing_rate = 100.0f;//set if optimizing based on maxfr //Maximum rate (spikes/sec) 87 +- 46  (*1)
@@ -71,13 +68,15 @@ int main (int argc, char *argv[]){
 	bool* use_inhibitory_neurons_for_each_optimisation_stage = (bool*)malloc(number_of_optimisation_stages*sizeof(bool));
 	int* number_of_non_input_layers_to_simulate_for_each_optimisation_stage = (int*)malloc(number_of_optimisation_stages*sizeof(int));
 	int* indices_of_neuron_group_of_interest_for_each_optimisation_stage = (int*)malloc(number_of_optimisation_stages*sizeof(int));
+	float* optimisation_minimum_error_for_each_optimisation_stage = (float*)malloc(number_of_optimisation_stages*sizeof(float));
+	float* initial_optimisation_parameter_min_for_each_optimisation_stage = (float*)malloc(number_of_optimisation_stages*sizeof(float));
+	float* initial_optimisation_parameter_max_for_each_optimisation_stage = (float*)malloc(number_of_optimisation_stages*sizeof(float));
 	float* ideal_output_scores_for_each_optimisation_stage = (float*)malloc(number_of_optimisation_stages*sizeof(float));
 	float* final_optimal_parameter_for_each_optimisation_stage = (float*)malloc(number_of_optimisation_stages*sizeof(float));
 
 	float upper = 20.0;
 	float lower = 10.0;
-	float optimisation_threshold = 1.0;
-	float initial_optimisation_parameter_min = 1.0f*pow(10, -12);;
+	float initial_optimisation_parameter_min = 1.0f*pow(10, -12);
 	float initial_optimisation_parameter_max = 1.0*pow(10, -1);
 
 
@@ -88,6 +87,9 @@ int main (int argc, char *argv[]){
 		number_of_non_input_layers_to_simulate_for_each_optimisation_stage[0] = 1;
 		indices_of_neuron_group_of_interest_for_each_optimisation_stage[0] = 0;
 		ideal_output_scores_for_each_optimisation_stage[0] = upper;
+		optimisation_minimum_error_for_each_optimisation_stage[0] = 1.0;
+		initial_optimisation_parameter_min_for_each_optimisation_stage[0] = 1.0f*pow(10, -12);
+		initial_optimisation_parameter_max_for_each_optimisation_stage[0] = 1.0*pow(10, -1);
 	}
 	if (number_of_optimisation_stages >= 2) {
 		model_pointers_to_be_optimised_for_each_optimisation_stage[1] = &four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2I_L[0];
@@ -96,6 +98,10 @@ int main (int argc, char *argv[]){
 		number_of_non_input_layers_to_simulate_for_each_optimisation_stage[1] = 1;
 		indices_of_neuron_group_of_interest_for_each_optimisation_stage[1] = 1;
 		ideal_output_scores_for_each_optimisation_stage[1] = upper;
+		optimisation_minimum_error_for_each_optimisation_stage[1] = 1.0;
+		optimisation_minimum_error_for_each_optimisation_stage[0] = 1.0;
+		initial_optimisation_parameter_min_for_each_optimisation_stage[1] = 1.0f*pow(10, -12);
+		initial_optimisation_parameter_max_for_each_optimisation_stage[1] = 1.0*pow(10, -1);
 	}
 	if (number_of_optimisation_stages >= 3) {
 		model_pointers_to_be_optimised_for_each_optimisation_stage[2] = &four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_I2E_L[0];
@@ -104,6 +110,9 @@ int main (int argc, char *argv[]){
 		number_of_non_input_layers_to_simulate_for_each_optimisation_stage[2] = 1;
 		indices_of_neuron_group_of_interest_for_each_optimisation_stage[2] = 0;
 		ideal_output_scores_for_each_optimisation_stage[2] = lower;
+		optimisation_minimum_error_for_each_optimisation_stage[2] = 1.0;
+		initial_optimisation_parameter_min_for_each_optimisation_stage[2] = 1.0f*pow(10, -12);
+		initial_optimisation_parameter_max_for_each_optimisation_stage[2] = 1.0*pow(10, -1);
 	}
 	if (number_of_optimisation_stages >= 4) {
 		model_pointers_to_be_optimised_for_each_optimisation_stage[3] = &four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2E_L[0];
@@ -112,6 +121,9 @@ int main (int argc, char *argv[]){
 		number_of_non_input_layers_to_simulate_for_each_optimisation_stage[3] = 1;
 		indices_of_neuron_group_of_interest_for_each_optimisation_stage[3] = 0;
 		ideal_output_scores_for_each_optimisation_stage[3] = upper;
+		optimisation_minimum_error_for_each_optimisation_stage[3] = 1.0;
+		initial_optimisation_parameter_min_for_each_optimisation_stage[3] = 1.0f*pow(10, -12);
+		initial_optimisation_parameter_max_for_each_optimisation_stage[3] = 1.0*pow(10, -1);
 	}
 	if (number_of_optimisation_stages >= 5) {
 		model_pointers_to_be_optimised_for_each_optimisation_stage[4] = &four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2E_FF[1];
@@ -120,6 +132,9 @@ int main (int argc, char *argv[]){
 		number_of_non_input_layers_to_simulate_for_each_optimisation_stage[2] = 1;
 		indices_of_neuron_group_of_interest_for_each_optimisation_stage[4] = 2;
 		ideal_output_scores_for_each_optimisation_stage[4] = upper;
+		optimisation_minimum_error_for_each_optimisation_stage[4] = 1.0;
+		initial_optimisation_parameter_min_for_each_optimisation_stage[4] = 1.0f*pow(10, -12);
+		initial_optimisation_parameter_max_for_each_optimisation_stage[4] = 1.0*pow(10, -1);
 	}
 	
 
@@ -130,11 +145,10 @@ int main (int argc, char *argv[]){
 	
 	for (int optimisation_stage = 0; optimisation_stage < number_of_optimisation_stages; optimisation_stage++) {
 
-		float optimisation_parameter_min = initial_optimisation_parameter_min;
-		float optimisation_parameter_max = initial_optimisation_parameter_max;
+		float optimisation_parameter_min = initial_optimisation_parameter_min_for_each_optimisation_stage[optimisation_stage];
+		float optimisation_parameter_max = initial_optimisation_parameter_min_for_each_optimisation_stage[optimisation_stage];
 		float optimisation_ideal_output_score = ideal_output_scores_for_each_optimisation_stage[optimisation_stage];
 
-		float final_optimal_parameter = 0.0; // Eventually have an array of these to use on subsequent optimisation_stage iterations :)
 		int iteration_count_for_optimisation_stage = 0;
 
 		float previous_optimisation_output_score = -1.0;
@@ -193,7 +207,7 @@ int main (int argc, char *argv[]){
 
 			if (optimisation_output_score <= optimisation_ideal_output_score) {
 
-				if (optimisation_ideal_output_score - optimisation_output_score < optimisation_threshold) {
+				if (optimisation_ideal_output_score - optimisation_output_score < optimisation_minimum_error_for_each_optimisation_stage[optimisation_stage]) {
 					final_optimal_parameter_for_each_optimisation_stage[optimisation_stage] = test_optimisation_parameter_value;
 					break;
 				} else {
@@ -202,7 +216,7 @@ int main (int argc, char *argv[]){
 
 			} else if (optimisation_output_score >= optimisation_ideal_output_score) {
 
-				if (optimisation_output_score - optimisation_ideal_output_score < optimisation_threshold) {
+				if (optimisation_output_score - optimisation_ideal_output_score < optimisation_minimum_error_for_each_optimisation_stage[optimisation_stage]) {
 					final_optimal_parameter_for_each_optimisation_stage[optimisation_stage] = test_optimisation_parameter_value;
 					break;
 				} else {
@@ -211,9 +225,6 @@ int main (int argc, char *argv[]){
 
 
 			}
-
-			// printf("NEW optimisation_parameter_max: %.12f\n", optimisation_parameter_max);
-			// printf("NEW optimisation_parameter_min: %.12f\n", optimisation_parameter_min);
 
 
 			print_line_of_dashes_with_blank_lines_either_side();
