@@ -20,9 +20,13 @@ public:
 	bool I2E_L_SYNAPSES_ON;
 	bool E2E_FB_SYNAPSES_ON;
 
+	bool E2E_FF_STDP_ON;
 	bool E2E_L_STDP_ON;
+	bool E2E_FB_STDP_ON;
+
 	
 	int number_of_non_input_layers;
+	int number_of_non_input_layers_to_simulate;
 	int dim_excit_layer;
 	int dim_inhib_layer;
 
@@ -93,7 +97,12 @@ public:
 	vector<int> INHIBITORY_NEURONS;
 
 
+	virtual void set_default_parameter_values();
 	virtual void finalise_model();
+
+protected:
+	virtual void create_parameter_arrays();
+	virtual void delete_model_components();
 
 
 };

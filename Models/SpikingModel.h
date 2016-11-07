@@ -55,6 +55,10 @@ public:
 	virtual void finalise_model();
 	void copy_model_to_device(bool high_fidelity_spike_storage);
 
+protected:
+	
+	virtual void create_parameter_arrays();
+
 };
 
 #endif

@@ -4,48 +4,41 @@
 // FourLayerVisionSpikingModel Constructor
 FourLayerVisionSpikingModel::FourLayerVisionSpikingModel () { 
 
-	// Network Parameters
-	INHIBITORY_NEURONS_ON = false;
-
-	E2I_L_SYNAPSES_ON = false;
-	I2E_L_SYNAPSES_ON = false;
-	E2E_L_SYNAPSES_ON = false;
-	E2E_FB_SYNAPSES_ON = false;
-
 	// Network size parameters
 	number_of_non_input_layers = 4;
-	dim_excit_layer = 64;
-	dim_inhib_layer = 32;
+	number_of_non_input_layers_to_simulate = number_of_non_input_layers;
+	
 
 
-	// Neuronal Parameters
-	max_FR_of_input_Gabor = 100.0f;
-	absolute_refractory_period = 0.002;
 
 
-	// Synaptic delay ranges
-	E2E_FF_minDelay = 5.0 * timestep;
-	E2E_FF_maxDelay = 0.01;
+	create_parameter_arrays();
 
-	E2I_L_minDelay = 5.0 * timestep;
-	E2I_L_maxDelay = 0.01;
+	set_default_parameter_values();
 
-	I2E_L_minDelay = 5.0 * timestep;
-	I2E_L_maxDelay = 0.01;
+	
 
-	E2E_FB_minDelay = 5.0 * timestep;
-	E2E_FB_maxDelay = 0.01;
-
-	E2E_L_minDelay = 5.0 * timestep;
-	E2E_L_maxDelay = 0.01;
+}
 
 
-	//STDP Parameters
-	learning_rate_rho = 0.1/timestep;//100.0;// 0.1;
-	decay_term_tau_C = 0.3;//(In Ben's model, tau_C/tau_D = 3/5 v 15/25 v 75/125, and the first one produces the best result)
-	decay_term_tau_D = 0.3;
-	E2E_L_STDP_ON = false;
 
+// FourLayerVisionSpikingModel Destructor
+FourLayerVisionSpikingModel::~FourLayerVisionSpikingModel () {
+
+	delete_model_components();
+
+}
+
+
+void FourLayerVisionSpikingModel::delete_model_components() {
+	delete lif_spiking_neurons;
+	delete image_poisson_input_spiking_neurons;
+	delete conductance_spiking_synapses;
+	delete evans_stdp;
+}
+
+
+void FourLayerVisionSpikingModel::create_parameter_arrays() {
 
 	// Layer-by-layer parameter arrays
 	LBL_max_number_of_connections_per_pair_E2E_FF = (int*)malloc(number_of_non_input_layers * sizeof(int));
@@ -77,6 +70,52 @@ FourLayerVisionSpikingModel::FourLayerVisionSpikingModel () {
 	LBL_decay_term_tau_g_I2E_L = (float*)malloc(number_of_non_input_layers * sizeof(float));
 	LBL_decay_term_tau_g_E2E_L = (float*)malloc(number_of_non_input_layers * sizeof(float));
 	LBL_decay_term_tau_g_E2E_FB = (float*)malloc(number_of_non_input_layers * sizeof(float));
+
+}
+
+void FourLayerVisionSpikingModel::set_default_parameter_values() {
+
+	// Network Parameters
+	dim_excit_layer = 64;
+	dim_inhib_layer = 32;
+	INHIBITORY_NEURONS_ON = false;
+
+	E2I_L_SYNAPSES_ON = false;
+	I2E_L_SYNAPSES_ON = false;
+	E2E_L_SYNAPSES_ON = false;
+	E2E_FB_SYNAPSES_ON = false;
+
+
+	//STDP Parameters
+	learning_rate_rho = 0.1;//100.0;// 0.1;
+	decay_term_tau_C = 0.3;//(In Ben's model, tau_C/tau_D = 3/5 v 15/25 v 75/125, and the first one produces the best result)
+	decay_term_tau_D = 0.3;
+
+	E2E_FF_STDP_ON = false;
+	E2E_L_STDP_ON = false;
+	E2E_FB_STDP_ON = false;
+
+
+	// Neuronal Parameters
+	max_FR_of_input_Gabor = 100.0f;
+	absolute_refractory_period = 0.002;
+
+
+	// Synaptic delay ranges
+	E2E_FF_minDelay = 0.0005;
+	E2E_FF_maxDelay = 0.01;
+
+	E2I_L_minDelay = 0.0005;
+	E2I_L_maxDelay = 0.01;
+
+	I2E_L_minDelay = 0.0005;
+	I2E_L_maxDelay = 0.01;
+
+	E2E_FB_minDelay = 0.0005;
+	E2E_FB_maxDelay = 0.01;
+
+	E2E_L_minDelay = 0.0005;
+	E2E_L_maxDelay = 0.01;
 
 
 	for (int layer_index = 0; layer_index  < number_of_non_input_layers; layer_index ++) {
@@ -132,19 +171,10 @@ FourLayerVisionSpikingModel::FourLayerVisionSpikingModel () {
 }
 
 
-// FourLayerVisionSpikingModel Destructor
-FourLayerVisionSpikingModel::~FourLayerVisionSpikingModel () {
-
-	delete lif_spiking_neurons;
-	delete image_poisson_input_spiking_neurons;
-	delete conductance_spiking_synapses;
-	delete evans_stdp;
-
-}
-
-
 
 void FourLayerVisionSpikingModel::finalise_model() {
+
+	delete_model_components();
 
 	lif_spiking_neurons = new LIFSpikingNeurons();
 	image_poisson_input_spiking_neurons = new ImagePoissonInputSpikingNeurons();
@@ -208,14 +238,14 @@ void FourLayerVisionSpikingModel::finalise_model() {
 	INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS->absolute_refractory_period = absolute_refractory_period;
 
 	
-	for (int l=0;l<number_of_non_input_layers;l++){
+	for (int layer_index = 0; layer_index < number_of_non_input_layers_to_simulate; layer_index++){
 
 		EXCITATORY_NEURONS.push_back(AddNeuronGroup(EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS));
-		cout<<"Neuron Group "<<EXCITATORY_NEURONS[l]<<": Excitatory layer "<<l<<endl;
+		cout << "Neuron Group " << EXCITATORY_NEURONS[layer_index] << ": Excitatory layer " << layer_index << endl;
 
 		if (INHIBITORY_NEURONS_ON) {
 			INHIBITORY_NEURONS.push_back(AddNeuronGroup(INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS));
-			cout<<"Neuron Group "<<INHIBITORY_NEURONS[l]<<": Inhibitory layer "<<l<<endl;
+			cout<<"Neuron Group "<<INHIBITORY_NEURONS[layer_index] << ": Inhibitory layer " << layer_index << endl;
 		}
 		
 	}
@@ -245,14 +275,14 @@ void FourLayerVisionSpikingModel::finalise_model() {
 	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[0] = E2E_FF_minDelay;//5.0*timestep;
 	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[1] = E2E_FF_maxDelay;//3.0f*pow(10, -3);
 	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->connectivity_type = CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE;
-	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->stdp_on = true;
+	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->stdp_on = E2E_FF_STDP_ON;
 	E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->reversal_potential_Vhat = 0.0;
 
 	conductance_spiking_synapse_parameters_struct * E2E_FB_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS = new conductance_spiking_synapse_parameters_struct();
 	E2E_FB_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[0] = E2E_FB_minDelay;
 	E2E_FB_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->delay_range[1] = E2E_FB_maxDelay;
 	E2E_FB_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->connectivity_type = CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE;
-	E2E_FB_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->stdp_on = true;
+	E2E_FB_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->stdp_on = E2E_FB_STDP_ON;
 	E2E_FB_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->reversal_potential_Vhat = 0.0;
 
 	conductance_spiking_synapse_parameters_struct * E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS = new conductance_spiking_synapse_parameters_struct();
@@ -280,7 +310,7 @@ void FourLayerVisionSpikingModel::finalise_model() {
 
 	
 
-	for (int layer_index = 0; layer_index < number_of_non_input_layers; layer_index++) {
+	for (int layer_index = 0; layer_index < number_of_non_input_layers_to_simulate; layer_index++) {
 
 
 		if (layer_index == 0) {

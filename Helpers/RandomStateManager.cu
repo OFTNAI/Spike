@@ -2,10 +2,7 @@
 
 #include "../Helpers/CUDAErrorCheckHelpers.h"
 #include "../Helpers/TimerWithMessages.h"
-
-#include <thrust/device_vector.h>
-#include <thrust/host_vector.h>
-#include <thrust/count.h>
+#include "../Helpers/TerminalHelpers.h"
 
 
 __global__ void generate_random_states_kernel(unsigned int seed, curandState_t* d_states, size_t total_number);
@@ -27,6 +24,8 @@ RandomStateManager::~RandomStateManager() {
 }
 
 void RandomStateManager::setup_random_states(int threads_per_blocks_x, int number_of_blocks_x, int seed) {
+
+	print_line_of_dashes_with_blank_lines_either_side();
 
 	TimerWithMessages * set_up_random_states_timer = new TimerWithMessages("Setting up random states for RandomStateManager...\n");;	
 

@@ -68,7 +68,7 @@ void SpikingModel::AddSynapseGroup(int presynaptic_group_id,
 
 void SpikingModel::AddSynapseGroupsForNeuronGroupAndEachInputGroup(int postsynaptic_group_id, 
 							synapse_parameters_struct * synapse_params) {
-
+	
 	for (int i = 0; i < input_spiking_neurons->total_number_of_groups; i++) {
 
 		AddSynapseGroup(CORRECTED_PRESYNAPTIC_ID(i, true), 
@@ -84,6 +84,12 @@ void SpikingModel::AddSynapseGroupsForNeuronGroupAndEachInputGroup(int postsynap
 void SpikingModel::finalise_model() {
 
 }
+
+
+void SpikingModel::create_parameter_arrays() {
+
+}
+
 
 void SpikingModel::copy_model_to_device(bool high_fidelity_spike_storage) {
 

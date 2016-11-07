@@ -94,7 +94,20 @@ int main (int argc, char *argv[]){
 		indices_of_neuron_group_of_interest_for_each_optimisation_stage[4] = 2;
 		ideal_output_scores_for_each_optimisation_stage[4] = upper;
 	}
+
+
+
+
 	
+	// MODEL
+	FourLayerVisionSpikingModel * four_layer_vision_spiking_model = new FourLayerVisionSpikingModel();
+	four_layer_vision_spiking_model->SetTimestep(timestep);
+
+
+
+	float* model_pointers_to_be_optimised_for_each_optimisation_stage = (float*)malloc(number_of_optimisation_stages*sizeof(float));
+
+
 
 	
 	
@@ -116,16 +129,13 @@ int main (int argc, char *argv[]){
 
 			printf("OPTIMISATION STAGE: %d\nITERATION COUNT FOR OPTIMISATION STAGE: %d\nPREVIOUS OPTIMISATION OUTPUT SCORE: %f\n", optimisation_stage, iteration_count_for_optimisation_stage, previous_optimisation_output_score);
 
-			print_line_of_dashes_with_blank_lines_either_side();
-
 
 			// print_memory_usage();
+
+			four_layer_vision_spiking_model->set_default_parameter_values();
 			
 
-			// MODEL
-			FourLayerVisionSpikingModel * four_layer_vision_spiking_model = new FourLayerVisionSpikingModel();
-			four_layer_vision_spiking_model->SetTimestep(timestep);
-
+			
 
 			float test_optimisation_parameter_value = (optimisation_parameter_max + optimisation_parameter_min) / 2.0;
 			
@@ -216,7 +226,7 @@ int main (int argc, char *argv[]){
 
 			print_line_of_dashes_with_blank_lines_either_side();
 
-			delete four_layer_vision_spiking_model;
+			// delete four_layer_vision_spiking_model;
 			delete simulator;
 			delete spike_analyser;
 
