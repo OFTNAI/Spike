@@ -36,6 +36,7 @@ public:
 
 
 	float timestep;
+	bool high_fidelity_spike_storage;
 	void SetTimestep(float timestep_parameter);
 
 	SpikingNeurons * spiking_neurons;
@@ -53,7 +54,7 @@ public:
 	void perform_per_timestep_model_instructions(float current_time_in_seconds, bool apply_stdp_to_relevant_synapses);
 
 	virtual void finalise_model();
-	void copy_model_to_device(bool high_fidelity_spike_storage);
+	void copy_model_to_device();
 
 protected:
 	

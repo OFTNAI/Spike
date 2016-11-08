@@ -7,6 +7,7 @@
 SpikingModel::SpikingModel () {
 
 	timestep = 0.0001f;
+	high_fidelity_spike_storage = false;
 
 	spiking_synapses = NULL;
 	spiking_neurons = NULL;
@@ -91,7 +92,7 @@ void SpikingModel::create_parameter_arrays() {
 }
 
 
-void SpikingModel::copy_model_to_device(bool high_fidelity_spike_storage) {
+void SpikingModel::copy_model_to_device() {
 
 	TimerWithMessages * timer = new TimerWithMessages("Setting Up Network...\n");
 

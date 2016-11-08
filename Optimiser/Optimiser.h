@@ -1,9 +1,10 @@
 #ifndef Optimiser_H
 #define Optimiser_H
 
+#include "../Simulator/Simulator.h"
+#include "../Models/FourLayerVisionSpikingModel.h"
 
 #include <stdio.h>
-
 #include <math.h>  
 
 struct Optimiser_Options {
@@ -36,11 +37,14 @@ class Optimiser{
 public:
 	// Constructor/Destructor
 	Optimiser();
+	Optimiser(FourLayerVisionSpikingModel* four_layer_vision_spiking_model_parameter);
 	~Optimiser();
 
+	FourLayerVisionSpikingModel * four_layer_vision_spiking_model;
 
 	int number_of_optimisation_stages = 0;
 
+	Simulator_Options ** simulator_options_for_each_optimisation_stage;
 	float** model_pointers_to_be_optimised_for_each_optimisation_stage;
 	bool** synapse_bool_pointers_to_turn_on_for_each_optimisation_stage;
 	bool* use_inhibitory_neurons_for_each_optimisation_stage;
@@ -54,7 +58,8 @@ public:
 	float* final_optimal_parameter_for_each_optimisation_stage;
 
 
-	void AddOptimisationStage(Optimiser_Options * optimisation_stage_options);
+	void AddOptimisationStage(Optimiser_Options * optimisation_stage_options, Simulator_Options * simulator_options_parameter);
+	void RunOptimisation();
 
 };
 
