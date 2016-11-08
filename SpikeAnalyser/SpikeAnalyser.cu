@@ -137,6 +137,7 @@ void SpikeAnalyser::calculate_various_neuron_spike_totals_and_averages(float pre
 		average_number_of_spikes_per_stimulus_per_neuron_group_per_second[neuron_group_index] = new float[input_neurons->total_number_of_input_stimuli];
 
 		int neuron_group_start_index = neurons->start_neuron_indices_for_each_group[neuron_group_index];
+		printf("neuron_group_start_index: %d\n", neuron_group_start_index);
 		int neuron_group_end_index = neurons->last_neuron_indices_for_each_group[neuron_group_index];
 		int number_of_neurons_in_group = neuron_group_end_index - neuron_group_start_index + 1;
 		printf("\n* neuron group %d (%d neurons) *\n", neuron_group_index,number_of_neurons_in_group);

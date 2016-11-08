@@ -31,7 +31,7 @@ int main (int argc, char *argv[]){
 	// float max_firing_rate = optimal_max_firing_rate*presentation_time_per_stimulus_per_epoch_test;
 
 
-	const float presentation_time_per_stimulus_per_epoch = 2.0;
+	const float presentation_time_per_stimulus_per_epoch = 0.2;
 
 
 	// SIMULATOR OPTIONS

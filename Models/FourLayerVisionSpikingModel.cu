@@ -315,23 +315,23 @@ void FourLayerVisionSpikingModel::finalise_model() {
 
 	for (int layer_index = 0; layer_index < number_of_non_input_layers_to_simulate; layer_index++) {
 
+		if (E2E_FF_SYNAPSES_ON) {
+			if (layer_index == 0) {
 
-		if (layer_index == 0) {
+				AddSynapseGroupsForNeuronGroupAndEachInputGroup(EXCITATORY_NEURONS[0], G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 
-			AddSynapseGroupsForNeuronGroupAndEachInputGroup(EXCITATORY_NEURONS[0], G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
+			} else {
 
-		} else {
+				E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_per_postsynaptic_neuron = LBL_fanInCount_E2E_FF[layer_index];
+				E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_standard_deviation = LBL_gaussian_synapses_sd_E2E_FF[layer_index];
+				E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = LBL_biological_conductance_scaling_constant_lambda_E2E_FF[layer_index];
+				E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->decay_term_tau_g = LBL_decay_term_tau_g_E2E_FF[layer_index];
+				E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->max_number_of_connections_per_pair = LBL_max_number_of_connections_per_pair_E2E_FF[layer_index];
 
-			E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_per_postsynaptic_neuron = LBL_fanInCount_E2E_FF[layer_index];
-			E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_standard_deviation = LBL_gaussian_synapses_sd_E2E_FF[layer_index];
-			E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = LBL_biological_conductance_scaling_constant_lambda_E2E_FF[layer_index];
-			E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->decay_term_tau_g = LBL_decay_term_tau_g_E2E_FF[layer_index];
-			E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->max_number_of_connections_per_pair = LBL_max_number_of_connections_per_pair_E2E_FF[layer_index];
+				AddSynapseGroup(EXCITATORY_NEURONS[layer_index - 1], EXCITATORY_NEURONS[layer_index], E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 
-			AddSynapseGroup(EXCITATORY_NEURONS[layer_index - 1], EXCITATORY_NEURONS[layer_index], E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
-
-		}
-
+			}
+		}	
 
 		if (E2I_L_SYNAPSES_ON && INHIBITORY_NEURONS_ON) {
 

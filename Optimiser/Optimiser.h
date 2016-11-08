@@ -56,6 +56,7 @@ public:
 	float* optimisation_minimum_error_for_each_optimisation_stage;
 
 	float* final_optimal_parameter_for_each_optimisation_stage;
+	int* final_iteration_count_for_each_optimisation_stage;
 
 
 	void AddOptimisationStage(Optimiser_Options * optimisation_stage_options, Simulator_Options * simulator_options_parameter);
