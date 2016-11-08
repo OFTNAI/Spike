@@ -147,8 +147,8 @@ void Simulator::RunSimulation(SpikeAnalyser *spike_analyser) {
 			perform_pre_stimulus_presentation_instructions(stimuli_presentation_order[stimulus_index]);
 
 			//TEMP 
-			delete ((FourLayerVisionSpikingModel*)spiking_model)->image_poisson_input_spiking_neurons->random_state_manager;
-			((FourLayerVisionSpikingModel*)spiking_model)->image_poisson_input_spiking_neurons->setup_random_states_on_device();
+			// delete ((FourLayerVisionSpikingModel*)spiking_model)->image_poisson_input_spiking_neurons->random_state_manager;
+			// ((FourLayerVisionSpikingModel*)spiking_model)->image_poisson_input_spiking_neurons->setup_random_states_on_device();
 
 			int number_of_timesteps_per_stimulus_per_epoch = simulator_options->run_simulation_general_options->presentation_time_per_stimulus_per_epoch / spiking_model->timestep;
 		

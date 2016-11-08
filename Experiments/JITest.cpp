@@ -31,7 +31,7 @@ int main (int argc, char *argv[]){
 	// float max_firing_rate = optimal_max_firing_rate*presentation_time_per_stimulus_per_epoch_test;
 
 
-	const float presentation_time_per_stimulus_per_epoch = 0.01;
+	const float presentation_time_per_stimulus_per_epoch = 2.0;
 
 
 	// SIMULATOR OPTIONS
@@ -54,6 +54,7 @@ int main (int argc, char *argv[]){
 	FourLayerVisionSpikingModel * four_layer_vision_spiking_model = new FourLayerVisionSpikingModel();
 	four_layer_vision_spiking_model->SetTimestep(0.00002);
 	four_layer_vision_spiking_model->high_fidelity_spike_storage = true;
+
 
 	// OPTIMISATION
 	float upper = 20.0;

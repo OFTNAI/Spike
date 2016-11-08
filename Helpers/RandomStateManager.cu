@@ -27,7 +27,7 @@ void RandomStateManager::setup_random_states(int threads_per_blocks_x, int numbe
 
 	print_line_of_dashes_with_blank_lines_either_side();
 
-	TimerWithMessages * set_up_random_states_timer = new TimerWithMessages("Setting up random states for RandomStateManager...\n");;	
+	// TimerWithMessages * set_up_random_states_timer = new TimerWithMessages("Setting up random states for RandomStateManager...\n");;	
 
 	threads_per_block = dim3(threads_per_blocks_x);
 	block_dimensions = dim3(number_of_blocks_x);
@@ -45,7 +45,7 @@ void RandomStateManager::setup_random_states(int threads_per_blocks_x, int numbe
 	generate_random_states_kernel<<<block_dimensions, threads_per_block>>>(seed, d_states, threads_per_blocks_x * number_of_blocks_x);
 	CudaCheckError();
 
-	set_up_random_states_timer->stop_timer_and_log_time_and_message("Random states set up...", true);
+	// set_up_random_states_timer->stop_timer_and_log_time_and_message("Random states set up...", true);
 
 }
 

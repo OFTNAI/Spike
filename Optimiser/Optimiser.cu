@@ -74,8 +74,11 @@ void Optimiser::RunOptimisation() {
 	for (int optimisation_stage = 0; optimisation_stage < number_of_optimisation_stages; optimisation_stage++) {
 
 		float optimisation_parameter_min = initial_optimisation_parameter_min_for_each_optimisation_stage[optimisation_stage];
-		float optimisation_parameter_max = initial_optimisation_parameter_min_for_each_optimisation_stage[optimisation_stage];
+		float optimisation_parameter_max = initial_optimisation_parameter_max_for_each_optimisation_stage[optimisation_stage];
 		float optimisation_ideal_output_score = ideal_output_scores_for_each_optimisation_stage[optimisation_stage];
+
+		printf("optimisation_parameter_min: %f\n", optimisation_parameter_min);
+		printf("optimisation_parameter_max: %f\n", optimisation_parameter_max);
 
 		int iteration_count_for_optimisation_stage = 0;
 
@@ -133,7 +136,6 @@ void Optimiser::RunOptimisation() {
 
 			printf("TEST OPTIMISATION PARAMETER VALUE: %.16f\n", test_optimisation_parameter_value);
 			printf("OPTIMISATION OUTPUTSCORE: %f\n", optimisation_output_score);
-
 
 			if (optimisation_output_score <= optimisation_ideal_output_score) {
 
