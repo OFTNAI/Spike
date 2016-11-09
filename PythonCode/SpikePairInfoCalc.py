@@ -22,7 +22,7 @@ def corr2(a,b):
 
 # experimentName = '20160904_FF_successful';
 # experimentName = '20160908_FF_LAT';
-experimentName = '1.5--FF_FB_LAT_stdp_0.005_nCon10';
+experimentName = '1.5--FF_FB_LAT_stdp_0.005_nCon5_seed1';
 phases = ['Untrained','Trained'];
 # phases = ['Untrained'];
 # phases = ['Trained'];

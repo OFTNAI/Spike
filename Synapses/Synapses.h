@@ -138,7 +138,8 @@ __global__ void set_neuron_indices_by_sampling_from_normal_distribution(int tota
 																		float * d_synaptic_efficacies_or_weights, 
 																		float standard_deviation_sigma, 
 																		bool presynaptic_group_is_input,
-																		curandState_t* d_states);
+																		curandState_t* d_states,
+																		int max_number_of_connections_per_pair);
 
 // GAUSS random number generator
 double randn (double mu, double sigma);

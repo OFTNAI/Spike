@@ -6,7 +6,8 @@ function group=polygroup(v0,t0,neuronModel)
 global a b c d N D pp s post ppre dpre pre delay T timestep di nLayers  ExcitDim InhibDim
 model_izhikevich = 1;
 model_conductanceLIAF = 2;
-maxFiringCount = 1000;
+maxFiringCount = 100;
+
 
 if (neuronModel==model_conductanceLIAF)
     
@@ -42,18 +43,21 @@ if (neuronModel==model_conductanceLIAF)
         r(inhib_begin:inhib_end,1)=membrane_resistance_R_inhib;
         tau_m(inhib_begin:inhib_end,1)=membrane_time_constant_tau_m_inhib;
     end
+    
+%     tau_m=tau_m*0.9;
 
     I_rev=zeros(N,T+D);
     s_sum=zeros(N,T+D);
     I_tmp = zeros(N,1);
     
     group.firings=[];                             % spike timings
+    group.firings_inhib = [];
     last_fired=-T+zeros(N,1);               % assume that no neurons fired yet
     group.gr=[];                                  % the group connectivity will be here
 
     I_rev(v0+N*(t0-1))=0.001; %set input current
-    recentTh = 0.002/timestep; %s
-    
+%     recentTh = 0.001/timestep; %s 0.001/timestep;
+    recentTh = 1;
     
     for t=1:T
         %conductance_calculate_postsynaptic_current_injection_kernel
@@ -79,8 +83,8 @@ if (neuronModel==model_conductanceLIAF)
 %             I_rev(pp{fired(k)}+t*N)=I_rev(pp{fired(k)}+t*N)+di(fired(k),:);%increment by the size of synaptic weight
 %             s_sum(pp{fired(k)}+t*N)=s_sum(pp{fired(k)}+t*N)+s(fired(k),:);%increment by the size of synaptic weight
             pp_index = find(pp{fired(k)}>0);
-            I_rev(pp{fired(k)}(pp_index)+(t)*N)=I_rev(pp{fired(k)}(pp_index)+(t)*N)+di(fired(k),pp_index);%increment by the size of synaptic weight
-            s_sum(pp{fired(k)}(pp_index)+(t)*N)=s_sum(pp{fired(k)}(pp_index)+(t)*N)+s(fired(k),pp_index);%increment by the size of synaptic weight
+            I_rev(pp{fired(k)}(pp_index)+(t-1)*N)=I_rev(pp{fired(k)}(pp_index)+(t-1)*N)+di(fired(k),pp_index);%increment by the size of synaptic weight
+            s_sum(pp{fired(k)}(pp_index)+(t-1)*N)=s_sum(pp{fired(k)}(pp_index)+(t-1)*N)+s(fired(k),pp_index);%increment by the size of synaptic weight
 
 
 %             tmp1 = find(post(fired(k),:)>0 & s(fired(k),:)>0 & di(fired(k),:)==0);
@@ -89,17 +93,39 @@ if (neuronModel==model_conductanceLIAF)
 %             plot([ones(1,length(tmp2(tmp1)))*t;t+tmp3(tmp1)],[ones(1,length(tmp2(tmp1)))*fired(k); tmp2(tmp1)]);
 %             hold on;
             
-            %The times of arrival of PSPs to this neuron
-            PSP_times= last_fired(ppre{fired(k)}) + dpre{fired(k)};
-            
-            recent=find(PSP_times <= t & PSP_times > t-recentTh & di(pre{fired(k)})==0.0 & s(pre{fired(k)}) > 0);
-            pprecentIDs = ppre{fired(k)}(recent);
-            group.gr = [group.gr; last_fired(pprecentIDs),  pprecentIDs, ...  % presynaptic (time, neuron #)
-                      last_fired(pprecentIDs) + dpre{fired(k)}(recent),...   % arrival of PSP (time)
-                      fired(k)*(ones(length(recent),1)), ...                            % postsynaptic (neuron)
-                      t*(ones(length(recent),1))];                                      % firing (time)
+%             %The times of arrival of PSPs to this neuron
+%             PSP_times= last_fired(ppre{fired(k)}) + dpre{fired(k)};
+%             
+%             recent=find(PSP_times <= t & PSP_times > t-recentTh & di(pre{fired(k)})==0.0 & s(pre{fired(k)}) > 0);
+%             pprecentIDs = ppre{fired(k)}(recent);
+%             group.gr = [group.gr; last_fired(pprecentIDs),  pprecentIDs, ...  % presynaptic (time, neuron #)
+%                       last_fired(pprecentIDs) + dpre{fired(k)}(recent),...   % arrival of PSP (time)
+%                       fired(k)*(ones(length(recent),1)), ...                            % postsynaptic (neuron)
+%                       t*(ones(length(recent),1))];                                      % firing (time)
 
-            group.firings=[group.firings; t, fired(k)];
+            if (mod(fired(k)-1,ExcitDim*ExcitDim+InhibDim*InhibDim)+1<=ExcitDim*ExcitDim)%count only excitatory cells
+                
+                
+                %The times of arrival of PSPs to this neuron
+                PSP_times= last_fired(ppre{fired(k)}) + dpre{fired(k)};
+
+                recent=find(PSP_times <= t & PSP_times > t-recentTh & di(pre{fired(k)})==0.0 & s(pre{fired(k)}) > 0);%should be excitatory cell
+                pprecentIDs = ppre{fired(k)}(recent);
+                if length(recent)>1
+                    lineWidth = 2;
+                else
+                    lineWidth = 1;
+                end
+                group.gr = [group.gr; last_fired(pprecentIDs),  pprecentIDs, ...  % presynaptic (time, neuron #)
+                          last_fired(pprecentIDs) + dpre{fired(k)}(recent),...   % arrival of PSP (time)
+                          fired(k)*(ones(length(recent),1)), ...                            % postsynaptic (neuron)
+                          t*(ones(length(recent),1)), ...                       % firing (time)
+                          lineWidth*(ones(length(recent),1))];                        %lineWidth for more than 2 incoming con                  
+
+                group.firings=[group.firings; t, fired(k)];            
+            else
+                group.firings_inhib=[group.firings_inhib; t, fired(k)];
+            end
         end;
         if(length(group.firings)>maxFiringCount)
             break;

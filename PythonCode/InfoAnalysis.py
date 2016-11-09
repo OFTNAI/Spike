@@ -53,7 +53,7 @@ class InfoAnalysis(object):
             
 
             FR = np.zeros((nObj, nTrans,nLayers, nExcitCells));
-            for l in range(nLayers):
+            for l in range(0,nLayers):
                 cond_ids = (l*(nExcitCells+nInhibCells) < spikeIDs) & (spikeIDs < l*(nInhibCells+nExcitCells)+nExcitCells);
                 spikeIDs_layer = np.extract(cond_ids, spikeIDs);
                 spikeTimes_layer = np.extract(cond_ids, spikeTimes);
@@ -89,7 +89,7 @@ class InfoAnalysis(object):
             performanceMeasure = 0.0;
             FR/=presentationTime;
             
-            for l in range(nLayers):
+            for l in range(0,nLayers):
                 if(not useMaxFRTh):
                     maxFRTh = FR[:,:,l,:].max()
                 print(" Maximum Firing Rate Threshold of " + str(maxFRTh) +" is used");
@@ -158,6 +158,10 @@ class InfoAnalysis(object):
                 if (weightedAnalysis):
                     IRs = IRs_weighted;
                 
+                IRs_sorted = np.sort(IRs*-1)*-1;
+                np.savetxt("../output/"+experimentName+"/SingleCellInfo_l" + str(l) + phase + ".csv",IRs_sorted, delimiter=',');
+
+                
                 
                 if (plotAllSingleCellInfo):
                     IRs_sorted = np.sort(IRs*-1)*-1;
@@ -180,6 +184,8 @@ class InfoAnalysis(object):
                 
                 
                     infos = reversed_arr;
+                    np.savetxt("../output/"+experimentName+"/SingleCellInfo_l" + str(l) + phase + "_max.csv",infos, delimiter=',');
+
                 
                     plt.subplot(1,nLayers,l+1)
                     if phaseIndex==1:
