@@ -169,6 +169,9 @@ void FourLayerVisionSpikingModel::set_default_parameter_values() {
 
 	}
 
+	EXCITATORY_NEURONS.clear();
+	INHIBITORY_NEURONS.clear();
+
 }
 
 
@@ -240,7 +243,7 @@ void FourLayerVisionSpikingModel::finalise_model() {
 	INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS->somatic_leakage_conductance_g0 = 18.0*pow(10, -9);
 	INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS->absolute_refractory_period = absolute_refractory_period;
 
-	
+
 	for (int layer_index = 0; layer_index < number_of_non_input_layers_to_simulate; layer_index++){
 
 		EXCITATORY_NEURONS.push_back(AddNeuronGroup(EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS));
