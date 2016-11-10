@@ -311,7 +311,7 @@ void Synapses::increment_number_of_synapses(int increment) {
 
 void Synapses::allocate_device_pointers() {
 
-	printf("Allocating synapse device pointers...\n");
+	// printf("Allocating synapse device pointers...\n");
 
 	CudaSafeCall(cudaMalloc((void **)&d_presynaptic_neuron_indices, sizeof(int)*total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&d_postsynaptic_neuron_indices, sizeof(int)*total_number_of_synapses));
@@ -323,7 +323,7 @@ void Synapses::allocate_device_pointers() {
 
 void Synapses::copy_constants_and_initial_efficacies_to_device() {
 
-	printf("Copying synaptic constants and initial efficacies to device...\n");
+	// printf("Copying synaptic constants and initial efficacies to device...\n");
 
 	CudaSafeCall(cudaMemcpy(d_presynaptic_neuron_indices, presynaptic_neuron_indices, sizeof(int)*total_number_of_synapses, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_postsynaptic_neuron_indices, postsynaptic_neuron_indices, sizeof(int)*total_number_of_synapses, cudaMemcpyHostToDevice));
@@ -340,7 +340,7 @@ void Synapses::copy_constants_and_initial_efficacies_to_device() {
 // Randomising order of synapses means that each block is accessing a larger number of points in memory.
 void Synapses::shuffle_synapses() {
 
-	printf("Shuffling synapses...\n");
+	// printf("Shuffling synapses...\n");
 
 	std::random_shuffle(&original_synapse_indices[0], &original_synapse_indices[total_number_of_synapses]);
 

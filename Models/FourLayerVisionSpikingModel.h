@@ -101,6 +101,8 @@ public:
 	virtual void set_default_parameter_values();
 	virtual void finalise_model();
 
+	virtual void set_LBL_values_for_pointer_from_layer_to_layer(float value, float* pointer, int start_layer, int end_layer);
+
 protected:
 	virtual void create_parameter_arrays();
 	virtual void delete_model_components();

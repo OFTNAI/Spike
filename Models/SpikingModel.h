@@ -1,6 +1,9 @@
 #ifndef SpikingModel_H
 #define SpikingModel_H
 
+#define SILENCE_MODEL_SETUP
+
+
 #include <cuda.h>
 #include <stdio.h>
 #include "../Synapses/ConductanceSpikingSynapses.h"

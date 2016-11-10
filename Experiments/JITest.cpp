@@ -15,13 +15,13 @@
 // make FILE='JITest' EXPERIMENT_DIRECTORY='Experiments'  model -j8
 
 
+
+
 // The function which will autorun when the executable is created
 int main (int argc, char *argv[]){
 
-	print_line_of_dashes_with_blank_lines_either_side();
 
-	TimerWithMessages * experiment_timer = new TimerWithMessages();
-
+	TimerWithMessages * experiment_timer = new TimerWithMessages("\n");
 	
 	// // Parameters for OPTIMISATION + Information Analysis
 	// const float optimal_max_firing_rate = 100.0f;//set if optimizing based on maxfr //Maximum rate (spikes/sec) 87 +- 46  (*1)
@@ -72,15 +72,6 @@ int main (int argc, char *argv[]){
 
 		optimiser->AddOptimisationStage(optimisation_stage_1_options, simulator_options);
 
-		// Pointer Test
-		// * optimiser->model_pointers_to_be_optimised_for_each_optimisation_stage[0] = 99.0;
-		// * optimiser->synapse_bool_pointers_to_turn_on_for_each_optimisation_stage[0] = true;
-
-		// printf("four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2E_FF[0]: %f\n", four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2E_FF[0]);
-		// if (four_layer_vision_spiking_model->E2E_FF_SYNAPSES_ON) {
-		// 	printf("four_layer_vision_spiking_model->E2E_FF_SYNAPSES_ON = true \n");
-		// }
-	
 	}
 
 	if (number_of_optimisation_stages >= 2) {
@@ -149,6 +140,11 @@ int main (int argc, char *argv[]){
 	// 	printf("final_optimal_parameter_for_each_optimisation_stage[optimisation_stage]: %f\n", final_optimal_parameter_for_each_optimisation_stage[optimisation_stage]);
 
 	// }
+
+
+	four_layer_vision_spiking_model->set_LBL_values_for_pointer_from_layer_to_layer(optimiser->final_optimal_parameter_for_each_optimisation_stage[5], four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2E_FF, 1, 4);
+
+
 
 	/////////// END OF EXPERIMENT ///////////
 	experiment_timer->stop_timer_and_log_time_and_message("Experiment Completed.", true);

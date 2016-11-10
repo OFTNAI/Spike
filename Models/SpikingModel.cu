@@ -94,7 +94,9 @@ void SpikingModel::create_parameter_arrays() {
 
 void SpikingModel::copy_model_to_device() {
 
+	#ifndef SILENCE_MODEL_SETUP
 	TimerWithMessages * timer = new TimerWithMessages("Setting Up Network...\n");
+	#endif
 
 	int threads_per_block_neurons = 512;
 	int threads_per_block_synapses = 512;
@@ -116,7 +118,9 @@ void SpikingModel::copy_model_to_device() {
 	spiking_neurons->copy_constants_to_device();
 	input_spiking_neurons->copy_constants_to_device();
 
+	#ifndef SILENCE_MODEL_SETUP
 	timer->stop_timer_and_log_time_and_message("Network Setup.", true);
+	#endif
 
 
 }

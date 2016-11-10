@@ -1,6 +1,8 @@
 #ifndef ImagePoissonInputSpikingNeurons_H
 #define ImagePoissonInputSpikingNeurons_H
 
+#define SILENCE_IMAGE_POISSON_INPUT_SPIKING_NEURONS_SETUP
+
 #include <cuda.h>
 #include <curand.h>
 #include <curand_kernel.h>

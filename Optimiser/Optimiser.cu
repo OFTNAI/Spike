@@ -86,35 +86,21 @@ void Optimiser::RunOptimisation() {
 		while (true) {
 
 			iteration_count_for_optimisation_stage++;
-			printf("OPTIMISATION STAGE: %d\nITERATION COUNT FOR OPTIMISATION STAGE: %d\nPREVIOUS OPTIMISATION OUTPUT SCORE: %f\n", optimisation_stage, iteration_count_for_optimisation_stage, previous_optimisation_output_score);
 
-			// print_memory_usage();
-
-			// RESET MODEL
-			four_layer_vision_spiking_model->set_default_parameter_values();
-
-
-			// SET RELEVANT PARAMETERS FOR OPTIMISATION STAGE
+			print_line_of_dashes_with_blank_lines_either_side();
+			
+			setup_optimisation_stage_specific_model_parameters(optimisation_stage);
+		
 			float test_optimisation_parameter_value = (optimisation_parameter_max + optimisation_parameter_min) / 2.0;
 			*model_pointers_to_be_optimised_for_each_optimisation_stage[optimisation_stage] = test_optimisation_parameter_value;
 
+			printf("OPTIMISATION ITERATION BEGINNING... \nOptimisation Stage: %d\nIteration Count for Optimisation Stage: %d\nNew Test Optimisaton Parameter: %f\n", optimisation_stage, iteration_count_for_optimisation_stage, test_optimisation_parameter_value);
 
-			for (int optimisation_stage_index = 0; optimisation_stage_index <= optimisation_stage; optimisation_stage_index++) {
-
-				*synapse_bool_pointers_to_turn_on_for_each_optimisation_stage[optimisation_stage_index] = true;
-
-				if (optimisation_stage_index < optimisation_stage) *model_pointers_to_be_optimised_for_each_optimisation_stage[optimisation_stage_index] = final_optimal_parameter_for_each_optimisation_stage[optimisation_stage_index];
-				
-			}
-
-			four_layer_vision_spiking_model->INHIBITORY_NEURONS_ON = use_inhibitory_neurons_for_each_optimisation_stage[optimisation_stage];
-			four_layer_vision_spiking_model->number_of_non_input_layers_to_simulate = number_of_non_input_layers_to_simulate_for_each_optimisation_stage[optimisation_stage];
-
+			print_line_of_dashes_with_blank_lines_either_side();
 
 			// FINALISE MODEL + COPY TO DEVICE
 			four_layer_vision_spiking_model->finalise_model();
 			four_layer_vision_spiking_model->copy_model_to_device();
-
 
 			// CREATE SIMULATOR
 			Simulator * simulator = new Simulator(four_layer_vision_spiking_model, simulator_options_for_each_optimisation_stage[optimisation_stage]);
@@ -130,9 +116,8 @@ void Optimiser::RunOptimisation() {
 			// float optimisation_output_score = spike_analyser->max_number_of_spikes_per_neuron_group_per_second[index_of_neuron_group_of_interest_for_each_optimisation_stage[optimisation_stage]];
 			float optimisation_output_score = spike_analyser->average_number_of_spikes_per_neuron_group_per_second[index_of_neuron_group_of_interest_for_each_optimisation_stage[optimisation_stage]];
 
-
-			printf("TEST OPTIMISATION PARAMETER VALUE: %.16f\n", test_optimisation_parameter_value);
-			printf("OPTIMISATION OUTPUTSCORE: %f\n", optimisation_output_score);
+			printf("OPTIMISATION ITERATION COMPLETED...\nTest Optimisation Parameter Value: %.16f\nOptimisation Output Score: %f\n", test_optimisation_parameter_value, optimisation_output_score);
+			// print_line_of_dashes_with_blank_lines_either_side();
 
 			if (optimisation_output_score <= optimisation_ideal_output_score) {
 
@@ -156,17 +141,8 @@ void Optimiser::RunOptimisation() {
 			}
 
 
-
-
-			print_line_of_dashes_with_blank_lines_either_side();
-
 			delete simulator;
 			delete spike_analyser;
-
-			previous_optimisation_output_score = optimisation_output_score;
-
-
-			// print_memory_usage();
 
 		}
 
@@ -185,8 +161,30 @@ void Optimiser::RunOptimisation() {
 
 	}
 
-
-
-
+		print_line_of_dashes_with_blank_lines_either_side();
 
 }
+
+
+void Optimiser::setup_optimisation_stage_specific_model_parameters(int optimisation_stage_index) {
+
+	*synapse_bool_pointers_to_turn_on_for_each_optimisation_stage[optimisation_stage_index] = true;
+	*model_pointers_to_be_optimised_for_each_optimisation_stage[optimisation_stage_index] = final_optimal_parameter_for_each_optimisation_stage[optimisation_stage_index];
+
+	four_layer_vision_spiking_model->INHIBITORY_NEURONS_ON = use_inhibitory_neurons_for_each_optimisation_stage[optimisation_stage_index];
+	four_layer_vision_spiking_model->number_of_non_input_layers_to_simulate = number_of_non_input_layers_to_simulate_for_each_optimisation_stage[optimisation_stage_index];
+
+}
+
+
+
+
+// void Optimiser::set_final_optimised_parameters_network() {
+
+// 	for (int optimisation_stage_index = 0; optimisation_stage_index < number_of_optimisation_stages; optimisation_stage_index++) {
+		
+// 		setup_optimisation_stage_specific_model_parameters(optimisation_stage_index);
+
+// 	}
+
+// }

@@ -29,7 +29,10 @@ Simulator::Simulator(SpikingModel * spiking_model_param, Simulator_Options * sim
 
 	full_directory_name_for_simulation_data_files = "output/"; // Put into struct!!
 
+	#ifndef SILENCE_SIMULATOR_SETUP
 	TimerWithMessages * timer = new TimerWithMessages("Setting up recording electrodes...\n");
+	#endif
+
 
 	if (simulator_options->recording_electrodes_options->count_neuron_spikes_recording_electrodes_bool) {
 		count_neuron_spikes_recording_electrodes = new CountNeuronSpikesRecordingElectrodes(spiking_model->spiking_neurons, spiking_model->spiking_synapses, full_directory_name_for_simulation_data_files, "Neurons");
@@ -66,8 +69,9 @@ Simulator::Simulator(SpikingModel * spiking_model_param, Simulator_Options * sim
 		network_state_archive_recording_electrodes = NULL;
 	}
 
-
+	#ifndef SILENCE_SIMULATOR_SETUP
 	timer->stop_timer_and_log_time_and_message("Recording electrodes setup.\n", true);
+	#endif
 
 }
 
@@ -296,7 +300,7 @@ void Simulator::perform_per_timestep_recording_electrode_instructions(float curr
 void Simulator::perform_pre_stimulus_presentation_instructions(int stimulus_index) {
 
 	printf("Stimulus Index: %d\n", stimulus_index);
-	printf("simulator_options->stimuli_presentation_options->presentation_format: %d\n", simulator_options->stimuli_presentation_options->presentation_format);
+	// printf("simulator_options->stimuli_presentation_options->presentation_format: %d\n", simulator_options->stimuli_presentation_options->presentation_format);
 
 	switch (simulator_options->stimuli_presentation_options->presentation_format) {
 		case PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_STIMULI: case PRESENTATION_FORMAT_RANDOM_RESET_BETWEEN_EACH_STIMULUS:
@@ -308,7 +312,7 @@ void Simulator::perform_pre_stimulus_presentation_instructions(int stimulus_inde
 		case PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_OBJECTS:
 		{
 			bool stimulus_is_new_object = spiking_model->input_spiking_neurons->stimulus_is_new_object_for_object_by_object_presentation(stimulus_index);
-			(stimulus_is_new_object) ? printf("Stimulus is new object\n") : printf("Stimulus is not new object\n");
+			// (stimulus_is_new_object) ? printf("Stimulus is new object\n") : printf("Stimulus is not new object\n");
 
 			if (stimulus_is_new_object) {
 				spiking_model->reset_model_activities();

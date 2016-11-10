@@ -8,15 +8,8 @@ FourLayerVisionSpikingModel::FourLayerVisionSpikingModel () {
 	number_of_non_input_layers = 4;
 	number_of_non_input_layers_to_simulate = number_of_non_input_layers;
 	
-
-
-
-
 	create_parameter_arrays();
-
 	set_default_parameter_values();
-
-	
 
 }
 
@@ -35,6 +28,9 @@ void FourLayerVisionSpikingModel::delete_model_components() {
 	delete image_poisson_input_spiking_neurons;
 	delete conductance_spiking_synapses;
 	delete evans_stdp;
+
+	EXCITATORY_NEURONS.clear();
+	INHIBITORY_NEURONS.clear();
 }
 
 
@@ -169,9 +165,6 @@ void FourLayerVisionSpikingModel::set_default_parameter_values() {
 
 	}
 
-	EXCITATORY_NEURONS.clear();
-	INHIBITORY_NEURONS.clear();
-
 }
 
 
@@ -205,7 +198,9 @@ void FourLayerVisionSpikingModel::finalise_model() {
 
 
 	/////////// ADD INPUT NEURONS ///////////
+	#ifndef SILENCE_MODEL_SETUP
 	TimerWithMessages * adding_image_poisson_input_spiking_neurons_timer = new TimerWithMessages("Adding Input Neurons...\n");
+	#endif
 
 	// if (is_optimisation)
 	// 	image_poisson_input_spiking_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "../../MatlabGaborFilter/Inputs/", 100.0f);
@@ -218,12 +213,15 @@ void FourLayerVisionSpikingModel::finalise_model() {
 
 	image_poisson_input_spiking_neurons->setup_random_states_on_device();
 
+	#ifndef SILENCE_MODEL_SETUP
 	adding_image_poisson_input_spiking_neurons_timer->stop_timer_and_log_time_and_message("Input Neurons Added.", true);
-
+	#endif
 
 
 	/////////// ADD NEURONS ///////////
+	#ifndef SILENCE_MODEL_SETUP
 	TimerWithMessages * adding_neurons_timer = new TimerWithMessages("Adding Neurons...\n");
+	#endif
 
 	lif_spiking_neuron_parameters_struct * EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS = new lif_spiking_neuron_parameters_struct();
 	EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS->group_shape[0] = dim_excit_layer;
@@ -247,21 +245,28 @@ void FourLayerVisionSpikingModel::finalise_model() {
 	for (int layer_index = 0; layer_index < number_of_non_input_layers_to_simulate; layer_index++){
 
 		EXCITATORY_NEURONS.push_back(AddNeuronGroup(EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS));
+		#ifndef SILENCE_MODEL_SETUP
 		cout << "Neuron Group " << EXCITATORY_NEURONS[layer_index] << ": Excitatory layer " << layer_index << endl;
+		#endif
 
 		if (INHIBITORY_NEURONS_ON) {
 			INHIBITORY_NEURONS.push_back(AddNeuronGroup(INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS));
+			#ifndef SILENCE_MODEL_SETUP
 			cout<<"Neuron Group "<<INHIBITORY_NEURONS[layer_index] << ": Inhibitory layer " << layer_index << endl;
+			#endif
 		}
 		
 	}
 
-
+	#ifndef SILENCE_MODEL_SETUP
 	adding_neurons_timer->stop_timer_and_log_time_and_message("Neurons Added.", true);
+	#endif
 
 
 	/////////// ADD SYNAPSES ///////////
+	#ifndef SILENCE_MODEL_SETUP
 	TimerWithMessages * adding_synapses_timer = new TimerWithMessages("Adding Synapses...\n");
+	#endif
 
 
 	conductance_spiking_synapse_parameters_struct * G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS = new conductance_spiking_synapse_parameters_struct();
@@ -386,6 +391,17 @@ void FourLayerVisionSpikingModel::finalise_model() {
 		
 	}
 	
+	#ifndef SILENCE_MODEL_SETUP
 	adding_synapses_timer->stop_timer_and_log_time_and_message("Synapses Added.", true);
+	#endif
+
+}
+
+
+void FourLayerVisionSpikingModel::set_LBL_values_for_pointer_from_layer_to_layer(float value, float* pointer, int start_layer, int end_layer) {
+
+	for (int layer_index = start_layer; layer_index <= end_layer; layer_index++) {
+		pointer[layer_index] = value;
+	}
 
 }

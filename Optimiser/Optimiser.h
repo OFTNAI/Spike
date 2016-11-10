@@ -62,6 +62,9 @@ public:
 	void AddOptimisationStage(Optimiser_Options * optimisation_stage_options, Simulator_Options * simulator_options_parameter);
 	void RunOptimisation();
 
+protected:
+	void setup_optimisation_stage_specific_model_parameters(int optimisation_stage_index);
+
 };
 
 
