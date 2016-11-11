@@ -5,7 +5,7 @@
 //	Date: 7/12/2015
 
 #include "Synapses.h"
-#include "../Helpers/CUDAErrorCheckHelpers.h"
+//CUDA #include "../Helpers/CUDAErrorCheckHelpers.h"
 #include "../Helpers/TerminalHelpers.h"
 
 #include <algorithm> // for random shuffle

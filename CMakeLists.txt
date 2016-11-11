@@ -1,0 +1,71 @@
+# Project setup
+###############
+
+cmake_minimum_required(VERSION 3.1 FATAL_ERROR) # only need 2.8.8, except for CMAKE_CXX_STANDARD
+if(COMMAND cmake_policy)
+  cmake_policy(SET CMP0003 NEW)
+endif(COMMAND cmake_policy)
+
+
+project(Spike)
+
+set(VERSION_MAJOR 1)
+set(VERSION_MINOR 1)
+set(VERSION_PATCH 0)
+set(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
+
+SET(CMAKE_VERBOSE_MAKEFILE ON)   #uncomment this line to increase CMake verbosity
+
+#SET(BOOSTPATH "C:/Program\ Files\ (x86)/boost/boost_1_42")    #Boost path for other systems - customize as needed
+
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
+
+set (CMAKE_CXX_STANDARD 11)
+
+# User options
+##############
+
+option(BUILD_DOXYGEN_DOCS "Build the Doxygen-generated API docs" OFF)
+
+#cmake_dependent_option(ENABLE_DIST "Enable the the distribution tarball target" ON "BUILD_DOXYGEN_DOCS" OFF)
+
+mark_as_advanced(BUILD_DOXYGEN_DOCS ENABLE_DIST)
+
+# Find prerequisites
+####################
+
+if(BUILD_DOXYGEN_DOCS)
+   find_package(Doxygen REQUIRED)
+endif()
+
+
+# Compile options
+#################
+
+include_directories(BEFORE "${PROJECT_SOURCE_DIR}")
+
+
+# Subdirectories
+################
+
+add_subdirectory(Spike)
+
+#if(BUILD_EXPERIMENTS)
+   add_subdirectory(Experiments)
+#endif()
+
+# if(BUILD_TESTING)
+#    INCLUDE(CTest)
+#    add_subdirectory(Tests)
+# endif()
+
+# add_subdirectory(Doc)
+
+# add_subdirectory(libspike)
+
+# Install
+#########
+
+# install(DIRECTORY viennacl "${CMAKE_CURRENT_BINARY_DIR}/viennacl"
+#    DESTINATION "${INSTALL_INCLUDE_DIR}" COMPONENT dev
+#    FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")

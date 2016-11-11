@@ -6,6 +6,7 @@ inline void print_memory_usage() {
 
             size_t total_byte ;
 
+            /* CUDA
             cudaError_t cuda_status = cudaMemGetInfo( &free_byte, &total_byte ) ;
 
             if ( cudaSuccess != cuda_status ){
@@ -15,6 +16,7 @@ inline void print_memory_usage() {
                 exit(1);
 
             }
+            */
 
 
             double free_db = (double)free_byte ;

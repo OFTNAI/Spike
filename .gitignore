@@ -1,6 +1,7 @@
 *~
 *.DS_Store
 *.o
+Build
 /Tests/catch.hpp
 /Tests/unittests
 /MatlabGaborFilter/Inputs*/*

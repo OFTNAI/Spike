@@ -3,21 +3,23 @@
 // Silences the printfs
 //#define QUIETSTART
 
+/*CUDA
 // cuRand Library import
 #include <curand.h>
 #include <curand_kernel.h>
 
 //	CUDA library
 #include <cuda.h>
+*/
 
-#include "../RecordingElectrodes/CountNeuronSpikesRecordingElectrodes.h"
-#include "../RecordingElectrodes/CollectNeuronSpikesRecordingElectrodes.h"
-#include "../RecordingElectrodes/NetworkStateArchiveRecordingElectrodes.h"
+#include "Spike/RecordingElectrodes/CountNeuronSpikesRecordingElectrodes.h"
+#include "Spike/RecordingElectrodes/CollectNeuronSpikesRecordingElectrodes.h"
+#include "Spike/RecordingElectrodes/NetworkStateArchiveRecordingElectrodes.h"
 
-#include "../SpikeAnalyser/SpikeAnalyser.h"
-#include "../Models/SpikingModel.h"
+#include "Spike/SpikeAnalyser/SpikeAnalyser.h"
+#include "Spike/Models/SpikingModel.h"
 
-#include "../Helpers/TimerWithMessages.h"
+#include "Spike/Helpers/TimerWithMessages.h"
 
 
 

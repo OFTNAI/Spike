@@ -1,8 +1,8 @@
 #ifndef SpikeAnalyser_H
 #define SpikeAnalyser_H
 
-#include <cuda.h>
-#include<vector>
+//CUDA #include <cuda.h>
+#include <vector>
 #include "../Neurons/Neurons.h"
 #include "../Neurons/InputSpikingNeurons.h"
 

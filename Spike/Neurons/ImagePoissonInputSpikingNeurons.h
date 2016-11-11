@@ -1,9 +1,11 @@
 #ifndef ImagePoissonInputSpikingNeurons_H
 #define ImagePoissonInputSpikingNeurons_H
 
+/*CUDA
 #include <cuda.h>
 #include <curand.h>
 #include <curand_kernel.h>
+*/
 
 #include "PoissonInputSpikingNeurons.h"
 

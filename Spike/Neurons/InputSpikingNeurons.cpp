@@ -1,7 +1,7 @@
 #include "InputSpikingNeurons.h"
 #include <stdlib.h>
 #include <algorithm>
-#include "../Helpers/CUDAErrorCheckHelpers.h"
+//CUDA #include "../Helpers/CUDAErrorCheckHelpers.h"
 #include "../Helpers/TerminalHelpers.h"
 
 

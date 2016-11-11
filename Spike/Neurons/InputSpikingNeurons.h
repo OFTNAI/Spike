@@ -1,9 +1,11 @@
 #ifndef InputSpikingNeurons_H
 #define InputSpikingNeurons_H
 
+/*CUDA
 #include <cuda.h>
 #include <curand.h>
 #include <curand_kernel.h>
+*/
 
 #include "SpikingNeurons.h"
 

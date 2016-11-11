@@ -3,7 +3,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <fstream>
-#include "../Helpers/CUDAErrorCheckHelpers.h"
+//CUDA #include "../Helpers/CUDAErrorCheckHelpers.h"
 #include "../Helpers/TerminalHelpers.h"
 #include <string>
 #include <time.h>
@@ -56,7 +56,7 @@ void NetworkStateArchiveRecordingElectrodes::write_network_state_to_file() {
 	clock_t save_network_state_start = clock();
 
 	// Copy back the data that we might want:
-	CudaSafeCall(cudaMemcpy(synapses->synaptic_efficacies_or_weights, synapses->d_synaptic_efficacies_or_weights, sizeof(float)*synapses->total_number_of_synapses, cudaMemcpyDeviceToHost));
+	//CUDA CudaSafeCall(cudaMemcpy(synapses->synaptic_efficacies_or_weights, synapses->d_synaptic_efficacies_or_weights, sizeof(float)*synapses->total_number_of_synapses, cudaMemcpyDeviceToHost));
 	
 	if (network_state_archive_optional_parameters->human_readable_storage){
 		// Creating and Opening all the files

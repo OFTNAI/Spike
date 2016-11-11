@@ -24,7 +24,7 @@ RandomStateManager::RandomStateManager() {
 // RandomStateManager Destructor
 RandomStateManager::~RandomStateManager() {
 
-	CudaSafeCall(cudaFree(d_states));
+  //CUDA CudaSafeCall(cudaFree(d_states));
 
 }
 

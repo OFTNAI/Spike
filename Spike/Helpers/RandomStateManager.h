@@ -4,7 +4,7 @@
 //CUDA #include <cuda.h>
 //CUDA #include <curand.h>
 //CUDA #include <curand_kernel.h>
-
+#include "Spike/CUDA_Hacks.h"
 
 
 
@@ -17,7 +17,8 @@ public:
 	RandomStateManager();
 	~RandomStateManager();
 
-	curandState_t* d_states;
+	//CUDA curandState_t* d_states;
+        void* d_states;
 	int total_number_of_states;
 
 	dim3 threads_per_block;

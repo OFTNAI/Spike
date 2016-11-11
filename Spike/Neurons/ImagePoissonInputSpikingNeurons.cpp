@@ -1,9 +1,10 @@
 #include "ImagePoissonInputSpikingNeurons.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include "../Helpers/CUDAErrorCheckHelpers.h"
+//CUDA #include "../Helpers/CUDAErrorCheckHelpers.h"
 #include <algorithm> // For random shuffle
 
+#include <iostream>
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -41,7 +42,7 @@ ImagePoissonInputSpikingNeurons::~ImagePoissonInputSpikingNeurons() {
 
 	free(gabor_input_rates);
 
-	CudaSafeCall(cudaFree(d_gabor_input_rates));
+	//CUDA CudaSafeCall(cudaFree(d_gabor_input_rates));
 }
 
 
@@ -92,12 +93,12 @@ void ImagePoissonInputSpikingNeurons::load_image_names_from_file_list(const char
 	string path_string = path.str();
 	
 	ifstream fileListStream;
-	fileListStream.open(path_string);
+	fileListStream.open(path_string.c_str());
 
 	if(fileListStream.fail()) {
 		stringstream s;
 		s << "Unable to open " << path_string << " for input." << endl;
-		cerr << s.str();
+                cerr << s.str();
 		exit(EXIT_FAILURE);
 	}
 	
@@ -134,7 +135,7 @@ void ImagePoissonInputSpikingNeurons::load_image_names_from_file_list(const char
 	
 	total_number_of_transformations_per_object = lastNrOfTransformsFound;
 	
-	cout << "--- --- Objects: " << total_number_of_objects << ", Transforms per Object: " << total_number_of_transformations_per_object << endl;
+        cout << "--- --- Objects: " << total_number_of_objects << ", Transforms per Object: " << total_number_of_transformations_per_object << endl;
 	
 	total_number_of_input_stimuli = total_number_of_objects * total_number_of_transformations_per_object;
 }
@@ -151,7 +152,7 @@ void ImagePoissonInputSpikingNeurons::load_gabor_filter_parameters(const char * 
 	string path_string = path.str();
 	
 	ifstream filterParametersStream;
-	filterParametersStream.open(path_string);
+	filterParametersStream.open(path_string.c_str());
 
 	if(filterParametersStream.fail()) {
 		stringstream s;
@@ -301,8 +302,10 @@ void ImagePoissonInputSpikingNeurons::load_rates_from_files(const char * inputDi
 }
 
 void ImagePoissonInputSpikingNeurons::copy_rates_to_device() {
+  /*CUDA
 	CudaSafeCall(cudaMalloc((void **)&d_gabor_input_rates, sizeof(float)*total_number_of_rates));
 	CudaSafeCall(cudaMemcpy(d_gabor_input_rates, gabor_input_rates, sizeof(float)*total_number_of_rates, cudaMemcpyHostToDevice));
+  */
 }
 
 
@@ -319,6 +322,7 @@ bool ImagePoissonInputSpikingNeurons::stimulus_is_new_object_for_object_by_objec
 
 void ImagePoissonInputSpikingNeurons::update_membrane_potentials(float timestep,float current_time_in_seconds) {
 
+  /*CUDA
 	poisson_update_membrane_potentials_kernel<<<random_state_manager->block_dimensions, random_state_manager->threads_per_block>>>(random_state_manager->d_states,
 														d_gabor_input_rates,
 														d_membrane_potentials_v,
@@ -328,4 +332,5 @@ void ImagePoissonInputSpikingNeurons::update_membrane_potentials(float timestep,
 														current_stimulus_index);
 
 	CudaCheckError();
+  */
 }

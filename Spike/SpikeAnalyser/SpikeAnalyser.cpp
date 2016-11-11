@@ -1,6 +1,6 @@
 #include "SpikeAnalyser.h"
 
-#include "../Helpers/CUDAErrorCheckHelpers.h"
+//CUDA #include "../Helpers/CUDAErrorCheckHelpers.h"
 #include "../Helpers/TerminalHelpers.h"
 #include "../Helpers/TimerWithMessages.h"
 
@@ -50,12 +50,12 @@ SpikeAnalyser::~SpikeAnalyser() {
 
 
 void SpikeAnalyser::store_spike_counts_for_stimulus_index(int stimulus_index, int * d_neuron_spike_counts_for_stimulus) {
-	
+  /*CUDA
 	CudaSafeCall(cudaMemcpy(per_stimulus_per_neuron_spike_counts[stimulus_index], 
 									d_neuron_spike_counts_for_stimulus, 
 									sizeof(float) * neurons->total_number_of_neurons, 
 									cudaMemcpyDeviceToHost));
-
+  */
 }
 
 
@@ -278,7 +278,7 @@ void SpikeAnalyser::calculate_single_cell_information_scores_for_neuron_group(in
 			int number_of_spikes = per_stimulus_per_neuron_spike_counts[stimulus_index][neuron_index_zeroed+neuron_group_start_index];
 			float ratio_of_max_number_of_spikes = (float)number_of_spikes / (float)max_number_of_spikes;
 
-			int bin_index = min(int(floor(ratio_of_max_number_of_spikes * number_of_bins)), number_of_bins - 1);
+			int bin_index = std::min(int(floor(ratio_of_max_number_of_spikes * number_of_bins)), number_of_bins - 1);
 			bin_indices_per_stimulus_and_per_neuron[stimulus_index][neuron_index_zeroed] = bin_index;
 
 			individual_bin_counts_for_each_neuron[bin_index][neuron_index_zeroed]++;

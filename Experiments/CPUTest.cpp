@@ -1,10 +1,10 @@
-#include <Spike/Simulator/Simulator.h>
-#include <Spike/Models/FourLayerVisionSpikingModel.h>
+#include "Spike/Simulator/Simulator.h"
+#include "Spike/Models/FourLayerVisionSpikingModel.h"
 
-#include <Spike/SpikeAnalyser/SpikeAnalyser.h>
-#include <Spike/Helpers/TimerWithMessages.h>
-#include <Spike/Helpers/TerminalHelpers.h>
-#include <Spike/Helpers/MemoryUsage.h>
+#include "Spike/SpikeAnalyser/SpikeAnalyser.h"
+#include "Spike/Helpers/TimerWithMessages.h"
+#include "Spike/Helpers/TerminalHelpers.h"
+#include "Spike/Helpers/MemoryUsage.h"
 
 // Use the following line to compile the binary
 // make FILE='CPUTest' EXPERIMENT_DIRECTORY='Experiments'  model -j8
@@ -41,8 +41,6 @@ int main (int argc, char *argv[]){
         FourLayerVisionSpikingModel * four_layer_vision_spiking_model = new FourLayerVisionSpikingModel();
         four_layer_vision_spiking_model->SetTimestep(timestep);
 
-        float test_optimisation_parameter_value = (optimisation_parameter_max + optimisation_parameter_min) / 2.0;
-			
         four_layer_vision_spiking_model->number_of_non_input_layers = 1;
         four_layer_vision_spiking_model->INHIBITORY_NEURONS_ON = false;
 
@@ -62,9 +60,6 @@ int main (int argc, char *argv[]){
         delete four_layer_vision_spiking_model;
         delete simulator;
         delete spike_analyser;
-
-        printf("final_optimal_parameter_for_each_optimisation_stage[optimisation_stage]: %.12f\n", final_optimal_parameter_for_each_optimisation_stage[optimisation_stage]);
-        printf("iteration_count_for_optimisation_stage: %d\n", iteration_count_for_optimisation_stage);
 
 	print_line_of_dashes_with_blank_lines_either_side();
 

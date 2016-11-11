@@ -8,11 +8,11 @@
 
 #include "Simulator.h"
 
-#include "../Helpers/CUDAErrorCheckHelpers.h"
-#include "../Helpers/TerminalHelpers.h"
-#include "../Helpers/RandomStateManager.h"
+//CUDA #include "Spike/Helpers/CUDAErrorCheckHelpers.h"
+#include "Spike/Helpers/TerminalHelpers.h"
+#include "Spike/Helpers/RandomStateManager.h"
 
-#include "../Models/FourLayerVisionSpikingModel.h"
+#include "Spike/Models/FourLayerVisionSpikingModel.h"
 
 using namespace std;
 
