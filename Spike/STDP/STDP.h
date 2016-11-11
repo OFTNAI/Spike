@@ -18,7 +18,7 @@
 // allows maths
 #include <math.h>
 
-#include <cuda.h>
+//CUDA #include <cuda.h>
 
 
 // STDP Parameters

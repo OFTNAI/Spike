@@ -5,7 +5,7 @@
 //	Date: 03/10/2016
 
 #include "MasquelierSTDP.h"
-#include "../Helpers/CUDAErrorCheckHelpers.h"
+//CUDA #include "../Helpers/CUDAErrorCheckHelpers.h"
 #include "../Helpers/TerminalHelpers.h"
 
 
@@ -34,9 +34,11 @@ void MasquelierSTDP::allocate_device_pointers(){
 	index_of_last_afferent_synapse_to_spike = (int*)malloc(sizeof(int)*neurs->total_number_of_neurons);
 	isindexed_ltd_synapse_spike = (bool*)malloc(sizeof(bool)*neurs->total_number_of_neurons);
 	index_of_first_synapse_spiked_after_postneuron = (int*)malloc(sizeof(int)*neurs->total_number_of_neurons);
+        /*CUDA
 	CudaSafeCall(cudaMalloc((void **)&d_index_of_last_afferent_synapse_to_spike, sizeof(int)*neurs->total_number_of_neurons));
 	CudaSafeCall(cudaMalloc((void **)&d_isindexed_ltd_synapse_spike, sizeof(int)*neurs->total_number_of_neurons));
 	CudaSafeCall(cudaMalloc((void **)&d_index_of_first_synapse_spiked_after_postneuron, sizeof(int)*neurs->total_number_of_neurons));
+        */
 
 	// Initialize indices
 	for (int i=0; i < neurs->total_number_of_neurons; i++){
@@ -49,9 +51,11 @@ void MasquelierSTDP::allocate_device_pointers(){
 //
 void MasquelierSTDP::reset_STDP_activities(){
 	STDP::reset_STDP_activities();
+        /*CUDA
 	CudaSafeCall(cudaMemcpy((void*)d_index_of_last_afferent_synapse_to_spike, (void*)index_of_last_afferent_synapse_to_spike, sizeof(int)*neurs->total_number_of_neurons, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy((void*)d_isindexed_ltd_synapse_spike, (void*)isindexed_ltd_synapse_spike, sizeof(bool)*neurs->total_number_of_neurons, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy((void*)d_index_of_first_synapse_spiked_after_postneuron, (void*)index_of_first_synapse_spiked_after_postneuron, sizeof(int)*neurs->total_number_of_neurons, cudaMemcpyHostToDevice));
+        */
 }
 
 // Run the STDP
@@ -61,9 +65,10 @@ void MasquelierSTDP::Run_STDP(float* d_last_spike_time_of_each_neuron, float cur
 
 
 void MasquelierSTDP::apply_stdp_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds) {
-	// First reset the indices array
-	// In order to carry out nearest spike potentiation only, we must find the spike arriving at each neuron which has the smallest time diff
-	get_indices_to_apply_stdp<<<neurs->number_of_neuron_blocks_per_grid, syns->threads_per_block>>>(
+  // First reset the indices array
+  // In order to carry out nearest spike potentiation only, we must find the spike arriving at each neuron which has the smallest time diff
+  /*CUDA
+    get_indices_to_apply_stdp<<<neurs->number_of_neuron_blocks_per_grid, syns->threads_per_block>>>(
 																	syns->d_postsynaptic_neuron_indices,
 																	d_last_spike_time_of_each_neuron,
 																	syns->d_stdp,
@@ -88,9 +93,11 @@ void MasquelierSTDP::apply_stdp_to_synapse_weights(float* d_last_spike_time_of_e
 																	current_time_in_seconds,
 																	neurs->total_number_of_neurons);
 	CudaCheckError();
+  */
 }
 
 
+/*CUDA
 // Find nearest spike
 __global__ void apply_stdp_to_synapse_weights_kernel(int* d_postsyns,
 							float* d_last_spike_time_of_each_neuron,
@@ -202,3 +209,4 @@ __global__ void get_indices_to_apply_stdp(int* d_postsyns,
 	}
 
 }
+*/

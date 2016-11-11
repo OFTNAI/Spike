@@ -1,7 +1,7 @@
 #include "IzhikevichSpikingNeurons.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include "../Helpers/CUDAErrorCheckHelpers.h"
+//CUDA #include "../Helpers/CUDAErrorCheckHelpers.h"
 
 
 // IzhikevichSpikingNeurons Constructor
@@ -26,10 +26,12 @@ IzhikevichSpikingNeurons::~IzhikevichSpikingNeurons() {
 	free(param_b);
 	free(param_d);
 
+        /*CUDA
 	CudaSafeCall(cudaFree(d_param_a));
 	CudaSafeCall(cudaFree(d_param_b));
 	CudaSafeCall(cudaFree(d_param_d));
 	CudaSafeCall(cudaFree(d_states_u));
+        */
 
 }
 
@@ -59,12 +61,12 @@ void IzhikevichSpikingNeurons::allocate_device_pointers(int maximum_axonal_delay
  	
  	SpikingNeurons::allocate_device_pointers(maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
 
+        /*CUDA
  	CudaSafeCall(cudaMalloc((void **)&d_param_a, sizeof(float)*total_number_of_neurons));
  	CudaSafeCall(cudaMalloc((void **)&d_param_b, sizeof(float)*total_number_of_neurons));
  	CudaSafeCall(cudaMalloc((void **)&d_param_d, sizeof(float)*total_number_of_neurons));
  	CudaSafeCall(cudaMalloc((void **)&d_states_u, sizeof(float)*total_number_of_neurons));
- 	
- 	
+        */
 }
 
 
@@ -72,11 +74,11 @@ void IzhikevichSpikingNeurons::copy_constants_to_device() {
 
 	SpikingNeurons::copy_constants_to_device();
 
+        /*CUDA
 	CudaSafeCall(cudaMemcpy(d_param_a, param_a, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_param_b, param_b, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_param_d, param_d, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
-	
-
+        */
 }
 
 
@@ -85,7 +87,7 @@ void IzhikevichSpikingNeurons::reset_neuron_activities() {
 
 	SpikingNeurons::reset_neuron_activities();	
 
-	CudaSafeCall(cudaMemset(d_states_u, 0.0f, sizeof(float)*total_number_of_neurons));
+	//CUDA CudaSafeCall(cudaMemset(d_states_u, 0.0f, sizeof(float)*total_number_of_neurons));
 
 }
 
@@ -95,16 +97,19 @@ void IzhikevichSpikingNeurons::reset_neuron_activities() {
 void IzhikevichSpikingNeurons::check_for_neuron_spikes(float current_time_in_seconds, float timestep) {
 	SpikingNeurons::check_for_neuron_spikes(current_time_in_seconds, timestep);
 
+        /*CUDA
 	reset_states_u_after_spikes_kernel<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_states_u,
 								d_param_d,
 								d_last_spike_time_of_each_neuron,
 								current_time_in_seconds,
 								total_number_of_neurons);
 	CudaCheckError();
+        */
 }
 
 void IzhikevichSpikingNeurons::update_membrane_potentials(float timestep, float current_time_in_seconds) {
 
+  /*CUDA
 	izhikevich_update_membrane_potentials_kernel<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_membrane_potentials_v,
 																	d_states_u,
 																	d_param_a,
@@ -114,11 +119,12 @@ void IzhikevichSpikingNeurons::update_membrane_potentials(float timestep, float 
 																	total_number_of_neurons);
 
 	CudaCheckError();
+  */
 }
 
 
 // GPU Kernels
-
+/*CUDA
 __global__ void reset_states_u_after_spikes_kernel(float *d_states_u,
 								float * d_param_d,
 								float* d_last_spike_time_of_each_neuron,
@@ -166,5 +172,5 @@ __global__ void izhikevich_update_membrane_potentials_kernel(float *d_membrane_p
 	}
 	__syncthreads();
 }
-
+*/
 

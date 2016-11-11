@@ -58,6 +58,7 @@ public:
 
 };
 
+/*CUDA
 __global__ void move_spikes_towards_synapses_kernel(int* d_presynaptic_neuron_indices,
 								int* d_delays,
 								int* d_spikes_travelling_to_synapse,
@@ -77,5 +78,6 @@ __global__ void check_bitarray_for_presynaptic_neuron_spikes(int* d_presynaptic_
 								float timestep,
 								size_t total_number_of_synapses,
 								float* d_time_of_last_spike_to_reach_synapse);
+*/
 
 #endif

@@ -5,7 +5,7 @@
 //	Date: 23/06/2016
 
 #include "HigginsSTDP.h"
-#include "../Helpers/CUDAErrorCheckHelpers.h"
+//CUDA #include "../Helpers/CUDAErrorCheckHelpers.h"
 #include "../Helpers/TerminalHelpers.h"
 
 
@@ -36,6 +36,7 @@ void HigginsSTDP::Run_STDP(float* d_last_spike_time_of_each_neuron, float curren
 }
 
 void HigginsSTDP::apply_ltd_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds) {
+  /*CUDA
 	izhikevich_apply_ltd_to_synapse_weights_kernel<<<syns->number_of_synapse_blocks_per_grid, syns->threads_per_block>>>(
 																	syns->d_time_of_last_spike_to_reach_synapse,
 																	syns->d_synaptic_efficacies_or_weights,
@@ -47,10 +48,12 @@ void HigginsSTDP::apply_ltd_to_synapse_weights(float* d_last_spike_time_of_each_
 																	syns->total_number_of_synapses);
 
 	CudaCheckError();
+  */
 }
 
 
 void HigginsSTDP::apply_ltp_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds) {
+  /*CUDA
 	izhikevich_apply_ltp_to_synapse_weights_kernel<<<syns->number_of_synapse_blocks_per_grid, syns->threads_per_block>>>(
 																	syns->d_postsynaptic_neuron_indices,
 																	d_last_spike_time_of_each_neuron,
@@ -62,10 +65,11 @@ void HigginsSTDP::apply_ltp_to_synapse_weights(float* d_last_spike_time_of_each_
 																	syns->total_number_of_synapses);
 
 	CudaCheckError();
+  */
 }
 
 
-
+/*CUDA
 // LTP on synapses
 __global__ void izhikevich_apply_ltp_to_synapse_weights_kernel(int* d_postsyns,
 							float* d_last_spike_time_of_each_neuron,
@@ -119,3 +123,4 @@ __global__ void izhikevich_apply_ltd_to_synapse_weights_kernel(float* d_time_of_
 		idx += blockDim.x * gridDim.x;
 	}
 }
+*/

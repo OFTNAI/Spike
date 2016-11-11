@@ -52,6 +52,7 @@ public:
 	virtual void update_synaptic_conductances(float timestep, float current_time_in_seconds);
 };
 
+/*CUDA
 __global__ void conductance_calculate_postsynaptic_current_injection_kernel(int * d_presynaptic_neuron_indices,
 							int* d_postsynaptic_neuron_indices,
 							float* d_reversal_potentials_Vhat,
@@ -69,8 +70,7 @@ __global__ void conductance_update_synaptic_conductances_kernel(float timestep,
 													int total_number_of_synapses,
 													float current_time_in_seconds,
 													float * d_decay_terms_tau_g);
-
-
+*/
 
 
 #endif

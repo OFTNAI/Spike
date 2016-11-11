@@ -1,7 +1,7 @@
 #ifndef RecordingElectrodes_H
 #define RecordingElectrodes_H
 
-#include <cuda.h>
+//CUDA #include <cuda.h>
 #include <string>
 using namespace std;
 

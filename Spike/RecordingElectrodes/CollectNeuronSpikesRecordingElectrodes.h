@@ -61,13 +61,14 @@ private:
 
 };
 
+/*CUDA
 __global__ void collect_spikes_for_timestep_kernel(float* d_last_spike_time_of_each_neuron,
 								int* d_total_number_of_spikes_stored_on_device,
 								int* d_neuron_ids_of_stored_spikes_on_device,
 								float* d_time_in_seconds_of_stored_spikes_on_device,
 								float current_time_in_seconds,
 								size_t total_number_of_neurons);
-
+*/
 
 
 #endif

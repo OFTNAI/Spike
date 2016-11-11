@@ -1,7 +1,7 @@
 #include "PoissonInputSpikingNeurons.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include "../Helpers/CUDAErrorCheckHelpers.h"
+//CUDA #include "../Helpers/CUDAErrorCheckHelpers.h"
 #include "../Helpers/TerminalHelpers.h"
 #include <algorithm> // For random shuffle
 using namespace std;
@@ -27,7 +27,7 @@ PoissonInputSpikingNeurons::~PoissonInputSpikingNeurons() {
 
 	free(rates);
 
-	CudaSafeCall(cudaFree(d_rates));
+	//CUDA CudaSafeCall(cudaFree(d_rates));
 
 }
 
@@ -59,8 +59,6 @@ void PoissonInputSpikingNeurons::set_up_rates() {
 
 
 void PoissonInputSpikingNeurons::setup_random_states_on_device() {
-
-
 	
 	random_state_manager = new RandomStateManager();
 
@@ -71,7 +69,7 @@ void PoissonInputSpikingNeurons::allocate_device_pointers(int maximum_axonal_del
 
 	InputSpikingNeurons::allocate_device_pointers(maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
 
-	CudaSafeCall(cudaMalloc((void **)&d_rates, sizeof(float)*total_number_of_neurons));
+	//CUDA CudaSafeCall(cudaMalloc((void **)&d_rates, sizeof(float)*total_number_of_neurons));
 
 }
 
@@ -79,7 +77,7 @@ void PoissonInputSpikingNeurons::copy_constants_to_device() {
 	InputSpikingNeurons::copy_constants_to_device();
 
 	if (rates != NULL) {
-		CudaSafeCall(cudaMemcpy(d_rates, rates, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
+          //CUDA CudaSafeCall(cudaMemcpy(d_rates, rates, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
 	}
 }
 
@@ -105,6 +103,7 @@ bool PoissonInputSpikingNeurons::stimulus_is_new_object_for_object_by_object_pre
 
 void PoissonInputSpikingNeurons::update_membrane_potentials(float timestep, float current_time_in_seconds) {
 
+  /*CUDA
 	poisson_update_membrane_potentials_kernel<<<random_state_manager->block_dimensions, random_state_manager->threads_per_block>>>(random_state_manager->d_states,
 														d_rates,
 														d_membrane_potentials_v,
@@ -114,9 +113,10 @@ void PoissonInputSpikingNeurons::update_membrane_potentials(float timestep, floa
 														current_stimulus_index);
 
 	CudaCheckError();
+  */
 }
 
-
+/*
 __global__ void poisson_update_membrane_potentials_kernel(curandState_t* d_states,
 							float *d_rates,
 							float *d_membrane_potentials_v,
@@ -157,3 +157,4 @@ __global__ void poisson_update_membrane_potentials_kernel(curandState_t* d_state
 	__syncthreads();
 }
 
+*/

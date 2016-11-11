@@ -9,9 +9,10 @@
  *
  */
 
-#include <cuda.h>
+//CUDA #include <cuda.h>
+//CUDA #include <vector_types.h>
+#include <Spike/CUDA_Hacks.h>
 #include <stdio.h>
-#include <vector_types.h>
 
 
 #define PRESYNAPTIC_IS_INPUT( id ) (id < 0 ? true : false)

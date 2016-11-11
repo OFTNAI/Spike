@@ -1,7 +1,7 @@
 #include "AdExSpikingNeurons.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include "../Helpers/CUDAErrorCheckHelpers.h"
+//CUDA #include "../Helpers/CUDAErrorCheckHelpers.h"
 
 
 // AdExSpikingNeurons Constructor
@@ -70,6 +70,7 @@ void AdExSpikingNeurons::allocate_device_pointers(int maximum_axonal_delay_in_ti
 	
 	SpikingNeurons::allocate_device_pointers(maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
 
+        /*CUDA
 	CudaSafeCall(cudaMalloc((void **)&d_adaptation_values_w, sizeof(float)*total_number_of_neurons));
 	CudaSafeCall(cudaMalloc((void **)&d_membrane_capacitances_Cm, sizeof(float)*total_number_of_neurons));
 	CudaSafeCall(cudaMalloc((void **)&d_membrane_leakage_conductances_g0, sizeof(float)*total_number_of_neurons));
@@ -78,6 +79,7 @@ void AdExSpikingNeurons::allocate_device_pointers(int maximum_axonal_delay_in_ti
 	CudaSafeCall(cudaMalloc((void **)&d_adaptation_coupling_coefficients_a, sizeof(float)*total_number_of_neurons));
 	CudaSafeCall(cudaMalloc((void **)&d_adaptation_time_constants_tau_w, sizeof(float)*total_number_of_neurons));
 	CudaSafeCall(cudaMalloc((void **)&d_adaptation_changes_b, sizeof(float)*total_number_of_neurons));
+        */
 }
 
 
@@ -85,6 +87,7 @@ void AdExSpikingNeurons::copy_constants_to_device() {
 
 	SpikingNeurons::copy_constants_to_device();
 
+        /*CUDA
 	CudaSafeCall(cudaMemcpy(d_adaptation_values_w, adaptation_values_w, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_membrane_capacitances_Cm, membrane_capacitances_Cm, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_membrane_leakage_conductances_g0, membrane_leakage_conductances_g0, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
@@ -93,6 +96,7 @@ void AdExSpikingNeurons::copy_constants_to_device() {
 	CudaSafeCall(cudaMemcpy(d_adaptation_coupling_coefficients_a, adaptation_coupling_coefficients_a, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_adaptation_time_constants_tau_w, adaptation_time_constants_tau_w, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_adaptation_changes_b, d_adaptation_changes_b, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
+        */
 }
 
 void AdExSpikingNeurons::reset_neuron_activities() {
@@ -100,13 +104,14 @@ void AdExSpikingNeurons::reset_neuron_activities() {
 	SpikingNeurons::reset_neuron_activities();
 
 	// Set adapatation value to zero
-	CudaSafeCall(cudaMemcpy(d_adaptation_values_w, adaptation_values_w, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
+	//CUDA CudaSafeCall(cudaMemcpy(d_adaptation_values_w, adaptation_values_w, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
 }
 
 
 
 void AdExSpikingNeurons::update_membrane_potentials(float timestep, float current_time_in_seconds) {
 
+  /*CUDA
 	AdEx_update_membrane_potentials<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(
 																	d_membrane_potentials_v,
 																	d_adaptation_values_w,
@@ -126,9 +131,10 @@ void AdExSpikingNeurons::update_membrane_potentials(float timestep, float curren
 																	total_number_of_neurons);
 
 	CudaCheckError();
+  */
 }
 
-
+/*CUDA
 __global__ void AdEx_update_membrane_potentials(float *d_membrane_potentials_v,
 								float * d_adaptation_values_w,
 								float * d_adaptation_changes_b,
@@ -184,10 +190,10 @@ __global__ void AdEx_update_membrane_potentials(float *d_membrane_potentials_v,
 	}
 	__syncthreads();
 }
-
+*/
 
 void AdExSpikingNeurons::check_for_neuron_spikes(float current_time_in_seconds, float timestep) {
-
+  /*CUDA
 	check_for_neuron_spikes_kernel<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_membrane_potentials_v,
 																	d_adaptation_values_w,
 																	d_adaptation_changes_b,
@@ -203,10 +209,12 @@ void AdExSpikingNeurons::check_for_neuron_spikes(float current_time_in_seconds, 
 																	high_fidelity_spike_flag);
 
 	CudaCheckError();
+  */
 }
 
 
 // Spiking Neurons
+/*CUDA
 __global__ void check_for_neuron_spikes_kernel(float *d_membrane_potentials_v,
 								float *d_adaptation_values_w,
 								float *d_adaptation_changes_b,
@@ -274,3 +282,4 @@ __global__ void check_for_neuron_spikes_kernel(float *d_membrane_potentials_v,
 	__syncthreads();
 
 }
+*/

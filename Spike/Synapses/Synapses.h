@@ -16,9 +16,12 @@
 // allows maths
 #include <math.h>
 
+/*CUDA
 #include <cuda.h>
 #include <curand.h>
 #include <curand_kernel.h>
+*/
+#include <Spike/CUDA_Hacks.h>
 
 #include "../Helpers/RandomStateManager.h"
 
@@ -107,6 +110,7 @@ protected:
 	
 };
 
+/*CUDA
 __global__ void compute_yes_no_connection_matrix_for_groups(bool * d_yes_no_connection_vector, 
 														int pre_width, 
 														int post_width, 
@@ -140,7 +144,7 @@ __global__ void set_neuron_indices_by_sampling_from_normal_distribution(int tota
 																		float standard_deviation_sigma, 
 																		bool presynaptic_group_is_input,
 																		curandState_t* d_states);
-
+*/
 // GAUSS random number generator
 double randn (double mu, double sigma);
 #endif

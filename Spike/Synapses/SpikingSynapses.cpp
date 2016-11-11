@@ -1,6 +1,6 @@
 #include "SpikingSynapses.h"
 
-#include "../Helpers/CUDAErrorCheckHelpers.h"
+//CUDA #include "../Helpers/CUDAErrorCheckHelpers.h"
 #include "../Helpers/TerminalHelpers.h"
 
 // SpikingSynapses Constructor
@@ -24,10 +24,12 @@ SpikingSynapses::~SpikingSynapses() {
 	free(delays);
 	free(stdp);
 
+        /*CUDA
 	CudaSafeCall(cudaFree(d_delays));
 	CudaSafeCall(cudaFree(d_spikes_travelling_to_synapse));
 	CudaSafeCall(cudaFree(d_stdp));
 	CudaSafeCall(cudaFree(d_time_of_last_spike_to_reach_synapse));
+        */
 
 }
 
@@ -104,11 +106,13 @@ void SpikingSynapses::allocate_device_pointers() {
 
 	Synapses::allocate_device_pointers();
 
+        /*CUDA
 	CudaSafeCall(cudaMalloc((void **)&d_delays, sizeof(int)*total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&d_stdp, sizeof(bool)*total_number_of_synapses));
 
 	CudaSafeCall(cudaMalloc((void **)&d_spikes_travelling_to_synapse, sizeof(int)*total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&d_time_of_last_spike_to_reach_synapse, sizeof(float)*total_number_of_synapses));
+        */
 
 	
 }
@@ -118,22 +122,24 @@ void SpikingSynapses::copy_constants_and_initial_efficacies_to_device() {
 	
 	Synapses::copy_constants_and_initial_efficacies_to_device();
 
+        /*CUDA
 	CudaSafeCall(cudaMemcpy(d_delays, delays, sizeof(int)*total_number_of_synapses, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_stdp, stdp, sizeof(bool)*total_number_of_synapses, cudaMemcpyHostToDevice));
+        */
 
 }
 
 
 void SpikingSynapses::reset_synapse_activities() {
 	
-	CudaSafeCall(cudaMemset(d_spikes_travelling_to_synapse, 0, sizeof(int)*total_number_of_synapses));
-	// Set last spike times to -1000 so that the times do not affect current simulation.
-	float* last_spike_to_reach_synapse;
-	last_spike_to_reach_synapse = (float*)malloc(sizeof(float)*total_number_of_synapses);
-	for (int i=0; i < total_number_of_synapses; i++){
-		last_spike_to_reach_synapse[i] = -1000.0f;
-	}
-	CudaSafeCall(cudaMemcpy(d_time_of_last_spike_to_reach_synapse, last_spike_to_reach_synapse, total_number_of_synapses*sizeof(float), cudaMemcpyHostToDevice));
+  //CUDA CudaSafeCall(cudaMemset(d_spikes_travelling_to_synapse, 0, sizeof(int)*total_number_of_synapses));
+  // Set last spike times to -1000 so that the times do not affect current simulation.
+  float* last_spike_to_reach_synapse;
+  last_spike_to_reach_synapse = (float*)malloc(sizeof(float)*total_number_of_synapses);
+  for (int i=0; i < total_number_of_synapses; i++){
+    last_spike_to_reach_synapse[i] = -1000.0f;
+  }
+  //CUDA CudaSafeCall(cudaMemcpy(d_time_of_last_spike_to_reach_synapse, last_spike_to_reach_synapse, total_number_of_synapses*sizeof(float), cudaMemcpyHostToDevice));
 
 }
 
@@ -164,7 +170,7 @@ void SpikingSynapses::set_threads_per_block_and_blocks_per_grid(int threads) {
 }
 
 void SpikingSynapses::interact_spikes_with_synapses(SpikingNeurons * neurons, SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) {
-
+  /*CUDA
 	if (neurons->high_fidelity_spike_flag){
 		check_bitarray_for_presynaptic_neuron_spikes<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(
 								d_presynaptic_neuron_indices,
@@ -190,6 +196,7 @@ void SpikingSynapses::interact_spikes_with_synapses(SpikingNeurons * neurons, Sp
 																			d_time_of_last_spike_to_reach_synapse);
 		CudaCheckError();
 	}
+  */
 }
 
 
@@ -202,6 +209,7 @@ void SpikingSynapses::update_synaptic_conductances(float timestep, float current
 
 }
 
+/*CUDA
 __global__ void move_spikes_towards_synapses_kernel(int* d_presynaptic_neuron_indices,
 								int* d_delays,
 								int* d_spikes_travelling_to_synapse,
@@ -291,3 +299,5 @@ __global__ void check_bitarray_for_presynaptic_neuron_spikes(int* d_presynaptic_
 	}
 	__syncthreads();
 }
+*/
+

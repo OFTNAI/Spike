@@ -5,7 +5,7 @@
 //	Date: 23/06/2016
 
 #include "STDP.h"
-#include "../Helpers/CUDAErrorCheckHelpers.h"
+//CUDA #include "../Helpers/CUDAErrorCheckHelpers.h"
 #include "../Helpers/TerminalHelpers.h"
 
 

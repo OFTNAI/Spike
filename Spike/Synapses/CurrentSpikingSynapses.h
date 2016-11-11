@@ -25,6 +25,7 @@ public:
 	virtual void calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds, float timestep);
 };
 
+/*CUDA
 __global__ void current_calculate_postsynaptic_current_injection_kernel(float* d_synaptic_efficacies_or_weights,
 							float* d_time_of_last_spike_to_reach_synapse,
 							int* d_postsynaptic_neuron_indices,
@@ -49,5 +50,6 @@ __global__ void current_apply_ltp_to_synapse_weights_kernel(int* d_postsyns,
 							struct stdp_struct stdp_vars,
 							float currtime,
 							size_t total_number_of_synapse);
+*/
 
 #endif

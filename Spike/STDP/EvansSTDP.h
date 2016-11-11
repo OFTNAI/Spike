@@ -18,7 +18,7 @@
 // allows maths
 #include <math.h>
 
-#include <cuda.h>
+//CUDA #include <cuda.h>
 
 
 // STDP Parameters
@@ -67,6 +67,7 @@ public:
 	void update_postsynaptic_activities(float timestep, float current_time_in_seconds);
 };
 
+/*CUDA
 __global__ void update_postsynaptic_activities_kernel(float timestep,
 								size_t total_number_of_neurons,
 								float * d_recent_postsynaptic_activities_D,
@@ -94,5 +95,6 @@ __global__ void update_synaptic_efficacies_or_weights_kernel(float * d_recent_pr
 																bool* d_stdp,
 																size_t total_number_of_synapses,
 																float learning_rate_rho);
+*/
 
 #endif

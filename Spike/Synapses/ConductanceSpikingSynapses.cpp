@@ -1,6 +1,6 @@
 #include "ConductanceSpikingSynapses.h"
 
-#include "../Helpers/CUDAErrorCheckHelpers.h"
+//CUDA #include "../Helpers/CUDAErrorCheckHelpers.h"
 #include "../Helpers/TerminalHelpers.h"
 
 // ConductanceSpikingSynapses Constructor
@@ -28,10 +28,12 @@ ConductanceSpikingSynapses::~ConductanceSpikingSynapses() {
 	free(reversal_potentials_Vhat);
 	free(decay_terms_tau_g);
 
+        /*CUDA
 	CudaSafeCall(cudaFree(d_synaptic_conductances_g));
 	CudaSafeCall(cudaFree(d_biological_conductance_scaling_constants_lambda));
 	CudaSafeCall(cudaFree(d_reversal_potentials_Vhat));
 	CudaSafeCall(cudaFree(d_decay_terms_tau_g));
+        */
 }
 
 
@@ -77,11 +79,13 @@ void ConductanceSpikingSynapses::allocate_device_pointers() {
 
 	SpikingSynapses::allocate_device_pointers();
 
+        /*CUDA
 	CudaSafeCall(cudaMalloc((void **)&d_biological_conductance_scaling_constants_lambda, sizeof(float)*total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&d_reversal_potentials_Vhat, sizeof(float)*total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&d_decay_terms_tau_g, sizeof(float)*total_number_of_synapses));
 
 	CudaSafeCall(cudaMalloc((void **)&d_synaptic_conductances_g, sizeof(float)*total_number_of_synapses));
+        */
 
 }
 
@@ -89,10 +93,11 @@ void ConductanceSpikingSynapses::copy_constants_and_initial_efficacies_to_device
 	
 	SpikingSynapses::copy_constants_and_initial_efficacies_to_device();
 
+        /*CUDA
 	CudaSafeCall(cudaMemcpy(d_biological_conductance_scaling_constants_lambda, biological_conductance_scaling_constants_lambda, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_reversal_potentials_Vhat, reversal_potentials_Vhat, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_decay_terms_tau_g, decay_terms_tau_g, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
-
+        */
 }
 
 
@@ -100,7 +105,7 @@ void ConductanceSpikingSynapses::reset_synapse_activities() {
 
 	SpikingSynapses::reset_synapse_activities();
 
-	CudaSafeCall(cudaMemcpy(d_synaptic_conductances_g, synaptic_conductances_g, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
+	//CUDA CudaSafeCall(cudaMemcpy(d_synaptic_conductances_g, synaptic_conductances_g, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
 
 }
 
@@ -140,6 +145,7 @@ void ConductanceSpikingSynapses::set_threads_per_block_and_blocks_per_grid(int t
 
 void ConductanceSpikingSynapses::calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds, float timestep) {
 
+  /*CUDA
 	conductance_calculate_postsynaptic_current_injection_kernel<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_presynaptic_neuron_indices,
 																	d_postsynaptic_neuron_indices,
 																	d_reversal_potentials_Vhat,
@@ -149,6 +155,7 @@ void ConductanceSpikingSynapses::calculate_postsynaptic_current_injection(Spikin
 																	d_synaptic_conductances_g);
 
 	CudaCheckError();
+  */
 
 	// After injecting current, update the conductances
 	update_synaptic_conductances(timestep, current_time_in_seconds);
@@ -156,6 +163,7 @@ void ConductanceSpikingSynapses::calculate_postsynaptic_current_injection(Spikin
 
 void ConductanceSpikingSynapses::update_synaptic_conductances(float timestep, float current_time_in_seconds) {
 
+  /*CUDA
 	conductance_update_synaptic_conductances_kernel<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(timestep, 
 											d_synaptic_conductances_g, 
 											d_synaptic_efficacies_or_weights, 
@@ -166,10 +174,11 @@ void ConductanceSpikingSynapses::update_synaptic_conductances(float timestep, fl
 											d_decay_terms_tau_g);
 
 	CudaCheckError();
+  */
 
 }
 
-
+/*CUDA
 __global__ void conductance_calculate_postsynaptic_current_injection_kernel(int * d_presynaptic_neuron_indices,
 							int* d_postsynaptic_neuron_indices,
 							float* d_reversal_potentials_Vhat,
@@ -231,8 +240,5 @@ __global__ void conductance_update_synaptic_conductances_kernel(float timestep,
 	__syncthreads();
 
 }
-
-
-
-
+*/
 

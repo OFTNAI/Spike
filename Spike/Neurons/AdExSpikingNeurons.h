@@ -1,7 +1,7 @@
 #ifndef AdExSpikingNeurons_H
 #define AdExSpikingNeurons_H
 
-#include <cuda.h>
+//CUDA #include <cuda.h>
 
 #include "SpikingNeurons.h"
 
@@ -57,7 +57,7 @@ public:
 
 };
 
-
+/*CUDA
 __global__ void check_for_neuron_spikes_kernel(float *d_membrane_potentials_v,
 								float *d_adaptation_values_w,
 								float * d_adaptation_changes_b,
@@ -88,6 +88,6 @@ __global__ void AdEx_update_membrane_potentials(float *d_membrane_potentials_v,
 								float current_time_in_seconds,
 								float timestep,
 								size_t total_number_of_neurons);
-
+*/
 
 #endif

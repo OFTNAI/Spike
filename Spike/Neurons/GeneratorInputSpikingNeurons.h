@@ -1,9 +1,11 @@
 #ifndef GeneratorInputSpikingNeurons_H
 #define GeneratorInputSpikingNeurons_H
 
+/*CUDA
 #include <cuda.h>
 #include <curand.h>
 #include <curand_kernel.h>
+*/
 
 #include "InputSpikingNeurons.h"
 
@@ -43,7 +45,7 @@ public:
 	void AddStimulus(int spikenumber, int* ids, float* spiketimes);
 };
 
-
+/*CUDA
 __global__ void check_for_generator_spikes_kernel(int *d_neuron_ids_for_stimulus,
 								float *d_spike_times_for_stimulus,
 								float* d_last_spike_time_of_each_neuron,
@@ -54,5 +56,6 @@ __global__ void check_for_generator_spikes_kernel(int *d_neuron_ids_for_stimulus
 								float timestep,
 								size_t number_of_spikes_in_stimulus,
 								bool high_fidelity_spike_flag);
+*/
 
 #endif

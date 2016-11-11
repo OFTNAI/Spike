@@ -2,7 +2,7 @@
 
 #include "Neurons.h"
 #include <stdlib.h>
-#include "../Helpers/CUDAErrorCheckHelpers.h"
+//CUDA #include "../Helpers/CUDAErrorCheckHelpers.h"
 #include "../Helpers/TerminalHelpers.h"
 
 
@@ -35,8 +35,10 @@ Neurons::~Neurons() {
 	free(per_neuron_afferent_synapse_count);
 	free(group_shapes);
 
+        /*CUDA
 	CudaSafeCall(cudaFree(d_per_neuron_afferent_synapse_count));
 	CudaSafeCall(cudaFree(d_current_injections));
+        */
 
 }
 
@@ -83,20 +85,22 @@ int Neurons::AddGroup(neuron_parameters_struct * group_params){
 
 void Neurons::allocate_device_pointers(int maximum_axonal_delay_in_timesteps,  bool high_fidelity_spike_storage) {
 
+  /*CUDA
 	CudaSafeCall(cudaMalloc((void **)&d_current_injections, sizeof(float)*total_number_of_neurons));
 	CudaSafeCall(cudaMalloc((void **)&d_per_neuron_afferent_synapse_count, sizeof(int)*total_number_of_neurons));
+  */
 }
 
 void Neurons::copy_constants_to_device() {
-	CudaSafeCall(cudaMemcpy(d_per_neuron_afferent_synapse_count, per_neuron_afferent_synapse_count, sizeof(int)*total_number_of_neurons, cudaMemcpyHostToDevice));
+  //CUDA CudaSafeCall(cudaMemcpy(d_per_neuron_afferent_synapse_count, per_neuron_afferent_synapse_count, sizeof(int)*total_number_of_neurons, cudaMemcpyHostToDevice));
 }
 
 void Neurons::reset_neuron_activities() {
-	reset_current_injections();
+  reset_current_injections();
 }
 
 void Neurons::reset_current_injections() {
-	CudaSafeCall(cudaMemset(d_current_injections, 0.0f, total_number_of_neurons*sizeof(float)));
+  //CUDA CudaSafeCall(cudaMemset(d_current_injections, 0.0f, total_number_of_neurons*sizeof(float)));
 }
 
 

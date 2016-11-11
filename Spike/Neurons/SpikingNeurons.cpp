@@ -1,6 +1,6 @@
 #include "SpikingNeurons.h"
 #include <stdlib.h>
-#include "../Helpers/CUDAErrorCheckHelpers.h"
+//CUDA #include "../Helpers/CUDAErrorCheckHelpers.h"
 
 
 // SpikingNeurons Constructor
@@ -33,11 +33,13 @@ SpikingNeurons::~SpikingNeurons() {
 	free(thresholds_for_action_potential_spikes);
 	free(bitarray_of_neuron_spikes);
 
+        /*CUDA
 	CudaSafeCall(cudaFree(d_last_spike_time_of_each_neuron));
 	CudaSafeCall(cudaFree(d_membrane_potentials_v));
 	CudaSafeCall(cudaFree(d_thresholds_for_action_potential_spikes));
 	CudaSafeCall(cudaFree(d_resting_potentials));
 	CudaSafeCall(cudaFree(d_bitarray_of_neuron_spikes));
+        */
 
 }
 
@@ -64,10 +66,12 @@ void SpikingNeurons::allocate_device_pointers(int maximum_axonal_delay_in_timest
 
 	Neurons::allocate_device_pointers(maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
 
+        /*CUDA
 	CudaSafeCall(cudaMalloc((void **)&d_last_spike_time_of_each_neuron, sizeof(float)*total_number_of_neurons));
 	CudaSafeCall(cudaMalloc((void **)&d_membrane_potentials_v, sizeof(float)*total_number_of_neurons));
 	CudaSafeCall(cudaMalloc((void **)&d_thresholds_for_action_potential_spikes, sizeof(float)*total_number_of_neurons));
 	CudaSafeCall(cudaMalloc((void **)&d_resting_potentials, sizeof(float)*total_number_of_neurons));
+        */
 
 	// Choosing Spike Mechanism
 	high_fidelity_spike_flag = high_fidelity_spike_storage;
@@ -75,7 +79,7 @@ void SpikingNeurons::allocate_device_pointers(int maximum_axonal_delay_in_timest
 	if (high_fidelity_spike_storage){
 		// Create bit array of correct length
 		bitarray_length = (maximum_axonal_delay_in_timesteps / 8) + 1; // each char is 8 bit long.
-		CudaSafeCall(cudaMalloc((void **)&d_bitarray_of_neuron_spikes, sizeof(unsigned char)*bitarray_length*total_number_of_neurons));
+		//CUDA CudaSafeCall(cudaMalloc((void **)&d_bitarray_of_neuron_spikes, sizeof(unsigned char)*bitarray_length*total_number_of_neurons));
 		bitarray_of_neuron_spikes = (unsigned char *)malloc(sizeof(unsigned char)*bitarray_length*total_number_of_neurons);
 		for (int i = 0; i < bitarray_length*total_number_of_neurons; i++){
 			bitarray_of_neuron_spikes[i] = (unsigned char)0;
@@ -88,8 +92,10 @@ void SpikingNeurons::copy_constants_to_device() {
 
 	Neurons::copy_constants_to_device();
 
+        /*CUDA
 	CudaSafeCall(cudaMemcpy(d_thresholds_for_action_potential_spikes, thresholds_for_action_potential_spikes, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_resting_potentials, after_spike_reset_membrane_potentials_c, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
+        */
 }
 
 
@@ -104,11 +110,13 @@ void SpikingNeurons::reset_neuron_activities() {
 		last_spike_times[i] = -1000.0f;
 	}
 
+        /*CUDA
 	CudaSafeCall(cudaMemcpy(d_last_spike_time_of_each_neuron, last_spike_times, total_number_of_neurons*sizeof(float), cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_membrane_potentials_v, after_spike_reset_membrane_potentials_c, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
+        */
 
 	if (high_fidelity_spike_flag){
-		CudaSafeCall(cudaMemcpy(d_bitarray_of_neuron_spikes, bitarray_of_neuron_spikes, sizeof(unsigned char)*bitarray_length*total_number_of_neurons, cudaMemcpyHostToDevice));
+          //CUDA CudaSafeCall(cudaMemcpy(d_bitarray_of_neuron_spikes, bitarray_of_neuron_spikes, sizeof(unsigned char)*bitarray_length*total_number_of_neurons, cudaMemcpyHostToDevice));
 	}
 }
 
@@ -119,6 +127,7 @@ void SpikingNeurons::update_membrane_potentials(float timestep, float current_ti
 
 void SpikingNeurons::check_for_neuron_spikes(float current_time_in_seconds, float timestep) {
 
+  /*CUDA
 	check_for_neuron_spikes_kernel<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_membrane_potentials_v,
 																	d_thresholds_for_action_potential_spikes,
 																	d_resting_potentials,
@@ -132,10 +141,12 @@ void SpikingNeurons::check_for_neuron_spikes(float current_time_in_seconds, floa
 																	high_fidelity_spike_flag);
 
 	CudaCheckError();
+  */
 }
 
 
 // Spiking Neurons
+/*CUDA
 __global__ void check_for_neuron_spikes_kernel(float *d_membrane_potentials_v,
 								float *d_thresholds_for_action_potential_spikes,
 								float *d_resting_potentials,
@@ -198,3 +209,4 @@ __global__ void check_for_neuron_spikes_kernel(float *d_membrane_potentials_v,
 	__syncthreads();
 
 }
+*/

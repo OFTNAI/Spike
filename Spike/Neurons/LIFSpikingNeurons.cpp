@@ -1,7 +1,7 @@
 #include "LIFSpikingNeurons.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include "../Helpers/CUDAErrorCheckHelpers.h"
+//CUDA #include "../Helpers/CUDAErrorCheckHelpers.h"
 
 
 // LIFSpikingNeurons Constructor
@@ -21,8 +21,10 @@ LIFSpikingNeurons::~LIFSpikingNeurons() {
 	free(membrane_time_constants_tau_m);
 	free(membrane_resistances_R);
 
-	CudaSafeCall(cudaFree(d_membrane_time_constants_tau_m));
+	/*CUDA
+        CudaSafeCall(cudaFree(d_membrane_time_constants_tau_m));
 	CudaSafeCall(cudaFree(d_membrane_resistances_R));
+        */
 }
 
 
@@ -53,8 +55,10 @@ void LIFSpikingNeurons::allocate_device_pointers(int maximum_axonal_delay_in_tim
  	
  	SpikingNeurons::allocate_device_pointers(maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
 
+        /*CUDA
  	CudaSafeCall(cudaMalloc((void **)&d_membrane_time_constants_tau_m, sizeof(float)*total_number_of_neurons));
  	CudaSafeCall(cudaMalloc((void **)&d_membrane_resistances_R, sizeof(float)*total_number_of_neurons));
+        */
 
 }
 
@@ -63,14 +67,17 @@ void LIFSpikingNeurons::copy_constants_to_device() {
 
 	SpikingNeurons::copy_constants_to_device();
 
+        /*CUDA
 	CudaSafeCall(cudaMemcpy(d_membrane_time_constants_tau_m, membrane_time_constants_tau_m, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_membrane_resistances_R, membrane_resistances_R, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
+        */
 }
 
 
 
 void LIFSpikingNeurons::update_membrane_potentials(float timestep, float current_time_in_seconds) {
 
+  /*CUDA
 	lif_update_membrane_potentials<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(d_membrane_potentials_v,
 																	d_last_spike_time_of_each_neuron,
 																	d_membrane_resistances_R,
@@ -83,9 +90,10 @@ void LIFSpikingNeurons::update_membrane_potentials(float timestep, float current
 																	total_number_of_neurons);
 
 	CudaCheckError();
+  */
 }
 
-
+/*CUDA
 __global__ void lif_update_membrane_potentials(float *d_membrane_potentials_v,
 								float * d_last_spike_time_of_each_neuron,
 								float * d_membrane_resistances_R,
@@ -119,5 +127,5 @@ __global__ void lif_update_membrane_potentials(float *d_membrane_potentials_v,
 	}
 	__syncthreads();
 }
-
+*/
 

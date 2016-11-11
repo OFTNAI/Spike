@@ -1,9 +1,9 @@
 #ifndef RANDOMSTATEMANAGER_H
 #define RANDOMSTATEMANAGER_H
 
-#include <cuda.h>
-#include <curand.h>
-#include <curand_kernel.h>
+//CUDA #include <cuda.h>
+//CUDA #include <curand.h>
+//CUDA #include <curand_kernel.h>
 
 
 

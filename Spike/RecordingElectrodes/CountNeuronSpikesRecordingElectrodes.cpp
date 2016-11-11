@@ -3,7 +3,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <fstream>
-#include "../Helpers/CUDAErrorCheckHelpers.h"
+//CUDA #include "../Helpers/CUDAErrorCheckHelpers.h"
 #include "../Helpers/TerminalHelpers.h"
 #include <string>
 #include <time.h>
@@ -29,7 +29,7 @@ CountNeuronSpikesRecordingElectrodes::CountNeuronSpikesRecordingElectrodes(Spiki
 // CountNeuronSpikesRecordingElectrodes Destructor
 CountNeuronSpikesRecordingElectrodes::~CountNeuronSpikesRecordingElectrodes() {
 
-	CudaSafeCall(cudaFree(d_per_neuron_spike_counts));
+  //CUDA CudaSafeCall(cudaFree(d_per_neuron_spike_counts));
 
 }
 
@@ -44,26 +44,28 @@ void CountNeuronSpikesRecordingElectrodes::initialise_count_neuron_spikes_record
 
 void CountNeuronSpikesRecordingElectrodes::allocate_pointers_for_spike_count() {
 
-	CudaSafeCall(cudaMalloc((void **)&d_per_neuron_spike_counts, sizeof(int) * neurons->total_number_of_neurons));
+  //CUDA CudaSafeCall(cudaMalloc((void **)&d_per_neuron_spike_counts, sizeof(int) * neurons->total_number_of_neurons));
 
 }
 
 void CountNeuronSpikesRecordingElectrodes::reset_pointers_for_spike_count() {
 
-	CudaSafeCall(cudaMemset(d_per_neuron_spike_counts, 0, sizeof(int) * neurons->total_number_of_neurons));
+  //CUDA CudaSafeCall(cudaMemset(d_per_neuron_spike_counts, 0, sizeof(int) * neurons->total_number_of_neurons));
 
 }
 
 
 void CountNeuronSpikesRecordingElectrodes::add_spikes_to_per_neuron_spike_count(float current_time_in_seconds) {
+  /*CUDA
 	add_spikes_to_per_neuron_spike_count_kernel<<<neurons->number_of_neuron_blocks_per_grid, neurons->threads_per_block>>>(neurons->d_last_spike_time_of_each_neuron,
 														d_per_neuron_spike_counts,
 														current_time_in_seconds,
 														neurons->total_number_of_neurons);
 	CudaCheckError();
+  */
 }
 
-
+/*CUDA
 __global__ void add_spikes_to_per_neuron_spike_count_kernel(float* d_last_spike_time_of_each_neuron,
 								int* d_per_neuron_spike_counts,
 								float current_time_in_seconds,
@@ -80,3 +82,4 @@ __global__ void add_spikes_to_per_neuron_spike_count_kernel(float* d_last_spike_
 		idx += blockDim.x * gridDim.x;
 	}
 }
+*/

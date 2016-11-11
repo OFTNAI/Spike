@@ -3,7 +3,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <fstream>
-#include "../Helpers/CUDAErrorCheckHelpers.h"
+//CUDA #include "../Helpers/CUDAErrorCheckHelpers.h"
 #include "../Helpers/TerminalHelpers.h"
 #include <time.h>
 

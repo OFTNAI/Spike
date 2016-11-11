@@ -1,7 +1,7 @@
 #include "GeneratorInputSpikingNeurons.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include "../Helpers/CUDAErrorCheckHelpers.h"
+//CUDA #include "../Helpers/CUDAErrorCheckHelpers.h"
 
 
 // GeneratorInputSpikingNeurons Constructor
@@ -23,9 +23,11 @@ GeneratorInputSpikingNeurons::~GeneratorInputSpikingNeurons() {
 	free(neuron_id_matrix_for_stimuli);
 	free(spike_times_matrix_for_stimuli);
 	free(number_of_spikes_in_stimuli);
-	
+
+        /*CUDA
 	CudaSafeCall(cudaFree(d_neuron_ids_for_stimulus));
 	CudaSafeCall(cudaFree(d_spike_times_for_stimulus));
+        */
 }
 
 // Add Group of given size as usual - nothing special in constructor
@@ -41,16 +43,20 @@ void GeneratorInputSpikingNeurons::allocate_device_pointers(int maximum_axonal_d
 
 	InputSpikingNeurons::allocate_device_pointers(maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
 
+        /*CUDA
 	CudaSafeCall(cudaMalloc((void **)&d_neuron_ids_for_stimulus, sizeof(int)*length_of_longest_stimulus));
 	CudaSafeCall(cudaMalloc((void **)&d_spike_times_for_stimulus, sizeof(float)*length_of_longest_stimulus));
+        */
 }
 
 
 void GeneratorInputSpikingNeurons::reset_neuron_activities() {
 	InputSpikingNeurons::reset_neuron_activities();
 
+        /*CUDA
 	CudaSafeCall(cudaMemcpy(d_neuron_ids_for_stimulus, neuron_id_matrix_for_stimuli[current_stimulus_index], sizeof(int)*number_of_spikes_in_stimuli[current_stimulus_index], cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_spike_times_for_stimulus, spike_times_matrix_for_stimuli[current_stimulus_index], sizeof(float)*number_of_spikes_in_stimuli[current_stimulus_index], cudaMemcpyHostToDevice));
+        */
 }
 
 
@@ -61,6 +67,7 @@ void GeneratorInputSpikingNeurons::set_threads_per_block_and_blocks_per_grid(int
 
 void GeneratorInputSpikingNeurons::check_for_neuron_spikes(float current_time_in_seconds, float timestep) {
 
+  /*CUDA
 	check_for_generator_spikes_kernel<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(
 		d_neuron_ids_for_stimulus,
 		d_spike_times_for_stimulus,
@@ -75,6 +82,7 @@ void GeneratorInputSpikingNeurons::check_for_neuron_spikes(float current_time_in
 
 
 	CudaCheckError();
+  */
 }
 
 void GeneratorInputSpikingNeurons::update_membrane_potentials(float timestep, float current_time_in_seconds){
@@ -116,6 +124,7 @@ void GeneratorInputSpikingNeurons::AddStimulus(int spikenumber, int* ids, float*
 }
 
 // Spiking Neurons
+/*CUDA
 __global__ void check_for_generator_spikes_kernel(int *d_neuron_ids_for_stimulus,
 								float *d_spike_times_for_stimulus,
 								float* d_last_spike_time_of_each_neuron,
@@ -170,3 +179,4 @@ __global__ void check_for_generator_spikes_kernel(int *d_neuron_ids_for_stimulus
 	}
 	__syncthreads();
 }
+*/

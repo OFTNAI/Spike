@@ -19,7 +19,7 @@
 // allows maths
 #include <math.h>
 
-#include <cuda.h>
+//CUDA #include <cuda.h>
 
 
 // STDP Parameters
@@ -55,7 +55,7 @@ public:
 
 };
 
-
+/*CUDA
 // Kernels to carry out LTP/LTD
 __global__ void izhikevich_apply_ltd_to_synapse_weights_kernel(float* d_time_of_last_spike_to_reach_synapse,
 							float* d_synaptic_efficacies_or_weights,
@@ -74,5 +74,6 @@ __global__ void izhikevich_apply_ltp_to_synapse_weights_kernel(int* d_postsyns,
 							struct higgins_stdp_parameters_struct stdp_vars,
 							float currtime,
 							size_t total_number_of_synapse);
+*/
 
 #endif

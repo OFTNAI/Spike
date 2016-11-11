@@ -10,9 +10,11 @@
 
 #include <algorithm> // for random shuffle
 
+/*CUDA
 #include <thrust/device_vector.h>
 #include <thrust/host_vector.h>
 #include <thrust/count.h>
+*/
 
 
 // Synapses Constructor
@@ -58,6 +60,7 @@ Synapses::~Synapses() {
 	free(synapse_postsynaptic_neuron_count_index);
 	free(random_state_manager);
 
+        /*CUDA
 	CudaSafeCall(cudaFree(d_presynaptic_neuron_indices));
 	CudaSafeCall(cudaFree(d_postsynaptic_neuron_indices));
 	CudaSafeCall(cudaFree(d_temp_presynaptic_neuron_indices));
@@ -65,6 +68,7 @@ Synapses::~Synapses() {
 	CudaSafeCall(cudaFree(d_synaptic_efficacies_or_weights));
 	CudaSafeCall(cudaFree(d_temp_synaptic_efficacies_or_weights));
 	CudaSafeCall(cudaFree(d_synapse_postsynaptic_neuron_count_index));
+        */
 
 	// free(number_of_synapse_blocks_per_grid);
 
@@ -220,16 +224,20 @@ void Synapses::AddGroup(int presynaptic_group_id,
 
 				largest_synapse_group_size = total_number_of_new_synapses;
 
+                                /*CUDA
 				CudaSafeCall(cudaMalloc((void **)&d_temp_presynaptic_neuron_indices, sizeof(int)*total_number_of_new_synapses));
 				CudaSafeCall(cudaMalloc((void **)&d_temp_postsynaptic_neuron_indices, sizeof(int)*total_number_of_new_synapses));
+                                */
 
 			}
 
+                        /*CUDA
 			set_neuron_indices_by_sampling_from_normal_distribution<<<random_state_manager->block_dimensions, random_state_manager->threads_per_block>>>(total_number_of_new_synapses, postsynaptic_group_id, poststart, prestart, postsynaptic_group_shape[0], postsynaptic_group_shape[1], presynaptic_group_shape[0], presynaptic_group_shape[1], number_of_new_synapses_per_postsynaptic_neuron, number_of_postsynaptic_neurons_in_group, d_temp_presynaptic_neuron_indices, d_temp_postsynaptic_neuron_indices, d_temp_synaptic_efficacies_or_weights, standard_deviation_sigma, presynaptic_group_is_input, random_state_manager->d_states);
 			CudaCheckError();
 
 			CudaSafeCall(cudaMemcpy(&presynaptic_neuron_indices[original_number_of_synapses], d_temp_presynaptic_neuron_indices, sizeof(int)*total_number_of_new_synapses, cudaMemcpyDeviceToHost));
 			CudaSafeCall(cudaMemcpy(&postsynaptic_neuron_indices[original_number_of_synapses], d_temp_postsynaptic_neuron_indices, sizeof(int)*total_number_of_new_synapses, cudaMemcpyDeviceToHost));
+                        */
 
 			break;
 		}
@@ -312,10 +320,12 @@ void Synapses::allocate_device_pointers() {
 
 	printf("Allocating synapse device pointers...\n");
 
+        /*CUDA
 	CudaSafeCall(cudaMalloc((void **)&d_presynaptic_neuron_indices, sizeof(int)*total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&d_postsynaptic_neuron_indices, sizeof(int)*total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&d_synaptic_efficacies_or_weights, sizeof(float)*total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&d_synapse_postsynaptic_neuron_count_index, sizeof(float)*total_number_of_synapses));
+        */
 
 }
 
@@ -324,14 +334,14 @@ void Synapses::copy_constants_and_initial_efficacies_to_device() {
 
 	printf("Copying synaptic constants and initial efficacies to device...\n");
 
+        /*CUDA
 	CudaSafeCall(cudaMemcpy(d_presynaptic_neuron_indices, presynaptic_neuron_indices, sizeof(int)*total_number_of_synapses, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_postsynaptic_neuron_indices, postsynaptic_neuron_indices, sizeof(int)*total_number_of_synapses, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_synaptic_efficacies_or_weights, synaptic_efficacies_or_weights, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
 	CudaSafeCall(cudaMemcpy(d_synapse_postsynaptic_neuron_count_index, synapse_postsynaptic_neuron_count_index, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
+        */
 
 }
-
-
 
 
 // Provides order of magnitude speedup for LIF (All to all atleast). 
@@ -361,9 +371,6 @@ void Synapses::shuffle_synapses() {
 
 }
 
-
-
-
 void Synapses::set_threads_per_block_and_blocks_per_grid(int threads) {
 
 	threads_per_block.x = threads;
@@ -372,6 +379,7 @@ void Synapses::set_threads_per_block_and_blocks_per_grid(int threads) {
 }
 
 
+/*CUDA
 __global__ void set_neuron_indices_by_sampling_from_normal_distribution(int total_number_of_new_synapses, int postsynaptic_group_id, int poststart, int prestart, int post_width, int post_height, int pre_width, int pre_height, int number_of_new_synapses_per_postsynaptic_neuron, int number_of_postsynaptic_neurons_in_group, int * d_presynaptic_neuron_indices, int * d_postsynaptic_neuron_indices, float * d_synaptic_efficacies_or_weights, float standard_deviation_sigma, bool presynaptic_group_is_input, curandState_t* d_states) {
 
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
@@ -433,3 +441,4 @@ __global__ void set_neuron_indices_by_sampling_from_normal_distribution(int tota
 	__syncthreads();
 
 }
+*/

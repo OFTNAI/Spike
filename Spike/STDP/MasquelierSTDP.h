@@ -27,7 +27,7 @@
 // allows maths
 #include <math.h>
 
-#include <cuda.h>
+//CUDA #include <cuda.h>
 
 
 // STDP Parameters
@@ -72,7 +72,7 @@ public:
 
 };
 
-
+/*CUDA
 // Kernel to carry out LTP/LTD
 __global__ void apply_stdp_to_synapse_weights_kernel(int* d_postsyns,
 							float* d_last_spike_time_of_each_neuron,
@@ -96,4 +96,5 @@ __global__ void get_indices_to_apply_stdp(int* d_postsyns,
 							float currtime,
 							size_t total_number_of_synapse);
 
+*/
 #endif

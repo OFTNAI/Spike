@@ -1,7 +1,7 @@
 #ifndef IzhikevichSpikingNeurons_H
 #define IzhikevichSpikingNeurons_H
 
-#include <cuda.h>
+//CUDA #include <cuda.h>
 
 #include "SpikingNeurons.h"
 
@@ -45,6 +45,7 @@ public:
 
 
 // GPU Kernels
+/*CUDA
 __global__ void reset_states_u_after_spikes_kernel(float *d_states_u,
 								float * d_param_d,
 								float* d_last_spike_time_of_each_neuron,
@@ -58,5 +59,6 @@ __global__ void izhikevich_update_membrane_potentials_kernel(float *d_membrane_p
 								float *d_current_injections,
 								float timestep,
 								size_t total_number_of_neurons);
+*/
 
 #endif

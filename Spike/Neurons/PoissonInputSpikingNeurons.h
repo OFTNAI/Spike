@@ -1,9 +1,11 @@
 #ifndef PoissonInputSpikingNeurons_H
 #define PoissonInputSpikingNeurons_H
 
+/*CUDA
 #include <cuda.h>
 #include <curand.h>
 #include <curand_kernel.h>
+*/
 
 #include "InputSpikingNeurons.h"
 
@@ -50,6 +52,7 @@ protected:
 };
 
 
+/*CUDA
 __global__ void poisson_update_membrane_potentials_kernel(curandState_t* d_states,
 							float *d_rates,
 							float *d_membrane_potentials_v,
@@ -57,5 +60,6 @@ __global__ void poisson_update_membrane_potentials_kernel(curandState_t* d_state
 							float * d_thresholds_for_action_potential_spikes,
 							size_t total_number_of_input_neurons,
 							int current_stimulus_index);
+*/
 
 #endif

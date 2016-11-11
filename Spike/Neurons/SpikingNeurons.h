@@ -1,7 +1,7 @@
 #ifndef SpikingNeurons_H
 #define SpikingNeurons_H
 
-#include <cuda.h>
+//CUDA #include <cuda.h>
 #include <stdio.h>
 
 #include "../Neurons/Neurons.h"
@@ -49,7 +49,7 @@ public:
 
 };
 
-
+/*CUDA
 __global__ void check_for_neuron_spikes_kernel(float *d_membrane_potentials_v,
 								float *d_thresholds_for_action_potential_spikes,
 								float *d_resting_potentials,
@@ -61,6 +61,6 @@ __global__ void check_for_neuron_spikes_kernel(float *d_membrane_potentials_v,
 								float timestep,
 								size_t total_number_of_neurons,
 								bool high_fidelity_spike_flag);
-
+*/
 
 #endif
