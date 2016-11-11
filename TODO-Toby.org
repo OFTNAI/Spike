@@ -1,0 +1,16 @@
+* DONE Add CMake build scripts
+CLOSED: [2016-11-11 Fri 14:00]
+:LOGBOOK:
+- State "DONE"       from              [2016-11-11 Fri 14:00]
+:END:
+* PROGRESS Refactor extant CUDA code into a backend
+:LOGBOOK:
+- State "PROGRESS"   from "TODO"       [2016-11-11 Fri 14:00]
+:END:
+* TODO Make frontend classes backend-agnostic
+* TODO Update CMake scripts to build CUDA code
+* TODO Put external dependencies (eg curand, mgl) into git submodules
+* TODO Write plain C++ backend. (Use ViennaCL for linalg acceleration?)
+* TODO Write OpenCL backend. (SYCL?)
+* TODO Write rate-coded neuron/synapse/model classes.
+
