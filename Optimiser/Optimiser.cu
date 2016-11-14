@@ -112,7 +112,7 @@ void Optimiser::RunOptimisation(int start_optimisation_stage_index) {
 			// CALCULATE AVERAGES + OPTIMISATION OUTPUT SCORE
 			spike_analyser->calculate_various_neuron_spike_totals_and_averages(simulator_options_for_each_optimisation_stage[optimisation_stage]->run_simulation_general_options->presentation_time_per_stimulus_per_epoch);
 			// float optimisation_output_score = spike_analyser->max_number_of_spikes_per_neuron_group_per_second[index_of_neuron_group_of_interest_for_each_optimisation_stage[optimisation_stage]];
-			float optimisation_output_score = spike_analyser->average_number_of_spikes_per_neuron_group_per_second[index_of_neuron_group_of_interest_for_each_optimisation_stage[optimisation_stage]];
+			float optimisation_output_score = spike_analyser->average_number_of_spikes_per_neuron_group_per_second_excluding_silent_neurons[index_of_neuron_group_of_interest_for_each_optimisation_stage[optimisation_stage]];
 
 			printf("OPTIMISATION ITERATION COMPLETED...\nTest Optimisation Parameter Value: %.16f\nOptimisation Output Score: %f\nOptimisation Ideal Output Score: %f", test_optimisation_parameter_value, optimisation_output_score, optimisation_ideal_output_score);
 			// print_line_of_dashes_with_blank_lines_either_side();

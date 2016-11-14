@@ -38,8 +38,10 @@ public:
 
 	int ** number_of_spikes_per_stimulus_per_neuron_group;
 	float ** average_number_of_spikes_per_stimulus_per_neuron_group_per_second;
+	float ** average_number_of_spikes_per_stimulus_per_neuron_group_per_second_excluding_silent_neurons;
 	int * total_number_of_spikes_per_neuron_group;
 	float * average_number_of_spikes_per_neuron_group_per_second;
+	float * average_number_of_spikes_per_neuron_group_per_second_excluding_silent_neurons;
 	float * max_number_of_spikes_per_neuron_group_per_second;
 	int total_number_of_neuron_spikes;
 	float average_number_of_neuron_spikes_per_second;

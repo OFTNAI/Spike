@@ -3,6 +3,10 @@
 
 #include "SpikingModel.h"
 
+#include <string>
+using namespace std;
+
+
 
 class FourLayerVisionSpikingModel : public SpikingModel {
 
@@ -11,6 +15,8 @@ public:
 	// Constructor/Destructor
 	FourLayerVisionSpikingModel();
 	~FourLayerVisionSpikingModel();
+
+	const char * inputs_directory;
 
 	// Network Parameters
 	bool INHIBITORY_NEURONS_ON;

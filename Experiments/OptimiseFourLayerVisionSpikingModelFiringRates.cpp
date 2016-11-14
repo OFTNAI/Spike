@@ -31,7 +31,7 @@ int main (int argc, char *argv[]){
 	// float max_firing_rate = optimal_max_firing_rate*presentation_time_per_stimulus_per_epoch_test;
 
 
-	const float presentation_time_per_stimulus_per_epoch = 0.2;
+	const float presentation_time_per_stimulus_per_epoch = 2.0;
 
 
 	// SIMULATOR OPTIONS
@@ -44,7 +44,7 @@ int main (int argc, char *argv[]){
 
 	simulator_options->recording_electrodes_options->count_neuron_spikes_recording_electrodes_bool = true;
 
-	simulator_options->stimuli_presentation_options->presentation_format = PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_OBJECTS;
+	simulator_options->stimuli_presentation_options->presentation_format = PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_STIMULI;
 	simulator_options->stimuli_presentation_options->object_order = OBJECT_ORDER_ORIGINAL;
 	simulator_options->stimuli_presentation_options->transform_order = TRANSFORM_ORDER_ORIGINAL;
 
@@ -54,11 +54,12 @@ int main (int argc, char *argv[]){
 	FourLayerVisionSpikingModel * four_layer_vision_spiking_model = new FourLayerVisionSpikingModel();
 	four_layer_vision_spiking_model->SetTimestep(0.00002);
 	four_layer_vision_spiking_model->high_fidelity_spike_storage = true;
+	four_layer_vision_spiking_model->inputs_directory = "MatlabGaborFilter/1T1L_FR_OPT/";
 
 
 	// OPTIMISATION
-	float upper = 20.0;
-	float lower = 10.0;
+	float upper = 150.0;
+	float lower = 100.0;
 	int number_of_optimisation_stages = 7;
 
 	Optimiser* optimiser = new Optimiser(four_layer_vision_spiking_model);
