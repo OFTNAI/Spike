@@ -405,3 +405,32 @@ void FourLayerVisionSpikingModel::set_LBL_values_for_pointer_from_layer_to_layer
 	}
 
 }
+
+
+
+//Regularly Used Helper
+void FourLayerVisionSpikingModel::setup_full_standard_model_using_optimal_parameters() {
+
+	SetTimestep(0.00002);
+	high_fidelity_spike_storage = true;
+
+	number_of_non_input_layers_to_simulate = 4;
+
+	INHIBITORY_NEURONS_ON = true;
+	E2E_FF_SYNAPSES_ON = true;
+	E2I_L_SYNAPSES_ON = true;
+	I2E_L_SYNAPSES_ON = true;
+	E2E_L_SYNAPSES_ON = true;
+
+	LBL_biological_conductance_scaling_constant_lambda_E2E_FF[0] = 0.000292968762;
+	LBL_biological_conductance_scaling_constant_lambda_E2E_FF[1] = 0.000030517578;
+	LBL_biological_conductance_scaling_constant_lambda_E2E_FF[2] = 0.000036621095;
+	LBL_biological_conductance_scaling_constant_lambda_E2E_FF[3] = 0.000061035156;
+	set_LBL_values_for_pointer_from_layer_to_layer(0.010937500745, LBL_biological_conductance_scaling_constant_lambda_E2I_L, 0, 3);
+	set_LBL_values_for_pointer_from_layer_to_layer(0.050000000745, LBL_biological_conductance_scaling_constant_lambda_I2E_L, 0, 3);
+	set_LBL_values_for_pointer_from_layer_to_layer(0.000292968762, LBL_biological_conductance_scaling_constant_lambda_E2E_L, 0, 3);
+
+	// FINALISE MODEL + COPY TO DEVICE
+	finalise_model();
+	copy_model_to_device();
+}
