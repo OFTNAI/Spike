@@ -12,7 +12,7 @@
 
 
 // Use the following line to compile the binary
-// make FILE='JITest' EXPERIMENT_DIRECTORY='Experiments'  model -j8
+// make FILE='OptimiseFourLayerVisionSpikingModelFiringRates' EXPERIMENT_DIRECTORY='Experiments'  model -j22
 
 
 
