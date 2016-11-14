@@ -59,7 +59,7 @@ int main (int argc, char *argv[]){
 	// OPTIMISATION
 	float upper = 20.0;
 	float lower = 10.0;
-	int number_of_optimisation_stages = 5;
+	int number_of_optimisation_stages = 7;
 
 	Optimiser* optimiser = new Optimiser(four_layer_vision_spiking_model);
 
@@ -114,6 +114,14 @@ int main (int argc, char *argv[]){
 	
 	}
 
+	optimiser->RunOptimisation();
+
+
+	four_layer_vision_spiking_model->set_LBL_values_for_pointer_from_layer_to_layer(four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2I_L[0], four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2I_L, 1, 3);
+	four_layer_vision_spiking_model->set_LBL_values_for_pointer_from_layer_to_layer(four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_I2E_L[0], four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_I2E_L, 1, 3);
+	four_layer_vision_spiking_model->set_LBL_values_for_pointer_from_layer_to_layer(four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2E_L[0], four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2E_L, 1, 3);
+
+
 	if (number_of_optimisation_stages >= 5) {
 
 		Optimiser_Options * optimisation_stage_5_options = new Optimiser_Options();
@@ -128,21 +136,58 @@ int main (int argc, char *argv[]){
 	
 	}
 
+	if (number_of_optimisation_stages >= 6) {
 
-	optimiser->RunOptimisation();
+		Optimiser_Options * optimisation_stage_6_options = new Optimiser_Options();
+		optimisation_stage_6_options->model_pointer_to_be_optimised = &four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2E_FF[2];
+		optimisation_stage_6_options->synapse_bool_pointer_to_turn_on = &four_layer_vision_spiking_model->E2E_FF_SYNAPSES_ON;
+		optimisation_stage_6_options->use_inhibitory_neurons = true;
+		optimisation_stage_6_options->number_of_non_input_layers_to_simulate = 3;
+		optimisation_stage_6_options->index_of_neuron_group_of_interest = 4;
+		optimisation_stage_6_options->ideal_output_score = upper;
 
+		optimiser->AddOptimisationStage(optimisation_stage_6_options, simulator_options);
+	
+	}
+
+	if (number_of_optimisation_stages >= 7) {
+
+		Optimiser_Options * optimisation_stage_7_options = new Optimiser_Options();
+		optimisation_stage_7_options->model_pointer_to_be_optimised = &four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2E_FF[3];
+		optimisation_stage_7_options->synapse_bool_pointer_to_turn_on = &four_layer_vision_spiking_model->E2E_FF_SYNAPSES_ON;
+		optimisation_stage_7_options->use_inhibitory_neurons = true;
+		optimisation_stage_7_options->number_of_non_input_layers_to_simulate = 4;
+		optimisation_stage_7_options->index_of_neuron_group_of_interest = 6;
+		optimisation_stage_7_options->ideal_output_score = upper;
+
+		optimiser->AddOptimisationStage(optimisation_stage_7_options, simulator_options);
+	
+	}
+
+
+	// four_layer_vision_spiking_model->set_LBL_values_for_pointer_from_layer_to_layer(four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2E_FF[1], four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2E_FF, 2, 3);
+
+	optimiser->RunOptimisation(4);
 
 
 	print_line_of_dashes_with_blank_lines_either_side();
 
-	// for (int optimisation_stage = 0; optimisation_stage < number_of_optimisation_stages; optimisation_stage++) {
+	// FINALISE MODEL + COPY TO DEVICE
+	four_layer_vision_spiking_model->number_of_non_input_layers_to_simulate = 4;
+	four_layer_vision_spiking_model->finalise_model();
+	four_layer_vision_spiking_model->copy_model_to_device();
 
-	// 	printf("final_optimal_parameter_for_each_optimisation_stage[optimisation_stage]: %f\n", final_optimal_parameter_for_each_optimisation_stage[optimisation_stage]);
+	// CREATE SIMULATOR
+	Simulator * simulator = new Simulator(four_layer_vision_spiking_model, simulator_options);
 
-	// }
+
+	// RUN SIMULATION
+	SpikeAnalyser * spike_analyser = new SpikeAnalyser(four_layer_vision_spiking_model->spiking_neurons, four_layer_vision_spiking_model->input_spiking_neurons);
+	simulator->RunSimulation(spike_analyser);
 
 
-	four_layer_vision_spiking_model->set_LBL_values_for_pointer_from_layer_to_layer(optimiser->final_optimal_parameter_for_each_optimisation_stage[5], four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2E_FF, 1, 4);
+	// CALCULATE AVERAGES + OPTIMISATION OUTPUT SCORE
+	spike_analyser->calculate_various_neuron_spike_totals_and_averages(simulator_options->run_simulation_general_options->presentation_time_per_stimulus_per_epoch);
 
 
 

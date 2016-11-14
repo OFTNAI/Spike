@@ -71,17 +71,15 @@ void Optimiser::AddOptimisationStage(Optimiser_Options * optimisation_stage_opti
 }
 
 
-void Optimiser::RunOptimisation() {
+void Optimiser::RunOptimisation(int start_optimisation_stage_index) {
 
-	for (int optimisation_stage = 0; optimisation_stage < number_of_optimisation_stages; optimisation_stage++) {
+	for (int optimisation_stage = start_optimisation_stage_index; optimisation_stage < number_of_optimisation_stages; optimisation_stage++) {
 
 		float optimisation_parameter_min = initial_optimisation_parameter_min_for_each_optimisation_stage[optimisation_stage];
 		float optimisation_parameter_max = initial_optimisation_parameter_max_for_each_optimisation_stage[optimisation_stage];
 		float optimisation_ideal_output_score = ideal_output_scores_for_each_optimisation_stage[optimisation_stage];
 
 		int iteration_count_for_optimisation_stage = 0;
-
-		float previous_optimisation_output_score = -1.0;
 
 		while (true) {
 
@@ -116,7 +114,7 @@ void Optimiser::RunOptimisation() {
 			// float optimisation_output_score = spike_analyser->max_number_of_spikes_per_neuron_group_per_second[index_of_neuron_group_of_interest_for_each_optimisation_stage[optimisation_stage]];
 			float optimisation_output_score = spike_analyser->average_number_of_spikes_per_neuron_group_per_second[index_of_neuron_group_of_interest_for_each_optimisation_stage[optimisation_stage]];
 
-			printf("OPTIMISATION ITERATION COMPLETED...\nTest Optimisation Parameter Value: %.16f\nOptimisation Output Score: %f\n", test_optimisation_parameter_value, optimisation_output_score);
+			printf("OPTIMISATION ITERATION COMPLETED...\nTest Optimisation Parameter Value: %.16f\nOptimisation Output Score: %f\nOptimisation Ideal Output Score: %f", test_optimisation_parameter_value, optimisation_output_score, optimisation_ideal_output_score);
 			// print_line_of_dashes_with_blank_lines_either_side();
 
 			if (optimisation_output_score <= optimisation_ideal_output_score) {
@@ -148,16 +146,18 @@ void Optimiser::RunOptimisation() {
 
 		final_iteration_count_for_each_optimisation_stage[optimisation_stage] = iteration_count_for_optimisation_stage; 
 
-		printf("final_optimal_parameter_for_each_optimisation_stage[optimisation_stage]: %.12f\n", final_optimal_parameter_for_each_optimisation_stage[optimisation_stage]);
-		printf("final_iteration_count_for_each_optimisation_stage[optimisation_stage]: %d\n", final_iteration_count_for_each_optimisation_stage[optimisation_stage]);
+		print_line_of_dashes_with_blank_lines_either_side();
+		
+		printf("FINAL OPTIMAL PARAMETER FOR OPTIMISATION STAGE %d: %.12f\n", optimisation_stage, final_optimal_parameter_for_each_optimisation_stage[optimisation_stage]);
+		printf("TOTAL OPTIMISATION ITERATIONS FOR OPTIMISATION STAGE %d: %d\n", optimisation_stage, final_iteration_count_for_each_optimisation_stage[optimisation_stage]);
 
 	}
 
-
+	printf("\n");
 	for (int optimisation_stage = 0; optimisation_stage < number_of_optimisation_stages; optimisation_stage++) {
 
-		printf("final_optimal_parameter_for_each_optimisation_stage[optimisation_stage]: %.12f\n", final_optimal_parameter_for_each_optimisation_stage[optimisation_stage]);
-		printf("final_iteration_count_for_each_optimisation_stage[optimisation_stage]: %d\n", final_iteration_count_for_each_optimisation_stage[optimisation_stage]);
+		printf("FINAL OPTIMAL PARAMETER FOR OPTIMISATION STAGE %d: %.12f\n", optimisation_stage, final_optimal_parameter_for_each_optimisation_stage[optimisation_stage]);
+		printf("TOTAL OPTIMISATION ITERATIONS FOR OPTIMISATION STAGE %d: %d\n", optimisation_stage, final_iteration_count_for_each_optimisation_stage[optimisation_stage]);
 
 	}
 
@@ -175,7 +175,6 @@ void Optimiser::setup_optimisation_stage_specific_model_parameters(int optimisat
 	four_layer_vision_spiking_model->number_of_non_input_layers_to_simulate = number_of_non_input_layers_to_simulate_for_each_optimisation_stage[optimisation_stage_index];
 
 }
-
 
 
 
