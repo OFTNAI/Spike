@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 //CUDA #include "../Helpers/CUDAErrorCheckHelpers.hpp"
-#include "../Helpers/TerminalHelpers.hppx"
+#include "../Helpers/TerminalHelpers.hpp"
 #include <algorithm> // For random shuffle
 using namespace std;
 

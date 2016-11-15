@@ -11,7 +11,7 @@
 
 //CUDA #include <cuda.h>
 //CUDA #include <vector_types.h>
-#include <Spike/CUDA_Hacks.h>
+#include "Spike/CUDA_Hacks.hpp"
 #include <stdio.h>
 
 
