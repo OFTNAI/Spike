@@ -8,11 +8,13 @@
 
 namespace Backend {
   namespace CUDA {
-    class Neurons : Generic {
+    class Neurons : public ::Backend::Neurons {
     public:
 
-      ::Neurons* front;
-      
+      // Device Pointers
+      int * per_neuron_afferent_synapse_count = NULL;	/**< A (device-side) count of the number of afferent synapses for each neuron */
+      float* current_injections = NULL;				/**< Device array for the storage of current to be injected into each neuron on each timestep. */
+
       dim3 number_of_neuron_blocks_per_grid;		/**< CUDA Device number of blocks */
       dim3 threads_per_block;						/**< CUDA Device number of threads */
 
@@ -21,7 +23,7 @@ namespace Backend {
        \param maximum_axonal_delay_in_timesteps The length (in timesteps) of the largest axonal delay in the simulation. Unused in this class.
        \param high_fidelity_spike_storage A flag determining whether a bit mask based method is used to store spike times of neurons (ensure no spike transmission failure).
       */
-      virtual void allocate_device_pointers();
+      virtual void allocate_device_pointers(int maximum_axonal_delay_in_timesteps,  bool high_fidelity_spike_flag);
 	
       /**  
        *  Unused in this class. Allows copying of static data related to neuron dynamics to the device.

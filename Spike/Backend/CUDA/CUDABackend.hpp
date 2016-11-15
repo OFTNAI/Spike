@@ -8,9 +8,5 @@ namespace Backend {
     class Device : ::Backend::Device
     {
     }; // ::Backend::CUDA::Device
-    
-    class Generic : ::Backend::Generic
-    {
-    }; // ::Backend::CUDA::Generic
   } // namespace CUDA
 }
