@@ -7,6 +7,19 @@ CLOSED: [2016-11-11 Fri 14:00]
 :LOGBOOK:
 - State "PROGRESS"   from "TODO"       [2016-11-11 Fri 14:00]
 :END:
+** What is a "backend"?
++ A set of classes / functions that performs the computations represented in the front end.
++ Specialises the computations for efficiency
+  - but the front end is agnostic about these specialisations
+  - consequently, there is a common API
++ Each backend can therefore be thought of as a 'sublibrary'
++ Front end only exposes the structure of the computations, not their implementation
+  - but what divides 'structure' from 'implementation'?
+    * this is the old 'structure'/'content' problem!...
++ Back end represents the state of the computation, as required by the associated device
+** What is the dispatch mechanism?
++ Each Model is associated with a context, and the context determines the backend
++ The context is associated with a device manager
 * TODO Make frontend classes backend-agnostic
 * TODO Update CMake scripts to build CUDA code
 * TODO Put external dependencies (eg curand, mgl) into git submodules
