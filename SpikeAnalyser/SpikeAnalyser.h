@@ -46,6 +46,8 @@ public:
 	int total_number_of_neuron_spikes;
 	float average_number_of_neuron_spikes_per_second;
 
+	int * running_count_of_non_silent_neurons_per_neuron_group;
+
 	float combined_powered_distance_from_average_score;
 	float * combined_powered_distance_from_average_score_for_each_neuron_group;
 

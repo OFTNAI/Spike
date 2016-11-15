@@ -28,6 +28,8 @@ Optimiser::Optimiser(FourLayerVisionSpikingModel* four_layer_vision_spiking_mode
 	final_optimal_parameter_for_each_optimisation_stage = NULL;
 	final_iteration_count_for_each_optimisation_stage = NULL;
 
+	spike_analyser_from_last_optimisation_stage = NULL;
+
 }
 
 
@@ -53,6 +55,8 @@ void Optimiser::AddOptimisationStage(Optimiser_Options * optimisation_stage_opti
 	initial_optimisation_parameter_max_for_each_optimisation_stage = (float*)realloc(initial_optimisation_parameter_max_for_each_optimisation_stage, number_of_optimisation_stages*sizeof(float));
 	ideal_output_scores_for_each_optimisation_stage = (float*)realloc(ideal_output_scores_for_each_optimisation_stage, number_of_optimisation_stages*sizeof(float));
 	optimisation_minimum_error_for_each_optimisation_stage = (float*)realloc(optimisation_minimum_error_for_each_optimisation_stage, number_of_optimisation_stages*sizeof(float));
+	positive_effect_of_postive_change_in_parameter_for_each_optimisation_stage = (bool*)realloc(positive_effect_of_postive_change_in_parameter_for_each_optimisation_stage, number_of_optimisation_stages*sizeof(bool));
+	score_to_use_for_each_optimisation_stage = (int*)realloc(score_to_use_for_each_optimisation_stage, number_of_optimisation_stages*sizeof(int));
 
 	simulator_options_for_each_optimisation_stage[new_optimisation_stage] = simulator_options_parameter;
 	model_pointers_to_be_optimised_for_each_optimisation_stage[new_optimisation_stage] = optimisation_stage_options->model_pointer_to_be_optimised;
@@ -64,6 +68,8 @@ void Optimiser::AddOptimisationStage(Optimiser_Options * optimisation_stage_opti
 	initial_optimisation_parameter_max_for_each_optimisation_stage[new_optimisation_stage] = optimisation_stage_options->initial_optimisation_parameter_max;
 	ideal_output_scores_for_each_optimisation_stage[new_optimisation_stage] = optimisation_stage_options->ideal_output_score;
 	optimisation_minimum_error_for_each_optimisation_stage[new_optimisation_stage] = optimisation_stage_options->optimisation_minimum_error;
+	positive_effect_of_postive_change_in_parameter_for_each_optimisation_stage[new_optimisation_stage] = optimisation_stage_options->positive_effect_of_postive_change_in_parameter;
+	score_to_use_for_each_optimisation_stage[new_optimisation_stage] = (int)optimisation_stage_options->score_to_use;
 
 	final_optimal_parameter_for_each_optimisation_stage = (float*)realloc(final_optimal_parameter_for_each_optimisation_stage, number_of_optimisation_stages*sizeof(float));
 	final_iteration_count_for_each_optimisation_stage = (int*)realloc(final_iteration_count_for_each_optimisation_stage, number_of_optimisation_stages*sizeof(int));
@@ -105,42 +111,64 @@ void Optimiser::RunOptimisation(int start_optimisation_stage_index) {
 
 
 			// RUN SIMULATION
-			SpikeAnalyser * spike_analyser = new SpikeAnalyser(four_layer_vision_spiking_model->spiking_neurons, four_layer_vision_spiking_model->input_spiking_neurons);
-			simulator->RunSimulation(spike_analyser);
+			spike_analyser_from_last_optimisation_stage = new SpikeAnalyser(four_layer_vision_spiking_model->spiking_neurons, four_layer_vision_spiking_model->input_spiking_neurons);
+			simulator->RunSimulation(spike_analyser_from_last_optimisation_stage);
 
 
 			// CALCULATE AVERAGES + OPTIMISATION OUTPUT SCORE
-			spike_analyser->calculate_various_neuron_spike_totals_and_averages(simulator_options_for_each_optimisation_stage[optimisation_stage]->run_simulation_general_options->presentation_time_per_stimulus_per_epoch);
-			// float optimisation_output_score = spike_analyser->max_number_of_spikes_per_neuron_group_per_second[index_of_neuron_group_of_interest_for_each_optimisation_stage[optimisation_stage]];
-			float optimisation_output_score = spike_analyser->average_number_of_spikes_per_neuron_group_per_second_excluding_silent_neurons[index_of_neuron_group_of_interest_for_each_optimisation_stage[optimisation_stage]];
+			spike_analyser_from_last_optimisation_stage->calculate_various_neuron_spike_totals_and_averages(simulator_options_for_each_optimisation_stage[optimisation_stage]->run_simulation_general_options->presentation_time_per_stimulus_per_epoch);
 
-			printf("OPTIMISATION ITERATION COMPLETED...\nTest Optimisation Parameter Value: %.16f\nOptimisation Output Score: %f\nOptimisation Ideal Output Score: %f", test_optimisation_parameter_value, optimisation_output_score, optimisation_ideal_output_score);
-			// print_line_of_dashes_with_blank_lines_either_side();
+			float optimisation_output_score = 0.0;
 
-			if (optimisation_output_score <= optimisation_ideal_output_score) {
+			int index_of_neuron_group_of_interest = index_of_neuron_group_of_interest_for_each_optimisation_stage[optimisation_stage];
 
-				if (optimisation_ideal_output_score - optimisation_output_score < optimisation_minimum_error_for_each_optimisation_stage[optimisation_stage]) {
-					final_optimal_parameter_for_each_optimisation_stage[optimisation_stage] = test_optimisation_parameter_value;
+			switch(score_to_use_for_each_optimisation_stage[optimisation_stage]) {
+
+				case SCORE_TO_USE_average_number_of_spikes_per_neuron_group_per_second:
+					optimisation_output_score = spike_analyser_from_last_optimisation_stage->average_number_of_spikes_per_neuron_group_per_second[index_of_neuron_group_of_interest];
 					break;
-				} else {
-					optimisation_parameter_min = test_optimisation_parameter_value;
-				}
 
-			} else if (optimisation_output_score >= optimisation_ideal_output_score) {
-
-				if (optimisation_output_score - optimisation_ideal_output_score < optimisation_minimum_error_for_each_optimisation_stage[optimisation_stage]) {
-					final_optimal_parameter_for_each_optimisation_stage[optimisation_stage] = test_optimisation_parameter_value;
+				case SCORE_TO_USE_max_number_of_spikes_per_neuron_group_per_second:
+					optimisation_output_score = spike_analyser_from_last_optimisation_stage->max_number_of_spikes_per_neuron_group_per_second[index_of_neuron_group_of_interest];
 					break;
-				} else {
-					optimisation_parameter_max = test_optimisation_parameter_value;
-				}
 
+				case SCORE_TO_USE_average_number_of_spikes_per_neuron_group_per_second_excluding_silent_neurons:
+					optimisation_output_score = spike_analyser_from_last_optimisation_stage->average_number_of_spikes_per_neuron_group_per_second_excluding_silent_neurons[index_of_neuron_group_of_interest];
+					break;
+
+				case SCORE_TO_USE_running_count_of_non_silent_neurons_per_neuron_group:
+					// optimisation_output_score = spike_analyser_from_last_optimisation_stage->running_count_of_non_silent_neurons_per_neuron_group[index_of_neuron_group_of_interest];
+					optimisation_output_score = (float)(spike_analyser_from_last_optimisation_stage->total_number_of_spikes_per_neuron_group[0])/356.0;
 
 			}
 
+			printf("OPTIMISATION ITERATION COMPLETED...\nTest Optimisation Parameter Value: %.16f\nOptimisation Output Score: %f\nOptimisation Ideal Output Score: %f", test_optimisation_parameter_value, optimisation_output_score, optimisation_ideal_output_score);
 
+
+			float difference_between_ideal_score_and_output_score = optimisation_ideal_output_score - optimisation_output_score; // Supposing the function we are trying to optimise is monotonic, the sign of this value gives the direction that the optimisation must move in.
+
+			if (abs(difference_between_ideal_score_and_output_score) < optimisation_minimum_error_for_each_optimisation_stage[optimisation_stage]) {
+			
+				final_optimal_parameter_for_each_optimisation_stage[optimisation_stage] = test_optimisation_parameter_value;
+				break;
+			
+			}
+
+			float effect_direction_factor = positive_effect_of_postive_change_in_parameter_for_each_optimisation_stage[optimisation_stage] ? 1.0 : -1.0;
+
+			if (effect_direction_factor * difference_between_ideal_score_and_output_score > 0) {
+			
+				optimisation_parameter_min = test_optimisation_parameter_value;
+			
+			} else {
+			
+				optimisation_parameter_max = test_optimisation_parameter_value;
+			
+			}
+
+					
 			delete simulator;
-			delete spike_analyser;
+			delete spike_analyser_from_last_optimisation_stage;
 
 		}
 

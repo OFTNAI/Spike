@@ -130,6 +130,7 @@ void SpikeAnalyser::calculate_various_neuron_spike_totals_and_averages(float pre
 	average_number_of_spikes_per_neuron_group_per_second = new float [neurons->total_number_of_groups];
 	average_number_of_spikes_per_neuron_group_per_second_excluding_silent_neurons = new float [neurons->total_number_of_groups];
 	max_number_of_spikes_per_neuron_group_per_second = new float [neurons->total_number_of_groups];
+	running_count_of_non_silent_neurons_per_neuron_group = new int [neurons->total_number_of_groups];
 	total_number_of_neuron_spikes = 0;
 	
 
@@ -189,6 +190,8 @@ void SpikeAnalyser::calculate_various_neuron_spike_totals_and_averages(float pre
 		printf("-- summary -- number of spikes per neuron -- max: %f\tavg: %f\n", max_number_of_spikes_per_neuron_group_per_second[neuron_group_index], average_number_of_spikes_per_neuron_group_per_second[neuron_group_index]);
 
 		total_number_of_neuron_spikes += total_number_of_spikes_per_neuron_group[neuron_group_index];
+
+		running_count_of_non_silent_neurons_per_neuron_group[neuron_group_index] = running_count_of_non_silent_neurons_in_group;
 
 	}
 

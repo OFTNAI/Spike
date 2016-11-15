@@ -3,10 +3,6 @@
 
 #include "SpikingModel.h"
 
-#include <string>
-using namespace std;
-
-
 
 class FourLayerVisionSpikingModel : public SpikingModel {
 
