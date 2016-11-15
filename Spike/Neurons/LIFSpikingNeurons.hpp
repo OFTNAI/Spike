@@ -22,19 +22,20 @@ namespace Backend {
 
 class LIFSpikingNeurons : public SpikingNeurons {
 public:
-	// Constructor/Destructor
-	LIFSpikingNeurons();
-	~LIFSpikingNeurons();
+  // Constructor/Destructor
+  LIFSpikingNeurons();
+  ~LIFSpikingNeurons();
 
-	float * membrane_time_constants_tau_m;
-	float * membrane_resistances_R;
+  Backend::LIFSpikingNeurons backend;
+  
+  float * membrane_time_constants_tau_m;
+  float * membrane_resistances_R;
 
-	float refractory_period_in_seconds;
+  float refractory_period_in_seconds;
 
+  virtual int AddGroup(neuron_parameters_struct * group_params);
 
-	virtual int AddGroup(neuron_parameters_struct * group_params);
-
-	virtual void update_membrane_potentials(float timestep,float current_time_in_seconds);
+  virtual void update_membrane_potentials(float timestep,float current_time_in_seconds);
 
 };
 

@@ -26,15 +26,17 @@ public:
   SpikingNeurons();
   ~SpikingNeurons();
 
+  Backend::SpikingNeurons backend;
+  
   // Variables
   int bitarray_length;
   int bitarray_maximum_axonal_delay_in_timesteps;
   bool high_fidelity_spike_flag;
 	
   // Host Pointers
-  float* after_spike_reset_membrane_potentials_c;
-  float* thresholds_for_action_potential_spikes;
-  unsigned char* bitarray_of_neuron_spikes;
+  float* after_spike_reset_membrane_potentials_c = NULL;
+  float* thresholds_for_action_potential_spikes = NULL;
+  unsigned char* bitarray_of_neuron_spikes = NULL;
 
   // Functions
   virtual int AddGroup(neuron_parameters_struct * group_params);

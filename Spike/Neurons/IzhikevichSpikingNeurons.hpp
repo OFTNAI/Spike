@@ -1,10 +1,7 @@
 #ifndef IzhikevichSpikingNeurons_H
 #define IzhikevichSpikingNeurons_H
 
-//CUDA #include <cuda.h>
-
 #include "SpikingNeurons.hpp"
-
 
 struct izhikevich_spiking_neuron_parameters_struct : spiking_neuron_parameters_struct {
 	izhikevich_spiking_neuron_parameters_struct(): parama(0.0f), paramb(0.0f), paramd(6.0f) { spiking_neuron_parameters_struct(); }
@@ -14,51 +11,27 @@ struct izhikevich_spiking_neuron_parameters_struct : spiking_neuron_parameters_s
 	float paramd;
 };
 
+namespace Backend {
+  class IzhikevichSpikingNeurons : public SpikingNeurons {
+  };
+}
 
 class IzhikevichSpikingNeurons : public SpikingNeurons {
 public:
-	// Constructor/Destructor
-	IzhikevichSpikingNeurons();
-	~IzhikevichSpikingNeurons();
+  // Constructor/Destructor
+  IzhikevichSpikingNeurons();
+  ~IzhikevichSpikingNeurons();
 
-	// Host Pointers
-	float * param_a;
-	float * param_b;
-	float * param_d;
+  Backend::IzhikevichSpikingNeurons backend;
+  
+  float * param_a = NULL;
+  float * param_b = NULL;
+  float * param_d = NULL;
 
-	// Device Pointers
-	float * d_param_a;
-	float * d_param_b;
-	float * d_param_d;
-	float * d_states_u;
-
-	virtual int AddGroup(neuron_parameters_struct * group_params);
-
-	virtual void allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage);
-	virtual void copy_constants_to_device();
-	virtual void reset_neuron_activities();
-
-	virtual void check_for_neuron_spikes(float current_time_in_seconds, float timestep);
-	virtual void update_membrane_potentials(float timestep, float current_time_in_seconds);
-
+  virtual int AddGroup(neuron_parameters_struct * group_params);
+  virtual void update_membrane_potentials(float timestep, float current_time_in_seconds);
+  virtual void reset();
 };
 
-
-// GPU Kernels
-/*CUDA
-__global__ void reset_states_u_after_spikes_kernel(float *d_states_u,
-								float * d_param_d,
-								float* d_last_spike_time_of_each_neuron,
-								float current_time_in_seconds,
-								size_t total_number_of_neurons);
-
-__global__ void izhikevich_update_membrane_potentials_kernel(float *d_membrane_potentials_v,
-								float *d_states_u,
-								float *d_param_a,
-								float *d_param_b,
-								float *d_current_injections,
-								float timestep,
-								size_t total_number_of_neurons);
-*/
 
 #endif
