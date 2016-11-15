@@ -3,21 +3,21 @@
 
 //CUDA #include <cuda.h>
 #include <stdio.h>
-#include "../Synapses/ConductanceSpikingSynapses.h"
-#include "../STDP/STDP.h"
-#include "../STDP/EvansSTDP.h"
-#include "../STDP/HigginsSTDP.h"
-#include "../STDP/MasquelierSTDP.h"
-#include "../Neurons/Neurons.h"
-#include "../Neurons/SpikingNeurons.h"
-#include "../Neurons/LIFSpikingNeurons.h"
-#include "../Neurons/AdExSpikingNeurons.h"
-#include "../Neurons/ImagePoissonInputSpikingNeurons.h"
-#include "../Neurons/GeneratorInputSpikingNeurons.h"
-#include "../SpikeAnalyser/SpikeAnalyser.h"
-#include "../Helpers/TimerWithMessages.h"
-#include "../Helpers/RandomStateManager.h"
-// #include "../Helpers/TerminalHelpers.h"
+#include "../Synapses/ConductanceSpikingSynapses.hpp"
+#include "../STDP/STDP.hpp"
+#include "../STDP/EvansSTDP.hpp"
+#include "../STDP/HigginsSTDP.hpp"
+#include "../STDP/MasquelierSTDP.hpp"
+#include "../Neurons/Neurons.hpp"
+#include "../Neurons/SpikingNeurons.hpp"
+#include "../Neurons/LIFSpikingNeurons.hpp"
+#include "../Neurons/AdExSpikingNeurons.hpp"
+#include "../Neurons/ImagePoissonInputSpikingNeurons.hpp"
+#include "../Neurons/GeneratorInputSpikingNeurons.hpp"
+#include "../SpikeAnalyser/SpikeAnalyser.hpp"
+#include "../Helpers/TimerWithMessages.hpp"
+#include "../Helpers/RandomStateManager.hpp"
+// #include "../Helpers/TerminalHelpers.hpp"
 #include <string>
 #include <fstream>
 #include <vector>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Spike/Neurons/Neurons.h"
+#include "Spike/Neurons/Neurons.hpp"
 #include "Spike/Backend/Dummy/DummyBackend.hpp"
 
 namespace Backend {

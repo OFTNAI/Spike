@@ -1,7 +1,7 @@
-#include "AdExSpikingNeurons.h"
+#include "AdExSpikingNeurons.hpp"
 #include <stdlib.h>
 #include <stdio.h>
-//CUDA #include "../Helpers/CUDAErrorCheckHelpers.h"
+//CUDA #include "../Helpers/CUDAErrorCheckHelpers.hpp"
 
 
 // AdExSpikingNeurons Constructor

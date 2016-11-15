@@ -1,14 +1,14 @@
-#include "ImagePoissonInputSpikingNeurons.h"
+#include "ImagePoissonInputSpikingNeurons.hpp"
 #include <stdlib.h>
 #include <stdio.h>
-//CUDA #include "../Helpers/CUDAErrorCheckHelpers.h"
+//CUDA #include "../Helpers/CUDAErrorCheckHelpers.hpp"
 #include <algorithm> // For random shuffle
 
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <string>
-#include "../Helpers/FstreamWrapper.h"
+#include "../Helpers/FstreamWrapper.hpp"
 
 using namespace std;
 

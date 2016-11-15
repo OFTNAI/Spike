@@ -2,7 +2,7 @@
 #define NetworkStateArchiveRecordingElectrodes_H
 
 
-#include "../RecordingElectrodes/RecordingElectrodes.h"
+#include "../RecordingElectrodes/RecordingElectrodes.hpp"
 
 
 struct Network_State_Archive_Optional_Parameters {

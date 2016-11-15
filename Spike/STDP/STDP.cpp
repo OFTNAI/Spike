@@ -4,9 +4,9 @@
 //	Author: Nasir Ahmad
 //	Date: 23/06/2016
 
-#include "STDP.h"
-//CUDA #include "../Helpers/CUDAErrorCheckHelpers.h"
-#include "../Helpers/TerminalHelpers.h"
+#include "STDP.hpp"
+//CUDA #include "../Helpers/CUDAErrorCheckHelpers.hpp"
+#include "../Helpers/TerminalHelpers.hpp"
 
 
 // STDP Constructor

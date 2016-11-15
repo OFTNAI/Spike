@@ -4,9 +4,9 @@
 //	Author: Nasir Ahmad
 //	Date: 7/12/2015
 
-#include "Synapses.h"
-//CUDA #include "../Helpers/CUDAErrorCheckHelpers.h"
-#include "../Helpers/TerminalHelpers.h"
+#include "Synapses.hpp"
+//CUDA #include "../Helpers/CUDAErrorCheckHelpers.hpp"
+#include "../Helpers/TerminalHelpers.hpp"
 
 #include <algorithm> // for random shuffle
 

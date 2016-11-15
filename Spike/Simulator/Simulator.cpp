@@ -6,13 +6,13 @@
 #include <string>
 #include <sys/stat.h>
 
-#include "Simulator.h"
+#include "Simulator.hpp"
 
-//CUDA #include "Spike/Helpers/CUDAErrorCheckHelpers.h"
-#include "Spike/Helpers/TerminalHelpers.h"
-#include "Spike/Helpers/RandomStateManager.h"
+//CUDA #include "Spike/Helpers/CUDAErrorCheckHelpers.hpp"
+#include "Spike/Helpers/TerminalHelpers.hpp"
+#include "Spike/Helpers/RandomStateManager.hpp"
 
-#include "Spike/Models/FourLayerVisionSpikingModel.h"
+#include "Spike/Models/FourLayerVisionSpikingModel.hpp"
 
 using namespace std;
 

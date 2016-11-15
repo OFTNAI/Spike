@@ -1,8 +1,8 @@
 #ifndef CURRENTSPIKINGSYNAPSES_H
 #define CURRENTSPIKINGSYNAPSES_H
 
-#include "SpikingSynapses.h"
-#include "../Neurons/Neurons.h"
+#include "SpikingSynapses.hpp"
+#include "../Neurons/Neurons.hpp"
 
 
 class CurrentSpikingSynapses : public SpikingSynapses {

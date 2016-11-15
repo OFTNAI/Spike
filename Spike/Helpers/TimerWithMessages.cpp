@@ -1,6 +1,6 @@
-#include "TimerWithMessages.h"
+#include "TimerWithMessages.hpp"
 #include <iostream>
-#include "TerminalHelpers.h"
+#include "TerminalHelpers.hpp"
 
 // TimerWithMessages Constructor
 TimerWithMessages::TimerWithMessages(const char * start_message) {

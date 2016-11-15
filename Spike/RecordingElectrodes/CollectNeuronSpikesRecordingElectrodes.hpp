@@ -2,7 +2,7 @@
 #define CollectNeuronSpikesRecordingElectrodes_H
 
 
-#include "../RecordingElectrodes/RecordingElectrodes.h"
+#include "../RecordingElectrodes/RecordingElectrodes.hpp"
 
 
 struct Collect_Neuron_Spikes_Optional_Parameters {

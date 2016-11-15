@@ -1,8 +1,8 @@
 #ifndef SPIKINGSYNAPSES_H
 #define SPIKINGSYNAPSES_H
 
-#include "Synapses.h"
-#include "../Neurons/SpikingNeurons.h"
+#include "Synapses.hpp"
+#include "../Neurons/SpikingNeurons.hpp"
 
 
 struct spiking_synapse_parameters_struct : synapse_parameters_struct {

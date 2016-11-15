@@ -1,7 +1,7 @@
-#include "SpikingSynapses.h"
+#include "SpikingSynapses.hpp"
 
-//CUDA #include "../Helpers/CUDAErrorCheckHelpers.h"
-#include "../Helpers/TerminalHelpers.h"
+//CUDA #include "../Helpers/CUDAErrorCheckHelpers.hpp"
+#include "../Helpers/TerminalHelpers.hpp"
 
 // SpikingSynapses Constructor
 SpikingSynapses::SpikingSynapses() {

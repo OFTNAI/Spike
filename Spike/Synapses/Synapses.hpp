@@ -7,7 +7,7 @@
 #ifndef SYNAPSES_H
 #define SYNAPSES_H
 
-#include "../Neurons/Neurons.h"
+#include "../Neurons/Neurons.hpp"
 
 // stdlib allows random numbers
 #include <stdlib.h>
@@ -21,9 +21,9 @@
 #include <curand.h>
 #include <curand_kernel.h>
 */
-#include <Spike/CUDA_Hacks.h>
+#include "Spike/CUDA_Hacks.hpp"
 
-#include "../Helpers/RandomStateManager.h"
+#include "../Helpers/RandomStateManager.hpp"
 
 
 enum CONNECTIVITY_TYPE

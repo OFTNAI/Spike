@@ -1,5 +1,5 @@
- #include "FstreamWrapper.h"
-#include "Utilities.h"
+ #include "FstreamWrapper.hpp"
+#include "Utilities.hpp"
 
 fstreamWrapper::fstreamWrapper() : fstream() { setupExceptions(); }
 

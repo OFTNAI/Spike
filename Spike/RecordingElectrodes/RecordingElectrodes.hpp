@@ -5,8 +5,8 @@
 #include <string>
 using namespace std;
 
-#include "../Neurons/SpikingNeurons.h"
-#include "../Synapses/SpikingSynapses.h"
+#include "../Neurons/SpikingNeurons.hpp"
+#include "../Synapses/SpikingSynapses.hpp"
 
 class RecordingElectrodes {
 public:

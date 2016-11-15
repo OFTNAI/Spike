@@ -1,8 +1,8 @@
 #ifndef ConductanceSPIKINGSYNAPSES_H
 #define ConductanceSPIKINGSYNAPSES_H
 
-#include "SpikingSynapses.h"
-#include "../Neurons/SpikingNeurons.h"
+#include "SpikingSynapses.hpp"
+#include "../Neurons/SpikingNeurons.hpp"
 
 struct conductance_spiking_synapse_parameters_struct : spiking_synapse_parameters_struct {
 	conductance_spiking_synapse_parameters_struct(): biological_conductance_scaling_constant_lambda(1.0), reversal_potential_Vhat(0.0f), decay_term_tau_g(0.001f) { spiking_synapse_parameters_struct(); }

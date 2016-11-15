@@ -7,7 +7,7 @@
 #include <curand_kernel.h>
 */
 
-#include "PoissonInputSpikingNeurons.h"
+#include "PoissonInputSpikingNeurons.hpp"
 
 #include <vector>
 #include <string>

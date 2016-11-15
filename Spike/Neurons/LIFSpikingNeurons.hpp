@@ -3,7 +3,7 @@
 
 //CUDA #include <cuda.h>
 
-#include "SpikingNeurons.h"
+#include "SpikingNeurons.hpp"
 
 
 struct lif_spiking_neuron_parameters_struct : spiking_neuron_parameters_struct {

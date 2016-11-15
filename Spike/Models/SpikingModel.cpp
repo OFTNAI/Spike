@@ -1,6 +1,6 @@
-#include "SpikingModel.h"
+#include "SpikingModel.hpp"
 
-#include "../Helpers/TerminalHelpers.h"
+#include "../Helpers/TerminalHelpers.hpp"
 
 
 // SpikingModel Constructor

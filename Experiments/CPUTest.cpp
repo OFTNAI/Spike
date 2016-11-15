@@ -1,10 +1,10 @@
-#include "Spike/Simulator/Simulator.h"
-#include "Spike/Models/FourLayerVisionSpikingModel.h"
+#include "Spike/Simulator/Simulator.hpp"
+#include "Spike/Models/FourLayerVisionSpikingModel.hpp"
 
-#include "Spike/SpikeAnalyser/SpikeAnalyser.h"
-#include "Spike/Helpers/TimerWithMessages.h"
-#include "Spike/Helpers/TerminalHelpers.h"
-#include "Spike/Helpers/MemoryUsage.h"
+#include "Spike/SpikeAnalyser/SpikeAnalyser.hpp"
+#include "Spike/Helpers/TimerWithMessages.hpp"
+#include "Spike/Helpers/TerminalHelpers.hpp"
+#include "Spike/Helpers/MemoryUsage.hpp"
 
 // Use the following line to compile the binary
 // make FILE='CPUTest' EXPERIMENT_DIRECTORY='Experiments'  model -j8

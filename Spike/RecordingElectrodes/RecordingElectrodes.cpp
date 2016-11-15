@@ -1,10 +1,10 @@
-#include "RecordingElectrodes.h"
+#include "RecordingElectrodes.hpp"
 #include <stdlib.h>
 #include <iostream>
 #include <stdio.h>
 #include <fstream>
-//CUDA #include "../Helpers/CUDAErrorCheckHelpers.h"
-#include "../Helpers/TerminalHelpers.h"
+//CUDA #include "../Helpers/CUDAErrorCheckHelpers.hpp"
+#include "../Helpers/TerminalHelpers.hpp"
 #include <time.h>
 
 

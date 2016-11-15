@@ -1,7 +1,7 @@
-#include "RandomStateManager.h"
+#include "RandomStateManager.hpp"
 
-//CUDA #include "../Helpers/CUDAErrorCheckHelpers.h"
-#include "../Helpers/TimerWithMessages.h"
+//CUDA #include "../Helpers/CUDAErrorCheckHelpers.hpp"
+#include "../Helpers/TimerWithMessages.hpp"
 
 /*CUDA
 #include <thrust/device_vector.h>

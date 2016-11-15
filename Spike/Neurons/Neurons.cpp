@@ -1,9 +1,7 @@
-
-
-#include "Neurons.h"
+#include "Neurons.hpp"
 #include <stdlib.h>
-//CUDA #include "../Helpers/CUDAErrorCheckHelpers.h"
-#include "../Helpers/TerminalHelpers.h"
+//CUDA #include "../Helpers/CUDAErrorCheckHelpers.hpp"
+#include "../Helpers/TerminalHelpers.hpp"
 
 
 // Neurons Constructor

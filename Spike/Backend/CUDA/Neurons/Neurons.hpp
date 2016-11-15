@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Spike/Neurons/Neurons.h"
+#include "Spike/Neurons/Neurons.hpp"
 #include "Spike/Backend/CUDA/CUDABackend.hpp"
-#include "Spike/Helpers/CUDAErrorCheckHelpers.h"
+#include "Spike/Helpers/CUDAErrorCheckHelpers.hpp"
 #include <cuda.h>
 #include <vector_types.h>
 

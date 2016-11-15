@@ -1,7 +1,7 @@
-#include "IzhikevichSpikingNeurons.h"
+#include "IzhikevichSpikingNeurons.hpp"
 #include <stdlib.h>
 #include <stdio.h>
-//CUDA #include "../Helpers/CUDAErrorCheckHelpers.h"
+//CUDA #include "../Helpers/CUDAErrorCheckHelpers.hpp"
 
 
 // IzhikevichSpikingNeurons Constructor

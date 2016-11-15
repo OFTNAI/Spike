@@ -1,7 +1,7 @@
 #ifndef FourLayerVisionSpikingModel_H
 #define FourLayerVisionSpikingModel_H
 
-#include "SpikingModel.h"
+#include "SpikingModel.hpp"
 
 
 class FourLayerVisionSpikingModel : public SpikingModel {

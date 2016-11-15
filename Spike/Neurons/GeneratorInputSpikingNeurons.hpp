@@ -7,7 +7,7 @@
 #include <curand_kernel.h>
 */
 
-#include "InputSpikingNeurons.h"
+#include "InputSpikingNeurons.hpp"
 
 struct generator_input_spiking_neuron_parameters_struct : input_spiking_neuron_parameters_struct {
 	generator_input_spiking_neuron_parameters_struct() { input_spiking_neuron_parameters_struct(); }

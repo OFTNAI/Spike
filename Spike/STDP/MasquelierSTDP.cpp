@@ -4,9 +4,9 @@
 //	Author: Nasir Ahmad
 //	Date: 03/10/2016
 
-#include "MasquelierSTDP.h"
-//CUDA #include "../Helpers/CUDAErrorCheckHelpers.h"
-#include "../Helpers/TerminalHelpers.h"
+#include "MasquelierSTDP.hpp"
+//CUDA #include "../Helpers/CUDAErrorCheckHelpers.hpp"
+#include "../Helpers/TerminalHelpers.hpp"
 
 
 // STDP Constructor

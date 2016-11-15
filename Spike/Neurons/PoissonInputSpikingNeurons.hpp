@@ -7,9 +7,9 @@
 #include <curand_kernel.h>
 */
 
-#include "InputSpikingNeurons.h"
+#include "InputSpikingNeurons.hpp"
 
-#include "../Helpers/RandomStateManager.h"
+#include "../Helpers/RandomStateManager.hpp"
 
 struct poisson_input_spiking_neuron_parameters_struct : input_spiking_neuron_parameters_struct {
 	poisson_input_spiking_neuron_parameters_struct(): rate(50.0f) { input_spiking_neuron_parameters_struct(); }

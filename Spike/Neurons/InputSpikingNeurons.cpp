@@ -1,8 +1,8 @@
-#include "InputSpikingNeurons.h"
+#include "InputSpikingNeurons.hpp"
 #include <stdlib.h>
 #include <algorithm>
-//CUDA #include "../Helpers/CUDAErrorCheckHelpers.h"
-#include "../Helpers/TerminalHelpers.h"
+//CUDA #include "../Helpers/CUDAErrorCheckHelpers.hpp"
+#include "../Helpers/TerminalHelpers.hpp"
 
 
 // InputSpikingNeurons Constructor

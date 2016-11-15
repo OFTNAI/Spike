@@ -1,8 +1,8 @@
-#include "SpikeAnalyser.h"
+#include "SpikeAnalyser.hpp"
 
-//CUDA #include "../Helpers/CUDAErrorCheckHelpers.h"
-#include "../Helpers/TerminalHelpers.h"
-#include "../Helpers/TimerWithMessages.h"
+//CUDA #include "../Helpers/CUDAErrorCheckHelpers.hpp"
+#include "../Helpers/TerminalHelpers.hpp"
+#include "../Helpers/TimerWithMessages.hpp"
 
 #include <stdlib.h>
 #include <functional>

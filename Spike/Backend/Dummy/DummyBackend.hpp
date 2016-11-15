@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Spike/Backend/Device.hpp"
-#include "Spike/Backend/Backend.h"
+#include "Spike/Backend/Backend.hpp"
 
 namespace Backend {
   namespace Dummy {

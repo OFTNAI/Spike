@@ -1,4 +1,4 @@
-#include "FourLayerVisionSpikingModel.h"
+#include "FourLayerVisionSpikingModel.hpp"
 
 
 // FourLayerVisionSpikingModel Constructor

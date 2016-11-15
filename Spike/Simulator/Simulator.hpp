@@ -12,14 +12,14 @@
 #include <cuda.h>
 */
 
-#include "Spike/RecordingElectrodes/CountNeuronSpikesRecordingElectrodes.h"
-#include "Spike/RecordingElectrodes/CollectNeuronSpikesRecordingElectrodes.h"
-#include "Spike/RecordingElectrodes/NetworkStateArchiveRecordingElectrodes.h"
+#include "Spike/RecordingElectrodes/CountNeuronSpikesRecordingElectrodes.hpp"
+#include "Spike/RecordingElectrodes/CollectNeuronSpikesRecordingElectrodes.hpp"
+#include "Spike/RecordingElectrodes/NetworkStateArchiveRecordingElectrodes.hpp"
 
-#include "Spike/SpikeAnalyser/SpikeAnalyser.h"
-#include "Spike/Models/SpikingModel.h"
+#include "Spike/SpikeAnalyser/SpikeAnalyser.hpp"
+#include "Spike/Models/SpikingModel.hpp"
 
-#include "Spike/Helpers/TimerWithMessages.h"
+#include "Spike/Helpers/TimerWithMessages.hpp"
 
 
 

@@ -1,4 +1,4 @@
-#include "Spike/Backend/CUDA/Neurons/Neurons.h"
+#include "Spike/Backend/CUDA/Neurons/Neurons.hpp"
 
 namespace Backend {
   namespace CUDA {

@@ -8,8 +8,8 @@
 #define STDP_H
 
 // Get Synapses & Neurons Class
-#include "../Synapses/SpikingSynapses.h"
-#include "../Neurons/SpikingNeurons.h"
+#include "../Synapses/SpikingSynapses.hpp"
+#include "../Neurons/SpikingNeurons.hpp"
 
 // stdlib allows random numbers
 #include <stdlib.h>

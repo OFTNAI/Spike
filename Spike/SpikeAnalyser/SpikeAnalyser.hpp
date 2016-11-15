@@ -3,8 +3,8 @@
 
 //CUDA #include <cuda.h>
 #include <vector>
-#include "../Neurons/Neurons.h"
-#include "../Neurons/InputSpikingNeurons.h"
+#include "../Neurons/Neurons.hpp"
+#include "../Neurons/InputSpikingNeurons.hpp"
 
 class SpikeAnalyser{
 public:

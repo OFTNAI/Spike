@@ -8,8 +8,8 @@
 #define Evans_STDP_H
 
 // Get Synapses Class
-#include "../Synapses/Synapses.h"
-#include "../STDP/STDP.h"
+#include "../Synapses/Synapses.hpp"
+#include "../STDP/STDP.hpp"
 
 // stdlib allows random numbers
 #include <stdlib.h>

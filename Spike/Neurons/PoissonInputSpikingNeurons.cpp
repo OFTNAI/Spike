@@ -1,8 +1,8 @@
-#include "PoissonInputSpikingNeurons.h"
+#include "PoissonInputSpikingNeurons.hpp"
 #include <stdlib.h>
 #include <stdio.h>
-//CUDA #include "../Helpers/CUDAErrorCheckHelpers.h"
-#include "../Helpers/TerminalHelpers.h"
+//CUDA #include "../Helpers/CUDAErrorCheckHelpers.hpp"
+#include "../Helpers/TerminalHelpers.hppx"
 #include <algorithm> // For random shuffle
 using namespace std;
 

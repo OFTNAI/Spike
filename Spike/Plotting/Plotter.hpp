@@ -7,7 +7,7 @@
 
 #include "mgl2/mgl.h"
 
-#include "../SpikeAnalyser/SpikeAnalyser.h"
+#include "../SpikeAnalyser/SpikeAnalyser.hpp"
 
 
 class Plotter{

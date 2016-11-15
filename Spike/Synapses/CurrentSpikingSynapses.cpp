@@ -1,7 +1,7 @@
-#include "CurrentSpikingSynapses.h"
+#include "CurrentSpikingSynapses.hpp"
 
-//CUDA #include "../Helpers/CUDAErrorCheckHelpers.h"
-#include "../Helpers/TerminalHelpers.h"
+//CUDA #include "../Helpers/CUDAErrorCheckHelpers.hpp"
+#include "../Helpers/TerminalHelpers.hpp""
 
 // CurrentSpikingSynapses Constructor
 CurrentSpikingSynapses::CurrentSpikingSynapses() {

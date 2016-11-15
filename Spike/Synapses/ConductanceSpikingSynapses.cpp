@@ -1,7 +1,7 @@
-#include "ConductanceSpikingSynapses.h"
+#include "ConductanceSpikingSynapses.hpp"
 
-//CUDA #include "../Helpers/CUDAErrorCheckHelpers.h"
-#include "../Helpers/TerminalHelpers.h"
+//CUDA #include "../Helpers/CUDAErrorCheckHelpers.hpp"
+#include "../Helpers/TerminalHelpers.hpp"
 
 // ConductanceSpikingSynapses Constructor
 ConductanceSpikingSynapses::ConductanceSpikingSynapses() {

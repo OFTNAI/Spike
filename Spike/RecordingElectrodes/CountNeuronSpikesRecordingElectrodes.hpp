@@ -2,7 +2,7 @@
 #define CountNeuronSpikesRecordingElectrodes_H
 
 
-#include "../RecordingElectrodes/RecordingElectrodes.h"
+#include "../RecordingElectrodes/RecordingElectrodes.hpp"
 
 class CountNeuronSpikesRecordingElectrodes : public RecordingElectrodes {
 public:

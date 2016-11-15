@@ -1,8 +1,8 @@
-#include "Plotter.h"
+#include "Plotter.hpp"
 #include<vector>
-// #include "../SpikeAnalyser/SpikeAnalyser.h"
+// #include "../SpikeAnalyser/SpikeAnalyser.hpp"
 
-#include "../Helpers/TerminalHelpers.h"
+#include "../Helpers/TerminalHelpers.hpp"
 #include <string>
 
 using namespace std;
