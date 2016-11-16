@@ -96,3 +96,8 @@ cleantest:
 # Removing all created files
 clean:
 	rm obj/*.o Tests/obj/*
+
+# Create the doxygen html
+doxygen:
+	echo “DOXY Spike”
+	doxygen docs/Doxyfile
