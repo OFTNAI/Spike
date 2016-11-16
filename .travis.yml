@@ -12,4 +12,4 @@ script:
 - echo “Creating Documentation.”
 
 after_success:
-- ./config/publish-doxygen
+- ./docs/publish-doxygen
