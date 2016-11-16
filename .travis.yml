@@ -1,3 +1,4 @@
+language: cpp
 before_install:
 - openssl aes-256-cbc -K $encrypted_4e409233e26c_key -iv $encrypted_4e409233e26c_iv
   -in docs/config/travisci_rsa.enc -out docs/config/travisci_rsa -d
