@@ -8,5 +8,8 @@ before_install:
 install:
 - sudo apt-get install --yes doxygen graphviz
 
+script:
+- echo “Creating Documentation.”
+
 after_success:
 - ./config/publish-doxygen
