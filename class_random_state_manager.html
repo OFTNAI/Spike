@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<title>Spike!: Main Page</title>
+<title>Spike!: RandomStateManager Class Reference</title>
 
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
@@ -46,8 +46,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </script>
   <div id="navrow1" class="tabs">
     <ul class="tablist">
-      <li class="current"><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li><a href="annotated.html"><span>Classes</span></a></li>
+      <li><a href="index.html"><span>Main&#160;Page</span></a></li>
+      <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
@@ -67,12 +67,49 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </li>
     </ul>
   </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="annotated.html"><span>Class&#160;List</span></a></li>
+      <li><a href="classes.html"><span>Class&#160;Index</span></a></li>
+      <li><a href="hierarchy.html"><span>Class&#160;Hierarchy</span></a></li>
+      <li><a href="functions.html"><span>Class&#160;Members</span></a></li>
+    </ul>
+  </div>
 </div>
 <div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pub-attribs">Public Attributes</a>  </div>
   <div class="headertitle">
-<div class="title">Spike! Documentation</div>  </div>
+<div class="title">RandomStateManager Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+<!-- doxytag: class="RandomStateManager" -->
+<p><a href="class_random_state_manager-members.html">List of all members.</a></p>
+<table class="memberdecls">
+<tr><td colspan="2"><h2><a name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a14d875481045d98c83a58a6c7203b286"></a><!-- doxytag: member="RandomStateManager::set_up_random_states" ref="a14d875481045d98c83a58a6c7203b286" args="(int threads_per_blocks_x, int number_of_blocks_x, int seed)" -->
+void&#160;</td><td class="memItemRight" valign="bottom"><b>set_up_random_states</b> (int threads_per_blocks_x, int number_of_blocks_x, int seed)</td></tr>
+<tr><td colspan="2"><h2><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae1d5a62449d4f0b163697aa90d11cad8"></a><!-- doxytag: member="RandomStateManager::instance" ref="ae1d5a62449d4f0b163697aa90d11cad8" args="()" -->
+static <a class="el" href="class_random_state_manager.html">RandomStateManager</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>instance</b> ()</td></tr>
+<tr><td colspan="2"><h2><a name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad8c6aa046d2f3290e84ab85ca8b04203"></a><!-- doxytag: member="RandomStateManager::d_states" ref="ad8c6aa046d2f3290e84ab85ca8b04203" args="" -->
+curandState_t *&#160;</td><td class="memItemRight" valign="bottom"><b>d_states</b></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5a7bf22fcc530f552f33984aa09aa5d4"></a><!-- doxytag: member="RandomStateManager::threads_per_block" ref="a5a7bf22fcc530f552f33984aa09aa5d4" args="" -->
+dim3&#160;</td><td class="memItemRight" valign="bottom"><b>threads_per_block</b></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6b3123584ec3da4358305610b5ce287f"></a><!-- doxytag: member="RandomStateManager::block_dimensions" ref="a6b3123584ec3da4358305610b5ce287f" args="" -->
+dim3&#160;</td><td class="memItemRight" valign="bottom"><b>block_dimensions</b></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a01ae164c836d6fdefd570e72b768928f"></a><!-- doxytag: member="RandomStateManager::total_number_of_states" ref="a01ae164c836d6fdefd570e72b768928f" args="" -->
+int&#160;</td><td class="memItemRight" valign="bottom"><b>total_number_of_states</b></td></tr>
+</table>
+<hr/>The documentation for this class was generated from the following file:<ul>
+<li>Helpers/<a class="el" href="_random_state_manager_8h_source.html">RandomStateManager.h</a></li>
+</ul>
 </div><!-- contents -->
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"

@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<title>Spike!: Main Page</title>
+<title>Spike!: STDP Class Reference</title>
 
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
@@ -46,8 +46,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </script>
   <div id="navrow1" class="tabs">
     <ul class="tablist">
-      <li class="current"><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li><a href="annotated.html"><span>Classes</span></a></li>
+      <li><a href="index.html"><span>Main&#160;Page</span></a></li>
+      <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
@@ -67,12 +67,50 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </li>
     </ul>
   </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="annotated.html"><span>Class&#160;List</span></a></li>
+      <li><a href="classes.html"><span>Class&#160;Index</span></a></li>
+      <li><a href="hierarchy.html"><span>Class&#160;Hierarchy</span></a></li>
+      <li><a href="functions.html"><span>Class&#160;Members</span></a></li>
+    </ul>
+  </div>
 </div>
 <div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a>  </div>
   <div class="headertitle">
-<div class="title">Spike! Documentation</div>  </div>
+<div class="title">STDP Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+<!-- doxytag: class="STDP" --><div class="dynheader">
+Inheritance diagram for STDP:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="class_s_t_d_p.png" usemap="#STDP_map" alt=""/>
+  <map id="STDP_map" name="STDP_map">
+<area href="class_evans_s_t_d_p.html" alt="EvansSTDP" shape="rect" coords="0,56,106,80"/>
+<area href="class_higgins_s_t_d_p.html" alt="HigginsSTDP" shape="rect" coords="116,56,222,80"/>
+<area href="class_masquelier_s_t_d_p.html" alt="MasquelierSTDP" shape="rect" coords="232,56,338,80"/>
+</map>
+ </div></div>
+
+<p><a href="class_s_t_d_p-members.html">List of all members.</a></p>
+<table class="memberdecls">
+<tr><td colspan="2"><h2><a name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abab551a04fb558c8342734e252c9aef9"></a><!-- doxytag: member="STDP::Set_STDP_Parameters" ref="abab551a04fb558c8342734e252c9aef9" args="(SpikingSynapses *synapses, SpikingNeurons *neurons, SpikingNeurons *input_neurons, stdp_parameters_struct *stdp_parameters)" -->
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>Set_STDP_Parameters</b> (<a class="el" href="class_spiking_synapses.html">SpikingSynapses</a> *synapses, <a class="el" href="class_spiking_neurons.html">SpikingNeurons</a> *neurons, <a class="el" href="class_spiking_neurons.html">SpikingNeurons</a> *input_neurons, <a class="el" href="structstdp__parameters__struct.html">stdp_parameters_struct</a> *stdp_parameters)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a00a98be6fad7f2eb7bb9478948095e4a"></a><!-- doxytag: member="STDP::allocate_device_pointers" ref="a00a98be6fad7f2eb7bb9478948095e4a" args="()" -->
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>allocate_device_pointers</b> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa0359593838145a62d3e6f7a30026bec"></a><!-- doxytag: member="STDP::Run_STDP" ref="aa0359593838145a62d3e6f7a30026bec" args="(float *d_last_spike_time_of_each_neuron, float current_time_in_seconds, float timestep)" -->
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>Run_STDP</b> (float *d_last_spike_time_of_each_neuron, float current_time_in_seconds, float timestep)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a150e2f7368533ede026ceff86fee6fe2"></a><!-- doxytag: member="STDP::reset_STDP_activities" ref="a150e2f7368533ede026ceff86fee6fe2" args="()" -->
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>reset_STDP_activities</b> ()</td></tr>
+</table>
+<hr/>The documentation for this class was generated from the following file:<ul>
+<li>STDP/<a class="el" href="_s_t_d_p_8h_source.html">STDP.h</a></li>
+</ul>
 </div><!-- contents -->
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
