@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<title>Spike!: Main Page</title>
+<title>Spike!: A GPGPU based Spiking Neural Network (SNN) designed to be as transparent and easy to modify as possible. Written in C++/CUDA.</title>
 
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
@@ -70,10 +70,21 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="header">
   <div class="headertitle">
-<div class="title">Spike! Documentation</div>  </div>
+<div class="title">A GPGPU based Spiking Neural Network (SNN) designed to be as transparent and easy to modify as possible. Written in C++/CUDA. </div>  </div>
 </div><!--header-->
 <div class="contents">
-</div><!-- contents -->
+<div class="textblock"><p>This Spiking Neural Network (SNN) simulator was designed with the purpose of enabling more effective research in the field of Computational Neuroscience through a high speed simulation environment which remains extremely flexible in its implementation of neuron, synapse and <a class="el" href="class_s_t_d_p.html">STDP</a> models.</p>
+<p>We have currently been able to achieve much higher speeds than many of the mainstream simulation softwares. As an example, this simulator can currently compute 1000 timesteps of a 6000 neuron simulation (with &gt;2 million synapses) in just over 1s (~1.25s) on a Geforce GTX 980 GPU. With continued optimization of the codebase and the release of newer GPU architectures (e.g. NVIDIA's Pascal line), this simulator continues to increase in speed.</p>
+<p><b>Motivations for this simulator</b></p>
+<p>There are a number of Spiking Neural Network simulators which are freely available and implemented in research labs across the world. However, many of these suffer from issues of reduced speed and bloating. Many of these are written in high level languages (such as Python), which have many benefits for newcomers and for debugging etc, but lose out significantly on speed. Furthermore, the features often end up tightly coupled to the core simulator making it difficult to overhaul the fundamental simulator.</p>
+<p>The result is code which runs slowly, has many more options than an individual needs and simultaneously can be difficult to alter at its core. For an incoming researcher to the field, who often wishes for a great deal of flexibility, these effects are particularly apparent. After testing more than half a dozen SNN simulators and running into either issues of extremely low simulation speed or an inability to do such things as set arbitrarily low timesteps (or arbitrarily large axonal delays), we have launched SPIKE.</p>
+<p>SPIKE has been designed to be as modular as possible with the core simulation code base making little to no assumptions about the components with which user wishes to set up their simulation. Each fundamental component of this simulator is therefore built in a hierarchy of complexity, for example the LIFSpikingNeuron class inherits the fundamental properties of a Spiking Neuron from the SpikingNeuron class while the Izhikevich Spiking Neuron can do the same. By structuring our code in this fashion, we hope to make it incredibly straight forward for someone with rudamentary knowledge in C++/CUDA to add a new neuron or synapse model for their own research purposes.</p>
+<p>With v1.0 now released, we hope that the community can begin to benefit from our work and any questions or other requests are welcome.</p>
+<p>Any and all questions are welcome to the development team:</p>
+<p>Nasir Ahmad (<a href="mailto:nasir.ahmad@psy.ox.ac.uk">nasir.ahmad@psy.ox.ac.uk</a>) James Isbister (<a href="mailto:james.isbister@psy.ox.ac.uk">james.isbister@psy.ox.ac.uk</a>) Akihiro Eguchi (<a href="mailto:akihiro.eguchi@psy.ox.ac.uk">akihiro.eguchi@psy.ox.ac.uk</a>)</p>
+<p><a href="http://www.oftnai.org/index.html">Click Here for the OFTNAI Website</a></p>
+<p>Updated: 13/07/2016 </p>
+</div></div><!-- contents -->
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
