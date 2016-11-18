@@ -14,5 +14,8 @@ var searchData=
   ['stdp_5fparameters_5fstruct',['stdp_parameters_struct',['../structstdp__parameters__struct.html',1,'']]],
   ['stimuli_5fpresentation_5fstruct',['Stimuli_Presentation_Struct',['../struct_stimuli___presentation___struct.html',1,'']]],
   ['synapse_5fparameters_5fstruct',['synapse_parameters_struct',['../structsynapse__parameters__struct.html',1,'']]],
-  ['synapses',['Synapses',['../class_synapses.html',1,'']]]
+  ['synapse_5fpostsynaptic_5fneuron_5fcount_5findex',['synapse_postsynaptic_neuron_count_index',['../class_synapses.html#a22de77b492ddcf90d24c6f1d82225ed0',1,'Synapses']]],
+  ['synapses',['Synapses',['../class_synapses.html',1,'']]],
+  ['synapses_2eh',['Synapses.h',['../_synapses_8h.html',1,'']]],
+  ['synaptic_5fefficacies_5for_5fweights',['synaptic_efficacies_or_weights',['../class_synapses.html#a920d6ec78a3dc72ac811addf9e7311b0',1,'Synapses']]]
 ];

@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['random_5fconnectivity_5fprobability',['random_connectivity_probability',['../structsynapse__parameters__struct.html#a6182f99bc3ee3a396c5ed051bda4a81c',1,'synapse_parameters_struct']]],
   ['randomstatemanager',['RandomStateManager',['../class_random_state_manager.html',1,'']]],
   ['recordingelectrodes',['RecordingElectrodes',['../class_recording_electrodes.html',1,'']]],
   ['reset_5fcurrent_5finjections',['reset_current_injections',['../class_neurons.html#aa88ad3106a959fd1b7bad4c6717b35fc',1,'Neurons']]],

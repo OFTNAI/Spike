@@ -70,6 +70,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow2" class="tabs2">
     <ul class="tablist">
       <li><a href="files.html"><span>File&#160;List</span></a></li>
+      <li><a href="globals.html"><span>File&#160;Members</span></a></li>
     </ul>
   </div>
 </div>
@@ -78,156 +79,146 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">Synapses/Synapses.h</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">// Synapse Class Header</span>
-<a name="l00002"></a>00002 <span class="comment">// Synapse.h</span>
-<a name="l00003"></a>00003 <span class="comment">//</span>
-<a name="l00004"></a>00004 <span class="comment">//  Author: Nasir Ahmad</span>
-<a name="l00005"></a>00005 <span class="comment">//  Date: 7/12/2015</span>
-<a name="l00006"></a>00006 
-<a name="l00007"></a>00007 <span class="preprocessor">#ifndef SYNAPSES_H</span>
-<a name="l00008"></a>00008 <span class="preprocessor"></span><span class="preprocessor">#define SYNAPSES_H</span>
-<a name="l00009"></a>00009 <span class="preprocessor"></span>
-<a name="l00010"></a>00010 <span class="preprocessor">#include &quot;../Neurons/Neurons.h&quot;</span>
-<a name="l00011"></a>00011 
-<a name="l00012"></a>00012 <span class="comment">// stdlib allows random numbers</span>
-<a name="l00013"></a>00013 <span class="preprocessor">#include &lt;stdlib.h&gt;</span>
-<a name="l00014"></a>00014 <span class="comment">// Input Output</span>
-<a name="l00015"></a>00015 <span class="preprocessor">#include &lt;stdio.h&gt;</span>
-<a name="l00016"></a>00016 <span class="comment">// allows maths</span>
-<a name="l00017"></a>00017 <span class="preprocessor">#include &lt;math.h&gt;</span>
-<a name="l00018"></a>00018 
-<a name="l00019"></a>00019 <span class="preprocessor">#include &lt;cuda.h&gt;</span>
-<a name="l00020"></a>00020 <span class="preprocessor">#include &lt;curand.h&gt;</span>
-<a name="l00021"></a>00021 <span class="preprocessor">#include &lt;curand_kernel.h&gt;</span>
-<a name="l00022"></a>00022 
-<a name="l00023"></a>00023 
-<a name="l00024"></a>00024 <span class="keyword">enum</span> CONNECTIVITY_TYPE
-<a name="l00025"></a>00025 {
-<a name="l00026"></a>00026     CONNECTIVITY_TYPE_ALL_TO_ALL,
-<a name="l00027"></a>00027     CONNECTIVITY_TYPE_ONE_TO_ONE,
-<a name="l00028"></a>00028     CONNECTIVITY_TYPE_RANDOM,
-<a name="l00029"></a>00029     CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE,
-<a name="l00030"></a>00030     CONNECTIVITY_TYPE_SINGLE
-<a name="l00031"></a>00031 };
-<a name="l00032"></a>00032 
-<a name="l00033"></a>00033 
-<a name="l00034"></a>00034 
-<a name="l00035"></a><a class="code" href="structsynapse__parameters__struct.html">00035</a> <span class="keyword">struct </span><a class="code" href="structsynapse__parameters__struct.html">synapse_parameters_struct</a> {
-<a name="l00036"></a>00036     <a class="code" href="structsynapse__parameters__struct.html">synapse_parameters_struct</a>(): max_number_of_connections_per_pair(1), gaussian_synapses_per_postsynaptic_neuron(10), gaussian_synapses_standard_deviation(10.0), weight_range_bottom(0.0), weight_range_top(1.0), connectivity_type(CONNECTIVITY_TYPE_ALL_TO_ALL)  {}
+<a href="_synapses_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/* \brief The most abstract Synapses class from which methods and attributes are inherited by SpikingSynapses etc.</span>
+<a name="l00002"></a>00002 <span class="comment">*/</span>
+<a name="l00003"></a>00003 <span class="preprocessor">#ifndef SYNAPSES_H</span>
+<a name="l00004"></a>00004 <span class="preprocessor"></span><span class="preprocessor">#define SYNAPSES_H</span>
+<a name="l00005"></a>00005 <span class="preprocessor"></span>
+<a name="l00012"></a>00012 <span class="preprocessor">#include &quot;../Neurons/Neurons.h&quot;</span>
+<a name="l00013"></a>00013 
+<a name="l00014"></a>00014 <span class="comment">// stdlib allows random numbers</span>
+<a name="l00015"></a>00015 <span class="preprocessor">#include &lt;stdlib.h&gt;</span>
+<a name="l00016"></a>00016 <span class="comment">// Input Output</span>
+<a name="l00017"></a>00017 <span class="preprocessor">#include &lt;stdio.h&gt;</span>
+<a name="l00018"></a>00018 <span class="comment">// allows maths</span>
+<a name="l00019"></a>00019 <span class="preprocessor">#include &lt;math.h&gt;</span>
+<a name="l00020"></a>00020 
+<a name="l00021"></a>00021 <span class="preprocessor">#include &lt;cuda.h&gt;</span>
+<a name="l00022"></a>00022 <span class="preprocessor">#include &lt;curand.h&gt;</span>
+<a name="l00023"></a>00023 <span class="preprocessor">#include &lt;curand_kernel.h&gt;</span>
+<a name="l00024"></a>00024 
+<a name="l00029"></a><a class="code" href="_synapses_8h.html#a403f227a1b3015f9bdcb8b0e41252db6">00029</a> <span class="keyword">enum</span> <a class="code" href="_synapses_8h.html#a403f227a1b3015f9bdcb8b0e41252db6">CONNECTIVITY_TYPE</a>
+<a name="l00030"></a>00030 {
+<a name="l00031"></a>00031     CONNECTIVITY_TYPE_ALL_TO_ALL,
+<a name="l00032"></a>00032     CONNECTIVITY_TYPE_ONE_TO_ONE,
+<a name="l00033"></a>00033     CONNECTIVITY_TYPE_RANDOM,
+<a name="l00034"></a>00034     CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE,
+<a name="l00035"></a>00035     CONNECTIVITY_TYPE_SINGLE
+<a name="l00036"></a>00036 };
 <a name="l00037"></a>00037 
-<a name="l00038"></a>00038     <span class="keywordtype">int</span> max_number_of_connections_per_pair;
-<a name="l00039"></a>00039     <span class="keywordtype">int</span> pairwise_connect_presynaptic;
-<a name="l00040"></a>00040     <span class="keywordtype">int</span> pairwise_connect_postsynaptic;
-<a name="l00041"></a>00041     <span class="keywordtype">int</span> gaussian_synapses_per_postsynaptic_neuron;
-<a name="l00042"></a>00042     <span class="keywordtype">float</span> gaussian_synapses_standard_deviation;
-<a name="l00043"></a>00043     <span class="keywordtype">float</span> weight_range_bottom;
-<a name="l00044"></a>00044     <span class="keywordtype">float</span> weight_range_top;
-<a name="l00045"></a>00045     <span class="keywordtype">float</span> random_connectivity_probability;
-<a name="l00046"></a>00046     <span class="keywordtype">int</span> connectivity_type;
+<a name="l00038"></a>00038 
+<a name="l00045"></a><a class="code" href="structsynapse__parameters__struct.html">00045</a> <span class="keyword">struct </span><a class="code" href="structsynapse__parameters__struct.html">synapse_parameters_struct</a> {
+<a name="l00046"></a>00046     <a class="code" href="structsynapse__parameters__struct.html">synapse_parameters_struct</a>(): <a class="code" href="structsynapse__parameters__struct.html#afb056185ae99dfa40e2741eaee7f1080">max_number_of_connections_per_pair</a>(1), <a class="code" href="structsynapse__parameters__struct.html#a2c03d1f8d8daf0e9505a1b11d587d2d2">gaussian_synapses_per_postsynaptic_neuron</a>(10), <a class="code" href="structsynapse__parameters__struct.html#a96420709074c9b15e61f91f8c936dd2e">gaussian_synapses_standard_deviation</a>(10.0), <a class="code" href="structsynapse__parameters__struct.html#a891323af9a477f4ca0155547068a65ca">weight_range_bottom</a>(0.0), <a class="code" href="structsynapse__parameters__struct.html#a7d13da93ffa7964a7c67f0698639cc51">weight_range_top</a>(1.0), <a class="code" href="structsynapse__parameters__struct.html#a19497bfa0461098b2629b5d867ccbb30">connectivity_type</a>(CONNECTIVITY_TYPE_ALL_TO_ALL)  {}
 <a name="l00047"></a>00047 
-<a name="l00048"></a>00048 };
-<a name="l00049"></a>00049 
-<a name="l00050"></a>00050 
-<a name="l00051"></a><a class="code" href="class_synapses.html">00051</a> <span class="keyword">class </span><a class="code" href="class_synapses.html">Synapses</a> {
-<a name="l00052"></a>00052 
-<a name="l00053"></a>00053 <span class="keyword">public</span>:
-<a name="l00054"></a>00054 
-<a name="l00055"></a>00055     <span class="comment">// Constructor/Destructor</span>
-<a name="l00056"></a>00056     <a class="code" href="class_synapses.html">Synapses</a>();
-<a name="l00057"></a>00057     ~<a class="code" href="class_synapses.html">Synapses</a>();
-<a name="l00058"></a>00058 
+<a name="l00048"></a><a class="code" href="structsynapse__parameters__struct.html#afb056185ae99dfa40e2741eaee7f1080">00048</a>     <span class="keywordtype">int</span> <a class="code" href="structsynapse__parameters__struct.html#afb056185ae99dfa40e2741eaee7f1080">max_number_of_connections_per_pair</a>;  
+<a name="l00049"></a><a class="code" href="structsynapse__parameters__struct.html#aa6e628549956f905f36da04142cc4352">00049</a>     <span class="keywordtype">int</span> <a class="code" href="structsynapse__parameters__struct.html#aa6e628549956f905f36da04142cc4352">pairwise_connect_presynaptic</a>;  
+<a name="l00050"></a><a class="code" href="structsynapse__parameters__struct.html#a67e763bed299d1465b214fb86a16a306">00050</a>     <span class="keywordtype">int</span> <a class="code" href="structsynapse__parameters__struct.html#a67e763bed299d1465b214fb86a16a306">pairwise_connect_postsynaptic</a>; 
+<a name="l00051"></a><a class="code" href="structsynapse__parameters__struct.html#a2c03d1f8d8daf0e9505a1b11d587d2d2">00051</a>     <span class="keywordtype">int</span> <a class="code" href="structsynapse__parameters__struct.html#a2c03d1f8d8daf0e9505a1b11d587d2d2">gaussian_synapses_per_postsynaptic_neuron</a>; 
+<a name="l00052"></a><a class="code" href="structsynapse__parameters__struct.html#a96420709074c9b15e61f91f8c936dd2e">00052</a>     <span class="keywordtype">float</span> <a class="code" href="structsynapse__parameters__struct.html#a96420709074c9b15e61f91f8c936dd2e">gaussian_synapses_standard_deviation</a>;  
+<a name="l00053"></a><a class="code" href="structsynapse__parameters__struct.html#a891323af9a477f4ca0155547068a65ca">00053</a>     <span class="keywordtype">float</span> <a class="code" href="structsynapse__parameters__struct.html#a891323af9a477f4ca0155547068a65ca">weight_range_bottom</a>; 
+<a name="l00054"></a><a class="code" href="structsynapse__parameters__struct.html#a7d13da93ffa7964a7c67f0698639cc51">00054</a>     <span class="keywordtype">float</span> <a class="code" href="structsynapse__parameters__struct.html#a7d13da93ffa7964a7c67f0698639cc51">weight_range_top</a>;  
+<a name="l00055"></a><a class="code" href="structsynapse__parameters__struct.html#a6182f99bc3ee3a396c5ed051bda4a81c">00055</a>     <span class="keywordtype">float</span> <a class="code" href="structsynapse__parameters__struct.html#a6182f99bc3ee3a396c5ed051bda4a81c">random_connectivity_probability</a>; 
+<a name="l00056"></a><a class="code" href="structsynapse__parameters__struct.html#a19497bfa0461098b2629b5d867ccbb30">00056</a>     <span class="keywordtype">int</span> <a class="code" href="structsynapse__parameters__struct.html#a19497bfa0461098b2629b5d867ccbb30">connectivity_type</a>; 
+<a name="l00058"></a>00058 };
 <a name="l00059"></a>00059 
-<a name="l00060"></a>00060     <span class="comment">// Variables</span>
-<a name="l00061"></a>00061     <span class="keywordtype">int</span> total_number_of_synapses;
-<a name="l00062"></a>00062     <span class="keywordtype">int</span> temp_number_of_synapses_in_last_group;
-<a name="l00063"></a>00063     <span class="keywordtype">int</span> largest_synapse_group_size;
-<a name="l00064"></a>00064     <span class="keywordtype">bool</span> print_synapse_group_details;
-<a name="l00065"></a>00065     
-<a name="l00066"></a>00066     <span class="comment">// Host Pointers</span>
-<a name="l00067"></a>00067     <span class="keywordtype">int</span>* presynaptic_neuron_indices;
-<a name="l00068"></a>00068     <span class="keywordtype">int</span>* postsynaptic_neuron_indices; 
-<a name="l00069"></a>00069     <span class="keywordtype">int</span>* original_synapse_indices;
-<a name="l00070"></a>00070     <span class="keywordtype">int</span>* synapse_postsynaptic_neuron_count_index;
-<a name="l00071"></a>00071     <span class="keywordtype">float</span>* synaptic_efficacies_or_weights;
+<a name="l00064"></a><a class="code" href="class_synapses.html">00064</a> <span class="keyword">class </span><a class="code" href="class_synapses.html">Synapses</a> {
+<a name="l00065"></a>00065 
+<a name="l00066"></a>00066 <span class="keyword">public</span>:
+<a name="l00067"></a>00067 
+<a name="l00068"></a>00068     <span class="comment">// Constructor/Destructor</span>
+<a name="l00069"></a>00069     <a class="code" href="class_synapses.html">Synapses</a>();
+<a name="l00070"></a>00070     ~<a class="code" href="class_synapses.html">Synapses</a>();
+<a name="l00071"></a>00071 
 <a name="l00072"></a>00072 
-<a name="l00073"></a>00073     <span class="comment">// Device pointers</span>
-<a name="l00074"></a>00074     <span class="keywordtype">int</span>* d_presynaptic_neuron_indices;
-<a name="l00075"></a>00075     <span class="keywordtype">int</span>* d_postsynaptic_neuron_indices;
-<a name="l00076"></a>00076     <span class="keywordtype">int</span>* d_temp_presynaptic_neuron_indices;
-<a name="l00077"></a>00077     <span class="keywordtype">int</span>* d_temp_postsynaptic_neuron_indices;
-<a name="l00078"></a>00078     <span class="keywordtype">int</span> * d_synapse_postsynaptic_neuron_count_index;
-<a name="l00079"></a>00079     <span class="keywordtype">float</span>* d_synaptic_efficacies_or_weights;
-<a name="l00080"></a>00080     <span class="keywordtype">float</span>* d_temp_synaptic_efficacies_or_weights;
-<a name="l00081"></a>00081 
-<a name="l00082"></a>00082     <span class="comment">// CUDA Specific</span>
-<a name="l00083"></a>00083     dim3 number_of_synapse_blocks_per_grid;
-<a name="l00084"></a>00084     dim3 threads_per_block;
-<a name="l00085"></a>00085 
-<a name="l00086"></a>00086     <span class="comment">// Functions</span>
-<a name="l00087"></a>00087     <span class="keyword">virtual</span> <span class="keywordtype">void</span> AddGroup(<span class="keywordtype">int</span> presynaptic_group_id, 
-<a name="l00088"></a>00088                         <span class="keywordtype">int</span> postsynaptic_group_id, 
-<a name="l00089"></a>00089                         <a class="code" href="class_neurons.html">Neurons</a> * neurons,
-<a name="l00090"></a>00090                         <a class="code" href="class_neurons.html">Neurons</a> * input_neurons,
-<a name="l00091"></a>00091                         <span class="keywordtype">float</span> timestep,
-<a name="l00092"></a>00092                         <a class="code" href="structsynapse__parameters__struct.html">synapse_parameters_struct</a> * synapse_params);
-<a name="l00093"></a>00093 
-<a name="l00094"></a>00094     <span class="keyword">virtual</span> <span class="keywordtype">void</span> allocate_device_pointers();
-<a name="l00095"></a>00095     <span class="keyword">virtual</span> <span class="keywordtype">void</span> copy_constants_and_initial_efficacies_to_device();
-<a name="l00096"></a>00096 
-<a name="l00097"></a>00097 
-<a name="l00098"></a>00098     <span class="keyword">virtual</span> <span class="keywordtype">void</span> set_threads_per_block_and_blocks_per_grid(<span class="keywordtype">int</span> threads);
-<a name="l00099"></a>00099     <span class="keyword">virtual</span> <span class="keywordtype">void</span> increment_number_of_synapses(<span class="keywordtype">int</span> increment);
-<a name="l00100"></a>00100     <span class="keyword">virtual</span> <span class="keywordtype">void</span> shuffle_synapses();
-<a name="l00101"></a>00101 
-<a name="l00102"></a>00102     
-<a name="l00103"></a>00103 
-<a name="l00104"></a>00104     
-<a name="l00105"></a>00105 };
+<a name="l00073"></a>00073     <span class="comment">// Variables</span>
+<a name="l00074"></a><a class="code" href="class_synapses.html#a213039c81928c5e59677ba009fdf1e57">00074</a>     <span class="keywordtype">int</span> <a class="code" href="class_synapses.html#a213039c81928c5e59677ba009fdf1e57">total_number_of_synapses</a>;                  
+<a name="l00075"></a><a class="code" href="class_synapses.html#a5c280148b3fdb20122c8bcd2fe9edbb2">00075</a>     <span class="keywordtype">int</span> <a class="code" href="class_synapses.html#a5c280148b3fdb20122c8bcd2fe9edbb2">temp_number_of_synapses_in_last_group</a>;     
+<a name="l00076"></a><a class="code" href="class_synapses.html#a8e405ba80ddb4543e4d6fd1c22f3aaba">00076</a>     <span class="keywordtype">int</span> <a class="code" href="class_synapses.html#a8e405ba80ddb4543e4d6fd1c22f3aaba">largest_synapse_group_size</a>;                
+<a name="l00077"></a><a class="code" href="class_synapses.html#a865f5dea97bec406a929d086c844d050">00077</a>     <span class="keywordtype">bool</span> <a class="code" href="class_synapses.html#a865f5dea97bec406a929d086c844d050">print_synapse_group_details</a>;              
+<a name="l00079"></a>00079     <span class="comment">// Host Pointers</span>
+<a name="l00080"></a><a class="code" href="class_synapses.html#a8fea60cc4216ea5eccf6a7a2ef44e0af">00080</a>     <span class="keywordtype">int</span>* <a class="code" href="class_synapses.html#a8fea60cc4216ea5eccf6a7a2ef44e0af">presynaptic_neuron_indices</a>;               
+<a name="l00081"></a><a class="code" href="class_synapses.html#a18207f0a2895bbee03a289fcd5bf65dc">00081</a>     <span class="keywordtype">int</span>* <a class="code" href="class_synapses.html#a18207f0a2895bbee03a289fcd5bf65dc">postsynaptic_neuron_indices</a>;              
+<a name="l00082"></a><a class="code" href="class_synapses.html#a911a9deb21e149bddb49069bbe1e1ee1">00082</a>     <span class="keywordtype">int</span>* <a class="code" href="class_synapses.html#a911a9deb21e149bddb49069bbe1e1ee1">original_synapse_indices</a>;                 
+<a name="l00083"></a><a class="code" href="class_synapses.html#a22de77b492ddcf90d24c6f1d82225ed0">00083</a>     <span class="keywordtype">int</span>* <a class="code" href="class_synapses.html#a22de77b492ddcf90d24c6f1d82225ed0">synapse_postsynaptic_neuron_count_index</a>;  
+<a name="l00084"></a><a class="code" href="class_synapses.html#a920d6ec78a3dc72ac811addf9e7311b0">00084</a>     <span class="keywordtype">float</span>* <a class="code" href="class_synapses.html#a920d6ec78a3dc72ac811addf9e7311b0">synaptic_efficacies_or_weights</a>;         
+<a name="l00086"></a>00086     <span class="comment">// Device pointers</span>
+<a name="l00087"></a><a class="code" href="class_synapses.html#ab159f12da464dc91a9bddd7e3f604305">00087</a>     <span class="keywordtype">int</span>* <a class="code" href="class_synapses.html#ab159f12da464dc91a9bddd7e3f604305">d_presynaptic_neuron_indices</a>;             
+<a name="l00088"></a><a class="code" href="class_synapses.html#ad3e037b9e86b30f0ca952e881b2bdf3d">00088</a>     <span class="keywordtype">int</span>* <a class="code" href="class_synapses.html#ad3e037b9e86b30f0ca952e881b2bdf3d">d_postsynaptic_neuron_indices</a>;            
+<a name="l00089"></a>00089     <span class="keywordtype">int</span>* d_temp_presynaptic_neuron_indices;
+<a name="l00090"></a>00090     <span class="keywordtype">int</span>* d_temp_postsynaptic_neuron_indices;
+<a name="l00091"></a>00091     <span class="keywordtype">int</span> * d_synapse_postsynaptic_neuron_count_index;
+<a name="l00092"></a>00092     <span class="keywordtype">float</span>* d_synaptic_efficacies_or_weights;
+<a name="l00093"></a>00093     <span class="keywordtype">float</span>* d_temp_synaptic_efficacies_or_weights;
+<a name="l00094"></a>00094 
+<a name="l00095"></a>00095     <span class="comment">// CUDA Specific</span>
+<a name="l00096"></a>00096     dim3 number_of_synapse_blocks_per_grid;
+<a name="l00097"></a>00097     dim3 threads_per_block;
+<a name="l00098"></a>00098 
+<a name="l00099"></a>00099     <span class="comment">// Functions</span>
+<a name="l00100"></a>00100     <span class="keyword">virtual</span> <span class="keywordtype">void</span> AddGroup(<span class="keywordtype">int</span> presynaptic_group_id,
+<a name="l00101"></a>00101                         <span class="keywordtype">int</span> postsynaptic_group_id,
+<a name="l00102"></a>00102                         <a class="code" href="class_neurons.html">Neurons</a> * neurons,
+<a name="l00103"></a>00103                         <a class="code" href="class_neurons.html">Neurons</a> * input_neurons,
+<a name="l00104"></a>00104                         <span class="keywordtype">float</span> timestep,
+<a name="l00105"></a>00105                         <a class="code" href="structsynapse__parameters__struct.html">synapse_parameters_struct</a> * synapse_params);
 <a name="l00106"></a>00106 
-<a name="l00107"></a>00107 __global__ <span class="keywordtype">void</span> compute_yes_no_connection_matrix_for_groups(<span class="keywordtype">bool</span> * d_yes_no_connection_vector, 
-<a name="l00108"></a>00108                                                         <span class="keywordtype">int</span> pre_width, 
-<a name="l00109"></a>00109                                                         <span class="keywordtype">int</span> post_width, 
-<a name="l00110"></a>00110                                                         <span class="keywordtype">int</span> post_height, 
-<a name="l00111"></a>00111                                                         <span class="keywordtype">float</span> sigma, 
-<a name="l00112"></a>00112                                                         <span class="keywordtype">int</span> total_pre_neurons, 
-<a name="l00113"></a>00113                                                         <span class="keywordtype">int</span> total_post_neurons);
+<a name="l00107"></a>00107     <span class="keyword">virtual</span> <span class="keywordtype">void</span> allocate_device_pointers();
+<a name="l00108"></a>00108     <span class="keyword">virtual</span> <span class="keywordtype">void</span> copy_constants_and_initial_efficacies_to_device();
+<a name="l00109"></a>00109 
+<a name="l00110"></a>00110 
+<a name="l00111"></a>00111     <span class="keyword">virtual</span> <span class="keywordtype">void</span> set_threads_per_block_and_blocks_per_grid(<span class="keywordtype">int</span> threads);
+<a name="l00112"></a>00112     <span class="keyword">virtual</span> <span class="keywordtype">void</span> increment_number_of_synapses(<span class="keywordtype">int</span> increment);
+<a name="l00113"></a>00113     <span class="keyword">virtual</span> <span class="keywordtype">void</span> shuffle_synapses();
 <a name="l00114"></a>00114 
-<a name="l00115"></a>00115 __global__ <span class="keywordtype">void</span> set_up_neuron_indices_and_weights_for_yes_no_connection_matrix(<span class="keywordtype">bool</span> * d_yes_no_connection_vector, 
-<a name="l00116"></a>00116                                                                             <span class="keywordtype">int</span> pre_width, 
-<a name="l00117"></a>00117                                                                             <span class="keywordtype">int</span> post_width, 
-<a name="l00118"></a>00118                                                                             <span class="keywordtype">int</span> post_height, 
-<a name="l00119"></a>00119                                                                             <span class="keywordtype">int</span> total_pre_neurons, 
-<a name="l00120"></a>00120                                                                             <span class="keywordtype">int</span> total_post_neurons, 
-<a name="l00121"></a>00121                                                                             <span class="keywordtype">int</span> * d_presynaptic_neuron_indices, 
-<a name="l00122"></a>00122                                                                             <span class="keywordtype">int</span> * d_postsynaptic_neuron_indices);
-<a name="l00123"></a>00123 
-<a name="l00124"></a>00124 __global__ <span class="keywordtype">void</span> set_neuron_indices_by_sampling_from_normal_distribution(<span class="keywordtype">int</span> total_number_of_new_synapses, 
-<a name="l00125"></a>00125                                                                         <span class="keywordtype">int</span> postsynaptic_group_id, 
-<a name="l00126"></a>00126                                                                         <span class="keywordtype">int</span> poststart, 
-<a name="l00127"></a>00127                                                                         <span class="keywordtype">int</span> prestart, 
-<a name="l00128"></a>00128                                                                         <span class="keywordtype">int</span> post_width, 
-<a name="l00129"></a>00129                                                                         <span class="keywordtype">int</span> post_height, 
-<a name="l00130"></a>00130                                                                         <span class="keywordtype">int</span> pre_width, 
-<a name="l00131"></a>00131                                                                         <span class="keywordtype">int</span> pre_height, 
-<a name="l00132"></a>00132                                                                         <span class="keywordtype">int</span> number_of_new_synapses_per_postsynaptic_neuron, 
-<a name="l00133"></a>00133                                                                         <span class="keywordtype">int</span> number_of_postsynaptic_neurons_in_group, 
-<a name="l00134"></a>00134                                                                         <span class="keywordtype">int</span> * d_presynaptic_neuron_indices, 
-<a name="l00135"></a>00135                                                                         <span class="keywordtype">int</span> * d_postsynaptic_neuron_indices, 
-<a name="l00136"></a>00136                                                                         <span class="keywordtype">float</span> * d_synaptic_efficacies_or_weights, 
-<a name="l00137"></a>00137                                                                         <span class="keywordtype">float</span> standard_deviation_sigma, 
-<a name="l00138"></a>00138                                                                         <span class="keywordtype">bool</span> presynaptic_group_is_input,
-<a name="l00139"></a>00139                                                                         curandState_t* d_states);
-<a name="l00140"></a>00140 
-<a name="l00141"></a>00141 <span class="comment">// GAUSS random number generator</span>
-<a name="l00142"></a>00142 <span class="keywordtype">double</span> randn (<span class="keywordtype">double</span> mu, <span class="keywordtype">double</span> sigma);
-<a name="l00143"></a>00143 <span class="preprocessor">#endif</span>
+<a name="l00115"></a>00115 
+<a name="l00116"></a>00116 
+<a name="l00117"></a>00117 
+<a name="l00118"></a>00118 };
+<a name="l00119"></a>00119 
+<a name="l00120"></a>00120 __global__ <span class="keywordtype">void</span> compute_yes_no_connection_matrix_for_groups(<span class="keywordtype">bool</span> * d_yes_no_connection_vector,
+<a name="l00121"></a>00121                                                         <span class="keywordtype">int</span> pre_width,
+<a name="l00122"></a>00122                                                         <span class="keywordtype">int</span> post_width,
+<a name="l00123"></a>00123                                                         <span class="keywordtype">int</span> post_height,
+<a name="l00124"></a>00124                                                         <span class="keywordtype">float</span> sigma,
+<a name="l00125"></a>00125                                                         <span class="keywordtype">int</span> total_pre_neurons,
+<a name="l00126"></a>00126                                                         <span class="keywordtype">int</span> total_post_neurons);
+<a name="l00127"></a>00127 
+<a name="l00128"></a>00128 __global__ <span class="keywordtype">void</span> set_up_neuron_indices_and_weights_for_yes_no_connection_matrix(<span class="keywordtype">bool</span> * d_yes_no_connection_vector,
+<a name="l00129"></a>00129                                                                             <span class="keywordtype">int</span> pre_width,
+<a name="l00130"></a>00130                                                                             <span class="keywordtype">int</span> post_width,
+<a name="l00131"></a>00131                                                                             <span class="keywordtype">int</span> post_height,
+<a name="l00132"></a>00132                                                                             <span class="keywordtype">int</span> total_pre_neurons,
+<a name="l00133"></a>00133                                                                             <span class="keywordtype">int</span> total_post_neurons,
+<a name="l00134"></a>00134                                                                             <span class="keywordtype">int</span> * d_presynaptic_neuron_indices,
+<a name="l00135"></a>00135                                                                             <span class="keywordtype">int</span> * d_postsynaptic_neuron_indices);
+<a name="l00136"></a>00136 
+<a name="l00137"></a>00137 __global__ <span class="keywordtype">void</span> set_neuron_indices_by_sampling_from_normal_distribution(<span class="keywordtype">int</span> total_number_of_new_synapses,
+<a name="l00138"></a>00138                                                                         <span class="keywordtype">int</span> postsynaptic_group_id,
+<a name="l00139"></a>00139                                                                         <span class="keywordtype">int</span> poststart,
+<a name="l00140"></a>00140                                                                         <span class="keywordtype">int</span> prestart,
+<a name="l00141"></a>00141                                                                         <span class="keywordtype">int</span> post_width,
+<a name="l00142"></a>00142                                                                         <span class="keywordtype">int</span> post_height,
+<a name="l00143"></a>00143                                                                         <span class="keywordtype">int</span> pre_width,
+<a name="l00144"></a>00144                                                                         <span class="keywordtype">int</span> pre_height,
+<a name="l00145"></a>00145                                                                         <span class="keywordtype">int</span> number_of_new_synapses_per_postsynaptic_neuron,
+<a name="l00146"></a>00146                                                                         <span class="keywordtype">int</span> number_of_postsynaptic_neurons_in_group,
+<a name="l00147"></a>00147                                                                         <span class="keywordtype">int</span> * d_presynaptic_neuron_indices,
+<a name="l00148"></a>00148                                                                         <span class="keywordtype">int</span> * d_postsynaptic_neuron_indices,
+<a name="l00149"></a>00149                                                                         <span class="keywordtype">float</span> * d_synaptic_efficacies_or_weights,
+<a name="l00150"></a>00150                                                                         <span class="keywordtype">float</span> standard_deviation_sigma,
+<a name="l00151"></a>00151                                                                         <span class="keywordtype">bool</span> presynaptic_group_is_input,
+<a name="l00152"></a>00152                                                                         curandState_t* d_states);
+<a name="l00153"></a>00153 
+<a name="l00154"></a>00154 <span class="comment">// GAUSS random number generator</span>
+<a name="l00155"></a>00155 <span class="keywordtype">double</span> randn (<span class="keywordtype">double</span> mu, <span class="keywordtype">double</span> sigma);
+<a name="l00156"></a>00156 <span class="preprocessor">#endif</span>
 </pre></div></div><!-- contents -->
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerations</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
