@@ -1,11 +1,13 @@
-// Synapse Class Header
-// Synapse.h
-//
-//	Author: Nasir Ahmad
-//	Date: 7/12/2015
-
+/* \brief The most abstract Synapses class from which methods and attributes are inherited by SpikingSynapses etc.
+*/
 #ifndef SYNAPSES_H
 #define SYNAPSES_H
+
+/**
+ * @file   Synapses.h
+ * @brief  The most abstract Synapses class from which methods and attributes are inherited by SpikingSynapses etc.
+ *
+ */
 
 #include "../Neurons/Neurons.h"
 
@@ -20,7 +22,10 @@
 #include <curand.h>
 #include <curand_kernel.h>
 
-
+/*!
+	This enum contains the possible connectivity types which can be requested
+  when adding synapstic connections between neuron populations.
+*/
 enum CONNECTIVITY_TYPE
 {
     CONNECTIVITY_TYPE_ALL_TO_ALL,
@@ -31,23 +36,31 @@ enum CONNECTIVITY_TYPE
 };
 
 
-
+/*!
+  This struct accompanies the synapses class and is used to provide the a number
+  of parameters to control synapse creation.
+  This is also used as the foundation for the more sophisticated neuron parameter structs
+  for SpikingSynapses etc.
+*/
 struct synapse_parameters_struct {
 	synapse_parameters_struct(): max_number_of_connections_per_pair(1), gaussian_synapses_per_postsynaptic_neuron(10), gaussian_synapses_standard_deviation(10.0), weight_range_bottom(0.0), weight_range_top(1.0), connectivity_type(CONNECTIVITY_TYPE_ALL_TO_ALL)  {}
 
-	int max_number_of_connections_per_pair;
-	int pairwise_connect_presynaptic;
-	int pairwise_connect_postsynaptic;
-	int gaussian_synapses_per_postsynaptic_neuron;
-	float gaussian_synapses_standard_deviation;
-	float weight_range_bottom;
-	float weight_range_top;
-	float random_connectivity_probability;
-	int connectivity_type;
+	int max_number_of_connections_per_pair;  /**< Used in specific branches to indicate max number of connections between a specific pair of pre and postsynaptic neurons. UNUSED IN THIS BRANCH.*/
+	int pairwise_connect_presynaptic;  /**< If using CONNECTIVITY_TYPE_ONE_TO_ONE, should be set to the presynaptic neuron index. Else, unused.*/
+	int pairwise_connect_postsynaptic; /**< If using CONNECTIVITY_TYPE_ONE_TO_ONE, should be set to the postsynaptic neuron index. Else, unused.*/
+	int gaussian_synapses_per_postsynaptic_neuron; /**< If using CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE, should be set to the max number of desired connections to each postsynaptic neuron. Else, unused.*/
+	float gaussian_synapses_standard_deviation;  /**< If using CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE, should be set to the desired standard deviation of the gaussian distribution to be used to select presynaptic neurons. Else, unused.*/
+	float weight_range_bottom; /**< Used for all CONNECTIVITY types. Indicates the lower range (inclusive) of the weight range to be used */
+	float weight_range_top;  /**< Used for all CONNECTIVITY types. Indicates the upper range (inclusive) of the weight range to be used. If weight_range_bottom == weight_range_top, all weight values are equal. Else, they are a random uniform distribution in this range*/
+	float random_connectivity_probability; /**< If using CONNECTIVITY_TYPE_RANDOM, indicates the probability with which a connection should be made between the pre and post synaptic neurons. Else, unused.*/
+	int connectivity_type; /**< A CONNECTIVITY_TYPE is set here */
 
 };
 
-
+/*!
+	This is the parent class for SpikingSpiking.
+	It provides a set of default methods which are primarily used to add groups of synapses to the connectivity.
+*/
 class Synapses {
 
 public:
@@ -58,21 +71,21 @@ public:
 
 
 	// Variables
-	int total_number_of_synapses;
-	int temp_number_of_synapses_in_last_group;
-	int largest_synapse_group_size;
-	bool print_synapse_group_details;
-	
+	int total_number_of_synapses;                  /**< Tracks the total number of synapses in the connectivity */
+	int temp_number_of_synapses_in_last_group;     /**< Tracks the number of synapses in the last added group. */
+	int largest_synapse_group_size;                /**< Tracks the size of the largest synaptic group. */
+	bool print_synapse_group_details;              /**< A flag used to indicate whether group details should be printed */
+
 	// Host Pointers
-	int* presynaptic_neuron_indices;
-	int* postsynaptic_neuron_indices; 
-	int* original_synapse_indices;
-	int* synapse_postsynaptic_neuron_count_index;
-	float* synaptic_efficacies_or_weights;
+	int* presynaptic_neuron_indices;               /**< Indices of presynaptic neuron IDs */
+	int* postsynaptic_neuron_indices;              /**< Indices of postsynaptic neuron IDs */
+	int* original_synapse_indices;                 /**< Indices by which to order the presynaptic and postsynaptic neuron IDs if a shuffle is carried out */
+	int* synapse_postsynaptic_neuron_count_index;  /**< An array of the number of incoming synapses to each postsynaptic neuron */
+	float* synaptic_efficacies_or_weights;         /**< An array of synaptic efficacies/weights accompanying the pre/postsynaptic_neuron_indices */
 
 	// Device pointers
-	int* d_presynaptic_neuron_indices;
-	int* d_postsynaptic_neuron_indices;
+	int* d_presynaptic_neuron_indices;             /**< A (device-side) pointer to store indices of the presynaptic neuron IDs */
+	int* d_postsynaptic_neuron_indices;            /**< A (device-side) pointer to store indices of the postsynaptic neuron IDs */
 	int* d_temp_presynaptic_neuron_indices;
 	int* d_temp_postsynaptic_neuron_indices;
 	int * d_synapse_postsynaptic_neuron_count_index;
@@ -84,8 +97,8 @@ public:
 	dim3 threads_per_block;
 
 	// Functions
-	virtual void AddGroup(int presynaptic_group_id, 
-						int postsynaptic_group_id, 
+	virtual void AddGroup(int presynaptic_group_id,
+						int postsynaptic_group_id,
 						Neurons * neurons,
 						Neurons * input_neurons,
 						float timestep,
@@ -99,42 +112,42 @@ public:
 	virtual void increment_number_of_synapses(int increment);
 	virtual void shuffle_synapses();
 
-	
 
-	
+
+
 };
 
-__global__ void compute_yes_no_connection_matrix_for_groups(bool * d_yes_no_connection_vector, 
-														int pre_width, 
-														int post_width, 
-														int post_height, 
-														float sigma, 
-														int total_pre_neurons, 
+__global__ void compute_yes_no_connection_matrix_for_groups(bool * d_yes_no_connection_vector,
+														int pre_width,
+														int post_width,
+														int post_height,
+														float sigma,
+														int total_pre_neurons,
 														int total_post_neurons);
 
-__global__ void set_up_neuron_indices_and_weights_for_yes_no_connection_matrix(bool * d_yes_no_connection_vector, 
-																			int pre_width, 
-																			int post_width, 
-																			int post_height, 
-																			int total_pre_neurons, 
-																			int total_post_neurons, 
-																			int * d_presynaptic_neuron_indices, 
+__global__ void set_up_neuron_indices_and_weights_for_yes_no_connection_matrix(bool * d_yes_no_connection_vector,
+																			int pre_width,
+																			int post_width,
+																			int post_height,
+																			int total_pre_neurons,
+																			int total_post_neurons,
+																			int * d_presynaptic_neuron_indices,
 																			int * d_postsynaptic_neuron_indices);
 
-__global__ void set_neuron_indices_by_sampling_from_normal_distribution(int total_number_of_new_synapses, 
-																		int postsynaptic_group_id, 
-																		int poststart, 
-																		int prestart, 
-																		int post_width, 
-																		int post_height, 
-																		int pre_width, 
-																		int pre_height, 
-																		int number_of_new_synapses_per_postsynaptic_neuron, 
-																		int number_of_postsynaptic_neurons_in_group, 
-																		int * d_presynaptic_neuron_indices, 
-																		int * d_postsynaptic_neuron_indices, 
-																		float * d_synaptic_efficacies_or_weights, 
-																		float standard_deviation_sigma, 
+__global__ void set_neuron_indices_by_sampling_from_normal_distribution(int total_number_of_new_synapses,
+																		int postsynaptic_group_id,
+																		int poststart,
+																		int prestart,
+																		int post_width,
+																		int post_height,
+																		int pre_width,
+																		int pre_height,
+																		int number_of_new_synapses_per_postsynaptic_neuron,
+																		int number_of_postsynaptic_neurons_in_group,
+																		int * d_presynaptic_neuron_indices,
+																		int * d_postsynaptic_neuron_indices,
+																		float * d_synaptic_efficacies_or_weights,
+																		float standard_deviation_sigma,
 																		bool presynaptic_group_is_input,
 																		curandState_t* d_states);
 
