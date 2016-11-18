@@ -30,8 +30,8 @@ int IzhikevichSpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
   return new_group_id;
 }
 
-void IzhikevichSpikingNeurons::reset() {
-  SpikingNeurons::reset();
-  backend.reset();
+void IzhikevichSpikingNeurons::reset_state() {
+  SpikingNeurons::reset_state();
+  backend.reset_state();
 }
 

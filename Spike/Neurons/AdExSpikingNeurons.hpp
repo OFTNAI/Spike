@@ -23,6 +23,7 @@ namespace Backend {
   };
 }
 
+#include "Spike/Backend/Dummy/Neurons/AdExSpikingNeurons.hpp"
 
 class AdExSpikingNeurons : public SpikingNeurons {
 public:
@@ -44,7 +45,7 @@ public:
 
   virtual int AddGroup(neuron_parameters_struct * group_params);
   virtual void update_membrane_potentials(float timestep, float current_time_in_seconds);
-  virtual void reset();
+  virtual void reset_state();
 };
 
 #endif

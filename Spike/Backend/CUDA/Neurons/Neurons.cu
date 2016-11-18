@@ -31,7 +31,7 @@ namespace Backend {
       CudaSafeCall(cudaMemset(d_current_injections, 0.0f, total_number_of_neurons*sizeof(float)));
     }
 
-    void Neurons::reset() {
+    void Neurons::reset_state() {
       reset_current_injections();
     }
   } // ::Backend::CUDA

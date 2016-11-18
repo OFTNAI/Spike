@@ -41,7 +41,7 @@ namespace Backend {
       CudaSafeCall(cudaMemcpy(resting_potentials, after_spike_reset_membrane_potentials_c, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
     }
 
-    void SpikingNeurons::reset() {
+    void SpikingNeurons::reset_state() {
       // Set last spike times to -1000 so that the times do not affect current simulation.
       float* last_spike_times;
       last_spike_times = (float*)malloc(sizeof(float)*total_number_of_neurons);

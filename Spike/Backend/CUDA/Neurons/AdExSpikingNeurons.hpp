@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Spike/Neurons/IzhikevichSpikingNeurons.hpp"
+#include "Spike/Neurons/AdExSpikingNeurons.hpp"
 #include "Spike/Backend/CUDA/CUDABackend.hpp"
 #include "Spike/Helpers/CUDAErrorCheckHelpers.hpp"
 #include <cuda.h>
@@ -23,7 +23,7 @@ namespace Backend {
       virtual void copy_constants_to_device();
       virtual void check_for_neuron_spikes(float current_time_in_seconds, float timestep);
       virtual void update_membrane_potentials(float timestep, float current_time_in_seconds);
-      virtual void reset();
+      virtual void reset_state();
     };
 
     __global__ void check_for_neuron_spikes_kernel

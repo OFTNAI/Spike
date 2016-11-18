@@ -135,7 +135,7 @@ void Simulator::RunSimulation(SpikeAnalyser *spike_analyser) {
 		TimerWithMessages * epoch_timer = new TimerWithMessages();
 		printf("Starting Epoch: %d\n", epoch_number);
 
-		spiking_model->reset_model_activities();
+		spiking_model->reset_state();
 
 		float current_time_in_seconds = 0.0f;
 
@@ -301,7 +301,7 @@ void Simulator::perform_pre_stimulus_presentation_instructions(int stimulus_inde
 	switch (simulator_options->stimuli_presentation_options->presentation_format) {
 		case PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_STIMULI: case PRESENTATION_FORMAT_RANDOM_RESET_BETWEEN_EACH_STIMULUS:
 		{
-			spiking_model->reset_model_activities();
+			spiking_model->reset_state();
 
 			break;
 		}
@@ -311,7 +311,7 @@ void Simulator::perform_pre_stimulus_presentation_instructions(int stimulus_inde
 			(stimulus_is_new_object) ? printf("Stimulus is new object\n") : printf("Stimulus is not new object\n");
 
 			if (stimulus_is_new_object) {
-				spiking_model->reset_model_activities();
+				spiking_model->reset_state();
 			}
 
 			break;
@@ -323,7 +323,7 @@ void Simulator::perform_pre_stimulus_presentation_instructions(int stimulus_inde
 
 
 	spiking_model->input_spiking_neurons->current_stimulus_index = stimulus_index;
-	spiking_model->input_spiking_neurons->reset_neuron_activities();
+	spiking_model->input_spiking_neurons->reset_state();
 
 
 }

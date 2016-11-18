@@ -27,7 +27,7 @@ namespace Backend {
 
       virtual void check_for_neuron_spikes(float current_time_in_seconds, float timestep);
 
-      virtual void reset();
+      virtual void reset_state();
       
       /**  
        *  Unused in this class. Allows copying of static data related to neuron dynamics to the device.

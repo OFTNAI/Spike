@@ -9,9 +9,11 @@ struct input_spiking_neuron_parameters_struct : spiking_neuron_parameters_struct
 namespace Backend {
   class InputSpikingNeurons : public SpikingNeurons {
   public:
-    virtual void reset() {};
+    virtual void reset_state() {};
   };
-} 
+}
+
+//#include "Spike/Backend/Dummy/Neurons/InputSpikingNeurons.hpp"
 
 class InputSpikingNeurons : public SpikingNeurons {
 public:
@@ -25,7 +27,7 @@ public:
 
   virtual int AddGroup(neuron_parameters_struct * group_params);
   virtual bool stimulus_is_new_object_for_object_by_object_presentation(int stimulus_index);
-  virtual void reset();
+  virtual void reset_state();
 };
 
 #endif

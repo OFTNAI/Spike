@@ -54,7 +54,7 @@ namespace Backend {
       CudaCheckError();
     }
 
-    void IzhikevichSpikingNeurons::reset() {
+    void IzhikevichSpikingNeurons::reset_state() {
       CudaSafeCall(cudaMemset(d_states_u, 0.0f, sizeof(float)*total_number_of_neurons));
     }
 

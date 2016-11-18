@@ -1,4 +1,5 @@
 #include "Neurons.hpp"
+#include <cassert>
 #include <stdlib.h>
 //CUDA #include "../Helpers/CUDAErrorCheckHelpers.hpp"
 #include "../Helpers/TerminalHelpers.hpp"
@@ -66,6 +67,9 @@ int Neurons::AddGroup(neuron_parameters_struct * group_params){
 	return new_group_id;
 }
 
-void Neurons::reset() {
-  backend.reset();
+void Neurons::reset_state() {
+  backend.reset_state();
 }
+
+MAKE_PREPARE_BACKEND(Neurons);
+

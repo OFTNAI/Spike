@@ -33,8 +33,8 @@ int AdExSpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
   return new_group_id;
 }
 
-void AdExSpikingNeurons::reset() {
-  SpikingNeurons::reset();
-  backend.reset();
+void AdExSpikingNeurons::reset_state() {
+  SpikingNeurons::reset_state();
+  backend.reset_state();
 }
 

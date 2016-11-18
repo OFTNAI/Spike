@@ -9,8 +9,20 @@
  *
  */
 
+#include "Spike/Backend/Macros.hpp"
 #include "Spike/Backend/Context.hpp"
 #include "Spike/Backend/Backend.hpp"
+#include "Spike/Backend/Device.hpp"
+
+namespace Backend {
+  class Neurons : public Generic {
+  public:
+    virtual void reset_state();
+    virtual void prepare();
+  };
+}
+
+#include "Spike/Backend/Dummy/Neurons/Neurons.hpp"
 
 #include <stdio.h>
 
@@ -29,13 +41,6 @@ struct neuron_parameters_struct {
 
 	int group_shape[2];		/**< An int array with 2 values describing the 2D shape of a neuron group */
 };
-
-namespace Backend {
-  class Neurons : public Generic {
-  public:
-    virtual void reset();
-  };
-}
 
 /*!
   This is the parent class for SpikingNeurons.
@@ -60,7 +65,7 @@ public:
   int **group_shapes;							/**< The 2D shape of each group. */
 
   // Functions
-  void set_backend(Context* ctx);
+  virtual void prepare_backend(Context* ctx);
   
   /**  
    *  Determines the total number of neurons by which the simulation should increase.
@@ -74,7 +79,7 @@ public:
   /**  
    *  Resets any undesired data which is dynamically reassigned during a simulation. In this case, the current to be injected at the next time step.
    */
-  virtual void reset();
+  virtual void reset_state();
 };
 
 #endif

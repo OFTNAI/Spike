@@ -20,6 +20,8 @@ namespace Backend {
   };
 }
 
+#include "Spike/Backend/Dummy/Neurons/LIFSpikingNeurons.hpp"
+
 class LIFSpikingNeurons : public SpikingNeurons {
 public:
   // Constructor/Destructor

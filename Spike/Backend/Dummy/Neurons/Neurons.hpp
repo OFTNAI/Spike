@@ -1,15 +1,14 @@
 #pragma once
 
 #include "Spike/Neurons/Neurons.hpp"
-#include "Spike/Backend/Dummy/DummyBackend.hpp"
 
 namespace Backend {
   namespace Dummy {
-    class Neurons : Generic {
+    class Neurons : public ::Backend::Neurons {
     public:
-
-      ::Neurons* front;
-      
+      virtual void prepare() {}
+      virtual void reset_state() {}
     };
   } // namespace Dummy
 } // namespace Backend
+

@@ -17,8 +17,11 @@ struct spiking_neuron_parameters_struct : neuron_parameters_struct {
 
 namespace Backend {
   class SpikingNeurons : public Neurons {
+    virtual void check_for_neuron_spikes(float current_time_in_seconds, float timestep) = 0;
   };
 }
+
+#include "Spike/Backend/Dummy/Neurons/SpikingNeurons.hpp"
 
 class SpikingNeurons : public Neurons {
 public:
@@ -26,7 +29,7 @@ public:
   SpikingNeurons();
   ~SpikingNeurons();
 
-  Backend::SpikingNeurons backend;
+  Backend::SpikingNeurons* backend;
   
   // Variables
   int bitarray_length;
@@ -39,9 +42,11 @@ public:
   unsigned char* bitarray_of_neuron_spikes = NULL;
 
   // Functions
+  virtual void prepare_backend(Context* ctx);
   virtual int AddGroup(neuron_parameters_struct * group_params);
   virtual void update_membrane_potentials(float timestep, float current_time_in_seconds);
-  virtual void reset();
+  virtual void check_for_neuron_spikes(float current_time_in_seconds, float timestep);
+  virtual void reset_state();
 };
 
 #endif

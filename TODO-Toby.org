@@ -8,6 +8,7 @@ CLOSED: [2016-11-11 Fri 14:00]
 - State "PROGRESS"   from "TODO"       [2016-11-11 Fri 14:00]
 :END:
 ** TODO Remove `d_' from pointer names in CUDA backend classes ...
+** TODO Always check pointers before freeing!
 ** Questions / thoughts
 *** What is a "backend"?
 + A set of classes / functions that performs the computations represented in the front end.

@@ -1,6 +1,7 @@
 #include "SpikingModel.hpp"
 
-#include "../Helpers/TerminalHelpers.hpp"
+#include "Spike/Helpers/TerminalHelpers.hpp"
+#include "Spike/Backend/Context.hpp"
 
 
 // SpikingModel Constructor
@@ -85,49 +86,62 @@ void SpikingModel::finalise_model() {
 
 }
 
-void SpikingModel::copy_model_to_device(bool high_fidelity_spike_storage) {
+void SpikingModel::init_backend(bool high_fidelity_spike_storage) {
+  Backend::init_global_context();
+  Context* ctx = Backend::get_current_context();
 
-	TimerWithMessages * timer = new TimerWithMessages("Setting Up Network...\n");
+  TimerWithMessages* timer = new TimerWithMessages("Setting Up Network...\n");
 
-	int threads_per_block_neurons = 512;
-	int threads_per_block_synapses = 512;
-	spiking_synapses->set_threads_per_block_and_blocks_per_grid(threads_per_block_synapses);
-	spiking_neurons->set_threads_per_block_and_blocks_per_grid(threads_per_block_neurons);
-	input_spiking_neurons->set_threads_per_block_and_blocks_per_grid(threads_per_block_neurons);
+  ctx->params.high_fidelity_spike_storage = high_fidelity_spike_storage;
+  ctx->params.threads_per_block_neurons = 512;
+  ctx->params.threads_per_block_synapses = 512;
+  ctx->params.maximum_axonal_delay_in_timesteps = spiking_synapses->maximum_axonal_delay_in_timesteps;
 
-	// Provides order of magnitude speedup for LIF (All to all atleast). 
-	// Because all synapses contribute to current_injection on every iteration, having all threads in a block accessing only 1 or 2 positions in memory causes massive slowdown.
-	// Randomising order of synapses means that each block is accessing a larger number of points in memory.
-	// if (temp_model_type == 1) spiking_synapses->shuffle_synapses();
+  // Provides order of magnitude speedup for LIF (All to all atleast). 
+  // Because all synapses contribute to current_injection on every iteration, having all threads in a block accessing only 1 or 2 positions in memory causes massive slowdown.
+  // Randomising order of synapses means that each block is accessing a larger number of points in memory.
+  // if (temp_model_type == 1) spiking_synapses->shuffle_synapses();
 
-	spiking_synapses->allocate_device_pointers();
-	spiking_neurons->allocate_device_pointers(spiking_synapses->maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
-	input_spiking_neurons->allocate_device_pointers(spiking_synapses->maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
-	stdp_rule->allocate_device_pointers();
+  /*
 
-	spiking_synapses->copy_constants_and_initial_efficacies_to_device();
-	spiking_neurons->copy_constants_to_device();
-	input_spiking_neurons->copy_constants_to_device();
+  spiking_neurons->set_threads_per_block_and_blocks_per_grid(threads_per_block_neurons);
+  spiking_neurons->allocate_device_pointers(spiking_synapses->maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
+  spiking_neurons->copy_constants_to_device();
 
-	timer->stop_timer_and_log_time_and_message("Network Setup.", true);
+  input_spiking_neurons->set_threads_per_block_and_blocks_per_grid(threads_per_block_neurons);
+  input_spiking_neurons->allocate_device_pointers(spiking_synapses->maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
+  input_spiking_neurons->copy_constants_to_device();
 
+  spiking_synapses->set_threads_per_block_and_blocks_per_grid(threads_per_block_synapses);
+  spiking_synapses->allocate_device_pointers();
+  spiking_synapses->copy_constants_and_initial_efficacies_to_device();
 
+  stdp_rule->allocate_device_pointers();
+
+  */
+
+  spiking_synapses->prepare_backend(ctx);
+  spiking_neurons->prepare_backend(ctx);
+  input_spiking_neurons->prepare_backend(ctx);
+  stdp_rule->prepare_backend(ctx);
+
+  timer->stop_timer_and_log_time_and_message("Network Setup.", true);
 }
 
 
-void SpikingModel::reset_model_activities() {
+void SpikingModel::reset_state() {
 
-	spiking_neurons->reset_neuron_activities();
-	input_spiking_neurons->reset_neuron_activities();
-	spiking_synapses->reset_synapse_activities();
-	stdp_rule->reset_STDP_activities();
+  spiking_neurons->reset_state();
+  input_spiking_neurons->reset_state();
+  spiking_synapses->reset_state();
+  stdp_rule->reset_state();
 
 }
 
 
 void SpikingModel::perform_per_timestep_model_instructions(float current_time_in_seconds, bool apply_stdp_to_relevant_synapses){
 
-	spiking_neurons->reset_current_injections();
+	spiking_neurons->reset_state();
 
 	spiking_neurons->check_for_neuron_spikes(current_time_in_seconds, timestep);
 	input_spiking_neurons->check_for_neuron_spikes(current_time_in_seconds, timestep);

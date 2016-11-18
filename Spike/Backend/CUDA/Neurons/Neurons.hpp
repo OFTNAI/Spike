@@ -34,6 +34,8 @@ namespace Backend {
        *  A local, non-polymorphic function called in to determine the CUDA Device thread (Neurons::threads_per_block) and block dimensions (Neurons::number_of_neuron_blocks_per_grid).
        */
       void set_threads_per_block_and_blocks_per_grid(int threads);
+
+      virtual void prepare();
     };
   } // namespace CUDA
 } // namespace Backend

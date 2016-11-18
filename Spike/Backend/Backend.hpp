@@ -6,7 +6,7 @@ namespace Backend {
   class Generic {
   public:
     bool ready = false;
-    Context* context;
+    Context* context = _global_ctx;
   };
 } // namespace Backend
 

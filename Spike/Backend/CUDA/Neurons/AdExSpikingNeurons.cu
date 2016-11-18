@@ -77,7 +77,7 @@ namespace Backend {
 	CudaCheckError();
     }
 
-    void AdExSpikingNeurons::reset() {
+    void AdExSpikingNeurons::reset_state() {
       // Set adapatation value to zero
       CudaSafeCall(cudaMemcpy(d_adaptation_values_w, adaptation_values_w, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
     }
