@@ -60,6 +60,9 @@ void ImagePoissonInputSpikingNeurons::set_up_rates(const char * fileList, const 
 
 }
 
+void ImagePoissonInputSpikingNeurons::copy_rates_to_device() {
+  assert("TODO" && false);
+}
 
 void ImagePoissonInputSpikingNeurons::load_image_names_from_file_list(const char * fileList, const char * inputDirectory) {
     

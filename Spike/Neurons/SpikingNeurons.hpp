@@ -42,6 +42,10 @@ public:
   float* thresholds_for_action_potential_spikes = NULL;
   unsigned char* bitarray_of_neuron_spikes = NULL;
 
+  float* last_spike_time_of_each_neuron = NULL;
+  float* membrane_potentials_v = NULL;
+  float* resting_potentials = NULL;
+
   // Functions
   virtual void prepare_backend(Context* ctx);
   virtual int AddGroup(neuron_parameters_struct * group_params);

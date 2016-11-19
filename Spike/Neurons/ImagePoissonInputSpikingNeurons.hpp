@@ -38,6 +38,7 @@ public:
 	void load_image_names_from_file_list(const char * fileList, const char * inputDirectory);
 	void load_gabor_filter_parameters(const char * filterParameters, const char * inputDirectory);
 	void load_rates_from_files(const char * inputDirectory, float max_rate_scaling_factor);
+        virtual void copy_rates_to_device();
 	int calculate_gabor_index(int orientationIndex, int wavelengthIndex, int phaseIndex);
 
 	//JI VARIABLES
