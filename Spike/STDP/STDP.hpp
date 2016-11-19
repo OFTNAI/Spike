@@ -34,11 +34,11 @@ public:
   ~STDP();
 
   void prepare_backend(Context* ctx) {
-    printf("TODO: Synapse prepare_backend\n");
+    printf("TODO: STDP prepare_backend\n");
   }
 
   void reset_state() {
-    printf("TODO: Synapse reset_state\n");
+    printf("TODO: STDP reset_state; cf reset_STDP_activities\n");
   }
 
   // Set STDP Parameters

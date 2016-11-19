@@ -37,7 +37,8 @@ public:
 
   virtual int AddGroup(neuron_parameters_struct * group_params);
 
-  virtual void update_membrane_potentials(float timestep,float current_time_in_seconds);
+  // TODO:
+  // virtual void update_membrane_potentials(float timestep,float current_time_in_seconds);
 
 };
 

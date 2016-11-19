@@ -22,7 +22,7 @@ namespace Backend {
 
 class PoissonInputSpikingNeurons : public InputSpikingNeurons {
 public:
-  PoissonInputSpikingNeurons();
+  PoissonInputSpikingNeurons() = default;
   ~PoissonInputSpikingNeurons();
 
   float rate = 0;
@@ -32,7 +32,8 @@ public:
   virtual int AddGroup(neuron_parameters_struct * group_params);
   void set_up_rates();
 
-  virtual void update_membrane_potentials(float timestep, float current_time_in_seconds);
+  // TODO:
+  // virtual void update_membrane_potentials(float timestep, float current_time_in_seconds);
   virtual void init_random_state();
 };
 

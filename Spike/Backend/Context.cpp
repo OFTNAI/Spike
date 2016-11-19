@@ -1,11 +1,13 @@
 #include "Context.hpp"
 
+Context* _global_ctx;
+
 namespace Backend {
   void init_global_context() {
     if (!_global_ctx)
       _global_ctx = new Context;
     // TODO:
-    _global_ctx->Device = SPIKE_DEVICE_CUDA;
+    _global_ctx->device = SPIKE_DEVICE_DUMMY;
   }
 
   Context* get_current_context() {
