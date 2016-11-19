@@ -28,7 +28,7 @@ public:
   LIFSpikingNeurons();
   ~LIFSpikingNeurons();
 
-  Backend::LIFSpikingNeurons backend;
+  Backend::LIFSpikingNeurons* backend;
   
   float * membrane_time_constants_tau_m;
   float * membrane_resistances_R;

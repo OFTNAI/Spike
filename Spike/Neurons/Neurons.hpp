@@ -51,7 +51,7 @@ public:
   Neurons();
   ~Neurons();
 
-  Backend::Neurons backend;
+  Backend::Neurons* backend;
   
   // Variables
   int total_number_of_neurons;				/**< Tracks the total neuron population size. */

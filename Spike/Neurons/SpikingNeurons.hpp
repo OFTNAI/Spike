@@ -17,6 +17,7 @@ struct spiking_neuron_parameters_struct : neuron_parameters_struct {
 
 namespace Backend {
   class SpikingNeurons : public Neurons {
+  public:
     virtual void check_for_neuron_spikes(float current_time_in_seconds, float timestep) = 0;
   };
 }
