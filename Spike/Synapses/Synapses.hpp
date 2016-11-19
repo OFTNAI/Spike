@@ -23,6 +23,8 @@
 */
 #include "Spike/CUDA_Hacks.hpp"
 
+#include "Spike/Backend/Context.hpp"
+
 #include "../Helpers/RandomStateManager.hpp"
 
 
@@ -56,58 +58,61 @@ struct synapse_parameters_struct {
 class Synapses {
 
 public:
+  // Constructor/Destructor
+  Synapses();
+  ~Synapses();
 
-	// Constructor/Destructor
-	Synapses();
-	~Synapses();
-
-
-	// Variables
-	int total_number_of_synapses;
-	int temp_number_of_synapses_in_last_group;
-	int largest_synapse_group_size;
-	bool print_synapse_group_details;
+  // Variables
+  int total_number_of_synapses;
+  int temp_number_of_synapses_in_last_group;
+  int largest_synapse_group_size;
+  bool print_synapse_group_details;
 	
-	// Host Pointers
-	int* presynaptic_neuron_indices;
-	int* postsynaptic_neuron_indices; 
-	int* original_synapse_indices;
-	int* synapse_postsynaptic_neuron_count_index;
-	float* synaptic_efficacies_or_weights;
+  // Host Pointers
+  int* presynaptic_neuron_indices;
+  int* postsynaptic_neuron_indices; 
+  int* original_synapse_indices;
+  int* synapse_postsynaptic_neuron_count_index;
+  float* synaptic_efficacies_or_weights;
 
-	// Device pointers
-	int* d_presynaptic_neuron_indices;
-	int* d_postsynaptic_neuron_indices;
-	int* d_temp_presynaptic_neuron_indices;
-	int* d_temp_postsynaptic_neuron_indices;
-	int * d_synapse_postsynaptic_neuron_count_index;
-	float* d_synaptic_efficacies_or_weights;
-	float* d_temp_synaptic_efficacies_or_weights;
+  // Device pointers
+  int* d_presynaptic_neuron_indices;
+  int* d_postsynaptic_neuron_indices;
+  int* d_temp_presynaptic_neuron_indices;
+  int* d_temp_postsynaptic_neuron_indices;
+  int * d_synapse_postsynaptic_neuron_count_index;
+  float* d_synaptic_efficacies_or_weights;
+  float* d_temp_synaptic_efficacies_or_weights;
 
-	// CUDA Specific
-	dim3 number_of_synapse_blocks_per_grid;
-	dim3 threads_per_block;
+  // CUDA Specific
+  dim3 number_of_synapse_blocks_per_grid;
+  dim3 threads_per_block;
 
-	// Functions
-	virtual void AddGroup(int presynaptic_group_id, 
-						int postsynaptic_group_id, 
-						Neurons * neurons,
-						Neurons * input_neurons,
-						float timestep,
-						synapse_parameters_struct * synapse_params);
+  // Functions
+  void prepare_backend(Context* ctx) {
+    printf("TODO: Synapse prepare_backend\n");
+  }
 
-	virtual void allocate_device_pointers();
-	virtual void copy_constants_and_initial_efficacies_to_device();
+  void reset_state() {
+    printf("TODO: Synapse reset_state\n");
+  }
 
+  virtual void AddGroup(int presynaptic_group_id, 
+                        int postsynaptic_group_id, 
+                        Neurons * neurons,
+                        Neurons * input_neurons,
+                        float timestep,
+                        synapse_parameters_struct * synapse_params);
 
-	virtual void set_threads_per_block_and_blocks_per_grid(int threads);
-	virtual void increment_number_of_synapses(int increment);
-	virtual void shuffle_synapses();
+  virtual void allocate_device_pointers();
+  virtual void copy_constants_and_initial_efficacies_to_device();
+
+  virtual void set_threads_per_block_and_blocks_per_grid(int threads);
+  virtual void increment_number_of_synapses(int increment);
+  virtual void shuffle_synapses();
 
 protected:
-	RandomStateManager * random_state_manager;
-
-	
+  RandomStateManager * random_state_manager;
 };
 
 /*CUDA
