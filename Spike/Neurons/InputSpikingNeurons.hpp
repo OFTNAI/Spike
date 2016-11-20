@@ -17,7 +17,7 @@ namespace Backend {
 
 class InputSpikingNeurons : public SpikingNeurons {
 public:
-  Backend::InputSpikingNeurons* backend;
+  //Backend::InputSpikingNeurons* backend;
 	
   int current_stimulus_index = 0;
 

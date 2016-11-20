@@ -31,7 +31,7 @@ public:
   AdExSpikingNeurons();
   ~AdExSpikingNeurons();
 
-  Backend::AdExSpikingNeurons* backend;
+  //Backend::AdExSpikingNeurons* backend;
   
   float * adaptation_values_w = NULL;
   float * membrane_capacitances_Cm = NULL;

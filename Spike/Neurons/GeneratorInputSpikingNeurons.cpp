@@ -20,7 +20,7 @@ int GeneratorInputSpikingNeurons::AddGroup(neuron_parameters_struct * group_para
 
 void GeneratorInputSpikingNeurons::reset_state() {
   InputSpikingNeurons::reset_state();
-  backend->reset_state();
+  ((Backend::GeneratorInputSpikingNeurons*)backend)->reset_state();
 }
 
 void GeneratorInputSpikingNeurons::update_membrane_potentials(float timestep, float current_time_in_seconds){

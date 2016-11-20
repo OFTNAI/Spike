@@ -51,7 +51,8 @@ public:
   Neurons();
   ~Neurons();
 
-  Backend::Neurons* backend;
+  // Backend::Neurons* backend; // can't do this if we want inheritance to work w/o shadowing!
+  void* backend;
   
   // Variables
   int total_number_of_neurons;				/**< Tracks the total neuron population size. */

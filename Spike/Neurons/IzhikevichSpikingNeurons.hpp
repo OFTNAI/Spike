@@ -24,7 +24,7 @@ public:
   IzhikevichSpikingNeurons();
   ~IzhikevichSpikingNeurons();
 
-  Backend::IzhikevichSpikingNeurons* backend;
+  //Backend::IzhikevichSpikingNeurons* backend;
   
   float * param_a = NULL;
   float * param_b = NULL;

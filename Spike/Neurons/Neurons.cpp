@@ -69,7 +69,7 @@ int Neurons::AddGroup(neuron_parameters_struct * group_params){
 
 void Neurons::reset_state() {
   std::cout << backend << "\n";
-  backend->reset_state();
+  ((Backend::Neurons*)backend)->reset_state();
 }
 
 MAKE_STUB_PREPARE_BACKEND(Neurons);

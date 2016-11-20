@@ -30,7 +30,7 @@ public:
   SpikingNeurons();
   ~SpikingNeurons();
 
-  Backend::SpikingNeurons* backend;
+  //Backend::SpikingNeurons* backend;
   
   // Variables
   int bitarray_length;

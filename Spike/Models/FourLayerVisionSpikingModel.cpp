@@ -352,7 +352,8 @@ void FourLayerVisionSpikingModel::init_backend(bool high_fidelity_spike_storage)
 	
 	adding_synapses_timer->stop_timer_and_log_time_and_message("Synapses Added.", true);
 
-        printf("TODO: Split backend-specific stuff out into separate function\n      Ideally, make it automatic for derived classes...");
+        printf("TODO: Split backend-specific stuff out into separate function\n      Ideally, make it automatic for derived classes...\n");
         SpikingModel::init_backend(high_fidelity_spike_storage);
+        std::cout << "spiking_neurons->backend: " << spiking_neurons->backend << "\n";
         image_poisson_input_spiking_neurons->copy_rates_to_device();
 }
