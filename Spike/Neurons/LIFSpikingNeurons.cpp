@@ -37,4 +37,5 @@ int LIFSpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
 	return new_group_id;
 }
 
+MAKE_PREPARE_BACKEND(LIFSpikingNeurons);
 

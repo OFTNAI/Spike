@@ -33,6 +33,6 @@ void PoissonInputSpikingNeurons::set_up_rates() {
 void PoissonInputSpikingNeurons::init_random_state() {
   random_state_manager = new RandomStateManager();
   random_state_manager->setup_random_states();
-  assert("TODO SPLIT OUT BACKEND OF RANDOM STATE MANAGER" && false);
+  printf("TODO SPLIT OUT BACKEND OF RANDOM STATE MANAGER\n");
 }
 

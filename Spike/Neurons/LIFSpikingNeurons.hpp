@@ -35,6 +35,7 @@ public:
 
   float refractory_period_in_seconds;
 
+  virtual void prepare_backend(Context* ctx);
   virtual int AddGroup(neuron_parameters_struct * group_params);
 
   // TODO:

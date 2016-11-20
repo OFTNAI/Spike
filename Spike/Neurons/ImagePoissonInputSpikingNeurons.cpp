@@ -56,12 +56,11 @@ void ImagePoissonInputSpikingNeurons::set_up_rates(const char * fileList, const 
   load_image_names_from_file_list(fileList, inputDirectory);
   load_gabor_filter_parameters(filterParameters, inputDirectory);
   load_rates_from_files(inputDirectory, max_rate_scaling_factor);
-  copy_rates_to_device();
 
 }
 
 void ImagePoissonInputSpikingNeurons::copy_rates_to_device() {
-  assert("TODO" && false);
+  printf("TODO ImagePoissonInputSpikingNeurons::copy_rates_to_device\n");
 }
 
 void ImagePoissonInputSpikingNeurons::load_image_names_from_file_list(const char * fileList, const char * inputDirectory) {
@@ -288,4 +287,6 @@ int ImagePoissonInputSpikingNeurons::calculate_gabor_index(int orientationIndex,
 bool ImagePoissonInputSpikingNeurons::stimulus_is_new_object_for_object_by_object_presentation(int stimulus_index) {
   return (stimulus_index % total_number_of_transformations_per_object == 0) ? true : false;
 }
+
+MAKE_PREPARE_BACKEND(ImagePoissonInputSpikingNeurons);
 

@@ -81,11 +81,6 @@ void SpikingModel::AddSynapseGroupsForNeuronGroupAndEachInputGroup(int postsynap
 }
 
 
-
-void SpikingModel::finalise_model() {
-
-}
-
 void SpikingModel::init_backend(bool high_fidelity_spike_storage) {
   Backend::init_global_context();
   Context* ctx = Backend::get_current_context();

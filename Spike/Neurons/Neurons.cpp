@@ -68,6 +68,7 @@ int Neurons::AddGroup(neuron_parameters_struct * group_params){
 }
 
 void Neurons::reset_state() {
+  std::cout << backend << "\n";
   backend->reset_state();
 }
 

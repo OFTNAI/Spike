@@ -37,8 +37,9 @@ int SpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
 	return new_group_id;
 }
 
-
+#include <iostream>
 void SpikingNeurons::reset_state() {
+  std::cout << backend << "!\n";
   Neurons::reset_state();
   backend->reset_state();
 }

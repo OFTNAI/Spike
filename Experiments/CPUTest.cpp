@@ -46,7 +46,7 @@ int main (int argc, char *argv[]){
 
         four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2E_FF[0] = 0.01;
 
-        four_layer_vision_spiking_model->finalise_model();
+        //four_layer_vision_spiking_model->finalise_model();
         four_layer_vision_spiking_model->init_backend(high_fidelity_spike_storage);
 
         // CREATE SIMULATOR

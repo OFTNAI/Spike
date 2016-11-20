@@ -93,7 +93,8 @@ public:
 	vector<int> INHIBITORY_NEURONS;
 
 
-	virtual void finalise_model();
+  // virtual void finalise_model();
+  virtual void init_backend(bool high_fidelity_spike_storage);
 
 
 };
