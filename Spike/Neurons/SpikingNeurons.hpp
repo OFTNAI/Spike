@@ -1,7 +1,6 @@
 #ifndef SpikingNeurons_H
 #define SpikingNeurons_H
 
-//CUDA #include <cuda.h>
 #include <stdio.h>
 
 #include "Neurons.hpp"

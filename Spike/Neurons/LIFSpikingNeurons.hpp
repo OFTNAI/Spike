@@ -1,8 +1,6 @@
 #ifndef LIFSpikingNeurons_H
 #define LIFSpikingNeurons_H
 
-//CUDA #include <cuda.h>
-
 #include "SpikingNeurons.hpp"
 
 

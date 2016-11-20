@@ -1,7 +1,6 @@
 #include "Neurons.hpp"
 #include <cassert>
 #include <stdlib.h>
-//CUDA #include "../Helpers/CUDAErrorCheckHelpers.hpp"
 #include "../Helpers/TerminalHelpers.hpp"
 
 

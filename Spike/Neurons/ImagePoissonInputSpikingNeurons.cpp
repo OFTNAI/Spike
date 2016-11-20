@@ -1,7 +1,6 @@
 #include "ImagePoissonInputSpikingNeurons.hpp"
 #include <stdlib.h>
 #include <stdio.h>
-//CUDA #include "../Helpers/CUDAErrorCheckHelpers.hpp"
 #include <algorithm> // For random shuffle
 
 #include <iostream>
