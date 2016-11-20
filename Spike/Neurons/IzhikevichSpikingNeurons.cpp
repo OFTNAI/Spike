@@ -32,6 +32,6 @@ int IzhikevichSpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
 
 void IzhikevichSpikingNeurons::reset_state() {
   SpikingNeurons::reset_state();
-  backend->reset_state();
+  ((Backend::IzhikevichSpikingNeurons*)backend)->reset_state();
 }
 
