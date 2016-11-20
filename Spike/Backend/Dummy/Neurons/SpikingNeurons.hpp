@@ -6,7 +6,6 @@ namespace Backend {
   namespace Dummy {
     class SpikingNeurons : public ::Backend::SpikingNeurons {
     public:
-
       virtual void reset_state();
       virtual void copy_constants_to_device();
     };
