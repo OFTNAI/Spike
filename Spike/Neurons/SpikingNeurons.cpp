@@ -39,8 +39,7 @@ int SpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
 
 #include <iostream>
 void SpikingNeurons::reset_state() {
-  std::cout << backend << "!\n";
-  Neurons::reset_state();
+   Neurons::reset_state();
   ((Backend::SpikingNeurons*)backend)->reset_state();
 }
 
