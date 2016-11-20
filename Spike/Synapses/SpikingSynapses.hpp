@@ -22,8 +22,6 @@ struct spiking_synapse_parameters_struct : synapse_parameters_struct {
 
 class SpikingSynapses : public Synapses {
 public:
-  // Constructor/Destructor
-  SpikingSynapses();
   ~SpikingSynapses();
 
   // Host Pointers
@@ -42,7 +40,6 @@ public:
                         synapse_parameters_struct * synapse_params);
 
   virtual void reset_state();
-  virtual void set_threads_per_block_and_blocks_per_grid(int threads);
   virtual void increment_number_of_synapses(int increment);
   virtual void shuffle_synapses();
 
