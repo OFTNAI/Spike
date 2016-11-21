@@ -176,24 +176,9 @@ void Synapses::AddGroup(int presynaptic_group_id,
             int total_number_of_new_synapses = number_of_new_synapses_per_postsynaptic_neuron * number_of_postsynaptic_neurons_in_group;
             this->increment_number_of_synapses(total_number_of_new_synapses);
 
-            if (total_number_of_new_synapses > largest_synapse_group_size) {
-
-              largest_synapse_group_size = total_number_of_new_synapses;
-
-              /*CUDA
-                CudaSafeCall(cudaMalloc((void **)&temp_presynaptic_neuron_indices, sizeof(int)*total_number_of_new_synapses));
-                CudaSafeCall(cudaMalloc((void **)&temp_postsynaptic_neuron_indices, sizeof(int)*total_number_of_new_synapses));
-              */
-
-            }
-
-            /*CUDA
-              set_neuron_indices_by_sampling_from_normal_distribution<<<random_state_manager->block_dimensions, random_state_manager->threads_per_block>>>(total_number_of_new_synapses, postsynaptic_group_id, poststart, prestart, postsynaptic_group_shape[0], postsynaptic_group_shape[1], presynaptic_group_shape[0], presynaptic_group_shape[1], number_of_new_synapses_per_postsynaptic_neuron, number_of_postsynaptic_neurons_in_group, temp_presynaptic_neuron_indices, temp_postsynaptic_neuron_indices, temp_synaptic_efficacies_or_weights, standard_deviation_sigma, presynaptic_group_is_input, random_state_manager->states);
-              CudaCheckError();
-
-              CudaSafeCall(cudaMemcpy(&presynaptic_neuron_indices[original_number_of_synapses], temp_presynaptic_neuron_indices, sizeof(int)*total_number_of_new_synapses, cudaMemcpyDeviceToHost));
-              CudaSafeCall(cudaMemcpy(&postsynaptic_neuron_indices[original_number_of_synapses], temp_postsynaptic_neuron_indices, sizeof(int)*total_number_of_new_synapses, cudaMemcpyDeviceToHost));
-            */
+            printf("TODO: FIX set_neuron_indices_by_sampling_from_normal_distribution\n");
+            backend()->set_neuron_indices_by_sampling_from_normal_distribution
+              ();
 
             break;
           }

@@ -1,10 +1,13 @@
 #pragma once
 
+#include "SpikingSynapses.hpp"
 #include "Spike/Synapses/ConductanceSpikingSynapses.hpp"
 
 namespace Backend {
   namespace Dummy {
-    class ConductanceSpikingSynapses : public ::Backend::ConductanceSpikingSynapses {
+    class ConductanceSpikingSynapses : public virtual ::Backend::Dummy::SpikingSynapsesCommon,
+                                       public ::Backend::ConductanceSpikingSynapses
+    {
     public:
       virtual void prepare() {
         printf("TODO Backend::Dummy::ConductanceSpikingSynapses::prepare\n");

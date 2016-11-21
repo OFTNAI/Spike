@@ -22,7 +22,13 @@
 #include "../Helpers/RandomStateManager.hpp"
 
 namespace Backend {
-  class Synapses : public Generic {
+  class SynapsesCommon {
+  public:
+    virtual void set_neuron_indices_by_sampling_from_normal_distribution() = 0;
+  };
+
+  class Synapses : public Generic,
+                   public virtual SynapsesCommon {
   public:
     virtual void reset_state() = 0;
     virtual void prepare() = 0;

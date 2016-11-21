@@ -145,7 +145,6 @@ FourLayerVisionSpikingModel::~FourLayerVisionSpikingModel () {
 
 
 void FourLayerVisionSpikingModel::init_backend(bool high_fidelity_spike_storage) {
-  
 	lif_spiking_neurons = new LIFSpikingNeurons();
 	image_poisson_input_spiking_neurons = new ImagePoissonInputSpikingNeurons();
 	conductance_spiking_synapses = new ConductanceSpikingSynapses();
@@ -155,6 +154,9 @@ void FourLayerVisionSpikingModel::init_backend(bool high_fidelity_spike_storage)
 	spiking_synapses = conductance_spiking_synapses;
 	input_spiking_neurons = image_poisson_input_spiking_neurons;
 	stdp_rule = evans_stdp; 
+
+        printf("TODO: Split backend-specific stuff out into separate function\n      Ideally, make it automatic for derived classes...\n");
+        SpikingModel::init_backend(high_fidelity_spike_storage);
 
 	/////////// STDP SETUP ///////////
 	evans_stdp_parameters_struct * STDP_PARAMS = new evans_stdp_parameters_struct();
@@ -351,9 +353,5 @@ void FourLayerVisionSpikingModel::init_backend(bool high_fidelity_spike_storage)
 	}
 	
 	adding_synapses_timer->stop_timer_and_log_time_and_message("Synapses Added.", true);
-
-        printf("TODO: Split backend-specific stuff out into separate function\n      Ideally, make it automatic for derived classes...\n");
-        SpikingModel::init_backend(high_fidelity_spike_storage);
-        std::cout << "spiking_neurons->backend: " << spiking_neurons->backend() << "\n";
         image_poisson_input_spiking_neurons->copy_rates_to_device();
 }
