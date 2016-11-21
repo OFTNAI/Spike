@@ -8,19 +8,24 @@
 #define TYPEID_NAME(x) abi::__cxa_demangle(typeid((x)).name(), NULL, NULL, NULL)
 #endif
 
+#define ADD_BACKEND_GETTER(TYPE)                \
+  Backend::TYPE* backend() const {              \
+    return (Backend::TYPE*)_backend;            \
+  }
+
 #define MAKE_PREPARE_BACKEND(TYPE) \
   void TYPE::prepare_backend(Context* ctx = _global_ctx) {      \
     std::cout << "prepare_backend " #TYPE " with " << ctx->device << "\n"; \
     switch (ctx->device) {                                      \
     case Backend::SPIKE_DEVICE_DUMMY:                           \
-      backend = new Backend::Dummy::TYPE();                     \
+      _backend = new Backend::Dummy::TYPE();                    \
       break;                                                    \
     default:                                                    \
       assert("Unsupported backend" && false);                   \
     };                                                          \
-    ((Backend::TYPE*)backend)->context = ctx;                   \
-    ((Backend::TYPE*)backend)->prepare();                       \
-    std::cout << "backend: " << backend << "\n";                \
+    backend()->context = ctx;                                   \
+    backend()->prepare();                                       \
+    std::cout << "backend: " << _backend << "\n";               \
     std::cout << "this " #TYPE ": " << this << "\n";            \
   }
 

@@ -40,7 +40,7 @@ int SpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
 #include <iostream>
 void SpikingNeurons::reset_state() {
    Neurons::reset_state();
-  ((Backend::SpikingNeurons*)backend)->reset_state();
+   backend()->reset_state();
 }
 
 
@@ -49,7 +49,7 @@ void SpikingNeurons::update_membrane_potentials(float timestep, float current_ti
 }
 
 void SpikingNeurons::check_for_neuron_spikes(float current_time_in_seconds, float timestep) {
-  ((Backend::SpikingNeurons*)backend)->check_for_neuron_spikes(current_time_in_seconds, timestep);
+  backend()->check_for_neuron_spikes(current_time_in_seconds, timestep);
   // TODO: Copy the result from the backend
 }
 

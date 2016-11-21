@@ -13,11 +13,11 @@ namespace Backend {
   };
 }
 
-//#include "Spike/Backend/Dummy/Neurons/InputSpikingNeurons.hpp"
+#include "Spike/Backend/Dummy/Neurons/InputSpikingNeurons.hpp"
 
 class InputSpikingNeurons : public SpikingNeurons {
 public:
-  //Backend::InputSpikingNeurons* backend;
+  ADD_BACKEND_GETTER(InputSpikingNeurons);
 	
   int current_stimulus_index = 0;
 

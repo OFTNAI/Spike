@@ -25,6 +25,8 @@ public:
   PoissonInputSpikingNeurons() = default;
   ~PoissonInputSpikingNeurons();
 
+  ADD_BACKEND_GETTER(PoissonInputSpikingNeurons);
+  
   float rate = 0;
   float * rates = NULL;
   RandomStateManager * random_state_manager = NULL;

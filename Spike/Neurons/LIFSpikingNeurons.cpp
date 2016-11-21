@@ -37,5 +37,10 @@ int LIFSpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
 	return new_group_id;
 }
 
+void LIFSpikingNeurons::reset_state() {
+  SpikingNeurons::reset_state();
+  backend()->reset_state();
+}
+
 MAKE_PREPARE_BACKEND(LIFSpikingNeurons);
 

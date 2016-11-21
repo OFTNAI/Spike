@@ -60,7 +60,7 @@ public:
   Synapses();
   ~Synapses();
 
-  void* backend;
+  void* _backend;
   
   // Variables
   int total_number_of_synapses = 0;

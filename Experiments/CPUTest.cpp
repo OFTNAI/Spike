@@ -50,7 +50,7 @@ int main (int argc, char *argv[]){
         four_layer_vision_spiking_model->init_backend(high_fidelity_spike_storage);
         std::cout << "Done init_backend\n"
                   << "model->spiking_neurons->backend: "
-                  << four_layer_vision_spiking_model->spiking_neurons->backend
+                  << four_layer_vision_spiking_model->spiking_neurons->backend()
                   << "\n";
 
         // CREATE SIMULATOR

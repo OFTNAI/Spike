@@ -118,8 +118,8 @@ void SpikingModel::init_backend(bool high_fidelity_spike_storage) {
   spiking_synapses->prepare_backend(ctx);
   spiking_neurons->prepare_backend(ctx);
   std::cout << "spiking_neurons at " << spiking_neurons << "\n";
-  std::cout << "spiking_neurons->backend: " << spiking_neurons->backend << "\n";
-  std::cout << "   type: " << TYPEID_NAME(spiking_neurons->backend) << "\n";
+  std::cout << "spiking_neurons->backend: " << spiking_neurons->backend() << "\n";
+  std::cout << "   type: " << TYPEID_NAME(spiking_neurons->backend()) << "\n";
   input_spiking_neurons->prepare_backend(ctx);
   stdp_rule->prepare_backend(ctx);
 

@@ -22,6 +22,8 @@ public:
   GeneratorInputSpikingNeurons();
   ~GeneratorInputSpikingNeurons();
 
+  ADD_BACKEND_GETTER(GeneratorInputSpikingNeurons);
+  
   // Variables
   int length_of_longest_stimulus;
 

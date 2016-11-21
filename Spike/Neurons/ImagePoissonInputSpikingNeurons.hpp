@@ -28,6 +28,8 @@ public:
   ImagePoissonInputSpikingNeurons();
   ~ImagePoissonInputSpikingNeurons();
 
+  ADD_BACKEND_GETTER(ImagePoissonInputSpikingNeurons);
+  
   virtual int AddGroup(neuron_parameters_struct * group_params);
   void AddGroupForEachGaborType(neuron_parameters_struct * group_params);
 

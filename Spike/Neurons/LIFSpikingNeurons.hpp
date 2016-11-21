@@ -26,7 +26,7 @@ public:
   LIFSpikingNeurons();
   ~LIFSpikingNeurons();
 
-  //Backend::LIFSpikingNeurons* backend;
+  ADD_BACKEND_GETTER(LIFSpikingNeurons);
   
   float * membrane_time_constants_tau_m;
   float * membrane_resistances_R;
@@ -34,6 +34,7 @@ public:
   float refractory_period_in_seconds;
 
   virtual void prepare_backend(Context* ctx);
+  virtual void reset_state();
   virtual int AddGroup(neuron_parameters_struct * group_params);
 
   // TODO:
