@@ -84,7 +84,7 @@ void SpikingSynapses::reset_state() {
   }
   
   backend()->reset_state();
-  Synapses::reset_state();
+  // Synapses::reset_state(); // TODO: Synapses::reset_state is pure virtual right now
 }
 
 

@@ -149,7 +149,7 @@ void SpikingModel::perform_per_timestep_model_instructions(float current_time_in
 	spiking_synapses->calculate_postsynaptic_current_injection(spiking_neurons, current_time_in_seconds, timestep);
 
 	if (apply_stdp_to_relevant_synapses){
-		stdp_rule->Run_STDP(spiking_neurons->last_spike_time_of_each_neuron, current_time_in_seconds, timestep);
+          stdp_rule->Run_STDP(spiking_neurons, current_time_in_seconds, timestep);
 	}
 
 	spiking_neurons->update_membrane_potentials(timestep, current_time_in_seconds);

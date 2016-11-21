@@ -7,8 +7,12 @@ CLOSED: [2016-11-11 Fri 14:00]
 :LOGBOOK:
 - State "PROGRESS"   from "TODO"       [2016-11-11 Fri 14:00]
 :END:
-** TODO Synapses: check Neurons for how to implement common functions
+** PROGRESS Synapses: check Neurons for how to implement common functions
+:LOGBOOK:
+- State "PROGRESS"   from "TODO"       [2016-11-21 Mon 17:25]
+:END:
 + eg prepare and reset
+** TODO Backend/CUDA/Synapses: copy Backend/Dummy/Synapses common classes
 ** TODO [FourLayerVision]SpikingModel: Split backend-specific stuff out into separate function
 ** TODO Look for MISSING KERNELS ?!
 + check Backend/CUDA header files (esp Synapses/)

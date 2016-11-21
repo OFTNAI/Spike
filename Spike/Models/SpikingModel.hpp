@@ -1,7 +1,6 @@
 #ifndef SpikingModel_H
 #define SpikingModel_H
 
-//CUDA #include <cuda.h>
 #include <stdio.h>
 #include "../Synapses/ConductanceSpikingSynapses.hpp"
 #include "../STDP/STDP.hpp"

@@ -20,6 +20,18 @@
 
 //CUDA #include <cuda.h>
 
+namespace Backend {
+  class STDPCommon {
+  public:
+  };
+
+  class STDP : public virtual STDPCommon,
+               public Generic {
+  public:
+  };
+}
+
+#include "Spike/Backend/Dummy/STDP/STDP.hpp"
 
 // STDP Parameters
 struct stdp_parameters_struct {
@@ -29,26 +41,17 @@ struct stdp_parameters_struct {
 
 class STDP {
 public:
-  // Constructor/Destructor
-  STDP();
-  ~STDP();
-
-  void prepare_backend(Context* ctx) {
-    printf("TODO: STDP prepare_backend\n");
-  }
-
-  void reset_state() {
-    printf("TODO: STDP reset_state; cf reset_STDP_activities\n");
-  }
+  void* _backend;
+  ADD_BACKEND_GETTER(STDP);
+  
+  virtual void prepare_backend(Context* ctx) = 0;
+  virtual void reset_state() = 0;
 
   // Set STDP Parameters
-  virtual void Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons* neurons, SpikingNeurons* input_neurons, stdp_parameters_struct* stdp_parameters);
-  // Initialize STDP
-  virtual void allocate_device_pointers();
-  // STDP
-  virtual void Run_STDP(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds, float timestep);
-  // Reset
-  virtual void reset_STDP_activities();
+  virtual void Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons* neurons, SpikingNeurons* input_neurons, stdp_parameters_struct* stdp_parameters) = 0;
+
+  // virtual void Run_STDP(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds, float timestep) = 0;
+  virtual void Run_STDP(SpikingNeurons* neurons, float current_time_in_seconds, float timestep) = 0;
 };
 
 #endif

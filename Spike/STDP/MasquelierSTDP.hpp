@@ -27,8 +27,17 @@
 // allows maths
 #include <math.h>
 
-//CUDA #include <cuda.h>
+namespace Backend {
+  class MasquelierSTDP : public virtual STDPCommon,
+                    public STDP {
+  public:
+    virtual void prepare() {
+      printf("TODO Backend::MasquelierSTDP::prepare\n");
+    }
+  };
+}
 
+#include "Spike/Backend/Dummy/STDP/MasquelierSTDP.hpp"
 
 // STDP Parameters
 struct masquelier_stdp_parameters_struct : stdp_parameters_struct {
@@ -44,25 +53,14 @@ struct masquelier_stdp_parameters_struct : stdp_parameters_struct {
 
 class MasquelierSTDP : public STDP{
 public:
+	struct masquelier_stdp_parameters_struct* stdp_params = NULL;
+	SpikingSynapses* syns = NULL;
+	SpikingNeurons* neurs = NULL;
+	int* index_of_last_afferent_synapse_to_spike = NULL;
+	bool* isindexed_ltd_synapse_spike = NULL;
+	int* index_of_first_synapse_spiked_after_postneuron = NULL;
 
-	// Constructor/Destructor
-	MasquelierSTDP();
-	~MasquelierSTDP();
-
-	struct masquelier_stdp_parameters_struct* stdp_params;
-	SpikingSynapses* syns;
-	SpikingNeurons* neurs;
-	int* index_of_last_afferent_synapse_to_spike;
-	int* d_index_of_last_afferent_synapse_to_spike;
-	bool* isindexed_ltd_synapse_spike;
-	bool* d_isindexed_ltd_synapse_spike;
-	int* index_of_first_synapse_spiked_after_postneuron;
-	int* d_index_of_first_synapse_spiked_after_postneuron;
-
-	// Pointers
-	virtual void allocate_device_pointers();
-	// Pointers
-	virtual void reset_STDP_activities();
+	virtual void reset_state();
 	// Set STDP Parameters
 	virtual void Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons* neurons, SpikingNeurons* input_neurons, stdp_parameters_struct* stdp_parameters);
 	// STDP

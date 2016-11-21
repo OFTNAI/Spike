@@ -22,16 +22,34 @@
 #include "../Helpers/RandomStateManager.hpp"
 
 namespace Backend {
+  /* Each type T deriving from ::Synapses must have an associated
+   * Backend::T class specifying the interface implementing the actual
+   * computations. Different backends then specialize this
+   * Backend::T. For example, Backend::CUDA::T implements the
+   * computations required by T, as specified by Backend::T, for the
+   * CUDA backend.
+   * 
+   * Whilst the Backend::T classes mirror the ::T hierarchy, the
+   * Backend::CUDA::T type only directly inherits from
+   * Backend::T. Methods shared by different ::Synapses types are
+   * implemented in a parallel hierarchy, deriving from the virtual
+   * class Backend::SynapsesCommon (which specifies the interface for
+   * the common computations).  Then, Backend::CUDA::SynapsesCommon
+   * (for example) implements these common computations, and other
+   * Backend::CUDA::T classes derive from it. The inheritance in this
+   * case is virtual, to avoid the `diamond problem' for pure virtual
+   * methods.
+   * 
+   * A good example of this structure is given by CunductanceSpikingSynapses.
+   */
   class SynapsesCommon {
   public:
     virtual void set_neuron_indices_by_sampling_from_normal_distribution() = 0;
   };
 
-  class Synapses : public Generic,
-                   public virtual SynapsesCommon {
+  class Synapses : public virtual SynapsesCommon,
+                   public Generic  {
   public:
-    virtual void reset_state() = 0;
-    virtual void prepare() = 0;
   };
 }
 
@@ -84,10 +102,7 @@ public:
 
   // Functions
   virtual void prepare_backend(Context* ctx);
-
-  void reset_state() {
-    printf("TODO: Synapse reset_state\n");
-  }
+  virtual void reset_state() = 0;
 
   virtual void AddGroup(int presynaptic_group_id, 
                         int postsynaptic_group_id, 
