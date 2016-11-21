@@ -18,15 +18,12 @@ public:
 	~RandomStateManager();
 
 	curandState_t* d_states;
+	int total_number_of_states;
 
 	dim3 threads_per_block;
 	dim3 block_dimensions;
 
-	int total_number_of_states;
-
-	void set_up_random_states(int threads_per_blocks_x, int number_of_blocks_x, int seed);
-
-	static RandomStateManager* instance();
+	void setup_random_states(int threads_per_blocks_x = 128, int number_of_blocks_x = 64, int seed = 1);
 
 private:
     static RandomStateManager *inst;

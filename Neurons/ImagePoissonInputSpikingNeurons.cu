@@ -15,10 +15,9 @@ using namespace std;
 // ImagePoissonInputSpikingNeurons Constructor
 ImagePoissonInputSpikingNeurons::ImagePoissonInputSpikingNeurons() {
 
-	//JI
-	total_number_of_transformations_per_object = 0;
-	total_number_of_objects = 0;
-	total_number_of_input_stimuli = 0;
+	gabor_input_rates = NULL;
+
+	d_gabor_input_rates = NULL;
 
 	total_number_of_phases = 0;
 	total_number_of_wavelengths = 0;
@@ -40,6 +39,9 @@ ImagePoissonInputSpikingNeurons::ImagePoissonInputSpikingNeurons() {
 // ImagePoissonInputSpikingNeurons Destructor
 ImagePoissonInputSpikingNeurons::~ImagePoissonInputSpikingNeurons() {
 
+	free(gabor_input_rates);
+
+	CudaSafeCall(cudaFree(d_gabor_input_rates));
 }
 
 
@@ -47,11 +49,10 @@ int ImagePoissonInputSpikingNeurons::AddGroup(neuron_parameters_struct * group_p
 
 	int new_group_id = PoissonInputSpikingNeurons::AddGroup(group_params);
 
+	// Not currently used
 	// image_poisson_input_spiking_neuron_parameters_struct * image_poisson_input_spiking_group_params = (image_poisson_input_spiking_neuron_parameters_struct*)group_params;
-
-	for (int i = total_number_of_neurons - number_of_neurons_in_new_group; i < total_number_of_neurons; i++) {
-
-	}
+	// for (int i = total_number_of_neurons - number_of_neurons_in_new_group; i < total_number_of_neurons; i++) {
+	// }
 
 	return new_group_id;
 
@@ -73,7 +74,9 @@ void ImagePoissonInputSpikingNeurons::AddGroupForEachGaborType(neuron_parameters
 
 
 void ImagePoissonInputSpikingNeurons::set_up_rates(const char * fileList, const char * filterParameters, const char * inputDirectory, float max_rate_scaling_factor) {
+	#ifndef SILENCE_IMAGE_POISSON_INPUT_SPIKING_NEURONS_SETUP
 	printf("--- Setting up Input Neuron Rates from Gabor files...\n");
+	#endif
 
 	load_image_names_from_file_list(fileList, inputDirectory);
 	load_gabor_filter_parameters(filterParameters, inputDirectory);
@@ -107,8 +110,6 @@ void ImagePoissonInputSpikingNeurons::load_image_names_from_file_list(const char
 	// cout << "Reading file list:" << endl;
 	
 	while(getline(fileListStream, dirNameBase)) { 	// Read line from file list
-
-		// printf("total_number_of_transformations_per_object: %d\n", total_number_of_transformations_per_object);
 		
 		if(dirNameBase.compare("") == 0) {
 			continue; // Last line may just be empty bcs of matlab script, should be break; really, but what the hell		
@@ -135,7 +136,9 @@ void ImagePoissonInputSpikingNeurons::load_image_names_from_file_list(const char
 	
 	total_number_of_transformations_per_object = lastNrOfTransformsFound;
 	
+	#ifndef SILENCE_IMAGE_POISSON_INPUT_SPIKING_NEURONS_SETUP
 	cout << "--- --- Objects: " << total_number_of_objects << ", Transforms per Object: " << total_number_of_transformations_per_object << endl;
+	#endif
 	
 	total_number_of_input_stimuli = total_number_of_objects * total_number_of_transformations_per_object;
 }
@@ -163,12 +166,16 @@ void ImagePoissonInputSpikingNeurons::load_gabor_filter_parameters(const char * 
 
 	string dirNameBase;
 
+	#ifndef SILENCE_IMAGE_POISSON_INPUT_SPIKING_NEURONS_SETUP
 	cout << "--- --- Gabor Parameters:" << endl;
+	#endif
 
 	int line_index = 0;
 	while(getline(filterParametersStream, dirNameBase)) {
 
+		#ifndef SILENCE_IMAGE_POISSON_INPUT_SPIKING_NEURONS_SETUP
 		cout << "--- --- --- " << dirNameBase << endl;
+		#endif
 
 		stringstream lineStream(dirNameBase);
 
@@ -312,66 +319,9 @@ int ImagePoissonInputSpikingNeurons::calculate_gabor_index(int orientationIndex,
 	return orientationIndex * (total_number_of_wavelengths * total_number_of_phases) + wavelengthIndex * total_number_of_phases + phaseIndex;
 }
 
-
-
-int* ImagePoissonInputSpikingNeurons::setup_stimuli_presentation_order(Stimuli_Presentation_Struct * stimuli_presentation_params) {
-	
-	int* stimuli_presentation_order = PoissonInputSpikingNeurons::setup_stimuli_presentation_order(stimuli_presentation_params);
-	
-	switch (stimuli_presentation_params->presentation_format) {
-		
-		case PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_OBJECTS: case PRESENTATION_FORMAT_OBJECT_BY_OBJECT_NO_RESET:
-		{
-			int* object_order_indices = (int*)malloc(total_number_of_objects * sizeof(int));
-
-			for (int object_index = 0; object_index < total_number_of_objects; object_index++) {
-				object_order_indices[object_index] = object_index;			
-			}
-
-			switch (stimuli_presentation_params->object_order) {
-		
-				case OBJECT_ORDER_ORIGINAL:
-
-					break;
-
-				case OBJECT_ORDER_RANDOM:
-					std::random_shuffle(&object_order_indices[0], &object_order_indices[total_number_of_objects]);
-					break;
-
-			}
-
-			int* transform_order_indices = (int*)malloc(total_number_of_transformations_per_object * sizeof(int));
-			for (int transform_index = 0; transform_index < total_number_of_transformations_per_object; transform_index++) {
-				transform_order_indices[transform_index] = transform_index;			
-			}
-
-			for (int object_index = 0; object_index < total_number_of_objects; object_index++) {
-				
-				if (stimuli_presentation_params->transform_order == TRANSFORM_ORDER_RANDOM) std::random_shuffle(&transform_order_indices[0], &transform_order_indices[total_number_of_transformations_per_object]);
-
-				for (int transform_index = 0; transform_index < total_number_of_transformations_per_object; transform_index++) {
-					stimuli_presentation_order[object_index * total_number_of_transformations_per_object + transform_index] = object_order_indices[object_index] * total_number_of_transformations_per_object + transform_order_indices[transform_index]; 
-				}					
-			}
-
-		}
-
-		default:
-			break;
-	}
-
-	return stimuli_presentation_order;
-}
-
-
-bool ImagePoissonInputSpikingNeurons::stimulus_is_new_object_for_object_by_object_presentation(int stimulus_index) {
-	return (stimulus_index % total_number_of_transformations_per_object == 0) ? true : false;
-}
-
-
 void ImagePoissonInputSpikingNeurons::update_membrane_potentials(float timestep,float current_time_in_seconds) {
 
-	poisson_update_membrane_potentials_kernel<<<RandomStateManager::instance()->block_dimensions, RandomStateManager::instance()->threads_per_block>>>(RandomStateManager::instance()->d_states,
+	poisson_update_membrane_potentials_kernel<<<random_state_manager->block_dimensions, random_state_manager->threads_per_block>>>(random_state_manager->d_states,
 														d_gabor_input_rates,
 														d_membrane_potentials_v,
 														timestep,

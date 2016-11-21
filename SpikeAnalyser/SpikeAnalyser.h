@@ -4,17 +4,17 @@
 #include <cuda.h>
 #include<vector>
 #include "../Neurons/Neurons.h"
-#include "../Neurons/ImagePoissonInputSpikingNeurons.h"
+#include "../Neurons/InputSpikingNeurons.h"
 
 class SpikeAnalyser{
 public:
 
 	// Constructor/Destructor
-	SpikeAnalyser(Neurons *neurons_parameter, ImagePoissonInputSpikingNeurons *input_neurons_parameter);
+	SpikeAnalyser(Neurons *neurons_parameter, InputSpikingNeurons *input_neurons_parameter);
 	~SpikeAnalyser();
 
 	Neurons * neurons;
-	ImagePoissonInputSpikingNeurons * input_neurons;
+	InputSpikingNeurons * input_neurons;
 	
 	std::vector<int> number_of_neurons_in_single_cell_analysis_group_vec;
 	std::vector<std::vector<float> > descending_maximum_information_score_for_each_neuron_vec;
@@ -38,11 +38,15 @@ public:
 
 	int ** number_of_spikes_per_stimulus_per_neuron_group;
 	float ** average_number_of_spikes_per_stimulus_per_neuron_group_per_second;
+	float ** average_number_of_spikes_per_stimulus_per_neuron_group_per_second_excluding_silent_neurons;
 	int * total_number_of_spikes_per_neuron_group;
 	float * average_number_of_spikes_per_neuron_group_per_second;
+	float * average_number_of_spikes_per_neuron_group_per_second_excluding_silent_neurons;
 	float * max_number_of_spikes_per_neuron_group_per_second;
 	int total_number_of_neuron_spikes;
 	float average_number_of_neuron_spikes_per_second;
+
+	int * running_count_of_non_silent_neurons_per_neuron_group;
 
 	float combined_powered_distance_from_average_score;
 	float * combined_powered_distance_from_average_score_for_each_neuron_group;

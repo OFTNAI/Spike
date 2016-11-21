@@ -177,3 +177,11 @@ TEST_CASE("HigginsSTDP") {
 TEST_CASE("EvansSTDP") {
 
 }
+
+/**
+		MASQUELIERSTDP.CU Test Set
+**/
+#include "../STDP/MasquelierSTDP.h"
+TEST_CASE("MasquelierSTDP") {
+
+}

@@ -22,18 +22,19 @@ ConductanceSpikingSynapses::ConductanceSpikingSynapses() {
 
 // ConductanceSpikingSynapses Destructor
 ConductanceSpikingSynapses::~ConductanceSpikingSynapses() {
+
 	free(synaptic_conductances_g);
+	free(biological_conductance_scaling_constants_lambda);
+	free(reversal_potentials_Vhat);
+	free(decay_terms_tau_g);
+
 	CudaSafeCall(cudaFree(d_synaptic_conductances_g));
+	CudaSafeCall(cudaFree(d_biological_conductance_scaling_constants_lambda));
+	CudaSafeCall(cudaFree(d_reversal_potentials_Vhat));
+	CudaSafeCall(cudaFree(d_decay_terms_tau_g));
 }
 
-// Connection Detail implementation
-//	INPUT:
-//		Pre-neuron population ID
-//		Post-neuron population ID
-//		An array of the exclusive sum of neuron populations
-//		CONNECTIVITY_TYPE (Constants.h)
-//		Boolean value to indicate if population is STDP based
-//		Parameter = either probability for random synapses or S.D. for Gaussian
+
 void ConductanceSpikingSynapses::AddGroup(int presynaptic_group_id, 
 						int postsynaptic_group_id, 
 						Neurons * neurons,

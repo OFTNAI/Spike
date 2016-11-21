@@ -2,16 +2,10 @@
 
 #include "../Helpers/CUDAErrorCheckHelpers.h"
 #include "../Helpers/TimerWithMessages.h"
-
-#include <thrust/device_vector.h>
-#include <thrust/host_vector.h>
-#include <thrust/count.h>
+#include "../Helpers/TerminalHelpers.h"
 
 
 __global__ void generate_random_states_kernel(unsigned int seed, curandState_t* d_states, size_t total_number);
-
-RandomStateManager* RandomStateManager::inst = NULL; 
-
 
 
 // RandomStateManager Constructor
@@ -25,22 +19,15 @@ RandomStateManager::RandomStateManager() {
 // RandomStateManager Destructor
 RandomStateManager::~RandomStateManager() {
 
+	CudaSafeCall(cudaFree(d_states));
+
 }
 
+void RandomStateManager::setup_random_states(int threads_per_blocks_x, int number_of_blocks_x, int seed) {
 
-RandomStateManager* RandomStateManager::instance()
-{
-	if (!inst) {
-  		// Do "lazy initialization" in the accessor function
-    	inst = new RandomStateManager();
-    }
+	// print_line_of_dashes_with_blank_lines_either_side();
 
-  return inst;
-}
-
-void RandomStateManager::set_up_random_states(int threads_per_blocks_x, int number_of_blocks_x, int seed) {
-
-	TimerWithMessages * set_up_random_states_timer = new TimerWithMessages("Setting up random states for RandomStateManager singleton...\n");;	
+	// TimerWithMessages * set_up_random_states_timer = new TimerWithMessages("Setting up random states for RandomStateManager...\n");;	
 
 	threads_per_block = dim3(threads_per_blocks_x);
 	block_dimensions = dim3(number_of_blocks_x);
@@ -58,7 +45,7 @@ void RandomStateManager::set_up_random_states(int threads_per_blocks_x, int numb
 	generate_random_states_kernel<<<block_dimensions, threads_per_block>>>(seed, d_states, threads_per_blocks_x * number_of_blocks_x);
 	CudaCheckError();
 
-	set_up_random_states_timer->stop_timer_and_log_time_and_message("Random states set up...", true);
+	// set_up_random_states_timer->stop_timer_and_log_time_and_message("Random states set up...", true);
 
 }
 

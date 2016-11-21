@@ -1,6 +1,8 @@
 #ifndef ImagePoissonInputSpikingNeurons_H
 #define ImagePoissonInputSpikingNeurons_H
 
+#define SILENCE_IMAGE_POISSON_INPUT_SPIKING_NEURONS_SETUP
+
 #include <cuda.h>
 #include <curand.h>
 #include <curand_kernel.h>
@@ -29,8 +31,6 @@ public:
 	void AddGroupForEachGaborType(neuron_parameters_struct * group_params);
 
 	virtual void update_membrane_potentials(float timestep, float current_time_in_seconds);
-	virtual int* setup_stimuli_presentation_order(Stimuli_Presentation_Struct * stimuli_presentation_params);
-	virtual bool stimulus_is_new_object_for_object_by_object_presentation(int stimulus_index);
 
 	void set_up_rates(const char * fileList, const char * filterParameters, const char * inputDirectory, float max_rate_scaling_factor);
 	void load_image_names_from_file_list(const char * fileList, const char * inputDirectory);
@@ -52,7 +52,6 @@ public:
 	int total_number_of_rates_per_image;
 
 	int total_number_of_gabor_types;
-	int total_number_of_objects;
 
 	//OLD VARIABLES
 	std::vector<std::string> inputNames;
@@ -62,7 +61,7 @@ public:
 	std::vector<float> * filterOrientations;
 	
 
-	int total_number_of_transformations_per_object;
+	
 	
 };
 

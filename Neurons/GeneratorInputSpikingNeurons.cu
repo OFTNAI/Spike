@@ -57,9 +57,6 @@ void GeneratorInputSpikingNeurons::reset_neuron_activities() {
 void GeneratorInputSpikingNeurons::set_threads_per_block_and_blocks_per_grid(int threads) {
 	
 	InputSpikingNeurons::set_threads_per_block_and_blocks_per_grid(threads);
-
-	int genblocknum = (length_of_longest_stimulus + threads) / threads;
-	number_of_neuron_blocks_per_grid.x = genblocknum;
 }
 
 void GeneratorInputSpikingNeurons::check_for_neuron_spikes(float current_time_in_seconds, float timestep) {
