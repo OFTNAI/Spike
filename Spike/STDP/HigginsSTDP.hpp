@@ -19,19 +19,15 @@
 // allows maths
 #include <math.h>
 
-//CUDA #include <cuda.h>
-
 
 // STDP Parameters
 struct higgins_stdp_parameters_struct : stdp_parameters_struct {
-	higgins_stdp_parameters_struct() : w_max(60.0f), a_minus(-0.015f), a_plus(0.005f), tau_minus(0.025f), tau_plus(0.015) { } // default Constructor
-	// STDP Parameters
-	float w_max;
-	float a_minus;
-	float a_plus;
-	float tau_minus;
-	float tau_plus;
-
+  // STDP Parameters
+  float w_max = 60.0;
+  float a_minus = -0.015;
+  float a_plus = 0.005;
+  float tau_minus = 0.025;
+  float tau_plus = 0.015;
 };
 
 
@@ -48,32 +44,12 @@ public:
 	// Set STDP Parameters
 	virtual void Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons* neurons, SpikingNeurons* input_neurons, stdp_parameters_struct* stdp_parameters);
 	// STDP
-	virtual void Run_STDP(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds, float timestep);
+        virtual void Run_STDP(SpikingNeurons* neurons, float current_time_in_seconds, float timestep);
+
 	// LTP & LTD for this model
 	void apply_ltd_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds);
 	void apply_ltp_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds);
 
 };
-
-/*CUDA
-// Kernels to carry out LTP/LTD
-__global__ void izhikevich_apply_ltd_to_synapse_weights_kernel(float* d_time_of_last_spike_to_reach_synapse,
-							float* d_synaptic_efficacies_or_weights,
-							bool* d_stdp,
-							float* d_last_spike_time_of_each_neuron,
-							int* d_postsyns,
-							float currtime,
-							struct higgins_stdp_parameters_struct stdp_vars,
-							size_t total_number_of_synapse);
-
-__global__ void izhikevich_apply_ltp_to_synapse_weights_kernel(int* d_postsyns,
-							float* d_last_spike_time_of_each_neuron,
-							bool* d_stdp,
-							float* d_time_of_last_spike_to_reach_synapse,
-							float* d_synaptic_efficacies_or_weights,
-							struct higgins_stdp_parameters_struct stdp_vars,
-							float currtime,
-							size_t total_number_of_synapse);
-*/
 
 #endif

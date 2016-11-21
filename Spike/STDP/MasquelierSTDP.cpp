@@ -20,7 +20,10 @@ void MasquelierSTDP::reset_state(){
 }
 
 // Run the STDP
-void MasquelierSTDP::Run_STDP(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds, float timestep){
+void MasquelierSTDP::Run_STDP(SpikingNeurons* neurons, float current_time_in_seconds, float timestep){
+  // TODO: Ensure host and device data are synchronized at this point
+  //       OR ***Just pass neurons straight through to update_syn_effs***
+  float* d_last_spike_time_of_each_neuron = neurons->last_spike_time_of_each_neuron;
   apply_stdp_to_synapse_weights(d_last_spike_time_of_each_neuron, current_time_in_seconds);
 }
 

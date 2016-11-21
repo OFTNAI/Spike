@@ -18,8 +18,6 @@
 // allows maths
 #include <math.h>
 
-//CUDA #include <cuda.h>
-
 namespace Backend {
   class STDPCommon {
   public:
