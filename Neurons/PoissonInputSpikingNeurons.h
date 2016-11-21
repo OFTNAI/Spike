@@ -39,7 +39,6 @@ public:
 
 	virtual void set_threads_per_block_and_blocks_per_grid(int threads);
 	virtual void update_membrane_potentials(float timestep, float current_time_in_seconds);
-	virtual bool stimulus_is_new_object_for_object_by_object_presentation(int stimulus_index);
 
 	virtual void setup_random_states_on_device();
 
