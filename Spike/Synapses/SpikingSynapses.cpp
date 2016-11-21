@@ -76,14 +76,15 @@ void SpikingSynapses::increment_number_of_synapses(int increment) {
 
 
 void SpikingSynapses::reset_state() {
-  //CUDA CudaSafeCall(cudaMemset(d_spikes_travelling_to_synapse, 0, sizeof(int)*total_number_of_synapses));
   // Set last spike times to -1000 so that the times do not affect current simulation.
   float* last_spike_to_reach_synapse;
   last_spike_to_reach_synapse = (float*)malloc(sizeof(float)*total_number_of_synapses);
   for (int i=0; i < total_number_of_synapses; i++){
     last_spike_to_reach_synapse[i] = -1000.0f;
   }
-  //CUDA CudaSafeCall(cudaMemcpy(d_time_of_last_spike_to_reach_synapse, last_spike_to_reach_synapse, total_number_of_synapses*sizeof(float), cudaMemcpyHostToDevice));
+  
+  backend()->reset_state();
+  Synapses::reset_state();
 }
 
 
@@ -107,42 +108,7 @@ void SpikingSynapses::shuffle_synapses() {
 
 
 void SpikingSynapses::interact_spikes_with_synapses(SpikingNeurons * neurons, SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) {
-  /*CUDA
-	if (neurons->high_fidelity_spike_flag){
-		check_bitarray_for_presynaptic_neuron_spikes<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(
-								d_presynaptic_neuron_indices,
-								d_delays,
-								neurons->d_bitarray_of_neuron_spikes,
-								input_neurons->d_bitarray_of_neuron_spikes,
-								neurons->bitarray_length,
-								neurons->bitarray_maximum_axonal_delay_in_timesteps,
-								current_time_in_seconds,
-								timestep,
-								total_number_of_synapses,
-								d_time_of_last_spike_to_reach_synapse);
-		CudaCheckError();
-	}
-	else{
-		move_spikes_towards_synapses_kernel<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_presynaptic_neuron_indices,
-																			d_delays,
-																			d_spikes_travelling_to_synapse,
-																			neurons->d_last_spike_time_of_each_neuron,
-																			input_neurons->d_last_spike_time_of_each_neuron,
-																			current_time_in_seconds,
-																			total_number_of_synapses,
-																			d_time_of_last_spike_to_reach_synapse);
-		CudaCheckError();
-	}
-  */
+  backend()->interact_spikes_with_synapses(neurons, input_neurons, current_time_in_seconds, timestep);
 }
 
-
-
-void SpikingSynapses::calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds, float timestep) {
-
-}
-
-void SpikingSynapses::update_synaptic_conductances(float timestep, float current_time_in_seconds) {
-
-}
-
+MAKE_STUB_PREPARE_BACKEND(SpikingSynapses);

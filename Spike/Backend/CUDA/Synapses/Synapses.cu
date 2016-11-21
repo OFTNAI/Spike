@@ -5,6 +5,22 @@
 
 namespace Backend {
   namespace CUDA {
+    Synapses::~Synapses() {
+      CudaSafeCall(cudaFree(presynaptic_neuron_indices));
+      CudaSafeCall(cudaFree(postsynaptic_neuron_indices));
+      CudaSafeCall(cudaFree(temp_presynaptic_neuron_indices));
+      CudaSafeCall(cudaFree(temp_postsynaptic_neuron_indices));
+      CudaSafeCall(cudaFree(synaptic_efficacies_or_weights));
+      CudaSafeCall(cudaFree(temp_synaptic_efficacies_or_weights));
+      CudaSafeCall(cudaFree(synapse_postsynaptic_neuron_count_index));
+    }
+
+    void Synapses::reset_state() {
+      CudaSafeCall(cudaMemset(spikes_travelling_to_synapse, 0, sizeof(int)*total_number_of_synapses));
+      // TODO: This is a copy involving the front-end, so need to think about synchrony...
+      CudaSafeCall(cudaMemcpy(time_of_last_spike_to_reach_synapse, last_spike_to_reach_synapse, total_number_of_synapses*sizeof(float), cudaMemcpyHostToDevice));
+    }
+    
     void Synapses::allocate_device_pointers() {
       printf("Allocating synapse device pointers...\n");
 

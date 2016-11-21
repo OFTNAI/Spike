@@ -24,6 +24,8 @@ namespace Backend {
       virtual void allocate_device_pointers();
       virtual void copy_constants_and_initial_efficacies_to_device();
       virtual void set_threads_per_block_and_blocks_per_grid(int threads);
+
+      virtual void interact_spikes_with_synapses(SpikingNeurons * neurons, SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep);
     };
 
     __global__ void move_spikes_towards_synapses_kernel(int* d_presynaptic_neuron_indices,

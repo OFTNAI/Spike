@@ -6,8 +6,15 @@ namespace Backend {
   namespace Dummy {
     class CurrentSpikingSynapses : public ::Backend::CurrentSpikingSynapses {
     public:
-      // virtual void prepare() {}
-      // virtual void reset_state() {}
+      virtual void prepare() {
+        printf("TODO Backend::Dummy::CurrentSpikingSynapses::prepare\n");
+      }
+
+      void calculate_postsynaptic_current_injection(::SpikingNeurons * neurons, float current_time_in_seconds, float timestep) {
+        printf("TODO Dummy::CurrentSpikingSynapses::calculate_postsynaptic_current_injection\n");
+      }
+
+      virtual void reset_state() {}
     };
   } // namespace Dummy
 } // namespace Backend

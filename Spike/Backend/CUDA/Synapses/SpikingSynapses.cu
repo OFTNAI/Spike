@@ -26,6 +26,34 @@ namespace Backend {
       CudaSafeCall(cudaMemcpy(d_stdp, stdp, sizeof(bool)*total_number_of_synapses, cudaMemcpyHostToDevice));
     }
 
+    void SpikingSynapses::interact_spikes_with_synapses(SpikingNeurons * neurons, SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) {
+      if (neurons->high_fidelity_spike_flag){
+        check_bitarray_for_presynaptic_neuron_spikes<<<number_of_synapse_blocks_per_grid, threads_per_block>>>
+          (d_presynaptic_neuron_indices,
+           d_delays,
+           neurons->backend()->bitarray_of_neuron_spikes, // NB: Neurons device data
+           input_neurons->backend()->bitarray_of_neuron_spikes,
+           neurons->backend()->bitarray_length,
+           neurons->backend()->bitarray_maximum_axonal_delay_in_timesteps,
+           current_time_in_seconds,
+           timestep,
+           total_number_of_synapses,
+           time_of_last_spike_to_reach_synapse);
+        CudaCheckError();
+      } else {
+        move_spikes_towards_synapses_kernel<<<number_of_synapse_blocks_per_grid, threads_per_block>>>
+          (d_presynaptic_neuron_indices,
+           d_delays,
+           d_spikes_travelling_to_synapse,
+           neurons->backend()->last_spike_time_of_each_neuron,
+           input_neurons->backend()->last_spike_time_of_each_neuron,
+           current_time_in_seconds,
+           total_number_of_synapses,
+           time_of_last_spike_to_reach_synapse);
+        CudaCheckError();
+      }
+    }
+
     __global__ void move_spikes_towards_synapses_kernel(int* d_presynaptic_neuron_indices,
                                                         int* d_delays,
                                                         int* d_spikes_travelling_to_synapse,

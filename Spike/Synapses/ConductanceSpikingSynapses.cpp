@@ -49,8 +49,8 @@ void ConductanceSpikingSynapses::increment_number_of_synapses(int increment) {
 
 
 void ConductanceSpikingSynapses::reset_state() {
-	SpikingSynapses::reset_state();
-	//CUDA CudaSafeCall(cudaMemcpy(d_synaptic_conductances_g, synaptic_conductances_g, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
+  SpikingSynapses::reset_state();
+  backend()->reset_state();
 }
 
 
@@ -79,37 +79,13 @@ void ConductanceSpikingSynapses::shuffle_synapses() {
 
 
 void ConductanceSpikingSynapses::calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds, float timestep) {
-
-  /*CUDA
-	conductance_calculate_postsynaptic_current_injection_kernel<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_presynaptic_neuron_indices,
-																	d_postsynaptic_neuron_indices,
-																	d_reversal_potentials_Vhat,
-																	neurons->d_current_injections,
-																	total_number_of_synapses,
-																	neurons->d_membrane_potentials_v, 
-																	d_synaptic_conductances_g);
-
-	CudaCheckError();
-  */
-
-	// After injecting current, update the conductances
-	update_synaptic_conductances(timestep, current_time_in_seconds);
+  backend()->calculate_postsynaptic_current_injection(neurons, current_time_in_seconds, timestep);
+  // After injecting current, update the conductances
+  update_synaptic_conductances(timestep, current_time_in_seconds);
 }
 
 void ConductanceSpikingSynapses::update_synaptic_conductances(float timestep, float current_time_in_seconds) {
-
-  /*CUDA
-	conductance_update_synaptic_conductances_kernel<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(timestep, 
-											d_synaptic_conductances_g, 
-											d_synaptic_efficacies_or_weights, 
-											d_time_of_last_spike_to_reach_synapse,
-											d_biological_conductance_scaling_constants_lambda,
-											total_number_of_synapses,
-											current_time_in_seconds,
-											d_decay_terms_tau_g);
-
-	CudaCheckError();
-  */
-
+  backend()->update_synaptic_conductances(timestep, current_time_in_seconds);
 }
 
+MAKE_PREPARE_BACKEND(ConductanceSpikingSynapses);

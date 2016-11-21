@@ -27,17 +27,6 @@ Synapses::~Synapses() {
   free(original_synapse_indices);
   free(synapse_postsynaptic_neuron_count_index);
   free(random_state_manager);
-
-  /*CUDA
-    CudaSafeCall(cudaFree(presynaptic_neuron_indices));
-    CudaSafeCall(cudaFree(postsynaptic_neuron_indices));
-    CudaSafeCall(cudaFree(temp_presynaptic_neuron_indices));
-    CudaSafeCall(cudaFree(temp_postsynaptic_neuron_indices));
-    CudaSafeCall(cudaFree(synaptic_efficacies_or_weights));
-    CudaSafeCall(cudaFree(temp_synaptic_efficacies_or_weights));
-    CudaSafeCall(cudaFree(synapse_postsynaptic_neuron_count_index));
-  */
-
   // free(number_of_synapse_blocks_per_grid);
 }
 
@@ -306,3 +295,4 @@ void Synapses::shuffle_synapses() {
 
 }
 
+MAKE_STUB_PREPARE_BACKEND(Synapses);

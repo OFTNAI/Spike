@@ -31,5 +31,5 @@
 
 #define MAKE_STUB_PREPARE_BACKEND(TYPE)                         \
   void TYPE::prepare_backend(Context* ctx = _global_ctx) {      \
-    assert("This type shouldn't be instantiated!" && false);    \
+    assert("This type's backend cannot be instantiated!" && false);    \
   }

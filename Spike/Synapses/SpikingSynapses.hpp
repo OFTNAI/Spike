@@ -7,6 +7,8 @@
 namespace Backend {
   class SpikingSynapses : public Synapses {
   public:
+    virtual void calculate_postsynaptic_current_injection(::SpikingNeurons * neurons, float current_time_in_seconds, float timestep) = 0;
+    virtual void interact_spikes_with_synapses(::SpikingNeurons * neurons, ::SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) = 0;
   };
 }
 
@@ -24,6 +26,8 @@ class SpikingSynapses : public Synapses {
 public:
   ~SpikingSynapses();
 
+  ADD_BACKEND_GETTER(SpikingSynapses);
+
   // Host Pointers
   int* delays = NULL;
   bool* stdp = NULL;
@@ -39,12 +43,13 @@ public:
                         float timestep,
                         synapse_parameters_struct * synapse_params);
 
+  virtual void prepare_backend(Context* ctx);
   virtual void reset_state();
   virtual void increment_number_of_synapses(int increment);
   virtual void shuffle_synapses();
 
-  virtual void update_synaptic_conductances(float timestep, float current_time_in_seconds);
-  virtual void calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds, float timestep);
+  virtual void update_synaptic_conductances(float timestep, float current_time_in_seconds) = 0;
+  virtual void calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds, float timestep) = 0;
 
   virtual void interact_spikes_with_synapses(SpikingNeurons * neurons, SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep);
 };

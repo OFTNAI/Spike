@@ -12,6 +12,7 @@ namespace Backend {
   namespace CUDA {
     class Synapses : public ::Backend::Synapses {
     public:
+      ~Synapses();
 
       int* presynaptic_neuron_indices = NULL;
       int* postsynaptic_neuron_indices = NULL;

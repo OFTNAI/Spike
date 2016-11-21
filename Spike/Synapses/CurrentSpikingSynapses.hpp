@@ -2,7 +2,7 @@
 #define CURRENTSPIKINGSYNAPSES_H
 
 #include "SpikingSynapses.hpp"
-#include "../Neurons/Neurons.hpp"
+#include "Spike/Neurons/SpikingNeurons.hpp"
 
 namespace Backend {
   class CurrentSpikingSynapses : public SpikingSynapses {
@@ -14,6 +14,8 @@ namespace Backend {
 
 class CurrentSpikingSynapses : public SpikingSynapses {
 public:
+  ADD_BACKEND_GETTER(CurrentSpikingSynapses);
+  
   virtual void AddGroup(int presynaptic_group_id, 
                         int postsynaptic_group_id, 
                         Neurons * neurons,
@@ -23,6 +25,8 @@ public:
 
 
   virtual void calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds, float timestep);
+
+  virtual void prepare_backend(Context* ctx);
 };
 
 #endif

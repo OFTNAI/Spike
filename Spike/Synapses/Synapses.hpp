@@ -61,6 +61,7 @@ public:
   ~Synapses();
 
   void* _backend;
+  ADD_BACKEND_GETTER(Synapses);
   
   // Variables
   int total_number_of_synapses = 0;
@@ -76,9 +77,7 @@ public:
   float* synaptic_efficacies_or_weights = NULL;
 
   // Functions
-  void prepare_backend(Context* ctx) {
-    printf("TODO: Synapse prepare_backend\n");
-  }
+  virtual void prepare_backend(Context* ctx);
 
   void reset_state() {
     printf("TODO: Synapse reset_state\n");
