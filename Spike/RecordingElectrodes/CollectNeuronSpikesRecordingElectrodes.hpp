@@ -38,18 +38,13 @@ public:
 
   // Variables
   int size_of_device_spike_store;
-  int h_total_number_of_spikes_stored_on_host;
+  int total_number_of_spikes_stored_on_host;
 
   // Host Pointers
-  Collect_Neuron_Spikes_Optional_Parameters * collect_neuron_spikes_optional_parameters;
-  int* h_neuron_ids_of_stored_spikes_on_host;
-  int* h_total_number_of_spikes_stored_on_device;
-  float* h_time_in_seconds_of_stored_spikes_on_host;
-
-  // Device Pointers
-  int* d_neuron_ids_of_stored_spikes_on_device;
-  int* d_total_number_of_spikes_stored_on_device;
-  float* d_time_in_seconds_of_stored_spikes_on_device;
+  Collect_Neuron_Spikes_Optional_Parameters * collect_neuron_spikes_optional_parameters = NULL;
+  int* neuron_ids_of_stored_spikes_on_host = NULL;
+  int* total_number_of_spikes_stored_on_device = NULL;
+  float* time_in_seconds_of_stored_spikes_on_host = NULL;
 
   // Constructor/Destructor
   CollectNeuronSpikesRecordingElectrodes(SpikingNeurons * neurons_parameter, SpikingSynapses * synapses_parameter, string full_directory_name_for_simulation_data_files_param, const char * prefix_string_param);
@@ -69,19 +64,9 @@ public:
 private:
 
   // Host Pointers
-  int* reset_neuron_ids;
-  float* reset_neuron_times;
+  int* reset_neuron_ids = NULL;
+  float* reset_neuron_times = NULL;
 
 };
-
-/*CUDA
-__global__ void collect_spikes_for_timestep_kernel(float* d_last_spike_time_of_each_neuron,
-								int* d_total_number_of_spikes_stored_on_device,
-								int* d_neuron_ids_of_stored_spikes_on_device,
-								float* d_time_in_seconds_of_stored_spikes_on_device,
-								float current_time_in_seconds,
-								size_t total_number_of_neurons);
-*/
-
 
 #endif

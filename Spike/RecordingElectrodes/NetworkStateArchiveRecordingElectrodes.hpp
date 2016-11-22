@@ -33,7 +33,7 @@ public:
   virtual void reset_state();
 
   // Host Pointers
-  Network_State_Archive_Optional_Parameters * network_state_archive_optional_parameters;
+  Network_State_Archive_Optional_Parameters * network_state_archive_optional_parameters = NULL;
 
   // Constructor/Destructor
   NetworkStateArchiveRecordingElectrodes(SpikingNeurons * neurons_parameter, SpikingSynapses * synapses_parameter, string full_directory_name_for_simulation_data_files_param, const char * prefix_string_param);
