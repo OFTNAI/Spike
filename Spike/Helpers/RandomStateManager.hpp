@@ -4,7 +4,7 @@
 //CUDA #include <cuda.h>
 //CUDA #include <curand.h>
 //CUDA #include <curand_kernel.h>
-#include "Spike/CUDA_Hacks.hpp"
+#include "Spike/Backend/CUDA_Hacks.hpp"
 
 
 
