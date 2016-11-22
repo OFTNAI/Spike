@@ -1,8 +1,7 @@
-//	CUDAErrorCheckHelpers
+//	CUDA/ErrorCheckHelpers
 //
 //
 //	Original Author: Nasir Ahmad in CUDAcode.h
-//	Moved to CUDAErrorCheckHelpers by James Isbister
 //	Date: 31/3/2016
 
 // Define this to turn on error checking

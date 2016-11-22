@@ -3,7 +3,6 @@
 #include "Spike/STDP/HigginsSTDP.hpp"
 #include "STDP.hpp"
 #include "Spike/Backend/CUDA/CUDABackend.hpp"
-#include "Spike/Helpers/CUDAErrorCheckHelpers.hpp"
 #include <cuda.h>
 #include <vector_types.h>
 #include <curand.h>
