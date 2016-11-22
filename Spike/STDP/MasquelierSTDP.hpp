@@ -34,6 +34,8 @@ namespace Backend {
     virtual void prepare() {
       printf("TODO Backend::MasquelierSTDP::prepare\n");
     }
+
+    virtual void apply_stdp_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds) = 0;
   };
 }
 
@@ -51,20 +53,23 @@ struct masquelier_stdp_parameters_struct : stdp_parameters_struct {
 
 class MasquelierSTDP : public STDP{
 public:
-	struct masquelier_stdp_parameters_struct* stdp_params = NULL;
-	SpikingSynapses* syns = NULL;
-	SpikingNeurons* neurs = NULL;
-	int* index_of_last_afferent_synapse_to_spike = NULL;
-	bool* isindexed_ltd_synapse_spike = NULL;
-	int* index_of_first_synapse_spiked_after_postneuron = NULL;
+  ADD_BACKEND_GETTER(MasquelierSTDP);
 
-	virtual void reset_state();
-	// Set STDP Parameters
-	virtual void Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons* neurons, SpikingNeurons* input_neurons, stdp_parameters_struct* stdp_parameters);
-	// STDP
-	virtual void Run_STDP(SpikingNeurons* neurons, float current_time_in_seconds, float timestep);
-	// LTP & LTD for this model
-	void apply_stdp_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds);
+  struct masquelier_stdp_parameters_struct* stdp_params = NULL;
+  SpikingSynapses* syns = NULL;
+  SpikingNeurons* neurs = NULL;
+  int* index_of_last_afferent_synapse_to_spike = NULL;
+  bool* isindexed_ltd_synapse_spike = NULL;
+  int* index_of_first_synapse_spiked_after_postneuron = NULL;
+
+  virtual void prepare_backend(Context* ctx);
+  virtual void reset_state();
+  // Set STDP Parameters
+  virtual void Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons* neurons, SpikingNeurons* input_neurons, stdp_parameters_struct* stdp_parameters);
+  // STDP
+  virtual void Run_STDP(SpikingNeurons* neurons, float current_time_in_seconds, float timestep);
+  // LTP & LTD for this model
+  void apply_stdp_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds);
 
 };
 

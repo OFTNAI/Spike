@@ -2,6 +2,34 @@
 
 namespace Backend {
   namespace CUDA {
+    void HigginsSTDP::apply_ltd_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds) {
+      izhikevich_apply_ltd_to_synapse_weights_kernel<<<syns->number_of_synapse_blocks_per_grid, syns->threads_per_block>>>
+        (syns->d_time_of_last_spike_to_reach_synapse,
+         syns->d_synaptic_efficacies_or_weights,
+         syns->d_stdp,
+         d_last_spike_time_of_each_neuron,
+         syns->d_postsynaptic_neuron_indices,
+         current_time_in_seconds,
+         *stdp_params, // Should make device copy?
+         syns->total_number_of_synapses);
+
+      CudaCheckError();
+    }
+
+    void HigginsSTDP::apply_ltp_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds) {
+      izhikevich_apply_ltp_to_synapse_weights_kernel<<<syns->number_of_synapse_blocks_per_grid, syns->threads_per_block>>>
+        (syns->d_postsynaptic_neuron_indices,
+         d_last_spike_time_of_each_neuron,
+         syns->d_stdp,
+         syns->d_time_of_last_spike_to_reach_synapse,
+         syns->d_synaptic_efficacies_or_weights,
+         *stdp_params,
+         current_time_in_seconds,
+         syns->total_number_of_synapses);
+
+      CudaCheckError();
+    }
+
     // LTP on synapses
     __global__ void izhikevich_apply_ltp_to_synapse_weights_kernel
     (int* d_postsyns,

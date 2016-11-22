@@ -37,6 +37,36 @@ namespace Backend {
       // **** END apparent host code ****
     }
 
+    MasquelierSTDP::apply_stdp_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds) {
+      // First reset the indices array
+      // In order to carry out nearest spike potentiation only, we must find the spike arriving at each neuron which has the smallest time diff
+    get_indices_to_apply_stdp<<<neurs->number_of_neuron_blocks_per_grid, syns->threads_per_block>>>
+      (syns->d_postsynaptic_neuron_indices,
+       d_last_spike_time_of_each_neuron,
+       syns->d_stdp,
+       syns->d_time_of_last_spike_to_reach_synapse,
+       d_index_of_last_afferent_synapse_to_spike,
+       d_isindexed_ltd_synapse_spike,
+       d_index_of_first_synapse_spiked_after_postneuron,
+       current_time_in_seconds,
+       syns->total_number_of_synapses);
+    CudaCheckError();
+
+    apply_stdp_to_synapse_weights_kernel<<<syns->number_of_synapse_blocks_per_grid, syns->threads_per_block>>>
+      (syns->d_postsynaptic_neuron_indices,
+       d_last_spike_time_of_each_neuron,
+       syns->d_stdp,
+       syns->d_time_of_last_spike_to_reach_synapse,
+       syns->d_synaptic_efficacies_or_weights,
+       d_index_of_last_afferent_synapse_to_spike,
+       d_isindexed_ltd_synapse_spike,
+       d_index_of_first_synapse_spiked_after_postneuron,
+       *stdp_params,
+       current_time_in_seconds,
+       neurs->total_number_of_neurons);
+    CudaCheckError();
+    }
+
     // Find nearest spike
     __global__ void apply_stdp_to_synapse_weights_kernel
     (int* d_postsyns,

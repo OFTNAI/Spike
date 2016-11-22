@@ -25,6 +25,10 @@ namespace Backend {
     virtual void prepare() {
       printf("TODO Backend::EvansSTDP::prepare\n");
     }
+
+    virtual void update_synaptic_efficacies_or_weights(float current_time_in_seconds, float * d_last_spike_time_of_each_neuron) = 0;
+    virtual void update_presynaptic_activities(float timestep, float current_time_in_seconds) = 0;
+    virtual void update_postsynaptic_activities(float timestep, float current_time_in_seconds) = 0;
   };
 }
 
@@ -45,7 +49,7 @@ class EvansSTDP : public STDP {
 public:
   // Constructor/Destructor
   ~EvansSTDP();
-  ADD_BACKEND_GETTER(STDP);
+  ADD_BACKEND_GETTER(EvansSTDP);
 
   struct evans_stdp_parameters_struct* stdp_params = NULL;
   SpikingSynapses* syns = NULL;

@@ -8,18 +8,10 @@
 #include "../Helpers/TerminalHelpers.hpp"
 
 
-// STDP Constructor
-HigginsSTDP::HigginsSTDP() {
-
-	stdp_params = NULL;
-	syns = NULL;
-
-}
-
 // STDP Destructor
 HigginsSTDP::~HigginsSTDP() {
-	// free(stdp_params);
-	// free(syns);
+  free(stdp_params);
+  free(syns);
 }
 
 // Implementation of the STDP Rule for Irina's Model
@@ -38,35 +30,12 @@ void HigginsSTDP::Run_STDP(SpikingNeurons* neurons, float current_time_in_second
 }
 
 void HigginsSTDP::apply_ltd_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds) {
-  /*CUDA
-	izhikevich_apply_ltd_to_synapse_weights_kernel<<<syns->number_of_synapse_blocks_per_grid, syns->threads_per_block>>>(
-																	syns->d_time_of_last_spike_to_reach_synapse,
-																	syns->d_synaptic_efficacies_or_weights,
-																	syns->d_stdp,
-																	d_last_spike_time_of_each_neuron,
-																	syns->d_postsynaptic_neuron_indices,
-																	current_time_in_seconds,
-																	*stdp_params, // Should make device copy?
-																	syns->total_number_of_synapses);
-
-	CudaCheckError();
-  */
+  backend()->apply_ltd_to_synapse_weights(d_last_spike_time_of_each_neuron, current_time_in_seconds);
 }
 
 
 void HigginsSTDP::apply_ltp_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds) {
-  /*CUDA
-	izhikevich_apply_ltp_to_synapse_weights_kernel<<<syns->number_of_synapse_blocks_per_grid, syns->threads_per_block>>>(
-																	syns->d_postsynaptic_neuron_indices,
-																	d_last_spike_time_of_each_neuron,
-																	syns->d_stdp,
-																	syns->d_time_of_last_spike_to_reach_synapse,
-																	syns->d_synaptic_efficacies_or_weights,
-																	*stdp_params, 
-																	current_time_in_seconds,
-																	syns->total_number_of_synapses);
-
-	CudaCheckError();
-  */
+  backend()->apply_ltp_to_synapse_weights(d_last_spike_time_of_each_neuron, current_time_in_seconds);
 }
 
+MAKE_PREPARE_BACKEND(HigginsSTDP);
