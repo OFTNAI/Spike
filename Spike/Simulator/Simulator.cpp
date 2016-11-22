@@ -8,7 +8,6 @@
 
 #include "Simulator.hpp"
 
-//CUDA #include "Spike/Helpers/CUDAErrorCheckHelpers.hpp"
 #include "Spike/Helpers/TerminalHelpers.hpp"
 #include "Spike/Helpers/RandomStateManager.hpp"
 

@@ -1,6 +1,5 @@
 #include "SpikeAnalyser.hpp"
 
-//CUDA #include "../Helpers/CUDAErrorCheckHelpers.hpp"
 #include "../Helpers/TerminalHelpers.hpp"
 #include "../Helpers/TimerWithMessages.hpp"
 
