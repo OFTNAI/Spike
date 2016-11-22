@@ -4,6 +4,17 @@
 
 #include "../RecordingElectrodes/RecordingElectrodes.hpp"
 
+namespace Backend {
+  class CollectNeuronSpikesRecordingElectrodes : public virtual RecordingElectrodesCommon,
+                                                 public RecordingElectrodes {
+  public:
+    virtual void prepare() {
+      printf("TODO Backend::CollectNeuronSpikesRecordingElectrodes::prepare\n");
+    }
+  };
+}
+
+#include "Spike/Backend/Dummy/RecordingElectrodes/CollectNeuronSpikesRecordingElectrodes.hpp"
 
 struct Collect_Neuron_Spikes_Optional_Parameters {
 
@@ -21,43 +32,45 @@ struct Collect_Neuron_Spikes_Optional_Parameters {
 
 class CollectNeuronSpikesRecordingElectrodes : public RecordingElectrodes {
 public:
+  ADD_BACKEND_GETTER(CollectNeuronSpikesRecordingElectrodes);
+  virtual void prepare_backend(Context* ctx);
+  virtual void reset_state();
 
-	// Variables
-	int size_of_device_spike_store;
-	int h_total_number_of_spikes_stored_on_host;
+  // Variables
+  int size_of_device_spike_store;
+  int h_total_number_of_spikes_stored_on_host;
 
-	// Host Pointers
-	Collect_Neuron_Spikes_Optional_Parameters * collect_neuron_spikes_optional_parameters;
-	int* h_neuron_ids_of_stored_spikes_on_host;
-	int* h_total_number_of_spikes_stored_on_device;
-	float* h_time_in_seconds_of_stored_spikes_on_host;
+  // Host Pointers
+  Collect_Neuron_Spikes_Optional_Parameters * collect_neuron_spikes_optional_parameters;
+  int* h_neuron_ids_of_stored_spikes_on_host;
+  int* h_total_number_of_spikes_stored_on_device;
+  float* h_time_in_seconds_of_stored_spikes_on_host;
 
-	// Device Pointers
-	int* d_neuron_ids_of_stored_spikes_on_device;
-	int* d_total_number_of_spikes_stored_on_device;
-	float* d_time_in_seconds_of_stored_spikes_on_device;
+  // Device Pointers
+  int* d_neuron_ids_of_stored_spikes_on_device;
+  int* d_total_number_of_spikes_stored_on_device;
+  float* d_time_in_seconds_of_stored_spikes_on_device;
 
+  // Constructor/Destructor
+  CollectNeuronSpikesRecordingElectrodes(SpikingNeurons * neurons_parameter, SpikingSynapses * synapses_parameter, string full_directory_name_for_simulation_data_files_param, const char * prefix_string_param);
+  ~CollectNeuronSpikesRecordingElectrodes();
 
-	// Constructor/Destructor
-	CollectNeuronSpikesRecordingElectrodes(SpikingNeurons * neurons_parameter, SpikingSynapses * synapses_parameter, string full_directory_name_for_simulation_data_files_param, const char * prefix_string_param);
-	~CollectNeuronSpikesRecordingElectrodes();
+  void initialise_collect_neuron_spikes_recording_electrodes(Collect_Neuron_Spikes_Optional_Parameters * collect_neuron_spikes_optional_parameters_param);
+  void allocate_pointers_for_spike_store();
 
-	void initialise_collect_neuron_spikes_recording_electrodes(Collect_Neuron_Spikes_Optional_Parameters * collect_neuron_spikes_optional_parameters_param);
-	void allocate_pointers_for_spike_store();
+  void collect_spikes_for_timestep(float current_time_in_seconds);
+  void copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(float current_time_in_seconds, int timestep_index, int number_of_timesteps_per_epoch);
+  void write_spikes_to_file(int epoch_number, bool isTrained);
 
-	void collect_spikes_for_timestep(float current_time_in_seconds);
-	void copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(float current_time_in_seconds, int timestep_index, int number_of_timesteps_per_epoch);
-	void write_spikes_to_file(int epoch_number, bool isTrained);
+  void add_spikes_to_per_neuron_spike_count(float current_time_in_seconds);
 
-	void add_spikes_to_per_neuron_spike_count(float current_time_in_seconds);
-
-	void delete_and_reset_collected_spikes();
+  void delete_and_reset_collected_spikes();
 
 private:
 
-	// Host Pointers
-	int* reset_neuron_ids;
-	float* reset_neuron_times;
+  // Host Pointers
+  int* reset_neuron_ids;
+  float* reset_neuron_times;
 
 };
 

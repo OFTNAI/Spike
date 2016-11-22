@@ -3,7 +3,6 @@
 #include <iostream>
 #include <stdio.h>
 #include <fstream>
-//CUDA #include "../Helpers/CUDAErrorCheckHelpers.hpp"
 #include "../Helpers/TerminalHelpers.hpp"
 #include <string>
 #include <time.h>
@@ -48,6 +47,12 @@ void CountNeuronSpikesRecordingElectrodes::allocate_pointers_for_spike_count() {
 
 }
 
+void CountNeuronSpikesRecordingElectrodes::reset_state() {
+  backend()->reset_state();
+  // NB: RecordingElectrodes::reset_state is pure virtual at the moment ::
+  // RecordingElectrodes::reset_state();
+}
+
 void CountNeuronSpikesRecordingElectrodes::reset_pointers_for_spike_count() {
 
   //CUDA CudaSafeCall(cudaMemset(d_per_neuron_spike_counts, 0, sizeof(int) * neurons->total_number_of_neurons));
@@ -64,6 +69,8 @@ void CountNeuronSpikesRecordingElectrodes::add_spikes_to_per_neuron_spike_count(
 	CudaCheckError();
   */
 }
+
+MAKE_PREPARE_BACKEND(CountNeuronSpikesRecordingElectrodes);
 
 /*CUDA
 __global__ void add_spikes_to_per_neuron_spike_count_kernel(float* d_last_spike_time_of_each_neuron,

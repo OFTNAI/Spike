@@ -3,16 +3,8 @@
 #include <iostream>
 #include <stdio.h>
 #include <fstream>
-//CUDA #include "../Helpers/CUDAErrorCheckHelpers.hpp"
 #include "../Helpers/TerminalHelpers.hpp"
 #include <time.h>
-
-
-// RecordingElectrodes Constructor
-
-RecordingElectrodes::RecordingElectrodes() {
-	
-}
 
 RecordingElectrodes::RecordingElectrodes(SpikingNeurons * neurons_parameter, SpikingSynapses * synapses_parameter, string full_directory_name_for_simulation_data_files_param, const char * prefix_string_param) {
 
@@ -26,9 +18,5 @@ RecordingElectrodes::RecordingElectrodes(SpikingNeurons * neurons_parameter, Spi
 
 }
 
-
-// RecordingElectrodes Destructor
-RecordingElectrodes::~RecordingElectrodes() {
-
-}
+MAKE_STUB_PREPARE_BACKEND(RecordingElectrodes);
 

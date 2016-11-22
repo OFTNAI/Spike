@@ -3,7 +3,6 @@
 #include <iostream>
 #include <stdio.h>
 #include <fstream>
-//CUDA #include "../Helpers/CUDAErrorCheckHelpers.hpp"
 #include "../Helpers/TerminalHelpers.hpp"
 #include <string>
 #include <time.h>
@@ -18,13 +17,6 @@ NetworkStateArchiveRecordingElectrodes::NetworkStateArchiveRecordingElectrodes(S
 }
 
 
-// NetworkStateArchiveRecordingElectrodes Destructor
-NetworkStateArchiveRecordingElectrodes::~NetworkStateArchiveRecordingElectrodes() {
-
-
-}
-
-
 void NetworkStateArchiveRecordingElectrodes::initialise_network_state_archive_recording_electrodes(Network_State_Archive_Optional_Parameters * network_state_archive_optional_parameters_param) {
 
 	if (network_state_archive_optional_parameters_param != NULL) {
@@ -33,6 +25,11 @@ void NetworkStateArchiveRecordingElectrodes::initialise_network_state_archive_re
 	
 }
 
+void NetworkStateArchiveRecordingElectrodes::reset_state() {
+  backend()->reset_state();
+  // NB: RecordingElectrodes::reset_state is pure virtual at the moment ::
+  // RecordingElectrodes::reset_state();
+}
 
 void NetworkStateArchiveRecordingElectrodes::write_initial_synaptic_weights_to_file() {
 	ofstream initweightfile;
@@ -108,3 +105,5 @@ void NetworkStateArchiveRecordingElectrodes::write_network_state_to_file() {
 	#endif
 
 }
+
+MAKE_PREPARE_BACKEND(NetworkStateArchiveRecordingElectrodes);

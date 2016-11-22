@@ -3,7 +3,6 @@
 #include <iostream>
 #include <stdio.h>
 #include <fstream>
-//CUDA #include "../Helpers/CUDAErrorCheckHelpers.hpp"
 #include "../Helpers/TerminalHelpers.hpp"
 #include <string>
 #include <time.h>
@@ -87,6 +86,11 @@ void CollectNeuronSpikesRecordingElectrodes::allocate_pointers_for_spike_store()
 	}
 }
 
+void CollectNeuronSpikesRecordingElectrodes::reset_state() {
+  backend()->reset_state();
+  // NB: RecordingElectrodes::reset_state is pure virtual at the moment ::
+  // RecordingElectrodes::reset_state();
+}
 
 void CollectNeuronSpikesRecordingElectrodes::delete_and_reset_collected_spikes() {
 
@@ -229,7 +233,7 @@ void CollectNeuronSpikesRecordingElectrodes::collect_spikes_for_timestep(float c
   */
 }
 
-
+MAKE_PREPARE_BACKEND(CollectNeuronSpikesRecordingElectrodes);
 
 // Collect Spikes
 /*CUDA
