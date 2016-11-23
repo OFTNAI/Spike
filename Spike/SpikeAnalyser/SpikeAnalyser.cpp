@@ -8,7 +8,8 @@
 #include <algorithm>
 
 // SpikeAnalyser Constructor
-SpikeAnalyser::SpikeAnalyser(Neurons * neurons_parameter, InputSpikingNeurons * input_neurons_parameter) {
+SpikeAnalyser::SpikeAnalyser(SpikingNeurons * neurons_parameter,
+                             InputSpikingNeurons * input_neurons_parameter) {
 	neurons = neurons_parameter;
 	input_neurons = input_neurons_parameter;
 //	number_of_neurons_in_single_cell_analysis_group = 0;
@@ -42,19 +43,9 @@ SpikeAnalyser::SpikeAnalyser(Neurons * neurons_parameter, InputSpikingNeurons * 
 }
 
 
-// SpikeAnalyser Destructor
-SpikeAnalyser::~SpikeAnalyser() {
-
-}
-
-
-void SpikeAnalyser::store_spike_counts_for_stimulus_index(int stimulus_index, int * d_neuron_spike_counts_for_stimulus) {
-  /*CUDA
-	CudaSafeCall(cudaMemcpy(per_stimulus_per_neuron_spike_counts[stimulus_index], 
-									d_neuron_spike_counts_for_stimulus, 
-									sizeof(float) * neurons->total_number_of_neurons, 
-									cudaMemcpyDeviceToHost));
-  */
+void SpikeAnalyser::store_spike_counts_for_stimulus_index(int stimulus_index) {
+  // , int * d_neuron_spike_counts_for_stimulus) { // can get this from neurons->backend()
+  backend()->store_spike_counts_for_stimulus_index(this, stimulus_index);
 }
 
 
@@ -425,3 +416,4 @@ void SpikeAnalyser::calculate_single_cell_information_scores_for_neuron_group(in
 
 }
 
+MAKE_PREPARE_BACKEND(SpikeAnalyser);
