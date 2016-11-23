@@ -40,7 +40,7 @@ namespace Backend {
    * case is virtual, to avoid the `diamond problem' for pure virtual
    * methods.
    * 
-   * A good example of this structure is given by CunductanceSpikingSynapses.
+   * A good example of this structure is given by ConductanceSpikingSynapses.
    */
   class SynapsesCommon {
   public:
