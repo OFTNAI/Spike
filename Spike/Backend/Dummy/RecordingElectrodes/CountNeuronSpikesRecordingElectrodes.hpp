@@ -12,6 +12,11 @@ namespace Backend {
       virtual void reset_state() {
         // TODO
       }
+
+      virtual void add_spikes_to_per_neuron_spike_count
+      (::CountNeuronSpikesRecordingElectrodes* front, float current_time_in_seconds) {
+        printf("TODO add_spikes_to_per_neuron_spike_count\n");
+      }
     };
   }
 }

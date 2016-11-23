@@ -13,7 +13,47 @@ namespace Backend {
       CudaSafeCall(cudaMemset(d_neuron_ids_of_stored_spikes_on_device, -1, sizeof(int)*neurons->total_number_of_neurons));
       CudaSafeCall(cudaMemset(d_time_in_seconds_of_stored_spikes_on_device, -1.0f, sizeof(float)*neurons->total_number_of_neurons));
     }
-    
+
+    CollectNeuronSpikesRecordingElectrodes::prepare() {
+      printf("TODO Backend::CUDA::CollectNeuronSpikesRecordingElectrodes::prepare\n");
+      
+      CudaSafeCall(cudaMalloc((void **)&d_neuron_ids_of_stored_spikes_on_device, sizeof(int)*size_of_device_spike_store));
+      CudaSafeCall(cudaMalloc((void **)&d_time_in_seconds_of_stored_spikes_on_device, sizeof(float)*size_of_device_spike_store));
+      CudaSafeCall(cudaMalloc((void **)&d_total_number_of_spikes_stored_on_device, sizeof(int)));
+    }
+
+    CollectNeuronSpikesRecordingElectrodes::copy_spikes_to_front
+    (::CollectNeuronSpikesRecordingElectrodes* front) {
+      CudaSafeCall(cudaMemcpy((void*)&neuron_ids_of_stored_spikes_on_host[total_number_of_spikes_stored_on_host], 
+                              d_neuron_ids_of_stored_spikes_on_device, 
+                              (sizeof(int)*total_number_of_spikes_stored_on_device[0]), 
+                              cudaMemcpyDeviceToHost));
+      CudaSafeCall(cudaMemcpy((void*)&time_in_seconds_of_stored_spikes_on_host[total_number_of_spikes_stored_on_host], 
+                              d_time_in_seconds_of_stored_spikes_on_device, 
+                              sizeof(float)*total_number_of_spikes_stored_on_device[0], 
+                              cudaMemcpyDeviceToHost));
+    }
+
+    CollectNeuronSpikesRecordingElectrodes::copy_spike_counts_to_front
+    (::CollectNeuronSpikesRecordingElectrodes* front) {
+      CudaSafeCall(cudaMemcpy(&(total_number_of_spikes_stored_on_device[0]), &(d_total_number_of_spikes_stored_on_device[0]), (sizeof(int)), cudaMemcpyDeviceToHost));
+    }
+
+    CollectNeuronSpikesRecordingElectrodes::collect_spikes_for_timestep
+    (::CollectNeuronSpikesRecordingElectrodes* front,
+     float current_time_in_seconds) {
+      	collect_spikes_for_timestep_kernel<<<neurons->number_of_neuron_blocks_per_grid, neurons->threads_per_block>>>
+          (neurons->d_last_spike_time_of_each_neuron,
+           d_total_number_of_spikes_stored_on_device,
+           d_neuron_ids_of_stored_spikes_on_device,
+           d_time_in_seconds_of_stored_spikes_on_device,
+           current_time_in_seconds,
+           neurons->total_number_of_neurons);
+
+	CudaCheckError();
+    }
+
+
     // Collect Spikes
     __global__ void collect_spikes_for_timestep_kernel
     (float* d_last_spike_time_of_each_neuron,

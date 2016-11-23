@@ -15,8 +15,10 @@ namespace Backend {
       public ::Backend::NetworkStateArchiveRecordingElectrodes {
     public:
       virtual void reset_state() {
-        // TODO
+        // TODO (if necessary...)
       }
+
+      virtual void copy_state_to_front(::NetworkStateArchiveRecordingElectrodes* front);
     };
   }
 }

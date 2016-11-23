@@ -4,6 +4,8 @@
 
 #include "../RecordingElectrodes/RecordingElectrodes.hpp"
 
+class CollectNeuronSpikesRecordingElectrodes; // forward definition
+
 namespace Backend {
   class CollectNeuronSpikesRecordingElectrodes : public virtual RecordingElectrodesCommon,
                                                  public RecordingElectrodes {
@@ -11,6 +13,11 @@ namespace Backend {
     virtual void prepare() {
       printf("TODO Backend::CollectNeuronSpikesRecordingElectrodes::prepare\n");
     }
+
+    virtual void copy_spikes_to_front(::CollectNeuronSpikesRecordingElectrodes* front) = 0;
+    virtual void copy_spike_counts_to_front(::CollectNeuronSpikesRecordingElectrodes* front) = 0;
+    virtual void collect_spikes_for_timestep(::CollectNeuronSpikesRecordingElectrodes* front,
+                                             float current_time_in_seconds) = 0;
   };
 }
 

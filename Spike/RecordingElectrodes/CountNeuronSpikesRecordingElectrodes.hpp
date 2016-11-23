@@ -4,6 +4,8 @@
 
 #include "../RecordingElectrodes/RecordingElectrodes.hpp"
 
+class CountNeuronSpikesRecordingElectrodes; // forward definition
+
 namespace Backend {
   class CountNeuronSpikesRecordingElectrodes : public virtual RecordingElectrodesCommon,
                                                public RecordingElectrodes {
@@ -11,6 +13,10 @@ namespace Backend {
     virtual void prepare() {
       printf("TODO Backend::CountNeuronSpikesRecordingElectrodes::prepare\n");
     }
+
+    virtual void add_spikes_to_per_neuron_spike_count
+    (::CountNeuronSpikesRecordingElectrodes* front,
+     float current_time_in_seconds) = 0;
   };
 }
 
@@ -33,7 +39,6 @@ public:
 
   void initialise_count_neuron_spikes_recording_electrodes();
   void allocate_pointers_for_spike_count();
-  void reset_pointers_for_spike_count();
 
   void add_spikes_to_per_neuron_spike_count(float current_time_in_seconds);
 };

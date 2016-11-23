@@ -93,11 +93,11 @@ void Simulator::CreateDirectoryForSimulationDataFiles(string directory_name_for_
 void Simulator::reset_all_recording_electrodes() {
 
 	if (simulator_options->recording_electrodes_options->count_neuron_spikes_recording_electrodes_bool) {
-		count_neuron_spikes_recording_electrodes->reset_pointers_for_spike_count();
+		count_neuron_spikes_recording_electrodes->reset_state();
 	}
 
 	if (simulator_options->recording_electrodes_options->count_input_neuron_spikes_recording_electrodes_bool) {
-		count_input_neuron_spikes_recording_electrodes->reset_pointers_for_spike_count();
+		count_input_neuron_spikes_recording_electrodes->reset_state();
 	}
 
 	if (simulator_options->recording_electrodes_options->collect_neuron_spikes_recording_electrodes_bool) {
@@ -336,7 +336,7 @@ void Simulator::perform_post_stimulus_presentation_instructions(SpikeAnalyser * 
           printf("TODO FIX BACKEND IN Simulator::perform_post_stimulus_presentation_instructions\n");
           // NB: There is a d_ pointer below which needs to be extracted from the backend
           // spike_analyser->store_spike_counts_for_stimulus_index(spiking_model->input_spiking_neurons->current_stimulus_index, count_neuron_spikes_recording_electrodes->d_per_neuron_spike_counts);
-          count_neuron_spikes_recording_electrodes->reset_pointers_for_spike_count();
+          count_neuron_spikes_recording_electrodes->reset_state();
 
 	}
 

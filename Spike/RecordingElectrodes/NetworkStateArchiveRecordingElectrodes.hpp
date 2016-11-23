@@ -4,6 +4,8 @@
 
 #include "../RecordingElectrodes/RecordingElectrodes.hpp"
 
+class NetworkStateArchiveRecordingElectrodes; // forward definition
+
 namespace Backend {
   class NetworkStateArchiveRecordingElectrodes : public virtual RecordingElectrodesCommon,
                                                  public RecordingElectrodes {
@@ -11,6 +13,8 @@ namespace Backend {
     virtual void prepare() {
       printf("TODO Backend::NetworkStateArchiveRecordingElectrodes::prepare\n");
     }
+
+    virtual void copy_state_to_front(::NetworkStateArchiveRecordingElectrodes* front) = 0;
   };
 }
 
