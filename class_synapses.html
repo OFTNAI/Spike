@@ -102,18 +102,12 @@ Inheritance diagram for Synapses:</div>
 <table class="memberdecls">
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a988416944df81e15a1a3b4b183398796"></a><!-- doxytag: member="Synapses::AddGroup" ref="a988416944df81e15a1a3b4b183398796" args="(int presynaptic_group_id, int postsynaptic_group_id, Neurons *neurons, Neurons *input_neurons, float timestep, synapse_parameters_struct *synapse_params)" -->
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>AddGroup</b> (int presynaptic_group_id, int postsynaptic_group_id, <a class="el" href="class_neurons.html">Neurons</a> *neurons, <a class="el" href="class_neurons.html">Neurons</a> *input_neurons, float timestep, <a class="el" href="structsynapse__parameters__struct.html">synapse_parameters_struct</a> *synapse_params)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afeb0d649ff7244b97aa02cb3b55a388e"></a><!-- doxytag: member="Synapses::allocate_device_pointers" ref="afeb0d649ff7244b97aa02cb3b55a388e" args="()" -->
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>allocate_device_pointers</b> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a408e198def51439dce1a426c957ecab4"></a><!-- doxytag: member="Synapses::copy_constants_and_initial_efficacies_to_device" ref="a408e198def51439dce1a426c957ecab4" args="()" -->
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>copy_constants_and_initial_efficacies_to_device</b> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a58fb0ac86d547c25edb66f58600f6bde"></a><!-- doxytag: member="Synapses::set_threads_per_block_and_blocks_per_grid" ref="a58fb0ac86d547c25edb66f58600f6bde" args="(int threads)" -->
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>set_threads_per_block_and_blocks_per_grid</b> (int threads)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a119870c5e04a53cd6b9ea756f1c4c07b"></a><!-- doxytag: member="Synapses::increment_number_of_synapses" ref="a119870c5e04a53cd6b9ea756f1c4c07b" args="(int increment)" -->
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>increment_number_of_synapses</b> (int increment)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa85d19a624beec4593946655986cfbe2"></a><!-- doxytag: member="Synapses::shuffle_synapses" ref="aa85d19a624beec4593946655986cfbe2" args="()" -->
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>shuffle_synapses</b> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_synapses.html#a988416944df81e15a1a3b4b183398796">AddGroup</a> (int presynaptic_group_id, int postsynaptic_group_id, <a class="el" href="class_neurons.html">Neurons</a> *neurons, <a class="el" href="class_neurons.html">Neurons</a> *input_neurons, float timestep, <a class="el" href="structsynapse__parameters__struct.html">synapse_parameters_struct</a> *synapse_params)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_synapses.html#afeb0d649ff7244b97aa02cb3b55a388e">allocate_device_pointers</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_synapses.html#a408e198def51439dce1a426c957ecab4">copy_constants_and_initial_efficacies_to_device</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_synapses.html#a58fb0ac86d547c25edb66f58600f6bde">set_threads_per_block_and_blocks_per_grid</a> (int threads)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_synapses.html#a119870c5e04a53cd6b9ea756f1c4c07b">increment_number_of_synapses</a> (int increment)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_synapses.html#aa85d19a624beec4593946655986cfbe2">shuffle_synapses</a> ()</td></tr>
 <tr><td colspan="2"><h2><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_synapses.html#a213039c81928c5e59677ba009fdf1e57">total_number_of_synapses</a></td></tr>
@@ -131,20 +125,179 @@ Public Attributes</h2></td></tr>
 int *&#160;</td><td class="memItemRight" valign="bottom"><b>d_temp_presynaptic_neuron_indices</b></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae28fd658a889b7931249725086797369"></a><!-- doxytag: member="Synapses::d_temp_postsynaptic_neuron_indices" ref="ae28fd658a889b7931249725086797369" args="" -->
 int *&#160;</td><td class="memItemRight" valign="bottom"><b>d_temp_postsynaptic_neuron_indices</b></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae53d4f1599ac48712d6c5c4286b42851"></a><!-- doxytag: member="Synapses::d_synapse_postsynaptic_neuron_count_index" ref="ae53d4f1599ac48712d6c5c4286b42851" args="" -->
-int *&#160;</td><td class="memItemRight" valign="bottom"><b>d_synapse_postsynaptic_neuron_count_index</b></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a060b5dbcf63383e912fc68c6c42664f8"></a><!-- doxytag: member="Synapses::d_synaptic_efficacies_or_weights" ref="a060b5dbcf63383e912fc68c6c42664f8" args="" -->
-float *&#160;</td><td class="memItemRight" valign="bottom"><b>d_synaptic_efficacies_or_weights</b></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_synapses.html#ae53d4f1599ac48712d6c5c4286b42851">d_synapse_postsynaptic_neuron_count_index</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">float *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_synapses.html#a060b5dbcf63383e912fc68c6c42664f8">d_synaptic_efficacies_or_weights</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aca9d13c31d4af5fe5a2aa4ef02574b6c"></a><!-- doxytag: member="Synapses::d_temp_synaptic_efficacies_or_weights" ref="aca9d13c31d4af5fe5a2aa4ef02574b6c" args="" -->
 float *&#160;</td><td class="memItemRight" valign="bottom"><b>d_temp_synaptic_efficacies_or_weights</b></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8b14ddaf8a108d838c2c9694feff49d3"></a><!-- doxytag: member="Synapses::number_of_synapse_blocks_per_grid" ref="a8b14ddaf8a108d838c2c9694feff49d3" args="" -->
-dim3&#160;</td><td class="memItemRight" valign="bottom"><b>number_of_synapse_blocks_per_grid</b></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa012cb1ce02d861910624fd7e16597c0"></a><!-- doxytag: member="Synapses::threads_per_block" ref="aa012cb1ce02d861910624fd7e16597c0" args="" -->
-dim3&#160;</td><td class="memItemRight" valign="bottom"><b>threads_per_block</b></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">dim3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_synapses.html#a8b14ddaf8a108d838c2c9694feff49d3">number_of_synapse_blocks_per_grid</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">dim3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_synapses.html#aa012cb1ce02d861910624fd7e16597c0">threads_per_block</a></td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock"><p>This is the parent class for SpikingSpiking. It provides a set of default methods which are primarily used to add groups of synapses to the connectivity. </p>
-</div><hr/><h2>Member Data Documentation</h2>
+</div><hr/><h2>Member Function Documentation</h2>
+<a class="anchor" id="a988416944df81e15a1a3b4b183398796"></a><!-- doxytag: member="Synapses::AddGroup" ref="a988416944df81e15a1a3b4b183398796" args="(int presynaptic_group_id, int postsynaptic_group_id, Neurons *neurons, Neurons *input_neurons, float timestep, synapse_parameters_struct *synapse_params)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void <a class="el" href="class_synapses.html#a988416944df81e15a1a3b4b183398796">Synapses::AddGroup</a> </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>presynaptic_group_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>postsynaptic_group_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_neurons.html">Neurons</a> *&#160;</td>
+          <td class="paramname"><em>neurons</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_neurons.html">Neurons</a> *&#160;</td>
+          <td class="paramname"><em>input_neurons</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>timestep</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structsynapse__parameters__struct.html">synapse_parameters_struct</a> *&#160;</td>
+          <td class="paramname"><em>synapse_params</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td><code> [virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Determines the synaptic connections to add to the simulation connectivity. This is a virtual function to allow polymorphism in the methods of various sub-class implementations. Allocates memory as necessary for group size and indices storage. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">presynaptic_group_id</td><td>An int ID of the presynaptic neuron population (ID is &lt; 0 if presynaptic population is an InputSpikingNeuron population) </td></tr>
+    <tr><td class="paramname">postsynaptic_group_id</td><td>An int ID of the postsynaptic neuron population. </td></tr>
+    <tr><td class="paramname">neurons</td><td>A pointer to an instance of the <a class="el" href="class_neurons.html">Neurons</a> class (or sub-class) which is included in this simulation. </td></tr>
+    <tr><td class="paramname">input_neurons</td><td>A pointer to an instance of the <a class="el" href="class_neurons.html">Neurons</a> class (or sub-class) which is included in this simulation (for population indices &lt; 0, i.e. <a class="el" href="class_input_spiking_neurons.html">InputSpikingNeurons</a>). </td></tr>
+    <tr><td class="paramname">timestep</td><td>A float indicating the timestep at which the simulator is running. </td></tr>
+    <tr><td class="paramname">synapse_params</td><td>A <a class="el" href="structsynapse__parameters__struct.html">synapse_parameters_struct</a> pointer describing the connectivity arrangement to be added between the pre and postsynaptic neuron populations. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Reimplemented in <a class="el" href="class_spiking_synapses.html#a187d08d4f2069c776401f6493061e096">SpikingSynapses</a>, <a class="el" href="class_conductance_spiking_synapses.html#aa16122da939c76023370b2ed02250eb1">ConductanceSpikingSynapses</a>, and <a class="el" href="class_current_spiking_synapses.html#ac58ccd047fdaa0574eba34f509f8f363">CurrentSpikingSynapses</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="afeb0d649ff7244b97aa02cb3b55a388e"></a><!-- doxytag: member="Synapses::allocate_device_pointers" ref="afeb0d649ff7244b97aa02cb3b55a388e" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void <a class="el" href="class_synapses.html#afeb0d649ff7244b97aa02cb3b55a388e">Synapses::allocate_device_pointers</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td><code> [virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Exclusively for the allocation of device memory. This class allocates device pointers for presynaptic and postsynaptic neuron ids, synaptic efficacies/weights, and the number of synaptic connections to the postsynaptic neuron. </p>
+
+<p>Reimplemented in <a class="el" href="class_spiking_synapses.html#aa4cc2665aea4ff500fcfc7de755417a1">SpikingSynapses</a>, and <a class="el" href="class_conductance_spiking_synapses.html#a6089d2cdaf8776c30e59900b5a8e161a">ConductanceSpikingSynapses</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a408e198def51439dce1a426c957ecab4"></a><!-- doxytag: member="Synapses::copy_constants_and_initial_efficacies_to_device" ref="a408e198def51439dce1a426c957ecab4" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void <a class="el" href="class_synapses.html#a408e198def51439dce1a426c957ecab4">Synapses::copy_constants_and_initial_efficacies_to_device</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td><code> [virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Allows copying of static data related to neuron dynamics to the device. Copies synapse pre/post ids, efficies/weights, and number of postsynaptic contacts on postsynaptic neuron. </p>
+
+<p>Reimplemented in <a class="el" href="class_spiking_synapses.html#a860873c08ed96df36b5eb2efa57234ae">SpikingSynapses</a>, and <a class="el" href="class_conductance_spiking_synapses.html#a5f965ffb4b3c087ef41628ef9df75b17">ConductanceSpikingSynapses</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a119870c5e04a53cd6b9ea756f1c4c07b"></a><!-- doxytag: member="Synapses::increment_number_of_synapses" ref="a119870c5e04a53cd6b9ea756f1c4c07b" args="(int increment)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void <a class="el" href="class_synapses.html#a119870c5e04a53cd6b9ea756f1c4c07b">Synapses::increment_number_of_synapses</a> </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>increment</em></td><td>)</td>
+          <td><code> [virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>A function called in to reallocate memory for a given number more synapses. /param increment The number of synapses for which allocated memory must be expanded. </p>
+
+<p>Reimplemented in <a class="el" href="class_spiking_synapses.html#a301e52b9d9629956e99baa44786f4d83">SpikingSynapses</a>, and <a class="el" href="class_conductance_spiking_synapses.html#ade89e4870db323bed029739ca95ac349">ConductanceSpikingSynapses</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a58fb0ac86d547c25edb66f58600f6bde"></a><!-- doxytag: member="Synapses::set_threads_per_block_and_blocks_per_grid" ref="a58fb0ac86d547c25edb66f58600f6bde" args="(int threads)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void <a class="el" href="class_synapses.html#a58fb0ac86d547c25edb66f58600f6bde">Synapses::set_threads_per_block_and_blocks_per_grid</a> </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>threads</em></td><td>)</td>
+          <td><code> [virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>A local, function called in to determine the CUDA Device thread (<a class="el" href="class_synapses.html#aa012cb1ce02d861910624fd7e16597c0">Synapses::threads_per_block</a>) and block dimensions (<a class="el" href="class_synapses.html#a8b14ddaf8a108d838c2c9694feff49d3">Synapses::number_of_synapse_blocks_per_grid</a>). </p>
+
+<p>Reimplemented in <a class="el" href="class_spiking_synapses.html#a55d9dba86e0bd6d3ca63444ea536f2ad">SpikingSynapses</a>, and <a class="el" href="class_conductance_spiking_synapses.html#a5b039afee9f4712313419ee59b66bc72">ConductanceSpikingSynapses</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aa85d19a624beec4593946655986cfbe2"></a><!-- doxytag: member="Synapses::shuffle_synapses" ref="aa85d19a624beec4593946655986cfbe2" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void <a class="el" href="class_synapses.html#aa85d19a624beec4593946655986cfbe2">Synapses::shuffle_synapses</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td><code> [virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>A function to shuffle the order of synapse array storage for increased GPU memory write speeds. Currently Unused. </p>
+
+<p>Reimplemented in <a class="el" href="class_spiking_synapses.html#a3d51530ee79cf70ab497a3be556c42b8">SpikingSynapses</a>, and <a class="el" href="class_conductance_spiking_synapses.html#a2fa5c7da9449f23b5e1193a2a5cc3385">ConductanceSpikingSynapses</a>.</p>
+
+</div>
+</div>
+<hr/><h2>Member Data Documentation</h2>
 <a class="anchor" id="ad3e037b9e86b30f0ca952e881b2bdf3d"></a><!-- doxytag: member="Synapses::d_postsynaptic_neuron_indices" ref="ad3e037b9e86b30f0ca952e881b2bdf3d" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -173,6 +326,34 @@ dim3&#160;</td><td class="memItemRight" valign="bottom"><b>threads_per_block</b>
 
 </div>
 </div>
+<a class="anchor" id="ae53d4f1599ac48712d6c5c4286b42851"></a><!-- doxytag: member="Synapses::d_synapse_postsynaptic_neuron_count_index" ref="ae53d4f1599ac48712d6c5c4286b42851" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int* <a class="el" href="class_synapses.html#ae53d4f1599ac48712d6c5c4286b42851">Synapses::d_synapse_postsynaptic_neuron_count_index</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>A (device-side) pointer to store the number of incoming synapses to each neuron </p>
+
+</div>
+</div>
+<a class="anchor" id="a060b5dbcf63383e912fc68c6c42664f8"></a><!-- doxytag: member="Synapses::d_synaptic_efficacies_or_weights" ref="a060b5dbcf63383e912fc68c6c42664f8" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float* <a class="el" href="class_synapses.html#a060b5dbcf63383e912fc68c6c42664f8">Synapses::d_synaptic_efficacies_or_weights</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>A (device-side) pointer to store synaptic efficaces/weights accompanying pre/postsynaptic neuron indices </p>
+
+</div>
+</div>
 <a class="anchor" id="a8e405ba80ddb4543e4d6fd1c22f3aaba"></a><!-- doxytag: member="Synapses::largest_synapse_group_size" ref="a8e405ba80ddb4543e4d6fd1c22f3aaba" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -184,6 +365,20 @@ dim3&#160;</td><td class="memItemRight" valign="bottom"><b>threads_per_block</b>
 </div>
 <div class="memdoc">
 <p>Tracks the size of the largest synaptic group. </p>
+
+</div>
+</div>
+<a class="anchor" id="a8b14ddaf8a108d838c2c9694feff49d3"></a><!-- doxytag: member="Synapses::number_of_synapse_blocks_per_grid" ref="a8b14ddaf8a108d838c2c9694feff49d3" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">dim3 <a class="el" href="class_synapses.html#a8b14ddaf8a108d838c2c9694feff49d3">Synapses::number_of_synapse_blocks_per_grid</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>A CUDA type, storing the number of blocks per grid for synapse GPU operations </p>
 
 </div>
 </div>
@@ -282,6 +477,20 @@ dim3&#160;</td><td class="memItemRight" valign="bottom"><b>threads_per_block</b>
 </div>
 <div class="memdoc">
 <p>Tracks the number of synapses in the last added group. </p>
+
+</div>
+</div>
+<a class="anchor" id="aa012cb1ce02d861910624fd7e16597c0"></a><!-- doxytag: member="Synapses::threads_per_block" ref="aa012cb1ce02d861910624fd7e16597c0" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">dim3 <a class="el" href="class_synapses.html#aa012cb1ce02d861910624fd7e16597c0">Synapses::threads_per_block</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>A CUDA type, storing the number of threads per block for synapse GPU operations </p>
 
 </div>
 </div>

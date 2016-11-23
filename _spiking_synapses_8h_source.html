@@ -117,20 +117,20 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00036"></a>00036     
 <a name="l00037"></a>00037 
 <a name="l00038"></a>00038     <span class="comment">// Synapse Functions</span>
-<a name="l00039"></a>00039     <span class="keyword">virtual</span> <span class="keywordtype">void</span> AddGroup(<span class="keywordtype">int</span> presynaptic_group_id, 
+<a name="l00039"></a>00039     <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_spiking_synapses.html#a187d08d4f2069c776401f6493061e096">AddGroup</a>(<span class="keywordtype">int</span> presynaptic_group_id, 
 <a name="l00040"></a>00040                         <span class="keywordtype">int</span> postsynaptic_group_id, 
 <a name="l00041"></a>00041                         <a class="code" href="class_neurons.html">Neurons</a> * neurons,
 <a name="l00042"></a>00042                         <a class="code" href="class_neurons.html">Neurons</a> * input_neurons,
 <a name="l00043"></a>00043                         <span class="keywordtype">float</span> timestep,
 <a name="l00044"></a>00044                         <a class="code" href="structsynapse__parameters__struct.html">synapse_parameters_struct</a> * synapse_params);
 <a name="l00045"></a>00045 
-<a name="l00046"></a>00046     <span class="keyword">virtual</span> <span class="keywordtype">void</span> allocate_device_pointers();
-<a name="l00047"></a>00047     <span class="keyword">virtual</span> <span class="keywordtype">void</span> copy_constants_and_initial_efficacies_to_device();
+<a name="l00046"></a>00046     <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_spiking_synapses.html#aa4cc2665aea4ff500fcfc7de755417a1">allocate_device_pointers</a>();
+<a name="l00047"></a>00047     <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_spiking_synapses.html#a860873c08ed96df36b5eb2efa57234ae">copy_constants_and_initial_efficacies_to_device</a>();
 <a name="l00048"></a>00048     
 <a name="l00049"></a>00049     <span class="keyword">virtual</span> <span class="keywordtype">void</span> reset_synapse_activities();
-<a name="l00050"></a>00050     <span class="keyword">virtual</span> <span class="keywordtype">void</span> set_threads_per_block_and_blocks_per_grid(<span class="keywordtype">int</span> threads);
-<a name="l00051"></a>00051     <span class="keyword">virtual</span> <span class="keywordtype">void</span> increment_number_of_synapses(<span class="keywordtype">int</span> increment);
-<a name="l00052"></a>00052     <span class="keyword">virtual</span> <span class="keywordtype">void</span> shuffle_synapses();
+<a name="l00050"></a>00050     <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_spiking_synapses.html#a55d9dba86e0bd6d3ca63444ea536f2ad">set_threads_per_block_and_blocks_per_grid</a>(<span class="keywordtype">int</span> threads);
+<a name="l00051"></a>00051     <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_spiking_synapses.html#a301e52b9d9629956e99baa44786f4d83">increment_number_of_synapses</a>(<span class="keywordtype">int</span> increment);
+<a name="l00052"></a>00052     <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_spiking_synapses.html#a3d51530ee79cf70ab497a3be556c42b8">shuffle_synapses</a>();
 <a name="l00053"></a>00053 
 <a name="l00054"></a>00054     <span class="keyword">virtual</span> <span class="keywordtype">void</span> update_synaptic_conductances(<span class="keywordtype">float</span> timestep, <span class="keywordtype">float</span> current_time_in_seconds);
 <a name="l00055"></a>00055     <span class="keyword">virtual</span> <span class="keywordtype">void</span> calculate_postsynaptic_current_injection(<a class="code" href="class_spiking_neurons.html">SpikingNeurons</a> * neurons, <span class="keywordtype">float</span> current_time_in_seconds, <span class="keywordtype">float</span> timestep);

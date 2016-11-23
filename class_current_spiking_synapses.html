@@ -98,11 +98,76 @@ Inheritance diagram for CurrentSpikingSynapses:</div>
 <table class="memberdecls">
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac58ccd047fdaa0574eba34f509f8f363"></a><!-- doxytag: member="CurrentSpikingSynapses::AddGroup" ref="ac58ccd047fdaa0574eba34f509f8f363" args="(int presynaptic_group_id, int postsynaptic_group_id, Neurons *neurons, Neurons *input_neurons, float timestep, synapse_parameters_struct *synapse_params)" -->
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>AddGroup</b> (int presynaptic_group_id, int postsynaptic_group_id, <a class="el" href="class_neurons.html">Neurons</a> *neurons, <a class="el" href="class_neurons.html">Neurons</a> *input_neurons, float timestep, <a class="el" href="structsynapse__parameters__struct.html">synapse_parameters_struct</a> *synapse_params)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_current_spiking_synapses.html#ac58ccd047fdaa0574eba34f509f8f363">AddGroup</a> (int presynaptic_group_id, int postsynaptic_group_id, <a class="el" href="class_neurons.html">Neurons</a> *neurons, <a class="el" href="class_neurons.html">Neurons</a> *input_neurons, float timestep, <a class="el" href="structsynapse__parameters__struct.html">synapse_parameters_struct</a> *synapse_params)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a09eea4af157013963de89900636d6f46"></a><!-- doxytag: member="CurrentSpikingSynapses::calculate_postsynaptic_current_injection" ref="a09eea4af157013963de89900636d6f46" args="(SpikingNeurons *neurons, float current_time_in_seconds, float timestep)" -->
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>calculate_postsynaptic_current_injection</b> (<a class="el" href="class_spiking_neurons.html">SpikingNeurons</a> *neurons, float current_time_in_seconds, float timestep)</td></tr>
 </table>
+<hr/><h2>Member Function Documentation</h2>
+<a class="anchor" id="ac58ccd047fdaa0574eba34f509f8f363"></a><!-- doxytag: member="CurrentSpikingSynapses::AddGroup" ref="ac58ccd047fdaa0574eba34f509f8f363" args="(int presynaptic_group_id, int postsynaptic_group_id, Neurons *neurons, Neurons *input_neurons, float timestep, synapse_parameters_struct *synapse_params)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void <a class="el" href="class_current_spiking_synapses.html#ac58ccd047fdaa0574eba34f509f8f363">CurrentSpikingSynapses::AddGroup</a> </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>presynaptic_group_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>postsynaptic_group_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_neurons.html">Neurons</a> *&#160;</td>
+          <td class="paramname"><em>neurons</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_neurons.html">Neurons</a> *&#160;</td>
+          <td class="paramname"><em>input_neurons</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>timestep</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structsynapse__parameters__struct.html">synapse_parameters_struct</a> *&#160;</td>
+          <td class="paramname"><em>synapse_params</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td><code> [virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Determines the synaptic connections to add to the simulation connectivity. This is a virtual function to allow polymorphism in the methods of various sub-class implementations. Allocates memory as necessary for group size and indices storage. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">presynaptic_group_id</td><td>An int ID of the presynaptic neuron population (ID is &lt; 0 if presynaptic population is an InputSpikingNeuron population) </td></tr>
+    <tr><td class="paramname">postsynaptic_group_id</td><td>An int ID of the postsynaptic neuron population. </td></tr>
+    <tr><td class="paramname">neurons</td><td>A pointer to an instance of the <a class="el" href="class_neurons.html">Neurons</a> class (or sub-class) which is included in this simulation. </td></tr>
+    <tr><td class="paramname">input_neurons</td><td>A pointer to an instance of the <a class="el" href="class_neurons.html">Neurons</a> class (or sub-class) which is included in this simulation (for population indices &lt; 0, i.e. <a class="el" href="class_input_spiking_neurons.html">InputSpikingNeurons</a>). </td></tr>
+    <tr><td class="paramname">timestep</td><td>A float indicating the timestep at which the simulator is running. </td></tr>
+    <tr><td class="paramname">synapse_params</td><td>A <a class="el" href="structsynapse__parameters__struct.html">synapse_parameters_struct</a> pointer describing the connectivity arrangement to be added between the pre and postsynaptic neuron populations. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Reimplemented from <a class="el" href="class_spiking_synapses.html#a187d08d4f2069c776401f6493061e096">SpikingSynapses</a>.</p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>Synapses/<a class="el" href="_current_spiking_synapses_8h_source.html">CurrentSpikingSynapses.h</a></li>
 </ul>
