@@ -88,15 +88,27 @@ public:
 	int* d_postsynaptic_neuron_indices;            /**< A (device-side) pointer to store indices of the postsynaptic neuron IDs */
 	int* d_temp_presynaptic_neuron_indices;
 	int* d_temp_postsynaptic_neuron_indices;
-	int * d_synapse_postsynaptic_neuron_count_index;
-	float* d_synaptic_efficacies_or_weights;
+	int * d_synapse_postsynaptic_neuron_count_index; /**< A (device-side) pointer to store the number of incoming synapses to each neuron */
+	float* d_synaptic_efficacies_or_weights;         /**< A (device-side) pointer to store synaptic efficaces/weights accompanying pre/postsynaptic neuron indices */
 	float* d_temp_synaptic_efficacies_or_weights;
 
 	// CUDA Specific
-	dim3 number_of_synapse_blocks_per_grid;
-	dim3 threads_per_block;
+	dim3 number_of_synapse_blocks_per_grid;        /**< A CUDA type, storing the number of blocks per grid for synapse GPU operations */
+	dim3 threads_per_block;                        /**< A CUDA type, storing the number of threads per block for synapse GPU operations */
 
 	// Functions
+
+  /**
+     *  Determines the synaptic connections to add to the simulation connectivity.
+     This is a virtual function to allow polymorphism in the methods of various sub-class implementations.
+      Allocates memory as necessary for group size and indices storage.
+    \param presynaptic_group_id An int ID of the presynaptic neuron population (ID is < 0 if presynaptic population is an InputSpikingNeuron population)
+    \param postsynaptic_group_id An int ID of the postsynaptic neuron population.
+    \param neurons A pointer to an instance of the Neurons class (or sub-class) which is included in this simulation.
+    \param input_neurons A pointer to an instance of the Neurons class (or sub-class) which is included in this simulation (for population indices < 0, i.e. InputSpikingNeurons).
+    \param timestep A float indicating the timestep at which the simulator is running.
+    \param synapse_params A synapse_parameters_struct pointer describing the connectivity arrangement to be added between the pre and postsynaptic neuron populations.
+     */
 	virtual void AddGroup(int presynaptic_group_id,
 						int postsynaptic_group_id,
 						Neurons * neurons,
@@ -104,12 +116,30 @@ public:
 						float timestep,
 						synapse_parameters_struct * synapse_params);
 
+  /**
+     *  Exclusively for the allocation of device memory. This class allocates device pointers for presynaptic and postsynaptic neuron ids, synaptic efficacies/weights, and the number of synaptic connections to the postsynaptic neuron.
+     */
 	virtual void allocate_device_pointers();
+
+  /**
+     *  Allows copying of static data related to neuron dynamics to the device. Copies synapse pre/post ids, efficies/weights, and number of postsynaptic contacts on postsynaptic neuron.
+	*/
 	virtual void copy_constants_and_initial_efficacies_to_device();
 
-
+  /**
+     *  A local, function called in to determine the CUDA Device thread (Synapses::threads_per_block) and block dimensions (Synapses::number_of_synapse_blocks_per_grid).
+	*/
 	virtual void set_threads_per_block_and_blocks_per_grid(int threads);
+
+  /**
+     *  A function called in to reallocate memory for a given number more synapses.
+     /param increment The number of synapses for which allocated memory must be expanded.
+  */
 	virtual void increment_number_of_synapses(int increment);
+
+  /**
+     *  A function to shuffle the order of synapse array storage for increased GPU memory write speeds. Currently Unused.
+  */
 	virtual void shuffle_synapses();
 
 
