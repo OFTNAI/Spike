@@ -1,31 +1,18 @@
+#pragma once
+
+#include <cstddef>
+
+#include "Spike/Backend/Context.hpp"
+#include "Spike/Backend/Memory.hpp"
 
 inline void print_memory_usage() {
-    // show memory usage of GPU
+  const Context* ctx = Backend::get_current_context();
+  float total_backend_bytes = Backend::total_memory();
+  float free_backend_bytes = Backend::free_memory();
+  float used_backend_bytes = total_backend_bytes - free_backend_bytes;
 
-            size_t free_byte ;
-
-            size_t total_byte ;
-
-            /* CUDA
-            cudaError_t cuda_status = cudaMemGetInfo( &free_byte, &total_byte ) ;
-
-            if ( cudaSuccess != cuda_status ){
-
-                printf("Error: cudaMemGetInfo fails, %s \n", cudaGetErrorString(cuda_status) );
-
-                exit(1);
-
-            }
-            */
-
-
-            double free_db = (double)free_byte ;
-
-            double total_db = (double)total_byte ;
-
-            double used_db = total_db - free_db ;
-
-            printf("GPU memory usage: used = %f, free = %f MB, total = %f MB\n",
-
-                used_db/1024.0/1024.0, free_db/1024.0/1024.0, total_db/1024.0/1024.0);
+  printf("Backend memory usage: used = %f, free = %f MB, total = %f MB\n",
+         used_backend_bytes/1024.0/1024.0,
+         free_backend_bytes/1024.0/1024.0,
+         total_backend_bytes/1024.0/1024.0);
 }
