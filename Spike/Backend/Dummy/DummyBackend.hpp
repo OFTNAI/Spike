@@ -9,8 +9,8 @@ namespace Backend {
     {
     }; // ::Backend::Dummy::Device
     
-    class Generic : ::Backend::Generic
+    class SpikeBackendBase : ::Backend::SpikeBackendBase
     {
-    }; // ::Backend::Dummy::Generic
+    }; // ::Backend::Dummy::Base
   } // namespace Dummy
 } // namespace Backend

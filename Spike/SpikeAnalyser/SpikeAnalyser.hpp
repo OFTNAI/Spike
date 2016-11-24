@@ -19,7 +19,7 @@ namespace Backend {
   class SpikeAnalyserCommon {};
 
   class SpikeAnalyser : public virtual SpikeAnalyserCommon,
-                        public Generic {
+                        public SpikeBackendBase {
   public:
     virtual void store_spike_counts_for_stimulus_index(::SpikeAnalyser* front,
                                                        int stimulus_index) = 0;

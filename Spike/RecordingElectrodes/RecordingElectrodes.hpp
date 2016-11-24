@@ -20,7 +20,7 @@ namespace Backend {
   };
 
   class RecordingElectrodes : public virtual RecordingElectrodesCommon,
-                              public Generic {
+                              public SpikeBackendBase {
   public:
   };
 }

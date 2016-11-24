@@ -55,9 +55,16 @@ CLOSED: [2016-11-24 Thu 14:05]
 :LOGBOOK:
 - State "PROGRESS"   from "TODO"       [2016-11-20 Sun 12:10]
 :END:
-** TODO Think about how to make calls to backend hierarchy irrepetitious (cf, reset_state call).
+** PROGRESS Think about how to make calls to backend hierarchy irrepetitious (cf, reset_state call).
+:LOGBOOK:
+- State "PROGRESS"   from "TODO"       [2016-11-24 Thu 14:10]
+:END:
 + Should backend->reset_state be a virtual method? If so, it always calls the most derived!
-** TODO Add macro for getting correct cast of backend pointer
+** DONE Add macro for getting correct cast of backend pointer
+CLOSED: [2016-11-24 Thu 14:10]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2016-11-24 Thu 14:10]
+:END:
 * TODO Update CMake scripts to build CUDA code
 * TODO Put external dependencies (eg curand, mgl) into git submodules
 * TODO Write plain C++ backend. (Use ViennaCL for linalg acceleration?)

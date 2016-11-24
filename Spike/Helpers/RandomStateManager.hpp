@@ -12,7 +12,7 @@ class RandomStateManager; // forward definition
 
 namespace Backend {
   // No `RandomStateManagerCommon' necessary, I believe
-  class RandomStateManager : public Generic {
+  class RandomStateManager : public SpikeBackendBase {
   public:
     virtual void reset_state() {
       prepare();

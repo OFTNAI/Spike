@@ -28,7 +28,7 @@ namespace Backend {
   };
 
   class STDP : public virtual STDPCommon,
-               public Generic {
+               public SpikeBackendBase {
   public:
   };
 }

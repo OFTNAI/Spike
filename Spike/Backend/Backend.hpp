@@ -3,7 +3,7 @@
 #include "Context.hpp"
 
 namespace Backend {
-  class Generic {
+  class SpikeBackendBase {
   public:
     bool ready = false;
     Context* context = _global_ctx;

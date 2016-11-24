@@ -22,7 +22,7 @@ namespace Backend {
   };
 
   class Neurons : public virtual NeuronsCommon,
-                  public Generic {
+                  public SpikeBackendBase {
   public:
     virtual void reset_state() = 0;
     virtual void prepare() = 0;

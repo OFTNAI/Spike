@@ -52,7 +52,7 @@ namespace Backend {
   };
 
   class Synapses : public virtual SynapsesCommon,
-                   public Generic  {
+                   public SpikeBackendBase  {
   public:
   };
 }
