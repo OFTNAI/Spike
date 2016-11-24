@@ -23,7 +23,11 @@ CLOSED: [2016-11-24 Thu 13:55]
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2016-11-24 Thu 13:55]
 :END:
-** TODO Backend/CUDA/Synapses: copy Backend/Dummy/Synapses common classes
+** DONE Backend/CUDA/Synapses: copy Backend/Dummy/Synapses common classes
+CLOSED: [2016-11-24 Thu 14:05]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2016-11-24 Thu 14:05]
+:END:
 ** TODO RecordingElectrodes: integrate prepare/reset functions, and backend
 ** TODO [FourLayerVision]SpikingModel: Split backend-specific stuff out into separate function
 ** TODO Look for MISSING KERNELS ?!
