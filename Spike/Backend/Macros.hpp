@@ -13,7 +13,7 @@
     return (Backend::TYPE*)_backend;            \
   }
 
-#define MAKE_PREPARE_BACKEND(TYPE) \
+#define MAKE_PREPARE_BACKEND(TYPE)                              \
   void TYPE::prepare_backend(Context* ctx) {                    \
     std::cout << "prepare_backend " #TYPE " with " << ctx->device << "\n"; \
     switch (ctx->device) {                                      \
@@ -25,6 +25,23 @@
     };                                                          \
     backend()->context = ctx;                                   \
     backend()->prepare();                                       \
+    std::cout << "backend: " << _backend << "\n";               \
+    std::cout << "this " #TYPE ": " << this << "\n";            \
+  }
+
+#define MAKE_PREPARE_BACKEND_EXTRA(TYPE)                        \
+  void TYPE::prepare_backend(Context* ctx) {                    \
+    std::cout << "prepare_backend " #TYPE " with " << ctx->device << "\n"; \
+    switch (ctx->device) {                                      \
+    case Backend::SPIKE_DEVICE_DUMMY:                           \
+      _backend = new Backend::Dummy::TYPE();                    \
+      break;                                                    \
+    default:                                                    \
+      assert("Unsupported backend" && false);                   \
+    };                                                          \
+    backend()->context = ctx;                                   \
+    backend()->prepare();                                       \
+    prepare_backend_extra();                                    \
     std::cout << "backend: " << _backend << "\n";               \
     std::cout << "this " #TYPE ": " << this << "\n";            \
   }

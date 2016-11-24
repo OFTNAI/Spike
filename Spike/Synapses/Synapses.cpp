@@ -16,6 +16,9 @@ Synapses::Synapses() {
   srand(42);	// Seeding the random numbers
 
   random_state_manager = new RandomStateManager();
+}
+
+void Synapses::prepare_backend_extra() {
   random_state_manager->prepare_backend(backend()->context);
 }
 

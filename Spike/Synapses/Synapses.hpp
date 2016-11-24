@@ -104,6 +104,7 @@ public:
 
   // Functions
   virtual void prepare_backend(Context* ctx = _global_ctx);
+  void prepare_backend_extra();
   virtual void reset_state() = 0;
 
   virtual void AddGroup(int presynaptic_group_id, 

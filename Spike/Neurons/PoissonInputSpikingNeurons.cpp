@@ -1,8 +1,11 @@
 #include "PoissonInputSpikingNeurons.hpp"
+#include "Spike/Helpers/TerminalHelpers.hpp"
+
 #include <stdlib.h>
 #include <stdio.h>
-#include "../Helpers/TerminalHelpers.hpp"
 #include <algorithm> // For random shuffle
+#include <cassert>
+
 using namespace std;
 
 PoissonInputSpikingNeurons::~PoissonInputSpikingNeurons() {
@@ -31,6 +34,7 @@ void PoissonInputSpikingNeurons::set_up_rates() {
 
 
 void PoissonInputSpikingNeurons::init_random_state() {
+  assert(backend() && "Backend needs to have been prepared before calling this!");
   random_state_manager = new RandomStateManager();
   random_state_manager->prepare_backend(backend()->context);
   printf("TODO: RNG should be managed globally...\n");

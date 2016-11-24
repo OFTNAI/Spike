@@ -22,5 +22,7 @@ void CurrentSpikingSynapses::calculate_postsynaptic_current_injection(SpikingNeu
   backend()->calculate_postsynaptic_current_injection(neurons, current_time_in_seconds, timestep);
 }
 
-MAKE_PREPARE_BACKEND(CurrentSpikingSynapses);
+// TODO: Perhaps simplify by having all front-end types derive from one base type
+//       with shared members (eg: void* _backend and an empty prepare_backend_extra)
+MAKE_PREPARE_BACKEND_EXTRA(CurrentSpikingSynapses);
 

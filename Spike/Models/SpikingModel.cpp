@@ -97,7 +97,7 @@ void SpikingModel::init_backend(bool high_fidelity_spike_storage) {
   // Randomising order of synapses means that each block is accessing a larger number of points in memory.
   // if (temp_model_type == 1) spiking_synapses->shuffle_synapses();
 
-  /*
+  /* TODO TODO TODO !!!
 
   spiking_neurons->set_threads_per_block_and_blocks_per_grid(threads_per_block_neurons);
   spiking_neurons->allocate_device_pointers(spiking_synapses->maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
@@ -113,7 +113,7 @@ void SpikingModel::init_backend(bool high_fidelity_spike_storage) {
 
   stdp_rule->allocate_device_pointers();
 
-  */
+     TODO TODO TODO !!! */
 
   spiking_synapses->prepare_backend(ctx);
   spiking_neurons->prepare_backend(ctx);

@@ -1,4 +1,5 @@
 #include "CountNeuronSpikesRecordingElectrodes.hpp"
+#include <cassert>
 #include <stdlib.h>
 #include <iostream>
 #include <stdio.h>
@@ -17,6 +18,7 @@ CountNeuronSpikesRecordingElectrodes::~CountNeuronSpikesRecordingElectrodes() {
 }
 
 void CountNeuronSpikesRecordingElectrodes::initialise_count_neuron_spikes_recording_electrodes() {
+  assert(backend() && "Need to have backend initialized!");
   // allocate_pointers_for_spike_count();
   reset_state();
   // prepare_backend();
@@ -24,12 +26,14 @@ void CountNeuronSpikesRecordingElectrodes::initialise_count_neuron_spikes_record
 }
 
 void CountNeuronSpikesRecordingElectrodes::reset_state() {
+  assert(backend() && "Need to have backend initialized!");
   backend()->reset_state();
   // NB: RecordingElectrodes::reset_state is pure virtual at the moment ::
   // RecordingElectrodes::reset_state();
 }
 
 void CountNeuronSpikesRecordingElectrodes::add_spikes_to_per_neuron_spike_count(float current_time_in_seconds) {
+  assert(backend() && "Need to have backend initialized!");
   backend()->add_spikes_to_per_neuron_spike_count(this, current_time_in_seconds);
 }
 

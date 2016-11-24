@@ -88,4 +88,6 @@ void ConductanceSpikingSynapses::update_synaptic_conductances(float timestep, fl
   backend()->update_synaptic_conductances(timestep, current_time_in_seconds);
 }
 
-MAKE_PREPARE_BACKEND(ConductanceSpikingSynapses);
+// TODO: Perhaps simplify by having all front-end types derive from one base type
+//       with shared members (eg: void* _backend and an empty prepare_backend_extra)
+MAKE_PREPARE_BACKEND_EXTRA(ConductanceSpikingSynapses);

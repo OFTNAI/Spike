@@ -3,6 +3,15 @@
 
 // FourLayerVisionSpikingModel Constructor
 FourLayerVisionSpikingModel::FourLayerVisionSpikingModel () { 
+	lif_spiking_neurons = new LIFSpikingNeurons();
+	image_poisson_input_spiking_neurons = new ImagePoissonInputSpikingNeurons();
+	conductance_spiking_synapses = new ConductanceSpikingSynapses();
+	evans_stdp = new EvansSTDP();
+
+	spiking_neurons = lif_spiking_neurons;
+	spiking_synapses = conductance_spiking_synapses;
+	input_spiking_neurons = image_poisson_input_spiking_neurons;
+	stdp_rule = evans_stdp; 
 
 	// Network Parameters
 	INHIBITORY_NEURONS_ON = false;
@@ -134,27 +143,15 @@ FourLayerVisionSpikingModel::FourLayerVisionSpikingModel () {
 
 // FourLayerVisionSpikingModel Destructor
 FourLayerVisionSpikingModel::~FourLayerVisionSpikingModel () {
-
 	delete lif_spiking_neurons;
 	delete image_poisson_input_spiking_neurons;
 	delete conductance_spiking_synapses;
 	delete evans_stdp;
-
 }
 
 
 
 void FourLayerVisionSpikingModel::init_backend(bool high_fidelity_spike_storage) {
-	lif_spiking_neurons = new LIFSpikingNeurons();
-	image_poisson_input_spiking_neurons = new ImagePoissonInputSpikingNeurons();
-	conductance_spiking_synapses = new ConductanceSpikingSynapses();
-	evans_stdp = new EvansSTDP();
-
-	spiking_neurons = lif_spiking_neurons;
-	spiking_synapses = conductance_spiking_synapses;
-	input_spiking_neurons = image_poisson_input_spiking_neurons;
-	stdp_rule = evans_stdp; 
-
         printf("TODO: Split backend-specific stuff out into separate function\n      Ideally, make it automatic for derived classes...\n");
         SpikingModel::init_backend(high_fidelity_spike_storage);
 
