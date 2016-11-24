@@ -24,7 +24,7 @@ namespace Backend {
       (::CountNeuronSpikesRecordingElectrodes* front,
         float current_time_in_seconds);
 
-      int * per_neuron_spike_counts = NULL;
+      int * per_neuron_spike_counts = nullptr;
     };
 
     __global__ void add_spikes_to_per_neuron_spike_count_kernel

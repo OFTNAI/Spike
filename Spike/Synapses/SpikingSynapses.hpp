@@ -34,8 +34,8 @@ public:
   ADD_BACKEND_GETTER(SpikingSynapses);
 
   // Host Pointers
-  int* delays = NULL;
-  bool* stdp = NULL;
+  int* delays = nullptr;
+  bool* stdp = nullptr;
 
   // For spike array stuff
   int maximum_axonal_delay_in_timesteps = 0;

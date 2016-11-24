@@ -14,20 +14,20 @@ SpikeAnalyser::SpikeAnalyser(SpikingNeurons * neurons_parameter,
 	input_neurons = input_neurons_parameter;
 //	number_of_neurons_in_single_cell_analysis_group = 0;
 
-	information_scores_for_each_object_and_neuron = NULL;
-	descending_information_scores_for_each_object_and_neuron = NULL;
-	maximum_information_score_for_each_neuron = NULL;
+	information_scores_for_each_object_and_neuron = nullptr;
+	descending_information_scores_for_each_object_and_neuron = nullptr;
+	maximum_information_score_for_each_neuron = nullptr;
 
 	spike_totals_and_averages_were_calculated = false;
 
-	number_of_spikes_per_stimulus_per_neuron_group = NULL;
-	total_number_of_spikes_per_neuron_group = NULL;
+	number_of_spikes_per_stimulus_per_neuron_group = nullptr;
+	total_number_of_spikes_per_neuron_group = nullptr;
 	total_number_of_neuron_spikes = 0;
 
 	maximum_possible_information_score = 0.0;
 
-	combined_powered_distance_from_average_score_for_each_neuron_group = NULL;
-	combined_powered_distance_from_max_score_for_each_neuron_group = NULL;
+	combined_powered_distance_from_average_score_for_each_neuron_group = nullptr;
+	combined_powered_distance_from_max_score_for_each_neuron_group = nullptr;
 
 	sum_of_information_scores_for_last_neuron_group = -1.0;
 	number_of_neurons_with_maximum_information_score_in_last_neuron_group = -1;

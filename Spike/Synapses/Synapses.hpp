@@ -7,6 +7,8 @@
 #ifndef SYNAPSES_H
 #define SYNAPSES_H
 
+#include "Spike/Base.hpp"
+
 #include "Spike/Backend/Macros.hpp"
 #include "Spike/Backend/Context.hpp"
 #include "Spike/Backend/Backend.hpp"
@@ -79,15 +81,17 @@ struct synapse_parameters_struct {
 };
 
 
-class Synapses {
+class Synapses : public virtual SpikeBase {
 
 public:
   // Constructor/Destructor
   Synapses();
   ~Synapses();
 
-  void* _backend;
   ADD_BACKEND_GETTER(Synapses);
+  virtual void prepare_backend(Context* ctx = _global_ctx);
+  virtual void prepare_backend_extra();
+  virtual void reset_state() = 0;
   
   // Variables
   int total_number_of_synapses = 0;
@@ -96,17 +100,13 @@ public:
   bool print_synapse_group_details = false;
 	
   // Host Pointers
-  int* presynaptic_neuron_indices = NULL;
-  int* postsynaptic_neuron_indices = NULL; 
-  int* original_synapse_indices = NULL;
-  int* synapse_postsynaptic_neuron_count_index = NULL;
-  float* synaptic_efficacies_or_weights = NULL;
+  int* presynaptic_neuron_indices = nullptr;
+  int* postsynaptic_neuron_indices = nullptr; 
+  int* original_synapse_indices = nullptr;
+  int* synapse_postsynaptic_neuron_count_index = nullptr;
+  float* synaptic_efficacies_or_weights = nullptr;
 
   // Functions
-  virtual void prepare_backend(Context* ctx = _global_ctx);
-  void prepare_backend_extra();
-  virtual void reset_state() = 0;
-
   virtual void AddGroup(int presynaptic_group_id, 
                         int postsynaptic_group_id, 
                         Neurons * neurons,

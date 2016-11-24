@@ -12,7 +12,7 @@ namespace Backend {
   namespace CUDA {
     class ImagePoissonInputSpikingNeurons : public ::Backend::ImagePoissonInputSpikingNeurons {
     public:
-      float * gabor_input_rates = NULL;
+      float * gabor_input_rates = nullptr;
       
       virtual void copy_rates_to_device();
       virtual void update_membrane_potentials(float timestep, float current_time_in_seconds);

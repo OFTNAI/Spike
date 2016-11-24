@@ -28,9 +28,9 @@ public:
   int length_of_longest_stimulus;
 
   // Host Pointers
-  int* number_of_spikes_in_stimuli = NULL;
-  int** neuron_id_matrix_for_stimuli = NULL;
-  float** spike_times_matrix_for_stimuli = NULL;
+  int* number_of_spikes_in_stimuli = nullptr;
+  int** neuron_id_matrix_for_stimuli = nullptr;
+  float** spike_times_matrix_for_stimuli = nullptr;
 
   // Don't need this as it is inherited without change:
   // virtual int AddGroup(neuron_parameters_struct * group_params);

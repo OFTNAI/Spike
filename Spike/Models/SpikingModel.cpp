@@ -9,10 +9,10 @@ SpikingModel::SpikingModel () {
 
 	timestep = 0.0001f;
 
-	spiking_synapses = NULL;
-	spiking_neurons = NULL;
-	input_spiking_neurons = NULL;
-	stdp_rule = NULL;
+	spiking_synapses = nullptr;
+	spiking_neurons = nullptr;
+	input_spiking_neurons = nullptr;
+	stdp_rule = nullptr;
 }
 
 
@@ -24,7 +24,7 @@ SpikingModel::~SpikingModel () {
 
 void SpikingModel::SetTimestep(float timestep_parameter){
 
-	if ((spiking_synapses == NULL) || (spiking_synapses->total_number_of_synapses == 0)) {
+	if ((spiking_synapses == nullptr) || (spiking_synapses->total_number_of_synapses == 0)) {
 		timestep = timestep_parameter;
 	} else {
 		print_message_and_exit("You must set the timestep before creating any synapses.");
@@ -34,7 +34,7 @@ void SpikingModel::SetTimestep(float timestep_parameter){
 
 int SpikingModel::AddNeuronGroup(neuron_parameters_struct * group_params) {
 
-	if (spiking_neurons == NULL) print_message_and_exit("Please set neurons pointer before adding neuron groups.");
+	if (spiking_neurons == nullptr) print_message_and_exit("Please set neurons pointer before adding neuron groups.");
 
 	int neuron_group_id = spiking_neurons->AddGroup(group_params);
 	return neuron_group_id;
@@ -44,7 +44,7 @@ int SpikingModel::AddNeuronGroup(neuron_parameters_struct * group_params) {
 
 int SpikingModel::AddInputNeuronGroup(neuron_parameters_struct * group_params) {
 
-	if (input_spiking_neurons == NULL) print_message_and_exit("Please set input_neurons pointer before adding inputs groups.");
+	if (input_spiking_neurons == nullptr) print_message_and_exit("Please set input_neurons pointer before adding inputs groups.");
 
 	int input_group_id = input_spiking_neurons->AddGroup(group_params);
 	return input_group_id;
@@ -56,7 +56,7 @@ void SpikingModel::AddSynapseGroup(int presynaptic_group_id,
 							int postsynaptic_group_id, 
 							synapse_parameters_struct * synapse_params) {
 
-	if (spiking_synapses == NULL) print_message_and_exit("Please set synapse pointer before adding synapses.");
+	if (spiking_synapses == nullptr) print_message_and_exit("Please set synapse pointer before adding synapses.");
 
 	spiking_synapses->AddGroup(presynaptic_group_id, 
 							postsynaptic_group_id, 

@@ -28,10 +28,10 @@ public:
 
   ADD_BACKEND_GETTER(ConductanceSpikingSynapses);
 
-  float * synaptic_conductances_g = NULL;
-  float * biological_conductance_scaling_constants_lambda = NULL;
-  float * reversal_potentials_Vhat = NULL;
-  float * decay_terms_tau_g = NULL;
+  float * synaptic_conductances_g = nullptr;
+  float * biological_conductance_scaling_constants_lambda = nullptr;
+  float * reversal_potentials_Vhat = nullptr;
+  float * decay_terms_tau_g = nullptr;
 
   // Synapse Functions
   virtual void AddGroup(int presynaptic_group_id, 

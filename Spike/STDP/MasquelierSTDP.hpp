@@ -55,12 +55,12 @@ class MasquelierSTDP : public STDP{
 public:
   ADD_BACKEND_GETTER(MasquelierSTDP);
 
-  struct masquelier_stdp_parameters_struct* stdp_params = NULL;
-  SpikingSynapses* syns = NULL;
-  SpikingNeurons* neurs = NULL;
-  int* index_of_last_afferent_synapse_to_spike = NULL;
-  bool* isindexed_ltd_synapse_spike = NULL;
-  int* index_of_first_synapse_spiked_after_postneuron = NULL;
+  struct masquelier_stdp_parameters_struct* stdp_params = nullptr;
+  SpikingSynapses* syns = nullptr;
+  SpikingNeurons* neurs = nullptr;
+  int* index_of_last_afferent_synapse_to_spike = nullptr;
+  bool* isindexed_ltd_synapse_spike = nullptr;
+  int* index_of_first_synapse_spiked_after_postneuron = nullptr;
 
   virtual void prepare_backend(Context* ctx = _global_ctx);
   virtual void reset_state();

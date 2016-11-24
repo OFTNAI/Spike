@@ -18,13 +18,13 @@ CollectNeuronSpikesRecordingElectrodes::CollectNeuronSpikesRecordingElectrodes(S
 
 	// Host Pointers
 	collect_neuron_spikes_optional_parameters = new Collect_Neuron_Spikes_Optional_Parameters();
-	neuron_ids_of_stored_spikes_on_host = NULL;
-	total_number_of_spikes_stored_on_device = NULL;
-	time_in_seconds_of_stored_spikes_on_host = NULL;
+	neuron_ids_of_stored_spikes_on_host = nullptr;
+	total_number_of_spikes_stored_on_device = nullptr;
+	time_in_seconds_of_stored_spikes_on_host = nullptr;
 
 	// Private Host Pointeres
-	reset_neuron_ids = NULL;
-	reset_neuron_times = NULL;
+	reset_neuron_ids = nullptr;
+	reset_neuron_times = nullptr;
 
 }
 
@@ -42,7 +42,7 @@ CollectNeuronSpikesRecordingElectrodes::~CollectNeuronSpikesRecordingElectrodes(
 
 void CollectNeuronSpikesRecordingElectrodes::initialise_collect_neuron_spikes_recording_electrodes(Collect_Neuron_Spikes_Optional_Parameters * collect_neuron_spikes_optional_parameters_param) {
 
-	if (collect_neuron_spikes_optional_parameters_param != NULL) {
+	if (collect_neuron_spikes_optional_parameters_param != nullptr) {
 		collect_neuron_spikes_optional_parameters = collect_neuron_spikes_optional_parameters_param;
 	}
 
@@ -86,8 +86,8 @@ void CollectNeuronSpikesRecordingElectrodes::delete_and_reset_collected_spikes()
 	// Free malloced host stuff
 	free(neuron_ids_of_stored_spikes_on_host);
 	free(time_in_seconds_of_stored_spikes_on_host);
-	neuron_ids_of_stored_spikes_on_host = NULL;
-	time_in_seconds_of_stored_spikes_on_host = NULL;
+	neuron_ids_of_stored_spikes_on_host = nullptr;
+	time_in_seconds_of_stored_spikes_on_host = nullptr;
 }
 
 

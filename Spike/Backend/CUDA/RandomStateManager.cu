@@ -21,9 +21,9 @@ namespace Backend {
       total_number_of_states = threads_per_blocks_x * number_of_blocks_x;
 
       // In case it has already been allocated
-      if (d_states != NULL) {
+      if (d_states != nullptr) {
         CudaSafeCall(cudaFree(d_states));
-        d_states = NULL;
+        d_states = nullptr;
       }
 
       // Allocate the random states

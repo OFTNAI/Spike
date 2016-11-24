@@ -9,9 +9,9 @@ SpikingNeurons::SpikingNeurons() {
 	high_fidelity_spike_flag = false;
 
 	// Host Pointers
-	after_spike_reset_membrane_potentials_c = NULL;
-	thresholds_for_action_potential_spikes = NULL;
-	bitarray_of_neuron_spikes = NULL;
+	after_spike_reset_membrane_potentials_c = nullptr;
+	thresholds_for_action_potential_spikes = nullptr;
+	bitarray_of_neuron_spikes = nullptr;
 }
 
 // SpikingNeurons Destructor

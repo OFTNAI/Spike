@@ -14,7 +14,7 @@ namespace Backend {
     void PoissonInputSpikingNeurons::copy_constants_to_device() {
       InputSpikingNeurons::copy_constants_to_device();
 
-      if (rates != NULL) {
+      if (rates != nullptr) {
         CudaSafeCall(cudaMemcpy(d_rates, rates, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
       }
     }

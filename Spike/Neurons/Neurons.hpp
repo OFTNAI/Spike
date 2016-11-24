@@ -9,6 +9,8 @@
  *
  */
 
+#include "Spike/Base.hpp"
+
 #include "Spike/Backend/Macros.hpp"
 #include "Spike/Backend/Context.hpp"
 #include "Spike/Backend/Backend.hpp"
@@ -46,14 +48,13 @@ struct neuron_parameters_struct {
   This is the parent class for SpikingNeurons.
   It provides a set of default methods which are primarily used to add groups of neurons to the total population.
 */
-class Neurons{
+class Neurons : public virtual SpikeBase {
 public:  
   Neurons();
   ~Neurons();
 
-  // Backend::Neurons* backend; // can't do this if we want inheritance to work w/o shadowing!
-  void* _backend;
   ADD_BACKEND_GETTER(Neurons);
+  virtual void prepare_backend(Context* ctx = _global_ctx);
   
   // Variables
   int total_number_of_neurons;				/**< Tracks the total neuron population size. */
@@ -65,9 +66,6 @@ public:
   int *last_neuron_indices_for_each_group;	/**< Indices of the final neuron in each group. */
   int * per_neuron_afferent_synapse_count;	/**< A (host-side) count of the number of afferent synapses for each neuron */
   int **group_shapes;							/**< The 2D shape of each group. */
-
-  // Functions
-  virtual void prepare_backend(Context* ctx = _global_ctx);
   
   /**  
    *  Determines the total number of neurons by which the simulation should increase.

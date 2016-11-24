@@ -41,14 +41,10 @@ struct stdp_parameters_struct {
 };
 
 
-class STDP {
+class STDP : public virtual SpikeBase {
 public:
-  void* _backend;
   ADD_BACKEND_GETTER(STDP);
   
-  virtual void prepare_backend(Context* ctx = _global_ctx) = 0;
-  virtual void reset_state() = 0;
-
   // Set STDP Parameters
   virtual void Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons* neurons, SpikingNeurons* input_neurons, stdp_parameters_struct* stdp_parameters) = 0;
 

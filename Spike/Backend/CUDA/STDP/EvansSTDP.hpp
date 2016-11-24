@@ -13,8 +13,8 @@ namespace Backend {
     class EvansSTDP : public virtual ::Backend::CUDA::STDPCommon,
                       public ::Backend::EvansSTDP {
     public:
-      float* recent_postsynaptic_activities_D = NULL; // (NEURON-WISE)
-      float* recent_presynaptic_activities_C = NULL;  // (SYNAPSE-WISE)
+      float* recent_postsynaptic_activities_D = nullptr; // (NEURON-WISE)
+      float* recent_presynaptic_activities_C = nullptr;  // (SYNAPSE-WISE)
       virtual void allocate_device_pointers();
     };
 

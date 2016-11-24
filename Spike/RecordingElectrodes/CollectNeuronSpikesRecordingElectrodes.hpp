@@ -48,10 +48,10 @@ public:
   int total_number_of_spikes_stored_on_host;
 
   // Host Pointers
-  Collect_Neuron_Spikes_Optional_Parameters * collect_neuron_spikes_optional_parameters = NULL;
-  int* neuron_ids_of_stored_spikes_on_host = NULL;
-  int* total_number_of_spikes_stored_on_device = NULL;
-  float* time_in_seconds_of_stored_spikes_on_host = NULL;
+  Collect_Neuron_Spikes_Optional_Parameters * collect_neuron_spikes_optional_parameters = nullptr;
+  int* neuron_ids_of_stored_spikes_on_host = nullptr;
+  int* total_number_of_spikes_stored_on_device = nullptr;
+  float* time_in_seconds_of_stored_spikes_on_host = nullptr;
 
   // Constructor/Destructor
   CollectNeuronSpikesRecordingElectrodes(SpikingNeurons * neurons_parameter, SpikingSynapses * synapses_parameter, string full_directory_name_for_simulation_data_files_param, const char * prefix_string_param);
@@ -71,8 +71,8 @@ public:
 private:
 
   // Host Pointers
-  int* reset_neuron_ids = NULL;
-  float* reset_neuron_times = NULL;
+  int* reset_neuron_ids = nullptr;
+  float* reset_neuron_times = nullptr;
 
 };
 

@@ -1,6 +1,8 @@
 #ifndef SpikeAnalyser_H
 #define SpikeAnalyser_H
 
+#include "Spike/Base.hpp"
+
 #include "Spike/Backend/Macros.hpp"
 #include "Spike/Backend/Context.hpp"
 #include "Spike/Backend/Backend.hpp"
@@ -33,11 +35,11 @@ namespace Backend {
 
 #include "Spike/Backend/Dummy/SpikeAnalyser/SpikeAnalyser.hpp"
 
-class SpikeAnalyser{
+class SpikeAnalyser : public virtual SpikeBase {
 public:
-  void* _backend;
   ADD_BACKEND_GETTER(SpikeAnalyser);
   void prepare_backend(Context* ctx = _global_ctx);
+  virtual void reset_state() {}
 
   SpikeAnalyser(SpikingNeurons *neurons_parameter,
                 InputSpikingNeurons *input_neurons_parameter);

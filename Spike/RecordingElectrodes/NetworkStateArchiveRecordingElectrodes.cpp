@@ -19,7 +19,7 @@ NetworkStateArchiveRecordingElectrodes::NetworkStateArchiveRecordingElectrodes(S
 
 void NetworkStateArchiveRecordingElectrodes::initialise_network_state_archive_recording_electrodes(Network_State_Archive_Optional_Parameters * network_state_archive_optional_parameters_param) {
 
-	if (network_state_archive_optional_parameters_param != NULL) {
+	if (network_state_archive_optional_parameters_param != nullptr) {
 		network_state_archive_optional_parameters = network_state_archive_optional_parameters_param;
 	}
 	

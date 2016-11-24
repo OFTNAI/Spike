@@ -14,8 +14,8 @@ namespace Backend {
     public:
 
       // Device Pointers
-      int* neuron_ids_for_stimulus = NULL;
-      float* spike_times_for_stimulus = NULL;
+      int* neuron_ids_for_stimulus = nullptr;
+      float* spike_times_for_stimulus = nullptr;
 
       virtual void allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage);
       virtual void check_for_neuron_spikes(float current_time_in_seconds, float timestep);

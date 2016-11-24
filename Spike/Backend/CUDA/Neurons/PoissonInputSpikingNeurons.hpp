@@ -12,7 +12,7 @@ namespace Backend {
   namespace CUDA {
     class PoissonInputSpikingNeurons : public ::Backend::PoissonInputSpikingNeurons {
     public:
-      float * d_rates = NULL;
+      float * d_rates = nullptr;
       
       virtual void allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage);
       virtual void copy_constants_to_device();

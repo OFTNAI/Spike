@@ -28,7 +28,7 @@ public:
   virtual void prepare_backend(Context* ctx = _global_ctx);
   virtual void reset_state();
   
-  int * per_neuron_spike_counts = NULL;
+  int * per_neuron_spike_counts = nullptr;
 
   // Constructor/Destructor
   CountNeuronSpikesRecordingElectrodes(SpikingNeurons * neurons_parameter,

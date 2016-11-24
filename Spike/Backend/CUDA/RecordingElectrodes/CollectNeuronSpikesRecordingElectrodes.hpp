@@ -26,9 +26,9 @@ namespace Backend {
                                                float current_time_in_seconds);
 
 
-      int* neuron_ids_of_stored_spikes_on_device = NULL;
-      int* total_number_of_spikes_stored_on_device = NULL;
-      float* time_in_seconds_of_stored_spikes_on_device = NULL;
+      int* neuron_ids_of_stored_spikes_on_device = nullptr;
+      int* total_number_of_spikes_stored_on_device = nullptr;
+      float* time_in_seconds_of_stored_spikes_on_device = nullptr;
     };
 
     __global__ void collect_spikes_for_timestep_kernel

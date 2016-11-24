@@ -51,15 +51,15 @@ public:
   ~EvansSTDP();
   ADD_BACKEND_GETTER(EvansSTDP);
 
-  struct evans_stdp_parameters_struct* stdp_params = NULL;
-  SpikingSynapses* syns = NULL;
-  SpikingNeurons* neurs = NULL;
+  struct evans_stdp_parameters_struct* stdp_params = nullptr;
+  SpikingSynapses* syns = nullptr;
+  SpikingNeurons* neurs = nullptr;
 
   //(NEURON-WISE)
-  float* recent_postsynaptic_activities_D = NULL;
+  float* recent_postsynaptic_activities_D = nullptr;
 
   //(SYNAPSE-WISE)
-  float* recent_presynaptic_activities_C = NULL;
+  float* recent_presynaptic_activities_C = nullptr;
 
   virtual void prepare_backend(Context* ctx = _global_ctx);
   virtual void reset_state();

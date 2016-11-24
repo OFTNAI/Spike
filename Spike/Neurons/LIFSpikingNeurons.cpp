@@ -4,8 +4,8 @@
 
 
 LIFSpikingNeurons::LIFSpikingNeurons() {
-	membrane_time_constants_tau_m = NULL;
-	membrane_resistances_R = NULL;
+	membrane_time_constants_tau_m = nullptr;
+	membrane_resistances_R = nullptr;
 }
 
 

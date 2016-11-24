@@ -37,13 +37,13 @@ public:
   bool high_fidelity_spike_flag;
 	
   // Host Pointers
-  float* after_spike_reset_membrane_potentials_c = NULL;
-  float* thresholds_for_action_potential_spikes = NULL;
-  unsigned char* bitarray_of_neuron_spikes = NULL;
+  float* after_spike_reset_membrane_potentials_c = nullptr;
+  float* thresholds_for_action_potential_spikes = nullptr;
+  unsigned char* bitarray_of_neuron_spikes = nullptr;
 
-  float* last_spike_time_of_each_neuron = NULL;
-  float* membrane_potentials_v = NULL;
-  float* resting_potentials = NULL;
+  float* last_spike_time_of_each_neuron = nullptr;
+  float* membrane_potentials_v = nullptr;
+  float* resting_potentials = nullptr;
 
   // Functions
   virtual void prepare_backend(Context* ctx = _global_ctx);

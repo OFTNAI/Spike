@@ -4,6 +4,8 @@
 #include <string>
 using namespace std;
 
+#include "Spike/Base.hpp"
+
 #include "Spike/Backend/Macros.hpp"
 #include "Spike/Backend/Context.hpp"
 #include "Spike/Backend/Backend.hpp"
@@ -25,16 +27,14 @@ namespace Backend {
 
 #include "Spike/Backend/Dummy/RecordingElectrodes/RecordingElectrodes.hpp"
 
-class RecordingElectrodes {
+class RecordingElectrodes : public virtual SpikeBase {
 public:
   RecordingElectrodes(SpikingNeurons * neurons_parameter,
                       SpikingSynapses * synapses_parameter,
                       string full_directory_name_for_simulation_data_files_param,
                       const char * prefix_string_param);
 
-  void* _backend;
   ADD_BACKEND_GETTER(RecordingElectrodes);
-
   virtual void prepare_backend(Context* ctx = _global_ctx) = 0;
   virtual void reset_state() = 0;
 

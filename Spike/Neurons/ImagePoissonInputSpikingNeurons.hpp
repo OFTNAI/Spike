@@ -47,7 +47,7 @@ public:
   virtual void prepare_backend(Context* ctx = _global_ctx);
   
   //JI VARIABLES
-  float * gabor_input_rates = NULL;
+  float * gabor_input_rates = nullptr;
 
   int total_number_of_phases = 0;
   int total_number_of_wavelengths = 0;

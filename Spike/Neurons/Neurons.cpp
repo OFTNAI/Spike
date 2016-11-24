@@ -12,10 +12,10 @@ Neurons::Neurons() {
 	number_of_neurons_in_new_group = 0;
 
 	// Host Pointers
-	start_neuron_indices_for_each_group = NULL;
-	last_neuron_indices_for_each_group = NULL;
-	per_neuron_afferent_synapse_count = NULL;
-	group_shapes = NULL;
+	start_neuron_indices_for_each_group = nullptr;
+	last_neuron_indices_for_each_group = nullptr;
+	per_neuron_afferent_synapse_count = nullptr;
+	group_shapes = nullptr;
 }
 
 

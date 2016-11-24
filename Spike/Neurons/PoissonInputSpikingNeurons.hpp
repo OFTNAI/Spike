@@ -28,8 +28,8 @@ public:
   ADD_BACKEND_GETTER(PoissonInputSpikingNeurons);
   
   float rate = 0;
-  float * rates = NULL;
-  RandomStateManager * random_state_manager = NULL;
+  float * rates = nullptr;
+  RandomStateManager * random_state_manager = nullptr;
 
   virtual int AddGroup(neuron_parameters_struct * group_params);
   void set_up_rates();

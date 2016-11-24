@@ -12,10 +12,10 @@ namespace Backend {
     class SpikingSynapses : public ::Backend::SpikingSynapses {
     public:
       // Device pointers
-      int* delays = NULL;
-      bool* stdp = NULL;
-      int* spikes_travelling_to_synapse = NULL;
-      float* time_of_last_spike_to_reach_synapse = NULL;
+      int* delays = nullptr;
+      bool* stdp = nullptr;
+      int* spikes_travelling_to_synapse = nullptr;
+      float* time_of_last_spike_to_reach_synapse = nullptr;
 
       virtual void prepare() {}
       virtual void reset_state() {}

@@ -33,14 +33,14 @@ public:
 
   ADD_BACKEND_GETTER(AdExSpikingNeurons);
   
-  float * adaptation_values_w = NULL;
-  float * membrane_capacitances_Cm = NULL;
-  float * membrane_leakage_conductances_g0 = NULL;
-  float * leak_reversal_potentials_E_L = NULL;
-  float * slope_factors_Delta_T = NULL;
-  float * adaptation_coupling_coefficients_a = NULL;
-  float * adaptation_time_constants_tau_w = NULL;
-  float * adaptation_changes_b = NULL;
+  float * adaptation_values_w = nullptr;
+  float * membrane_capacitances_Cm = nullptr;
+  float * membrane_leakage_conductances_g0 = nullptr;
+  float * leak_reversal_potentials_E_L = nullptr;
+  float * slope_factors_Delta_T = nullptr;
+  float * adaptation_coupling_coefficients_a = nullptr;
+  float * adaptation_time_constants_tau_w = nullptr;
+  float * adaptation_changes_b = nullptr;
   float absolute_refractory_period = 0;
 
   virtual int AddGroup(neuron_parameters_struct * group_params);

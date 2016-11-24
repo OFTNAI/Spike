@@ -248,11 +248,11 @@ void Synapses::increment_number_of_synapses(int increment) {
     int* temp_original_synapse_indices = (int*)realloc(original_synapse_indices, total_number_of_synapses * sizeof(int));
     int* temp_synapse_postsynaptic_neuron_count_index = (int*)realloc(synapse_postsynaptic_neuron_count_index, total_number_of_synapses * sizeof(int));
 
-    if (temp_presynaptic_neuron_indices != NULL) presynaptic_neuron_indices = temp_presynaptic_neuron_indices;
-    if (temp_postsynaptic_neuron_indices != NULL) postsynaptic_neuron_indices = temp_postsynaptic_neuron_indices;
-    if (temp_synaptic_efficacies_or_weights != NULL) synaptic_efficacies_or_weights = temp_synaptic_efficacies_or_weights;
-    if (temp_original_synapse_indices != NULL) original_synapse_indices = temp_original_synapse_indices;
-    if (temp_synapse_postsynaptic_neuron_count_index != NULL) synapse_postsynaptic_neuron_count_index = temp_synapse_postsynaptic_neuron_count_index;
+    if (temp_presynaptic_neuron_indices != nullptr) presynaptic_neuron_indices = temp_presynaptic_neuron_indices;
+    if (temp_postsynaptic_neuron_indices != nullptr) postsynaptic_neuron_indices = temp_postsynaptic_neuron_indices;
+    if (temp_synaptic_efficacies_or_weights != nullptr) synaptic_efficacies_or_weights = temp_synaptic_efficacies_or_weights;
+    if (temp_original_synapse_indices != nullptr) original_synapse_indices = temp_original_synapse_indices;
+    if (temp_synapse_postsynaptic_neuron_count_index != nullptr) synapse_postsynaptic_neuron_count_index = temp_synapse_postsynaptic_neuron_count_index;
   }
 
 }

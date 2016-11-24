@@ -13,9 +13,9 @@ namespace Backend {
     class MasquelierSTDP : public virtual ::Backend::CUDA::STDPCommon,
                            public ::Backend::MasquelierSTDP {
     public:
-      int* index_of_last_afferent_synapse_to_spike = NULL;
-      bool* isindexed_ltd_synapse_spike = NULL;
-      int* index_of_first_synapse_spiked_after_postneuron = NULL;
+      int* index_of_last_afferent_synapse_to_spike = nullptr;
+      bool* isindexed_ltd_synapse_spike = nullptr;
+      int* index_of_first_synapse_spiked_after_postneuron = nullptr;
       virtual void allocate_device_pointers();
     };
 

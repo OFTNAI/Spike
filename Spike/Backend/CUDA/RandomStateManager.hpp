@@ -12,7 +12,7 @@ namespace Backend {
   namespace CUDA {
     class RandomStateManager : public ::Backend::RandomStateManager {
     public:
-      curandState_t* d_states = NULL;
+      curandState_t* d_states = nullptr;
       dim3 threads_per_block;
       dim3 block_dimensions;
 

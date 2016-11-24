@@ -13,13 +13,13 @@ namespace Backend {
     public:
       ~Synapses();
 
-      int* presynaptic_neuron_indices = NULL;
-      int* postsynaptic_neuron_indices = NULL;
-      int* temp_presynaptic_neuron_indices = NULL;
-      int* temp_postsynaptic_neuron_indices = NULL;
-      int * synapse_postsynaptic_neuron_count_index = NULL;
-      float* synaptic_efficacies_or_weights = NULL;
-      float* temp_synaptic_efficacies_or_weights = NULL;
+      int* presynaptic_neuron_indices = nullptr;
+      int* postsynaptic_neuron_indices = nullptr;
+      int* temp_presynaptic_neuron_indices = nullptr;
+      int* temp_postsynaptic_neuron_indices = nullptr;
+      int * synapse_postsynaptic_neuron_count_index = nullptr;
+      float* synaptic_efficacies_or_weights = nullptr;
+      float* temp_synaptic_efficacies_or_weights = nullptr;
       
       // CUDA Specific
       dim3 number_of_synapse_blocks_per_grid;

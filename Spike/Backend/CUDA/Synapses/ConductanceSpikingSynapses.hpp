@@ -11,10 +11,10 @@ namespace Backend {
   namespace CUDA {
     class ConductanceSpikingSynapses : public ::Backend::ConductanceSpikingSynapses {
     public:
-      float * synaptic_conductances_g = NULL;
-      float * biological_conductance_scaling_constants_lambda = NULL;
-      float * reversal_potentials_Vhat = NULL;
-      float * decay_terms_tau_g = NULL;
+      float * synaptic_conductances_g = nullptr;
+      float * biological_conductance_scaling_constants_lambda = nullptr;
+      float * reversal_potentials_Vhat = nullptr;
+      float * decay_terms_tau_g = nullptr;
 
       virtual void allocate_device_pointers();
       virtual void copy_constants_and_initial_efficacies_to_device();

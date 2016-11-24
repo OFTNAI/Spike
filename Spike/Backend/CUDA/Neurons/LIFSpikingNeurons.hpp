@@ -9,8 +9,8 @@ namespace Backend {
   namespace CUDA {
     class LIFSpikingNeurons : public ::Backend::LIFSpikingNeurons {
     public:
-      float * membrane_time_constants_tau_m = NULL;
-      float * membrane_resistances_R = NULL;
+      float * membrane_time_constants_tau_m = nullptr;
+      float * membrane_resistances_R = nullptr;
 
       virtual void allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage);
       virtual void copy_constants_to_device();

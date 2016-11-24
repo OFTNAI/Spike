@@ -26,9 +26,9 @@ public:
 
   ADD_BACKEND_GETTER(IzhikevichSpikingNeurons);
   
-  float * param_a = NULL;
-  float * param_b = NULL;
-  float * param_d = NULL;
+  float * param_a = nullptr;
+  float * param_b = nullptr;
+  float * param_d = nullptr;
 
   virtual int AddGroup(neuron_parameters_struct * group_params);
   virtual void update_membrane_potentials(float timestep, float current_time_in_seconds);

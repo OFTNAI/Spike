@@ -38,8 +38,8 @@ void GeneratorInputSpikingNeurons::AddStimulus(int spikenumber, int* ids, float*
   spike_times_matrix_for_stimuli = (float**)realloc(spike_times_matrix_for_stimuli, sizeof(float*)*total_number_of_input_stimuli);
 	
   // Initialize matrices
-  neuron_id_matrix_for_stimuli[total_number_of_input_stimuli - 1] = NULL;
-  spike_times_matrix_for_stimuli[total_number_of_input_stimuli - 1] = NULL;
+  neuron_id_matrix_for_stimuli[total_number_of_input_stimuli - 1] = nullptr;
+  spike_times_matrix_for_stimuli[total_number_of_input_stimuli - 1] = nullptr;
   number_of_spikes_in_stimuli[total_number_of_input_stimuli - 1] = 0;
 	
   neuron_id_matrix_for_stimuli[total_number_of_input_stimuli - 1] = (int*)

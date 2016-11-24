@@ -32,37 +32,38 @@ Simulator::Simulator(SpikingModel * spiking_model_param, Simulator_Options * sim
 
 	if (simulator_options->recording_electrodes_options->count_neuron_spikes_recording_electrodes_bool) {
 		count_neuron_spikes_recording_electrodes = new CountNeuronSpikesRecordingElectrodes(spiking_model->spiking_neurons, spiking_model->spiking_synapses, full_directory_name_for_simulation_data_files, "Neurons");
+                // count_neuron_spikes_recording_electrodes->prepare_backend();
 		count_neuron_spikes_recording_electrodes->initialise_count_neuron_spikes_recording_electrodes();
 	} else {
-		count_neuron_spikes_recording_electrodes = NULL;
+		count_neuron_spikes_recording_electrodes = nullptr;
 	}
 
 	if (simulator_options->recording_electrodes_options->count_input_neuron_spikes_recording_electrodes_bool) {
 		count_input_neuron_spikes_recording_electrodes = new CountNeuronSpikesRecordingElectrodes(spiking_model->input_spiking_neurons, spiking_model->spiking_synapses, full_directory_name_for_simulation_data_files, "Input_Neurons");
 		count_input_neuron_spikes_recording_electrodes->initialise_count_neuron_spikes_recording_electrodes();
 	} else {
-		count_input_neuron_spikes_recording_electrodes = NULL;
+		count_input_neuron_spikes_recording_electrodes = nullptr;
 	}
 
 	if (simulator_options->recording_electrodes_options->collect_neuron_spikes_recording_electrodes_bool) {
 		collect_neuron_spikes_recording_electrodes = new CollectNeuronSpikesRecordingElectrodes(spiking_model->spiking_neurons, spiking_model->spiking_synapses, full_directory_name_for_simulation_data_files, "Neurons");
 		collect_neuron_spikes_recording_electrodes->initialise_collect_neuron_spikes_recording_electrodes(simulator_options->recording_electrodes_options->collect_neuron_spikes_optional_parameters);
 	} else {
-		collect_neuron_spikes_recording_electrodes = NULL;
+		collect_neuron_spikes_recording_electrodes = nullptr;
 	}
 
 	if (simulator_options->recording_electrodes_options->collect_input_neuron_spikes_recording_electrodes_bool) {
 		collect_input_neuron_spikes_recording_electrodes = new CollectNeuronSpikesRecordingElectrodes(spiking_model->input_spiking_neurons, spiking_model->spiking_synapses, full_directory_name_for_simulation_data_files, "Input_Neurons");
 		collect_input_neuron_spikes_recording_electrodes->initialise_collect_neuron_spikes_recording_electrodes(simulator_options->recording_electrodes_options->collect_input_neuron_spikes_optional_parameters);
 	} else {
-		collect_input_neuron_spikes_recording_electrodes = NULL;
+		collect_input_neuron_spikes_recording_electrodes = nullptr;
 	}
 
 	if (simulator_options->recording_electrodes_options->network_state_archive_recording_electrodes_bool) {
 		network_state_archive_recording_electrodes->initialise_network_state_archive_recording_electrodes(simulator_options->recording_electrodes_options->network_state_archive_optional_parameters);
 		network_state_archive_recording_electrodes = new NetworkStateArchiveRecordingElectrodes(spiking_model->spiking_neurons, spiking_model->spiking_synapses, full_directory_name_for_simulation_data_files, "Synapses");
 	} else {
-		network_state_archive_recording_electrodes = NULL;
+		network_state_archive_recording_electrodes = nullptr;
 	}
 
 

@@ -50,8 +50,8 @@ public:
   ~HigginsSTDP();
   ADD_BACKEND_GETTER(HigginsSTDP);
 
-  struct higgins_stdp_parameters_struct* stdp_params = NULL;
-  SpikingSynapses* syns = NULL;
+  struct higgins_stdp_parameters_struct* stdp_params = nullptr;
+  SpikingSynapses* syns = nullptr;
 
   virtual void prepare_backend(Context* ctx = _global_ctx);
 

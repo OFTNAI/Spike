@@ -11,10 +11,10 @@ namespace Backend {
     public:
 
       // Device Pointers
-      float * param_a = NULL;
-      float * param_b = NULL;
-      float * param_d = NULL;
-      float * states_u = NULL;
+      float * param_a = nullptr;
+      float * param_b = nullptr;
+      float * param_d = nullptr;
+      float * states_u = nullptr;
 
       virtual void allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage);
       virtual void copy_constants_to_device();
