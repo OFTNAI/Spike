@@ -132,18 +132,19 @@ public:
 
 
 	// Variables
+        Context* context = nullptr;
 	std::string full_directory_name_for_simulation_data_files;
 	int simulations_run_count;
 
 	// Host Pointers
-	SpikingModel * spiking_model;
-	Simulator_Options * simulator_options;
+	SpikingModel * spiking_model = nullptr;
+	Simulator_Options * simulator_options = nullptr;
 
-	CountNeuronSpikesRecordingElectrodes* count_neuron_spikes_recording_electrodes;
-	CountNeuronSpikesRecordingElectrodes* count_input_neuron_spikes_recording_electrodes;
-	CollectNeuronSpikesRecordingElectrodes* collect_neuron_spikes_recording_electrodes;
-	CollectNeuronSpikesRecordingElectrodes* collect_input_neuron_spikes_recording_electrodes;
-	NetworkStateArchiveRecordingElectrodes* network_state_archive_recording_electrodes;
+	CountNeuronSpikesRecordingElectrodes* count_neuron_spikes_recording_electrodes = nullptr;
+	CountNeuronSpikesRecordingElectrodes* count_input_neuron_spikes_recording_electrodes = nullptr;
+	CollectNeuronSpikesRecordingElectrodes* collect_neuron_spikes_recording_electrodes = nullptr;
+	CollectNeuronSpikesRecordingElectrodes* collect_input_neuron_spikes_recording_electrodes = nullptr;
+	NetworkStateArchiveRecordingElectrodes* network_state_archive_recording_electrodes = nullptr;
 	
 	// Functions
 

@@ -65,6 +65,9 @@ CLOSED: [2016-11-24 Thu 14:05]
 - State "PROGRESS"   from "TODO"       [2016-11-24 Thu 14:10]
 :END:
 + Should backend->reset_state be a virtual method? If so, it always calls the most derived!
+** TODO If prepare_backend hasn't been called before backend is needed, then we should not just crash. Instead, we should have a compile-time option to call prepare_backend implicitly using the global context. This would mean that adding prepare_backend calls to legacy code should not be needed.
++ On the other hand, it is likely to end up necessary, in a number of places, to add code to prepare_backend_extra() in order to set the device up correctly.
++ prepare_backend calls will then replace current backend-specific preparatory calls.
 ** DONE Add macro for getting correct cast of backend pointer
 CLOSED: [2016-11-24 Thu 14:10]
 :LOGBOOK:
