@@ -27,7 +27,7 @@ void MasquelierSTDP::Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeuro
 	neurs = neurons;
 }
 
-// 
+//
 void MasquelierSTDP::allocate_device_pointers(){
 	STDP::allocate_device_pointers();
 	// Add the correct space for last synapse
@@ -63,7 +63,7 @@ void MasquelierSTDP::Run_STDP(float* d_last_spike_time_of_each_neuron, float cur
 void MasquelierSTDP::apply_stdp_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds) {
 	// First reset the indices array
 	// In order to carry out nearest spike potentiation only, we must find the spike arriving at each neuron which has the smallest time diff
-	get_indices_to_apply_stdp<<<neurs->number_of_neuron_blocks_per_grid, syns->threads_per_block>>>(
+	get_indices_to_apply_stdp<<<syns->number_of_synapse_blocks_per_grid, syns->threads_per_block>>>(
 																	syns->d_postsynaptic_neuron_indices,
 																	d_last_spike_time_of_each_neuron,
 																	syns->d_stdp,
@@ -75,7 +75,7 @@ void MasquelierSTDP::apply_stdp_to_synapse_weights(float* d_last_spike_time_of_e
 																	syns->total_number_of_synapses);
 	CudaCheckError();
 
-	apply_stdp_to_synapse_weights_kernel<<<syns->number_of_synapse_blocks_per_grid, syns->threads_per_block>>>(
+	apply_stdp_to_synapse_weights_kernel<<<neurs->number_of_neuron_blocks_per_grid, neurs->threads_per_block>>>(
 																	syns->d_postsynaptic_neuron_indices,
 																	d_last_spike_time_of_each_neuron,
 																	syns->d_stdp,
@@ -84,7 +84,7 @@ void MasquelierSTDP::apply_stdp_to_synapse_weights(float* d_last_spike_time_of_e
 																	d_index_of_last_afferent_synapse_to_spike,
 																	d_isindexed_ltd_synapse_spike,
 																	d_index_of_first_synapse_spiked_after_postneuron,
-																	*stdp_params, 
+																	*stdp_params,
 																	current_time_in_seconds,
 																	neurs->total_number_of_neurons);
 	CudaCheckError();
@@ -109,29 +109,36 @@ __global__ void apply_stdp_to_synapse_weights_kernel(int* d_postsyns,
 
 	// Running though all synapses
 	while (idx < total_number_of_post_neurons) {
+		// Check whether a neuron has fired, if so: reset flag
+		if (d_last_spike_time_of_each_neuron[idx] == currtime){
+			d_isindexed_ltd_synapse_spike[idx] = false;
+		}
+
 		// Get the synapse on which to do LTP/LTD
 		int index_of_LTP_synapse = d_index_of_last_afferent_synapse_to_spike[idx];
 		int index_of_LTD_synapse = d_index_of_first_synapse_spiked_after_postneuron[idx];
 
 		// If we are to carry out STDP on LTP synapse
-		if(d_stdp[index_of_LTP_synapse]){
-			float last_syn_spike_time = d_time_of_last_spike_to_reach_synapse[index_of_LTP_synapse];
-			float last_neuron_spike_time = d_last_spike_time_of_each_neuron[idx];
-			float new_syn_weight = d_synaptic_efficacies_or_weights[index_of_LTP_synapse];
+		if (index_of_LTP_synapse >= 0){
+			if(d_stdp[index_of_LTP_synapse]){
+				float last_syn_spike_time = d_time_of_last_spike_to_reach_synapse[index_of_LTP_synapse];
+				float last_neuron_spike_time = d_last_spike_time_of_each_neuron[idx];
+				float new_syn_weight = d_synaptic_efficacies_or_weights[index_of_LTP_synapse];
 
-			if (last_neuron_spike_time == currtime){
-				float diff = currtime - last_syn_spike_time;
-				// Only carry out LTP if the difference is greater than some range
-				if (diff < 7*stdp_vars.tau_plus && diff > 0){
-					float weightchange = stdp_vars.a_plus * expf(-diff / stdp_vars.tau_plus);
-					// Update weights
-					new_syn_weight += weightchange;
-					// Ensure that the weights are clipped to 1.0f
-					new_syn_weight = min(new_syn_weight, 1.0f);
+				if (last_neuron_spike_time == currtime){
+					float diff = currtime - last_syn_spike_time;
+					// Only carry out LTP if the difference is greater than some range
+					if (diff < 7*stdp_vars.tau_plus && diff > 0){
+						float weightchange = stdp_vars.a_plus * expf(-diff / stdp_vars.tau_plus);
+						// Update weights
+						new_syn_weight += weightchange;
+						// Ensure that the weights are clipped to 1.0f
+						new_syn_weight = min(new_syn_weight, 1.0f);
+					}
 				}
+				// Update the synaptic weight as required
+				d_synaptic_efficacies_or_weights[index_of_LTP_synapse] = new_syn_weight;
 			}
-			// Update the synaptic weight as required
-			d_synaptic_efficacies_or_weights[index_of_LTP_synapse] = new_syn_weight;
 		}
 
 		// Get the synapse for LTD
@@ -157,7 +164,7 @@ __global__ void apply_stdp_to_synapse_weights_kernel(int* d_postsyns,
 					}
 					d_synaptic_efficacies_or_weights[index_of_LTD_synapse] = new_syn_weight;
 				}
-			}	
+			}
 		}
 		idx += blockDim.x * gridDim.x;
 	}
@@ -185,17 +192,13 @@ __global__ void get_indices_to_apply_stdp(int* d_postsyns,
 			// Atomic Exchange the new synapse index
 			atomicExch(&d_index_of_last_afferent_synapse_to_spike[postsynaptic_neuron], idx);
 		}
-		
+
 		// Check (if we need to) whether a synapse has fired
-		if (d_isindexed_ltd_synapse_spike[postsynaptic_neuron]){
+		if (!d_isindexed_ltd_synapse_spike[postsynaptic_neuron]){
 			if (d_time_of_last_spike_to_reach_synapse[idx] == currtime){
 				d_isindexed_ltd_synapse_spike[postsynaptic_neuron] = true;
 				atomicExch(&d_index_of_first_synapse_spiked_after_postneuron[postsynaptic_neuron], idx);
 			}
-		}
-		// Check whether a neuron has fired
-		if (d_last_spike_time_of_each_neuron[postsynaptic_neuron] == currtime){
-			d_isindexed_ltd_synapse_spike[postsynaptic_neuron] = false;
 		}
 		// Increment index
 		idx += blockDim.x * gridDim.x;
