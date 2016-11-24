@@ -9,7 +9,8 @@
 
 namespace Backend {
   namespace CUDA {
-    class CurrentSpikingSynapses : public ::Backend::CurrentSpikingSynapses {
+    class CurrentSpikingSynapses : public virtual SpikingSynapsesCommon,
+                                   public ::Backend::CurrentSpikingSynapses {
     public:
     };
 

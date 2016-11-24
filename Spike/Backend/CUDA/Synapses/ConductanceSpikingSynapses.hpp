@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Spike/Synapses/ConductanceSpikingSynapses.hpp"
+#include "SpikingSynapses.hpp"
 #include "Spike/Backend/CUDA/CUDABackend.hpp"
 #include <cuda.h>
 #include <vector_types.h>
@@ -9,7 +10,8 @@
 
 namespace Backend {
   namespace CUDA {
-    class ConductanceSpikingSynapses : public ::Backend::ConductanceSpikingSynapses {
+    class ConductanceSpikingSynapses : public virtual SpikingSynapsesCommon,
+                                       public ::Backend::ConductanceSpikingSynapses {
     public:
       float * synaptic_conductances_g = nullptr;
       float * biological_conductance_scaling_constants_lambda = nullptr;

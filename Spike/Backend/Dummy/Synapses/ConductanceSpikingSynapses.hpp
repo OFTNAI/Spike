@@ -1,11 +1,11 @@
 #pragma once
 
-#include "SpikingSynapses.hpp"
 #include "Spike/Synapses/ConductanceSpikingSynapses.hpp"
+#include "SpikingSynapses.hpp"
 
 namespace Backend {
   namespace Dummy {
-    class ConductanceSpikingSynapses : public virtual ::Backend::Dummy::SpikingSynapsesCommon,
+    class ConductanceSpikingSynapses : public virtual SpikingSynapsesCommon,
                                        public ::Backend::ConductanceSpikingSynapses
     {
     public:

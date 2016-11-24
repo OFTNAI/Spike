@@ -5,7 +5,7 @@
 
 namespace Backend {
   namespace Dummy {
-    class CurrentSpikingSynapses : public virtual ::Backend::Dummy::SpikingSynapsesCommon,
+    class CurrentSpikingSynapses : public virtual SpikingSynapsesCommon,
                                    public ::Backend::CurrentSpikingSynapses {
     public:
       virtual void prepare() {

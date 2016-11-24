@@ -11,8 +11,8 @@ namespace Backend {
       }
     };
 
-    class Synapses : public ::Backend::Synapses,
-                     public virtual SynapsesCommon {
+    class Synapses : public virtual SynapsesCommon,
+                     public ::Backend::Synapses {
     public:
       // virtual void prepare() {}
       // virtual void reset_state() {}

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Spike/Synapses/SpikingSynapses.hpp"
+#include "Synapses.hpp"
 #include "Spike/Backend/CUDA/CUDABackend.hpp"
 #include <cuda.h>
 #include <vector_types.h>
@@ -9,7 +10,16 @@
 
 namespace Backend {
   namespace CUDA {
-    class SpikingSynapses : public ::Backend::SpikingSynapses {
+    class SpikingSynapsesCommon : public virtual SynapsesCommon,
+                                  public virtual ::Backend::SpikingSynapsesCommon {
+    public:
+      virtual void interact_spikes_with_synapses(::SpikingNeurons * neurons, ::SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) {
+        // printf("TODO Backend::Synapses::interact_spikes_with_synapses\n");
+      }
+    };
+    
+    class SpikingSynapses : public virtual SpikingSynapsesCommon,
+                            public ::Backend::SpikingSynapses {
     public:
       // Device pointers
       int* delays = nullptr;

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Synapses.hpp"
 #include "Spike/Synapses/SpikingSynapses.hpp"
+#include "Synapses.hpp"
 
 namespace Backend {
   namespace Dummy {
