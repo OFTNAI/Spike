@@ -1,13 +1,16 @@
 #pragma once
 
 #include "Spike/Neurons/IzhikevichSpikingNeurons.hpp"
+#include "Neurons.hpp"
 #include "Spike/Backend/CUDA/CUDABackend.hpp"
+
 #include <cuda.h>
 #include <vector_types.h>
 
 namespace Backend {
   namespace CUDA {
-    class IzhikevichSpikingNeurons : public ::Backend::IzhikevichSpikingNeurons {
+    class IzhikevichSpikingNeurons : public virtual ::Backend::CUDA::NeuronsCommon,
+                                     public ::Backend::IzhikevichSpikingNeurons {
     public:
 
       // Device Pointers

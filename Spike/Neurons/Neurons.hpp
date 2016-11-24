@@ -17,7 +17,12 @@
 #include "Spike/Backend/Device.hpp"
 
 namespace Backend {
-  class Neurons : public Generic {
+  class NeuronsCommon {
+  public:
+  };
+
+  class Neurons : public virtual NeuronsCommon,
+                  public Generic {
   public:
     virtual void reset_state() = 0;
     virtual void prepare() = 0;

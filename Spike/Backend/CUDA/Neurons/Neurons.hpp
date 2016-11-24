@@ -7,7 +7,12 @@
 
 namespace Backend {
   namespace CUDA {
-    class Neurons : public ::Backend::Neurons {
+    class NeuronsCommon : public virtual ::Backend::NeuronsCommon {
+    public:
+    };
+
+    class Neurons : public virtual ::Backend::CUDA::NeuronsCommon,
+                    public ::Backend::Neurons {
     public:
 
       // Device Pointers

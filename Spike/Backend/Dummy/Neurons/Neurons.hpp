@@ -4,7 +4,12 @@
 
 namespace Backend {
   namespace Dummy {
-    class Neurons : public ::Backend::Neurons {
+    class NeuronsCommon : public virtual ::Backend::NeuronsCommon {
+    public:
+    };
+
+    class Neurons : public virtual ::Backend::Dummy::NeuronsCommon,
+                    public ::Backend::Neurons {
     public:
       virtual void prepare() {}
       virtual void reset_state() {}

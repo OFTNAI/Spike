@@ -1,10 +1,12 @@
 #pragma once
 
 #include "Spike/Neurons/PoissonInputSpikingNeurons.hpp"
+#include "Neurons.hpp"
 
 namespace Backend {
   namespace Dummy {
-    class ImagePoissonInputSpikingNeurons : public ::Backend::ImagePoissonInputSpikingNeurons {
+    class ImagePoissonInputSpikingNeurons : public virtual ::Backend::Dummy::NeuronsCommon,
+                                            public ::Backend::ImagePoissonInputSpikingNeurons {
     public:
       virtual void check_for_neuron_spikes(float current_time_in_seconds, float timestep) {
         // printf("TODO Backend::Dummy::ImagePoissonInputSpikingNeurons::check_for_neuron_spikes\n");

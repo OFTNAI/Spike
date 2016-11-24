@@ -7,14 +7,22 @@ CLOSED: [2016-11-11 Fri 14:00]
 :LOGBOOK:
 - State "PROGRESS"   from "TODO"       [2016-11-11 Fri 14:00]
 :END:
-** TODO Make all frontend classes derive from a shared root, with basic elements such as void* _backend and empty prepare_backend_extra
+** DONE Make all frontend classes derive from a shared root, with basic elements such as void* _backend and empty prepare_backend_extra
+CLOSED: [2016-11-24 Thu 13:40]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2016-11-24 Thu 13:40]
+:END:
 ** TODO Add frontend member pointer to backend classes; and add it to `prepare' call
 ** PROGRESS Synapses: check Neurons for how to implement common functions
 :LOGBOOK:
 - State "PROGRESS"   from "TODO"       [2016-11-21 Mon 17:25]
 :END:
 + eg prepare and reset
-** TODO Neurons: Add NeuronsCommon class with virtual inheritance
+** DONE Neurons: Add NeuronsCommon class with virtual inheritance
+CLOSED: [2016-11-24 Thu 13:55]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2016-11-24 Thu 13:55]
+:END:
 ** TODO Backend/CUDA/Synapses: copy Backend/Dummy/Synapses common classes
 ** TODO RecordingElectrodes: integrate prepare/reset functions, and backend
 ** TODO [FourLayerVision]SpikingModel: Split backend-specific stuff out into separate function

@@ -2,12 +2,15 @@
 
 #include "Spike/Neurons/LIFSpikingNeurons.hpp"
 #include "Spike/Backend/CUDA/CUDABackend.hpp"
+#include "Neurons.hpp"
+
 #include <cuda.h>
 #include <vector_types.h>
 
 namespace Backend {
   namespace CUDA {
-    class LIFSpikingNeurons : public ::Backend::LIFSpikingNeurons {
+    class LIFSpikingNeurons : public virtual ::Backend::CUDA::NeuronsCommon,
+                              public ::Backend::LIFSpikingNeurons {
     public:
       float * membrane_time_constants_tau_m = nullptr;
       float * membrane_resistances_R = nullptr;

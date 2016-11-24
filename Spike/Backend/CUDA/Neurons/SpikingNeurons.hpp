@@ -2,12 +2,15 @@
 
 #include "Spike/Neurons/SpikingNeurons.hpp"
 #include "Spike/Backend/CUDA/CUDABackend.hpp"
+#include "Neurons.hpp"
+
 #include <cuda.h>
 #include <vector_types.h>
 
 namespace Backend {
   namespace CUDA {
-    class SpikingNeurons : public ::Backend::SpikingNeurons {
+    class SpikingNeurons : public virtual ::Backend::CUDA::NeuronsCommon,
+                           public ::Backend::SpikingNeurons {
     public:
 
       // Device Pointers
