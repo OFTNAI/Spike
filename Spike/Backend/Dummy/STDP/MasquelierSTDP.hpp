@@ -8,6 +8,8 @@ namespace Backend {
     class MasquelierSTDP : public virtual ::Backend::Dummy::STDPCommon,
                            public ::Backend::MasquelierSTDP {
     public:
+      MAKE_BACKEND_CONSTRUCTOR(MasquelierSTDP);
+
       virtual void reset_state() {
         // TODO
       }

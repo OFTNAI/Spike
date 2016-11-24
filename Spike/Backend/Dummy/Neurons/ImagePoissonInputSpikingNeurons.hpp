@@ -8,6 +8,8 @@ namespace Backend {
     class ImagePoissonInputSpikingNeurons : public virtual ::Backend::Dummy::NeuronsCommon,
                                             public ::Backend::ImagePoissonInputSpikingNeurons {
     public:
+      MAKE_BACKEND_CONSTRUCTOR(ImagePoissonInputSpikingNeurons);
+
       virtual void check_for_neuron_spikes(float current_time_in_seconds, float timestep) {
         // printf("TODO Backend::Dummy::ImagePoissonInputSpikingNeurons::check_for_neuron_spikes\n");
       }

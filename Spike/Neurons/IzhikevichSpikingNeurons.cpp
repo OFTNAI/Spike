@@ -35,3 +35,4 @@ void IzhikevichSpikingNeurons::reset_state() {
   backend()->reset_state();
 }
 
+// MAKE_PREPARE_BACKEND(IzhikevichSpikingNeurons);

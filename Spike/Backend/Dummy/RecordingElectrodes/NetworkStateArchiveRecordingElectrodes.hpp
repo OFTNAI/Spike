@@ -9,6 +9,8 @@ namespace Backend {
       public virtual ::Backend::Dummy::RecordingElectrodesCommon,
       public ::Backend::NetworkStateArchiveRecordingElectrodes {
     public:
+      MAKE_BACKEND_CONSTRUCTOR(NetworkStateArchiveRecordingElectrodes);
+
       virtual void reset_state() {
         // TODO
       }

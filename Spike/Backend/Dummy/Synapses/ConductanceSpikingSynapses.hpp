@@ -6,9 +6,10 @@
 namespace Backend {
   namespace Dummy {
     class ConductanceSpikingSynapses : public virtual SpikingSynapsesCommon,
-                                       public ::Backend::ConductanceSpikingSynapses
-    {
+                                       public ::Backend::ConductanceSpikingSynapses {
     public:
+      MAKE_BACKEND_CONSTRUCTOR(ConductanceSpikingSynapses);
+      
       virtual void prepare() {
         printf("TODO Backend::Dummy::ConductanceSpikingSynapses::prepare\n");
       }

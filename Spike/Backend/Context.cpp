@@ -1,6 +1,6 @@
 #include "Context.hpp"
 
-Context* _global_ctx;
+Context* _global_ctx = nullptr;
 
 namespace Backend {
   void init_global_context() {

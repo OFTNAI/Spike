@@ -18,6 +18,8 @@ struct AdEx_spiking_neuron_parameters_struct : spiking_neuron_parameters_struct 
 
 };
 
+class AdExSpikingNeurons; // forward definition
+
 namespace Backend {
   class AdExSpikingNeurons : public SpikingNeurons {
   };

@@ -12,7 +12,12 @@ CLOSED: [2016-11-24 Thu 13:40]
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2016-11-24 Thu 13:40]
 :END:
-** TODO Add frontend member pointer to backend classes; and add it to `prepare' call
+** DONE Add frontend member pointer to backend classes; and add it to `prepare' call
+CLOSED: [2016-11-24 Thu 15:55]
+:LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2016-11-24 Thu 15:55]
+- State "PROGRESS"   from "TODO"       [2016-11-24 Thu 14:20]
+:END:
 ** PROGRESS Synapses: check Neurons for how to implement common functions
 :LOGBOOK:
 - State "PROGRESS"   from "TODO"       [2016-11-21 Mon 17:25]

@@ -22,6 +22,8 @@
 // allows maths
 #include <math.h>
 
+class STDP; // forward definition
+
 namespace Backend {
   class STDPCommon {
   public:

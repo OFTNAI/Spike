@@ -4,6 +4,8 @@
 #include "SpikingSynapses.hpp"
 #include "Spike/Neurons/SpikingNeurons.hpp"
 
+class CurrentSpikingSynapses; // forward definition
+
 namespace Backend {
   class CurrentSpikingSynapses : public SpikingSynapses {
   public:

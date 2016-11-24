@@ -6,6 +6,8 @@
 struct input_spiking_neuron_parameters_struct : spiking_neuron_parameters_struct {
 };
 
+class InputSpikingNeurons; // forward definition
+
 namespace Backend {
   class InputSpikingNeurons : public SpikingNeurons {
   public:

@@ -16,6 +16,10 @@
 #include "Spike/Backend/Backend.hpp"
 #include "Spike/Backend/Device.hpp"
 
+#include <cstdio>
+
+class Neurons; // forward definition
+
 namespace Backend {
   class NeuronsCommon {
   public:
@@ -30,9 +34,6 @@ namespace Backend {
 }
 
 #include "Spike/Backend/Dummy/Neurons/Neurons.hpp"
-
-#include <stdio.h>
-
 
 #define PRESYNAPTIC_IS_INPUT( id ) (id < 0 ? true : false)
 #define CORRECTED_PRESYNAPTIC_ID(id, is_input) (is_input ? (-1 * (id)) - 1 : id) 

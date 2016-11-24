@@ -8,6 +8,8 @@ namespace Backend {
     class AdExSpikingNeurons : public virtual ::Backend::Dummy::NeuronsCommon,
                                public ::Backend::AdExSpikingNeurons {
     public:
+      MAKE_BACKEND_CONSTRUCTOR(AdExSpikingNeurons);
+
       virtual void reset_state();
     };
   }

@@ -27,6 +27,8 @@
 // allows maths
 #include <math.h>
 
+class MasquelierSTDP; // forward definition
+
 namespace Backend {
   class MasquelierSTDP : public virtual STDPCommon,
                          public STDP {

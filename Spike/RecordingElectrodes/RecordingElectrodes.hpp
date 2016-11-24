@@ -14,6 +14,8 @@ using namespace std;
 #include "Spike/Neurons/SpikingNeurons.hpp"
 #include "Spike/Synapses/SpikingSynapses.hpp"
 
+class RecordingElectrodes; // forward definition
+
 namespace Backend {
   class RecordingElectrodesCommon {
   public:

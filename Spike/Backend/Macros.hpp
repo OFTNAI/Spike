@@ -11,8 +11,15 @@
 #define ADD_BACKEND_GETTER(TYPE)                        \
   Backend::TYPE* backend() const {                      \
     assert(_backend != nullptr &&                       \
-           "Need to have _backend initialized!");       \
+           "Need to have backend initialized!");        \
+    /*assert(((Backend::TYPE*)_backend)->ready &&   */  \
+    /*       "Need to have backend ready!"); */         \
     return (Backend::TYPE*)_backend;                    \
+  }
+
+#define MAKE_BACKEND_CONSTRUCTOR(TYPE)                  \
+  TYPE(::TYPE* front) {                                 \
+    _frontend = (void*)front;                           \
   }
 
 #define MAKE_PREPARE_BACKEND(TYPE)                              \
@@ -20,7 +27,7 @@
     std::cout << "prepare_backend " #TYPE " with " << ctx->device << "\n"; \
     switch (ctx->device) {                                      \
     case Backend::SPIKE_DEVICE_DUMMY:                           \
-      _backend = new Backend::Dummy::TYPE();                    \
+      _backend = new Backend::Dummy::TYPE(this);                \
       break;                                                    \
     default:                                                    \
       assert("Unsupported backend" && false);                   \

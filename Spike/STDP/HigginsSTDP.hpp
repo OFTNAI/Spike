@@ -19,6 +19,8 @@
 // allows maths
 #include <math.h>
 
+class HigginsSTDP; // forward definition
+
 namespace Backend {
   class HigginsSTDP : public virtual STDPCommon,
                       public STDP {

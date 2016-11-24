@@ -11,6 +11,8 @@ struct poisson_input_spiking_neuron_parameters_struct : input_spiking_neuron_par
 	float rate;
 };
 
+class PoissonInputSpikingNeurons; // forward definition
+
 namespace Backend {
   class PoissonInputSpikingNeurons : public InputSpikingNeurons {
   public:

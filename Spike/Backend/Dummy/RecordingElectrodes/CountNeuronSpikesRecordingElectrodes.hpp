@@ -9,6 +9,8 @@ namespace Backend {
       public virtual ::Backend::Dummy::RecordingElectrodesCommon,
       public ::Backend::CountNeuronSpikesRecordingElectrodes {
     public:
+      MAKE_BACKEND_CONSTRUCTOR(CountNeuronSpikesRecordingElectrodes);
+
       virtual void reset_state() {
         // TODO
       }

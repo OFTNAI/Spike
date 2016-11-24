@@ -7,6 +7,8 @@ struct generator_input_spiking_neuron_parameters_struct : input_spiking_neuron_p
 	generator_input_spiking_neuron_parameters_struct() { input_spiking_neuron_parameters_struct(); }
 };
 
+class GeneratorInputSpikingNeurons; // forward definition
+
 namespace Backend {
   class GeneratorInputSpikingNeurons : public InputSpikingNeurons {
   public:

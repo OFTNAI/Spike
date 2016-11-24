@@ -12,6 +12,8 @@ struct conductance_spiking_synapse_parameters_struct : spiking_synapse_parameter
 	float decay_term_tau_g;
 };
 
+class ConductanceSpikingSynapses; // forward definition
+
 namespace Backend {
   class ConductanceSpikingSynapses : public SpikingSynapses {
   public:

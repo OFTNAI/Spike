@@ -8,6 +8,8 @@ namespace Backend {
     class HigginsSTDP : public virtual ::Backend::Dummy::STDPCommon,
                         public ::Backend::HigginsSTDP {
     public:
+      MAKE_BACKEND_CONSTRUCTOR(HigginsSTDP);
+
       virtual void reset_state() {
         // TODO
       }

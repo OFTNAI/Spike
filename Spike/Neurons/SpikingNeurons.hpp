@@ -1,7 +1,7 @@
 #ifndef SpikingNeurons_H
 #define SpikingNeurons_H
 
-#include <stdio.h>
+#include <cstdio>
 
 #include "Neurons.hpp"
 
@@ -13,6 +13,8 @@ struct spiking_neuron_parameters_struct : neuron_parameters_struct {
 	float threshold_for_action_potential_spike;
 	float absolute_refractory_period;
 };
+
+class SpikingNeurons; // forward definition
 
 namespace Backend {
   class SpikingNeurons : public Neurons {

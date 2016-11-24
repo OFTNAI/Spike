@@ -4,6 +4,8 @@
 #include "Synapses.hpp"
 #include "../Neurons/SpikingNeurons.hpp"
 
+class SpikingSynapses; // forward definition
+
 namespace Backend {
   class SpikingSynapsesCommon : public virtual SynapsesCommon {
   public:

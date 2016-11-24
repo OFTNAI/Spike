@@ -11,6 +11,8 @@ struct izhikevich_spiking_neuron_parameters_struct : spiking_neuron_parameters_s
 	float paramd;
 };
 
+class IzhikevichSpikingNeurons; // forward definition
+
 namespace Backend {
   class IzhikevichSpikingNeurons : public SpikingNeurons {
   };

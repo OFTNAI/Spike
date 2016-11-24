@@ -8,6 +8,8 @@ namespace Backend {
     bool ready = false;
     Context* context = _global_ctx;
 
+    void* _frontend = nullptr;
+
     virtual void reset_state() = 0;
     virtual void prepare() = 0;
   };

@@ -25,6 +25,8 @@
 
 #include "Spike/Helpers/RandomStateManager.hpp"
 
+class Synapses; // forward definition
+
 namespace Backend {
   /* Each type T deriving from ::Synapses must have an associated
    * Backend::T class specifying the interface implementing the actual

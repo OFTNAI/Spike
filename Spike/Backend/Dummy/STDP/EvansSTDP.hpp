@@ -8,6 +8,8 @@ namespace Backend {
     class EvansSTDP : public virtual ::Backend::Dummy::STDPCommon,
                       public ::Backend::EvansSTDP {
     public:
+      MAKE_BACKEND_CONSTRUCTOR(EvansSTDP);
+
       virtual void reset_state() {
         // TODO
       }

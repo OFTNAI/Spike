@@ -8,6 +8,7 @@ namespace Backend {
     class IzhikevichSpikingNeurons : public virtual ::Backend::Dummy::NeuronsCommon,
                                      public ::Backend::IzhikevichSpikingNeurons {
     public:
+      MAKE_BACKEND_CONSTRUCTOR(IzhikevichSpikingNeurons);
 
       virtual void update_membrane_potentials(float timestep, float current_time_in_seconds);
       virtual void reset_state();

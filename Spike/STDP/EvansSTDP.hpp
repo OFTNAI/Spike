@@ -18,6 +18,8 @@
 // allows maths
 #include <math.h>
 
+class EvansSTDP; // forward definition
+
 namespace Backend {
   class EvansSTDP : public virtual STDPCommon,
                     public STDP {

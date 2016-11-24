@@ -9,6 +9,8 @@ namespace Backend {
       public virtual ::Backend::Dummy::RecordingElectrodesCommon,
       public ::Backend::CollectNeuronSpikesRecordingElectrodes {
     public:
+      MAKE_BACKEND_CONSTRUCTOR(CollectNeuronSpikesRecordingElectrodes);
+
       virtual void reset_state() {
         // TODO
       }
