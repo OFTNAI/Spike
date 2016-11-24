@@ -32,6 +32,7 @@ namespace Backend {
   class STDP : public virtual STDPCommon,
                public SpikeBackendBase {
   public:
+    ADD_FRONTEND_GETTER(STDP);
   };
 }
 

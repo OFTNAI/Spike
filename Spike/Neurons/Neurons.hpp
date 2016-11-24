@@ -28,6 +28,7 @@ namespace Backend {
   class Neurons : public virtual NeuronsCommon,
                   public SpikeBackendBase {
   public:
+    ADD_FRONTEND_GETTER(Neurons);
     virtual void reset_state() = 0;
     virtual void prepare() = 0;
   };

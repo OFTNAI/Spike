@@ -22,6 +22,13 @@
     _frontend = (void*)front;                           \
   }
 
+#define ADD_FRONTEND_GETTER(TYPE)                       \
+  ::TYPE* frontend() const {                            \
+    assert(_frontend != nullptr &&                      \
+           "Need to have backend initialized!");        \
+    return (::TYPE*)_frontend;                          \
+  }
+
 #define MAKE_PREPARE_BACKEND(TYPE)                              \
   void TYPE::prepare_backend(Context* ctx) {                    \
     std::cout << "prepare_backend " #TYPE " with " << ctx->device << "\n"; \

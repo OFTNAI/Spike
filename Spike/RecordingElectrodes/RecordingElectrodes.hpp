@@ -24,6 +24,7 @@ namespace Backend {
   class RecordingElectrodes : public virtual RecordingElectrodesCommon,
                               public SpikeBackendBase {
   public:
+    ADD_FRONTEND_GETTER(RecordingElectrodes);
   };
 }
 

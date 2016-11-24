@@ -9,6 +9,7 @@ class CurrentSpikingSynapses; // forward definition
 namespace Backend {
   class CurrentSpikingSynapses : public SpikingSynapses {
   public:
+    ADD_FRONTEND_GETTER(CurrentSpikingSynapses);
   };
 }
 

@@ -19,6 +19,7 @@ class ImagePoissonInputSpikingNeurons; // forward definition
 namespace Backend {
   class ImagePoissonInputSpikingNeurons : public PoissonInputSpikingNeurons {
   public:
+    ADD_FRONTEND_GETTER(ImagePoissonInputSpikingNeurons);
   };
 }
 

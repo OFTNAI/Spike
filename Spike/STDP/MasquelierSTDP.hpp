@@ -33,6 +33,8 @@ namespace Backend {
   class MasquelierSTDP : public virtual STDPCommon,
                          public STDP {
   public:
+    ADD_FRONTEND_GETTER(MasquelierSTDP);
+
     virtual void prepare() {
       printf("TODO Backend::MasquelierSTDP::prepare\n");
     }

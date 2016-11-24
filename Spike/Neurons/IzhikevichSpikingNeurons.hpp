@@ -15,6 +15,7 @@ class IzhikevichSpikingNeurons; // forward definition
 
 namespace Backend {
   class IzhikevichSpikingNeurons : public SpikingNeurons {
+    ADD_FRONTEND_GETTER(IzhikevichSpikingNeurons);
   };
 }
 

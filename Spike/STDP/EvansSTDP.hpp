@@ -24,6 +24,8 @@ namespace Backend {
   class EvansSTDP : public virtual STDPCommon,
                     public STDP {
   public:
+    ADD_FRONTEND_GETTER(EvansSTDP);
+
     virtual void prepare() {
       printf("TODO Backend::EvansSTDP::prepare\n");
     }

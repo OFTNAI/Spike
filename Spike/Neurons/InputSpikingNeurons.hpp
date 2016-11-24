@@ -11,6 +11,7 @@ class InputSpikingNeurons; // forward definition
 namespace Backend {
   class InputSpikingNeurons : public SpikingNeurons {
   public:
+    ADD_FRONTEND_GETTER(InputSpikingNeurons);
     virtual void reset_state() {};
   };
 }

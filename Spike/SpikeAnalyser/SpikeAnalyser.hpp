@@ -21,6 +21,8 @@ namespace Backend {
   class SpikeAnalyser : public virtual SpikeAnalyserCommon,
                         public SpikeBackendBase {
   public:
+    ADD_FRONTEND_GETTER(SpikeAnalyser);
+
     virtual void store_spike_counts_for_stimulus_index(::SpikeAnalyser* front,
                                                        int stimulus_index) = 0;
      // int * d_neuron_spike_counts_for_stimulus)

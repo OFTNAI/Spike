@@ -56,6 +56,7 @@ namespace Backend {
   class Synapses : public virtual SynapsesCommon,
                    public SpikeBackendBase  {
   public:
+    ADD_FRONTEND_GETTER(Synapses);
   };
 }
 

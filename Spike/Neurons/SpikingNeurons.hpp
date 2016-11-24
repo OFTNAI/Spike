@@ -19,6 +19,7 @@ class SpikingNeurons; // forward definition
 namespace Backend {
   class SpikingNeurons : public Neurons {
   public:
+    ADD_FRONTEND_GETTER(SpikingNeurons);
     virtual void check_for_neuron_spikes(float current_time_in_seconds, float timestep) = 0;
   };
 }

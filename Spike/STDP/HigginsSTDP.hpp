@@ -25,6 +25,8 @@ namespace Backend {
   class HigginsSTDP : public virtual STDPCommon,
                       public STDP {
   public:
+    ADD_FRONTEND_GETTER(HigginsSTDP);
+
     virtual void prepare() {
       printf("TODO Backend::HigginsSTDP::prepare\n");
     }

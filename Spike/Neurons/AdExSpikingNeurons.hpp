@@ -22,6 +22,7 @@ class AdExSpikingNeurons; // forward definition
 
 namespace Backend {
   class AdExSpikingNeurons : public SpikingNeurons {
+    ADD_FRONTEND_GETTER(AdExSpikingNeurons);
   };
 }
 

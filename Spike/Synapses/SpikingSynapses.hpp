@@ -15,6 +15,7 @@ namespace Backend {
   class SpikingSynapses : public virtual SpikingSynapsesCommon,
                           public Synapses {
   public:
+    ADD_FRONTEND_GETTER(SpikingSynapses);
     virtual void calculate_postsynaptic_current_injection(::SpikingNeurons * neurons, float current_time_in_seconds, float timestep) = 0;
   };
 }
