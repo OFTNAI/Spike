@@ -7,41 +7,15 @@ CLOSED: [2016-11-11 Fri 14:00]
 :LOGBOOK:
 - State "PROGRESS"   from "TODO"       [2016-11-11 Fri 14:00]
 :END:
-** DONE Make all frontend classes derive from a shared root, with basic elements such as void* _backend and empty prepare_backend_extra
-CLOSED: [2016-11-24 Thu 13:40]
-:LOGBOOK:
-- State "DONE"       from "TODO"       [2016-11-24 Thu 13:40]
-:END:
-** DONE Add frontend member pointer to backend classes; and add it to `prepare' call
-CLOSED: [2016-11-24 Thu 15:55]
-:LOGBOOK:
-- State "DONE"       from "PROGRESS"   [2016-11-24 Thu 15:55]
-- State "PROGRESS"   from "TODO"       [2016-11-24 Thu 14:20]
-:END:
-** PROGRESS Synapses: check Neurons for how to implement common functions
-:LOGBOOK:
-- State "PROGRESS"   from "TODO"       [2016-11-21 Mon 17:25]
-:END:
-+ eg prepare and reset
-** DONE Neurons: Add NeuronsCommon class with virtual inheritance
-CLOSED: [2016-11-24 Thu 13:55]
-:LOGBOOK:
-- State "DONE"       from "TODO"       [2016-11-24 Thu 13:55]
-:END:
 ** DONE Backend/CUDA/Synapses: copy Backend/Dummy/Synapses common classes
 CLOSED: [2016-11-24 Thu 14:05]
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2016-11-24 Thu 14:05]
 :END:
-** TODO RecordingElectrodes: integrate prepare/reset functions, and backend
-** TODO [FourLayerVision]SpikingModel: Split backend-specific stuff out into separate function
+** TODO Update CMake scripts to build CUDA code
 ** TODO Look for MISSING KERNELS ?!
 + check Backend/CUDA header files (esp Synapses/)
 ** TODO Remove `d_' from pointer names in CUDA backend classes ...
-** TODO Connect up front and back ends
-+ eg update_membrane_potentials, memory synchrony, etc etc
-+ what should the API look like?
-** TODO Always check pointers before freeing!
 ** Questions / thoughts
 *** What is a "backend"?
 + A set of classes / functions that performs the computations represented in the front end.
@@ -60,20 +34,50 @@ CLOSED: [2016-11-24 Thu 14:05]
 :LOGBOOK:
 - State "PROGRESS"   from "TODO"       [2016-11-20 Sun 12:10]
 :END:
+** TODO Fix all TODO comments in frontend code
+** DONE Make all frontend classes derive from a shared root, with basic elements such as void* _backend and empty prepare_backend_extra
+CLOSED: [2016-11-24 Thu 13:40]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2016-11-24 Thu 13:40]
+:END:
+** DONE Add frontend member pointer to backend classes; and add it to `prepare' call
+CLOSED: [2016-11-24 Thu 15:55]
+:LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2016-11-24 Thu 15:55]
+- State "PROGRESS"   from "TODO"       [2016-11-24 Thu 14:20]
+:END:
+** TODO RecordingElectrodes: integrate prepare/reset functions, and backend
+** PROGRESS Synapses: check Neurons for how to implement common functions
+:LOGBOOK:
+- State "PROGRESS"   from "TODO"       [2016-11-21 Mon 17:25]
+:END:
++ eg prepare and reset
+** DONE Neurons: Add NeuronsCommon class with virtual inheritance
+CLOSED: [2016-11-24 Thu 13:55]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2016-11-24 Thu 13:55]
+:END:
 ** PROGRESS Think about how to make calls to backend hierarchy irrepetitious (cf, reset_state call).
 :LOGBOOK:
 - State "PROGRESS"   from "TODO"       [2016-11-24 Thu 14:10]
 :END:
 + Should backend->reset_state be a virtual method? If so, it always calls the most derived!
-** TODO If prepare_backend hasn't been called before backend is needed, then we should not just crash. Instead, we should have a compile-time option to call prepare_backend implicitly using the global context. This would mean that adding prepare_backend calls to legacy code should not be needed.
+** TODO [FourLayerVision]SpikingModel: Split backend-specific stuff out into separate function
+** TODO Option to call prepare_backend implicitly using the global context
++ If prepare_backend hasn't been called before backend is needed, then we should not just crash.
++ Instead, we should have a compile-time option to call prepare_backend implicitly using the global context.
+  + This would mean that adding prepare_backend calls to legacy code should not be needed.
 + On the other hand, it is likely to end up necessary, in a number of places, to add code to prepare_backend_extra() in order to set the device up correctly.
 + prepare_backend calls will then replace current backend-specific preparatory calls.
+** TODO Connect up front and back ends
++ eg update_membrane_potentials, memory synchrony, etc etc
++ what should the API look like?
+** TODO Always check pointers before freeing!
 ** DONE Add macro for getting correct cast of backend pointer
 CLOSED: [2016-11-24 Thu 14:10]
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2016-11-24 Thu 14:10]
 :END:
-* TODO Update CMake scripts to build CUDA code
 * TODO Put external dependencies (eg curand, mgl) into git submodules
 * TODO Write plain C++ backend. (Use ViennaCL for linalg acceleration?)
 * TODO Write OpenCL backend. (SYCL?)
