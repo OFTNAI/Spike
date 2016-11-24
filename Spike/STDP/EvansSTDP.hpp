@@ -61,7 +61,7 @@ public:
   //(SYNAPSE-WISE)
   float* recent_presynaptic_activities_C = NULL;
 
-  virtual void prepare_backend(Context* ctx);
+  virtual void prepare_backend(Context* ctx = _global_ctx);
   virtual void reset_state();
 
   // Set STDP Parameters

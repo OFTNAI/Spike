@@ -67,7 +67,7 @@ public:
   int **group_shapes;							/**< The 2D shape of each group. */
 
   // Functions
-  virtual void prepare_backend(Context* ctx);
+  virtual void prepare_backend(Context* ctx = _global_ctx);
   
   /**  
    *  Determines the total number of neurons by which the simulation should increase.

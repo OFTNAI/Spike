@@ -7,9 +7,13 @@
 #ifndef STDP_H
 #define STDP_H
 
-// Get Synapses & Neurons Class
-#include "../Synapses/SpikingSynapses.hpp"
-#include "../Neurons/SpikingNeurons.hpp"
+#include "Spike/Backend/Macros.hpp"
+#include "Spike/Backend/Context.hpp"
+#include "Spike/Backend/Backend.hpp"
+#include "Spike/Backend/Device.hpp"
+
+#include "Spike/Synapses/SpikingSynapses.hpp"
+#include "Spike/Neurons/SpikingNeurons.hpp"
 
 // stdlib allows random numbers
 #include <stdlib.h>
@@ -42,7 +46,7 @@ public:
   void* _backend;
   ADD_BACKEND_GETTER(STDP);
   
-  virtual void prepare_backend(Context* ctx) = 0;
+  virtual void prepare_backend(Context* ctx = _global_ctx) = 0;
   virtual void reset_state() = 0;
 
   // Set STDP Parameters

@@ -4,8 +4,13 @@
 #include <string>
 using namespace std;
 
-#include "../Neurons/SpikingNeurons.hpp"
-#include "../Synapses/SpikingSynapses.hpp"
+#include "Spike/Backend/Macros.hpp"
+#include "Spike/Backend/Context.hpp"
+#include "Spike/Backend/Backend.hpp"
+#include "Spike/Backend/Device.hpp"
+
+#include "Spike/Neurons/SpikingNeurons.hpp"
+#include "Spike/Synapses/SpikingSynapses.hpp"
 
 namespace Backend {
   class RecordingElectrodesCommon {
@@ -30,7 +35,7 @@ public:
   void* _backend;
   ADD_BACKEND_GETTER(RecordingElectrodes);
 
-  virtual void prepare_backend(Context* ctx) = 0;
+  virtual void prepare_backend(Context* ctx = _global_ctx) = 0;
   virtual void reset_state() = 0;
 
   // Variables

@@ -40,7 +40,7 @@ struct Collect_Neuron_Spikes_Optional_Parameters {
 class CollectNeuronSpikesRecordingElectrodes : public RecordingElectrodes {
 public:
   ADD_BACKEND_GETTER(CollectNeuronSpikesRecordingElectrodes);
-  virtual void prepare_backend(Context* ctx);
+  virtual void prepare_backend(Context* ctx = _global_ctx);
   virtual void reset_state();
 
   // Variables

@@ -14,7 +14,7 @@
   }
 
 #define MAKE_PREPARE_BACKEND(TYPE) \
-  void TYPE::prepare_backend(Context* ctx = _global_ctx) {      \
+  void TYPE::prepare_backend(Context* ctx) {                    \
     std::cout << "prepare_backend " #TYPE " with " << ctx->device << "\n"; \
     switch (ctx->device) {                                      \
     case Backend::SPIKE_DEVICE_DUMMY:                           \
@@ -30,6 +30,6 @@
   }
 
 #define MAKE_STUB_PREPARE_BACKEND(TYPE)                         \
-  void TYPE::prepare_backend(Context* ctx = _global_ctx) {      \
+  void TYPE::prepare_backend(Context* ctx) {                    \
     assert("This type's backend cannot be instantiated!" && false);    \
   }

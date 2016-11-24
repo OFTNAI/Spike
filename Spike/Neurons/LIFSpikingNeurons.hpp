@@ -33,7 +33,7 @@ public:
 
   float refractory_period_in_seconds;
 
-  virtual void prepare_backend(Context* ctx);
+  virtual void prepare_backend(Context* ctx = _global_ctx);
   virtual void reset_state();
   virtual int AddGroup(neuron_parameters_struct * group_params);
 

@@ -1,9 +1,15 @@
 #ifndef SpikeAnalyser_H
 #define SpikeAnalyser_H
 
+#include "Spike/Backend/Macros.hpp"
+#include "Spike/Backend/Context.hpp"
+#include "Spike/Backend/Backend.hpp"
+#include "Spike/Backend/Device.hpp"
+
+#include "Spike/Neurons/SpikingNeurons.hpp"
+#include "Spike/Neurons/InputSpikingNeurons.hpp"
+
 #include <vector>
-#include "../Neurons/SpikingNeurons.hpp"
-#include "../Neurons/InputSpikingNeurons.hpp"
 
 class SpikeAnalyser; // forward definition
 
@@ -31,7 +37,7 @@ class SpikeAnalyser{
 public:
   void* _backend;
   ADD_BACKEND_GETTER(SpikeAnalyser);
-  void prepare_backend(Context* ctx);
+  void prepare_backend(Context* ctx = _global_ctx);
 
   SpikeAnalyser(SpikingNeurons *neurons_parameter,
                 InputSpikingNeurons *input_neurons_parameter);

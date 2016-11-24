@@ -62,7 +62,7 @@ public:
   bool* isindexed_ltd_synapse_spike = NULL;
   int* index_of_first_synapse_spiked_after_postneuron = NULL;
 
-  virtual void prepare_backend(Context* ctx);
+  virtual void prepare_backend(Context* ctx = _global_ctx);
   virtual void reset_state();
   // Set STDP Parameters
   virtual void Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons* neurons, SpikingNeurons* input_neurons, stdp_parameters_struct* stdp_parameters);

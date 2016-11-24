@@ -11,12 +11,12 @@
 
 // Synapses Constructor
 Synapses::Synapses() {
-  random_state_manager = new RandomStateManager();
-  random_state_manager->setup_random_states();
-
-  // TODO: THE RANDOM SEED SHOULD BE A GLOBAL PARAMETER!!
   // On construction, seed
+  // TODO: THE RANDOM SEED SHOULD BE A GLOBAL PARAMETER!!
   srand(42);	// Seeding the random numbers
+
+  random_state_manager = new RandomStateManager();
+  random_state_manager->prepare_backend(backend()->context);
 }
 
 // Synapses Destructor

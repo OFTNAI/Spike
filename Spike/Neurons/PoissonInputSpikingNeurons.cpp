@@ -32,7 +32,7 @@ void PoissonInputSpikingNeurons::set_up_rates() {
 
 void PoissonInputSpikingNeurons::init_random_state() {
   random_state_manager = new RandomStateManager();
-  random_state_manager->setup_random_states();
-  printf("TODO SPLIT OUT BACKEND OF RANDOM STATE MANAGER\n");
+  random_state_manager->prepare_backend(backend()->context);
+  printf("TODO: RNG should be managed globally...\n");
 }
 

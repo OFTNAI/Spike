@@ -7,7 +7,12 @@
 #ifndef SYNAPSES_H
 #define SYNAPSES_H
 
-#include "../Neurons/Neurons.hpp"
+#include "Spike/Backend/Macros.hpp"
+#include "Spike/Backend/Context.hpp"
+#include "Spike/Backend/Backend.hpp"
+#include "Spike/Backend/Device.hpp"
+
+#include "Spike/Neurons/Neurons.hpp"
 
 // stdlib allows random numbers
 #include <stdlib.h>
@@ -16,10 +21,7 @@
 // allows maths
 #include <math.h>
 
-#include "Spike/Backend/Context.hpp"
-#include "Spike/Backend/Backend.hpp"
-
-#include "../Helpers/RandomStateManager.hpp"
+#include "Spike/Helpers/RandomStateManager.hpp"
 
 namespace Backend {
   /* Each type T deriving from ::Synapses must have an associated
@@ -101,7 +103,7 @@ public:
   float* synaptic_efficacies_or_weights = NULL;
 
   // Functions
-  virtual void prepare_backend(Context* ctx);
+  virtual void prepare_backend(Context* ctx = _global_ctx);
   virtual void reset_state() = 0;
 
   virtual void AddGroup(int presynaptic_group_id, 

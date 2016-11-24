@@ -53,7 +53,7 @@ public:
   struct higgins_stdp_parameters_struct* stdp_params = NULL;
   SpikingSynapses* syns = NULL;
 
-  virtual void prepare_backend(Context* ctx);
+  virtual void prepare_backend(Context* ctx = _global_ctx);
 
   // Set STDP Parameters
   virtual void Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons* neurons, SpikingNeurons* input_neurons, stdp_parameters_struct* stdp_parameters);

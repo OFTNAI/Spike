@@ -44,7 +44,7 @@ public:
   virtual void copy_rates_to_device();
   int calculate_gabor_index(int orientationIndex, int wavelengthIndex, int phaseIndex);
 
-  virtual void prepare_backend(Context* ctx);
+  virtual void prepare_backend(Context* ctx = _global_ctx);
   
   //JI VARIABLES
   float * gabor_input_rates = NULL;

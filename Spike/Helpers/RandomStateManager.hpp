@@ -1,35 +1,35 @@
 #ifndef RANDOMSTATEMANAGER_H
 #define RANDOMSTATEMANAGER_H
 
-//CUDA #include <cuda.h>
-//CUDA #include <curand.h>
-//CUDA #include <curand_kernel.h>
-#include "Spike/Backend/CUDA_Hacks.hpp"
+#include "Spike/Backend/Macros.hpp"
+#include "Spike/Backend/Context.hpp"
+#include "Spike/Backend/Backend.hpp"
+#include "Spike/Backend/Device.hpp"
 
+class RandomStateManager; // forward definition
 
+namespace Backend {
+  // No `RandomStateManagerCommon' necessary, I believe
+  class RandomStateManager : public Generic {
+  public:
+    virtual void reset_state() {
+      prepare();
+    }
+  };
+}
 
+#include "Spike/Backend/Dummy/RandomStateManager.hpp" 
 
 class RandomStateManager {
-
 public:
+  int total_number_of_states = 0;
 
-	// Constructor/Destructor
-	RandomStateManager();
-	~RandomStateManager();
-
-	//CUDA curandState_t* d_states;
-        void* d_states;
-	int total_number_of_states;
-
-	dim3 threads_per_block;
-	dim3 block_dimensions;
-
-	void setup_random_states(int threads_per_blocks_x = 128, int number_of_blocks_x = 64, int seed = 1);
+  void* _backend;
+  ADD_BACKEND_GETTER(RandomStateManager);
+  void prepare_backend(Context* ctx = _global_ctx);
 
 private:
-    static RandomStateManager *inst;
-
-	
+  static RandomStateManager *inst;
 };
 
 #endif
