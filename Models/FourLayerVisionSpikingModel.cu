@@ -4,6 +4,11 @@
 // FourLayerVisionSpikingModel Constructor
 FourLayerVisionSpikingModel::FourLayerVisionSpikingModel () { 
 
+	lif_spiking_neurons = NULL;
+	image_poisson_input_spiking_neurons = NULL;
+	conductance_spiking_synapses = NULL;
+	evans_stdp = NULL;
+
 	// Network size parameters
 	number_of_non_input_layers = 4;
 	number_of_non_input_layers_to_simulate = number_of_non_input_layers;

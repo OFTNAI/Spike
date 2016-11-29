@@ -138,21 +138,43 @@ void SpikingModel::reset_model_activities() {
 
 void SpikingModel::perform_per_timestep_model_instructions(float current_time_in_seconds, bool apply_stdp_to_relevant_synapses){
 
-	spiking_neurons->reset_current_injections();
+	spiking_neurons->update_membrane_potentials(timestep, current_time_in_seconds);
+	input_spiking_neurons->update_membrane_potentials(timestep, current_time_in_seconds);
 
 	spiking_neurons->check_for_neuron_spikes(current_time_in_seconds, timestep);
 	input_spiking_neurons->check_for_neuron_spikes(current_time_in_seconds, timestep);
 
 	spiking_synapses->interact_spikes_with_synapses(spiking_neurons, input_spiking_neurons, current_time_in_seconds, timestep);
 
+	spiking_neurons->reset_current_injections();
 	spiking_synapses->calculate_postsynaptic_current_injection(spiking_neurons, current_time_in_seconds, timestep);
 
 	if (apply_stdp_to_relevant_synapses){
 		stdp_rule->Run_STDP(spiking_neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds, timestep);
 	}
 
-	spiking_neurons->update_membrane_potentials(timestep, current_time_in_seconds);
-	input_spiking_neurons->update_membrane_potentials(timestep, current_time_in_seconds);
-
 }
+
+
+// PREVIOUS PER TIMESTEP MODEL INSTRUCTIONS. KEEP FOR NOW FOR COMPARISON, ALTHOUGH NEW ORDERING SHOULD WORK + MORE LOGICAL
+
+// void SpikingModel::perform_per_timestep_model_instructions(float current_time_in_seconds, bool apply_stdp_to_relevant_synapses){
+
+// 	spiking_neurons->reset_current_injections();
+
+// 	spiking_neurons->check_for_neuron_spikes(current_time_in_seconds, timestep);
+// 	input_spiking_neurons->check_for_neuron_spikes(current_time_in_seconds, timestep);
+
+// 	spiking_synapses->interact_spikes_with_synapses(spiking_neurons, input_spiking_neurons, current_time_in_seconds, timestep);
+
+// 	spiking_synapses->calculate_postsynaptic_current_injection(spiking_neurons, current_time_in_seconds, timestep);
+
+// 	if (apply_stdp_to_relevant_synapses){
+// 		stdp_rule->Run_STDP(spiking_neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds, timestep);
+// 	}
+
+// 	spiking_neurons->update_membrane_potentials(timestep, current_time_in_seconds);
+// 	input_spiking_neurons->update_membrane_potentials(timestep, current_time_in_seconds);
+
+// }
 

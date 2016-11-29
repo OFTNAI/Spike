@@ -52,7 +52,7 @@ void ConductanceSpikingSynapses::AddGroup(int presynaptic_group_id,
 
 	conductance_spiking_synapse_parameters_struct * conductance_spiking_synapse_group_params = (conductance_spiking_synapse_parameters_struct*)synapse_params;
 
-	for (int i = (total_number_of_synapses - temp_number_of_synapses_in_last_group); i < total_number_of_synapses-1; i++){
+	for (int i = (total_number_of_synapses - temp_number_of_synapses_in_last_group); i < total_number_of_synapses; i++) {
 		synaptic_conductances_g[i] = 0.0f;
 		biological_conductance_scaling_constants_lambda[i] = conductance_spiking_synapse_group_params->biological_conductance_scaling_constant_lambda;
 		reversal_potentials_Vhat[i] = conductance_spiking_synapse_group_params->reversal_potential_Vhat;
@@ -140,6 +140,9 @@ void ConductanceSpikingSynapses::set_threads_per_block_and_blocks_per_grid(int t
 
 void ConductanceSpikingSynapses::calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds, float timestep) {
 
+	// First update the conductances
+	update_synaptic_conductances(timestep, current_time_in_seconds);
+
 	conductance_calculate_postsynaptic_current_injection_kernel<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(d_presynaptic_neuron_indices,
 																	d_postsynaptic_neuron_indices,
 																	d_reversal_potentials_Vhat,
@@ -150,8 +153,6 @@ void ConductanceSpikingSynapses::calculate_postsynaptic_current_injection(Spikin
 
 	CudaCheckError();
 
-	// After injecting current, update the conductances
-	update_synaptic_conductances(timestep, current_time_in_seconds);
 }
 
 void ConductanceSpikingSynapses::update_synaptic_conductances(float timestep, float current_time_in_seconds) {
