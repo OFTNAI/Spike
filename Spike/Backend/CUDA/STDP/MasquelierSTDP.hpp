@@ -16,7 +16,15 @@ namespace Backend {
       int* index_of_last_afferent_synapse_to_spike = nullptr;
       bool* isindexed_ltd_synapse_spike = nullptr;
       int* index_of_first_synapse_spiked_after_postneuron = nullptr;
+
+      MAKE_BACKEND_CONSTRUCTOR(MasquelierSTDP);
+
       virtual void allocate_device_pointers();
+      virtual void prepare() {
+        allocate_device_pointers();
+      }
+      virtual void reset_state();
+      virtual void apply_stdp_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds);
     };
 
     // Kernel to carry out LTP/LTD

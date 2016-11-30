@@ -4,6 +4,7 @@
 #include "Spike/Backend/Backend.hpp"
 #include "Spike/Backend/CUDA/ErrorCheckHelpers.hpp"
 
+/*
 namespace Backend {
   namespace CUDA {
     class Device : ::Backend::Device
@@ -11,3 +12,4 @@ namespace Backend {
     }; // ::Backend::CUDA::Device
   } // namespace CUDA
 }
+*/

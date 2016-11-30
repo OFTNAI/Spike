@@ -61,6 +61,9 @@ namespace Backend {
 }
 
 #include "Spike/Backend/Dummy/Synapses/Synapses.hpp"
+#ifdef SPIKE_WITH_CUDA
+#include "Spike/Backend/CUDA/Synapses/Synapses.hpp"
+#endif
 
 enum CONNECTIVITY_TYPE
 {

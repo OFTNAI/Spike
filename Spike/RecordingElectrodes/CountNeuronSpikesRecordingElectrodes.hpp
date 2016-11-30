@@ -21,6 +21,10 @@ namespace Backend {
 }
 
 #include "Spike/Backend/Dummy/RecordingElectrodes/CountNeuronSpikesRecordingElectrodes.hpp"
+#ifdef SPIKE_WITH_CUDA
+#include "Spike/Backend/CUDA/RecordingElectrodes/CountNeuronSpikesRecordingElectrodes.hpp"
+#endif
+
 
 class CountNeuronSpikesRecordingElectrodes : public RecordingElectrodes {
 public:

@@ -14,11 +14,10 @@ namespace Backend {
       public virtual ::Backend::CUDA::RecordingElectrodesCommon,
       public ::Backend::CountNeuronSpikesRecordingElectrodes {
     public:
-      ~CountNeuronRecordingElectrodes();
+      MAKE_BACKEND_CONSTRUCTOR(CountNeuronSpikesRecordingElectrodes);
+      // ~CountNeuronRecordingElectrodes();
       
-      // virtual void reset_state() {
-      //   // TODO
-      // }
+      virtual void reset_state();
 
       virtual void add_spikes_to_per_neuron_spike_count
       (::CountNeuronSpikesRecordingElectrodes* front,

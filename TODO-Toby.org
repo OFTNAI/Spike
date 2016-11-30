@@ -12,7 +12,10 @@ CLOSED: [2016-11-24 Thu 14:05]
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2016-11-24 Thu 14:05]
 :END:
-** TODO Update CMake scripts to build CUDA code
+** PROGRESS Update CMake scripts to build CUDA code
+:LOGBOOK:
+- State "PROGRESS"   from "TODO"       [2016-11-30 Wed 15:40]
+:END:
 ** TODO Look for MISSING KERNELS ?!
 + check Backend/CUDA header files (esp Synapses/)
 ** TODO Remove `d_' from pointer names in CUDA backend classes ...
@@ -69,7 +72,10 @@ CLOSED: [2016-11-24 Thu 13:55]
   + This would mean that adding prepare_backend calls to legacy code should not be needed.
 + On the other hand, it is likely to end up necessary, in a number of places, to add code to prepare_backend_extra() in order to set the device up correctly.
 + prepare_backend calls will then replace current backend-specific preparatory calls.
-** TODO Connect up front and back ends
+** PROGRESS Connect up front and back ends
+:LOGBOOK:
+- State "PROGRESS"   from "TODO"       [2016-11-30 Wed 15:40]
+:END:
 + eg update_membrane_potentials, memory synchrony, etc etc
 + what should the API look like?
 ** TODO Always check pointers before freeing!
@@ -78,8 +84,7 @@ CLOSED: [2016-11-24 Thu 14:10]
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2016-11-24 Thu 14:10]
 :END:
-* TODO Put external dependencies (eg curand, mgl) into git submodules
+* TODO Put external dependencies (eg mgl) into git submodules
+* TODO Write SYCL backend.
 * TODO Write plain C++ backend. (Use ViennaCL for linalg acceleration?)
-* TODO Write OpenCL backend. (SYCL?)
 * TODO Write rate-coded neuron/synapse/model classes.
-

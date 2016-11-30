@@ -12,12 +12,13 @@ namespace Backend {
     class IzhikevichSpikingNeurons : public virtual ::Backend::CUDA::NeuronsCommon,
                                      public ::Backend::IzhikevichSpikingNeurons {
     public:
-
       // Device Pointers
       float * param_a = nullptr;
       float * param_b = nullptr;
       float * param_d = nullptr;
       float * states_u = nullptr;
+
+      MAKE_BACKEND_CONSTRUCTOR(IzhikevichSpikingNeurons);
 
       virtual void allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage);
       virtual void copy_constants_to_device();

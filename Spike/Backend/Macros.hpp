@@ -36,6 +36,9 @@
     case Backend::SPIKE_DEVICE_DUMMY:                           \
       _backend = new Backend::Dummy::TYPE(this);                \
       break;                                                    \
+    case Backend::SPIKE_DEVICE_CUDA:                            \
+      _backend = new Backend::CUDA::TYPE(this);                 \
+      break;                                                    \
     default:                                                    \
       assert("Unsupported backend" && false);                   \
     };                                                          \

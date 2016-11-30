@@ -12,6 +12,8 @@ namespace Backend {
     class AdExSpikingNeurons : public virtual ::Backend::CUDA::NeuronsCommon,
                                public ::Backend::AdExSpikingNeurons {
     public:
+      MAKE_BACKEND_CONSTRUCTOR(AdExSpikingNeurons);
+
       float * adaptation_values_w = nullptr;
       float * membrane_capacitances_Cm = nullptr;
       float * membrane_leakage_conductances_g0 = nullptr;

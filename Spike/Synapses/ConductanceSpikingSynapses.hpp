@@ -23,6 +23,10 @@ namespace Backend {
 }
 
 #include "Spike/Backend/Dummy/Synapses/ConductanceSpikingSynapses.hpp"
+#ifdef SPIKE_WITH_CUDA
+#include "Spike/Backend/CUDA/Synapses/ConductanceSpikingSynapses.hpp"
+#endif
+
 
 class ConductanceSpikingSynapses : public SpikingSynapses {
 

@@ -25,6 +25,7 @@ set (CMAKE_CXX_STANDARD 11)
 # User options
 ##############
 
+option(BUILD_WITH_CUDA "Enable CUDA backend" ON)
 option(BUILD_DOXYGEN_DOCS "Build the Doxygen-generated API docs" OFF)
 
 #cmake_dependent_option(ENABLE_DIST "Enable the the distribution tarball target" ON "BUILD_DOXYGEN_DOCS" OFF)
@@ -35,7 +36,13 @@ mark_as_advanced(BUILD_DOXYGEN_DOCS ENABLE_DIST)
 ####################
 
 if(BUILD_DOXYGEN_DOCS)
-   find_package(Doxygen REQUIRED)
+  find_package(Doxygen REQUIRED)
+endif()
+
+if(BUILD_WITH_CUDA)
+  find_package(CUDA REQUIRED)
+  add_definitions(-DSPIKE_WITH_CUDA)
+  include_directories(BEFORE SYSTEM "${CUDA_INCLUDE_DIRS}")
 endif()
 
 

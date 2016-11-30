@@ -56,4 +56,5 @@ namespace Backend {
                                                                  float timestep,
                                                                  size_t total_number_of_synapses,
                                                                  float* d_time_of_last_spike_to_reach_synapse);
-b  }
+  }
+}

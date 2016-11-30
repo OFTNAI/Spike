@@ -12,6 +12,10 @@ namespace Backend {
     class CurrentSpikingSynapses : public virtual SpikingSynapsesCommon,
                                    public ::Backend::CurrentSpikingSynapses {
     public:
+      MAKE_BACKEND_CONSTRUCTOR(CurrentSpikingSynapses);
+      virtual void prepare();
+      virtual void reset_state();
+      virtual void calculate_postsynaptic_current_injection(::SpikingNeurons * neurons, float current_time_in_seconds, float timestep);
     };
 
     __global__ void current_calculate_postsynaptic_current_injection_kernel

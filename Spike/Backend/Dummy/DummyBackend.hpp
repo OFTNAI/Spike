@@ -3,6 +3,7 @@
 #include "Spike/Backend/Device.hpp"
 #include "Spike/Backend/Backend.hpp"
 
+/*
 namespace Backend {
   namespace Dummy {
     class Device : ::Backend::Device
@@ -14,3 +15,4 @@ namespace Backend {
     }; // ::Backend::Dummy::Base
   } // namespace Dummy
 } // namespace Backend
+*/

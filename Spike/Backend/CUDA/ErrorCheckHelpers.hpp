@@ -8,6 +8,7 @@
 #define CUDA_ERROR_CHECK
 
 #include <cuda.h>
+#include <cuda_runtime.h>
 #include <stdio.h>
 #include <iostream>
 #include <stdlib.h>

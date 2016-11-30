@@ -35,6 +35,9 @@ namespace Backend {
 }
 
 #include "Spike/Backend/Dummy/Neurons/Neurons.hpp"
+#ifdef SPIKE_WITH_CUDA
+#include "Spike/Backend/CUDA/Neurons/Neurons.hpp"
+#endif
 
 #define PRESYNAPTIC_IS_INPUT( id ) (id < 0 ? true : false)
 #define CORRECTED_PRESYNAPTIC_ID(id, is_input) (is_input ? (-1 * (id)) - 1 : id) 

@@ -14,7 +14,8 @@ namespace Backend {
       public virtual ::Backend::CUDA::RecordingElectrodesCommon,
       public ::Backend::CollectNeuronSpikesRecordingElectrodes {
     public:
-      ~CollectNeuronSpikesRecordingElectrodes();
+      MAKE_BACKEND_CONSTRUCTOR(CollectNeuronSpikesRecordingElectrodes);
+      // ~CollectNeuronSpikesRecordingElectrodes();
 
       virtual void reset_state();
       virtual void prepare();

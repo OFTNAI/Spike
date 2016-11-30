@@ -83,7 +83,7 @@ void SpikingModel::AddSynapseGroupsForNeuronGroupAndEachInputGroup(int postsynap
 #include "Spike/Neurons/LIFSpikingNeurons.hpp"
 void SpikingModel::init_backend(bool high_fidelity_spike_storage) {
   Backend::init_global_context();
-  Context* ctx = Backend::get_current_context();
+  Context* ctx = Backend::get_current_context(); // TODO: Add param to choose
 
   TimerWithMessages* timer = new TimerWithMessages("Setting Up Network...\n");
 
@@ -99,27 +99,14 @@ void SpikingModel::init_backend(bool high_fidelity_spike_storage) {
 
   /* TODO TODO TODO !!!
 
-  spiking_neurons->set_threads_per_block_and_blocks_per_grid(threads_per_block_neurons);
-  spiking_neurons->allocate_device_pointers(spiking_synapses->maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
-  spiking_neurons->copy_constants_to_device();
-
   input_spiking_neurons->set_threads_per_block_and_blocks_per_grid(threads_per_block_neurons);
   input_spiking_neurons->allocate_device_pointers(spiking_synapses->maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
   input_spiking_neurons->copy_constants_to_device();
-
-  spiking_synapses->set_threads_per_block_and_blocks_per_grid(threads_per_block_synapses);
-  spiking_synapses->allocate_device_pointers();
-  spiking_synapses->copy_constants_and_initial_efficacies_to_device();
-
-  stdp_rule->allocate_device_pointers();
 
      TODO TODO TODO !!! */
 
   spiking_synapses->prepare_backend(ctx);
   spiking_neurons->prepare_backend(ctx);
-  std::cout << "spiking_neurons at " << spiking_neurons << "\n";
-  std::cout << "spiking_neurons->backend: " << spiking_neurons->backend() << "\n";
-  std::cout << "   type: " << TYPEID_NAME(spiking_neurons->backend()) << "\n";
   input_spiking_neurons->prepare_backend(ctx);
   stdp_rule->prepare_backend(ctx);
 

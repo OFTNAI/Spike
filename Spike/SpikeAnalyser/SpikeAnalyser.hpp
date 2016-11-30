@@ -36,6 +36,9 @@ namespace Backend {
 }
 
 #include "Spike/Backend/Dummy/SpikeAnalyser/SpikeAnalyser.hpp"
+#ifdef SPIKE_WITH_CUDA
+#include "Spike/Backend/CUDA/SpikeAnalyser/SpikeAnalyser.hpp"
+#endif
 
 class SpikeAnalyser : public virtual SpikeBase {
 public:

@@ -27,6 +27,9 @@ namespace Backend {
 }
 
 #include "Spike/Backend/Dummy/Neurons/AdExSpikingNeurons.hpp"
+#ifdef SPIKE_WITH_CUDA
+#include "Spike/Backend/CUDA/Neurons/AdExSpikingNeurons.hpp"
+#endif
 
 class AdExSpikingNeurons : public SpikingNeurons {
 public:

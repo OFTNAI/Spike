@@ -29,6 +29,9 @@ namespace Backend {
 }
 
 #include "Spike/Backend/Dummy/RecordingElectrodes/RecordingElectrodes.hpp"
+#ifdef SPIKE_WITH_CUDA
+#include "Spike/Backend/CUDA/RecordingElectrodes/RecordingElectrodes.hpp"
+#endif
 
 class RecordingElectrodes : public virtual SpikeBase {
 public:

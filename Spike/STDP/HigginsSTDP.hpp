@@ -37,6 +37,10 @@ namespace Backend {
 }
 
 #include "Spike/Backend/Dummy/STDP/HigginsSTDP.hpp"
+#ifdef SPIKE_WITH_CUDA
+#include "Spike/Backend/CUDA/STDP/HigginsSTDP.hpp"
+#endif
+
 
 // STDP Parameters
 struct higgins_stdp_parameters_struct : stdp_parameters_struct {

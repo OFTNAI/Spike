@@ -49,8 +49,6 @@ public:
   void perform_per_timestep_model_instructions(float current_time_in_seconds, bool apply_stdp_to_relevant_synapses);
 
   // virtual void finalise_model();
-  // TODO
-  // virtual void init_backend(Context* ctx);
   virtual void init_backend(bool high_fidelity_spike_storage);
 };
 

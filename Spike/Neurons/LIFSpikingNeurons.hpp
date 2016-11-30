@@ -21,6 +21,10 @@ namespace Backend {
 }
 
 #include "Spike/Backend/Dummy/Neurons/LIFSpikingNeurons.hpp"
+#ifdef SPIKE_WITH_CUDA
+#include "Spike/Backend/CUDA/Neurons/LIFSpikingNeurons.hpp"
+#endif
+
 
 class LIFSpikingNeurons : public SpikingNeurons {
 public:

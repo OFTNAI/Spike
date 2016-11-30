@@ -37,6 +37,10 @@ namespace Backend {
 }
 
 #include "Spike/Backend/Dummy/STDP/STDP.hpp"
+#ifdef SPIKE_WITH_CUDA
+#include "Spike/Backend/CUDA/STDP/STDP.hpp"
+#endif
+
 
 // STDP Parameters
 struct stdp_parameters_struct {

@@ -15,6 +15,12 @@ namespace Backend {
       float * membrane_time_constants_tau_m = nullptr;
       float * membrane_resistances_R = nullptr;
 
+      MAKE_BACKEND_CONSTRUCTOR(LIFSpikingNeurons);
+
+      virtual void check_for_neuron_spikes(float current_time_in_seconds, float timestep);
+      virtual void reset_state();
+      virtual void prepare();
+
       virtual void allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage);
       virtual void copy_constants_to_device();
       virtual void update_membrane_potentials(float timestep, float current_time_in_seconds);

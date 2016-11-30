@@ -14,9 +14,9 @@ namespace Backend {
       public virtual ::Backend::CUDA::RecordingElectrodesCommon,
       public ::Backend::NetworkStateArchiveRecordingElectrodes {
     public:
-      virtual void reset_state() {
-        // TODO (if necessary...)
-      }
+      MAKE_BACKEND_CONSTRUCTOR(NetworkStateArchiveRecordingElectrodes);
+
+      virtual void reset_state(); // TODO (if necessary...)
 
       virtual void copy_state_to_front(::NetworkStateArchiveRecordingElectrodes* front);
     };

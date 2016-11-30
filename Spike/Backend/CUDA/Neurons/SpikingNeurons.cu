@@ -41,6 +41,13 @@ namespace Backend {
       CudaSafeCall(cudaMemcpy(resting_potentials, after_spike_reset_membrane_potentials_c, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
     }
 
+    void SpikingNeurons::prepare() {
+      // TODO: Add this to the other classes ...
+      set_threads_per_block_and_blocks_per_grid(threads_per_block_neurons);
+      allocate_device_pointers(spiking_synapses->maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
+      copy_constants_to_device();
+    }
+
     void SpikingNeurons::reset_state() {
       // Set last spike times to -1000 so that the times do not affect current simulation.
       float* last_spike_times;

@@ -22,6 +22,10 @@ namespace Backend {
 }
 
 #include "Spike/Backend/Dummy/Neurons/PoissonInputSpikingNeurons.hpp"
+#ifdef SPIKE_WITH_CUDA
+#include "Spike/Backend/CUDA/Neurons/PoissonInputSpikingNeurons.hpp"
+#endif
+
 
 class PoissonInputSpikingNeurons : public InputSpikingNeurons {
 public:

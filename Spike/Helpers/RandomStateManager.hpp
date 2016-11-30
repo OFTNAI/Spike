@@ -20,7 +20,11 @@ namespace Backend {
   };
 }
 
-#include "Spike/Backend/Dummy/RandomStateManager.hpp" 
+#include "Spike/Backend/Dummy/RandomStateManager.hpp"
+#ifdef SPIKE_WITH_CUDA
+#include "Spike/Backend/CUDA/RandomStateManager.hpp"
+#endif
+
 
 class RandomStateManager : public virtual SpikeBase {
 public:

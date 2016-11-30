@@ -6,7 +6,7 @@ namespace Backend {
   void init_global_context() {
     if (!_global_ctx)
       _global_ctx = new Context;
-    // TODO:
+    // TODO: Add other device types (esp CUDA)
     _global_ctx->device = SPIKE_DEVICE_DUMMY;
   }
 

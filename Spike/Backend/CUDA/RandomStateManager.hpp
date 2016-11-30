@@ -16,6 +16,8 @@ namespace Backend {
       dim3 threads_per_block;
       dim3 block_dimensions;
 
+      MAKE_BACKEND_CONSTRUCTOR(RandomStateManager);
+
       void setup_random_states(int threads_per_blocks_x = 128, int number_of_blocks_x = 64, int seed = 1);
 
       virtual void prepare();

@@ -12,7 +12,6 @@ namespace Backend {
 
       virtual void update_membrane_potentials(float timestep, float current_time_in_seconds);
       virtual void reset_state();
-
     };
   }
 }

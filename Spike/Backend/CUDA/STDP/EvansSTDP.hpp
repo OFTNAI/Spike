@@ -15,7 +15,17 @@ namespace Backend {
     public:
       float* recent_postsynaptic_activities_D = nullptr; // (NEURON-WISE)
       float* recent_presynaptic_activities_C = nullptr;  // (SYNAPSE-WISE)
+
+      MAKE_BACKEND_CONSTRUCTOR(EvansSTDP);
+
+      virtual void prepare() {
+        allocate_device_pointers();
+      }
+      virtual void reset_state();
       virtual void allocate_device_pointers();
+      virtual void update_synaptic_efficacies_or_weights(float current_time_in_seconds, float * d_last_spike_time_of_each_neuron);
+      virtual void update_presynaptic_activities(float timestep, float current_time_in_seconds);
+      virtual void update_postsynaptic_activities(float timestep, float current_time_in_seconds);
     };
 
     __global__ void update_postsynaptic_activities_kernel(float timestep,
