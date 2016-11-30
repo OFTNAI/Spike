@@ -26,4 +26,17 @@ add_library(Spike
   $<TARGET_OBJECTS:SpikeAnalyser>
   $<TARGET_OBJECTS:STDP>
   $<TARGET_OBJECTS:Synapses>
-)
+  )
+
+# target_compile_features(Spike PUBLIC cxx_nullptr)
+
+if (BUILD_WITH_CUDA)
+  target_link_libraries(Spike
+    SpikeCUDANeurons
+    SpikeCUDARecordingElectrodes
+    SpikeCUDASpikeAnalyser
+    SpikeCUDASTDP
+    SpikeCUDASynapses
+    )
+endif()
+
