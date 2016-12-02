@@ -5,8 +5,8 @@
 
 namespace Backend {
   namespace Dummy {
-    class HigginsSTDP : public virtual ::Backend::Dummy::STDPCommon,
-                        public ::Backend::HigginsSTDP {
+    class HigginsSTDP : public virtual ::Backend::Dummy::STDP,
+                        public virtual ::Backend::HigginsSTDP {
     public:
       MAKE_BACKEND_CONSTRUCTOR(HigginsSTDP);
 

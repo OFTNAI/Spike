@@ -16,7 +16,9 @@ struct lif_spiking_neuron_parameters_struct : spiking_neuron_parameters_struct {
 class LIFSpikingNeurons; // forward definition
 
 namespace Backend {
-  class LIFSpikingNeurons : public SpikingNeurons {
+  class LIFSpikingNeurons : public virtual SpikingNeurons {
+  public:
+    ADD_FRONTEND_GETTER(LIFSpikingNeurons);
   };
 }
 

@@ -7,9 +7,10 @@
 class CountNeuronSpikesRecordingElectrodes; // forward definition
 
 namespace Backend {
-  class CountNeuronSpikesRecordingElectrodes : public virtual RecordingElectrodesCommon,
-                                               public RecordingElectrodes {
+  class CountNeuronSpikesRecordingElectrodes : public virtual RecordingElectrodes {
   public:
+    ADD_FRONTEND_GETTER(CountNeuronSpikesRecordingElectrodes);
+
     virtual void prepare() {
       printf("TODO Backend::CountNeuronSpikesRecordingElectrodes::prepare\n");
     }

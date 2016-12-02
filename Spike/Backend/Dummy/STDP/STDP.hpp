@@ -4,12 +4,7 @@
 
 namespace Backend {
   namespace Dummy {
-    class STDPCommon : public virtual ::Backend::STDPCommon {
-    public:
-    };
-
-    class STDP : public virtual ::Backend::Dummy::STDPCommon,
-                 public ::Backend::STDP {
+    class STDP : public virtual ::Backend::STDP {
     public:
     };
   }

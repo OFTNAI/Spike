@@ -25,14 +25,8 @@
 class STDP; // forward definition
 
 namespace Backend {
-  class STDPCommon {
+  class STDP : public virtual SpikeBackendBase {
   public:
-  };
-
-  class STDP : public virtual STDPCommon,
-               public SpikeBackendBase {
-  public:
-    ADD_FRONTEND_GETTER(STDP);
   };
 }
 

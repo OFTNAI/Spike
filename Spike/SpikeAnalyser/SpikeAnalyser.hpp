@@ -16,10 +16,7 @@
 class SpikeAnalyser; // forward definition
 
 namespace Backend {
-  class SpikeAnalyserCommon {};
-
-  class SpikeAnalyser : public virtual SpikeAnalyserCommon,
-                        public SpikeBackendBase {
+  class SpikeAnalyser : public virtual SpikeBackendBase {
   public:
     ADD_FRONTEND_GETTER(SpikeAnalyser);
 

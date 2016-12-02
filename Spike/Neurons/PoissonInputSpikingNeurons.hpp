@@ -14,9 +14,8 @@ struct poisson_input_spiking_neuron_parameters_struct : input_spiking_neuron_par
 class PoissonInputSpikingNeurons; // forward definition
 
 namespace Backend {
-  class PoissonInputSpikingNeurons : public InputSpikingNeurons {
+  class PoissonInputSpikingNeurons : public virtual InputSpikingNeurons {
   public:
-    ADD_FRONTEND_GETTER(PoissonInputSpikingNeurons);
     virtual void reset_state() {};
   };
 }

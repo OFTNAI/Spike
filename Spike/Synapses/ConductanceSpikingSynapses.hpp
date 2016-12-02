@@ -15,7 +15,7 @@ struct conductance_spiking_synapse_parameters_struct : spiking_synapse_parameter
 class ConductanceSpikingSynapses; // forward definition
 
 namespace Backend {
-  class ConductanceSpikingSynapses : public SpikingSynapses {
+  class ConductanceSpikingSynapses : public virtual SpikingSynapses {
   public:
     ADD_FRONTEND_GETTER(ConductanceSpikingSynapses);
     virtual void update_synaptic_conductances(float timestep, float current_time_in_seconds) = 0;

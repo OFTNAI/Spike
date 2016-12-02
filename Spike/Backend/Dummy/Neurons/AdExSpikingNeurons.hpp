@@ -1,12 +1,12 @@
 #pragma once
 
 #include "Spike/Neurons/AdExSpikingNeurons.hpp"
-#include "Neurons.hpp"
+#include "SpikingNeurons.hpp"
 
 namespace Backend {
   namespace Dummy {
-    class AdExSpikingNeurons : public virtual ::Backend::Dummy::NeuronsCommon,
-                               public ::Backend::AdExSpikingNeurons {
+    class AdExSpikingNeurons : public virtual ::Backend::Dummy::SpikingNeurons,
+                               public virtual ::Backend::AdExSpikingNeurons {
     public:
       MAKE_BACKEND_CONSTRUCTOR(AdExSpikingNeurons);
 

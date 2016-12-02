@@ -4,12 +4,7 @@
 
 namespace Backend {
   namespace Dummy {
-    class RecordingElectrodesCommon : public virtual ::Backend::RecordingElectrodesCommon {
-    public:
-    };
-
-    class RecordingElectrodes : public virtual ::Backend::Dummy::RecordingElectrodesCommon,
-                                public ::Backend::RecordingElectrodes {
+    class RecordingElectrodes : public virtual ::Backend::RecordingElectrodes {
     public:
     };
   }

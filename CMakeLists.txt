@@ -27,12 +27,16 @@ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 # User options
 ##############
 
-option(BUILD_WITH_CUDA "Enable CUDA backend" ON)
-option(BUILD_DOXYGEN_DOCS "Build the Doxygen-generated API docs" OFF)
+option(BUILD_WITH_CUDA
+  "Enable CUDA backend"
+  OFF)
+
+option(BUILD_DOXYGEN_DOCS
+  "Build the Doxygen-generated API docs"
+  OFF)
 
 #cmake_dependent_option(ENABLE_DIST "Enable the the distribution tarball target" ON "BUILD_DOXYGEN_DOCS" OFF)
-
-mark_as_advanced(BUILD_DOXYGEN_DOCS ENABLE_DIST)
+#mark_as_advanced(BUILD_DOXYGEN_DOCS ENABLE_DIST)
 
 # Find prerequisites
 ####################

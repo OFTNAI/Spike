@@ -5,11 +5,11 @@
 
 namespace Backend {
   namespace Dummy {
-    class SpikingNeurons : public virtual ::Backend::Dummy::NeuronsCommon,
-                           public ::Backend::SpikingNeurons {
+    class SpikingNeurons : public virtual ::Backend::Dummy::Neurons,
+                           public virtual ::Backend::SpikingNeurons {
     public:
-      virtual void reset_state();
-      virtual void copy_constants_to_device();
+      // virtual void reset_state();
+      // virtual void copy_constants_to_device();
     };
   } // namespace Dummy
 } // namespace Backend

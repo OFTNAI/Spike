@@ -5,8 +5,8 @@
 
 namespace Backend {
   namespace Dummy {
-    class EvansSTDP : public virtual ::Backend::Dummy::STDPCommon,
-                      public ::Backend::EvansSTDP {
+    class EvansSTDP : public virtual ::Backend::Dummy::STDP,
+                      public virtual ::Backend::EvansSTDP {
     public:
       MAKE_BACKEND_CONSTRUCTOR(EvansSTDP);
 

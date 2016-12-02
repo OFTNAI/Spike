@@ -6,8 +6,8 @@
 namespace Backend {
   namespace Dummy {
     class NetworkStateArchiveRecordingElectrodes :
-      public virtual ::Backend::Dummy::RecordingElectrodesCommon,
-      public ::Backend::NetworkStateArchiveRecordingElectrodes {
+      public virtual ::Backend::Dummy::RecordingElectrodes,
+      public virtual ::Backend::NetworkStateArchiveRecordingElectrodes {
     public:
       MAKE_BACKEND_CONSTRUCTOR(NetworkStateArchiveRecordingElectrodes);
 

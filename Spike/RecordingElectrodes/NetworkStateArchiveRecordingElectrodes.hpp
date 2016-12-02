@@ -7,9 +7,10 @@
 class NetworkStateArchiveRecordingElectrodes; // forward definition
 
 namespace Backend {
-  class NetworkStateArchiveRecordingElectrodes : public virtual RecordingElectrodesCommon,
-                                                 public RecordingElectrodes {
+  class NetworkStateArchiveRecordingElectrodes : public virtual RecordingElectrodes {
   public:
+    ADD_FRONTEND_GETTER(NetworkStateArchiveRecordingElectrodes);
+
     virtual void prepare() {
       printf("TODO Backend::NetworkStateArchiveRecordingElectrodes::prepare\n");
     }

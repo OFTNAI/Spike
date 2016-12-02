@@ -10,7 +10,7 @@ struct generator_input_spiking_neuron_parameters_struct : input_spiking_neuron_p
 class GeneratorInputSpikingNeurons; // forward definition
 
 namespace Backend {
-  class GeneratorInputSpikingNeurons : public InputSpikingNeurons {
+  class GeneratorInputSpikingNeurons : public virtual InputSpikingNeurons {
   public:
     ADD_FRONTEND_GETTER(GeneratorInputSpikingNeurons);
     virtual void reset_state() {};

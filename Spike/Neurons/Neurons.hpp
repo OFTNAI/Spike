@@ -21,14 +21,8 @@
 class Neurons; // forward definition
 
 namespace Backend {
-  class NeuronsCommon {
+  class Neurons : public virtual SpikeBackendBase {
   public:
-  };
-
-  class Neurons : public virtual NeuronsCommon,
-                  public SpikeBackendBase {
-  public:
-    ADD_FRONTEND_GETTER(Neurons);
     virtual void reset_state() = 0;
     virtual void prepare() = 0;
   };

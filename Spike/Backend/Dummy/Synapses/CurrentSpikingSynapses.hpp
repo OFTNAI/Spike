@@ -5,8 +5,8 @@
 
 namespace Backend {
   namespace Dummy {
-    class CurrentSpikingSynapses : public virtual SpikingSynapsesCommon,
-                                   public ::Backend::CurrentSpikingSynapses {
+    class CurrentSpikingSynapses : public virtual ::Backend::Dummy::SpikingSynapses,
+                                   public virtual ::Backend::CurrentSpikingSynapses {
     public:
       MAKE_BACKEND_CONSTRUCTOR(CurrentSpikingSynapses);
 

@@ -22,8 +22,7 @@
 class HigginsSTDP; // forward definition
 
 namespace Backend {
-  class HigginsSTDP : public virtual STDPCommon,
-                      public STDP {
+  class HigginsSTDP : public STDP {
   public:
     ADD_FRONTEND_GETTER(HigginsSTDP);
 

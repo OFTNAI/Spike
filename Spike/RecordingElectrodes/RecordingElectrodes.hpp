@@ -17,14 +17,7 @@ using namespace std;
 class RecordingElectrodes; // forward definition
 
 namespace Backend {
-  class RecordingElectrodesCommon {
-  public:
-  };
-
-  class RecordingElectrodes : public virtual RecordingElectrodesCommon,
-                              public SpikeBackendBase {
-  public:
-    ADD_FRONTEND_GETTER(RecordingElectrodes);
+  class RecordingElectrodes : public virtual SpikeBackendBase {
   };
 }
 

@@ -1,13 +1,14 @@
 #pragma once
 
 #include "Spike/Neurons/InputSpikingNeurons.hpp"
-#include "Neurons.hpp"
+#include "SpikingNeurons.hpp"
 
 namespace Backend {
   namespace Dummy {
-    class InputSpikingNeurons : public virtual ::Backend::Dummy::NeuronsCommon,
-                                public ::Backend::InputSpikingNeurons {
-    public:
-    };
+    using InputSpikingNeurons = ::Backend::Dummy::SpikingNeurons;
+    // class InputSpikingNeurons : public virtual ::Backend::Dummy::SpikingNeurons,
+    //                             public virtual ::Backend::InputSpikingNeurons {
+    // public:
+    // };
   }
 }

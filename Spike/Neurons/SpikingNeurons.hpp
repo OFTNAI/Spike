@@ -17,9 +17,8 @@ struct spiking_neuron_parameters_struct : neuron_parameters_struct {
 class SpikingNeurons; // forward definition
 
 namespace Backend {
-  class SpikingNeurons : public Neurons {
+  class SpikingNeurons : public virtual Neurons {
   public:
-    ADD_FRONTEND_GETTER(SpikingNeurons);
     virtual void check_for_neuron_spikes(float current_time_in_seconds, float timestep) = 0;
   };
 }

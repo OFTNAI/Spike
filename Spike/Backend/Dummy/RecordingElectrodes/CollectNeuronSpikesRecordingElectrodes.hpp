@@ -6,8 +6,8 @@
 namespace Backend {
   namespace Dummy {
     class CollectNeuronSpikesRecordingElectrodes :
-      public virtual ::Backend::Dummy::RecordingElectrodesCommon,
-      public ::Backend::CollectNeuronSpikesRecordingElectrodes {
+      public virtual ::Backend::Dummy::RecordingElectrodes,
+      public virtual ::Backend::CollectNeuronSpikesRecordingElectrodes {
     public:
       MAKE_BACKEND_CONSTRUCTOR(CollectNeuronSpikesRecordingElectrodes);
 

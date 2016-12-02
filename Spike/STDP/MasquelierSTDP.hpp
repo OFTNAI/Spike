@@ -30,8 +30,7 @@
 class MasquelierSTDP; // forward definition
 
 namespace Backend {
-  class MasquelierSTDP : public virtual STDPCommon,
-                         public STDP {
+  class MasquelierSTDP : public STDP {
   public:
     ADD_FRONTEND_GETTER(MasquelierSTDP);
 

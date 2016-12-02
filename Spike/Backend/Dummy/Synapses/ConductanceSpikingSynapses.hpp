@@ -5,13 +5,13 @@
 
 namespace Backend {
   namespace Dummy {
-    class ConductanceSpikingSynapses : public virtual SpikingSynapsesCommon,
-                                       public ::Backend::ConductanceSpikingSynapses {
+    class ConductanceSpikingSynapses : public virtual ::Backend::Dummy::SpikingSynapses,
+                                       public virtual ::Backend::ConductanceSpikingSynapses {
     public:
       MAKE_BACKEND_CONSTRUCTOR(ConductanceSpikingSynapses);
       
       virtual void prepare() {
-        printf("TODO Backend::Dummy::ConductanceSpikingSynapses::prepare\n");
+        // printf("TODO Backend::Dummy::ConductanceSpikingSynapses::prepare\n");
       }
 
       virtual void calculate_postsynaptic_current_injection(::SpikingNeurons * neurons, float current_time_in_seconds, float timestep) {

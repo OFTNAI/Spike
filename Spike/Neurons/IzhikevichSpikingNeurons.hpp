@@ -14,7 +14,7 @@ struct izhikevich_spiking_neuron_parameters_struct : spiking_neuron_parameters_s
 class IzhikevichSpikingNeurons; // forward definition
 
 namespace Backend {
-  class IzhikevichSpikingNeurons : public SpikingNeurons {
+  class IzhikevichSpikingNeurons : public virtual SpikingNeurons {
   public:
     ADD_FRONTEND_GETTER(IzhikevichSpikingNeurons);
   };

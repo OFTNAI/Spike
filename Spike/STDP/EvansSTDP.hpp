@@ -21,8 +21,7 @@
 class EvansSTDP; // forward definition
 
 namespace Backend {
-  class EvansSTDP : public virtual STDPCommon,
-                    public STDP {
+  class EvansSTDP : public virtual STDP {
   public:
     ADD_FRONTEND_GETTER(EvansSTDP);
 
