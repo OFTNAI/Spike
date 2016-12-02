@@ -11,6 +11,9 @@ namespace Backend {
       virtual void prepare() {
         printf("TODO Backend::Dummy::RandomStateManager::prepare\n");
       }
+
+      virtual void push_data_front() {}
+      virtual void pull_data_back() {}
     };
   }
 }

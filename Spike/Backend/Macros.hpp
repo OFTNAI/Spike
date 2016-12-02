@@ -29,6 +29,7 @@
     return (::TYPE*)_frontend;                          \
   }
 
+#ifdef SPIKE_WITH_CUDA
 #define MAKE_PREPARE_BACKEND(TYPE)                              \
   void TYPE::prepare_backend(Context* ctx) {                    \
     std::cout << "prepare_backend " #TYPE " with " << ctx->device << "\n"; \
@@ -48,6 +49,24 @@
     std::cout << "backend: " << _backend << "\n";               \
     std::cout << "this " #TYPE ": " << this << "\n";            \
   }
+#else
+#define MAKE_PREPARE_BACKEND(TYPE)                              \
+  void TYPE::prepare_backend(Context* ctx) {                    \
+    std::cout << "prepare_backend " #TYPE " with " << ctx->device << "\n"; \
+    switch (ctx->device) {                                      \
+    case Backend::SPIKE_DEVICE_DUMMY:                           \
+      _backend = new Backend::Dummy::TYPE(this);                \
+      break;                                                    \
+    default:                                                    \
+      assert("Unsupported backend" && false);                   \
+    };                                                          \
+    backend()->context = ctx;                                   \
+    backend()->prepare();                                       \
+    prepare_backend_extra();                                    \
+    std::cout << "backend: " << _backend << "\n";               \
+    std::cout << "this " #TYPE ": " << this << "\n";            \
+  }
+#endif
 
 #define MAKE_STUB_PREPARE_BACKEND(TYPE)                         \
   void TYPE::prepare_backend(Context* ctx) {                    \

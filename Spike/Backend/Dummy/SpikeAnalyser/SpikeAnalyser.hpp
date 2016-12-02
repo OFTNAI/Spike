@@ -17,6 +17,9 @@ namespace Backend {
                                                          int stimulus_index) {
         printf("TODO store_spike_counts_for_stimulus_index\n");
       }
+
+      virtual void push_data_front() {}
+      virtual void pull_data_back() {}
     };
   }
 }

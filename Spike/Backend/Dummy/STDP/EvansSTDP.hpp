@@ -25,6 +25,9 @@ namespace Backend {
       virtual void update_postsynaptic_activities(float timestep, float current_time_in_seconds) {
         printf("TODO EvansSTDP::update_postsynaptic_activities\n");
       }
+
+      virtual void push_data_front() {}
+      virtual void pull_data_back() {}
     };
   }
 }

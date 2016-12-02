@@ -11,6 +11,8 @@ namespace Backend {
       MAKE_BACKEND_CONSTRUCTOR(AdExSpikingNeurons);
 
       virtual void reset_state();
+      virtual void push_data_front() {}
+      virtual void pull_data_back() {}
     };
   }
 }

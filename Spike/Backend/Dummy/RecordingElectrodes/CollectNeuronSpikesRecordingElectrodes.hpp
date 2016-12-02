@@ -26,6 +26,9 @@ namespace Backend {
                                                float current_time_in_seconds) {
         printf("TODO collect_spikes_for_timestep\n");
       }
+
+      virtual void push_data_front() {}
+      virtual void pull_data_back() {}
     };
   }
 }

@@ -17,6 +17,9 @@ namespace Backend {
       virtual void apply_stdp_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds) {
         printf("TODO MasquelierSTDP::apply_stdp_to_synapse_weights\n");
       }
+
+      virtual void push_data_front() {}
+      virtual void pull_data_back() {}
     };
   }
 }
