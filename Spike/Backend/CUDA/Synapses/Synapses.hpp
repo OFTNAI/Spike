@@ -9,15 +9,7 @@
 
 namespace Backend {
   namespace CUDA {
-    class SynapsesCommon : public virtual ::Backend::SynapsesCommon {
-    public:
-      virtual void set_neuron_indices_by_sampling_from_normal_distribution() {
-        printf("TODO Backend::Synapses::set_neuron_indices_by_sampling_from_normal_distribution\n");
-      }
-    };
-
-    class Synapses : public virtual SynapsesCommon,
-                     public ::Backend::Synapses {
+    class Synapses : public virtual ::Backend::Synapses {
     public:
       ~Synapses();
 
@@ -39,6 +31,10 @@ namespace Backend {
       virtual void allocate_device_pointers();
       virtual void copy_constants_and_initial_efficacies_to_device();
       virtual void set_threads_per_block_and_blocks_per_grid(int threads);
+
+      virtual void set_neuron_indices_by_sampling_from_normal_distribution() {
+        printf("TODO Backend::Synapses::set_neuron_indices_by_sampling_from_normal_distribution\n");
+      }
     };
 
     __global__ void compute_yes_no_connection_matrix_for_groups(bool * d_yes_no_connection_vector, 

@@ -10,8 +10,8 @@
 
 namespace Backend {
   namespace CUDA {
-    class EvansSTDP : public virtual ::Backend::CUDA::STDPCommon,
-                      public ::Backend::EvansSTDP {
+    class EvansSTDP : public virtual ::Backend::CUDA::STDP,
+                      public virtual ::Backend::EvansSTDP {
     public:
       float* recent_postsynaptic_activities_D = nullptr; // (NEURON-WISE)
       float* recent_presynaptic_activities_C = nullptr;  // (SYNAPSE-WISE)

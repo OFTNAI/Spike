@@ -9,13 +9,16 @@
 
 namespace Backend {
   namespace CUDA {
-    class CurrentSpikingSynapses : public virtual SpikingSynapsesCommon,
-                                   public ::Backend::CurrentSpikingSynapses {
+    class CurrentSpikingSynapses : public virtual ::Backend::CUDA::SpikingSynapses,
+                                   public virtual ::Backend::CurrentSpikingSynapses {
     public:
       MAKE_BACKEND_CONSTRUCTOR(CurrentSpikingSynapses);
       virtual void prepare();
       virtual void reset_state();
       virtual void calculate_postsynaptic_current_injection(::SpikingNeurons * neurons, float current_time_in_seconds, float timestep);
+
+      virtual void push_data_front() {}
+      virtual void pull_data_back() {}
     };
 
     __global__ void current_calculate_postsynaptic_current_injection_kernel

@@ -10,8 +10,8 @@
 
 namespace Backend {
   namespace CUDA {
-    class ConductanceSpikingSynapses : public virtual SpikingSynapsesCommon,
-                                       public ::Backend::ConductanceSpikingSynapses {
+    class ConductanceSpikingSynapses : public virtual ::Backend::CUDA::SpikingSynapses,
+                                       public virtual ::Backend::ConductanceSpikingSynapses {
     public:
       float * synaptic_conductances_g = nullptr;
       float * biological_conductance_scaling_constants_lambda = nullptr;
@@ -27,6 +27,9 @@ namespace Backend {
 
       virtual void calculate_postsynaptic_current_injection(::SpikingNeurons * neurons, float current_time_in_seconds, float timestep);
       virtual void update_synaptic_conductances(float timestep, float current_time_in_seconds);
+
+      virtual void push_data_front() {}
+      virtual void pull_data_back() {}
     };
 
     __global__ void conductance_calculate_postsynaptic_current_injection_kernel

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Spike/Neurons/AdExSpikingNeurons.hpp"
-#include "Neurons.hpp"
+#include "SpikingNeurons.hpp"
 #include "Spike/Backend/CUDA/CUDABackend.hpp"
 
 #include <cuda.h>
@@ -9,8 +9,8 @@
 
 namespace Backend {
   namespace CUDA {
-    class AdExSpikingNeurons : public virtual ::Backend::CUDA::NeuronsCommon,
-                               public ::Backend::AdExSpikingNeurons {
+    class AdExSpikingNeurons : public virtual ::Backend::CUDA::SpikingNeurons,
+                               public virtual ::Backend::AdExSpikingNeurons {
     public:
       MAKE_BACKEND_CONSTRUCTOR(AdExSpikingNeurons);
 

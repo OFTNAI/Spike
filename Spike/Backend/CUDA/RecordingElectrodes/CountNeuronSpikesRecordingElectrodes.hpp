@@ -11,8 +11,8 @@
 namespace Backend {
   namespace CUDA {
     class CountNeuronSpikesRecordingElectrodes :
-      public virtual ::Backend::CUDA::RecordingElectrodesCommon,
-      public ::Backend::CountNeuronSpikesRecordingElectrodes {
+      public virtual ::Backend::CUDA::RecordingElectrodes,
+      public virtual ::Backend::CountNeuronSpikesRecordingElectrodes {
     public:
       MAKE_BACKEND_CONSTRUCTOR(CountNeuronSpikesRecordingElectrodes);
       // ~CountNeuronRecordingElectrodes();

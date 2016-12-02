@@ -10,16 +10,8 @@
 
 namespace Backend {
   namespace CUDA {
-    class SpikingSynapsesCommon : public virtual SynapsesCommon,
-                                  public virtual ::Backend::SpikingSynapsesCommon {
-    public:
-      virtual void interact_spikes_with_synapses(::SpikingNeurons * neurons, ::SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) {
-        // printf("TODO Backend::Synapses::interact_spikes_with_synapses\n");
-      }
-    };
-    
-    class SpikingSynapses : public virtual SpikingSynapsesCommon,
-                            public ::Backend::SpikingSynapses {
+    class SpikingSynapses : public virtual ::Backend::CUDA::Synapses,
+                            public virtual ::Backend::SpikingSynapses {
     public:
       // Device pointers
       int* delays = nullptr;
@@ -35,6 +27,10 @@ namespace Backend {
       virtual void set_threads_per_block_and_blocks_per_grid(int threads);
 
       virtual void interact_spikes_with_synapses(SpikingNeurons * neurons, SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep);
+
+      virtual void interact_spikes_with_synapses(::SpikingNeurons * neurons, ::SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) {
+        // printf("TODO Backend::Synapses::interact_spikes_with_synapses\n");
+      }
     };
 
     __global__ void move_spikes_towards_synapses_kernel(int* d_presynaptic_neuron_indices,

@@ -9,12 +9,7 @@
 
 namespace Backend {
   namespace CUDA {
-    class STDPCommon : public virtual ::Backend::STDPCommon {
-    public:
-    };
-
-    class STDP : public virtual ::Backend::CUDA::STDPCommon,
-                 public ::Backend::STDP {
+    class STDP : public virtual ::Backend::STDP {
     public:
     };
   }

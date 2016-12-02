@@ -7,13 +7,9 @@
 
 namespace Backend {
   namespace CUDA {
-    class NeuronsCommon : public virtual ::Backend::NeuronsCommon {
+    class Neurons : public virtual ::Backend::Neurons {
     public:
-    };
-
-    class Neurons : public virtual ::Backend::CUDA::NeuronsCommon,
-                    public ::Backend::Neurons {
-    public:
+      ~Neurons();
 
       // Device Pointers
       int * per_neuron_afferent_synapse_count = nullptr;	/**< A (device-side) count of the number of afferent synapses for each neuron */
@@ -40,6 +36,11 @@ namespace Backend {
       void set_threads_per_block_and_blocks_per_grid(int threads);
 
       virtual void prepare();
+      virtual void reset_state();
+      void reset_current_injections();
+
+    private:
+      ADD_FRONTEND_GETTER(Neurons);
     };
   } // namespace CUDA
 } // namespace Backend

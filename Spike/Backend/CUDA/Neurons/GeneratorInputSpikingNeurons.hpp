@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Spike/Neurons/GeneratorInputSpikingNeurons.hpp"
-#include "Neurons.hpp"
+#include "InputSpikingNeurons.hpp"
 #include "Spike/Backend/CUDA/CUDABackend.hpp"
 
 #include <cuda.h>
@@ -11,8 +11,8 @@
 
 namespace Backend {
   namespace CUDA {
-    class GeneratorInputSpikingNeurons : public virtual ::Backend::CUDA::NeuronsCommon,
-                                         public ::Backend::GeneratorInputSpikingNeurons {
+    class GeneratorInputSpikingNeurons : public virtual ::Backend::CUDA::InputSpikingNeurons,
+                                         public virtual ::Backend::GeneratorInputSpikingNeurons {
     public:
 
       // Device Pointers

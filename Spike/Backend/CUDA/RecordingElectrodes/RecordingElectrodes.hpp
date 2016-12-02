@@ -9,12 +9,7 @@
 
 namespace Backend {
   namespace CUDA {
-    class RecordingElectrodesCommon : public virtual ::Backend::RecordingElectrodesCommon {
-    public:
-    };
-
-    class RecordingElectrodes : public virtual ::Backend::CUDA::RecordingElectrodesCommon,
-                                public ::Backend::RecordingElectrodes {
+    class RecordingElectrodes : public virtual ::Backend::RecordingElectrodes {
     public:
     };
   }

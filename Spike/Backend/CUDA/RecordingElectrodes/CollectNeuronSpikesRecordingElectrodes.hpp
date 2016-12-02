@@ -11,8 +11,8 @@
 namespace Backend {
   namespace CUDA {
     class CollectNeuronSpikesRecordingElectrodes :
-      public virtual ::Backend::CUDA::RecordingElectrodesCommon,
-      public ::Backend::CollectNeuronSpikesRecordingElectrodes {
+      public virtual ::Backend::CUDA::RecordingElectrodes,
+      public virtual ::Backend::CollectNeuronSpikesRecordingElectrodes {
     public:
       MAKE_BACKEND_CONSTRUCTOR(CollectNeuronSpikesRecordingElectrodes);
       // ~CollectNeuronSpikesRecordingElectrodes();

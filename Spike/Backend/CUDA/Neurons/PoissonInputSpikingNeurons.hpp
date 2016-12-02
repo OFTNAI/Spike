@@ -2,7 +2,7 @@
 
 #include "Spike/Neurons/PoissonInputSpikingNeurons.hpp"
 #include "Spike/Backend/CUDA/CUDABackend.hpp"
-#include "Neurons.hpp"
+#include "InputSpikingNeurons.hpp"
 
 #include <cuda.h>
 #include <vector_types.h>
@@ -11,8 +11,8 @@
 
 namespace Backend {
   namespace CUDA {
-    class PoissonInputSpikingNeurons : public virtual ::Backend::CUDA::NeuronsCommon,
-                                       public ::Backend::PoissonInputSpikingNeurons {
+    class PoissonInputSpikingNeurons : public virtual ::Backend::CUDA::InputSpikingNeurons,
+                                       public virtual ::Backend::PoissonInputSpikingNeurons {
     public:
       float * d_rates = nullptr;
       

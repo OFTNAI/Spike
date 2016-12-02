@@ -9,8 +9,8 @@
 
 namespace Backend {
   namespace CUDA {
-    class SpikingNeurons : public virtual ::Backend::CUDA::NeuronsCommon,
-                           public ::Backend::SpikingNeurons {
+    class SpikingNeurons : public virtual ::Backend::CUDA::Neurons,
+                           public virtual ::Backend::SpikingNeurons {
     public:
 
       // Device Pointers
@@ -36,6 +36,9 @@ namespace Backend {
        *  Unused in this class. Allows copying of static data related to neuron dynamics to the device.
        */
       virtual void copy_constants_to_device();
+
+    private:
+      ADD_FRONTEND_GETTER(SpikingNeurons);
     };
 
     __global__ void check_for_neuron_spikes_kernel(float *d_membrane_potentials_v,

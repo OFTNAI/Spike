@@ -9,12 +9,7 @@
 
 namespace Backend {
   namespace CUDA {
-    class SpikeAnalyserCommon : public virtual ::Backend::SpikeAnalyserCommon {
-    public:
-    };
-
-    class SpikeAnalyser : public virtual ::Backend::CUDA::SpikeAnalyserCommon,
-                          public ::Backend::SpikeAnalyser {
+    class SpikeAnalyser : public virtual ::Backend::SpikeAnalyser {
     public:
       MAKE_BACKEND_CONSTRUCTOR(SpikeAnalyser);
 

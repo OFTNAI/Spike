@@ -11,8 +11,8 @@
 namespace Backend {
   namespace CUDA {
     class NetworkStateArchiveRecordingElectrodes :
-      public virtual ::Backend::CUDA::RecordingElectrodesCommon,
-      public ::Backend::NetworkStateArchiveRecordingElectrodes {
+      public virtual ::Backend::CUDA::RecordingElectrodes,
+      public virtual ::Backend::NetworkStateArchiveRecordingElectrodes {
     public:
       MAKE_BACKEND_CONSTRUCTOR(NetworkStateArchiveRecordingElectrodes);
 

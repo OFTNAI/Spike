@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Spike/Neurons/IzhikevichSpikingNeurons.hpp"
-#include "Neurons.hpp"
+#include "SpikingNeurons.hpp"
 #include "Spike/Backend/CUDA/CUDABackend.hpp"
 
 #include <cuda.h>
@@ -9,9 +9,11 @@
 
 namespace Backend {
   namespace CUDA {
-    class IzhikevichSpikingNeurons : public virtual ::Backend::CUDA::NeuronsCommon,
-                                     public ::Backend::IzhikevichSpikingNeurons {
+    class IzhikevichSpikingNeurons : public virtual ::Backend::CUDA::SpikingNeurons,
+                                     public virtual ::Backend::IzhikevichSpikingNeurons {
     public:
+      ~IzhikevichSpikingNeurons();
+
       // Device Pointers
       float * param_a = nullptr;
       float * param_b = nullptr;
@@ -19,6 +21,7 @@ namespace Backend {
       float * states_u = nullptr;
 
       MAKE_BACKEND_CONSTRUCTOR(IzhikevichSpikingNeurons);
+      using ::Backend::IzhikevichSpikingNeurons::frontend;
 
       virtual void allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage);
       virtual void copy_constants_to_device();

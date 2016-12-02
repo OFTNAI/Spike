@@ -1,3 +1,4 @@
+// -*- mode: c++ -*-
 #include "Spike/Backend/CUDA/Neurons/GeneratorInputSpikingNeurons.hpp"
 
 namespace Backend {
