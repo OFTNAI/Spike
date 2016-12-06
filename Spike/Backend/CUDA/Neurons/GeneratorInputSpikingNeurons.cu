@@ -4,35 +4,41 @@
 namespace Backend {
   namespace CUDA {
     GeneratorInputSpikingNeurons::~GeneratorInputSpikingNeurons() {
-      CudaSafeCall(cudaFree(d_neuron_ids_for_stimulus));
-      CudaSafeCall(cudaFree(d_spike_times_for_stimulus));
+      CudaSafeCall(cudaFree(neuron_ids_for_stimulus));
+      CudaSafeCall(cudaFree(spike_times_for_stimulus));
     }
     
     // Allocate device pointers for the longest stimulus so that they do not need to be replaced
     void GeneratorInputSpikingNeurons::allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage) {
       InputSpikingNeurons::allocate_device_pointers(maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
 
-      CudaSafeCall(cudaMalloc((void **)&d_neuron_ids_for_stimulus, sizeof(int)*length_of_longest_stimulus));
-      CudaSafeCall(cudaMalloc((void **)&d_spike_times_for_stimulus, sizeof(float)*length_of_longest_stimulus));
+      CudaSafeCall(cudaMalloc((void **)&neuron_ids_for_stimulus, sizeof(int)*frontend()->length_of_longest_stimulus));
+      CudaSafeCall(cudaMalloc((void **)&spike_times_for_stimulus, sizeof(float)*frontend()->length_of_longest_stimulus));
     }
 
     void GeneratorInputSpikingNeurons::reset_state() {
-      CudaSafeCall(cudaMemcpy(d_neuron_ids_for_stimulus, neuron_id_matrix_for_stimuli[current_stimulus_index], sizeof(int)*number_of_spikes_in_stimuli[current_stimulus_index], cudaMemcpyHostToDevice));
-      CudaSafeCall(cudaMemcpy(d_spike_times_for_stimulus, spike_times_matrix_for_stimuli[current_stimulus_index], sizeof(float)*number_of_spikes_in_stimuli[current_stimulus_index], cudaMemcpyHostToDevice));
+      CudaSafeCall(cudaMemcpy(neuron_ids_for_stimulus,
+                              frontend()->neuron_id_matrix_for_stimuli[frontend()->current_stimulus_index],
+                              sizeof(int)*frontend()->number_of_spikes_in_stimuli[frontend()->current_stimulus_index],
+                              cudaMemcpyHostToDevice));
+      CudaSafeCall(cudaMemcpy(spike_times_for_stimulus,
+                              frontend()->spike_times_matrix_for_stimuli[frontend()->current_stimulus_index],
+                              sizeof(float)*frontend()->number_of_spikes_in_stimuli[frontend()->current_stimulus_index],
+                              cudaMemcpyHostToDevice));
     }
 
     void GeneratorInputSpikingNeurons::check_for_neuron_spikes(float current_time_in_seconds, float timestep) {
       check_for_generator_spikes_kernel<<<number_of_neuron_blocks_per_grid, threads_per_block>>>
-        (d_neuron_ids_for_stimulus,
-         d_spike_times_for_stimulus,
-         d_last_spike_time_of_each_neuron,
-         d_bitarray_of_neuron_spikes,
-         bitarray_length,
-         bitarray_maximum_axonal_delay_in_timesteps,
+        (neuron_ids_for_stimulus,
+         spike_times_for_stimulus,
+         last_spike_time_of_each_neuron,
+         bitarray_of_neuron_spikes,
+         frontend()->bitarray_length,
+         frontend()->bitarray_maximum_axonal_delay_in_timesteps,
          current_time_in_seconds,
          timestep,
-         number_of_spikes_in_stimuli[current_stimulus_index],
-         high_fidelity_spike_flag);
+         frontend()->number_of_spikes_in_stimuli[frontend()->current_stimulus_index],
+         frontend()->high_fidelity_spike_flag);
 
       CudaCheckError();
     }

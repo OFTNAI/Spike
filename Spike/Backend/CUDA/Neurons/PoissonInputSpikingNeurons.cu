@@ -9,27 +9,32 @@ namespace Backend {
 
     void PoissonInputSpikingNeurons::allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage) {
       InputSpikingNeurons::allocate_device_pointers(maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
-      CudaSafeCall(cudaMalloc((void **)&d_rates, sizeof(float)*total_number_of_neurons));
+      CudaSafeCall(cudaMalloc((void **)&rates, sizeof(float)*frontend()->total_number_of_neurons));
     }
 
     void PoissonInputSpikingNeurons::copy_constants_to_device() {
       InputSpikingNeurons::copy_constants_to_device();
 
       if (rates != nullptr) {
-        CudaSafeCall(cudaMemcpy(d_rates, rates, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
+        CudaSafeCall(cudaMemcpy(rates, frontend()->rates, sizeof(float)*frontend()->total_number_of_neurons, cudaMemcpyHostToDevice));
       }
     }
 
     void PoissonInputSpikingNeurons::update_membrane_potentials(float timestep, float current_time_in_seconds) {
 
+      // Crudely assume that the RandomStateManager backend is also CUDA:
+      ::Backend::CUDA::RandomStateManager* random_state_manager
+        = static_cast<::Backend::CUDA::RandomStateManager*>
+        (frontend()->random_state_manager->backend());
+
       poisson_update_membrane_potentials_kernel<<<random_state_manager->block_dimensions, random_state_manager->threads_per_block>>>
-        (random_state_manager->d_states,
-         d_rates,
-         d_membrane_potentials_v,
+        (random_state_manager->states,
+         rates,
+         membrane_potentials_v,
          timestep,
-         d_thresholds_for_action_potential_spikes,
-         total_number_of_neurons,
-         current_stimulus_index);
+         thresholds_for_action_potential_spikes,
+         frontend()->total_number_of_neurons,
+         frontend()->current_stimulus_index);
 
 	CudaCheckError();
     }

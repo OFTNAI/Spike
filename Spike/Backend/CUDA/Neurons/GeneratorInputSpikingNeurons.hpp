@@ -14,7 +14,11 @@ namespace Backend {
     class GeneratorInputSpikingNeurons : public virtual ::Backend::CUDA::InputSpikingNeurons,
                                          public virtual ::Backend::GeneratorInputSpikingNeurons {
     public:
+      ~GeneratorInputSpikingNeurons();
 
+      MAKE_BACKEND_CONSTRUCTOR(GeneratorInputSpikingNeurons);
+      using ::Backend::GeneratorInputSpikingNeurons::frontend;
+      
       // Device Pointers
       int* neuron_ids_for_stimulus = nullptr;
       float* spike_times_for_stimulus = nullptr;

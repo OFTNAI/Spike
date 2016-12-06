@@ -1,3 +1,4 @@
+// -*- mode: c++ -*-
 #include "Spike/Backend/CUDA/RandomStateManager.hpp"
 #include "Spike/Helpers/TimerWithMessages.hpp"
 

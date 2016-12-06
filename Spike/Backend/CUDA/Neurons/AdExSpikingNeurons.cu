@@ -4,83 +4,116 @@
 namespace Backend {
   namespace CUDA {
     AdExSpikingNeurons::~AdExSpikingNeurons() {
-      // TODO, like:
-      // CudaSafeCall(cudaFree(d_param_a));
+      CudaSafeCall(cudaFree(adaptation_values_w));
+      CudaSafeCall(cudaFree(membrane_capacitances_Cm));
+      CudaSafeCall(cudaFree(membrane_leakage_conductances_g0));
+      CudaSafeCall(cudaFree(leak_reversal_potentials_E_L));
+      CudaSafeCall(cudaFree(slope_factors_Delta_T));
+      CudaSafeCall(cudaFree(adaptation_coupling_coefficients_a));
+      CudaSafeCall(cudaFree(adaptation_time_constants_tau_w));
+      CudaSafeCall(cudaFree(adaptation_changes_b));
     }
 
     void AdExSpikingNeurons::allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage) {
 	
       SpikingNeurons::allocate_device_pointers(maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
 
-      CudaSafeCall(cudaMalloc((void **)&d_adaptation_values_w, sizeof(float)*total_number_of_neurons));
-      CudaSafeCall(cudaMalloc((void **)&d_membrane_capacitances_Cm, sizeof(float)*total_number_of_neurons));
-      CudaSafeCall(cudaMalloc((void **)&d_membrane_leakage_conductances_g0, sizeof(float)*total_number_of_neurons));
-      CudaSafeCall(cudaMalloc((void **)&d_leak_reversal_potentials_E_L, sizeof(float)*total_number_of_neurons));
-      CudaSafeCall(cudaMalloc((void **)&d_slope_factors_Delta_T, sizeof(float)*total_number_of_neurons));
-      CudaSafeCall(cudaMalloc((void **)&d_adaptation_coupling_coefficients_a, sizeof(float)*total_number_of_neurons));
-      CudaSafeCall(cudaMalloc((void **)&d_adaptation_time_constants_tau_w, sizeof(float)*total_number_of_neurons));
-      CudaSafeCall(cudaMalloc((void **)&d_adaptation_changes_b, sizeof(float)*total_number_of_neurons));
+      CudaSafeCall(cudaMalloc((void **)&adaptation_values_w, sizeof(float)*frontend()->total_number_of_neurons));
+      CudaSafeCall(cudaMalloc((void **)&membrane_capacitances_Cm, sizeof(float)*frontend()->total_number_of_neurons));
+      CudaSafeCall(cudaMalloc((void **)&membrane_leakage_conductances_g0, sizeof(float)*frontend()->total_number_of_neurons));
+      CudaSafeCall(cudaMalloc((void **)&leak_reversal_potentials_E_L, sizeof(float)*frontend()->total_number_of_neurons));
+      CudaSafeCall(cudaMalloc((void **)&slope_factors_Delta_T, sizeof(float)*frontend()->total_number_of_neurons));
+      CudaSafeCall(cudaMalloc((void **)&adaptation_coupling_coefficients_a, sizeof(float)*frontend()->total_number_of_neurons));
+      CudaSafeCall(cudaMalloc((void **)&adaptation_time_constants_tau_w, sizeof(float)*frontend()->total_number_of_neurons));
+      CudaSafeCall(cudaMalloc((void **)&adaptation_changes_b, sizeof(float)*frontend()->total_number_of_neurons));
     }
 
 
     void AdExSpikingNeurons::copy_constants_to_device() {
       SpikingNeurons::copy_constants_to_device();
 
-      CudaSafeCall(cudaMemcpy(d_adaptation_values_w, adaptation_values_w, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
-      CudaSafeCall(cudaMemcpy(d_membrane_capacitances_Cm, membrane_capacitances_Cm, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
-      CudaSafeCall(cudaMemcpy(d_membrane_leakage_conductances_g0, membrane_leakage_conductances_g0, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
-      CudaSafeCall(cudaMemcpy(d_leak_reversal_potentials_E_L, leak_reversal_potentials_E_L, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
-      CudaSafeCall(cudaMemcpy(d_slope_factors_Delta_T, slope_factors_Delta_T, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
-      CudaSafeCall(cudaMemcpy(d_adaptation_coupling_coefficients_a, adaptation_coupling_coefficients_a, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
-      CudaSafeCall(cudaMemcpy(d_adaptation_time_constants_tau_w, adaptation_time_constants_tau_w, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
-      CudaSafeCall(cudaMemcpy(d_adaptation_changes_b, d_adaptation_changes_b, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
+      CudaSafeCall(cudaMemcpy(adaptation_values_w,
+                              frontend()->adaptation_values_w,
+                              sizeof(float)*frontend()->total_number_of_neurons,
+                              cudaMemcpyHostToDevice));
+      CudaSafeCall(cudaMemcpy(membrane_capacitances_Cm,
+                              frontend()->membrane_capacitances_Cm,
+                              sizeof(float)*frontend()->total_number_of_neurons,
+                              cudaMemcpyHostToDevice));
+      CudaSafeCall(cudaMemcpy(membrane_leakage_conductances_g0,
+                              frontend()->membrane_leakage_conductances_g0,
+                              sizeof(float)*frontend()->total_number_of_neurons,
+                              cudaMemcpyHostToDevice));
+      CudaSafeCall(cudaMemcpy(leak_reversal_potentials_E_L,
+                              frontend()->leak_reversal_potentials_E_L,
+                              sizeof(float)*frontend()->total_number_of_neurons,
+                              cudaMemcpyHostToDevice));
+      CudaSafeCall(cudaMemcpy(slope_factors_Delta_T,
+                              frontend()->slope_factors_Delta_T,
+                              sizeof(float)*frontend()->total_number_of_neurons,
+                              cudaMemcpyHostToDevice));
+      CudaSafeCall(cudaMemcpy(adaptation_coupling_coefficients_a,
+                              frontend()->adaptation_coupling_coefficients_a,
+                              sizeof(float)*frontend()->total_number_of_neurons,
+                              cudaMemcpyHostToDevice));
+      CudaSafeCall(cudaMemcpy(adaptation_time_constants_tau_w,
+                              frontend()->adaptation_time_constants_tau_w,
+                              sizeof(float)*frontend()->total_number_of_neurons,
+                              cudaMemcpyHostToDevice));
+      CudaSafeCall(cudaMemcpy(adaptation_changes_b,
+                              frontend()->adaptation_changes_b,
+                              sizeof(float)*frontend()->total_number_of_neurons,
+                              cudaMemcpyHostToDevice));
     }
 
     void AdExSpikingNeurons::update_membrane_potentials(float timestep, float current_time_in_seconds) {
 
 	AdEx_update_membrane_potentials<<<number_of_neuron_blocks_per_grid, threads_per_block>>>
-          (d_membrane_potentials_v,
-           d_adaptation_values_w,
-           d_adaptation_changes_b,
-           d_membrane_capacitances_Cm,
-           d_membrane_leakage_conductances_g0,
-           d_leak_reversal_potentials_E_L,
-           d_slope_factors_Delta_T,
-           d_adaptation_coupling_coefficients_a,
-           d_adaptation_time_constants_tau_w,
-           d_current_injections,
-           d_thresholds_for_action_potential_spikes,
-           d_last_spike_time_of_each_neuron,
-           absolute_refractory_period,
+          (membrane_potentials_v,
+           adaptation_values_w,
+           adaptation_changes_b,
+           membrane_capacitances_Cm,
+           membrane_leakage_conductances_g0,
+           leak_reversal_potentials_E_L,
+           slope_factors_Delta_T,
+           adaptation_coupling_coefficients_a,
+           adaptation_time_constants_tau_w,
+           current_injections,
+           thresholds_for_action_potential_spikes,
+           last_spike_time_of_each_neuron,
+           frontend()->absolute_refractory_period,
            current_time_in_seconds,
            timestep,
-           total_number_of_neurons);
+           frontend()->total_number_of_neurons);
 
 	CudaCheckError();
     }
 
     void AdExSpikingNeurons::check_for_neuron_spikes(float current_time_in_seconds, float timestep) {
 	check_for_neuron_spikes_kernel<<<number_of_neuron_blocks_per_grid, threads_per_block>>>
-          (d_membrane_potentials_v,
-           d_adaptation_values_w,
-           d_adaptation_changes_b,
-           d_thresholds_for_action_potential_spikes,
-           d_resting_potentials,
-           d_last_spike_time_of_each_neuron,
-           d_bitarray_of_neuron_spikes,
-           bitarray_length,
-           bitarray_maximum_axonal_delay_in_timesteps,
+          (membrane_potentials_v,
+           adaptation_values_w,
+           adaptation_changes_b,
+           thresholds_for_action_potential_spikes,
+           resting_potentials,
+           last_spike_time_of_each_neuron,
+           bitarray_of_neuron_spikes,
+           frontend()->bitarray_length,
+           frontend()->bitarray_maximum_axonal_delay_in_timesteps,
            current_time_in_seconds,
            timestep,
-           total_number_of_neurons,
-           high_fidelity_spike_flag);
+           frontend()->total_number_of_neurons,
+           frontend()->high_fidelity_spike_flag);
 
 	CudaCheckError();
     }
 
     void AdExSpikingNeurons::reset_state() {
       // Set adapatation value to zero
-      CudaSafeCall(cudaMemcpy(d_adaptation_values_w, adaptation_values_w, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
+      CudaSafeCall(cudaMemcpy(adaptation_values_w,
+                              frontend()->adaptation_values_w,
+                              sizeof(float)*frontend()->total_number_of_neurons,
+                              cudaMemcpyHostToDevice));
     }
 
     __global__ void AdEx_update_membrane_potentials(float *d_membrane_potentials_v,

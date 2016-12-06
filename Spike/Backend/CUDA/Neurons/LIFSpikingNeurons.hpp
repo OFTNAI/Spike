@@ -15,7 +15,9 @@ namespace Backend {
       float * membrane_time_constants_tau_m = nullptr;
       float * membrane_resistances_R = nullptr;
 
+      ~LIFSpikingNeurons();
       MAKE_BACKEND_CONSTRUCTOR(LIFSpikingNeurons);
+      using ::Backend::LIFSpikingNeurons::frontend;
 
       virtual void check_for_neuron_spikes(float current_time_in_seconds, float timestep);
       virtual void reset_state();

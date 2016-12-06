@@ -14,12 +14,20 @@ namespace Backend {
     class PoissonInputSpikingNeurons : public virtual ::Backend::CUDA::InputSpikingNeurons,
                                        public virtual ::Backend::PoissonInputSpikingNeurons {
     public:
-      float * d_rates = nullptr;
+      PoissonInputSpikingNeurons() = default;
+      ~PoissonInputSpikingNeurons();
+
+      MAKE_BACKEND_CONSTRUCTOR(PoissonInputSpikingNeurons);
+      using ::Backend::PoissonInputSpikingNeurons::frontend;
+
+      float * rates = nullptr;
       
       virtual void allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage);
       virtual void copy_constants_to_device();
       virtual void update_membrane_potentials(float timestep, float current_time_in_seconds);
       // virtual void setup_random_states_on_device();
+
+      virtual void reset_state();
     };
 
     __global__ void poisson_update_membrane_potentials_kernel(curandState_t* d_states,

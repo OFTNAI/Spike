@@ -12,6 +12,7 @@ namespace Backend {
     class SpikingNeurons : public virtual ::Backend::CUDA::Neurons,
                            public virtual ::Backend::SpikingNeurons {
     public:
+      ~SpikingNeurons();
 
       // Device Pointers
       float* last_spike_time_of_each_neuron;
