@@ -13,6 +13,7 @@ namespace Backend {
                            public virtual ::Backend::SpikingNeurons {
     public:
       ~SpikingNeurons();
+      ADD_FRONTEND_GETTER(SpikingNeurons);
 
       // Device Pointers
       float* last_spike_time_of_each_neuron;
@@ -37,9 +38,6 @@ namespace Backend {
        *  Unused in this class. Allows copying of static data related to neuron dynamics to the device.
        */
       virtual void copy_constants_to_device();
-
-    private:
-      ADD_FRONTEND_GETTER(SpikingNeurons);
     };
 
     __global__ void check_for_neuron_spikes_kernel(float *d_membrane_potentials_v,

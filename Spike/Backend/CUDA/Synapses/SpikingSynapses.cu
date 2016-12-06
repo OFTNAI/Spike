@@ -1,3 +1,4 @@
+// -*- mode: c++ -*-
 #include "Spike/Backend/CUDA/Synapses/SpikingSynapses.hpp"
 
 namespace Backend {
@@ -7,6 +8,14 @@ namespace Backend {
       CudaSafeCall(cudaFree(spikes_travelling_to_synapse));
       CudaSafeCall(cudaFree(stdp));
       CudaSafeCall(cudaFree(time_of_last_spike_to_reach_synapse));
+    }
+
+    void SpikingSynapses::push_data_front() {
+      // TODO: Flesh this out (and for derived classes!)
+      CudaSafeCall(cudaMemcpy(frontend()->synaptic_efficacies_or_weights,
+                              synaptic_efficacies_or_weights,
+                              sizeof(float)*frontend()->total_number_of_synapses,
+                              cudaMemcpyDeviceToHost));
     }
 
     void SpikingSynapses::allocate_device_pointers() {

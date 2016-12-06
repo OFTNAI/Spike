@@ -1,30 +1,36 @@
+// -*- mode: c++ -*-
 #include "Spike/Backend/CUDA/RecordingElectrodes/CountNeuronSpikesRecordingElectrodes.hpp"
 
 namespace Backend {
   namespace CUDA {
     CountNeuronSpikesRecordingElectrodes::~CountNeuronSpikesRecordingElectrodes() {
-      CudaSafeCall(cudaFree(d_per_neuron_spike_counts));
+      CudaSafeCall(cudaFree(per_neuron_spike_counts));
     }
 
-    CountNeuronSpikesRecordingElectrodes::reset_state() {
-      CudaSafeCall(cudaMemset(d_per_neuron_spike_counts, 0, sizeof(int) * neurons->total_number_of_neurons));
+    void CountNeuronSpikesRecordingElectrodes::reset_state() {
+      CudaSafeCall(cudaMemset(per_neuron_spike_counts, 0, sizeof(int) * frontend()->neurons->total_number_of_neurons));
     }
 
-    CountNeuronSpikesRecordingElectrodes::prepare() {
+    void CountNeuronSpikesRecordingElectrodes::prepare() {
+      // set neurons_frontend and neurons_backend pointers:
+      RecordingElectrodes::prepare();
+
+      // TODO: Check this
+      allocate_pointers_for_spike_count();
     }
 
-    CountNeuronSpikesRecordingElectrodes::allocate_pointers_for_spike_count() {
-      CudaSafeCall(cudaMalloc((void **)&d_per_neuron_spike_counts, sizeof(int) * neurons->total_number_of_neurons));
+    void CountNeuronSpikesRecordingElectrodes::allocate_pointers_for_spike_count() {
+      CudaSafeCall(cudaMalloc((void **)&per_neuron_spike_counts,
+                              sizeof(int) * frontend()->neurons->total_number_of_neurons));
     }
 
-    CountNeuronSpikesRecordingElectrodes::add_spikes_to_per_neuron_spike_count
-    (::CountNeuronSpikesRecordingElectrodes* front,
-     float current_time_in_seconds) {
-      add_spikes_to_per_neuron_spike_count_kernel<<<neurons->number_of_neuron_blocks_per_grid, neurons->threads_per_block>>>
-        (neurons->d_last_spike_time_of_each_neuron,
-         d_per_neuron_spike_counts,
+    void CountNeuronSpikesRecordingElectrodes::add_spikes_to_per_neuron_spike_count
+    (float current_time_in_seconds) {
+      add_spikes_to_per_neuron_spike_count_kernel<<<neurons_backend->number_of_neuron_blocks_per_grid, neurons_backend->threads_per_block>>>
+        (neurons_backend->last_spike_time_of_each_neuron,
+         per_neuron_spike_counts,
          current_time_in_seconds,
-         neurons->total_number_of_neurons);
+         frontend()->neurons->total_number_of_neurons);
 	CudaCheckError();
     }
 

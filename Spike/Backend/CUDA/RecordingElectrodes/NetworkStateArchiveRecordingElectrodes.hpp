@@ -15,10 +15,11 @@ namespace Backend {
       public virtual ::Backend::NetworkStateArchiveRecordingElectrodes {
     public:
       MAKE_BACKEND_CONSTRUCTOR(NetworkStateArchiveRecordingElectrodes);
+      using ::Backend::NetworkStateArchiveRecordingElectrodes::frontend;
 
-      virtual void reset_state(); // TODO (if necessary...)
-
-      virtual void copy_state_to_front(::NetworkStateArchiveRecordingElectrodes* front);
+      void prepare() override;
+      void reset_state() override; // TODO (if necessary...)
+      void push_data_front() override;
     };
   }
 }

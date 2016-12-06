@@ -1,5 +1,5 @@
 CUDA_ADD_LIBRARY (SpikeCUDARecordingElectrodes
-  # RecordingElectrodes.cu
+  RecordingElectrodes.cu
   CountNeuronSpikesRecordingElectrodes.cu
   CollectNeuronSpikesRecordingElectrodes.cu
   NetworkStateArchiveRecordingElectrodes.cu

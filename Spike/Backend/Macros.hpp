@@ -9,7 +9,7 @@
 #endif
 
 #define ADD_BACKEND_GETTER(TYPE)                        \
-  Backend::TYPE* backend() const {                      \
+  inline Backend::TYPE* backend() const {               \
     assert(_backend != nullptr &&                       \
            "Need to have backend initialized!");        \
     /*assert(((Backend::TYPE*)_backend)->ready &&   */  \
@@ -23,7 +23,7 @@
   }
 
 #define ADD_FRONTEND_GETTER(TYPE)                       \
-  ::TYPE* frontend() const {                            \
+  inline ::TYPE* frontend() const {                     \
     assert(_frontend != nullptr &&                      \
            "Need to have backend initialized!");        \
     return (::TYPE*)_frontend;                          \

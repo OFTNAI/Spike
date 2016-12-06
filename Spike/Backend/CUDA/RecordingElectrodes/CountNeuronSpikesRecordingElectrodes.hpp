@@ -11,17 +11,19 @@
 namespace Backend {
   namespace CUDA {
     class CountNeuronSpikesRecordingElectrodes :
-      public virtual ::Backend::CUDA::RecordingElectrodes,
+      protected virtual ::Backend::CUDA::RecordingElectrodes,
       public virtual ::Backend::CountNeuronSpikesRecordingElectrodes {
     public:
+      ~CountNeuronSpikesRecordingElectrodes();
       MAKE_BACKEND_CONSTRUCTOR(CountNeuronSpikesRecordingElectrodes);
-      // ~CountNeuronRecordingElectrodes();
+      using ::Backend::CountNeuronSpikesRecordingElectrodes::frontend;
       
       virtual void reset_state();
+      virtual void prepare();
+      void allocate_pointers_for_spike_count();
 
       virtual void add_spikes_to_per_neuron_spike_count
-      (::CountNeuronSpikesRecordingElectrodes* front,
-        float current_time_in_seconds);
+      (float current_time_in_seconds);
 
       int * per_neuron_spike_counts = nullptr;
     };

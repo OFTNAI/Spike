@@ -18,7 +18,10 @@ CLOSED: [2016-11-24 Thu 14:05]
 :END:
 ** TODO Look for MISSING KERNELS ?!
 + check Backend/CUDA header files (esp Synapses/)
-** TODO Remove `d_' from pointer names in CUDA backend classes ...
+** PROGRESS Remove `d_' from pointer names in CUDA backend classes ...
+:LOGBOOK:
+- State "PROGRESS"   from "TODO"       [2016-12-06 Tue 16:10]
+:END:
 ** Questions / thoughts
 *** What is a "backend"?
 + A set of classes / functions that performs the computations represented in the front end.
@@ -38,6 +41,12 @@ CLOSED: [2016-11-24 Thu 14:05]
 - State "PROGRESS"   from "TODO"       [2016-11-20 Sun 12:10]
 :END:
 ** TODO Fix all TODO comments in frontend code
+** TODO Check all calls to `frontend()' to ensure elegance
+** TODO Ensure dynamic dispatch is used as sparingly as possible
++ don't want RTTI and performance penality!
+** TODO Add `override' specifier to derived versions of virtual functions
+*** TODO remove `virtual' keyword where unnecessary
+*** TODO remove duplicate definitions of virtual functions
 ** DONE Make all frontend classes derive from a shared root, with basic elements such as void* _backend and empty prepare_backend_extra
 CLOSED: [2016-11-24 Thu 13:40]
 :LOGBOOK:

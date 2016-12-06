@@ -11,21 +11,21 @@
 namespace Backend {
   namespace CUDA {
     class CollectNeuronSpikesRecordingElectrodes :
-      public virtual ::Backend::CUDA::RecordingElectrodes,
+      protected virtual ::Backend::CUDA::RecordingElectrodes,
       public virtual ::Backend::CollectNeuronSpikesRecordingElectrodes {
     public:
+      ~CollectNeuronSpikesRecordingElectrodes();
       MAKE_BACKEND_CONSTRUCTOR(CollectNeuronSpikesRecordingElectrodes);
-      // ~CollectNeuronSpikesRecordingElectrodes();
+      using ::Backend::CollectNeuronSpikesRecordingElectrodes::frontend;
 
       virtual void reset_state();
       virtual void prepare();
 
-      virtual void copy_spikes_to_front(::CollectNeuronSpikesRecordingElectrodes* front);
-      virtual void copy_spike_counts_to_front(::CollectNeuronSpikesRecordingElectrodes* front);
+      void push_data_front() override;
+      void copy_spikes_to_front() override;
+      void copy_spike_counts_to_front() override;
 
-      virtual void collect_spikes_for_timestep(::CollectNeuronSpikesRecordingElectrodes* front,
-                                               float current_time_in_seconds);
-
+      virtual void collect_spikes_for_timestep(float current_time_in_seconds);
 
       int* neuron_ids_of_stored_spikes_on_device = nullptr;
       int* total_number_of_spikes_stored_on_device = nullptr;

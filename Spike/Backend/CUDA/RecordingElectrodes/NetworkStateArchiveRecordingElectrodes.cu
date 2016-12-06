@@ -1,9 +1,15 @@
-#include "Spike/Backend/CUDA/RecordingElectrodes/CollectNeuronSpikesRecordingElectrodes.hpp"
+// -*- mode: c++ -*-
+#include "Spike/Backend/CUDA/RecordingElectrodes/NetworkStateArchiveRecordingElectrodes.hpp"
 
 namespace Backend {
   namespace CUDA {
-    NetworkStateArchiveRecordingElectrodes::copy_state_to_front(::NetworkStateArchiveRecordingElectrodes* front) {
-      CudaSafeCall(cudaMemcpy(synapses->synaptic_efficacies_or_weights, synapses->d_synaptic_efficacies_or_weights, sizeof(float)*synapses->total_number_of_synapses, cudaMemcpyDeviceToHost));
+    void NetworkStateArchiveRecordingElectrodes::prepare() {
+      // set neurons_frontend and neurons_backend pointers:
+      RecordingElectrodes::prepare();
+    }
+
+    void NetworkStateArchiveRecordingElectrodes::push_data_front() {
+      frontend()->synapses->backend()->push_data_front();
     }
   }
 }

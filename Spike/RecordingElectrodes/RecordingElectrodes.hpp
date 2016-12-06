@@ -18,6 +18,8 @@ class RecordingElectrodes; // forward definition
 
 namespace Backend {
   class RecordingElectrodes : public virtual SpikeBackendBase {
+  public:
+    ADD_FRONTEND_GETTER(RecordingElectrodes);
   };
 }
 

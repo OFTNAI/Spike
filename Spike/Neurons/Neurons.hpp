@@ -21,11 +21,7 @@
 class Neurons; // forward definition
 
 namespace Backend {
-  class Neurons : public virtual SpikeBackendBase {
-  public:
-    virtual void reset_state() = 0;
-    virtual void prepare() = 0;
-  };
+  class Neurons : public virtual SpikeBackendBase {};
 }
 
 #include "Spike/Backend/Dummy/Neurons/Neurons.hpp"

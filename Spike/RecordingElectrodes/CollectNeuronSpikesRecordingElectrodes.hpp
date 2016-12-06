@@ -15,10 +15,9 @@ namespace Backend {
       printf("TODO Backend::CollectNeuronSpikesRecordingElectrodes::prepare\n");
     }
 
-    virtual void copy_spikes_to_front(::CollectNeuronSpikesRecordingElectrodes* front) = 0;
-    virtual void copy_spike_counts_to_front(::CollectNeuronSpikesRecordingElectrodes* front) = 0;
-    virtual void collect_spikes_for_timestep(::CollectNeuronSpikesRecordingElectrodes* front,
-                                             float current_time_in_seconds) = 0;
+    virtual void copy_spikes_to_front() = 0;
+    virtual void copy_spike_counts_to_front() = 0;
+    virtual void collect_spikes_for_timestep(float current_time_in_seconds) = 0;
   };
 }
 

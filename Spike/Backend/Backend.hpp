@@ -2,6 +2,8 @@
 
 #include "Context.hpp"
 
+#include <cassert>
+
 namespace Backend {
   class SpikeBackendBase {
   public:
