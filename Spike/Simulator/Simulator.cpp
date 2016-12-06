@@ -72,6 +72,10 @@ Simulator::Simulator(SpikingModel * spiking_model_param, Simulator_Options * sim
 		network_state_archive_recording_electrodes = nullptr;
 	}
 
+        spike_analyser = new SpikeAnalyser
+          (spiking_model->spiking_neurons,
+           spiking_model->input_spiking_neurons,
+           count_neuron_spikes_recording_electrodes);
 
 	timer->stop_timer_and_log_time_and_message("Recording electrodes setup.\n", true);
 
@@ -85,6 +89,7 @@ Simulator::~Simulator(){
 	delete collect_neuron_spikes_recording_electrodes;
 	delete collect_input_neuron_spikes_recording_electrodes;
 	delete network_state_archive_recording_electrodes;
+        delete spike_analyser;
 
 }
 
@@ -118,7 +123,7 @@ void Simulator::reset_all_recording_electrodes() {
 }
 
 
-void Simulator::RunSimulation(SpikeAnalyser *spike_analyser) {
+void Simulator::RunSimulation() {
 
 	// check_for_epochs_and_begin_simulation_message(spiking_model->timestep, spiking_model->input_spiking_neurons->total_number_of_input_stimuli, number_of_epochs, collect_spikes, save_collected_spikes_and_states_to_file, spiking_model->spiking_neurons->total_number_of_neurons, spiking_model->input_spiking_neurons->total_number_of_neurons, spiking_model->spiking_synapses->total_number_of_synapses);
 	// Should print something about simulator_options->stimuli_presentation_options as old stuff removed from check_for_epochs...
@@ -169,7 +174,7 @@ void Simulator::RunSimulation(SpikeAnalyser *spike_analyser) {
 
 			}
 
-			perform_post_stimulus_presentation_instructions(spike_analyser);
+			perform_post_stimulus_presentation_instructions();
 			
 		}
 
@@ -336,13 +341,12 @@ void Simulator::perform_pre_stimulus_presentation_instructions(int stimulus_inde
 
 
 
-void Simulator::perform_post_stimulus_presentation_instructions(SpikeAnalyser * spike_analyser) {
+void Simulator::perform_post_stimulus_presentation_instructions() {
 
 	if (simulator_options->recording_electrodes_options->count_neuron_spikes_recording_electrodes_bool && spike_analyser) {
 
-          printf("TODO FIX BACKEND IN Simulator::perform_post_stimulus_presentation_instructions\n");
-          // NB: There is a d_ pointer below which needs to be extracted from the backend
-          // spike_analyser->store_spike_counts_for_stimulus_index(spiking_model->input_spiking_neurons->current_stimulus_index, count_neuron_spikes_recording_electrodes->d_per_neuron_spike_counts);
+          spike_analyser->store_spike_counts_for_stimulus_index
+            (spiking_model->input_spiking_neurons->current_stimulus_index);
           count_neuron_spikes_recording_electrodes->reset_state();
 
 	}

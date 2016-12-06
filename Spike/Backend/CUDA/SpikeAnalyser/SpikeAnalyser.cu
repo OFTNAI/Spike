@@ -1,17 +1,28 @@
+// -*- mode: c++ -*-
 #include "Spike/Backend/CUDA/SpikeAnalyser/SpikeAnalyser.hpp"
-#include "Spike/Backend/CUDA/Neurons/SpikingNeurons.hpp"
 
 namespace Backend {
   namespace CUDA {
-    SpikeAnalyser::store_spike_counts_for_stimulus_index(::SpikeAnalyser* front,
-                                                         int stimulus_index) {
-      ::Backend::CUDA::SpikingNeurons* neurons_backend
-        = (::Backend::CUDA::SpikingNeurons*)front->neurons->backend();
-      	CudaSafeCall
-          (cudaMemcpy(front->per_stimulus_per_neuron_spike_counts[stimulus_index], 
-                      neurons_backend->neuron_spike_counts_for_stimulus, 
-                      sizeof(float) * front->neurons->total_number_of_neurons, 
-                      cudaMemcpyDeviceToHost));
+    void SpikeAnalyser::prepare() {
+      neurons_backend = dynamic_cast<::Backend::CUDA::SpikingNeurons*>
+        (frontend()->neurons->backend());
+      input_neurons_backend = dynamic_cast<::Backend::CUDA::InputSpikingNeurons*>
+        (frontend()->input_neurons->backend());
+      count_electrodes_backend =
+        dynamic_cast<::Backend::CUDA::CountNeuronSpikesRecordingElectrodes*>
+        (frontend()->count_electrodes->backend());
+    }
+
+    void SpikeAnalyser::store_spike_counts_for_stimulus_index(int stimulus_index) {
+      // TODO: Should this be a 'push_data_front' kind of function?
+      //       Perhaps even in CountNeuronSpikesRecordingElectrodes?
+      //       Then the front-end could just get the data from the
+      //          electrodes instance, and wouldn't need this backend at all!..
+      CudaSafeCall
+        (cudaMemcpy(frontend()->per_stimulus_per_neuron_spike_counts[stimulus_index], 
+                    count_electrodes_backend->per_neuron_spike_counts, 
+                    sizeof(float) * frontend()->neurons->total_number_of_neurons, 
+                    cudaMemcpyDeviceToHost));
     }
   }
 }

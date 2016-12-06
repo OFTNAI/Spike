@@ -34,7 +34,7 @@ void CountNeuronSpikesRecordingElectrodes::reset_state() {
 
 void CountNeuronSpikesRecordingElectrodes::add_spikes_to_per_neuron_spike_count(float current_time_in_seconds) {
   assert(backend() && "Need to have backend initialized!");
-  backend()->add_spikes_to_per_neuron_spike_count(this, current_time_in_seconds);
+  backend()->add_spikes_to_per_neuron_spike_count(current_time_in_seconds);
 }
 
 MAKE_PREPARE_BACKEND(CountNeuronSpikesRecordingElectrodes);

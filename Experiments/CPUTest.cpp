@@ -1,7 +1,6 @@
 #include "Spike/Simulator/Simulator.hpp"
 #include "Spike/Models/FourLayerVisionSpikingModel.hpp"
 
-#include "Spike/SpikeAnalyser/SpikeAnalyser.hpp"
 #include "Spike/Helpers/TimerWithMessages.hpp"
 #include "Spike/Helpers/TerminalHelpers.hpp"
 #include "Spike/Helpers/MemoryUsage.hpp"
@@ -57,13 +56,11 @@ int main (int argc, char *argv[]){
         Simulator * simulator = new Simulator(four_layer_vision_spiking_model, simulator_options);
 
         // RUN SIMULATION
-        SpikeAnalyser * spike_analyser = new SpikeAnalyser(four_layer_vision_spiking_model->spiking_neurons, four_layer_vision_spiking_model->input_spiking_neurons);
-        simulator->RunSimulation(spike_analyser);
-        spike_analyser->calculate_various_neuron_spike_totals_and_averages(presentation_time_per_stimulus_per_epoch);
+        simulator->RunSimulation();
+        simulator->spike_analyser->calculate_various_neuron_spike_totals_and_averages(presentation_time_per_stimulus_per_epoch);
 
         delete four_layer_vision_spiking_model;
         delete simulator;
-        delete spike_analyser;
 
 	print_line_of_dashes_with_blank_lines_either_side();
 

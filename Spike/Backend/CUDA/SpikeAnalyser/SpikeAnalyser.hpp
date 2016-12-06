@@ -2,6 +2,9 @@
 
 #include "Spike/SpikeAnalyser/SpikeAnalyser.hpp"
 #include "Spike/Backend/CUDA/CUDABackend.hpp"
+#include "Spike/Backend/CUDA/Neurons/SpikingNeurons.hpp"
+#include "Spike/Backend/CUDA/Neurons/InputSpikingNeurons.hpp"
+
 #include <cuda.h>
 #include <vector_types.h>
 #include <curand.h>
@@ -12,9 +15,15 @@ namespace Backend {
     class SpikeAnalyser : public virtual ::Backend::SpikeAnalyser {
     public:
       MAKE_BACKEND_CONSTRUCTOR(SpikeAnalyser);
+      using ::Backend::SpikeAnalyser::frontend;
 
-      virtual void store_spike_counts_for_stimulus_index(::SpikeAnalyser* front,
-                                                         int stimulus_index);
+      void prepare() override;
+      void store_spike_counts_for_stimulus_index(int stimulus_index) override;
+
+    protected:
+      ::Backend::CUDA::SpikingNeurons* neurons_backend = nullptr;
+      ::Backend::CUDA::InputSpikingNeurons* input_neurons_backend = nullptr;
+      ::Backend::CUDA::CountNeuronSpikesRecordingElectrodes* count_electrodes_backend = nullptr;
     };
   }
 }

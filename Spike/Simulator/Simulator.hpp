@@ -138,6 +138,7 @@ public:
 
 	// Host Pointers
 	SpikingModel * spiking_model = nullptr;
+        SpikeAnalyser * spike_analyser = nullptr;
 	Simulator_Options * simulator_options = nullptr;
 
 	CountNeuronSpikesRecordingElectrodes* count_neuron_spikes_recording_electrodes = nullptr;
@@ -155,7 +156,7 @@ public:
 	// void RunSimulationToCountNeuronSpikes(float presentation_time_per_stimulus_per_epoch, bool collect_spikes, bool save_collected_spikes_and_states_to_file, SpikeAnalyser *spike_analyser, bool human_readable_storage, bool isTrained);
 	// void RunSimulationToCollectEvents(float presentation_time_per_stimulus_per_epoch, bool isTrained);
 	// void RunSimulationToTrainNetwork(float presentation_time_per_stimulus_per_epoch, int number_of_epochs, Stimuli_Presentation_Struct * stimuli_presentation_params, int stimulus_presentation_order_seed);
-	void RunSimulation(SpikeAnalyser *spike_analyser);
+	void RunSimulation();
 
 
 protected: 
@@ -163,7 +164,7 @@ protected:
 
 	void perform_per_timestep_recording_electrode_instructions(float current_time_in_seconds, int timestep_index, int number_of_timesteps_per_stimulus_per_epoch);
 	void perform_pre_stimulus_presentation_instructions(int stimulus_index);
-	void perform_post_stimulus_presentation_instructions(SpikeAnalyser* spike_analyser);
+	void perform_post_stimulus_presentation_instructions();
 	void perform_post_epoch_instructions(int epoch_number, TimerWithMessages * epoch_timer);
 	void perform_end_of_simulation_instructions(TimerWithMessages * simulation_timer);
 };

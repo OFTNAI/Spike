@@ -8,13 +8,14 @@ namespace Backend {
     public:
       MAKE_BACKEND_CONSTRUCTOR(SpikeAnalyser);
 
-      virtual void store_spike_counts_for_stimulus_index(::SpikeAnalyser* front,
-                                                         int stimulus_index) {
+      void prepare() override {}
+
+      void store_spike_counts_for_stimulus_index(int stimulus_index) override {
         printf("TODO store_spike_counts_for_stimulus_index\n");
       }
 
-      virtual void push_data_front() {}
-      virtual void pull_data_back() {}
+      void push_data_front() override {}
+      void pull_data_back() override {}
     };
   }
 }

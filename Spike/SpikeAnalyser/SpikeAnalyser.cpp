@@ -8,10 +8,14 @@
 #include <algorithm>
 
 // SpikeAnalyser Constructor
-SpikeAnalyser::SpikeAnalyser(SpikingNeurons * neurons_parameter,
-                             InputSpikingNeurons * input_neurons_parameter) {
+SpikeAnalyser::SpikeAnalyser(SpikingNeurons *neurons_parameter,
+                             InputSpikingNeurons *input_neurons_parameter,
+                             CountNeuronSpikesRecordingElectrodes *electrodes_parameter) {
 	neurons = neurons_parameter;
 	input_neurons = input_neurons_parameter;
+        count_electrodes = electrodes_parameter;
+        assert(count_electrodes != nullptr &&
+               "You need to have some electrodes!");
 //	number_of_neurons_in_single_cell_analysis_group = 0;
 
 	information_scores_for_each_object_and_neuron = nullptr;
@@ -44,8 +48,7 @@ SpikeAnalyser::SpikeAnalyser(SpikingNeurons * neurons_parameter,
 
 
 void SpikeAnalyser::store_spike_counts_for_stimulus_index(int stimulus_index) {
-  // , int * d_neuron_spike_counts_for_stimulus) { // can get this from neurons->backend()
-  backend()->store_spike_counts_for_stimulus_index(this, stimulus_index);
+  backend()->store_spike_counts_for_stimulus_index(stimulus_index);
 }
 
 

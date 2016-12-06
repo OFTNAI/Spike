@@ -98,7 +98,7 @@ void CollectNeuronSpikesRecordingElectrodes::copy_spikes_from_device_to_host_and
 	if (((timestep_index % collect_neuron_spikes_optional_parameters->number_of_timesteps_per_device_spike_copy_check) == 0) || (timestep_index == (number_of_timesteps_per_epoch-1))){
 
 		// Finally, we want to get the spikes back. Every few timesteps check the number of spikes:
-                backend()->copy_spike_counts_to_front(this);
+                backend()->copy_spike_counts_to_front();
 
 		// Ensure that we don't have too many
 		if (total_number_of_spikes_stored_on_device[0] > size_of_device_spike_store){
@@ -113,7 +113,7 @@ void CollectNeuronSpikesRecordingElectrodes::copy_spikes_from_device_to_host_and
 			time_in_seconds_of_stored_spikes_on_host = (float*)realloc(time_in_seconds_of_stored_spikes_on_host, sizeof(float)*(total_number_of_spikes_stored_on_host + total_number_of_spikes_stored_on_device[0]));
 
 			// Copy device spikes into correct host array location
-                        backend()->copy_spikes_to_front(this);
+                        backend()->copy_spikes_to_front();
 
 			total_number_of_spikes_stored_on_host += total_number_of_spikes_stored_on_device[0];
 
@@ -185,7 +185,7 @@ void CollectNeuronSpikesRecordingElectrodes::write_spikes_to_file(int epoch_numb
 
 
 void CollectNeuronSpikesRecordingElectrodes::collect_spikes_for_timestep(float current_time_in_seconds) {
-  backend()->collect_spikes_for_timestep(this, current_time_in_seconds);
+  backend()->collect_spikes_for_timestep(current_time_in_seconds);
 }
 
 MAKE_PREPARE_BACKEND(CollectNeuronSpikesRecordingElectrodes);

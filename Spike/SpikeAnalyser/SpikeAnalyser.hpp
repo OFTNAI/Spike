@@ -11,6 +11,8 @@
 #include "Spike/Neurons/SpikingNeurons.hpp"
 #include "Spike/Neurons/InputSpikingNeurons.hpp"
 
+#include "Spike/RecordingElectrodes/CountNeuronSpikesRecordingElectrodes.hpp"
+
 #include <vector>
 
 class SpikeAnalyser; // forward definition
@@ -20,15 +22,13 @@ namespace Backend {
   public:
     ADD_FRONTEND_GETTER(SpikeAnalyser);
 
-    virtual void store_spike_counts_for_stimulus_index(::SpikeAnalyser* front,
-                                                       int stimulus_index) = 0;
-     // int * d_neuron_spike_counts_for_stimulus)
+    virtual void store_spike_counts_for_stimulus_index
+    // (int stimulus_index, int *d_neuron_spike_counts_for_stimulus) = 0;
+    (int stimulus_index) = 0;
 
-    virtual void prepare() {
-      // TODO
+    void reset_state() override {
+      // TODO?
     }
-
-    virtual void reset_state() {}
   };
 }
 
@@ -44,11 +44,13 @@ public:
   virtual void reset_state() {}
 
   SpikeAnalyser(SpikingNeurons *neurons_parameter,
-                InputSpikingNeurons *input_neurons_parameter);
+                InputSpikingNeurons *input_neurons_parameter,
+                CountNeuronSpikesRecordingElectrodes *electrodes_parameter);
 
-  SpikingNeurons * neurons;
-  InputSpikingNeurons * input_neurons;
-	
+  SpikingNeurons *neurons;
+  InputSpikingNeurons *input_neurons;
+  CountNeuronSpikesRecordingElectrodes *count_electrodes;
+
   std::vector<int> number_of_neurons_in_single_cell_analysis_group_vec;
   std::vector<std::vector<float> > descending_maximum_information_score_for_each_neuron_vec;
   std::vector<std::vector<float> > maximum_information_score_for_each_neuron_vec;
@@ -89,7 +91,7 @@ public:
   float sum_of_information_scores_for_last_neuron_group;
   float maximum_information_score_count_multiplied_by_sum_of_information_scores;
 
-  void store_spike_counts_for_stimulus_index(int stimulus_index); // , int * d_neuron_spike_counts_for_stimulus);
+  void store_spike_counts_for_stimulus_index(int stimulus_index);
   void calculate_various_neuron_spike_totals_and_averages(float presentation_time_per_stimulus_per_epoch);
   void calculate_fitness_score(float optimal_average_firing_rate, float optimal_max_firing_rate);
   void calculate_single_cell_information_scores_for_neuron_group(int neuron_group_index, int number_of_bins, bool useThresholdForMaxFR,float optimal_max_firing_rate);
