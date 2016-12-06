@@ -47,6 +47,7 @@ CLOSED: [2016-11-24 Thu 14:05]
 ** TODO Add `override' specifier to derived versions of virtual functions
 *** TODO remove `virtual' keyword where unnecessary
 *** TODO remove duplicate definitions of virtual functions
+** TODO Replace repeated calls to getters (eg frontend()->something) with local variables
 ** DONE Make all frontend classes derive from a shared root, with basic elements such as void* _backend and empty prepare_backend_extra
 CLOSED: [2016-11-24 Thu 13:40]
 :LOGBOOK:
@@ -59,6 +60,7 @@ CLOSED: [2016-11-24 Thu 15:55]
 - State "PROGRESS"   from "TODO"       [2016-11-24 Thu 14:20]
 :END:
 ** TODO RecordingElectrodes: integrate prepare/reset functions, and backend
+** TODO STDP: check that the correct neurons/input_neurons distinction is made for all kernel calls and memory transfers
 ** PROGRESS Synapses: check Neurons for how to implement common functions
 :LOGBOOK:
 - State "PROGRESS"   from "TODO"       [2016-11-21 Mon 17:25]

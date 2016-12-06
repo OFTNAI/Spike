@@ -2,6 +2,10 @@
 
 #include "Spike/STDP/MasquelierSTDP.hpp"
 #include "STDP.hpp"
+
+#include "Spike/Backend/CUDA/Neurons/SpikingNeurons.hpp"
+#include "Spike/Backend/CUDA/Synapses/SpikingSynapses.hpp"
+
 #include "Spike/Backend/CUDA/CUDABackend.hpp"
 #include <cuda.h>
 #include <vector_types.h>
@@ -10,21 +14,21 @@
 
 namespace Backend {
   namespace CUDA {
-    class MasquelierSTDP : public virtual ::Backend::CUDA::STDP,
+    class MasquelierSTDP : protected virtual ::Backend::CUDA::STDP,
                            public virtual ::Backend::MasquelierSTDP {
     public:
       int* index_of_last_afferent_synapse_to_spike = nullptr;
       bool* isindexed_ltd_synapse_spike = nullptr;
       int* index_of_first_synapse_spiked_after_postneuron = nullptr;
 
+      ~MasquelierSTDP();
       MAKE_BACKEND_CONSTRUCTOR(MasquelierSTDP);
+      using ::Backend::MasquelierSTDP::frontend;
 
-      virtual void allocate_device_pointers();
-      virtual void prepare() {
-        allocate_device_pointers();
-      }
-      virtual void reset_state();
-      virtual void apply_stdp_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds);
+      void allocate_device_pointers();
+      void prepare() override;
+      void reset_state() override;
+      void apply_stdp_to_synapse_weights(float current_time_in_seconds) override;
     };
 
     // Kernel to carry out LTP/LTD

@@ -1,76 +1,77 @@
+// -*- mode: c++ -*-
 #include "Spike/Backend/CUDA/STDP/EvansSTDP.hpp"
 
 namespace Backend {
   namespace CUDA {
     EvansSTDP::~EvansSTDP() {
       // TODO Check before free
-      CudaSafeCall(cudaFree(d_recent_postsynaptic_activities_D));
-      CudaSafeCall(cudaFree(d_recent_presynaptic_activities_C));
+      CudaSafeCall(cudaFree(recent_postsynaptic_activities_D));
+      CudaSafeCall(cudaFree(recent_presynaptic_activities_C));
+    }
+
+    void EvansSTDP::prepare() {
+      ::Backend::CUDA::STDP::prepare();
+
+      allocate_device_pointers();
     }
 
     void EvansSTDP::reset_state() {
-      CudaSafeCall(cudaMemcpy(d_recent_presynaptic_activities_C, recent_presynaptic_activities_C, sizeof(float)*syns->total_number_of_synapses, cudaMemcpyHostToDevice));
-      CudaSafeCall(cudaMemcpy(d_recent_postsynaptic_activities_D, recent_postsynaptic_activities_D, sizeof(float)*neurs->total_number_of_neurons, cudaMemcpyHostToDevice));
+      CudaSafeCall(cudaMemcpy(recent_presynaptic_activities_C,
+                              frontend()->recent_presynaptic_activities_C,
+                              sizeof(float)*frontend()->syns->total_number_of_synapses,
+                              cudaMemcpyHostToDevice));
+      CudaSafeCall(cudaMemcpy(recent_postsynaptic_activities_D,
+                              frontend()->recent_postsynaptic_activities_D,
+                              sizeof(float)*frontend()->neurs->total_number_of_neurons,
+                              cudaMemcpyHostToDevice));
     }
 
-    // RUN AFTER NETWORK HAS BEEN STARTED
+    // RUN AFTER NETWORK HAS BEEN STARTED -- TODO: Check this?..
     void EvansSTDP::allocate_device_pointers(){
-      // Create extra LIF arrays
-      recent_postsynaptic_activities_D = (float*)realloc(recent_postsynaptic_activities_D, (neurs->total_number_of_neurons*sizeof(float)));
-      recent_presynaptic_activities_C = (float*)realloc(recent_presynaptic_activities_C, syns->total_number_of_synapses*sizeof(float));
-      for (int i = 0; i < neurs->total_number_of_neurons; i++){
-        recent_postsynaptic_activities_D[i] = 0.0f;
-      }
-      for (int i = 0; i < syns->total_number_of_synapses; i++){
-        recent_presynaptic_activities_C[i] = 0.0f;
-      }
-
-      // CUDA them
-      //
-      CudaSafeCall(cudaMalloc((void **)&d_recent_postsynaptic_activities_D, sizeof(float)*neurs->total_number_of_neurons));
-      CudaSafeCall(cudaMalloc((void **)&d_recent_presynaptic_activities_C, sizeof(float)*syns->total_number_of_synapses));
+      CudaSafeCall(cudaMalloc((void **)&recent_postsynaptic_activities_D, sizeof(float)*frontend()->neurs->total_number_of_neurons));
+      CudaSafeCall(cudaMalloc((void **)&recent_presynaptic_activities_C, sizeof(float)*frontend()->syns->total_number_of_synapses));
 
     }
 
-    void EvansSTDP::update_synaptic_efficacies_or_weights(float current_time_in_seconds, float * d_last_spike_time_of_each_neuron) {
-      update_synaptic_efficacies_or_weights_kernel<<<syns->number_of_synapse_blocks_per_grid, syns->threads_per_block>>>
-        (d_recent_presynaptic_activities_C,
-         d_recent_postsynaptic_activities_D,
-         syns->d_postsynaptic_neuron_indices,
-         syns->d_synaptic_efficacies_or_weights,
+    void EvansSTDP::update_synaptic_efficacies_or_weights(float current_time_in_seconds) { // , float * d_last_spike_time_of_each_neuron
+      update_synaptic_efficacies_or_weights_kernel<<<synapses_backend->number_of_synapse_blocks_per_grid, synapses_backend->threads_per_block>>>
+        (recent_presynaptic_activities_C,
+         recent_postsynaptic_activities_D,
+         synapses_backend->postsynaptic_neuron_indices,
+         synapses_backend->synaptic_efficacies_or_weights,
          current_time_in_seconds,
-         syns->d_time_of_last_spike_to_reach_synapse,
-         d_last_spike_time_of_each_neuron,
-         syns->d_stdp,
-         syns->total_number_of_synapses,
-         stdp_params->learning_rate_rho); // Here learning_rate_rho represents timestep/tau_delta_g in finite difference equation
+         synapses_backend->time_of_last_spike_to_reach_synapse,
+         neurons_backend->last_spike_time_of_each_neuron,
+         synapses_backend->stdp,
+         frontend()->syns->total_number_of_synapses,
+         frontend()->stdp_params->learning_rate_rho); // Here learning_rate_rho represents timestep/tau_delta_g in finite difference equation
 
       CudaCheckError();
     }
 
     void EvansSTDP::update_presynaptic_activities(float timestep, float current_time_in_seconds) {
-      update_presynaptic_activities_C_kernel<<<syns->number_of_synapse_blocks_per_grid, syns->threads_per_block>>>
-        (d_recent_presynaptic_activities_C,
-         syns->d_time_of_last_spike_to_reach_synapse,
-         syns->d_stdp,
+      update_presynaptic_activities_C_kernel<<<synapses_backend->number_of_synapse_blocks_per_grid, synapses_backend->threads_per_block>>>
+        (recent_presynaptic_activities_C,
+         synapses_backend->time_of_last_spike_to_reach_synapse,
+         synapses_backend->stdp,
          timestep,
          current_time_in_seconds,
-         syns->total_number_of_synapses,
-         stdp_params->synaptic_neurotransmitter_concentration_alpha_C,
-         stdp_params->decay_term_tau_C);
+         frontend()->syns->total_number_of_synapses,
+         frontend()->stdp_params->synaptic_neurotransmitter_concentration_alpha_C,
+         frontend()->stdp_params->decay_term_tau_C);
 
       CudaCheckError();
     }
 
     void EvansSTDP::update_postsynaptic_activities(float timestep, float current_time_in_seconds) {
-      update_postsynaptic_activities_kernel<<<neurs->number_of_neuron_blocks_per_grid, neurs->threads_per_block>>>
+      update_postsynaptic_activities_kernel<<<neurons_backend->number_of_neuron_blocks_per_grid, neurons_backend->threads_per_block>>>
         (timestep,
-         neurs->total_number_of_neurons,
-         d_recent_postsynaptic_activities_D,
-         neurs->d_last_spike_time_of_each_neuron,
+         frontend()->neurs->total_number_of_neurons,
+         recent_postsynaptic_activities_D,
+         neurons_backend->last_spike_time_of_each_neuron,
          current_time_in_seconds,
-         stdp_params->decay_term_tau_D,
-         stdp_params->model_parameter_alpha_D);
+         frontend()->stdp_params->decay_term_tau_D,
+         frontend()->stdp_params->model_parameter_alpha_D);
 
 	CudaCheckError();
     }

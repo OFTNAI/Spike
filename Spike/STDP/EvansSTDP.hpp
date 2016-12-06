@@ -29,7 +29,7 @@ namespace Backend {
       printf("TODO Backend::EvansSTDP::prepare\n");
     }
 
-    virtual void update_synaptic_efficacies_or_weights(float current_time_in_seconds, float * d_last_spike_time_of_each_neuron) = 0;
+    virtual void update_synaptic_efficacies_or_weights(float current_time_in_seconds) = 0; // , float * d_last_spike_time_of_each_neuron) = 0;
     virtual void update_presynaptic_activities(float timestep, float current_time_in_seconds) = 0;
     virtual void update_postsynaptic_activities(float timestep, float current_time_in_seconds) = 0;
   };
@@ -51,15 +51,13 @@ struct evans_stdp_parameters_struct : stdp_parameters_struct {
 };
 
 
-class EvansSTDP : public STDP {
+class EvansSTDP : public virtual STDP {
 public:
   // Constructor/Destructor
   ~EvansSTDP();
   ADD_BACKEND_GETTER(EvansSTDP);
 
   struct evans_stdp_parameters_struct* stdp_params = nullptr;
-  SpikingSynapses* syns = nullptr;
-  SpikingNeurons* neurs = nullptr;
 
   //(NEURON-WISE)
   float* recent_postsynaptic_activities_D = nullptr;
@@ -67,18 +65,19 @@ public:
   //(SYNAPSE-WISE)
   float* recent_presynaptic_activities_C = nullptr;
 
-  virtual void prepare_backend(Context* ctx = _global_ctx);
-  virtual void reset_state();
+  void prepare_backend(Context* ctx = _global_ctx) override;
+  inline void prepare_backend_extra();
+  void reset_state() override;
 
   // Set STDP Parameters
-  virtual void Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons* neurons, SpikingNeurons* input_neurons, stdp_parameters_struct* stdp_parameters);
+  void Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons* neurons, SpikingNeurons* input_neurons, stdp_parameters_struct* stdp_parameters) override;
 	
   // virtual void Run_STDP(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds, float timestep);
-  virtual void Run_STDP(SpikingNeurons* neurons, float current_time_in_seconds, float timestep);
+  void Run_STDP(float current_time_in_seconds, float timestep) override;
 	
   // Updates for this model
   void update_presynaptic_activities(float timestep, float current_time_in_seconds);
-  void update_synaptic_efficacies_or_weights(float current_time_in_seconds, float * d_last_spike_time_of_each_neuron);
+  void update_synaptic_efficacies_or_weights(float current_time_in_seconds); // , float * d_last_spike_time_of_each_neuron);
   void update_postsynaptic_activities(float timestep, float current_time_in_seconds);
 };
 

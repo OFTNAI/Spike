@@ -1,3 +1,4 @@
+// -*- mode: c++ -*-
 #include "Spike/Backend/CUDA/STDP/MasquelierSTDP.hpp"
 
 namespace Backend {
@@ -7,63 +8,62 @@ namespace Backend {
     }
 
     void MasquelierSTDP::reset_state() {
-      CudaSafeCall(cudaMemcpy((void*)d_index_of_last_afferent_synapse_to_spike, (void*)index_of_last_afferent_synapse_to_spike, sizeof(int)*neurs->total_number_of_neurons, cudaMemcpyHostToDevice));
-      CudaSafeCall(cudaMemcpy((void*)d_isindexed_ltd_synapse_spike, (void*)isindexed_ltd_synapse_spike, sizeof(bool)*neurs->total_number_of_neurons, cudaMemcpyHostToDevice));
-      CudaSafeCall(cudaMemcpy((void*)d_index_of_first_synapse_spiked_after_postneuron, (void*)index_of_first_synapse_spiked_after_postneuron, sizeof(int)*neurs->total_number_of_neurons, cudaMemcpyHostToDevice));
+      CudaSafeCall(cudaMemcpy((void*)index_of_last_afferent_synapse_to_spike,
+                              (void*)frontend()->index_of_last_afferent_synapse_to_spike,
+                              sizeof(int)*frontend()->neurs->total_number_of_neurons,
+                              cudaMemcpyHostToDevice));
+      CudaSafeCall(cudaMemcpy((void*)isindexed_ltd_synapse_spike,
+                              (void*)frontend()->isindexed_ltd_synapse_spike,
+                              sizeof(bool)*frontend()->neurs->total_number_of_neurons,
+                              cudaMemcpyHostToDevice));
+      CudaSafeCall(cudaMemcpy((void*)index_of_first_synapse_spiked_after_postneuron,
+                              (void*)frontend()->index_of_first_synapse_spiked_after_postneuron,
+                              sizeof(int)*frontend()->neurs->total_number_of_neurons,
+                              cudaMemcpyHostToDevice));
+    }
+
+    void MasquelierSTDP::prepare() {
+      ::Backend::CUDA::STDP::prepare();
+
+      allocate_device_pointers();
     }
 
     void MasquelierSTDP::allocate_device_pointers() {
-      // TODO: Check the following (doesn't do anything in original code?...)
-      STDP::allocate_device_pointers();
+      // The following doesn't do anything in original code...
+      // ::Backend::CUDA::STDP::allocate_device_pointers();
 
-      // **** TODO: The following appears to be host code ... ****
-      // Add the correct space for last synapse
-      index_of_last_afferent_synapse_to_spike = (int*)malloc(sizeof(int)*neurs->total_number_of_neurons);
-      isindexed_ltd_synapse_spike = (bool*)malloc(sizeof(bool)*neurs->total_number_of_neurons);
-      index_of_first_synapse_spiked_after_postneuron = (int*)malloc(sizeof(int)*neurs->total_number_of_neurons);
-      // **** END apparent host code ****
-
-      CudaSafeCall(cudaMalloc((void **)&d_index_of_last_afferent_synapse_to_spike, sizeof(int)*neurs->total_number_of_neurons));
-      CudaSafeCall(cudaMalloc((void **)&d_isindexed_ltd_synapse_spike, sizeof(int)*neurs->total_number_of_neurons));
-      CudaSafeCall(cudaMalloc((void **)&d_index_of_first_synapse_spiked_after_postneuron, sizeof(int)*neurs->total_number_of_neurons));
-
-      // **** TODO: The following appears to be host code ... ****
-      // Initialize indices
-      for (int i=0; i < neurs->total_number_of_neurons; i++){
-        index_of_last_afferent_synapse_to_spike[i] = -1;
-        isindexed_ltd_synapse_spike[i] = false;
-        index_of_first_synapse_spiked_after_postneuron[i] = -1;
-      }
-      // **** END apparent host code ****
+      CudaSafeCall(cudaMalloc((void **)&index_of_last_afferent_synapse_to_spike, sizeof(int)*frontend()->neurs->total_number_of_neurons));
+      CudaSafeCall(cudaMalloc((void **)&isindexed_ltd_synapse_spike, sizeof(int)*frontend()->neurs->total_number_of_neurons));
+      CudaSafeCall(cudaMalloc((void **)&index_of_first_synapse_spiked_after_postneuron, sizeof(int)*frontend()->neurs->total_number_of_neurons));
     }
 
-    MasquelierSTDP::apply_stdp_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds) {
+    void MasquelierSTDP::apply_stdp_to_synapse_weights(float current_time_in_seconds) {
       // First reset the indices array
       // In order to carry out nearest spike potentiation only, we must find the spike arriving at each neuron which has the smallest time diff
-    get_indices_to_apply_stdp<<<neurs->number_of_neuron_blocks_per_grid, syns->threads_per_block>>>
-      (syns->d_postsynaptic_neuron_indices,
-       d_last_spike_time_of_each_neuron,
-       syns->d_stdp,
-       syns->d_time_of_last_spike_to_reach_synapse,
-       d_index_of_last_afferent_synapse_to_spike,
-       d_isindexed_ltd_synapse_spike,
-       d_index_of_first_synapse_spiked_after_postneuron,
+    get_indices_to_apply_stdp<<<neurons_backend->number_of_neuron_blocks_per_grid, synapses_backend->threads_per_block>>>
+      (synapses_backend->postsynaptic_neuron_indices,
+       neurons_backend->last_spike_time_of_each_neuron,
+       synapses_backend->stdp,
+       synapses_backend->time_of_last_spike_to_reach_synapse,
+       index_of_last_afferent_synapse_to_spike,
+       isindexed_ltd_synapse_spike,
+       index_of_first_synapse_spiked_after_postneuron,
        current_time_in_seconds,
-       syns->total_number_of_synapses);
+       frontend()->syns->total_number_of_synapses);
     CudaCheckError();
 
-    apply_stdp_to_synapse_weights_kernel<<<syns->number_of_synapse_blocks_per_grid, syns->threads_per_block>>>
-      (syns->d_postsynaptic_neuron_indices,
-       d_last_spike_time_of_each_neuron,
-       syns->d_stdp,
-       syns->d_time_of_last_spike_to_reach_synapse,
-       syns->d_synaptic_efficacies_or_weights,
-       d_index_of_last_afferent_synapse_to_spike,
-       d_isindexed_ltd_synapse_spike,
-       d_index_of_first_synapse_spiked_after_postneuron,
-       *stdp_params,
+    apply_stdp_to_synapse_weights_kernel<<<synapses_backend->number_of_synapse_blocks_per_grid, synapses_backend->threads_per_block>>>
+      (synapses_backend->postsynaptic_neuron_indices,
+       neurons_backend->last_spike_time_of_each_neuron,
+       synapses_backend->stdp,
+       synapses_backend->time_of_last_spike_to_reach_synapse,
+       synapses_backend->synaptic_efficacies_or_weights,
+       index_of_last_afferent_synapse_to_spike,
+       isindexed_ltd_synapse_spike,
+       index_of_first_synapse_spiked_after_postneuron,
+       *(frontend()->stdp_params),
        current_time_in_seconds,
-       neurs->total_number_of_neurons);
+       frontend()->neurs->total_number_of_neurons);
     CudaCheckError();
     }
 

@@ -13,17 +13,16 @@ namespace Backend {
     class HigginsSTDP : public virtual ::Backend::CUDA::STDP,
                         public virtual ::Backend::HigginsSTDP {
     public:
+      // ~HigginsSTDP();
       MAKE_BACKEND_CONSTRUCTOR(HigginsSTDP);
+      using ::Backend::HigginsSTDP::frontend;
 
-      virtual void prepare() {
-        allocate_device_pointers();
-      }
+      void prepare() override;
+      void reset_state() override;
 
-      virtual void reset_state();
-
-      virtual void allocate_device_pointers();
-      virtual void apply_ltp_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds);
-      virtual void apply_ltd_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds);
+      void allocate_device_pointers();
+      void apply_ltp_to_synapse_weights(float current_time_in_seconds) override; // float* d_last_spike_time_of_each_neuron, 
+      void apply_ltd_to_synapse_weights(float current_time_in_seconds) override; // float* d_last_spike_time_of_each_neuron, 
     };
 
     // Kernels to carry out LTP/LTD

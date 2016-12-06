@@ -1,5 +1,6 @@
 CUDA_ADD_LIBRARY (SpikeCUDASTDP
-    EvansSTDP.cu
-    HigginsSTDP.cu
-    MasquelierSTDP.cu
-    STATIC)
+  STDP.cu
+  EvansSTDP.cu
+  HigginsSTDP.cu
+  MasquelierSTDP.cu
+  STATIC)

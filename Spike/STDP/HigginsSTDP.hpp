@@ -30,8 +30,8 @@ namespace Backend {
       printf("TODO Backend::HigginsSTDP::prepare\n");
     }
 
-    virtual void apply_ltp_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds) = 0;
-    virtual void apply_ltd_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds) = 0;
+    virtual void apply_ltp_to_synapse_weights(float current_time_in_seconds) = 0; // float* d_last_spike_time_of_each_neuron, 
+    virtual void apply_ltd_to_synapse_weights(float current_time_in_seconds) = 0; // float* d_last_spike_time_of_each_neuron, 
   };
 }
 
@@ -52,24 +52,23 @@ struct higgins_stdp_parameters_struct : stdp_parameters_struct {
 };
 
 
-class HigginsSTDP : public STDP{
+class HigginsSTDP : public virtual STDP {
 public:
   ~HigginsSTDP();
   ADD_BACKEND_GETTER(HigginsSTDP);
 
   struct higgins_stdp_parameters_struct* stdp_params = nullptr;
-  SpikingSynapses* syns = nullptr;
 
   virtual void prepare_backend(Context* ctx = _global_ctx);
 
   // Set STDP Parameters
   virtual void Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons* neurons, SpikingNeurons* input_neurons, stdp_parameters_struct* stdp_parameters);
   // STDP
-  virtual void Run_STDP(SpikingNeurons* neurons, float current_time_in_seconds, float timestep);
+  virtual void Run_STDP(float current_time_in_seconds, float timestep);
 
   // LTP & LTD for this model
-  void apply_ltd_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds);
-  void apply_ltp_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds);
+  void apply_ltd_to_synapse_weights(float current_time_in_seconds); // float* d_last_spike_time_of_each_neuron, 
+  void apply_ltp_to_synapse_weights(float current_time_in_seconds); // float* d_last_spike_time_of_each_neuron, 
 };
 
 #endif

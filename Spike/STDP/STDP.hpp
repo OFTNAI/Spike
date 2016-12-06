@@ -27,6 +27,7 @@ class STDP; // forward definition
 namespace Backend {
   class STDP : public virtual SpikeBackendBase {
   public:
+    ADD_FRONTEND_GETTER(STDP);
   };
 }
 
@@ -45,12 +46,16 @@ struct stdp_parameters_struct {
 class STDP : public virtual SpikeBase {
 public:
   ADD_BACKEND_GETTER(STDP);
-  
+
+  SpikingSynapses* syns = nullptr;
+  SpikingNeurons* neurs = nullptr;
+
   // Set STDP Parameters
   virtual void Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons* neurons, SpikingNeurons* input_neurons, stdp_parameters_struct* stdp_parameters) = 0;
 
   // virtual void Run_STDP(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds, float timestep) = 0;
-  virtual void Run_STDP(SpikingNeurons* neurons, float current_time_in_seconds, float timestep) = 0;
+  // Now get d_last_spike_time_of_each_neuron (old sig above) from this->neurs
+  virtual void Run_STDP(float current_time_in_seconds, float timestep) = 0;
 };
 
 #endif

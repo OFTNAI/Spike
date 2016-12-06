@@ -10,22 +10,22 @@
 
 namespace Backend {
   namespace CUDA {
-    class EvansSTDP : public virtual ::Backend::CUDA::STDP,
+    class EvansSTDP : protected virtual ::Backend::CUDA::STDP,
                       public virtual ::Backend::EvansSTDP {
     public:
       float* recent_postsynaptic_activities_D = nullptr; // (NEURON-WISE)
       float* recent_presynaptic_activities_C = nullptr;  // (SYNAPSE-WISE)
 
+      ~EvansSTDP();
       MAKE_BACKEND_CONSTRUCTOR(EvansSTDP);
+      using ::Backend::EvansSTDP::frontend;
 
-      virtual void prepare() {
-        allocate_device_pointers();
-      }
-      virtual void reset_state();
-      virtual void allocate_device_pointers();
-      virtual void update_synaptic_efficacies_or_weights(float current_time_in_seconds, float * d_last_spike_time_of_each_neuron);
-      virtual void update_presynaptic_activities(float timestep, float current_time_in_seconds);
-      virtual void update_postsynaptic_activities(float timestep, float current_time_in_seconds);
+      void prepare() override;
+      void reset_state() override;
+      void allocate_device_pointers();
+      void update_synaptic_efficacies_or_weights(float current_time_in_seconds) override; // , float * d_last_spike_time_of_each_neuron
+      void update_presynaptic_activities(float timestep, float current_time_in_seconds) override;
+      void update_postsynaptic_activities(float timestep, float current_time_in_seconds) override;
     };
 
     __global__ void update_postsynaptic_activities_kernel(float timestep,
