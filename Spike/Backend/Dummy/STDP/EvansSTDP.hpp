@@ -14,7 +14,7 @@ namespace Backend {
         // TODO
       }
 
-      void update_synaptic_efficacies_or_weights(float current_time_in_seconds) override { // , float * d_last_spike_time_of_each_neuron) {
+      void update_synaptic_efficacies_or_weights(float current_time_in_seconds) override {
         printf("TODO EvansSTDP::update_synaptic_efficacies_or_weights\n");
       }
 

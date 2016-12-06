@@ -37,18 +37,9 @@ void MasquelierSTDP::reset_state(){
 
 // Run the STDP
 void MasquelierSTDP::Run_STDP(float current_time_in_seconds, float timestep){
-  // TODO: Ensure host and device data are synchronized at this point
-  //       OR ***Just pass neurons straight through to update_syn_effs***
-  // float* d_last_spike_time_of_each_neuron = neurons_backend->last_spike_time_of_each_neuron;
-  // apply_stdp_to_synapse_weights(d_last_spike_time_of_each_neuron, current_time_in_seconds);
   apply_stdp_to_synapse_weights(current_time_in_seconds);
 }
 
-/*
-void MasquelierSTDP::apply_stdp_to_synapse_weights(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds) {
-  backend()->apply_stdp_to_synapse_weights(d_last_spike_time_of_each_neuron, current_time_in_seconds);
-}
-*/
 void MasquelierSTDP::apply_stdp_to_synapse_weights(float current_time_in_seconds) {
   // TODO: Check that this doesn't need to be called with input neurons ..
   backend()->apply_stdp_to_synapse_weights(current_time_in_seconds);

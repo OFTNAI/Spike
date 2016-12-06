@@ -53,8 +53,6 @@ public:
   // Set STDP Parameters
   virtual void Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons* neurons, SpikingNeurons* input_neurons, stdp_parameters_struct* stdp_parameters) = 0;
 
-  // virtual void Run_STDP(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds, float timestep) = 0;
-  // Now get d_last_spike_time_of_each_neuron (old sig above) from this->neurs
   virtual void Run_STDP(float current_time_in_seconds, float timestep) = 0;
 };
 

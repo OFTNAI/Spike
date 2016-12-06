@@ -29,7 +29,7 @@ namespace Backend {
       printf("TODO Backend::EvansSTDP::prepare\n");
     }
 
-    virtual void update_synaptic_efficacies_or_weights(float current_time_in_seconds) = 0; // , float * d_last_spike_time_of_each_neuron) = 0;
+    virtual void update_synaptic_efficacies_or_weights(float current_time_in_seconds) = 0;
     virtual void update_presynaptic_activities(float timestep, float current_time_in_seconds) = 0;
     virtual void update_postsynaptic_activities(float timestep, float current_time_in_seconds) = 0;
   };
@@ -72,12 +72,11 @@ public:
   // Set STDP Parameters
   void Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons* neurons, SpikingNeurons* input_neurons, stdp_parameters_struct* stdp_parameters) override;
 	
-  // virtual void Run_STDP(float* d_last_spike_time_of_each_neuron, float current_time_in_seconds, float timestep);
   void Run_STDP(float current_time_in_seconds, float timestep) override;
 	
   // Updates for this model
   void update_presynaptic_activities(float timestep, float current_time_in_seconds);
-  void update_synaptic_efficacies_or_weights(float current_time_in_seconds); // , float * d_last_spike_time_of_each_neuron);
+  void update_synaptic_efficacies_or_weights(float current_time_in_seconds);
   void update_postsynaptic_activities(float timestep, float current_time_in_seconds);
 };
 

@@ -30,8 +30,8 @@ namespace Backend {
       printf("TODO Backend::HigginsSTDP::prepare\n");
     }
 
-    virtual void apply_ltp_to_synapse_weights(float current_time_in_seconds) = 0; // float* d_last_spike_time_of_each_neuron, 
-    virtual void apply_ltd_to_synapse_weights(float current_time_in_seconds) = 0; // float* d_last_spike_time_of_each_neuron, 
+    virtual void apply_ltp_to_synapse_weights(float current_time_in_seconds) = 0;
+    virtual void apply_ltd_to_synapse_weights(float current_time_in_seconds) = 0;
   };
 }
 
@@ -67,8 +67,8 @@ public:
   virtual void Run_STDP(float current_time_in_seconds, float timestep);
 
   // LTP & LTD for this model
-  void apply_ltd_to_synapse_weights(float current_time_in_seconds); // float* d_last_spike_time_of_each_neuron, 
-  void apply_ltp_to_synapse_weights(float current_time_in_seconds); // float* d_last_spike_time_of_each_neuron, 
+  void apply_ltd_to_synapse_weights(float current_time_in_seconds);
+  void apply_ltp_to_synapse_weights(float current_time_in_seconds);
 };
 
 #endif

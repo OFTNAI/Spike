@@ -37,11 +37,9 @@ void EvansSTDP::Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons* n
 
 // Run the STDP
 void EvansSTDP::Run_STDP(float current_time_in_seconds, float timestep){
-  // TODO: Ensure host and device data are synchronized at this point
-  //       OR ***Just pass neurons straight through to update_syn_effs***
-  // float* d_last_spike_time_of_each_neuron = neurons->last_spike_time_of_each_neuron;
   // Update
-  update_synaptic_efficacies_or_weights(current_time_in_seconds); // , d_last_spike_time_of_each_neuron);
+  // TODO: Check that this doesn't need to be called with input neurons ..
+  update_synaptic_efficacies_or_weights(current_time_in_seconds);
   update_presynaptic_activities(timestep, current_time_in_seconds);
   update_postsynaptic_activities(timestep, current_time_in_seconds);
 }
@@ -51,9 +49,8 @@ void EvansSTDP::reset_state() {
   // STDP::reset_state(); // NB: STDP::reset_state is pure virtual at the moment
 }
 
-void EvansSTDP::update_synaptic_efficacies_or_weights(float current_time_in_seconds) { //, float * d_last_spike_time_of_each_neuron) {
-  backend()->update_synaptic_efficacies_or_weights(current_time_in_seconds); //,
-                                                   // d_last_spike_time_of_each_neuron);
+void EvansSTDP::update_synaptic_efficacies_or_weights(float current_time_in_seconds) {
+  backend()->update_synaptic_efficacies_or_weights(current_time_in_seconds);
 }
 
 void EvansSTDP::update_presynaptic_activities(float timestep, float current_time_in_seconds) {

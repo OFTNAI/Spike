@@ -38,7 +38,7 @@ namespace Backend {
       printf("TODO Backend::MasquelierSTDP::prepare\n");
     }
 
-    virtual void apply_stdp_to_synapse_weights(float current_time_in_seconds) = 0; // float* d_last_spike_time_of_each_neuron, 
+    virtual void apply_stdp_to_synapse_weights(float current_time_in_seconds) = 0;
   };
 }
 
@@ -80,7 +80,7 @@ public:
   void Run_STDP(float current_time_in_seconds, float timestep) override;
 
   // LTP & LTD for this model
-  void apply_stdp_to_synapse_weights(float current_time_in_seconds); // float* d_last_spike_time_of_each_neuron, 
+  void apply_stdp_to_synapse_weights(float current_time_in_seconds);
 
 };
 

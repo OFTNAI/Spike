@@ -21,8 +21,8 @@ namespace Backend {
       void reset_state() override;
 
       void allocate_device_pointers();
-      void apply_ltp_to_synapse_weights(float current_time_in_seconds) override; // float* d_last_spike_time_of_each_neuron, 
-      void apply_ltd_to_synapse_weights(float current_time_in_seconds) override; // float* d_last_spike_time_of_each_neuron, 
+      void apply_ltp_to_synapse_weights(float current_time_in_seconds) override;
+      void apply_ltd_to_synapse_weights(float current_time_in_seconds) override;
     };
 
     // Kernels to carry out LTP/LTD

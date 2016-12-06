@@ -9,7 +9,7 @@ namespace Backend {
       allocate_device_pointers();
     }
 
-    void HigginsSTDP::apply_ltd_to_synapse_weights(float current_time_in_seconds) { // float* d_last_spike_time_of_each_neuron, 
+    void HigginsSTDP::apply_ltd_to_synapse_weights(float current_time_in_seconds) {
       izhikevich_apply_ltd_to_synapse_weights_kernel<<<synapses_backend->number_of_synapse_blocks_per_grid, synapses_backend->threads_per_block>>>
         (synapses_backend->time_of_last_spike_to_reach_synapse,
          synapses_backend->synaptic_efficacies_or_weights,
@@ -23,7 +23,7 @@ namespace Backend {
       CudaCheckError();
     }
 
-    void HigginsSTDP::apply_ltp_to_synapse_weights(float current_time_in_seconds) { // float* d_last_spike_time_of_each_neuron, 
+    void HigginsSTDP::apply_ltp_to_synapse_weights(float current_time_in_seconds) {
       izhikevich_apply_ltp_to_synapse_weights_kernel<<<synapses_backend->number_of_synapse_blocks_per_grid, synapses_backend->threads_per_block>>>
         (synapses_backend->postsynaptic_neuron_indices,
          neurons_backend->last_spike_time_of_each_neuron,

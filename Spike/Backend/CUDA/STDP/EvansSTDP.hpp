@@ -23,7 +23,7 @@ namespace Backend {
       void prepare() override;
       void reset_state() override;
       void allocate_device_pointers();
-      void update_synaptic_efficacies_or_weights(float current_time_in_seconds) override; // , float * d_last_spike_time_of_each_neuron
+      void update_synaptic_efficacies_or_weights(float current_time_in_seconds) override;
       void update_presynaptic_activities(float timestep, float current_time_in_seconds) override;
       void update_postsynaptic_activities(float timestep, float current_time_in_seconds) override;
     };
