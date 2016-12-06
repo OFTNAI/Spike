@@ -57,7 +57,6 @@ int main (int argc, char *argv[]){
 
         // RUN SIMULATION
         simulator->RunSimulation();
-        simulator->spike_analyser->calculate_various_neuron_spike_totals_and_averages(presentation_time_per_stimulus_per_epoch);
 
         delete four_layer_vision_spiking_model;
         delete simulator;
