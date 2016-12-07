@@ -19,6 +19,8 @@ namespace Backend {
   class LIFSpikingNeurons : public virtual SpikingNeurons {
   public:
     ADD_FRONTEND_GETTER(LIFSpikingNeurons);
+    void push_data_front() override {} // TODO
+    void pull_data_back() override {} // TODO
   };
 }
 

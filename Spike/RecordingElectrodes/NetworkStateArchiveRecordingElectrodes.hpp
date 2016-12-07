@@ -11,11 +11,13 @@ namespace Backend {
   public:
     ADD_FRONTEND_GETTER(NetworkStateArchiveRecordingElectrodes);
 
-    virtual void prepare() {
+    void prepare() override {
       printf("TODO Backend::NetworkStateArchiveRecordingElectrodes::prepare\n");
     }
 
-    virtual void copy_state_to_front(::NetworkStateArchiveRecordingElectrodes* front) = 0;
+    // virtual void copy_state_to_front(::NetworkStateArchiveRecordingElectrodes* front) = 0;
+    void push_data_front() override {} // TODO
+    void pull_data_back() override {} // TODO
   };
 }
 

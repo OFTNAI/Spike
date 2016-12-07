@@ -10,6 +10,21 @@ namespace Backend {
       CudaSafeCall(cudaFree(time_of_last_spike_to_reach_synapse));
     }
 
+    void SpikingSynapses::reset_state() {
+      CudaSafeCall(cudaMemset(spikes_travelling_to_synapse, 0,
+                              sizeof(int)*frontend()->total_number_of_synapses));
+
+      // Set last spike times to -1000 so that the times do not affect current simulation.
+      float last_spike_to_reach_synapse[frontend()->total_number_of_synapses];
+      for (int i=0; i < frontend()->total_number_of_synapses; i++)
+        last_spike_to_reach_synapse[i] = -1000.0f;
+
+      CudaSafeCall(cudaMemcpy(time_of_last_spike_to_reach_synapse,
+                              last_spike_to_reach_synapse,
+                              frontend()->total_number_of_synapses*sizeof(float),
+                              cudaMemcpyHostToDevice));
+    }
+
     void SpikingSynapses::push_data_front() {
       // TODO: Flesh this out (and for derived classes!)
       CudaSafeCall(cudaMemcpy(frontend()->synaptic_efficacies_or_weights,
@@ -21,43 +36,56 @@ namespace Backend {
     void SpikingSynapses::allocate_device_pointers() {
       Synapses::allocate_device_pointers();
 
-      CudaSafeCall(cudaMalloc((void **)&d_delays, sizeof(int)*total_number_of_synapses));
-      CudaSafeCall(cudaMalloc((void **)&d_stdp, sizeof(bool)*total_number_of_synapses));
+      CudaSafeCall(cudaMalloc((void **)&delays, sizeof(int)*frontend()->total_number_of_synapses));
+      CudaSafeCall(cudaMalloc((void **)&stdp, sizeof(bool)*frontend()->total_number_of_synapses));
 
-      CudaSafeCall(cudaMalloc((void **)&d_spikes_travelling_to_synapse, sizeof(int)*total_number_of_synapses));
-      CudaSafeCall(cudaMalloc((void **)&d_time_of_last_spike_to_reach_synapse, sizeof(float)*total_number_of_synapses));
+      CudaSafeCall(cudaMalloc((void **)&spikes_travelling_to_synapse, sizeof(int)*frontend()->total_number_of_synapses));
+      CudaSafeCall(cudaMalloc((void **)&time_of_last_spike_to_reach_synapse, sizeof(float)*frontend()->total_number_of_synapses));
     }
 
     void SpikingSynapses::copy_constants_and_initial_efficacies_to_device() {
       Synapses::copy_constants_and_initial_efficacies_to_device();
 
-      CudaSafeCall(cudaMemcpy(d_delays, delays, sizeof(int)*total_number_of_synapses, cudaMemcpyHostToDevice));
-      CudaSafeCall(cudaMemcpy(d_stdp, stdp, sizeof(bool)*total_number_of_synapses, cudaMemcpyHostToDevice));
+      CudaSafeCall(cudaMemcpy(delays, frontend()->delays,
+                              sizeof(int)*frontend()->total_number_of_synapses,
+                              cudaMemcpyHostToDevice));
+      CudaSafeCall(cudaMemcpy(stdp, frontend()->stdp,
+                              sizeof(bool)*frontend()->total_number_of_synapses,
+                              cudaMemcpyHostToDevice));
     }
 
-    void SpikingSynapses::interact_spikes_with_synapses(SpikingNeurons * neurons, SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) {
+    void SpikingSynapses::interact_spikes_with_synapses
+    (::SpikingNeurons* neurons,
+     ::SpikingNeurons* input_neurons,
+     float current_time_in_seconds, float timestep) {
+
+      ::Backend::CUDA::SpikingNeurons* neurons_backend =
+        dynamic_cast<::Backend::CUDA::SpikingNeurons*>(neurons->backend());
+      ::Backend::CUDA::SpikingNeurons* input_neurons_backend =
+        dynamic_cast<::Backend::CUDA::SpikingNeurons*>(input_neurons->backend());
+
       if (neurons->high_fidelity_spike_flag){
         check_bitarray_for_presynaptic_neuron_spikes<<<number_of_synapse_blocks_per_grid, threads_per_block>>>
-          (d_presynaptic_neuron_indices,
-           d_delays,
-           neurons->backend()->bitarray_of_neuron_spikes, // NB: Neurons device data
-           input_neurons->backend()->bitarray_of_neuron_spikes,
-           neurons->backend()->bitarray_length,
-           neurons->backend()->bitarray_maximum_axonal_delay_in_timesteps,
+          (presynaptic_neuron_indices,
+           delays,
+           neurons_backend->bitarray_of_neuron_spikes,
+           input_neurons_backend->bitarray_of_neuron_spikes,
+           neurons->bitarray_length,
+           neurons->bitarray_maximum_axonal_delay_in_timesteps,
            current_time_in_seconds,
            timestep,
-           total_number_of_synapses,
+           frontend()->total_number_of_synapses,
            time_of_last_spike_to_reach_synapse);
         CudaCheckError();
       } else {
         move_spikes_towards_synapses_kernel<<<number_of_synapse_blocks_per_grid, threads_per_block>>>
-          (d_presynaptic_neuron_indices,
-           d_delays,
-           d_spikes_travelling_to_synapse,
-           neurons->backend()->last_spike_time_of_each_neuron,
-           input_neurons->backend()->last_spike_time_of_each_neuron,
+          (presynaptic_neuron_indices,
+           delays,
+           spikes_travelling_to_synapse,
+           neurons_backend->last_spike_time_of_each_neuron,
+           input_neurons_backend->last_spike_time_of_each_neuron,
            current_time_in_seconds,
-           total_number_of_synapses,
+           frontend()->total_number_of_synapses,
            time_of_last_spike_to_reach_synapse);
         CudaCheckError();
       }

@@ -19,20 +19,21 @@ namespace Backend {
       int* spikes_travelling_to_synapse = nullptr;
       float* time_of_last_spike_to_reach_synapse = nullptr;
 
-      virtual void prepare() {}
-      virtual void reset_state() {}
+      ~SpikingSynapses();
+      using ::Backend::SpikingSynapses::frontend;
 
-      virtual void allocate_device_pointers();
-      virtual void copy_constants_and_initial_efficacies_to_device();
-      virtual void set_threads_per_block_and_blocks_per_grid(int threads);
+      // void prepare() {}
+      void reset_state() override;
 
-      virtual void interact_spikes_with_synapses(SpikingNeurons * neurons, SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep);
+      void allocate_device_pointers() override;
+      void copy_constants_and_initial_efficacies_to_device() override;
+      void set_threads_per_block_and_blocks_per_grid(int threads) override;
 
-      virtual void interact_spikes_with_synapses(::SpikingNeurons * neurons, ::SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) {
-        // printf("TODO Backend::Synapses::interact_spikes_with_synapses\n");
-      }
+      // virtual void interact_spikes_with_synapses(SpikingNeurons * neurons, SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) override;
 
-      virtual void push_data_front();
+      virtual void interact_spikes_with_synapses(::SpikingNeurons * neurons, ::SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep);
+
+      void push_data_front() override;
     };
 
     __global__ void move_spikes_towards_synapses_kernel(int* d_presynaptic_neuron_indices,

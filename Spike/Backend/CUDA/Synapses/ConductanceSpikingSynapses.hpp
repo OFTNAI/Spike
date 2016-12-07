@@ -18,7 +18,9 @@ namespace Backend {
       float * reversal_potentials_Vhat = nullptr;
       float * decay_terms_tau_g = nullptr;
 
+      ~ConductanceSpikingSynapses();
       MAKE_BACKEND_CONSTRUCTOR(ConductanceSpikingSynapses);
+      using ::Backend::ConductanceSpikingSynapses::frontend;
       
       virtual void allocate_device_pointers();
       virtual void copy_constants_and_initial_efficacies_to_device();

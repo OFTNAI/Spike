@@ -13,12 +13,14 @@ namespace Backend {
                                    public virtual ::Backend::CurrentSpikingSynapses {
     public:
       MAKE_BACKEND_CONSTRUCTOR(CurrentSpikingSynapses);
-      virtual void prepare();
-      virtual void reset_state();
-      virtual void calculate_postsynaptic_current_injection(::SpikingNeurons * neurons, float current_time_in_seconds, float timestep);
+      using ::Backend::CurrentSpikingSynapses::frontend;
 
-      virtual void push_data_front() {}
-      virtual void pull_data_back() {}
+      void prepare() override;
+      void reset_state() override;
+      void calculate_postsynaptic_current_injection(::SpikingNeurons * neurons, float current_time_in_seconds, float timestep) override;
+
+      void push_data_front() override {}
+      void pull_data_back() override {}
     };
 
     __global__ void current_calculate_postsynaptic_current_injection_kernel

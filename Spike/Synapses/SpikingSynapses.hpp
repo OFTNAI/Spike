@@ -9,6 +9,7 @@ class SpikingSynapses; // forward definition
 namespace Backend {
   class SpikingSynapses : public virtual Synapses {
   public:
+    ADD_FRONTEND_GETTER(SpikingSynapses);
     virtual void calculate_postsynaptic_current_injection(::SpikingNeurons * neurons, float current_time_in_seconds, float timestep) = 0;
     virtual void interact_spikes_with_synapses(::SpikingNeurons * neurons, ::SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) = 0;
   };

@@ -34,9 +34,12 @@ namespace Backend {
   public:
     ADD_FRONTEND_GETTER(MasquelierSTDP);
 
-    virtual void prepare() {
+    void prepare() override {
       printf("TODO Backend::MasquelierSTDP::prepare\n");
     }
+
+    void push_data_front() override {} // TODO
+    void pull_data_back() override {} // TODO
 
     virtual void apply_stdp_to_synapse_weights(float current_time_in_seconds) = 0;
   };

@@ -76,13 +76,6 @@ void SpikingSynapses::increment_number_of_synapses(int increment) {
 
 
 void SpikingSynapses::reset_state() {
-  // Set last spike times to -1000 so that the times do not affect current simulation.
-  float* last_spike_to_reach_synapse;
-  last_spike_to_reach_synapse = (float*)malloc(sizeof(float)*total_number_of_synapses);
-  for (int i=0; i < total_number_of_synapses; i++){
-    last_spike_to_reach_synapse[i] = -1000.0f;
-  }
-  
   backend()->reset_state();
   // Synapses::reset_state(); // TODO: Synapses::reset_state is pure virtual right now
 }

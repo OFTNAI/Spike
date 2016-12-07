@@ -26,9 +26,12 @@ namespace Backend {
   public:
     ADD_FRONTEND_GETTER(HigginsSTDP);
 
-    virtual void prepare() {
+    void prepare() override {
       printf("TODO Backend::HigginsSTDP::prepare\n");
     }
+
+    void push_data_front() override {} // TODO
+    void pull_data_back() override {} // TODO
 
     virtual void apply_ltp_to_synapse_weights(float current_time_in_seconds) = 0;
     virtual void apply_ltd_to_synapse_weights(float current_time_in_seconds) = 0;

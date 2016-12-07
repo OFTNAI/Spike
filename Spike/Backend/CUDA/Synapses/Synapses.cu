@@ -1,3 +1,4 @@
+// -*- mode: c++ -*-
 #include "Spike/Backend/CUDA/Synapses/Synapses.hpp"
 #include <thrust/device_vector.h>
 #include <thrust/host_vector.h>
@@ -15,29 +16,39 @@ namespace Backend {
       CudaSafeCall(cudaFree(synapse_postsynaptic_neuron_count_index));
     }
 
-    void Synapses::reset_state() {
-      CudaSafeCall(cudaMemset(spikes_travelling_to_synapse, 0, sizeof(int)*total_number_of_synapses));
-      // TODO: This is a copy involving the front-end, so need to think about synchrony...
-      CudaSafeCall(cudaMemcpy(time_of_last_spike_to_reach_synapse, last_spike_to_reach_synapse, total_number_of_synapses*sizeof(float), cudaMemcpyHostToDevice));
-    }
-    
     void Synapses::allocate_device_pointers() {
       printf("Allocating synapse device pointers...\n");
 
-      CudaSafeCall(cudaMalloc((void **)&presynaptic_neuron_indices, sizeof(int)*total_number_of_synapses));
-      CudaSafeCall(cudaMalloc((void **)&postsynaptic_neuron_indices, sizeof(int)*total_number_of_synapses));
-      CudaSafeCall(cudaMalloc((void **)&synaptic_efficacies_or_weights, sizeof(float)*total_number_of_synapses));
-      CudaSafeCall(cudaMalloc((void **)&synapse_postsynaptic_neuron_count_index, sizeof(float)*total_number_of_synapses));
+      CudaSafeCall(cudaMalloc((void **)&presynaptic_neuron_indices,
+                              sizeof(int)*frontend()->total_number_of_synapses));
+      CudaSafeCall(cudaMalloc((void **)&postsynaptic_neuron_indices,
+                              sizeof(int)*frontend()->total_number_of_synapses));
+      CudaSafeCall(cudaMalloc((void **)&synaptic_efficacies_or_weights,
+                              sizeof(float)*frontend()->total_number_of_synapses));
+      CudaSafeCall(cudaMalloc((void **)&synapse_postsynaptic_neuron_count_index,
+                              sizeof(float)*frontend()->total_number_of_synapses));
     }
 
 
     void Synapses::copy_constants_and_initial_efficacies_to_device() {
       printf("Copying synaptic constants and initial efficacies to device...\n");
 
-      CudaSafeCall(cudaMemcpy(presynaptic_neuron_indices, presynaptic_neuron_indices, sizeof(int)*total_number_of_synapses, cudaMemcpyHostToDevice));
-      CudaSafeCall(cudaMemcpy(postsynaptic_neuron_indices, postsynaptic_neuron_indices, sizeof(int)*total_number_of_synapses, cudaMemcpyHostToDevice));
-      CudaSafeCall(cudaMemcpy(synaptic_efficacies_or_weights, synaptic_efficacies_or_weights, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
-      CudaSafeCall(cudaMemcpy(synapse_postsynaptic_neuron_count_index, synapse_postsynaptic_neuron_count_index, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
+      CudaSafeCall(cudaMemcpy(presynaptic_neuron_indices,
+                              frontend()->presynaptic_neuron_indices,
+                              sizeof(int)*frontend()->total_number_of_synapses,
+                              cudaMemcpyHostToDevice));
+      CudaSafeCall(cudaMemcpy(postsynaptic_neuron_indices,
+                              frontend()->postsynaptic_neuron_indices,
+                              sizeof(int)*frontend()->total_number_of_synapses,
+                              cudaMemcpyHostToDevice));
+      CudaSafeCall(cudaMemcpy(synaptic_efficacies_or_weights,
+                              frontend()->synaptic_efficacies_or_weights,
+                              sizeof(float)*frontend()->total_number_of_synapses,
+                              cudaMemcpyHostToDevice));
+      CudaSafeCall(cudaMemcpy(synapse_postsynaptic_neuron_count_index,
+                              frontend()->synapse_postsynaptic_neuron_count_index,
+                              sizeof(float)*frontend()->total_number_of_synapses,
+                              cudaMemcpyHostToDevice));
     }
 
 
@@ -46,19 +57,30 @@ namespace Backend {
       number_of_synapse_blocks_per_grid = dim3(1000);
     }
 
-    void Synapses::set_neuron_indices_by_sampling_from_normal_distribution() {
-      // Taken from ::Synapses::AddGroup under condition CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE
+    void Synapses::set_neuron_indices_by_sampling_from_normal_distribution
+    (int original_number_of_synapses,
+     int total_number_of_new_synapses,
+     int postsynaptic_group_id,
+     int poststart, int prestart,
+     int* postsynaptic_group_shape,
+     int* presynaptic_group_shape,
+     int number_of_new_synapses_per_postsynaptic_neuron,
+     int number_of_postsynaptic_neurons_in_group,
+     float standard_deviation_sigma,
+     bool presynaptic_group_is_input) {
 
-      if (total_number_of_new_synapses > largest_synapse_group_size) {
-
-        largest_synapse_group_size = total_number_of_new_synapses;
-
-        CudaSafeCall(cudaMalloc((void **)&temp_presynaptic_neuron_indices, sizeof(int)*total_number_of_new_synapses));
-        CudaSafeCall(cudaMalloc((void **)&temp_postsynaptic_neuron_indices, sizeof(int)*total_number_of_new_synapses));
-
+      if (total_number_of_new_synapses > frontend()->largest_synapse_group_size) {
+        CudaSafeCall(cudaMalloc((void **)&temp_presynaptic_neuron_indices,
+                                sizeof(int)*total_number_of_new_synapses));
+        CudaSafeCall(cudaMalloc((void **)&temp_postsynaptic_neuron_indices,
+                                sizeof(int)*total_number_of_new_synapses));
       }
 
-      set_neuron_indices_by_sampling_from_normal_distribution<<<random_state_manager->block_dimensions, random_state_manager->threads_per_block>>>
+      ::Backend::CUDA::RandomStateManager* random_state_manager =
+          static_cast<::Backend::CUDA::RandomStateManager*>
+          (frontend()->random_state_manager->backend());
+
+      set_neuron_indices_by_sampling_from_normal_distribution_kernel<<<random_state_manager->block_dimensions, random_state_manager->threads_per_block>>>
         (total_number_of_new_synapses,
          postsynaptic_group_id,
          poststart, prestart,
@@ -80,7 +102,7 @@ namespace Backend {
       CudaSafeCall(cudaMemcpy(&postsynaptic_neuron_indices[original_number_of_synapses], temp_postsynaptic_neuron_indices, sizeof(int)*total_number_of_new_synapses, cudaMemcpyDeviceToHost));
     }
     
-    __global__ void set_neuron_indices_by_sampling_from_normal_distribution
+    __global__ void set_neuron_indices_by_sampling_from_normal_distribution_kernel
     (int total_number_of_new_synapses,
      int postsynaptic_group_id,
      int poststart, int prestart,

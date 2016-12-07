@@ -29,6 +29,9 @@ namespace Backend {
     void reset_state() override {
       // TODO?
     }
+
+    void push_data_front() override {} // TODO
+    void pull_data_back() override {} // TODO
   };
 }
 

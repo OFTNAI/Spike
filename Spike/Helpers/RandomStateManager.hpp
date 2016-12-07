@@ -14,9 +14,12 @@ namespace Backend {
   class RandomStateManager : public SpikeBackendBase {
   public:
     ADD_FRONTEND_GETTER(RandomStateManager);
-    virtual void reset_state() {
+    void reset_state() override {
       prepare();
     }
+
+    void push_data_front() override {} // TODO
+    void pull_data_back() override {} // TODO
   };
 }
 

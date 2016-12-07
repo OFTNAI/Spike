@@ -1,16 +1,25 @@
+// -*- mode: c++ -*-
 #include "Spike/Backend/CUDA/Synapses/CurrentSpikingSynapses.hpp"
 
 namespace Backend {
   namespace CUDA {
+    /*
+    void CurrentSpikingSynapses::prepare() {
+      ::Backend::SpikingSynapses::prepare();
+    }
+    */
+
     void CurrentSpikingSynapses::calculate_postsynaptic_current_injection(::SpikingNeurons * neurons, float current_time_in_seconds, float timestep) {
       printf("number_of_synapse_blocks_per_grid.x: %d\n", number_of_synapse_blocks_per_grid.x);
+      ::Backend::CUDA::SpikingNeurons* neurons_backend
+          = dynamic_cast<::Backend::CUDA::SpikingNeurons*>(neurons->backend());
       current_calculate_postsynaptic_current_injection_kernel<<<number_of_synapse_blocks_per_grid, threads_per_block>>>
         (synaptic_efficacies_or_weights,
          time_of_last_spike_to_reach_synapse,
          postsynaptic_neuron_indices,
-         neurons->current_injections, // TODO: How to access this Neurons device data?
+         neurons_backend->current_injections,
          current_time_in_seconds,
-         total_number_of_synapses);
+         frontend()->total_number_of_synapses);
 
       CudaCheckError();
     }

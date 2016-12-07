@@ -11,9 +11,12 @@ namespace Backend {
   public:
     ADD_FRONTEND_GETTER(CollectNeuronSpikesRecordingElectrodes);
 
-    virtual void prepare() {
+    void prepare() override {
       printf("TODO Backend::CollectNeuronSpikesRecordingElectrodes::prepare\n");
     }
+
+    void push_data_front() override {} // TODO
+    void pull_data_back() override {} // TODO
 
     virtual void copy_spikes_to_front() = 0;
     virtual void copy_spike_counts_to_front() = 0;

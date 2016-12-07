@@ -181,7 +181,19 @@ void Synapses::AddGroup(int presynaptic_group_id,
 
             printf("TODO: FIX set_neuron_indices_by_sampling_from_normal_distribution\n");
             backend()->set_neuron_indices_by_sampling_from_normal_distribution
-              ();
+              (original_number_of_synapses,
+               total_number_of_new_synapses,
+               postsynaptic_group_id,
+               poststart, prestart,
+               postsynaptic_group_shape,
+               presynaptic_group_shape,
+               number_of_new_synapses_per_postsynaptic_neuron,
+               number_of_postsynaptic_neurons_in_group,
+               standard_deviation_sigma,
+               presynaptic_group_is_input);
+            if (total_number_of_new_synapses > largest_synapse_group_size) {
+              largest_synapse_group_size = total_number_of_new_synapses;
+            }
 
             break;
           }

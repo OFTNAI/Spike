@@ -1,3 +1,4 @@
+// -*- mode: c++ -*-
 #include "Spike/Backend/CUDA/Synapses/ConductanceSpikingSynapses.hpp"
 
 namespace Backend {
@@ -11,39 +12,44 @@ namespace Backend {
     }
 
     void ConductanceSpikingSynapses::calculate_postsynaptic_current_injection(::SpikingNeurons * neurons, float current_time_in_seconds, float timestep) {
+      ::Backend::CUDA::SpikingNeurons* neurons_backend =
+        dynamic_cast<::Backend::CUDA::SpikingNeurons*>(neurons->backend());
+
       	conductance_calculate_postsynaptic_current_injection_kernel<<<number_of_synapse_blocks_per_grid, threads_per_block>>>
           (presynaptic_neuron_indices,
            postsynaptic_neuron_indices,
            reversal_potentials_Vhat,
-           neurons->current_injections, // TODO: How to access this Neurons device data?
-           total_number_of_synapses,
-           neurons->membrane_potentials_v, 
+           neurons_backend->current_injections,
+           frontend()->total_number_of_synapses,
+           neurons_backend->membrane_potentials_v, 
            synaptic_conductances_g);
 
 	CudaCheckError();
     }
 
     void ConductanceSpikingSynapses::reset_state() {
-      // TODO: How to do memcpy involving front?
-      CudaSafeCall(cudaMemcpy(d_synaptic_conductances_g, synaptic_conductances_g, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
+      CudaSafeCall(cudaMemcpy(synaptic_conductances_g,
+                              frontend()->synaptic_conductances_g,
+                              sizeof(float)*frontend()->total_number_of_synapses,
+                              cudaMemcpyHostToDevice));
     }
 
     void ConductanceSpikingSynapses::allocate_device_pointers() {
 	SpikingSynapses::allocate_device_pointers();
 
-	CudaSafeCall(cudaMalloc((void **)&biological_conductance_scaling_constants_lambda, sizeof(float)*total_number_of_synapses));
-	CudaSafeCall(cudaMalloc((void **)&reversal_potentials_Vhat, sizeof(float)*total_number_of_synapses));
-	CudaSafeCall(cudaMalloc((void **)&decay_terms_tau_g, sizeof(float)*total_number_of_synapses));
+	CudaSafeCall(cudaMalloc((void **)&biological_conductance_scaling_constants_lambda, sizeof(float)*frontend()->total_number_of_synapses));
+	CudaSafeCall(cudaMalloc((void **)&reversal_potentials_Vhat, sizeof(float)*frontend()->total_number_of_synapses));
+	CudaSafeCall(cudaMalloc((void **)&decay_terms_tau_g, sizeof(float)*frontend()->total_number_of_synapses));
 
-	CudaSafeCall(cudaMalloc((void **)&synaptic_conductances_g, sizeof(float)*total_number_of_synapses));
+	CudaSafeCall(cudaMalloc((void **)&synaptic_conductances_g, sizeof(float)*frontend()->total_number_of_synapses));
     }
 
     void ConductanceSpikingSynapses::copy_constants_and_initial_efficacies_to_device() {
       SpikingSynapses::copy_constants_and_initial_efficacies_to_device();
 
-      CudaSafeCall(cudaMemcpy(biological_conductance_scaling_constants_lambda, biological_conductance_scaling_constants_lambda, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
-      CudaSafeCall(cudaMemcpy(reversal_potentials_Vhat, reversal_potentials_Vhat, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
-      CudaSafeCall(cudaMemcpy(decay_terms_tau_g, decay_terms_tau_g, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
+      CudaSafeCall(cudaMemcpy(biological_conductance_scaling_constants_lambda, biological_conductance_scaling_constants_lambda, sizeof(float)*frontend()->total_number_of_synapses, cudaMemcpyHostToDevice));
+      CudaSafeCall(cudaMemcpy(reversal_potentials_Vhat, reversal_potentials_Vhat, sizeof(float)*frontend()->total_number_of_synapses, cudaMemcpyHostToDevice));
+      CudaSafeCall(cudaMemcpy(decay_terms_tau_g, decay_terms_tau_g, sizeof(float)*frontend()->total_number_of_synapses, cudaMemcpyHostToDevice));
     }
 
     void ConductanceSpikingSynapses::update_synaptic_conductances(float timestep, float current_time_in_seconds) {
@@ -53,7 +59,7 @@ namespace Backend {
            synaptic_efficacies_or_weights, 
            time_of_last_spike_to_reach_synapse,
            biological_conductance_scaling_constants_lambda,
-           total_number_of_synapses,
+           frontend()->total_number_of_synapses,
            current_time_in_seconds,
            decay_terms_tau_g);
 

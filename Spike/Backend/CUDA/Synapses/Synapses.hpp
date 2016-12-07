@@ -12,6 +12,7 @@ namespace Backend {
     class Synapses : public virtual ::Backend::Synapses {
     public:
       ~Synapses();
+      using ::Backend::Synapses::frontend;
 
       int* presynaptic_neuron_indices = nullptr;
       int* postsynaptic_neuron_indices = nullptr;
@@ -25,16 +26,21 @@ namespace Backend {
       dim3 number_of_synapse_blocks_per_grid;
       dim3 threads_per_block;
 
-      virtual void prepare() {}
-      virtual void reset_state() {}
-
       virtual void allocate_device_pointers();
       virtual void copy_constants_and_initial_efficacies_to_device();
       virtual void set_threads_per_block_and_blocks_per_grid(int threads);
 
-      virtual void set_neuron_indices_by_sampling_from_normal_distribution() {
-        printf("TODO Backend::Synapses::set_neuron_indices_by_sampling_from_normal_distribution\n");
-      }
+      void set_neuron_indices_by_sampling_from_normal_distribution
+      (int original_number_of_synapses,
+       int total_number_of_new_synapses,
+       int postsynaptic_group_id,
+       int poststart, int prestart,
+       int* postsynaptic_group_shape,
+       int* presynaptic_group_shape,
+       int number_of_new_synapses_per_postsynaptic_neuron,
+       int number_of_postsynaptic_neurons_in_group,
+       float standard_deviation_sigma,
+       bool presynaptic_group_is_input) override;
     };
 
     __global__ void compute_yes_no_connection_matrix_for_groups(bool * d_yes_no_connection_vector, 
@@ -54,21 +60,22 @@ namespace Backend {
                                                                                    int * d_presynaptic_neuron_indices, 
                                                                                    int * d_postsynaptic_neuron_indices);
 
-    __global__ void set_neuron_indices_by_sampling_from_normal_distribution(int total_number_of_new_synapses, 
-                                                                            int postsynaptic_group_id, 
-                                                                            int poststart, 
-                                                                            int prestart, 
-                                                                            int post_width, 
-                                                                            int post_height, 
-                                                                            int pre_width, 
-                                                                            int pre_height, 
-                                                                            int number_of_new_synapses_per_postsynaptic_neuron, 
-                                                                            int number_of_postsynaptic_neurons_in_group, 
-                                                                            int * d_presynaptic_neuron_indices, 
-                                                                            int * d_postsynaptic_neuron_indices, 
-                                                                            float * d_synaptic_efficacies_or_weights, 
-                                                                            float standard_deviation_sigma, 
-                                                                            bool presynaptic_group_is_input,
-                                                                            curandState_t* d_states);
+    __global__ void set_neuron_indices_by_sampling_from_normal_distribution_kernel
+    (int total_number_of_new_synapses, 
+     int postsynaptic_group_id, 
+     int poststart, 
+     int prestart, 
+     int post_width, 
+     int post_height, 
+     int pre_width, 
+     int pre_height, 
+     int number_of_new_synapses_per_postsynaptic_neuron, 
+     int number_of_postsynaptic_neurons_in_group, 
+     int * d_presynaptic_neuron_indices, 
+     int * d_postsynaptic_neuron_indices, 
+     float * d_synaptic_efficacies_or_weights, 
+     float standard_deviation_sigma, 
+     bool presynaptic_group_is_input,
+     curandState_t* d_states);
   }
 }
