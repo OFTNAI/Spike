@@ -23,11 +23,15 @@ namespace Backend {
       float* temp_synaptic_efficacies_or_weights = nullptr;
       
       // CUDA Specific
+      ::Backend::CUDA::RandomStateManager* random_state_manager_backend = nullptr;
       dim3 number_of_synapse_blocks_per_grid;
       dim3 threads_per_block;
 
+      void prepare() override;
+
       virtual void allocate_device_pointers();
       virtual void copy_constants_and_initial_efficacies_to_device();
+      // TODO: Check when set_threads_per_block_and_blocks_per_grid is called
       virtual void set_threads_per_block_and_blocks_per_grid(int threads);
 
       void set_neuron_indices_by_sampling_from_normal_distribution

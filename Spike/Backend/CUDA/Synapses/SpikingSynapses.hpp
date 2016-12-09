@@ -22,12 +22,14 @@ namespace Backend {
       ~SpikingSynapses();
       using ::Backend::SpikingSynapses::frontend;
 
-      // void prepare() {}
+      // NB: If we override Synapses::prepare, make sure to call it as well
+      //      -- it initializes the random_state_manager_backend pointer!
+      // void prepare() {} 
       void reset_state() override;
 
       void allocate_device_pointers() override;
       void copy_constants_and_initial_efficacies_to_device() override;
-      void set_threads_per_block_and_blocks_per_grid(int threads) override;
+      // void set_threads_per_block_and_blocks_per_grid(int threads) override;
 
       // virtual void interact_spikes_with_synapses(SpikingNeurons * neurons, SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) override;
 

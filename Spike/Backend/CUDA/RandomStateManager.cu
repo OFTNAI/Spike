@@ -9,7 +9,7 @@
 namespace Backend {
   namespace CUDA {
     RandomStateManager::~RandomStateManager() {
-      CudaSafeCall(cudaFree(d_states));
+      CudaSafeCall(cudaFree(states));
     }
 
     void RandomStateManager::setup_random_states(int threads_per_blocks_x, int number_of_blocks_x, int seed) {
@@ -22,20 +22,20 @@ namespace Backend {
       total_number_of_states = threads_per_blocks_x * number_of_blocks_x;
 
       // In case it has already been allocated
-      if (d_states != nullptr) {
-        CudaSafeCall(cudaFree(d_states));
-        d_states = nullptr;
+      if (states != nullptr) {
+        CudaSafeCall(cudaFree(states));
+        states = nullptr;
       }
 
       // Allocate the random states
-      CudaSafeCall(cudaMalloc((void**) &d_states, sizeof(curandState_t)*threads_per_blocks_x*number_of_blocks_x));
-      generate_random_states_kernel<<<block_dimensions, threads_per_block>>>(seed, d_states, threads_per_blocks_x * number_of_blocks_x);
+      CudaSafeCall(cudaMalloc((void**) &states, sizeof(curandState_t)*threads_per_blocks_x*number_of_blocks_x));
+      generate_random_states_kernel<<<block_dimensions, threads_per_block>>>(seed, states, threads_per_blocks_x * number_of_blocks_x);
       CudaCheckError();
 
       set_up_random_states_timer->stop_timer_and_log_time_and_message("Random states set up...", true);
     }
 
-    RandomStateManager::prepare() {
+    void RandomStateManager::prepare() {
       setup_random_states(); // TODO: Check context for params
     }
 

@@ -36,12 +36,12 @@ public:
   ~ImagePoissonInputSpikingNeurons();
 
   ADD_BACKEND_GETTER(ImagePoissonInputSpikingNeurons);
+  virtual void prepare_backend(Context* ctx = _global_ctx);
   
   virtual int AddGroup(neuron_parameters_struct * group_params);
   void AddGroupForEachGaborType(neuron_parameters_struct * group_params);
 
-  // TODO:
-  // virtual void update_membrane_potentials(float timestep, float current_time_in_seconds);
+  void update_membrane_potentials(float timestep, float current_time_in_seconds) override;
   virtual bool stimulus_is_new_object_for_object_by_object_presentation(int stimulus_index);
 
   void set_up_rates(const char * fileList, const char * filterParameters, const char * inputDirectory, float max_rate_scaling_factor);
@@ -51,8 +51,6 @@ public:
   virtual void copy_rates_to_device();
   int calculate_gabor_index(int orientationIndex, int wavelengthIndex, int phaseIndex);
 
-  virtual void prepare_backend(Context* ctx = _global_ctx);
-  
   //JI VARIABLES
   float * gabor_input_rates = nullptr;
 

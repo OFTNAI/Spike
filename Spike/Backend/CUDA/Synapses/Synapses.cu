@@ -57,6 +57,16 @@ namespace Backend {
       number_of_synapse_blocks_per_grid = dim3(1000);
     }
 
+    void Synapses::prepare() {
+      // TODO: Check (call copy_constants, set_up_states etc?)
+      // ...
+
+      // Crudely assume that the RandomStateManager backend is also CUDA:
+      random_state_manager_backend
+        = dynamic_cast<::Backend::CUDA::RandomStateManager*>
+        (frontend()->random_state_manager->backend());
+    }
+
     void Synapses::set_neuron_indices_by_sampling_from_normal_distribution
     (int original_number_of_synapses,
      int total_number_of_new_synapses,
@@ -76,11 +86,7 @@ namespace Backend {
                                 sizeof(int)*total_number_of_new_synapses));
       }
 
-      ::Backend::CUDA::RandomStateManager* random_state_manager =
-          static_cast<::Backend::CUDA::RandomStateManager*>
-          (frontend()->random_state_manager->backend());
-
-      set_neuron_indices_by_sampling_from_normal_distribution_kernel<<<random_state_manager->block_dimensions, random_state_manager->threads_per_block>>>
+      set_neuron_indices_by_sampling_from_normal_distribution_kernel<<<random_state_manager_backend->block_dimensions, random_state_manager_backend->threads_per_block>>>
         (total_number_of_new_synapses,
          postsynaptic_group_id,
          poststart, prestart,
@@ -95,7 +101,7 @@ namespace Backend {
          temp_synaptic_efficacies_or_weights,
          standard_deviation_sigma,
          presynaptic_group_is_input,
-         random_state_manager->states);
+         random_state_manager_backend->states);
       CudaCheckError();
 
       CudaSafeCall(cudaMemcpy(&presynaptic_neuron_indices[original_number_of_synapses], temp_presynaptic_neuron_indices, sizeof(int)*total_number_of_new_synapses, cudaMemcpyDeviceToHost));

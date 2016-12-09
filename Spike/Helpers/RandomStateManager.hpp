@@ -11,9 +11,12 @@
 class RandomStateManager; // forward definition
 
 namespace Backend {
-  class RandomStateManager : public SpikeBackendBase {
+  class RandomStateManager : public virtual SpikeBackendBase {
   public:
     ADD_FRONTEND_GETTER(RandomStateManager);
+
+    // void prepare() override;
+    
     void reset_state() override {
       prepare();
     }
@@ -31,11 +34,9 @@ namespace Backend {
 
 class RandomStateManager : public virtual SpikeBase {
 public:
-  int total_number_of_states = 0;
-
   ADD_BACKEND_GETTER(RandomStateManager);
-  void prepare_backend(Context* ctx = _global_ctx);
-  virtual void reset_state() {}
+  void prepare_backend(Context* ctx = _global_ctx) override;
+  void reset_state() override;
 private:
   static RandomStateManager *inst;
 };

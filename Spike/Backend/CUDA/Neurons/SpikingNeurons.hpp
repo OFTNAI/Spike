@@ -27,12 +27,12 @@ namespace Backend {
        \param maximum_axonal_delay_in_timesteps The length (in timesteps) of the largest axonal delay in the simulation. Unused in this class.
        \param high_fidelity_spike_storage A flag determining whether a bit mask based method is used to store spike times of neurons (ensure no spike transmission failure).
       */
-      virtual void allocate_device_pointers(int maximum_axonal_delay_in_timesteps,  bool high_fidelity_spike_flag);
+      void allocate_device_pointers(int maximum_axonal_delay_in_timesteps,  bool high_fidelity_spike_flag) override;
 
-      virtual void check_for_neuron_spikes(float current_time_in_seconds, float timestep);
+      void check_for_neuron_spikes(float current_time_in_seconds, float timestep) override;
 
-      virtual void reset_state();
-      virtual void prepare();
+      void reset_state() override;
+      void prepare() override;
       
       /**  
        *  Unused in this class. Allows copying of static data related to neuron dynamics to the device.

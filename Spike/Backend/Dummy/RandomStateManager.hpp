@@ -4,16 +4,16 @@
 
 namespace Backend {
   namespace Dummy {
-    class RandomStateManager : public ::Backend::RandomStateManager {
+    class RandomStateManager : public virtual ::Backend::RandomStateManager {
     public:
       MAKE_BACKEND_CONSTRUCTOR(RandomStateManager);
 
-      virtual void prepare() {
+      void prepare() override {
         printf("TODO Backend::Dummy::RandomStateManager::prepare\n");
       }
 
-      virtual void push_data_front() {}
-      virtual void pull_data_back() {}
+      void push_data_front() override {}
+      void pull_data_back() override {}
     };
   }
 }

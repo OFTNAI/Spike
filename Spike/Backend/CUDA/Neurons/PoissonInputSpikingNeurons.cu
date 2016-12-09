@@ -20,15 +20,24 @@ namespace Backend {
       }
     }
 
-    void PoissonInputSpikingNeurons::update_membrane_potentials(float timestep, float current_time_in_seconds) {
+    void PoissonInputSpikingNeurons::reset_state() {
+      printf("!!! TODO PoissonInputSpikingNeurons::reset_state called\n");
+    }
+
+    void PoissonInputSpikingNeurons::prepare() {
+      // TODO: Check (call copy_constants, set_up_states etc?)
+      // ...
 
       // Crudely assume that the RandomStateManager backend is also CUDA:
-      ::Backend::CUDA::RandomStateManager* random_state_manager
-        = static_cast<::Backend::CUDA::RandomStateManager*>
+      random_state_manager_backend
+        = dynamic_cast<::Backend::CUDA::RandomStateManager*>
         (frontend()->random_state_manager->backend());
+    }
 
-      poisson_update_membrane_potentials_kernel<<<random_state_manager->block_dimensions, random_state_manager->threads_per_block>>>
-        (random_state_manager->states,
+    void PoissonInputSpikingNeurons::update_membrane_potentials(float timestep, float current_time_in_seconds) {
+
+      poisson_update_membrane_potentials_kernel<<<random_state_manager_backend->block_dimensions, random_state_manager_backend->threads_per_block>>>
+        (random_state_manager_backend->states,
          rates,
          membrane_potentials_v,
          timestep,

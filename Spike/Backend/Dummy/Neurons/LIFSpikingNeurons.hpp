@@ -10,20 +10,24 @@ namespace Backend {
     public:
       MAKE_BACKEND_CONSTRUCTOR(LIFSpikingNeurons);
 
-      virtual void check_for_neuron_spikes(float current_time_in_seconds, float timestep) {
+      void check_for_neuron_spikes(float current_time_in_seconds, float timestep) override {
         // printf("TODO Backend::Dummy::LIFSpikingNeurons::check_for_neuron_spikes\n");
       }
 
-      virtual void reset_state() {
+      void update_membrane_potentials(float timestep, float current_time_in_seconds) override {
+        // TODO
+      }
+
+      void reset_state() override {
         // printf("TODO Backend::Dummy::LIFSpikingNeurons::reset_state\n");
       }
 
-      virtual void prepare() {
+      void prepare() override {
         printf("TODO Backend::Dummy::LIFSpikingNeurons::prepare\n");
       }
 
-      virtual void push_data_front() {}
-      virtual void pull_data_back() {}
+      void push_data_front() override {}
+      void pull_data_back() override {}
     };
   }
 }

@@ -11,7 +11,7 @@ class InputSpikingNeurons; // forward definition
 namespace Backend {
   class InputSpikingNeurons : public virtual SpikingNeurons {
   public:
-    virtual void reset_state() {};
+    void reset_state() override {};
   };
 }
 

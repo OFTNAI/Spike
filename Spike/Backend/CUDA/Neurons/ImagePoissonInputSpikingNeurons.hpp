@@ -21,12 +21,12 @@ namespace Backend {
       MAKE_BACKEND_CONSTRUCTOR(ImagePoissonInputSpikingNeurons);
       using ::Backend::ImagePoissonInputSpikingNeurons::frontend;
 
-      virtual void copy_rates_to_device();
-      virtual void update_membrane_potentials(float timestep, float current_time_in_seconds);
+      void copy_rates_to_device();
+      void update_membrane_potentials(float timestep, float current_time_in_seconds) override;
 
-      virtual void check_for_neuron_spikes(float current_time_in_seconds, float timestep);
-      virtual void reset_state();
-      virtual void prepare();
+      // virtual void check_for_neuron_spikes(float current_time_in_seconds, float timestep);
+      void reset_state() override;
+      void prepare() override;
     };
   }
 }

@@ -34,6 +34,6 @@ namespace Backend {
 
     void Neurons::reset_state() {
       reset_current_injections();
-    }
+    }  
   } // ::Backend::CUDA
 } // ::Backend

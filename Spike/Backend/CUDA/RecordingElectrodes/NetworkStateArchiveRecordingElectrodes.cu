@@ -8,6 +8,10 @@ namespace Backend {
       RecordingElectrodes::prepare();
     }
 
+    void NetworkStateArchiveRecordingElectrodes::reset_state() {
+      // TODO?
+    }
+
     void NetworkStateArchiveRecordingElectrodes::push_data_front() {
       frontend()->synapses->backend()->push_data_front();
     }

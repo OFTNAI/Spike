@@ -3,11 +3,10 @@
 
 namespace Backend {
   namespace CUDA {
-    /*
     void CurrentSpikingSynapses::prepare() {
-      ::Backend::SpikingSynapses::prepare();
+      SpikingSynapses::prepare();
+      // TODO? Should we consolidate prepare and allocate_device_pointers?
     }
-    */
 
     void CurrentSpikingSynapses::calculate_postsynaptic_current_injection(::SpikingNeurons * neurons, float current_time_in_seconds, float timestep) {
       printf("number_of_synapse_blocks_per_grid.x: %d\n", number_of_synapse_blocks_per_grid.x);

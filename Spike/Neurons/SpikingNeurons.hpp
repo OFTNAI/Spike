@@ -20,6 +20,7 @@ namespace Backend {
   class SpikingNeurons : public virtual Neurons {
   public:
     virtual void check_for_neuron_spikes(float current_time_in_seconds, float timestep) = 0;
+    virtual void update_membrane_potentials(float timestep, float current_time_in_seconds) = 0;
   };
 }
 
@@ -35,6 +36,7 @@ public:
   SpikingNeurons();
   ~SpikingNeurons();
 
+  void prepare_backend(Context* ctx) override;
   ADD_BACKEND_GETTER(SpikingNeurons);
   
   // Variables
@@ -52,11 +54,11 @@ public:
   float* resting_potentials = nullptr;
 
   // Functions
-  virtual void prepare_backend(Context* ctx = _global_ctx);
-  virtual int AddGroup(neuron_parameters_struct * group_params);
-  virtual void update_membrane_potentials(float timestep, float current_time_in_seconds);
+  int AddGroup(neuron_parameters_struct * group_params) override;
+  void reset_state() override;
+
+  virtual void update_membrane_potentials(float timestep, float current_time_in_seconds) = 0;
   virtual void check_for_neuron_spikes(float current_time_in_seconds, float timestep);
-  virtual void reset_state();
 };
 
 #endif

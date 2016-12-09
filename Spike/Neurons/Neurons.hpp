@@ -53,8 +53,8 @@ public:
   Neurons();
   ~Neurons();
 
+  void prepare_backend(Context* ctx) override;
   ADD_BACKEND_GETTER(Neurons);
-  virtual void prepare_backend(Context* ctx = _global_ctx);
   
   // Variables
   int total_number_of_neurons;				/**< Tracks the total neuron population size. */
@@ -79,7 +79,7 @@ public:
   /**  
    *  Resets any undesired data which is dynamically reassigned during a simulation. In this case, the current to be injected at the next time step.
    */
-  virtual void reset_state();
+  void reset_state() override;
 };
 
 #endif

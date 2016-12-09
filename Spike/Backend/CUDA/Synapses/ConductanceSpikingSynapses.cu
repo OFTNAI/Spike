@@ -34,6 +34,11 @@ namespace Backend {
                               cudaMemcpyHostToDevice));
     }
 
+    void ConductanceSpikingSynapses::prepare() {
+      SpikingSynapses::prepare();
+      // TODO? Should we consolidate prepare and allocate_device_pointers?
+    }
+
     void ConductanceSpikingSynapses::allocate_device_pointers() {
 	SpikingSynapses::allocate_device_pointers();
 

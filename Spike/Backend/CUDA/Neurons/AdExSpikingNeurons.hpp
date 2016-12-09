@@ -25,11 +25,11 @@ namespace Backend {
       MAKE_BACKEND_CONSTRUCTOR(AdExSpikingNeurons);
       using ::Backend::AdExSpikingNeurons::frontend;
 
-      virtual void allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage);
-      virtual void copy_constants_to_device();
-      virtual void check_for_neuron_spikes(float current_time_in_seconds, float timestep);
-      virtual void update_membrane_potentials(float timestep, float current_time_in_seconds);
-      virtual void reset_state();
+      void allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage) override;
+      void copy_constants_to_device() override;
+      void check_for_neuron_spikes(float current_time_in_seconds, float timestep) override;
+      void update_membrane_potentials(float timestep, float current_time_in_seconds) override;
+      void reset_state() override;
     };
 
     __global__ void check_for_neuron_spikes_kernel

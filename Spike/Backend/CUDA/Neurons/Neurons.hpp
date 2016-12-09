@@ -35,9 +35,9 @@ namespace Backend {
        */
       void set_threads_per_block_and_blocks_per_grid(int threads);
 
-      virtual void prepare();
-      virtual void reset_state();
-      void reset_current_injections();
+      // void prepare() override;
+      void reset_state() override;
+      virtual void reset_current_injections();
 
     private:
       ADD_FRONTEND_GETTER(Neurons);

@@ -21,6 +21,8 @@ namespace Backend {
     ADD_FRONTEND_GETTER(LIFSpikingNeurons);
     void push_data_front() override {} // TODO
     void pull_data_back() override {} // TODO
+
+    virtual void update_membrane_potentials(float timestep, float current_time_in_seconds) = 0;
   };
 }
 
@@ -36,6 +38,7 @@ public:
   LIFSpikingNeurons();
   ~LIFSpikingNeurons();
 
+  void prepare_backend(Context* ctx) override;
   ADD_BACKEND_GETTER(LIFSpikingNeurons);
   
   float * membrane_time_constants_tau_m;
@@ -43,12 +46,9 @@ public:
 
   float refractory_period_in_seconds;
 
-  virtual void prepare_backend(Context* ctx = _global_ctx);
-  virtual void reset_state();
-  virtual int AddGroup(neuron_parameters_struct * group_params);
-
-  // TODO:
-  // virtual void update_membrane_potentials(float timestep,float current_time_in_seconds);
+  void reset_state() override;
+  int AddGroup(neuron_parameters_struct * group_params) override;
+  void update_membrane_potentials(float timestep,float current_time_in_seconds) override;
 
 };
 
