@@ -35,7 +35,7 @@ namespace Backend {
 class RandomStateManager : public virtual SpikeBase {
 public:
   ADD_BACKEND_GETTER(RandomStateManager);
-  void prepare_backend(Context* ctx = _global_ctx) override;
+  void init_backend(Context* ctx = _global_ctx) override;
   void reset_state() override;
 private:
   static RandomStateManager *inst;

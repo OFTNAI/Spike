@@ -30,7 +30,7 @@
 class MasquelierSTDP; // forward definition
 
 namespace Backend {
-  class MasquelierSTDP : public STDP {
+  class MasquelierSTDP : public virtual STDP {
   public:
     ADD_FRONTEND_GETTER(MasquelierSTDP);
 
@@ -60,7 +60,7 @@ struct masquelier_stdp_parameters_struct : stdp_parameters_struct {
 };
 
 
-class MasquelierSTDP : public virtual STDP {
+class MasquelierSTDP : public STDP {
 public:
   ADD_BACKEND_GETTER(MasquelierSTDP);
 
@@ -70,8 +70,8 @@ public:
   bool* isindexed_ltd_synapse_spike = nullptr;
   int* index_of_first_synapse_spiked_after_postneuron = nullptr;
 
-  void prepare_backend(Context* ctx = _global_ctx) override;
-  inline void prepare_backend_extra();
+  void init_backend(Context* ctx = _global_ctx) override;
+  void prepare_backend_late();
   void reset_state() override;
 
   // Set STDP Parameters

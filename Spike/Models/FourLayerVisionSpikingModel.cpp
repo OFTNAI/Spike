@@ -153,17 +153,21 @@ FourLayerVisionSpikingModel::~FourLayerVisionSpikingModel () {
 
 void FourLayerVisionSpikingModel::init_backend(bool high_fidelity_spike_storage) {
         printf("TODO: Split backend-specific stuff out into separate function\n      Ideally, make it automatic for derived classes...\n");
-        SpikingModel::init_backend(high_fidelity_spike_storage);
 
-	/////////// STDP SETUP ///////////
+        /////////// STDP SETUP ///////////
 	evans_stdp_parameters_struct * STDP_PARAMS = new evans_stdp_parameters_struct();
 	STDP_PARAMS->decay_term_tau_C = decay_term_tau_C;
 	STDP_PARAMS->decay_term_tau_D = decay_term_tau_D;
 	STDP_PARAMS->learning_rate_rho = learning_rate_rho;
 	evans_stdp->Set_STDP_Parameters((SpikingSynapses *) conductance_spiking_synapses, (SpikingNeurons *) lif_spiking_neurons, (SpikingNeurons *) image_poisson_input_spiking_neurons, (stdp_parameters_struct *) STDP_PARAMS);
 
+        // Need to wait for STDP to be set up before calling init_backend ^
+        // TODO: This is very inelegant! ^^
+
+        SpikingModel::init_backend(high_fidelity_spike_storage);
 
 
+        // Do the remaining bits..
 	conductance_spiking_synapses->print_synapse_group_details = false;
 
 
@@ -179,7 +183,9 @@ void FourLayerVisionSpikingModel::init_backend(bool high_fidelity_spike_storage)
 	image_poisson_input_spiking_group_params->rate = 30.0f; // ??????
 	image_poisson_input_spiking_neurons->AddGroupForEachGaborType(image_poisson_input_spiking_group_params);
 
-	image_poisson_input_spiking_neurons->init_random_state();
+        // NB: Following line commented out because init_random_state
+        //     is called from init_backend
+	// image_poisson_input_spiking_neurons->init_random_state();
 
 	adding_image_poisson_input_spiking_neurons_timer->stop_timer_and_log_time_and_message("Input Neurons Added.", true);
 

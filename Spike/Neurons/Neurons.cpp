@@ -70,5 +70,5 @@ void Neurons::reset_state() {
   backend()->reset_state();
 }
 
-MAKE_STUB_PREPARE_BACKEND(Neurons);
+MAKE_STUB_INIT_BACKEND(Neurons);
 

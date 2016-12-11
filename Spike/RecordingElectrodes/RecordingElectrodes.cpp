@@ -18,5 +18,4 @@ RecordingElectrodes::RecordingElectrodes(SpikingNeurons * neurons_parameter, Spi
 
 }
 
-MAKE_STUB_PREPARE_BACKEND(RecordingElectrodes);
-
+MAKE_STUB_INIT_BACKEND(RecordingElectrodes);

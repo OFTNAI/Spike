@@ -16,6 +16,9 @@ namespace Backend {
       Neurons::allocate_device_pointers(maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
 
       CudaSafeCall(cudaMalloc((void **)&last_spike_time_of_each_neuron, sizeof(float)*frontend()->total_number_of_neurons));
+      printf(">>>>>>>>> %d, %p\n",
+             frontend()->total_number_of_neurons,
+             last_spike_time_of_each_neuron);
       CudaSafeCall(cudaMalloc((void **)&membrane_potentials_v, sizeof(float)*frontend()->total_number_of_neurons));
       CudaSafeCall(cudaMalloc((void **)&thresholds_for_action_potential_spikes, sizeof(float)*frontend()->total_number_of_neurons));
       CudaSafeCall(cudaMalloc((void **)&resting_potentials, sizeof(float)*frontend()->total_number_of_neurons));
@@ -52,17 +55,31 @@ namespace Backend {
 
     void SpikingNeurons::reset_state() {
       // Set last spike times to -1000 so that the times do not affect current simulation.
-      float* last_spike_times;
-      last_spike_times = (float*)malloc(sizeof(float)*frontend()->total_number_of_neurons);
+      float* tmp_last_spike_times;
+      tmp_last_spike_times = (float*)malloc(sizeof(float)*frontend()->total_number_of_neurons);
       for (int i=0; i < frontend()->total_number_of_neurons; i++){
-        last_spike_times[i] = -1000.0f;
+        tmp_last_spike_times[i] = -1000.0f;
       }
 
-      CudaSafeCall(cudaMemcpy(last_spike_time_of_each_neuron, last_spike_times, frontend()->total_number_of_neurons*sizeof(float), cudaMemcpyHostToDevice));
-      CudaSafeCall(cudaMemcpy(membrane_potentials_v, frontend()->after_spike_reset_membrane_potentials_c, sizeof(float)*frontend()->total_number_of_neurons, cudaMemcpyHostToDevice));
+      printf("------ %p, %p, %p, %p, %d\n",
+             this, frontend(),
+             last_spike_time_of_each_neuron,
+             tmp_last_spike_times,
+             frontend()->total_number_of_neurons*sizeof(float));
+      CudaSafeCall(cudaMemcpy(last_spike_time_of_each_neuron,
+                              tmp_last_spike_times,
+                              frontend()->total_number_of_neurons*sizeof(float),
+                              cudaMemcpyHostToDevice));
+      CudaSafeCall(cudaMemcpy(membrane_potentials_v,
+                              frontend()->after_spike_reset_membrane_potentials_c,
+                              sizeof(float)*frontend()->total_number_of_neurons,
+                              cudaMemcpyHostToDevice));
 
       if (frontend()->high_fidelity_spike_flag) {
-        CudaSafeCall(cudaMemcpy(bitarray_of_neuron_spikes, bitarray_of_neuron_spikes, sizeof(unsigned char)*frontend()->bitarray_length*frontend()->total_number_of_neurons, cudaMemcpyHostToDevice));
+        CudaSafeCall(cudaMemcpy(bitarray_of_neuron_spikes,
+                                frontend()->bitarray_of_neuron_spikes,
+                                sizeof(unsigned char)*frontend()->bitarray_length*frontend()->total_number_of_neurons,
+                                cudaMemcpyHostToDevice));
       }
     }
 

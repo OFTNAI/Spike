@@ -79,7 +79,7 @@ namespace Backend {
      float standard_deviation_sigma,
      bool presynaptic_group_is_input) {
 
-      if (total_number_of_new_synapses > frontend()->largest_synapse_group_size) {
+      if (total_number_of_new_synapses > frontend()->largest_synapse_group_size || !temp_presynaptic_neuron_indices) {
         CudaSafeCall(cudaMalloc((void **)&temp_presynaptic_neuron_indices,
                                 sizeof(int)*total_number_of_new_synapses));
         CudaSafeCall(cudaMalloc((void **)&temp_postsynaptic_neuron_indices,
@@ -104,8 +104,13 @@ namespace Backend {
          random_state_manager_backend->states);
       CudaCheckError();
 
-      CudaSafeCall(cudaMemcpy(&presynaptic_neuron_indices[original_number_of_synapses], temp_presynaptic_neuron_indices, sizeof(int)*total_number_of_new_synapses, cudaMemcpyDeviceToHost));
-      CudaSafeCall(cudaMemcpy(&postsynaptic_neuron_indices[original_number_of_synapses], temp_postsynaptic_neuron_indices, sizeof(int)*total_number_of_new_synapses, cudaMemcpyDeviceToHost));
+      printf("--------- %p, %p, %p, %d\n",
+             frontend()->presynaptic_neuron_indices,
+             &frontend()->presynaptic_neuron_indices[original_number_of_synapses],
+             temp_presynaptic_neuron_indices,
+             sizeof(int)*total_number_of_new_synapses);
+      CudaSafeCall(cudaMemcpy(&(frontend()->presynaptic_neuron_indices)[original_number_of_synapses], temp_presynaptic_neuron_indices, sizeof(int)*total_number_of_new_synapses, cudaMemcpyDeviceToHost));
+      CudaSafeCall(cudaMemcpy(&(frontend()->postsynaptic_neuron_indices)[original_number_of_synapses], temp_postsynaptic_neuron_indices, sizeof(int)*total_number_of_new_synapses, cudaMemcpyDeviceToHost));
     }
     
     __global__ void set_neuron_indices_by_sampling_from_normal_distribution_kernel

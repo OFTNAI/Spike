@@ -43,7 +43,7 @@ namespace Backend {
 class SpikeAnalyser : public virtual SpikeBase {
 public:
   ADD_BACKEND_GETTER(SpikeAnalyser);
-  void prepare_backend(Context* ctx = _global_ctx);
+  void init_backend(Context* ctx = _global_ctx);
   virtual void reset_state() {}
 
   SpikeAnalyser(SpikingNeurons *neurons_parameter,

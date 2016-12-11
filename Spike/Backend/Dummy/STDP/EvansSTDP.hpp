@@ -10,6 +10,10 @@ namespace Backend {
     public:
       MAKE_BACKEND_CONSTRUCTOR(EvansSTDP);
 
+      void prepare() override {
+        // TODO
+      }
+
       void reset_state() override {
         // TODO
       }

@@ -18,8 +18,8 @@ Synapses::Synapses() {
   random_state_manager = new RandomStateManager();
 }
 
-void Synapses::prepare_backend_extra() {
-  random_state_manager->prepare_backend(backend()->context);
+void Synapses::prepare_backend_early() {
+  random_state_manager->init_backend(backend()->context);
 }
 
 // Synapses Destructor
@@ -179,7 +179,6 @@ void Synapses::AddGroup(int presynaptic_group_id,
             int total_number_of_new_synapses = number_of_new_synapses_per_postsynaptic_neuron * number_of_postsynaptic_neurons_in_group;
             this->increment_number_of_synapses(total_number_of_new_synapses);
 
-            printf("TODO: FIX set_neuron_indices_by_sampling_from_normal_distribution\n");
             backend()->set_neuron_indices_by_sampling_from_normal_distribution
               (original_number_of_synapses,
                total_number_of_new_synapses,
@@ -295,4 +294,4 @@ void Synapses::shuffle_synapses() {
 
 }
 
-MAKE_STUB_PREPARE_BACKEND(Synapses);
+MAKE_STUB_INIT_BACKEND(Synapses);

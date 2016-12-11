@@ -48,7 +48,7 @@ public:
                         float timestep,
                         synapse_parameters_struct * synapse_params);
 
-  virtual void prepare_backend(Context* ctx = _global_ctx);
+  virtual void init_backend(Context* ctx = _global_ctx);
   virtual void reset_state();
   virtual void increment_number_of_synapses(int increment);
   virtual void shuffle_synapses();

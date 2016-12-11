@@ -38,4 +38,4 @@ void AdExSpikingNeurons::reset_state() {
   backend()->reset_state();
 }
 
-// MAKE_PREPARE_BACKEND(AdExSpikingNeurons); // Commented out because we just use SpikingNeurons::prepare_backend
+// MAKE_INIT_BACKEND(AdExSpikingNeurons); // Commented out because we just use SpikingNeurons::init_backend

@@ -49,4 +49,4 @@ void SpikingNeurons::check_for_neuron_spikes(float current_time_in_seconds, floa
   // TODO: Copy the result from the backend
 }
 
-MAKE_STUB_PREPARE_BACKEND(SpikingNeurons);
+MAKE_STUB_INIT_BACKEND(SpikingNeurons);

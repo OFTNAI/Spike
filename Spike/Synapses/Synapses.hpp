@@ -80,9 +80,8 @@ public:
   ~Synapses();
 
   ADD_BACKEND_GETTER(Synapses);
-  virtual void prepare_backend(Context* ctx = _global_ctx);
-  virtual void prepare_backend_extra();
-  virtual void reset_state() = 0;
+  void init_backend(Context* ctx = _global_ctx);
+  void prepare_backend_early();
   
   // Variables
   int total_number_of_synapses = 0;

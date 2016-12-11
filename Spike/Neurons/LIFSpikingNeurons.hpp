@@ -38,7 +38,7 @@ public:
   LIFSpikingNeurons();
   ~LIFSpikingNeurons();
 
-  void prepare_backend(Context* ctx) override;
+  void init_backend(Context* ctx) override;
   ADD_BACKEND_GETTER(LIFSpikingNeurons);
   
   float * membrane_time_constants_tau_m;

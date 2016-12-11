@@ -106,4 +106,4 @@ void NetworkStateArchiveRecordingElectrodes::write_network_state_to_file() {
 
 }
 
-MAKE_PREPARE_BACKEND(NetworkStateArchiveRecordingElectrodes);
+MAKE_INIT_BACKEND(NetworkStateArchiveRecordingElectrodes);

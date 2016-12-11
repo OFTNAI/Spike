@@ -10,20 +10,24 @@ namespace Backend {
     public:
       MAKE_BACKEND_CONSTRUCTOR(HigginsSTDP);
 
-      virtual void reset_state() {
+      void prepare() override {
         // TODO
       }
 
-      virtual void apply_ltp_to_synapse_weights(float current_time_in_seconds) {
+      void reset_state() override {
+        // TODO
+      }
+
+      void apply_ltp_to_synapse_weights(float current_time_in_seconds) override {
         printf("TODO HigginsSTDP::apply_ltp_to_synapse_weights\n");
       }
 
-      virtual void apply_ltd_to_synapse_weights(float current_time_in_seconds) {
+      void apply_ltd_to_synapse_weights(float current_time_in_seconds) override {
         printf("TODO HigginsSTDP::apply_ltd_to_synapse_weights\n");
       }
 
-      virtual void push_data_front() {}
-      virtual void pull_data_back() {}
+      void push_data_front() override {}
+      void pull_data_back() override {}
     };
   }
 }

@@ -36,7 +36,7 @@ public:
                       const char * prefix_string_param);
 
   ADD_BACKEND_GETTER(RecordingElectrodes);
-  virtual void prepare_backend(Context* ctx = _global_ctx) = 0;
+  virtual void init_backend(Context* ctx = _global_ctx) = 0;
   virtual void reset_state() = 0;
 
   // Variables

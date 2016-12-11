@@ -12,14 +12,18 @@ CLOSED: [2016-11-24 Thu 14:05]
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2016-11-24 Thu 14:05]
 :END:
-** PROGRESS Update CMake scripts to build CUDA code
+** DONE Update CMake scripts to build CUDA code
+CLOSED: [2016-12-11 Sun 00:50]
 :LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2016-12-11 Sun 00:50]
 - State "PROGRESS"   from "TODO"       [2016-11-30 Wed 15:40]
 :END:
 ** TODO Look for MISSING KERNELS ?!
 + check Backend/CUDA header files (esp Synapses/)
-** PROGRESS Remove `d_' from pointer names in CUDA backend classes ...
+** DONE Remove `d_' from pointer names in CUDA backend classes ...
+CLOSED: [2016-12-11 Sun 00:50]
 :LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2016-12-11 Sun 00:50]
 - State "PROGRESS"   from "TODO"       [2016-12-06 Tue 16:10]
 :END:
 ** Questions / thoughts
@@ -40,9 +44,24 @@ CLOSED: [2016-11-24 Thu 14:05]
 :LOGBOOK:
 - State "PROGRESS"   from "TODO"       [2016-11-20 Sun 12:10]
 :END:
-** TODO Fix all TODO comments in frontend code
+** PROGRESS Fix all TODO comments in frontend code
+:LOGBOOK:
+- State "PROGRESS"   from "TODO"       [2016-12-11 Sun 00:50]
+:END:
+** PROGRESS Call prepare_backend when making changes that require ensuring consistency between front and back ends
+:LOGBOOK:
+- State "PROGRESS"   from "TODO"       [2016-12-11 Sun 00:50]
+:END:
++ NB: this is not the most elegant solution
 ** TODO Check all calls to `frontend()' to ensure elegance
-** TODO Ensure dynamic dispatch is used as sparingly as possible
+** PROGRESS Check all [CUDA] memcpy calls for correct frontend() usage
+:LOGBOOK:
+- State "PROGRESS"   from "TODO"       [2016-12-10 Sat 17:45]
+:END:
+** PROGRESS Ensure dynamic dispatch is used as sparingly as possible
+:LOGBOOK:
+- State "PROGRESS"   from "TODO"       [2016-12-11 Sun 00:50]
+:END:
 + don't want RTTI and performance penality!
 ** PROGRESS Add `override' specifier to derived versions of virtual functions
 :LOGBOOK:
@@ -56,7 +75,7 @@ CLOSED: [2016-11-24 Thu 14:05]
 :LOGBOOK:
 - State "PROGRESS"   from "TODO"       [2016-12-09 Fri 12:10]
 :END:
-** TODO Replace repeated calls to getters (eg frontend()->something) with local variables
+** TODO Replace repeated calls to ``getters'' (eg frontend()->something) with local variables
 ** DONE Make all frontend classes derive from a shared root, with basic elements such as void* _backend and empty prepare_backend_extra
 CLOSED: [2016-11-24 Thu 13:40]
 :LOGBOOK:
@@ -86,7 +105,10 @@ CLOSED: [2016-11-24 Thu 13:55]
 :END:
 + Should backend->reset_state be a virtual method? If so, it always calls the most derived!
 ** TODO [FourLayerVision]SpikingModel: Split backend-specific stuff out into separate function
-** TODO Option to call prepare_backend implicitly using the global context
+** PROGRESS Option to call prepare_backend implicitly using the global context
+:LOGBOOK:
+- State "PROGRESS"   from "TODO"       [2016-12-11 Sun 00:50]
+:END:
 + If prepare_backend hasn't been called before backend is needed, then we should not just crash.
 + Instead, we should have a compile-time option to call prepare_backend implicitly using the global context.
   + This would mean that adding prepare_backend calls to legacy code should not be needed.

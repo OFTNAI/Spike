@@ -39,7 +39,7 @@ struct Network_State_Archive_Optional_Parameters {
 class NetworkStateArchiveRecordingElectrodes  : public RecordingElectrodes {
 public:
   ADD_BACKEND_GETTER(NetworkStateArchiveRecordingElectrodes);
-  virtual void prepare_backend(Context* ctx = _global_ctx);
+  virtual void init_backend(Context* ctx = _global_ctx);
   virtual void reset_state();
 
   // Host Pointers

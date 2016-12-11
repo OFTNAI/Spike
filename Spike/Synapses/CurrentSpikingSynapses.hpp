@@ -32,7 +32,7 @@ public:
 
   virtual void calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds, float timestep);
 
-  virtual void prepare_backend(Context* ctx = _global_ctx);
+  virtual void init_backend(Context* ctx = _global_ctx);
 };
 
 #endif

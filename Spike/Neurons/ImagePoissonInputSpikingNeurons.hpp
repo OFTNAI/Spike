@@ -36,7 +36,7 @@ public:
   ~ImagePoissonInputSpikingNeurons();
 
   ADD_BACKEND_GETTER(ImagePoissonInputSpikingNeurons);
-  virtual void prepare_backend(Context* ctx = _global_ctx);
+  virtual void init_backend(Context* ctx = _global_ctx);
   
   virtual int AddGroup(neuron_parameters_struct * group_params);
   void AddGroupForEachGaborType(neuron_parameters_struct * group_params);

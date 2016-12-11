@@ -19,6 +19,8 @@
 
 #define MAKE_BACKEND_CONSTRUCTOR(TYPE)                  \
   TYPE(::TYPE* front) {                                 \
+    std::cout << #TYPE " constructed with "             \
+              << front << " as _frontend\n";            \
     _frontend = (void*)front;                           \
   }
 
@@ -30,45 +32,43 @@
   }
 
 #ifdef SPIKE_WITH_CUDA
-#define MAKE_PREPARE_BACKEND(TYPE)                              \
-  void TYPE::prepare_backend(Context* ctx) {                    \
-    std::cout << "prepare_backend " #TYPE " with " << ctx->device << "\n"; \
-    switch (ctx->device) {                                      \
-    case Backend::SPIKE_DEVICE_DUMMY:                           \
-      _backend = new Backend::Dummy::TYPE(this);                \
-      break;                                                    \
-    case Backend::SPIKE_DEVICE_CUDA:                            \
-      _backend = new Backend::CUDA::TYPE(this);                 \
-      break;                                                    \
-    default:                                                    \
-      assert("Unsupported backend" && false);                   \
-    };                                                          \
-    backend()->context = ctx;                                   \
-    backend()->prepare();                                       \
-    prepare_backend_extra();                                    \
-    std::cout << "backend: " << _backend << "\n";               \
-    std::cout << "this " #TYPE ": " << this << "\n";            \
+#define MAKE_INIT_BACKEND(TYPE)                                         \
+  void TYPE::init_backend(Context* ctx) {                               \
+    std::cout << "init_backend " #TYPE " with " << ctx->device << "\n"; \
+    switch (ctx->device) {                                              \
+    case Backend::SPIKE_DEVICE_DUMMY:                                   \
+      _backend = new Backend::Dummy::TYPE(this);                        \
+      break;                                                            \
+    case Backend::SPIKE_DEVICE_CUDA:                                    \
+      _backend = new Backend::CUDA::TYPE(this);                         \
+      break;                                                            \
+    default:                                                            \
+      assert("Unsupported backend" && false);                           \
+    };                                                                  \
+    backend()->context = ctx;                                           \
+    prepare_backend();                                                  \
+    std::cout << "backend: " << _backend << "\n";                       \
+    std::cout << "this " #TYPE ": " << this << "\n";                    \
   }
 #else
-#define MAKE_PREPARE_BACKEND(TYPE)                              \
-  void TYPE::prepare_backend(Context* ctx) {                    \
-    std::cout << "prepare_backend " #TYPE " with " << ctx->device << "\n"; \
-    switch (ctx->device) {                                      \
-    case Backend::SPIKE_DEVICE_DUMMY:                           \
-      _backend = new Backend::Dummy::TYPE(this);                \
-      break;                                                    \
-    default:                                                    \
-      assert("Unsupported backend" && false);                   \
-    };                                                          \
-    backend()->context = ctx;                                   \
-    backend()->prepare();                                       \
-    prepare_backend_extra();                                    \
-    std::cout << "backend: " << _backend << "\n";               \
-    std::cout << "this " #TYPE ": " << this << "\n";            \
+#define MAKE_INIT_BACKEND(TYPE)                                         \
+  void TYPE::init_backend(Context* ctx) {                               \
+    std::cout << "init_backend " #TYPE " with " << ctx->device << "\n"; \
+    switch (ctx->device) {                                              \
+    case Backend::SPIKE_DEVICE_DUMMY:                                   \
+      _backend = new Backend::Dummy::TYPE(this);                        \
+      break;                                                            \
+    default:                                                            \
+      assert("Unsupported backend" && false);                           \
+    };                                                                  \
+    backend()->context = ctx;                                           \
+    prepare_backend();                                                  \
+    std::cout << "backend: " << _backend << "\n";                       \
+    std::cout << "this " #TYPE ": " << this << "\n";                    \
   }
 #endif
 
-#define MAKE_STUB_PREPARE_BACKEND(TYPE)                         \
-  void TYPE::prepare_backend(Context* ctx) {                    \
+#define MAKE_STUB_INIT_BACKEND(TYPE)                                   \
+  void TYPE::init_backend(Context* ctx) {                              \
     assert("This type's backend cannot be instantiated!" && false);    \
   }

@@ -104,4 +104,4 @@ void SpikingSynapses::interact_spikes_with_synapses(SpikingNeurons * neurons, Sp
   backend()->interact_spikes_with_synapses(neurons, input_neurons, current_time_in_seconds, timestep);
 }
 
-MAKE_STUB_PREPARE_BACKEND(SpikingSynapses);
+MAKE_STUB_INIT_BACKEND(SpikingSynapses);

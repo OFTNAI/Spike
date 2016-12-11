@@ -25,9 +25,9 @@ namespace Backend {
   public:
     ADD_FRONTEND_GETTER(EvansSTDP);
 
-    void prepare() override {
-      printf("TODO Backend::EvansSTDP::prepare\n");
-    }
+    // void prepare() override {
+    //   printf("TODO Backend::EvansSTDP::prepare\n");
+    // }
 
     void push_data_front() override {} // TODO
     void pull_data_back() override {} // TODO
@@ -54,7 +54,7 @@ struct evans_stdp_parameters_struct : stdp_parameters_struct {
 };
 
 
-class EvansSTDP : public virtual STDP {
+class EvansSTDP : public STDP {
 public:
   // Constructor/Destructor
   ~EvansSTDP();
@@ -68,8 +68,8 @@ public:
   //(SYNAPSE-WISE)
   float* recent_presynaptic_activities_C = nullptr;
 
-  void prepare_backend(Context* ctx = _global_ctx) override;
-  inline void prepare_backend_extra();
+  void init_backend(Context* ctx = _global_ctx) override;
+  void prepare_backend_late();
   void reset_state() override;
 
   // Set STDP Parameters

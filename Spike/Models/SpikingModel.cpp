@@ -80,7 +80,6 @@ void SpikingModel::AddSynapseGroupsForNeuronGroupAndEachInputGroup(int postsynap
 
 }
 
-#include "Spike/Neurons/LIFSpikingNeurons.hpp"
 void SpikingModel::init_backend(bool high_fidelity_spike_storage) {
   Backend::init_global_context();
   Context* ctx = Backend::get_current_context(); // TODO: Add param to choose
@@ -105,10 +104,12 @@ void SpikingModel::init_backend(bool high_fidelity_spike_storage) {
 
      TODO TODO TODO !!! */
 
-  spiking_synapses->prepare_backend(ctx);
-  spiking_neurons->prepare_backend(ctx);
-  input_spiking_neurons->prepare_backend(ctx);
-  stdp_rule->prepare_backend(ctx);
+  spiking_synapses->init_backend(ctx);
+  spiking_neurons->init_backend(ctx);
+  input_spiking_neurons->init_backend(ctx);
+  std::cout << spiking_neurons << " == " << stdp_rule->neurs << "!!!!!\n";
+  std::cout << stdp_rule << " stdp\n";
+  stdp_rule->init_backend(ctx);
 
   timer->stop_timer_and_log_time_and_message("Network Setup.", true);
 }

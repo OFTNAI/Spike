@@ -7,9 +7,7 @@
 #include "MasquelierSTDP.hpp"
 #include "../Helpers/TerminalHelpers.hpp"
 
-void MasquelierSTDP::prepare_backend_extra() {
-  assert("This is a test; please remove this line" && false);
-  
+void MasquelierSTDP::prepare_backend_late() {
   // Add the correct space for last synapse
   index_of_last_afferent_synapse_to_spike = (int*)malloc(sizeof(int)*neurs->total_number_of_neurons);
   isindexed_ltd_synapse_spike = (bool*)malloc(sizeof(bool)*neurs->total_number_of_neurons);
@@ -45,4 +43,4 @@ void MasquelierSTDP::apply_stdp_to_synapse_weights(float current_time_in_seconds
   backend()->apply_stdp_to_synapse_weights(current_time_in_seconds);
 }
 
-MAKE_PREPARE_BACKEND(MasquelierSTDP);
+MAKE_INIT_BACKEND(MasquelierSTDP);

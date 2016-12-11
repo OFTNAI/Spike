@@ -36,7 +36,7 @@ public:
   SpikingNeurons();
   ~SpikingNeurons();
 
-  void prepare_backend(Context* ctx) override;
+  void init_backend(Context* ctx) override;
   ADD_BACKEND_GETTER(SpikingNeurons);
   
   // Variables
@@ -49,7 +49,7 @@ public:
   float* thresholds_for_action_potential_spikes = nullptr;
   unsigned char* bitarray_of_neuron_spikes = nullptr;
 
-  float* last_spike_time_of_each_neuron = nullptr;
+  // float* last_spike_time_of_each_neuron = nullptr;
   float* membrane_potentials_v = nullptr;
   float* resting_potentials = nullptr;
 

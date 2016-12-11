@@ -53,7 +53,7 @@ public:
   Neurons();
   ~Neurons();
 
-  void prepare_backend(Context* ctx) override;
+  void init_backend(Context* ctx) override;
   ADD_BACKEND_GETTER(Neurons);
   
   // Variables

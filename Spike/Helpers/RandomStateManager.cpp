@@ -4,4 +4,4 @@ void RandomStateManager::reset_state() {
   backend()->reset_state();
 }
 
-MAKE_PREPARE_BACKEND(RandomStateManager);
+MAKE_INIT_BACKEND(RandomStateManager);

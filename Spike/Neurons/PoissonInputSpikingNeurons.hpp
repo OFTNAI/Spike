@@ -40,12 +40,14 @@ public:
   float * rates = nullptr;
   RandomStateManager * random_state_manager = nullptr;
 
+  void prepare_backend_early();
+  
   virtual int AddGroup(neuron_parameters_struct * group_params);
   void set_up_rates();
 
   // TODO:
   // virtual void update_membrane_potentials(float timestep, float current_time_in_seconds);
-  virtual void init_random_state();
+  virtual void init_random_state(bool force=false);
 };
 
 #endif

@@ -291,5 +291,5 @@ bool ImagePoissonInputSpikingNeurons::stimulus_is_new_object_for_object_by_objec
   return (stimulus_index % total_number_of_transformations_per_object == 0) ? true : false;
 }
 
-MAKE_PREPARE_BACKEND(ImagePoissonInputSpikingNeurons);
+MAKE_INIT_BACKEND(ImagePoissonInputSpikingNeurons);
 

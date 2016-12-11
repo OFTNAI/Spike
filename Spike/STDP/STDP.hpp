@@ -51,6 +51,7 @@ public:
   SpikingNeurons* neurs = nullptr;
 
   // Set STDP Parameters
+  // TODO: Shouldn't this be a constructor?
   virtual void Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons* neurons, SpikingNeurons* input_neurons, stdp_parameters_struct* stdp_parameters) = 0;
 
   virtual void Run_STDP(float current_time_in_seconds, float timestep) = 0;

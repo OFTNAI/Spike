@@ -14,9 +14,7 @@ EvansSTDP::~EvansSTDP() {
   free(recent_presynaptic_activities_C);
 }
 
-void EvansSTDP::prepare_backend_extra() {
-  assert("This is a test; please remove this line" && false);
-  
+void EvansSTDP::prepare_backend_late() {
   // Create extra LIF arrays
   recent_postsynaptic_activities_D = (float*)realloc(recent_postsynaptic_activities_D, (neurs->total_number_of_neurons*sizeof(float)));
   recent_presynaptic_activities_C = (float*)realloc(recent_presynaptic_activities_C, syns->total_number_of_synapses*sizeof(float));
@@ -61,4 +59,4 @@ void EvansSTDP::update_postsynaptic_activities(float timestep, float current_tim
   backend()->update_postsynaptic_activities(timestep, current_time_in_seconds);
 }
 
-MAKE_PREPARE_BACKEND(EvansSTDP);
+MAKE_INIT_BACKEND(EvansSTDP);

@@ -26,6 +26,12 @@ int LIFSpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
 	membrane_time_constants_tau_m = (float*)realloc(membrane_time_constants_tau_m, total_number_of_neurons*sizeof(float));
 	membrane_resistances_R = (float*)realloc(membrane_resistances_R, total_number_of_neurons*sizeof(float));
 
+        backend()->ensure(); // TODO: Think about this.
+                             //       How should this connect with prepare()?
+                             //       What should it be called?
+                             //       Idea is to keep front and back ends
+                             //         consistent.
+
 	float membrane_time_constant_tau_m = lif_spiking_group_params->somatic_capcitance_Cm / lif_spiking_group_params->somatic_leakage_conductance_g0;
 	float membrane_resistance_R = 1 / lif_spiking_group_params->somatic_leakage_conductance_g0;
 	
@@ -46,5 +52,5 @@ void LIFSpikingNeurons::update_membrane_potentials(float timestep,float current_
   backend()->update_membrane_potentials(timestep, current_time_in_seconds);
 }
 
-MAKE_PREPARE_BACKEND(LIFSpikingNeurons);
+MAKE_INIT_BACKEND(LIFSpikingNeurons);
 

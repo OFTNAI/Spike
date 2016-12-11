@@ -14,6 +14,7 @@ namespace Backend {
 
     virtual void reset_state() = 0;
     virtual void prepare() = 0;
+    virtual void ensure() = 0;
     virtual void push_data_front() = 0;
     virtual void pull_data_back() = 0;
   };

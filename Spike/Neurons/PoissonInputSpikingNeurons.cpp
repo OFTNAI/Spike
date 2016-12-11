@@ -33,10 +33,16 @@ void PoissonInputSpikingNeurons::set_up_rates() {
 }
 
 
-void PoissonInputSpikingNeurons::init_random_state() {
+void PoissonInputSpikingNeurons::init_random_state(bool force) {
   assert(backend() && "Backend needs to have been prepared before calling this!");
-  random_state_manager = new RandomStateManager();
-  random_state_manager->prepare_backend(backend()->context);
+  if (force || !random_state_manager) {
+    random_state_manager = new RandomStateManager();
+    random_state_manager->init_backend(backend()->context);
+  }
   printf("TODO: RNG should be managed globally...\n");
+}
+
+void PoissonInputSpikingNeurons::prepare_backend_early() {
+  init_random_state();
 }
 

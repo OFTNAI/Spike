@@ -10,16 +10,20 @@ namespace Backend {
     public:
       MAKE_BACKEND_CONSTRUCTOR(MasquelierSTDP);
 
-      virtual void reset_state() {
+      void prepare() override {
         // TODO
       }
 
-      virtual void apply_stdp_to_synapse_weights(float current_time_in_seconds) {
+      void reset_state() override {
+        // TODO
+      }
+
+      void apply_stdp_to_synapse_weights(float current_time_in_seconds) override {
         printf("TODO MasquelierSTDP::apply_stdp_to_synapse_weights\n");
       }
 
-      virtual void push_data_front() {}
-      virtual void pull_data_back() {}
+      void push_data_front() override {}
+      void pull_data_back() override {}
     };
   }
 }

@@ -22,7 +22,7 @@
 class HigginsSTDP; // forward definition
 
 namespace Backend {
-  class HigginsSTDP : public STDP {
+  class HigginsSTDP : public virtual STDP {
   public:
     ADD_FRONTEND_GETTER(HigginsSTDP);
 
@@ -55,14 +55,14 @@ struct higgins_stdp_parameters_struct : stdp_parameters_struct {
 };
 
 
-class HigginsSTDP : public virtual STDP {
+class HigginsSTDP : public STDP {
 public:
   ~HigginsSTDP();
   ADD_BACKEND_GETTER(HigginsSTDP);
 
   struct higgins_stdp_parameters_struct* stdp_params = nullptr;
 
-  virtual void prepare_backend(Context* ctx = _global_ctx);
+  virtual void init_backend(Context* ctx = _global_ctx);
 
   // Set STDP Parameters
   virtual void Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons* neurons, SpikingNeurons* input_neurons, stdp_parameters_struct* stdp_parameters);
