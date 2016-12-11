@@ -45,6 +45,10 @@ void ConductanceSpikingSynapses::increment_number_of_synapses(int increment) {
   reversal_potentials_Vhat = (float*)realloc(reversal_potentials_Vhat, total_number_of_synapses * sizeof(float));
   decay_terms_tau_g = (float*)realloc(decay_terms_tau_g, total_number_of_synapses * sizeof(float));
 
+  printf("increment at %p: %d; %p\n",
+         this, increment,
+         synaptic_conductances_g);
+
 }
 
 

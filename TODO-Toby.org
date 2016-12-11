@@ -3,8 +3,10 @@ CLOSED: [2016-11-11 Fri 14:00]
 :LOGBOOK:
 - State "DONE"       from              [2016-11-11 Fri 14:00]
 :END:
-* PROGRESS Refactor extant CUDA code into a backend
+* DONE Refactor extant CUDA code into a backend
+CLOSED: [2016-12-11 Sun 18:20]
 :LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2016-12-11 Sun 18:20]
 - State "PROGRESS"   from "TODO"       [2016-11-11 Fri 14:00]
 :END:
 ** DONE Backend/CUDA/Synapses: copy Backend/Dummy/Synapses common classes
@@ -18,7 +20,12 @@ CLOSED: [2016-12-11 Sun 00:50]
 - State "DONE"       from "PROGRESS"   [2016-12-11 Sun 00:50]
 - State "PROGRESS"   from "TODO"       [2016-11-30 Wed 15:40]
 :END:
-** TODO Look for MISSING KERNELS ?!
+** CANCELLED Look for MISSING KERNELS ?!
+CLOSED: [2016-12-11 Sun 18:20]
+:LOGBOOK:
+- State "CANCELLED"  from "TODO"       [2016-12-11 Sun 18:20] \\
+  Don't need to do this, it seems: no missing kernels apparent.
+:END:
 + check Backend/CUDA header files (esp Synapses/)
 ** DONE Remove `d_' from pointer names in CUDA backend classes ...
 CLOSED: [2016-12-11 Sun 00:50]
@@ -44,6 +51,12 @@ CLOSED: [2016-12-11 Sun 00:50]
 :LOGBOOK:
 - State "PROGRESS"   from "TODO"       [2016-11-20 Sun 12:10]
 :END:
+** PROGRESS Make sure backends are actually prepared !!
+:LOGBOOK:
+- State "PROGRESS"   from "TODO"       [2016-12-11 Sun 18:20]
+:END:
++ this means, for example, calling allocate_device_pointers from prepare in all relevant cases
+  - CHECK THIS!!
 ** PROGRESS Fix all TODO comments in frontend code
 :LOGBOOK:
 - State "PROGRESS"   from "TODO"       [2016-12-11 Sun 00:50]

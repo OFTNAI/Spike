@@ -28,6 +28,18 @@ namespace Backend {
     }
 
     void ConductanceSpikingSynapses::reset_state() {
+      assert(synaptic_conductances_g);
+      printf("??? %p, %p, %p, %d\n",
+             synaptic_conductances_g,
+             frontend(),
+             frontend()->synaptic_conductances_g,
+             frontend()->total_number_of_synapses);
+      // TODO: So it seems that this->synaptic_conductances_g is not
+      //       allocated at the point when this is called from RunSimulation
+      //       (ie, from SpikingModel::reset_state via that route).
+      //       Why is this?
+      // TODO: -- WELL, IT SEEMS THAT THIS WAS BECAUSE THE BACKEND WAS NOT
+      //          PROPERLY PREPARED !!
       CudaSafeCall(cudaMemcpy(synaptic_conductances_g,
                               frontend()->synaptic_conductances_g,
                               sizeof(float)*frontend()->total_number_of_synapses,
@@ -37,6 +49,8 @@ namespace Backend {
     void ConductanceSpikingSynapses::prepare() {
       SpikingSynapses::prepare();
       // TODO? Should we consolidate prepare and allocate_device_pointers?
+      allocate_device_pointers();
+      copy_constants_and_initial_efficacies_to_device();
     }
 
     void ConductanceSpikingSynapses::allocate_device_pointers() {
@@ -47,6 +61,9 @@ namespace Backend {
 	CudaSafeCall(cudaMalloc((void **)&decay_terms_tau_g, sizeof(float)*frontend()->total_number_of_synapses));
 
 	CudaSafeCall(cudaMalloc((void **)&synaptic_conductances_g, sizeof(float)*frontend()->total_number_of_synapses));
+        printf("@@@@@@@@@@@@@@@@@@@@ allocating css pointers: %d; s_c_g %p\n",
+               frontend()->total_number_of_synapses,
+               synaptic_conductances_g);
     }
 
     void ConductanceSpikingSynapses::copy_constants_and_initial_efficacies_to_device() {
