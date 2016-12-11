@@ -146,7 +146,7 @@ void Simulator::RunSimulation() {
 		TimerWithMessages * epoch_timer = new TimerWithMessages();
 		printf("Starting Epoch: %d\n", epoch_number);
 
-		spiking_model->reset_state();
+		// spiking_model->reset_state();
 
 		float current_time_in_seconds = 0.0f;
 
@@ -155,7 +155,7 @@ void Simulator::RunSimulation() {
 
 			if (simulator_options->stimuli_presentation_options->reset_current_time_between_each_stimulus) current_time_in_seconds = 0.0f; // For GeneratorInputSpikingNeurons?
 
-			perform_pre_stimulus_presentation_instructions(stimuli_presentation_order[stimulus_index]);
+			// perform_pre_stimulus_presentation_instructions(stimuli_presentation_order[stimulus_index]);
 
 			//TEMP 
 			delete ((FourLayerVisionSpikingModel*)spiking_model)->image_poisson_input_spiking_neurons->random_state_manager;
@@ -166,25 +166,25 @@ void Simulator::RunSimulation() {
 
 			for (int timestep_index = 0; timestep_index < number_of_timesteps_per_stimulus_per_epoch; timestep_index++){
 				
-				spiking_model->perform_per_timestep_model_instructions(current_time_in_seconds, simulator_options->run_simulation_general_options->apply_stdp_to_relevant_synapses);
+				// spiking_model->perform_per_timestep_model_instructions(current_time_in_seconds, simulator_options->run_simulation_general_options->apply_stdp_to_relevant_synapses);
 
-				perform_per_timestep_recording_electrode_instructions(current_time_in_seconds, timestep_index, number_of_timesteps_per_stimulus_per_epoch);
+				// perform_per_timestep_recording_electrode_instructions(current_time_in_seconds, timestep_index, number_of_timesteps_per_stimulus_per_epoch);
 
 				current_time_in_seconds += float(spiking_model->timestep);
 
 			}
 
-			perform_post_stimulus_presentation_instructions();
+			// perform_post_stimulus_presentation_instructions();
 			
 		}
 
-		perform_post_epoch_instructions(epoch_number, epoch_timer);
+		// perform_post_epoch_instructions(epoch_number, epoch_timer);
 		
 	}
 	
-	perform_end_of_simulation_instructions(simulation_timer);
+	// perform_end_of_simulation_instructions(simulation_timer);
 
-        if (spike_analyser)
+        if (false) // spike_analyser)
           spike_analyser->calculate_various_neuron_spike_totals_and_averages(simulator_options->run_simulation_general_options->presentation_time_per_stimulus_per_epoch);
 	
 }
