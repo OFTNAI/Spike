@@ -81,7 +81,7 @@ public:
 
   ADD_BACKEND_GETTER(Synapses);
   void init_backend(Context* ctx = _global_ctx);
-  void prepare_backend_early();
+  void prepare_backend_early() override;
   
   // Variables
   int total_number_of_synapses = 0;

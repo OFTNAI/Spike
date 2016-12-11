@@ -15,6 +15,11 @@
     /*assert(((Backend::TYPE*)_backend)->ready &&   */  \
     /*       "Need to have backend ready!"); */         \
     return (Backend::TYPE*)_backend;                    \
+  }                                                     \
+  inline void prepare_backend() {                       \
+    prepare_backend_early();                            \
+    backend()->prepare();                               \
+    prepare_backend_late();                             \
   }
 
 #define MAKE_BACKEND_CONSTRUCTOR(TYPE)                  \

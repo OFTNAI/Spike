@@ -50,6 +50,7 @@ public:
 
   // virtual void finalise_model();
   virtual void init_backend(bool high_fidelity_spike_storage);
+  virtual void prepare_backend();
 };
 
 #endif

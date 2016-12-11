@@ -357,4 +357,6 @@ void FourLayerVisionSpikingModel::init_backend(bool high_fidelity_spike_storage)
 	
 	adding_synapses_timer->stop_timer_and_log_time_and_message("Synapses Added.", true);
         image_poisson_input_spiking_neurons->copy_rates_to_device();
+
+        SpikingModel::prepare_backend();
 }

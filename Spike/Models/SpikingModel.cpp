@@ -107,13 +107,17 @@ void SpikingModel::init_backend(bool high_fidelity_spike_storage) {
   spiking_synapses->init_backend(ctx);
   spiking_neurons->init_backend(ctx);
   input_spiking_neurons->init_backend(ctx);
-  std::cout << spiking_neurons << " == " << stdp_rule->neurs << "!!!!!\n";
-  std::cout << stdp_rule << " stdp\n";
   stdp_rule->init_backend(ctx);
 
   timer->stop_timer_and_log_time_and_message("Network Setup.", true);
 }
 
+void SpikingModel::prepare_backend() {
+  spiking_synapses->prepare_backend();
+  spiking_neurons->prepare_backend();
+  input_spiking_neurons->prepare_backend();
+  stdp_rule->prepare_backend();
+}
 
 void SpikingModel::reset_state() {
 

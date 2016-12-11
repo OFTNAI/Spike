@@ -14,9 +14,4 @@ public:
 
   virtual void prepare_backend_early() {}
   virtual void prepare_backend_late() {}
-  void prepare_backend() {
-    prepare_backend_early();
-    backend()->prepare();
-    prepare_backend_late();
-  }
 };
