@@ -15,6 +15,10 @@ namespace Backend {
         // TODO
       }
 
+      void copy_rates_to_device() override {
+        // TODO
+      }
+      
       void check_for_neuron_spikes
       (float current_time_in_seconds, float timestep) override {
         // printf("TODO Backend::Dummy::ImagePoissonInputSpikingNeurons::check_for_neuron_spikes\n");

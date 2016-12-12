@@ -21,7 +21,7 @@ namespace Backend {
       MAKE_BACKEND_CONSTRUCTOR(ImagePoissonInputSpikingNeurons);
       using ::Backend::ImagePoissonInputSpikingNeurons::frontend;
 
-      void copy_rates_to_device();
+      void copy_rates_to_device() override;
       void update_membrane_potentials(float timestep, float current_time_in_seconds) override;
 
       // virtual void check_for_neuron_spikes(float current_time_in_seconds, float timestep);

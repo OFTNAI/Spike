@@ -61,6 +61,7 @@ CLOSED: [2016-12-11 Sun 00:50]
 :LOGBOOK:
 - State "PROGRESS"   from "TODO"       [2016-12-11 Sun 00:50]
 :END:
+** TODO Fix dynamic_casts -- often return NULL when not casting to most derived backend type...
 ** PROGRESS Call prepare_backend when making changes that require ensuring consistency between front and back ends
 :LOGBOOK:
 - State "PROGRESS"   from "TODO"       [2016-12-11 Sun 00:50]

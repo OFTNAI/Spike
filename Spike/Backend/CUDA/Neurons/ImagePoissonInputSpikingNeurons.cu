@@ -31,8 +31,6 @@ namespace Backend {
     }
     
     void ImagePoissonInputSpikingNeurons::prepare() {
-      // TODO
-
       PoissonInputSpikingNeurons::prepare();
     }
   }

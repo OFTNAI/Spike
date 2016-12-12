@@ -76,6 +76,8 @@ Simulator::Simulator(SpikingModel * spiking_model_param, Simulator_Options * sim
           (spiking_model->spiking_neurons,
            spiking_model->input_spiking_neurons,
            count_neuron_spikes_recording_electrodes);
+        // TODO: Perhaps init automatically? ..
+        spike_analyser->init_backend(spiking_model->spiking_neurons->backend()->context);
 
 	timer->stop_timer_and_log_time_and_message("Recording electrodes setup.\n", true);
 
@@ -175,23 +177,23 @@ void Simulator::RunSimulation() {
 				
 				spiking_model->perform_per_timestep_model_instructions(current_time_in_seconds, simulator_options->run_simulation_general_options->apply_stdp_to_relevant_synapses);
 
-				// perform_per_timestep_recording_electrode_instructions(current_time_in_seconds, timestep_index, number_of_timesteps_per_stimulus_per_epoch);
+				perform_per_timestep_recording_electrode_instructions(current_time_in_seconds, timestep_index, number_of_timesteps_per_stimulus_per_epoch);
 
 				current_time_in_seconds += float(spiking_model->timestep);
 
 			}
 
-			// perform_post_stimulus_presentation_instructions();
+			perform_post_stimulus_presentation_instructions();
 			
 		}
 
-		// perform_post_epoch_instructions(epoch_number, epoch_timer);
+		perform_post_epoch_instructions(epoch_number, epoch_timer);
 		
 	}
 	
-	// perform_end_of_simulation_instructions(simulation_timer);
+	perform_end_of_simulation_instructions(simulation_timer);
 
-        if (false) // spike_analyser)
+        if (spike_analyser)
           spike_analyser->calculate_various_neuron_spike_totals_and_averages(simulator_options->run_simulation_general_options->presentation_time_per_stimulus_per_epoch);
 	
 }

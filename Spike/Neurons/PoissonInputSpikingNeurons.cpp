@@ -43,6 +43,7 @@ void PoissonInputSpikingNeurons::init_random_state(bool force) {
 }
 
 void PoissonInputSpikingNeurons::prepare_backend_early() {
+  InputSpikingNeurons::prepare_backend_early();
   init_random_state();
 }
 

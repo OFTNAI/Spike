@@ -14,7 +14,8 @@ namespace Backend {
     class InputSpikingNeurons : public virtual ::Backend::CUDA::SpikingNeurons,
                                 public virtual ::Backend::InputSpikingNeurons {
     public:
-      virtual void reset_state();
+      void reset_state() override;
+      void prepare() override;
     };
   }
 }

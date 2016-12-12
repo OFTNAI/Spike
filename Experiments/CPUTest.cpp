@@ -17,7 +17,7 @@ int main (int argc, char *argv[]){
 	TimerWithMessages * experiment_timer = new TimerWithMessages();
 
 	// Simulator Parameters
-	float timestep = 0.00002;
+	float timestep = 0.5; // 0.00002;
 	bool high_fidelity_spike_storage = true;
 
 	float presentation_time_per_stimulus_per_epoch = 2.0;

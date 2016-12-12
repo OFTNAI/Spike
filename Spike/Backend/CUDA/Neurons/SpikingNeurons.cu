@@ -20,21 +20,13 @@ namespace Backend {
              frontend()->total_number_of_neurons,
              last_spike_time_of_each_neuron);
       CudaSafeCall(cudaMalloc((void **)&membrane_potentials_v, sizeof(float)*frontend()->total_number_of_neurons));
+      printf("############ %p, %p\n", this, membrane_potentials_v);
       CudaSafeCall(cudaMalloc((void **)&thresholds_for_action_potential_spikes, sizeof(float)*frontend()->total_number_of_neurons));
       CudaSafeCall(cudaMalloc((void **)&resting_potentials, sizeof(float)*frontend()->total_number_of_neurons));
 
-      // Choosing Spike Mechanism
-      // TODO: Move most of this to frontend init! (It's not backend-specific!!)
-      frontend()->high_fidelity_spike_flag = high_fidelity_spike_storage;
-      frontend()->bitarray_maximum_axonal_delay_in_timesteps = maximum_axonal_delay_in_timesteps;
       if (high_fidelity_spike_storage){
         // Create bit array of correct length
-        frontend()->bitarray_length = (maximum_axonal_delay_in_timesteps / 8) + 1; // each char is 8 bit long.
         CudaSafeCall(cudaMalloc((void **)&bitarray_of_neuron_spikes, sizeof(unsigned char)*frontend()->bitarray_length*frontend()->total_number_of_neurons));
-        bitarray_of_neuron_spikes = (unsigned char *)malloc(sizeof(unsigned char)*frontend()->bitarray_length*frontend()->total_number_of_neurons);
-        for (int i = 0; i < frontend()->bitarray_length*frontend()->total_number_of_neurons; i++){
-          bitarray_of_neuron_spikes[i] = (unsigned char)0;
-        }
       }
     }
 
@@ -75,19 +67,14 @@ namespace Backend {
                               cudaMemcpyHostToDevice));
 
       if (frontend()->high_fidelity_spike_flag) {
-        // TODO: Fix this up
-        if (frontend()->bitarray_of_neuron_spikes) {
-          printf("::::: %p, %p, %d\n",
-                 bitarray_of_neuron_spikes,
-                 frontend()->bitarray_of_neuron_spikes,
-                 frontend()->bitarray_length*frontend()->total_number_of_neurons);
-          CudaSafeCall(cudaMemcpy(bitarray_of_neuron_spikes,
-                                  frontend()->bitarray_of_neuron_spikes,
-                                  sizeof(unsigned char)*frontend()->bitarray_length*frontend()->total_number_of_neurons,
-                                  cudaMemcpyHostToDevice));
-        } else {
-          printf("HIGH FIDELITY SPIKE FLAG SET BUT NO FRONTEND BITARRAY!\n");
-        }
+        printf("::::: %p, %p, %d\n",
+               bitarray_of_neuron_spikes,
+               frontend()->bitarray_of_neuron_spikes,
+               frontend()->bitarray_length*frontend()->total_number_of_neurons);
+        CudaSafeCall(cudaMemcpy(bitarray_of_neuron_spikes,
+                                frontend()->bitarray_of_neuron_spikes,
+                                sizeof(unsigned char)*frontend()->bitarray_length*frontend()->total_number_of_neurons,
+                                cudaMemcpyHostToDevice));
       }
     }
 

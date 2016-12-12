@@ -20,6 +20,7 @@ namespace Backend {
   class ImagePoissonInputSpikingNeurons : public virtual PoissonInputSpikingNeurons {
   public:
     ADD_FRONTEND_GETTER(ImagePoissonInputSpikingNeurons);
+    virtual void copy_rates_to_device() = 0;
   };
 }
 

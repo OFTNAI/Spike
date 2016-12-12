@@ -6,5 +6,9 @@ namespace Backend {
     void InputSpikingNeurons::reset_state() {
       printf("!!! TODO InputSpikingNeurons::reset_state called\n");
     }
+
+    void InputSpikingNeurons::prepare() {
+      SpikingNeurons::prepare();
+    }
   }
 }

@@ -1,5 +1,7 @@
 // -*- mode: c++ -*-
 #include "Spike/Backend/CUDA/Synapses/SpikingSynapses.hpp"
+#include "Spike/Backend/CUDA/Neurons/LIFSpikingNeurons.hpp"
+#include "Spike/Backend/CUDA/Neurons/ImagePoissonInputSpikingNeurons.hpp"
 
 namespace Backend {
   namespace CUDA {
@@ -59,11 +61,28 @@ namespace Backend {
      ::SpikingNeurons* input_neurons,
      float current_time_in_seconds, float timestep) {
 
+      // TODO: Fix this weird cludge (want to cast most generically!)
       ::Backend::CUDA::SpikingNeurons* neurons_backend =
-        dynamic_cast<::Backend::CUDA::SpikingNeurons*>(neurons->backend());
+        dynamic_cast<::Backend::CUDA::LIFSpikingNeurons*>(neurons->backend());
       ::Backend::CUDA::SpikingNeurons* input_neurons_backend =
-        dynamic_cast<::Backend::CUDA::SpikingNeurons*>(input_neurons->backend());
+        dynamic_cast<::Backend::CUDA::ImagePoissonInputSpikingNeurons*>(input_neurons->backend());
 
+      std::cout << "########## " << TYPEID_NAME(input_neurons->backend()) << "\n"
+                << input_neurons_backend << " (" << input_neurons->_backend << ") -- "
+                << input_neurons_backend->membrane_potentials_v << "\n";
+
+      printf(";;;;;;;; %p, %p, %p, %p, %d, %d, %f, %f, %d, %p\n",
+             presynaptic_neuron_indices,
+             delays,
+             neurons_backend->bitarray_of_neuron_spikes,
+             input_neurons_backend->bitarray_of_neuron_spikes,
+             neurons->bitarray_length,
+             neurons->bitarray_maximum_axonal_delay_in_timesteps,
+             current_time_in_seconds,
+             timestep,
+             frontend()->total_number_of_synapses,
+             time_of_last_spike_to_reach_synapse);
+      
       if (neurons->high_fidelity_spike_flag){
         check_bitarray_for_presynaptic_neuron_spikes<<<number_of_synapse_blocks_per_grid, threads_per_block>>>
           (presynaptic_neuron_indices,

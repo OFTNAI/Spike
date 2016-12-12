@@ -38,6 +38,7 @@ public:
 
   void init_backend(Context* ctx) override;
   ADD_BACKEND_GETTER(SpikingNeurons);
+  void prepare_backend_early() override;
   
   // Variables
   int bitarray_length;

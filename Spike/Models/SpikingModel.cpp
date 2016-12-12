@@ -98,9 +98,6 @@ void SpikingModel::init_backend(bool high_fidelity_spike_storage) {
 
   /* TODO TODO TODO !!!
 
-  input_spiking_neurons->set_threads_per_block_and_blocks_per_grid(threads_per_block_neurons);
-  input_spiking_neurons->allocate_device_pointers(spiking_synapses->maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
-  input_spiking_neurons->copy_constants_to_device();
 
      TODO TODO TODO !!! */
 

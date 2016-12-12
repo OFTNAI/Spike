@@ -15,7 +15,12 @@ namespace Backend {
     void PoissonInputSpikingNeurons::copy_constants_to_device() {
       InputSpikingNeurons::copy_constants_to_device();
 
-      if (rates != nullptr) {
+      if (rates != nullptr && frontend()->rates) {
+        // TODO: Above check shouldn't be necessary (esp. the frontend() bit!)
+        // So many bugs ...
+        printf(";;;;;; %p, %p, %d\n",
+               rates, frontend()->rates,
+               frontend()->total_number_of_neurons);
         CudaSafeCall(cudaMemcpy(rates, frontend()->rates, sizeof(float)*frontend()->total_number_of_neurons, cudaMemcpyHostToDevice));
       }
     }
@@ -26,7 +31,11 @@ namespace Backend {
 
     void PoissonInputSpikingNeurons::prepare() {
       // TODO: Check (call copy_constants, set_up_states etc?)
-      // ...
+      // set_threads_per_block_and_blocks_per_grid(threads_per_block_neurons);
+      // allocate_device_pointers(spiking_synapses->maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
+      // copy_constants_to_device();
+
+      InputSpikingNeurons::prepare();
 
       // Crudely assume that the RandomStateManager backend is also CUDA:
       random_state_manager_backend
