@@ -64,7 +64,7 @@ namespace Backend {
         dynamic_cast<::Backend::CUDA::SpikingNeurons*>(neurons->backend());
       assert(neurons_backend);
       ::Backend::CUDA::SpikingNeurons* input_neurons_backend =
-        dynamic_cast<::Backend::CUDA::InputSpikingNeurons*>(input_neurons->backend());
+        dynamic_cast<::Backend::CUDA::SpikingNeurons*>(input_neurons->backend());
       assert(input_neurons_backend);
 
       // std::cout << "########## " << TYPEID_NAME(input_neurons->backend()) << "\n"
