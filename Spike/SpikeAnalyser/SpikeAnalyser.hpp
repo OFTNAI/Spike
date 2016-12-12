@@ -42,7 +42,7 @@ namespace Backend {
 
 class SpikeAnalyser : public virtual SpikeBase {
 public:
-  ADD_BACKEND_GETTER(SpikeAnalyser);
+  ADD_BACKEND_GETSET(SpikeAnalyser, SpikeBase);
   void init_backend(Context* ctx = _global_ctx);
   virtual void reset_state() {}
 
@@ -99,6 +99,8 @@ public:
   void calculate_fitness_score(float optimal_average_firing_rate, float optimal_max_firing_rate);
   void calculate_single_cell_information_scores_for_neuron_group(int neuron_group_index, int number_of_bins, bool useThresholdForMaxFR,float optimal_max_firing_rate);
 
+private:
+  ::Backend::SpikeAnalyser* _backend = nullptr;
 };
 
 #endif

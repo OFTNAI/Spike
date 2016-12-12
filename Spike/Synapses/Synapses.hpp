@@ -79,7 +79,7 @@ public:
   Synapses();
   ~Synapses();
 
-  ADD_BACKEND_GETTER(Synapses);
+  ADD_BACKEND_GETSET(Synapses, SpikeBase);
   void init_backend(Context* ctx = _global_ctx);
   void prepare_backend_early() override;
   
@@ -108,6 +108,9 @@ public:
   virtual void shuffle_synapses();
 
   RandomStateManager * random_state_manager;
+
+private:
+  ::Backend::Synapses* _backend = nullptr;
 };
 
 // GAUSS random number generator

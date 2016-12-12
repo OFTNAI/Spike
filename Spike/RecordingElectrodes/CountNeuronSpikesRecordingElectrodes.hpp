@@ -31,7 +31,8 @@ namespace Backend {
 
 class CountNeuronSpikesRecordingElectrodes : public RecordingElectrodes {
 public:
-  ADD_BACKEND_GETTER(CountNeuronSpikesRecordingElectrodes);
+  ADD_BACKEND_GETSET(CountNeuronSpikesRecordingElectrodes,
+                     RecordingElectrodes);
   virtual void init_backend(Context* ctx = _global_ctx);
   virtual void reset_state();
   
@@ -48,6 +49,9 @@ public:
   void allocate_pointers_for_spike_count();
 
   void add_spikes_to_per_neuron_spike_count(float current_time_in_seconds);
+
+private:
+  ::Backend::CountNeuronSpikesRecordingElectrodes* _backend = nullptr;
 };
 
 #endif

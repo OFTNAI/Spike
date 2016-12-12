@@ -1,7 +1,5 @@
 // -*- mode: c++ -*-
 #include "Spike/Backend/CUDA/Synapses/SpikingSynapses.hpp"
-#include "Spike/Backend/CUDA/Neurons/LIFSpikingNeurons.hpp"
-#include "Spike/Backend/CUDA/Neurons/ImagePoissonInputSpikingNeurons.hpp"
 
 namespace Backend {
   namespace CUDA {
@@ -61,15 +59,17 @@ namespace Backend {
      ::SpikingNeurons* input_neurons,
      float current_time_in_seconds, float timestep) {
 
-      // TODO: Fix this weird cludge (want to cast most generically!)
+      // TODO: Is the dynamic cast too slow?
       ::Backend::CUDA::SpikingNeurons* neurons_backend =
-        dynamic_cast<::Backend::CUDA::LIFSpikingNeurons*>(neurons->backend());
+        dynamic_cast<::Backend::CUDA::SpikingNeurons*>(neurons->backend());
+      assert(neurons_backend);
       ::Backend::CUDA::SpikingNeurons* input_neurons_backend =
-        dynamic_cast<::Backend::CUDA::ImagePoissonInputSpikingNeurons*>(input_neurons->backend());
+        dynamic_cast<::Backend::CUDA::InputSpikingNeurons*>(input_neurons->backend());
+      assert(input_neurons_backend);
 
-      std::cout << "########## " << TYPEID_NAME(input_neurons->backend()) << "\n"
-                << input_neurons_backend << " (" << input_neurons->_backend << ") -- "
-                << input_neurons_backend->membrane_potentials_v << "\n";
+      // std::cout << "########## " << TYPEID_NAME(input_neurons->backend()) << "\n"
+      //           << input_neurons_backend << " (" << input_neurons->_backend << ") -- "
+      //           << input_neurons_backend->membrane_potentials_v << "\n";
 
       printf(";;;;;;;; %p, %p, %p, %p, %d, %d, %f, %f, %d, %p\n",
              presynaptic_neuron_indices,

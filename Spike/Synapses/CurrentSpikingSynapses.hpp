@@ -20,7 +20,7 @@ namespace Backend {
 
 class CurrentSpikingSynapses : public SpikingSynapses {
 public:
-  ADD_BACKEND_GETTER(CurrentSpikingSynapses);
+  ADD_BACKEND_GETSET(CurrentSpikingSynapses, SpikingSynapses);
   
   virtual void AddGroup(int presynaptic_group_id, 
                         int postsynaptic_group_id, 
@@ -33,6 +33,9 @@ public:
   virtual void calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds, float timestep);
 
   virtual void init_backend(Context* ctx = _global_ctx);
+
+private:
+  ::Backend::CurrentSpikingSynapses* _backend = nullptr;
 };
 
 #endif

@@ -34,7 +34,7 @@ public:
   PoissonInputSpikingNeurons() = default;
   ~PoissonInputSpikingNeurons();
 
-  ADD_BACKEND_GETTER(PoissonInputSpikingNeurons);
+  ADD_BACKEND_GETSET(PoissonInputSpikingNeurons, InputSpikingNeurons);
   
   float rate = 0;
   float * rates = nullptr;
@@ -48,6 +48,9 @@ public:
   // TODO:
   // virtual void update_membrane_potentials(float timestep, float current_time_in_seconds);
   virtual void init_random_state(bool force=false);
+
+private:
+  ::Backend::PoissonInputSpikingNeurons* _backend = nullptr;
 };
 
 #endif

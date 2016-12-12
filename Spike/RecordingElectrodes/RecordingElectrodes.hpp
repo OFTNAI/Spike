@@ -35,7 +35,7 @@ public:
                       string full_directory_name_for_simulation_data_files_param,
                       const char * prefix_string_param);
 
-  ADD_BACKEND_GETTER(RecordingElectrodes);
+  ADD_BACKEND_GETSET(RecordingElectrodes, SpikeBase);
   virtual void init_backend(Context* ctx = _global_ctx) = 0;
   virtual void reset_state() = 0;
 
@@ -46,6 +46,9 @@ public:
   // Host Pointers
   SpikingNeurons * neurons;
   SpikingSynapses * synapses;
+
+private:
+  ::Backend::RecordingElectrodes* _backend = nullptr;
 };
 
 #endif

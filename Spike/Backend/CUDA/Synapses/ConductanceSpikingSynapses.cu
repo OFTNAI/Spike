@@ -1,6 +1,5 @@
 // -*- mode: c++ -*-
 #include "Spike/Backend/CUDA/Synapses/ConductanceSpikingSynapses.hpp"
-#include "Spike/Backend/CUDA/Neurons/LIFSpikingNeurons.hpp"
 
 namespace Backend {
   namespace CUDA {
@@ -14,9 +13,9 @@ namespace Backend {
 
     void ConductanceSpikingSynapses::calculate_postsynaptic_current_injection(::SpikingNeurons * neurons, float current_time_in_seconds, float timestep) {
 
-      // TODO: Fix this weird cludge (want to cast most generically!)
       ::Backend::CUDA::SpikingNeurons* neurons_backend =
-        dynamic_cast<::Backend::CUDA::LIFSpikingNeurons*>(neurons->backend());
+        dynamic_cast<::Backend::CUDA::SpikingNeurons*>(neurons->backend());
+      assert(neurons_backend);
 
       	conductance_calculate_postsynaptic_current_injection_kernel<<<number_of_synapse_blocks_per_grid, threads_per_block>>>
           (presynaptic_neuron_indices,

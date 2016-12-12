@@ -38,7 +38,7 @@ public:
   AdExSpikingNeurons();
   ~AdExSpikingNeurons();
 
-  ADD_BACKEND_GETTER(AdExSpikingNeurons);
+  ADD_BACKEND_GETSET(AdExSpikingNeurons, SpikingNeurons);
   
   float * adaptation_values_w = nullptr;
   float * membrane_capacitances_Cm = nullptr;
@@ -53,6 +53,9 @@ public:
   virtual int AddGroup(neuron_parameters_struct * group_params);
   virtual void update_membrane_potentials(float timestep, float current_time_in_seconds);
   virtual void reset_state();
+
+private:
+  ::Backend::AdExSpikingNeurons* _backend = nullptr;
 };
 
 #endif

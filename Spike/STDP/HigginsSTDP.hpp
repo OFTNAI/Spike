@@ -58,7 +58,7 @@ struct higgins_stdp_parameters_struct : stdp_parameters_struct {
 class HigginsSTDP : public STDP {
 public:
   ~HigginsSTDP();
-  ADD_BACKEND_GETTER(HigginsSTDP);
+  ADD_BACKEND_GETSET(HigginsSTDP, STDP);
 
   struct higgins_stdp_parameters_struct* stdp_params = nullptr;
 
@@ -72,6 +72,9 @@ public:
   // LTP & LTD for this model
   void apply_ltd_to_synapse_weights(float current_time_in_seconds);
   void apply_ltp_to_synapse_weights(float current_time_in_seconds);
+
+private:
+  ::Backend::HigginsSTDP* _backend = nullptr;
 };
 
 #endif

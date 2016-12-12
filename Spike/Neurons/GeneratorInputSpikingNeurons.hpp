@@ -28,7 +28,7 @@ public:
   GeneratorInputSpikingNeurons();
   ~GeneratorInputSpikingNeurons();
 
-  ADD_BACKEND_GETTER(GeneratorInputSpikingNeurons);
+  ADD_BACKEND_GETSET(GeneratorInputSpikingNeurons, InputSpikingNeurons);
   
   // Variables
   int length_of_longest_stimulus;
@@ -46,6 +46,9 @@ public:
   virtual void update_membrane_potentials(float timestep, float current_time_in_seconds);
 
   void AddStimulus(int spikenumber, int* ids, float* spiketimes);
+
+private:
+  ::Backend::GeneratorInputSpikingNeurons* _backend = nullptr;
 };
 
 #endif

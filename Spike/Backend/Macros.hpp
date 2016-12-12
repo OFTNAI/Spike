@@ -8,12 +8,14 @@
 #define TYPEID_NAME(x) abi::__cxa_demangle(typeid((x)).name(), NULL, NULL, NULL)
 #endif
 
-#define ADD_BACKEND_GETTER(TYPE)                        \
+#define ADD_BACKEND_GETSET(TYPE, SUPER)                 \
+  void backend(Backend::TYPE* ptr) {                    \
+    _backend = ptr;                                     \
+    SUPER::backend(ptr);                                \
+  }                                                     \
   inline Backend::TYPE* backend() const {               \
     assert(_backend != nullptr &&                       \
            "Need to have backend initialized!");        \
-    /*assert(((Backend::TYPE*)_backend)->ready &&   */  \
-    /*       "Need to have backend ready!"); */         \
     return (Backend::TYPE*)_backend;                    \
   }                                                     \
   inline void prepare_backend() {                       \
@@ -40,16 +42,18 @@
 #define MAKE_INIT_BACKEND(TYPE)                                         \
   void TYPE::init_backend(Context* ctx) {                               \
     std::cout << "init_backend " #TYPE " with " << ctx->device << "\n"; \
+    ::Backend::TYPE* ptr = nullptr;                                     \
     switch (ctx->device) {                                              \
     case Backend::SPIKE_DEVICE_DUMMY:                                   \
-      _backend = new Backend::Dummy::TYPE(this);                        \
+      ptr = new Backend::Dummy::TYPE(this);                             \
       break;                                                            \
     case Backend::SPIKE_DEVICE_CUDA:                                    \
-      _backend = new Backend::CUDA::TYPE(this);                         \
+      ptr = new Backend::CUDA::TYPE(this);                              \
       break;                                                            \
     default:                                                            \
       assert("Unsupported backend" && false);                           \
     };                                                                  \
+    backend(ptr);                                                       \
     backend()->context = ctx;                                           \
     prepare_backend();                                                  \
     std::cout << "backend: " << _backend << "\n";                       \
@@ -59,13 +63,15 @@
 #define MAKE_INIT_BACKEND(TYPE)                                         \
   void TYPE::init_backend(Context* ctx) {                               \
     std::cout << "init_backend " #TYPE " with " << ctx->device << "\n"; \
+    ::Backend::TYPE* ptr = nullptr;                                     \
     switch (ctx->device) {                                              \
     case Backend::SPIKE_DEVICE_DUMMY:                                   \
-      _backend = new Backend::Dummy::TYPE(this);                        \
+      ptr = new Backend::Dummy::TYPE(this);                             \
       break;                                                            \
     default:                                                            \
       assert("Unsupported backend" && false);                           \
     };                                                                  \
+    backend(ptr);                                                       \
     backend()->context = ctx;                                           \
     prepare_backend();                                                  \
     std::cout << "backend: " << _backend << "\n";                       \

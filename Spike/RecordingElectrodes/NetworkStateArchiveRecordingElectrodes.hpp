@@ -38,7 +38,8 @@ struct Network_State_Archive_Optional_Parameters {
 
 class NetworkStateArchiveRecordingElectrodes  : public RecordingElectrodes {
 public:
-  ADD_BACKEND_GETTER(NetworkStateArchiveRecordingElectrodes);
+  ADD_BACKEND_GETSET(NetworkStateArchiveRecordingElectrodes,
+                     RecordingElectrodes);
   virtual void init_backend(Context* ctx = _global_ctx);
   virtual void reset_state();
 
@@ -52,6 +53,9 @@ public:
 
   void write_initial_synaptic_weights_to_file();
   void write_network_state_to_file();
+
+private:
+  ::Backend::NetworkStateArchiveRecordingElectrodes* _backend = nullptr;
 };
 
 #endif

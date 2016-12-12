@@ -45,7 +45,8 @@ struct Collect_Neuron_Spikes_Optional_Parameters {
 
 class CollectNeuronSpikesRecordingElectrodes : public RecordingElectrodes {
 public:
-  ADD_BACKEND_GETTER(CollectNeuronSpikesRecordingElectrodes);
+  ADD_BACKEND_GETSET(CollectNeuronSpikesRecordingElectrodes,
+                     RecordingElectrodes);
   virtual void init_backend(Context* ctx = _global_ctx);
   virtual void reset_state();
 
@@ -75,6 +76,7 @@ public:
   void delete_and_reset_collected_spikes();
 
 private:
+  ::Backend::CollectNeuronSpikesRecordingElectrodes* _backend = nullptr;
 
   // Host Pointers
   int* reset_neuron_ids = nullptr;

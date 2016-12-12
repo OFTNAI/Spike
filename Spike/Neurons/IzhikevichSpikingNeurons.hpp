@@ -32,7 +32,7 @@ public:
   IzhikevichSpikingNeurons();
   ~IzhikevichSpikingNeurons();
 
-  ADD_BACKEND_GETTER(IzhikevichSpikingNeurons);
+  ADD_BACKEND_GETSET(IzhikevichSpikingNeurons, SpikingNeurons);
   
   float * param_a = nullptr;
   float * param_b = nullptr;
@@ -41,6 +41,9 @@ public:
   virtual int AddGroup(neuron_parameters_struct * group_params);
   virtual void update_membrane_potentials(float timestep, float current_time_in_seconds);
   virtual void reset_state();
+
+private:
+  ::Backend::IzhikevichSpikingNeurons* _backend = nullptr;
 };
 
 

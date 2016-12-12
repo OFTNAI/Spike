@@ -58,7 +58,7 @@ class EvansSTDP : public STDP {
 public:
   // Constructor/Destructor
   ~EvansSTDP();
-  ADD_BACKEND_GETTER(EvansSTDP);
+  ADD_BACKEND_GETSET(EvansSTDP, STDP);
 
   struct evans_stdp_parameters_struct* stdp_params = nullptr;
 
@@ -81,6 +81,9 @@ public:
   void update_presynaptic_activities(float timestep, float current_time_in_seconds);
   void update_synaptic_efficacies_or_weights(float current_time_in_seconds);
   void update_postsynaptic_activities(float timestep, float current_time_in_seconds);
+
+private:
+  ::Backend::EvansSTDP* _backend = nullptr;
 };
 
 #endif

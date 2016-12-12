@@ -54,7 +54,7 @@ public:
   ~Neurons();
 
   void init_backend(Context* ctx) override;
-  ADD_BACKEND_GETTER(Neurons);
+  ADD_BACKEND_GETSET(Neurons, SpikeBase);
   
   // Variables
   int total_number_of_neurons;				/**< Tracks the total neuron population size. */
@@ -80,6 +80,9 @@ public:
    *  Resets any undesired data which is dynamically reassigned during a simulation. In this case, the current to be injected at the next time step.
    */
   void reset_state() override;
+
+private:
+  ::Backend::Neurons* _backend = nullptr;
 };
 
 #endif

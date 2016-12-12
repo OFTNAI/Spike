@@ -62,7 +62,7 @@ struct masquelier_stdp_parameters_struct : stdp_parameters_struct {
 
 class MasquelierSTDP : public STDP {
 public:
-  ADD_BACKEND_GETTER(MasquelierSTDP);
+  ADD_BACKEND_GETSET(MasquelierSTDP, STDP);
 
   struct masquelier_stdp_parameters_struct* stdp_params = nullptr;
 
@@ -85,6 +85,8 @@ public:
   // LTP & LTD for this model
   void apply_stdp_to_synapse_weights(float current_time_in_seconds);
 
+private:
+  ::Backend::MasquelierSTDP* _backend = nullptr;
 };
 
 #endif

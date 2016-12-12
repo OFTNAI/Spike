@@ -37,7 +37,7 @@ public:
   ~SpikingNeurons();
 
   void init_backend(Context* ctx) override;
-  ADD_BACKEND_GETTER(SpikingNeurons);
+  ADD_BACKEND_GETSET(SpikingNeurons, Neurons);
   void prepare_backend_early() override;
   
   // Variables
@@ -60,6 +60,9 @@ public:
 
   virtual void update_membrane_potentials(float timestep, float current_time_in_seconds) = 0;
   virtual void check_for_neuron_spikes(float current_time_in_seconds, float timestep);
+
+private:
+  ::Backend::SpikingNeurons* _backend = nullptr;
 };
 
 #endif

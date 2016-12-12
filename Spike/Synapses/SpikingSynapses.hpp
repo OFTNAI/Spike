@@ -31,7 +31,7 @@ class SpikingSynapses : public Synapses {
 public:
   ~SpikingSynapses();
 
-  ADD_BACKEND_GETTER(SpikingSynapses);
+  ADD_BACKEND_GETSET(SpikingSynapses, Synapses);
 
   // Host Pointers
   int* delays = nullptr;
@@ -57,6 +57,9 @@ public:
   virtual void calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds, float timestep) = 0;
 
   virtual void interact_spikes_with_synapses(SpikingNeurons * neurons, SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep);
+
+private:
+  ::Backend::SpikingSynapses* _backend = nullptr;
 };
 
 #endif

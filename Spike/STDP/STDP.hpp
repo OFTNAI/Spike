@@ -45,7 +45,7 @@ struct stdp_parameters_struct {
 
 class STDP : public virtual SpikeBase {
 public:
-  ADD_BACKEND_GETTER(STDP);
+  ADD_BACKEND_GETSET(STDP, SpikeBase);
 
   SpikingSynapses* syns = nullptr;
   SpikingNeurons* neurs = nullptr;
@@ -55,6 +55,9 @@ public:
   virtual void Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons* neurons, SpikingNeurons* input_neurons, stdp_parameters_struct* stdp_parameters) = 0;
 
   virtual void Run_STDP(float current_time_in_seconds, float timestep) = 0;
+
+private:
+  ::Backend::STDP* _backend = nullptr;
 };
 
 #endif

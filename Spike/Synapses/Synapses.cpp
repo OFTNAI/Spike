@@ -190,6 +190,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
                number_of_postsynaptic_neurons_in_group,
                standard_deviation_sigma,
                presynaptic_group_is_input);
+
             if (total_number_of_new_synapses > largest_synapse_group_size) {
               largest_synapse_group_size = total_number_of_new_synapses;
             }

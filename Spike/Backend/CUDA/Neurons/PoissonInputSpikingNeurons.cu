@@ -41,6 +41,7 @@ namespace Backend {
       random_state_manager_backend
         = dynamic_cast<::Backend::CUDA::RandomStateManager*>
         (frontend()->random_state_manager->backend());
+      assert(random_state_manager_backend);
     }
 
     void PoissonInputSpikingNeurons::update_membrane_potentials(float timestep, float current_time_in_seconds) {

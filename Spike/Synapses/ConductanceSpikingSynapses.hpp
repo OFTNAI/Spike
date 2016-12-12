@@ -33,7 +33,7 @@ class ConductanceSpikingSynapses : public SpikingSynapses {
 public:
   ~ConductanceSpikingSynapses();
 
-  ADD_BACKEND_GETTER(ConductanceSpikingSynapses);
+  ADD_BACKEND_GETSET(ConductanceSpikingSynapses, SpikingSynapses);
 
   float * synaptic_conductances_g = nullptr;
   float * biological_conductance_scaling_constants_lambda = nullptr;
@@ -56,6 +56,9 @@ public:
 
   virtual void init_backend(Context* ctx = _global_ctx);
   virtual void reset_state();
+
+private:
+  ::Backend::ConductanceSpikingSynapses* _backend = nullptr;
 };
 
 #endif

@@ -34,11 +34,12 @@ namespace Backend {
 
 class RandomStateManager : public virtual SpikeBase {
 public:
-  ADD_BACKEND_GETTER(RandomStateManager);
+  ADD_BACKEND_GETSET(RandomStateManager, SpikeBase);
   void init_backend(Context* ctx = _global_ctx) override;
   void reset_state() override;
 private:
   static RandomStateManager *inst;
+  ::Backend::RandomStateManager* _backend = nullptr;
 };
 
 #endif

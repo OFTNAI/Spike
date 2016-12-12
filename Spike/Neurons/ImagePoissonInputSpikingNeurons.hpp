@@ -36,7 +36,7 @@ public:
   ImagePoissonInputSpikingNeurons();
   ~ImagePoissonInputSpikingNeurons();
 
-  ADD_BACKEND_GETTER(ImagePoissonInputSpikingNeurons);
+  ADD_BACKEND_GETSET(ImagePoissonInputSpikingNeurons, PoissonInputSpikingNeurons);
   virtual void init_backend(Context* ctx = _global_ctx);
   
   virtual int AddGroup(neuron_parameters_struct * group_params);
@@ -71,7 +71,9 @@ public:
   std::vector<float> * filterPhases;
   std::vector<int>  * filterWavelengths;
   std::vector<float> * filterOrientations;
-	
+
+private:
+  ::Backend::ImagePoissonInputSpikingNeurons* _backend = nullptr;
 };
 
 #endif
