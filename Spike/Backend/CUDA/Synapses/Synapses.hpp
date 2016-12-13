@@ -28,11 +28,14 @@ namespace Backend {
       dim3 threads_per_block;
 
       void prepare() override;
+      void reset_state() override;
 
-      virtual void allocate_device_pointers();
-      virtual void copy_constants_and_initial_efficacies_to_device();
-      // TODO: Check when set_threads_per_block_and_blocks_per_grid is called
-      virtual void set_threads_per_block_and_blocks_per_grid(int threads);
+      void push_data_front() override;
+      void pull_data_back() override;
+
+      void allocate_device_pointers(); // Not virtual
+      void copy_constants_and_initial_efficacies_to_device(); // Not virtual
+      void set_threads_per_block_and_blocks_per_grid(int threads); // Not virtual
 
       void set_neuron_indices_by_sampling_from_normal_distribution
       (int original_number_of_synapses,
@@ -44,7 +47,7 @@ namespace Backend {
        int number_of_new_synapses_per_postsynaptic_neuron,
        int number_of_postsynaptic_neurons_in_group,
        float standard_deviation_sigma,
-       bool presynaptic_group_is_input) override;
+       bool presynaptic_group_is_input) final;
     };
 
     __global__ void compute_yes_no_connection_matrix_for_groups(bool * d_yes_no_connection_vector, 

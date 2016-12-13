@@ -30,18 +30,7 @@ namespace Backend {
     }
 
     void ConductanceSpikingSynapses::reset_state() {
-      assert(synaptic_conductances_g);
-      printf("??? %p, %p, %p, %d\n",
-             synaptic_conductances_g,
-             frontend(),
-             frontend()->synaptic_conductances_g,
-             frontend()->total_number_of_synapses);
-      // TODO: So it seems that this->synaptic_conductances_g is not
-      //       allocated at the point when this is called from RunSimulation
-      //       (ie, from SpikingModel::reset_state via that route).
-      //       Why is this?
-      // TODO: -- WELL, IT SEEMS THAT THIS WAS BECAUSE THE BACKEND WAS NOT
-      //          PROPERLY PREPARED !!
+      SpikingSynapses::reset_state();
       CudaSafeCall(cudaMemcpy(synaptic_conductances_g,
                               frontend()->synaptic_conductances_g,
                               sizeof(float)*frontend()->total_number_of_synapses,
@@ -50,27 +39,26 @@ namespace Backend {
 
     void ConductanceSpikingSynapses::prepare() {
       SpikingSynapses::prepare();
-      // TODO? Should we consolidate prepare and allocate_device_pointers?
       allocate_device_pointers();
       copy_constants_and_initial_efficacies_to_device();
     }
 
-    void ConductanceSpikingSynapses::allocate_device_pointers() {
-	SpikingSynapses::allocate_device_pointers();
+    void ConductanceSpikingSynapses::push_data_front() {
+      SpikingSynapses::push_data_front();
+    }
 
+    void ConductanceSpikingSynapses::pull_data_back() {
+      SpikingSynapses::pull_data_back();
+    }
+
+    void ConductanceSpikingSynapses::allocate_device_pointers() {
 	CudaSafeCall(cudaMalloc((void **)&biological_conductance_scaling_constants_lambda, sizeof(float)*frontend()->total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&reversal_potentials_Vhat, sizeof(float)*frontend()->total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&decay_terms_tau_g, sizeof(float)*frontend()->total_number_of_synapses));
-
 	CudaSafeCall(cudaMalloc((void **)&synaptic_conductances_g, sizeof(float)*frontend()->total_number_of_synapses));
-        printf("@@@@@@@@@@@@@@@@@@@@ allocating css pointers: %d; s_c_g %p\n",
-               frontend()->total_number_of_synapses,
-               synaptic_conductances_g);
     }
 
     void ConductanceSpikingSynapses::copy_constants_and_initial_efficacies_to_device() {
-      SpikingSynapses::copy_constants_and_initial_efficacies_to_device();
-
       CudaSafeCall(cudaMemcpy(biological_conductance_scaling_constants_lambda, biological_conductance_scaling_constants_lambda, sizeof(float)*frontend()->total_number_of_synapses, cudaMemcpyHostToDevice));
       CudaSafeCall(cudaMemcpy(reversal_potentials_Vhat, reversal_potentials_Vhat, sizeof(float)*frontend()->total_number_of_synapses, cudaMemcpyHostToDevice));
       CudaSafeCall(cudaMemcpy(decay_terms_tau_g, decay_terms_tau_g, sizeof(float)*frontend()->total_number_of_synapses, cudaMemcpyHostToDevice));

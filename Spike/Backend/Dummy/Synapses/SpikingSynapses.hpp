@@ -8,12 +8,24 @@ namespace Backend {
     class SpikingSynapses : public virtual ::Backend::Dummy::Synapses,
                             public virtual ::Backend::SpikingSynapses {
     public:
-      virtual void interact_spikes_with_synapses(::SpikingNeurons * neurons, ::SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) {
-        // printf("TODO Backend::Synapses::interact_spikes_with_synapses\n");
+      void interact_spikes_with_synapses(::SpikingNeurons * neurons, ::SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) final {
       }
 
-      // virtual void prepare() {}
-      virtual void reset_state() {}
+      void prepare() override {
+        Synapses::prepare();
+      }
+
+      void reset_state() override {
+        Synapses::reset_state();
+      }
+
+      void push_data_front() override {
+        Synapses::push_data_front();
+      }
+
+      void pull_data_back() override {
+        Synapses::pull_data_back();
+      }
     };
   } // namespace Dummy
 } // namespace Backend

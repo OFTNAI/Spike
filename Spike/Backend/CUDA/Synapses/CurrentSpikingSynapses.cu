@@ -5,7 +5,18 @@ namespace Backend {
   namespace CUDA {
     void CurrentSpikingSynapses::prepare() {
       SpikingSynapses::prepare();
-      // TODO? Should we consolidate prepare and allocate_device_pointers?
+    }
+
+    void CurrentSpikingSynapses::reset_state() {
+      SpikingSynapses::reset_state();
+    }
+
+    void CurrentSpikingSynapses::push_data_front() {
+      SpikingSynapses::push_data_front();
+    }
+
+    void CurrentSpikingSynapses::pull_data_back() {
+      SpikingSynapses::pull_data_back();
     }
 
     void CurrentSpikingSynapses::calculate_postsynaptic_current_injection(::SpikingNeurons * neurons, float current_time_in_seconds, float timestep) {

@@ -11,6 +11,8 @@ namespace Backend {
     }
 
     void SpikingSynapses::reset_state() {
+      Synapses::reset_state();
+
       CudaSafeCall(cudaMemset(spikes_travelling_to_synapse, 0,
                               sizeof(int)*frontend()->total_number_of_synapses));
 
@@ -27,15 +29,24 @@ namespace Backend {
 
     void SpikingSynapses::push_data_front() {
       // TODO: Flesh this out (and for derived classes!)
+      Synapses::push_data_front();
       CudaSafeCall(cudaMemcpy(frontend()->synaptic_efficacies_or_weights,
                               synaptic_efficacies_or_weights,
                               sizeof(float)*frontend()->total_number_of_synapses,
                               cudaMemcpyDeviceToHost));
     }
 
-    void SpikingSynapses::allocate_device_pointers() {
-      Synapses::allocate_device_pointers();
+    void SpikingSynapses::pull_data_back() {
+      Synapses::pull_data_back();
+    }
 
+    void SpikingSynapses::prepare() {
+      Synapses::prepare();
+      allocate_device_pointers();
+      copy_constants_and_initial_efficacies_to_device();
+    }
+
+    void SpikingSynapses::allocate_device_pointers() {
       CudaSafeCall(cudaMalloc((void **)&delays, sizeof(int)*frontend()->total_number_of_synapses));
       CudaSafeCall(cudaMalloc((void **)&stdp, sizeof(bool)*frontend()->total_number_of_synapses));
 
@@ -44,8 +55,6 @@ namespace Backend {
     }
 
     void SpikingSynapses::copy_constants_and_initial_efficacies_to_device() {
-      Synapses::copy_constants_and_initial_efficacies_to_device();
-
       CudaSafeCall(cudaMemcpy(delays, frontend()->delays,
                               sizeof(int)*frontend()->total_number_of_synapses,
                               cudaMemcpyHostToDevice));
@@ -67,22 +76,6 @@ namespace Backend {
         dynamic_cast<::Backend::CUDA::SpikingNeurons*>(input_neurons->backend());
       assert(input_neurons_backend);
 
-      // std::cout << "########## " << TYPEID_NAME(input_neurons->backend()) << "\n"
-      //           << input_neurons_backend << " (" << input_neurons->_backend << ") -- "
-      //           << input_neurons_backend->membrane_potentials_v << "\n";
-
-      printf(";;;;;;;; %p, %p, %p, %p, %d, %d, %f, %f, %d, %p\n",
-             presynaptic_neuron_indices,
-             delays,
-             neurons_backend->bitarray_of_neuron_spikes,
-             input_neurons_backend->bitarray_of_neuron_spikes,
-             neurons->bitarray_length,
-             neurons->bitarray_maximum_axonal_delay_in_timesteps,
-             current_time_in_seconds,
-             timestep,
-             frontend()->total_number_of_synapses,
-             time_of_last_spike_to_reach_synapse);
-      
       if (neurons->high_fidelity_spike_flag){
         check_bitarray_for_presynaptic_neuron_spikes<<<number_of_synapse_blocks_per_grid, threads_per_block>>>
           (presynaptic_neuron_indices,

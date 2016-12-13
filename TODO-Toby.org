@@ -51,6 +51,10 @@ CLOSED: [2016-12-11 Sun 00:50]
 :LOGBOOK:
 - State "PROGRESS"   from "TODO"       [2016-11-20 Sun 12:10]
 :END:
+** PROGRESS Virtual functions in SpikeBackendBase should 'travel up' the hierarchy, calling leaf methods where appropriate. Leaf methods should themselves not be virtual, and not travel up the hierarchy, unless for a very good reason..
+:LOGBOOK:
+- State "PROGRESS"   from "TODO"       [2016-12-13 Tue 11:50]
+:END:
 ** PROGRESS Make sure backends are actually prepared !!
 :LOGBOOK:
 - State "PROGRESS"   from "TODO"       [2016-12-11 Sun 18:20]
@@ -145,6 +149,7 @@ CLOSED: [2016-11-24 Thu 14:10]
 - State "DONE"       from "TODO"       [2016-11-24 Thu 14:10]
 :END:
 * TODO Put external dependencies (eg mgl) into git submodules
+* TODO Move tests to CTest ?
 * TODO Write SYCL backend.
 * TODO Write plain C++ backend. (Use ViennaCL for linalg acceleration?)
 * TODO Write rate-coded neuron/synapse/model classes.

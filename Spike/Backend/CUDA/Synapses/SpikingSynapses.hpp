@@ -22,20 +22,16 @@ namespace Backend {
       ~SpikingSynapses();
       using ::Backend::SpikingSynapses::frontend;
 
-      // NB: If we override Synapses::prepare, make sure to call it as well
-      //      -- it initializes the random_state_manager_backend pointer!
-      // void prepare() {} 
+      void prepare() override;
       void reset_state() override;
 
-      void allocate_device_pointers() override;
-      void copy_constants_and_initial_efficacies_to_device() override;
-      // void set_threads_per_block_and_blocks_per_grid(int threads) override;
+      void allocate_device_pointers(); // Not virtual
+      void copy_constants_and_initial_efficacies_to_device(); // Not virtual
 
-      // virtual void interact_spikes_with_synapses(SpikingNeurons * neurons, SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) override;
-
-      virtual void interact_spikes_with_synapses(::SpikingNeurons * neurons, ::SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep);
+      void interact_spikes_with_synapses(::SpikingNeurons * neurons, ::SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) final;
 
       void push_data_front() override;
+      void pull_data_back() override;
     };
 
     __global__ void move_spikes_towards_synapses_kernel(int* d_presynaptic_neuron_indices,

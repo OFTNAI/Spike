@@ -16,6 +16,15 @@ namespace Backend {
       CudaSafeCall(cudaFree(synapse_postsynaptic_neuron_count_index));
     }
 
+    void Synapses::reset_state() {
+    }
+
+    void Synapses::push_data_front() {
+    }
+
+    void Synapses::pull_data_back() {
+    }
+
     void Synapses::allocate_device_pointers() {
       printf("Allocating synapse device pointers...\n");
 
@@ -58,10 +67,10 @@ namespace Backend {
     }
 
     void Synapses::prepare() {
-      // TODO: Check (call copy_constants, set_up_states etc?)
-      // ...
+      allocate_device_pointers();
+      copy_constants_and_initial_efficacies_to_device();
+      set_threads_per_block_and_blocks_per_grid(context->params.threads_per_block_synapses);
 
-      // Crudely assume that the RandomStateManager backend is also CUDA:
       random_state_manager_backend
         = dynamic_cast<::Backend::CUDA::RandomStateManager*>
         (frontend()->random_state_manager->backend());

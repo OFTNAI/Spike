@@ -22,16 +22,21 @@ namespace Backend {
       MAKE_BACKEND_CONSTRUCTOR(ConductanceSpikingSynapses);
       using ::Backend::ConductanceSpikingSynapses::frontend;
       
-      void allocate_device_pointers() override;
-      void copy_constants_and_initial_efficacies_to_device() override;
       void prepare() override;
       void reset_state() override;
 
-      void calculate_postsynaptic_current_injection(::SpikingNeurons * neurons, float current_time_in_seconds, float timestep) override;
-      void update_synaptic_conductances(float timestep, float current_time_in_seconds) override;
+      void allocate_device_pointers(); // Not virtual
+      void copy_constants_and_initial_efficacies_to_device(); // Not virtual
 
-      void push_data_front() override {}
-      void pull_data_back() override {}
+      void calculate_postsynaptic_current_injection
+      (::SpikingNeurons * neurons,
+       float current_time_in_seconds,
+       float timestep) final; // Overrides ::Backend::SpikingSynapses:: ...
+
+      void update_synaptic_conductances(float timestep, float current_time_in_seconds) final;
+
+      void push_data_front() override;
+      void pull_data_back() override;
     };
 
     __global__ void conductance_calculate_postsynaptic_current_injection_kernel

@@ -17,10 +17,14 @@ namespace Backend {
 
       void prepare() override;
       void reset_state() override;
-      void calculate_postsynaptic_current_injection(::SpikingNeurons * neurons, float current_time_in_seconds, float timestep) override;
 
-      void push_data_front() override {}
-      void pull_data_back() override {}
+      void calculate_postsynaptic_current_injection
+      (::SpikingNeurons * neurons,
+       float current_time_in_seconds,
+       float timestep) final; // Overrides ::Backend::SpikingSynapses:: ...
+
+      void push_data_front() override;
+      void pull_data_back() override;
     };
 
     __global__ void current_calculate_postsynaptic_current_injection_kernel

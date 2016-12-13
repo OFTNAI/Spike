@@ -6,7 +6,7 @@ namespace Backend {
   namespace Dummy {
     class Synapses : public virtual ::Backend::Synapses {
     public:
-      virtual void set_neuron_indices_by_sampling_from_normal_distribution
+      void set_neuron_indices_by_sampling_from_normal_distribution
       (int original_number_of_synapses,
        int total_number_of_new_synapses,
        int postsynaptic_group_id,
@@ -16,11 +16,20 @@ namespace Backend {
        int number_of_new_synapses_per_postsynaptic_neuron,
        int number_of_postsynaptic_neurons_in_group,
        float standard_deviation_sigma,
-       bool presynaptic_group_is_input) {
-        printf("TODO Backend::Synapses::set_neuron_indices_by_sampling_from_normal_distribution\n");
+       bool presynaptic_group_is_input) final {
       }
-      // virtual void prepare() {}
-      // virtual void reset_state() {}
+
+      void prepare() override {
+      }
+
+      void reset_state() override {
+      }
+
+      void push_data_front() override {
+      }
+
+      void pull_data_back() override {
+      }
     };
   } // namespace Dummy
 } // namespace Backend

@@ -10,18 +10,24 @@ namespace Backend {
     public:
       MAKE_BACKEND_CONSTRUCTOR(CurrentSpikingSynapses);
 
-      virtual void prepare() {
-        printf("TODO Backend::Dummy::CurrentSpikingSynapses::prepare\n");
+      void prepare() override {
+        SpikingSynapses::prepare();
       }
 
-      void calculate_postsynaptic_current_injection(::SpikingNeurons * neurons, float current_time_in_seconds, float timestep) {
-        printf("TODO Dummy::CurrentSpikingSynapses::calculate_postsynaptic_current_injection\n");
+      void calculate_postsynaptic_current_injection(::SpikingNeurons * neurons, float current_time_in_seconds, float timestep) final {
       }
 
-      virtual void reset_state() {}
+      void reset_state() override {
+        SpikingSynapses::reset_state();
+      }
 
-      virtual void push_data_front() {}
-      virtual void pull_data_back() {}
+      void push_data_front() override {
+        SpikingSynapses::push_data_front();
+      }
+
+      void pull_data_back() override {
+        SpikingSynapses::pull_data_back();
+      }
     };
   } // namespace Dummy
 } // namespace Backend
