@@ -89,54 +89,55 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00008"></a>00008 <span class="preprocessor">#include &quot;../STDP/EvansSTDP.h&quot;</span>
 <a name="l00009"></a>00009 <span class="preprocessor">#include &quot;../STDP/HigginsSTDP.h&quot;</span>
 <a name="l00010"></a>00010 <span class="preprocessor">#include &quot;../STDP/MasquelierSTDP.h&quot;</span>
-<a name="l00011"></a>00011 <span class="preprocessor">#include &quot;../Neurons/Neurons.h&quot;</span>
-<a name="l00012"></a>00012 <span class="preprocessor">#include &quot;../Neurons/SpikingNeurons.h&quot;</span>
-<a name="l00013"></a>00013 <span class="preprocessor">#include &quot;../Neurons/LIFSpikingNeurons.h&quot;</span>
-<a name="l00014"></a>00014 <span class="preprocessor">#include &quot;../Neurons/AdExSpikingNeurons.h&quot;</span>
-<a name="l00015"></a>00015 <span class="preprocessor">#include &quot;../Neurons/ImagePoissonInputSpikingNeurons.h&quot;</span>
-<a name="l00016"></a>00016 <span class="preprocessor">#include &quot;../Neurons/GeneratorInputSpikingNeurons.h&quot;</span>
-<a name="l00017"></a>00017 <span class="preprocessor">#include &quot;../SpikeAnalyser/SpikeAnalyser.h&quot;</span>
-<a name="l00018"></a>00018 <span class="preprocessor">#include &quot;../Helpers/TimerWithMessages.h&quot;</span>
-<a name="l00019"></a>00019 <span class="preprocessor">#include &quot;../Helpers/RandomStateManager.h&quot;</span>
-<a name="l00020"></a>00020 <span class="comment">// #include &quot;../Helpers/TerminalHelpers.h&quot;</span>
-<a name="l00021"></a>00021 <span class="preprocessor">#include &lt;string&gt;</span>
-<a name="l00022"></a>00022 <span class="preprocessor">#include &lt;fstream&gt;</span>
-<a name="l00023"></a>00023 <span class="preprocessor">#include &lt;vector&gt;</span>
-<a name="l00024"></a>00024 
-<a name="l00025"></a>00025 <span class="preprocessor">#include &lt;iostream&gt;</span>
-<a name="l00026"></a>00026 <span class="keyword">using namespace </span>std;
-<a name="l00027"></a>00027 
+<a name="l00011"></a>00011 <span class="preprocessor">#include &quot;../STDP/vanRossumSTDP.h&quot;</span>
+<a name="l00012"></a>00012 <span class="preprocessor">#include &quot;../Neurons/Neurons.h&quot;</span>
+<a name="l00013"></a>00013 <span class="preprocessor">#include &quot;../Neurons/SpikingNeurons.h&quot;</span>
+<a name="l00014"></a>00014 <span class="preprocessor">#include &quot;../Neurons/LIFSpikingNeurons.h&quot;</span>
+<a name="l00015"></a>00015 <span class="preprocessor">#include &quot;../Neurons/AdExSpikingNeurons.h&quot;</span>
+<a name="l00016"></a>00016 <span class="preprocessor">#include &quot;../Neurons/ImagePoissonInputSpikingNeurons.h&quot;</span>
+<a name="l00017"></a>00017 <span class="preprocessor">#include &quot;../Neurons/GeneratorInputSpikingNeurons.h&quot;</span>
+<a name="l00018"></a>00018 <span class="preprocessor">#include &quot;../SpikeAnalyser/SpikeAnalyser.h&quot;</span>
+<a name="l00019"></a>00019 <span class="preprocessor">#include &quot;../Helpers/TimerWithMessages.h&quot;</span>
+<a name="l00020"></a>00020 <span class="preprocessor">#include &quot;../Helpers/RandomStateManager.h&quot;</span>
+<a name="l00021"></a>00021 <span class="comment">// #include &quot;../Helpers/TerminalHelpers.h&quot;</span>
+<a name="l00022"></a>00022 <span class="preprocessor">#include &lt;string&gt;</span>
+<a name="l00023"></a>00023 <span class="preprocessor">#include &lt;fstream&gt;</span>
+<a name="l00024"></a>00024 <span class="preprocessor">#include &lt;vector&gt;</span>
+<a name="l00025"></a>00025 
+<a name="l00026"></a>00026 <span class="preprocessor">#include &lt;iostream&gt;</span>
+<a name="l00027"></a>00027 <span class="keyword">using namespace </span>std;
 <a name="l00028"></a>00028 
-<a name="l00029"></a><a class="code" href="class_spiking_model.html">00029</a> <span class="keyword">class </span><a class="code" href="class_spiking_model.html">SpikingModel</a> {
-<a name="l00030"></a>00030 
-<a name="l00031"></a>00031 <span class="keyword">public</span>:
-<a name="l00032"></a>00032 
-<a name="l00033"></a>00033     <span class="comment">// Constructor/Destructor</span>
-<a name="l00034"></a>00034     <a class="code" href="class_spiking_model.html">SpikingModel</a>();
-<a name="l00035"></a>00035     ~<a class="code" href="class_spiking_model.html">SpikingModel</a>();
-<a name="l00036"></a>00036 
+<a name="l00029"></a>00029 
+<a name="l00030"></a><a class="code" href="class_spiking_model.html">00030</a> <span class="keyword">class </span><a class="code" href="class_spiking_model.html">SpikingModel</a> {
+<a name="l00031"></a>00031 
+<a name="l00032"></a>00032 <span class="keyword">public</span>:
+<a name="l00033"></a>00033 
+<a name="l00034"></a>00034     <span class="comment">// Constructor/Destructor</span>
+<a name="l00035"></a>00035     <a class="code" href="class_spiking_model.html">SpikingModel</a>();
+<a name="l00036"></a>00036     ~<a class="code" href="class_spiking_model.html">SpikingModel</a>();
 <a name="l00037"></a>00037 
-<a name="l00038"></a>00038     <span class="keywordtype">float</span> timestep;
-<a name="l00039"></a>00039     <span class="keywordtype">void</span> SetTimestep(<span class="keywordtype">float</span> timestep_parameter);
-<a name="l00040"></a>00040 
-<a name="l00041"></a>00041     <a class="code" href="class_spiking_neurons.html">SpikingNeurons</a> * spiking_neurons;
-<a name="l00042"></a>00042     <a class="code" href="class_spiking_synapses.html">SpikingSynapses</a> * spiking_synapses;
-<a name="l00043"></a>00043     <a class="code" href="class_input_spiking_neurons.html">InputSpikingNeurons</a> * input_spiking_neurons;
-<a name="l00044"></a>00044     <a class="code" href="class_s_t_d_p.html">STDP</a>* stdp_rule; 
-<a name="l00045"></a>00045 
+<a name="l00038"></a>00038 
+<a name="l00039"></a>00039     <span class="keywordtype">float</span> timestep;
+<a name="l00040"></a>00040     <span class="keywordtype">void</span> SetTimestep(<span class="keywordtype">float</span> timestep_parameter);
+<a name="l00041"></a>00041 
+<a name="l00042"></a>00042     <a class="code" href="class_spiking_neurons.html">SpikingNeurons</a> * spiking_neurons;
+<a name="l00043"></a>00043     <a class="code" href="class_spiking_synapses.html">SpikingSynapses</a> * spiking_synapses;
+<a name="l00044"></a>00044     <a class="code" href="class_input_spiking_neurons.html">InputSpikingNeurons</a> * input_spiking_neurons;
+<a name="l00045"></a>00045     <a class="code" href="class_s_t_d_p.html">STDP</a>* stdp_rule;
 <a name="l00046"></a>00046 
-<a name="l00047"></a>00047     <span class="keywordtype">int</span> AddNeuronGroup(<a class="code" href="structneuron__parameters__struct.html">neuron_parameters_struct</a> * group_params);
-<a name="l00048"></a>00048     <span class="keywordtype">int</span> AddInputNeuronGroup(<a class="code" href="structneuron__parameters__struct.html">neuron_parameters_struct</a> * group_params);
-<a name="l00049"></a>00049     
-<a name="l00050"></a>00050     <span class="keywordtype">void</span> AddSynapseGroup(<span class="keywordtype">int</span> presynaptic_group_id, <span class="keywordtype">int</span> postsynaptic_group_id, <a class="code" href="structsynapse__parameters__struct.html">synapse_parameters_struct</a> * synapse_params);
-<a name="l00051"></a>00051     <span class="keywordtype">void</span> AddSynapseGroupsForNeuronGroupAndEachInputGroup(<span class="keywordtype">int</span> postsynaptic_group_id, <a class="code" href="structsynapse__parameters__struct.html">synapse_parameters_struct</a> * synapse_params);
-<a name="l00052"></a>00052 
-<a name="l00053"></a>00053     <span class="keyword">virtual</span> <span class="keywordtype">void</span> finalise_model();
-<a name="l00054"></a>00054     <span class="keywordtype">void</span> copy_model_to_device(<span class="keywordtype">bool</span> high_fidelity_spike_storage);
-<a name="l00055"></a>00055 
-<a name="l00056"></a>00056 };
-<a name="l00057"></a>00057 
-<a name="l00058"></a>00058 <span class="preprocessor">#endif</span>
+<a name="l00047"></a>00047 
+<a name="l00048"></a>00048     <span class="keywordtype">int</span> AddNeuronGroup(<a class="code" href="structneuron__parameters__struct.html">neuron_parameters_struct</a> * group_params);
+<a name="l00049"></a>00049     <span class="keywordtype">int</span> AddInputNeuronGroup(<a class="code" href="structneuron__parameters__struct.html">neuron_parameters_struct</a> * group_params);
+<a name="l00050"></a>00050 
+<a name="l00051"></a>00051     <span class="keywordtype">void</span> AddSynapseGroup(<span class="keywordtype">int</span> presynaptic_group_id, <span class="keywordtype">int</span> postsynaptic_group_id, <a class="code" href="structsynapse__parameters__struct.html">synapse_parameters_struct</a> * synapse_params);
+<a name="l00052"></a>00052     <span class="keywordtype">void</span> AddSynapseGroupsForNeuronGroupAndEachInputGroup(<span class="keywordtype">int</span> postsynaptic_group_id, <a class="code" href="structsynapse__parameters__struct.html">synapse_parameters_struct</a> * synapse_params);
+<a name="l00053"></a>00053 
+<a name="l00054"></a>00054     <span class="keyword">virtual</span> <span class="keywordtype">void</span> finalise_model();
+<a name="l00055"></a>00055     <span class="keywordtype">void</span> copy_model_to_device(<span class="keywordtype">bool</span> high_fidelity_spike_storage);
+<a name="l00056"></a>00056 
+<a name="l00057"></a>00057 };
+<a name="l00058"></a>00058 
+<a name="l00059"></a>00059 <span class="preprocessor">#endif</span>
 </pre></div></div><!-- contents -->
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"

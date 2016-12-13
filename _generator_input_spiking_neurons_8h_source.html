@@ -103,40 +103,42 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00022"></a>00022 
 <a name="l00023"></a>00023     <span class="comment">// Host Pointers</span>
 <a name="l00024"></a>00024     <span class="keywordtype">int</span>* number_of_spikes_in_stimuli;
-<a name="l00025"></a>00025     <span class="keywordtype">int</span>** neuron_id_matrix_for_stimuli;
-<a name="l00026"></a>00026     <span class="keywordtype">float</span>** spike_times_matrix_for_stimuli;
-<a name="l00027"></a>00027     
-<a name="l00028"></a>00028     <span class="comment">// Device Pointers</span>
-<a name="l00029"></a>00029     <span class="keywordtype">int</span>* d_neuron_ids_for_stimulus;
-<a name="l00030"></a>00030     <span class="keywordtype">float</span>* d_spike_times_for_stimulus;
-<a name="l00031"></a>00031 
-<a name="l00032"></a>00032 
-<a name="l00033"></a>00033     <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code" href="class_generator_input_spiking_neurons.html#a00ac1cae345d851e01b3a56b68e4fdc5">AddGroup</a>(<a class="code" href="structneuron__parameters__struct.html">neuron_parameters_struct</a> * group_params);
+<a name="l00025"></a>00025     <span class="keywordtype">float</span>* temporal_lengths_of_stimuli;
+<a name="l00026"></a>00026     <span class="keywordtype">int</span>** neuron_id_matrix_for_stimuli;
+<a name="l00027"></a>00027     <span class="keywordtype">float</span>** spike_times_matrix_for_stimuli;
+<a name="l00028"></a>00028 
+<a name="l00029"></a>00029 
+<a name="l00030"></a>00030     <span class="comment">// Device Pointers</span>
+<a name="l00031"></a>00031     <span class="keywordtype">int</span>* d_neuron_ids_for_stimulus;
+<a name="l00032"></a>00032     <span class="keywordtype">float</span>* d_spike_times_for_stimulus;
+<a name="l00033"></a>00033 
 <a name="l00034"></a>00034 
-<a name="l00035"></a>00035     <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_generator_input_spiking_neurons.html#aa31c2381ccf7b6feefbc6252eb3807ca">allocate_device_pointers</a>(<span class="keywordtype">int</span> maximum_axonal_delay_in_timesteps, <span class="keywordtype">bool</span> high_fidelity_spike_storage);
-<a name="l00036"></a>00036     <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_generator_input_spiking_neurons.html#a5894e79e7482b84adc3e6913d5e79301">reset_neuron_activities</a>();
-<a name="l00037"></a>00037 
-<a name="l00038"></a>00038     <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_generator_input_spiking_neurons.html#a77bc0da4313db248b03f6a6d51068598">set_threads_per_block_and_blocks_per_grid</a>(<span class="keywordtype">int</span> threads);
+<a name="l00035"></a>00035     <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code" href="class_generator_input_spiking_neurons.html#a00ac1cae345d851e01b3a56b68e4fdc5">AddGroup</a>(<a class="code" href="structneuron__parameters__struct.html">neuron_parameters_struct</a> * group_params);
+<a name="l00036"></a>00036 
+<a name="l00037"></a>00037     <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_generator_input_spiking_neurons.html#aa31c2381ccf7b6feefbc6252eb3807ca">allocate_device_pointers</a>(<span class="keywordtype">int</span> maximum_axonal_delay_in_timesteps, <span class="keywordtype">bool</span> high_fidelity_spike_storage);
+<a name="l00038"></a>00038     <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_generator_input_spiking_neurons.html#a5894e79e7482b84adc3e6913d5e79301">reset_neuron_activities</a>();
 <a name="l00039"></a>00039 
-<a name="l00040"></a>00040     <span class="keyword">virtual</span> <span class="keywordtype">void</span> check_for_neuron_spikes(<span class="keywordtype">float</span> current_time_in_seconds, <span class="keywordtype">float</span> timestep);
-<a name="l00041"></a>00041     <span class="keyword">virtual</span> <span class="keywordtype">void</span> update_membrane_potentials(<span class="keywordtype">float</span> timestep, <span class="keywordtype">float</span> current_time_in_seconds);
-<a name="l00042"></a>00042 
-<a name="l00043"></a>00043     <span class="keywordtype">void</span> AddStimulus(<span class="keywordtype">int</span> spikenumber, <span class="keywordtype">int</span>* ids, <span class="keywordtype">float</span>* spiketimes);
-<a name="l00044"></a>00044 };
-<a name="l00045"></a>00045 
-<a name="l00046"></a>00046 
-<a name="l00047"></a>00047 __global__ <span class="keywordtype">void</span> check_for_generator_spikes_kernel(<span class="keywordtype">int</span> *d_neuron_ids_for_stimulus,
-<a name="l00048"></a>00048                                 <span class="keywordtype">float</span> *d_spike_times_for_stimulus,
-<a name="l00049"></a>00049                                 <span class="keywordtype">float</span>* d_last_spike_time_of_each_neuron,
-<a name="l00050"></a>00050                                 <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span>* d_bitarray_of_neuron_spikes,
-<a name="l00051"></a>00051                                 <span class="keywordtype">int</span> bitarray_length,
-<a name="l00052"></a>00052                                 <span class="keywordtype">int</span> bitarray_maximum_axonal_delay_in_timesteps,
-<a name="l00053"></a>00053                                 <span class="keywordtype">float</span> current_time_in_seconds,
-<a name="l00054"></a>00054                                 <span class="keywordtype">float</span> timestep,
-<a name="l00055"></a>00055                                 <span class="keywordtype">size_t</span> number_of_spikes_in_stimulus,
-<a name="l00056"></a>00056                                 <span class="keywordtype">bool</span> high_fidelity_spike_flag);
-<a name="l00057"></a>00057 
-<a name="l00058"></a>00058 <span class="preprocessor">#endif</span>
+<a name="l00040"></a>00040     <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_generator_input_spiking_neurons.html#a77bc0da4313db248b03f6a6d51068598">set_threads_per_block_and_blocks_per_grid</a>(<span class="keywordtype">int</span> threads);
+<a name="l00041"></a>00041 
+<a name="l00042"></a>00042     <span class="keyword">virtual</span> <span class="keywordtype">void</span> check_for_neuron_spikes(<span class="keywordtype">float</span> current_time_in_seconds, <span class="keywordtype">float</span> timestep);
+<a name="l00043"></a>00043     <span class="keyword">virtual</span> <span class="keywordtype">void</span> update_membrane_potentials(<span class="keywordtype">float</span> timestep, <span class="keywordtype">float</span> current_time_in_seconds);
+<a name="l00044"></a>00044 
+<a name="l00045"></a>00045     <span class="keywordtype">void</span> AddStimulus(<span class="keywordtype">int</span> spikenumber, <span class="keywordtype">int</span>* ids, <span class="keywordtype">float</span>* spiketimes);
+<a name="l00046"></a>00046 };
+<a name="l00047"></a>00047 
+<a name="l00048"></a>00048 
+<a name="l00049"></a>00049 __global__ <span class="keywordtype">void</span> check_for_generator_spikes_kernel(<span class="keywordtype">int</span> *d_neuron_ids_for_stimulus,
+<a name="l00050"></a>00050                                 <span class="keywordtype">float</span> *d_spike_times_for_stimulus,
+<a name="l00051"></a>00051                                 <span class="keywordtype">float</span>* d_last_spike_time_of_each_neuron,
+<a name="l00052"></a>00052                                 <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span>* d_bitarray_of_neuron_spikes,
+<a name="l00053"></a>00053                                 <span class="keywordtype">int</span> bitarray_length,
+<a name="l00054"></a>00054                                 <span class="keywordtype">int</span> bitarray_maximum_axonal_delay_in_timesteps,
+<a name="l00055"></a>00055                                 <span class="keywordtype">float</span> current_time_in_seconds,
+<a name="l00056"></a>00056                                 <span class="keywordtype">float</span> timestep,
+<a name="l00057"></a>00057                                 <span class="keywordtype">size_t</span> number_of_spikes_in_stimulus,
+<a name="l00058"></a>00058                                 <span class="keywordtype">bool</span> high_fidelity_spike_flag);
+<a name="l00059"></a>00059 
+<a name="l00060"></a>00060 <span class="preprocessor">#endif</span>
 </pre></div></div><!-- contents -->
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
