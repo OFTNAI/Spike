@@ -22,9 +22,11 @@ public:
 
 	// Host Pointers
 	int* number_of_spikes_in_stimuli;
+	float* temporal_lengths_of_stimuli;
 	int** neuron_id_matrix_for_stimuli;
 	float** spike_times_matrix_for_stimuli;
-	
+
+
 	// Device Pointers
 	int* d_neuron_ids_for_stimulus;
 	float* d_spike_times_for_stimulus;

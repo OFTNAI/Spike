@@ -7,6 +7,7 @@
 // GeneratorInputSpikingNeurons Constructor
 GeneratorInputSpikingNeurons::GeneratorInputSpikingNeurons() {
 	neuron_id_matrix_for_stimuli = NULL;
+	temporal_lengths_of_stimuli = NULL;
 	spike_times_matrix_for_stimuli = NULL;
 	number_of_spikes_in_stimuli = NULL;
 
@@ -23,14 +24,14 @@ GeneratorInputSpikingNeurons::~GeneratorInputSpikingNeurons() {
 	free(neuron_id_matrix_for_stimuli);
 	free(spike_times_matrix_for_stimuli);
 	free(number_of_spikes_in_stimuli);
-	
+
 	CudaSafeCall(cudaFree(d_neuron_ids_for_stimulus));
 	CudaSafeCall(cudaFree(d_spike_times_for_stimulus));
 }
 
 // Add Group of given size as usual - nothing special in constructor
 int GeneratorInputSpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
-	
+
 	int new_group_id = InputSpikingNeurons::AddGroup(group_params);
 	return new_group_id;
 
@@ -55,26 +56,27 @@ void GeneratorInputSpikingNeurons::reset_neuron_activities() {
 
 
 void GeneratorInputSpikingNeurons::set_threads_per_block_and_blocks_per_grid(int threads) {
-	
+
 	InputSpikingNeurons::set_threads_per_block_and_blocks_per_grid(threads);
 }
 
 void GeneratorInputSpikingNeurons::check_for_neuron_spikes(float current_time_in_seconds, float timestep) {
+	// Only Check Generator Spikes if necessary
+	if ((temporal_lengths_of_stimuli[current_stimulus_index] + timestep) > current_time_in_seconds){
+		check_for_generator_spikes_kernel<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(
+			d_neuron_ids_for_stimulus,
+			d_spike_times_for_stimulus,
+			d_last_spike_time_of_each_neuron,
+			d_bitarray_of_neuron_spikes,
+			bitarray_length,
+			bitarray_maximum_axonal_delay_in_timesteps,
+			current_time_in_seconds,
+			timestep,
+			number_of_spikes_in_stimuli[current_stimulus_index],
+			high_fidelity_spike_flag);
 
-	check_for_generator_spikes_kernel<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(
-		d_neuron_ids_for_stimulus,
-		d_spike_times_for_stimulus,
-		d_last_spike_time_of_each_neuron,
-		d_bitarray_of_neuron_spikes,
-		bitarray_length,
-		bitarray_maximum_axonal_delay_in_timesteps,
-		current_time_in_seconds,
-		timestep,
-		number_of_spikes_in_stimuli[current_stimulus_index],
-		high_fidelity_spike_flag);
-
-
-	CudaCheckError();
+			CudaCheckError();
+	}
 }
 
 void GeneratorInputSpikingNeurons::update_membrane_potentials(float timestep, float current_time_in_seconds){
@@ -89,22 +91,23 @@ void GeneratorInputSpikingNeurons::AddStimulus(int spikenumber, int* ids, float*
 	}
 
 	number_of_spikes_in_stimuli = (int*)realloc(number_of_spikes_in_stimuli, sizeof(int)*total_number_of_input_stimuli);
+	temporal_lengths_of_stimuli = (float*)realloc(temporal_lengths_of_stimuli, sizeof(float)*total_number_of_input_stimuli);
 	neuron_id_matrix_for_stimuli = (int**)realloc(neuron_id_matrix_for_stimuli, sizeof(int*)*total_number_of_input_stimuli);
 	spike_times_matrix_for_stimuli = (float**)realloc(spike_times_matrix_for_stimuli, sizeof(float*)*total_number_of_input_stimuli);
-	
+
 	// Initialize matrices
 	neuron_id_matrix_for_stimuli[total_number_of_input_stimuli - 1] = NULL;
 	spike_times_matrix_for_stimuli[total_number_of_input_stimuli - 1] = NULL;
 	number_of_spikes_in_stimuli[total_number_of_input_stimuli - 1] = 0;
-	
+
 	neuron_id_matrix_for_stimuli[total_number_of_input_stimuli - 1] = (int*)realloc(
-		neuron_id_matrix_for_stimuli[total_number_of_input_stimuli - 1], 
+		neuron_id_matrix_for_stimuli[total_number_of_input_stimuli - 1],
 		sizeof(int)*(spikenumber));
 	spike_times_matrix_for_stimuli[total_number_of_input_stimuli - 1] = (float*)realloc(
-		spike_times_matrix_for_stimuli[total_number_of_input_stimuli - 1], 
+		spike_times_matrix_for_stimuli[total_number_of_input_stimuli - 1],
 		sizeof(float)*(spikenumber));
 
-	
+
 	// Assign the genid values according to how many neurons exist already
 	for (int i = 0; i < spikenumber; i++){
 		neuron_id_matrix_for_stimuli[total_number_of_input_stimuli - 1][i] = ids[i];
@@ -112,7 +115,16 @@ void GeneratorInputSpikingNeurons::AddStimulus(int spikenumber, int* ids, float*
 	}
 	// Increment the number of entries the generator population
 	number_of_spikes_in_stimuli[total_number_of_input_stimuli - 1] = spikenumber;
-	
+
+	// Get the maximum length of this stimulus
+	float max = 0.0f;
+	for (int i=0; i < spikenumber; i++){
+		if (spiketimes[i] > max){
+			max = spiketimes[i];
+		}
+	}
+	// Assign max length of stimulus to array
+	temporal_lengths_of_stimuli[total_number_of_input_stimuli - 1] = max;
 }
 
 // Spiking Neurons
@@ -143,7 +155,7 @@ __global__ void check_for_generator_spikes_kernel(int *d_neuron_ids_for_stimulus
 				int offset_bit_pos = offset_index - (8 * offset_byte);
 				// Get the specific position at which we should be putting the current value
 				unsigned char byte = d_bitarray_of_neuron_spikes[neuron_id_spike_store_start + offset_byte];
-				// Set the specific bit in the byte to on 
+				// Set the specific bit in the byte to on
 				byte |= (1 << offset_bit_pos);
 				// Assign the byte
 				d_bitarray_of_neuron_spikes[neuron_id_spike_store_start + offset_byte] = byte;
@@ -159,7 +171,7 @@ __global__ void check_for_generator_spikes_kernel(int *d_neuron_ids_for_stimulus
 				int offset_bit_pos = offset_index - (8 * offset_byte);
 				// Get the specific position at which we should be putting the current value
 				unsigned char byte = d_bitarray_of_neuron_spikes[neuron_id_spike_store_start + offset_byte];
-				// Set the specific bit in the byte to on 
+				// Set the specific bit in the byte to on
 				byte &= ~(1 << offset_bit_pos);
 				// Assign the byte
 				d_bitarray_of_neuron_spikes[neuron_id_spike_store_start + offset_byte] = byte;

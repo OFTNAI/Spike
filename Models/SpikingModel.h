@@ -8,6 +8,7 @@
 #include "../STDP/EvansSTDP.h"
 #include "../STDP/HigginsSTDP.h"
 #include "../STDP/MasquelierSTDP.h"
+#include "../STDP/vanRossumSTDP.h"
 #include "../Neurons/Neurons.h"
 #include "../Neurons/SpikingNeurons.h"
 #include "../Neurons/LIFSpikingNeurons.h"
@@ -41,12 +42,12 @@ public:
 	SpikingNeurons * spiking_neurons;
 	SpikingSynapses * spiking_synapses;
 	InputSpikingNeurons * input_spiking_neurons;
-	STDP* stdp_rule; 
+	STDP* stdp_rule;
 
 
 	int AddNeuronGroup(neuron_parameters_struct * group_params);
 	int AddInputNeuronGroup(neuron_parameters_struct * group_params);
-	
+
 	void AddSynapseGroup(int presynaptic_group_id, int postsynaptic_group_id, synapse_parameters_struct * synapse_params);
 	void AddSynapseGroupsForNeuronGroupAndEachInputGroup(int postsynaptic_group_id, synapse_parameters_struct * synapse_params);
 

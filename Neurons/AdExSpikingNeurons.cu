@@ -29,7 +29,7 @@ AdExSpikingNeurons::AdExSpikingNeurons() {
 
 // AdExSpikingNeurons Destructor
 AdExSpikingNeurons::~AdExSpikingNeurons() {
-	
+
 }
 
 
@@ -49,8 +49,9 @@ int AdExSpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
 	adaptation_changes_b = (float*)realloc(adaptation_changes_b, total_number_of_neurons*sizeof(float));
 
 	absolute_refractory_period = AdEx_spiking_group_params->absolute_refractory_period;
+	background_current = AdEx_spiking_group_params->background_current;
 
-	
+
 	for (int i = total_number_of_neurons - number_of_neurons_in_new_group; i < total_number_of_neurons; i++) {
 		adaptation_values_w[i] = 0.0f;
 		membrane_capacitances_Cm[i] = AdEx_spiking_group_params->membrane_capacitance_Cm;
@@ -67,7 +68,7 @@ int AdExSpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
 
 
 void AdExSpikingNeurons::allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage) {
-	
+
 	SpikingNeurons::allocate_device_pointers(maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
 
 	CudaSafeCall(cudaMalloc((void **)&d_adaptation_values_w, sizeof(float)*total_number_of_neurons));
@@ -121,6 +122,7 @@ void AdExSpikingNeurons::update_membrane_potentials(float timestep, float curren
 																	d_thresholds_for_action_potential_spikes,
 																	d_last_spike_time_of_each_neuron,
 																	absolute_refractory_period,
+																	background_current,
 																	current_time_in_seconds,
 																	timestep,
 																	total_number_of_neurons);
@@ -142,11 +144,12 @@ __global__ void AdEx_update_membrane_potentials(float *d_membrane_potentials_v,
 								float * d_thresholds_for_action_potential_spikes,
 								float * d_last_spike_time_of_each_neuron,
 								float absolute_refractory_period,
+								float background_current,
 								float current_time_in_seconds,
 								float timestep,
 								size_t total_number_of_neurons){
 
-	
+
 	// // Get thread IDs
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	while (idx < total_number_of_neurons) {
@@ -158,14 +161,14 @@ __global__ void AdEx_update_membrane_potentials(float *d_membrane_potentials_v,
 			float membrane_leak_diff = (d_membrane_potentials_v[idx] - d_leak_reversal_potentials_E_L[idx]);
 			float membrane_leakage = -1.0 * d_membrane_leakage_conductances_g0[idx]*membrane_leak_diff;
 			float membrane_thresh_diff = (d_membrane_potentials_v[idx] - d_thresholds_for_action_potential_spikes[idx]);
-			
+
 			// Checking for limit of Delta_T => 0
 			float slope_adaptation = 0.0f;
 			if (d_slope_factors_Delta_T[idx] != 0.0f){
 				slope_adaptation = d_membrane_leakage_conductances_g0[idx]*d_slope_factors_Delta_T[idx]*expf(membrane_thresh_diff / d_slope_factors_Delta_T[idx]);
 			}
 
-			float update_membrane_potential = inverse_capacitance*(membrane_leakage + slope_adaptation - d_adaptation_values_w[idx] + d_current_injections[idx]);
+			float update_membrane_potential = inverse_capacitance*(membrane_leakage + slope_adaptation - d_adaptation_values_w[idx] + d_current_injections[idx] + background_current);
 
 			// Updating the adaptation parameter
 			float inverse_tau_w = (1.0f / d_adaptation_time_constants_tau_w[idx]);
@@ -174,7 +177,7 @@ __global__ void AdEx_update_membrane_potentials(float *d_membrane_potentials_v,
 			float update_adaptation_value = inverse_tau_w*(adaptation_change - d_adaptation_values_w[idx]);
 
 
-			// 
+			//
 			d_adaptation_values_w[idx] += timestep*update_adaptation_value;
 			d_membrane_potentials_v[idx] += timestep*update_membrane_potential;
 
@@ -233,7 +236,7 @@ __global__ void check_for_neuron_spikes_kernel(float *d_membrane_potentials_v,
 			d_membrane_potentials_v[idx] = d_resting_potentials[idx];
 
 			// Set the adaptation parameter (w += b)
-			d_adaptation_values_w[idx] += d_adaptation_changes_b[idx]; 
+			d_adaptation_values_w[idx] += d_adaptation_changes_b[idx];
 
 			// High fidelity spike storage
 			if (high_fidelity_spike_flag){
@@ -245,7 +248,7 @@ __global__ void check_for_neuron_spikes_kernel(float *d_membrane_potentials_v,
 				int offset_bit_pos = offset_index - (8 * offset_byte);
 				// Get the specific position at which we should be putting the current value
 				unsigned char byte = d_bitarray_of_neuron_spikes[neuron_id_spike_store_start + offset_byte];
-				// Set the specific bit in the byte to on 
+				// Set the specific bit in the byte to on
 				byte |= (1 << offset_bit_pos);
 				// Assign the byte
 				d_bitarray_of_neuron_spikes[neuron_id_spike_store_start + offset_byte] = byte;
@@ -262,7 +265,7 @@ __global__ void check_for_neuron_spikes_kernel(float *d_membrane_potentials_v,
 				int offset_bit_pos = offset_index - (8 * offset_byte);
 				// Get the specific position at which we should be putting the current value
 				unsigned char byte = d_bitarray_of_neuron_spikes[neuron_id_spike_store_start + offset_byte];
-				// Set the specific bit in the byte to on 
+				// Set the specific bit in the byte to on
 				byte &= ~(1 << offset_bit_pos);
 				// Assign the byte
 				d_bitarray_of_neuron_spikes[neuron_id_spike_store_start + offset_byte] = byte;

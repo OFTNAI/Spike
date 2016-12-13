@@ -17,6 +17,7 @@ struct AdEx_spiking_neuron_parameters_struct : spiking_neuron_parameters_struct 
 	float adaptation_time_constant_tau_w;
 	float adaptation_change_b;
 	float absolute_refractory_period;
+	float background_current;
 
 };
 
@@ -36,6 +37,7 @@ public:
 	float * adaptation_time_constants_tau_w;
 	float * adaptation_changes_b;
 	float absolute_refractory_period;
+	float background_current;
 
 	float * d_adaptation_values_w;
 	float * d_membrane_capacitances_Cm;
@@ -85,6 +87,7 @@ __global__ void AdEx_update_membrane_potentials(float *d_membrane_potentials_v,
 								float * d_thresholds_for_action_potential_spikes,
 								float * d_last_spike_time_of_each_neuron,
 								float absolute_refractory_period,
+								float background_current,
 								float current_time_in_seconds,
 								float timestep,
 								size_t total_number_of_neurons);

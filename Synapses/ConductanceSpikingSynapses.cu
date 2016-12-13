@@ -34,16 +34,16 @@ ConductanceSpikingSynapses::~ConductanceSpikingSynapses() {
 //		CONNECTIVITY_TYPE (Constants.h)
 //		Boolean value to indicate if population is STDP based
 //		Parameter = either probability for random synapses or S.D. for Gaussian
-void ConductanceSpikingSynapses::AddGroup(int presynaptic_group_id, 
-						int postsynaptic_group_id, 
+void ConductanceSpikingSynapses::AddGroup(int presynaptic_group_id,
+						int postsynaptic_group_id,
 						Neurons * neurons,
 						Neurons * input_neurons,
 						float timestep,
 						synapse_parameters_struct * synapse_params) {
-	
-	
-	SpikingSynapses::AddGroup(presynaptic_group_id, 
-							postsynaptic_group_id, 
+
+
+	SpikingSynapses::AddGroup(presynaptic_group_id,
+							postsynaptic_group_id,
 							neurons,
 							input_neurons,
 							timestep,
@@ -85,7 +85,7 @@ void ConductanceSpikingSynapses::allocate_device_pointers() {
 }
 
 void ConductanceSpikingSynapses::copy_constants_and_initial_efficacies_to_device() {
-	
+
 	SpikingSynapses::copy_constants_and_initial_efficacies_to_device();
 
 	CudaSafeCall(cudaMemcpy(d_biological_conductance_scaling_constants_lambda, biological_conductance_scaling_constants_lambda, sizeof(float)*total_number_of_synapses, cudaMemcpyHostToDevice));
@@ -105,7 +105,7 @@ void ConductanceSpikingSynapses::reset_synapse_activities() {
 
 
 void ConductanceSpikingSynapses::shuffle_synapses() {
-	
+
 	SpikingSynapses::shuffle_synapses();
 
 	float * temp_synaptic_conductances_g = (float *)malloc(total_number_of_synapses*sizeof(float));
@@ -130,9 +130,9 @@ void ConductanceSpikingSynapses::shuffle_synapses() {
 
 
 void ConductanceSpikingSynapses::set_threads_per_block_and_blocks_per_grid(int threads) {
-	
+
 	SpikingSynapses::set_threads_per_block_and_blocks_per_grid(threads);
-	
+
 }
 
 
@@ -144,7 +144,7 @@ void ConductanceSpikingSynapses::calculate_postsynaptic_current_injection(Spikin
 																	d_reversal_potentials_Vhat,
 																	neurons->d_current_injections,
 																	total_number_of_synapses,
-																	neurons->d_membrane_potentials_v, 
+																	neurons->d_membrane_potentials_v,
 																	d_synaptic_conductances_g);
 
 	CudaCheckError();
@@ -155,9 +155,9 @@ void ConductanceSpikingSynapses::calculate_postsynaptic_current_injection(Spikin
 
 void ConductanceSpikingSynapses::update_synaptic_conductances(float timestep, float current_time_in_seconds) {
 
-	conductance_update_synaptic_conductances_kernel<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(timestep, 
-											d_synaptic_conductances_g, 
-											d_synaptic_efficacies_or_weights, 
+	conductance_update_synaptic_conductances_kernel<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(timestep,
+											d_synaptic_conductances_g,
+											d_synaptic_efficacies_or_weights,
 											d_time_of_last_spike_to_reach_synapse,
 											d_biological_conductance_scaling_constants_lambda,
 											total_number_of_synapses,
@@ -198,9 +198,9 @@ __global__ void conductance_calculate_postsynaptic_current_injection_kernel(int 
 
 
 
-__global__ void conductance_update_synaptic_conductances_kernel(float timestep, 
-														float * d_synaptic_conductances_g, 
-														float * d_synaptic_efficacies_or_weights, 
+__global__ void conductance_update_synaptic_conductances_kernel(float timestep,
+														float * d_synaptic_conductances_g,
+														float * d_synaptic_efficacies_or_weights,
 														float * d_time_of_last_spike_to_reach_synapse,
 														float * d_biological_conductance_scaling_constants_lambda,
 														int total_number_of_synapses,
@@ -213,7 +213,7 @@ __global__ void conductance_update_synaptic_conductances_kernel(float timestep,
 		float synaptic_conductance_g = d_synaptic_conductances_g[idx];
 
 		float new_conductance = (1.0 - (timestep/d_decay_terms_tau_g[idx])) * synaptic_conductance_g;
-		
+
 		if (d_time_of_last_spike_to_reach_synapse[idx] == current_time_in_seconds) {
 			float timestep_times_synaptic_efficacy = timestep * d_synaptic_efficacies_or_weights[idx];
 			float biological_conductance_scaling_constant_lambda = d_biological_conductance_scaling_constants_lambda[idx];
@@ -221,17 +221,10 @@ __global__ void conductance_update_synaptic_conductances_kernel(float timestep,
 			new_conductance += timestep_times_synaptic_efficacy_times_scaling_constant;
 		}
 
-		if (synaptic_conductance_g != new_conductance) {
-			d_synaptic_conductances_g[idx] = new_conductance;
-		}
+		d_synaptic_conductances_g[idx] = new_conductance;
 
 		idx += blockDim.x * gridDim.x;
 	}
 	__syncthreads();
 
 }
-
-
-
-
-
