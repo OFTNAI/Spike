@@ -68,8 +68,8 @@ Synapses::~Synapses() {
 }
 
 
-void Synapses::AddGroup(int presynaptic_group_id, 
-						int postsynaptic_group_id, 
+void Synapses::AddGroup(int presynaptic_group_id,
+						int postsynaptic_group_id,
 						Neurons * neurons,
 						Neurons * input_neurons,
 						float timestep,
@@ -130,7 +130,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 	} else if (postsynaptic_group_id >= 0){
 		postsynaptic_group_shape = neurons->group_shapes[postsynaptic_group_id];
 		poststart = start_neuron_indices_for_neuron_groups[postsynaptic_group_id];
-		
+
 	}
 	int postend = last_neuron_indices_for_neuron_groups[postsynaptic_group_id] + 1;
 
@@ -147,10 +147,10 @@ void Synapses::AddGroup(int presynaptic_group_id,
 
 	// Carry out the creation of the connectivity matrix
 	switch (synapse_params->connectivity_type){
-            
+
 		case CONNECTIVITY_TYPE_ALL_TO_ALL:
 		{
-            
+
             int increment = (preend-prestart)*(postend-poststart);
             this->increment_number_of_synapses(increment);
 
@@ -170,7 +170,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 		{
             int increment = (preend-prestart);
             this->increment_number_of_synapses(increment);
-            
+
 			// If the connectivity is one_to_one
 			if ((preend-prestart) != (postend-poststart)) print_message_and_exit("Unequal populations for one_to_one.");
 			// Create the connectivity
@@ -191,7 +191,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 					float prob = ((float)rand() / (RAND_MAX));
 					// If it is within the probability range, connect!
 					if (prob < synapse_params->random_connectivity_probability){
-						
+
 						this->increment_number_of_synapses(1);
 
 						// Setup Synapses
@@ -202,13 +202,13 @@ void Synapses::AddGroup(int presynaptic_group_id,
 			}
 			break;
 		}
-		
+
 		case CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE:
 		{
 
 			float standard_deviation_sigma = synapse_params->gaussian_synapses_standard_deviation;
 			int number_of_new_synapses_per_postsynaptic_neuron = synapse_params->gaussian_synapses_per_postsynaptic_neuron;
-			
+
 			int number_of_postsynaptic_neurons_in_group = postend - poststart;
 			int total_number_of_new_synapses = number_of_new_synapses_per_postsynaptic_neuron * number_of_postsynaptic_neurons_in_group;
 			this->increment_number_of_synapses(total_number_of_new_synapses);
@@ -253,7 +253,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 	if (print_synapse_group_details == true) printf("%d new synapses added.\n\n", temp_number_of_synapses_in_last_group);
 
 	for (int i = original_number_of_synapses; i < total_number_of_synapses; i++){
-		
+
 		float weight_range_bottom = synapse_params->weight_range_bottom;
 		float weight_range_top = synapse_params->weight_range_top;
 
@@ -261,7 +261,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 			synaptic_efficacies_or_weights[i] = weight_range_bottom;
 		} else {
 			float weight = weight_range_bottom + (weight_range_top - weight_range_bottom)*((float)rand() / (RAND_MAX));
-			
+
 			synaptic_efficacies_or_weights[i] = weight;
 		}
 
@@ -300,7 +300,7 @@ void Synapses::increment_number_of_synapses(int increment) {
 	    if (temp_synapse_postsynaptic_neuron_count_index != NULL) synapse_postsynaptic_neuron_count_index = temp_synapse_postsynaptic_neuron_count_index;
 	}
 
-	
+
 
 }
 
@@ -331,7 +331,7 @@ void Synapses::copy_constants_and_initial_efficacies_to_device() {
 
 
 
-// Provides order of magnitude speedup for LIF (All to all atleast). 
+// Provides order of magnitude speedup for LIF (All to all atleast).
 // Because all synapses contribute to current_injection on every iteration, having all threads in a block accessing only 1 or 2 positions in memory causing massive slowdown.
 // Randomising order of synapses means that each block is accessing a larger number of points in memory.
 void Synapses::shuffle_synapses() {
@@ -343,7 +343,7 @@ void Synapses::shuffle_synapses() {
 	int* new_presynaptic_neuron_indices = (int *)malloc(total_number_of_synapses*sizeof(int));
 	int* new_postsynaptic_neuron_indices = (int *)malloc(total_number_of_synapses*sizeof(int));
 	float* new_synaptic_efficacies_or_weights = (float *)malloc(total_number_of_synapses*sizeof(float));
-	
+
 	for(int i = 0; i < total_number_of_synapses; i++) {
 
 		new_presynaptic_neuron_indices[i] = presynaptic_neuron_indices[original_synapse_indices[i]];
@@ -363,8 +363,8 @@ void Synapses::shuffle_synapses() {
 
 void Synapses::set_threads_per_block_and_blocks_per_grid(int threads) {
 
-	threads_per_block.x = threads;
-	number_of_synapse_blocks_per_grid = dim3(1000);
+	threads_per_block.x = 128;
+	number_of_synapse_blocks_per_grid = dim3((2048/128)*14);
 
 }
 
@@ -374,22 +374,22 @@ __global__ void set_neuron_indices_by_sampling_from_normal_distribution(int tota
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	int t_idx = idx;
 	while (idx < total_number_of_new_synapses) {
-		
+
 		int postsynaptic_neuron_id = idx / number_of_new_synapses_per_postsynaptic_neuron;
 		d_postsynaptic_neuron_indices[idx] = poststart + postsynaptic_neuron_id;
 
-		int postsynaptic_x = postsynaptic_neuron_id % post_width; 
+		int postsynaptic_x = postsynaptic_neuron_id % post_width;
 		int postsynaptic_y = floor((float)(postsynaptic_neuron_id) / post_width);
 		float fractional_x = (float)postsynaptic_x / post_width;
 		float fractional_y = (float)postsynaptic_y / post_height;
 
-		int corresponding_presynaptic_centre_x = floor((float)pre_width * fractional_x); 
+		int corresponding_presynaptic_centre_x = floor((float)pre_width * fractional_x);
 		int corresponding_presynaptic_centre_y = floor((float)pre_height * fractional_y);
 
 		bool presynaptic_x_set = false;
 		bool presynaptic_y_set = false;
 		int presynaptic_x = -1;
-		int presynaptic_y = -1; 
+		int presynaptic_y = -1;
 
 		while (true) {
 
@@ -405,7 +405,7 @@ __global__ void set_neuron_indices_by_sampling_from_normal_distribution(int tota
 			}
 
 			if (presynaptic_y_set == false) {
-			
+
 				float value_from_normal_distribution_for_y = curand_normal(&d_states[t_idx]);
 				float scaled_value_from_normal_distribution_for_y = standard_deviation_sigma * value_from_normal_distribution_for_y;
 				int rounded_scaled_value_from_normal_distribution_for_y = round(scaled_value_from_normal_distribution_for_y);
@@ -420,12 +420,12 @@ __global__ void set_neuron_indices_by_sampling_from_normal_distribution(int tota
 				d_presynaptic_neuron_indices[idx] = CORRECTED_PRESYNAPTIC_ID(prestart + presynaptic_x + presynaptic_y*pre_width, presynaptic_group_is_input);
 				break;
 			}
-			
 
-		}	
+
+		}
 		idx += blockDim.x * gridDim.x;
 
-	}	
+	}
 
 	__syncthreads();
 

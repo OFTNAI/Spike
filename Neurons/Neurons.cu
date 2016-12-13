@@ -42,9 +42,9 @@ Neurons::~Neurons() {
 
 
 int Neurons::AddGroup(neuron_parameters_struct * group_params){
-	
+
 	number_of_neurons_in_new_group = group_params->group_shape[0] * group_params->group_shape[1];
- 
+
 	if (number_of_neurons_in_new_group < 0) {
 		print_message_and_exit("Error: Group must have at least 1 neuron.");
 	}
@@ -76,7 +76,7 @@ int Neurons::AddGroup(neuron_parameters_struct * group_params){
 		per_neuron_afferent_synapse_count[i] = 0;
 	}
 
-	
+
 	return new_group_id;
 }
 
@@ -101,9 +101,7 @@ void Neurons::reset_current_injections() {
 
 
 void Neurons::set_threads_per_block_and_blocks_per_grid(int threads) {
-	
-	threads_per_block.x = threads;
 
-	int number_of_neuron_blocks = (total_number_of_neurons + threads) / threads;
-	number_of_neuron_blocks_per_grid.x = number_of_neuron_blocks;
+	threads_per_block.x = 128;
+	number_of_neuron_blocks_per_grid.x = (2048/128)*14;
 }
