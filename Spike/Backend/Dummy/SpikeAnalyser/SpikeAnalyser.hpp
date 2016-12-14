@@ -8,14 +8,20 @@ namespace Backend {
     public:
       MAKE_BACKEND_CONSTRUCTOR(SpikeAnalyser);
 
-      void prepare() override {}
-
-      void store_spike_counts_for_stimulus_index(int stimulus_index) override {
-        printf("TODO store_spike_counts_for_stimulus_index\n");
+      void prepare() override {
       }
 
-      void push_data_front() override {}
-      void pull_data_back() override {}
+      void reset_state() override {
+      }
+
+      void push_data_front() override {
+      }
+
+      void pull_data_back() override {
+      }
+
+      void store_spike_counts_for_stimulus_index(int stimulus_index) override {
+      }
     };
   }
 }

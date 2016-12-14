@@ -30,7 +30,11 @@ Synapses::~Synapses() {
   free(original_synapse_indices);
   free(synapse_postsynaptic_neuron_count_index);
   free(random_state_manager);
-  // free(number_of_synapse_blocks_per_grid);
+}
+
+
+void Synapses::reset_state() {
+  backend()->reset_state();
 }
 
 

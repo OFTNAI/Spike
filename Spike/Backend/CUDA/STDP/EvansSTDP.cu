@@ -4,7 +4,6 @@
 namespace Backend {
   namespace CUDA {
     EvansSTDP::~EvansSTDP() {
-      // TODO Check before free
       CudaSafeCall(cudaFree(recent_postsynaptic_activities_D));
       CudaSafeCall(cudaFree(recent_presynaptic_activities_C));
     }
@@ -36,8 +35,10 @@ namespace Backend {
       STDP::pull_data_back();
     }
 
-    // RUN AFTER NETWORK HAS BEEN STARTED -- TODO: Check this?..
     void EvansSTDP::allocate_device_pointers(){
+      // RUN AFTER NETWORK HAS BEEN STARTED
+      // (eg, see prepare_backend() call at end of
+      //  FourLayerVisionSpikingModel::finalise_model)
       CudaSafeCall(cudaMalloc((void **)&recent_postsynaptic_activities_D, sizeof(float)*frontend()->neurs->total_number_of_neurons));
       CudaSafeCall(cudaMalloc((void **)&recent_presynaptic_activities_C, sizeof(float)*frontend()->syns->total_number_of_synapses));
 

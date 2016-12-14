@@ -5,12 +5,24 @@
 
 namespace Backend {
   namespace Dummy {
-    using PoissonInputSpikingNeurons = ::Backend::Dummy::InputSpikingNeurons;
-    // class PoissonInputSpikingNeurons : public virtual ::Backend::Dummy::InputSpikingNeurons,
-    //                                    public virtual ::Backend::PoissonInputSpikingNeurons {
-    // public:
-    //   virtual void update_membrane_potentials(float timestep, float current_time_in_seconds);
-    //   // virtual void setup_random_states_on_device();
-    // };
+    class PoissonInputSpikingNeurons : public virtual ::Backend::Dummy::InputSpikingNeurons,
+                                       public virtual ::Backend::PoissonInputSpikingNeurons {
+    public:
+      void prepare() override {
+        InputSpikingNeurons::prepare();
+      }
+
+      void reset_state() override {
+        InputSpikingNeurons::reset_state();
+      }
+
+      void push_data_front() override {
+        InputSpikingNeurons::push_data_front();
+      }
+
+      void pull_data_back() override {
+        InputSpikingNeurons::pull_data_back();
+      }
+    };
   }
 }

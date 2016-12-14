@@ -17,9 +17,6 @@ namespace Backend {
   class PoissonInputSpikingNeurons : public virtual InputSpikingNeurons {
   public:
     ADD_FRONTEND_GETTER(PoissonInputSpikingNeurons);
-    void reset_state() override {}; // TODO ??
-    void push_data_front() override {} // TODO
-    void pull_data_back() override {} // TODO    
   };
 }
 
@@ -41,13 +38,14 @@ public:
   RandomStateManager * random_state_manager = nullptr;
 
   void prepare_backend_early();
-  
-  virtual int AddGroup(neuron_parameters_struct * group_params);
+
   void set_up_rates();
 
-  // TODO:
-  // virtual void update_membrane_potentials(float timestep, float current_time_in_seconds);
-  virtual void init_random_state(bool force=false);
+  void init_random_state(bool force=false);
+  
+  int AddGroup(neuron_parameters_struct * group_params) override;
+
+  void update_membrane_potentials(float timestep, float current_time_in_seconds) override;
 
 private:
   ::Backend::PoissonInputSpikingNeurons* _backend = nullptr;

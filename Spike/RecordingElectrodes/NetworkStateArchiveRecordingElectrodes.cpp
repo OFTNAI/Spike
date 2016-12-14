@@ -25,12 +25,6 @@ void NetworkStateArchiveRecordingElectrodes::initialise_network_state_archive_re
 	
 }
 
-void NetworkStateArchiveRecordingElectrodes::reset_state() {
-  backend()->reset_state();
-  // NB: RecordingElectrodes::reset_state is pure virtual at the moment ::
-  // RecordingElectrodes::reset_state();
-}
-
 void NetworkStateArchiveRecordingElectrodes::write_initial_synaptic_weights_to_file() {
 	ofstream initweightfile;
 	if (network_state_archive_optional_parameters->human_readable_storage){

@@ -55,6 +55,7 @@ struct masquelier_stdp_parameters_struct : stdp_parameters_struct {
 
 class MasquelierSTDP : public STDP {
 public:
+  ~MasquelierSTDP();
   ADD_BACKEND_GETSET(MasquelierSTDP, STDP);
 
   struct masquelier_stdp_parameters_struct* stdp_params = nullptr;
@@ -65,7 +66,6 @@ public:
 
   void init_backend(Context* ctx = _global_ctx) override;
   void prepare_backend_late();
-  void reset_state() override;
 
   // Set STDP Parameters
   void Set_STDP_Parameters(SpikingSynapses* synapses,

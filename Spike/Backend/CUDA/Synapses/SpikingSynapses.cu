@@ -28,7 +28,6 @@ namespace Backend {
     }
 
     void SpikingSynapses::push_data_front() {
-      // TODO: Flesh this out (and for derived classes!)
       Synapses::push_data_front();
       CudaSafeCall(cudaMemcpy(frontend()->synaptic_efficacies_or_weights,
                               synaptic_efficacies_or_weights,
@@ -68,7 +67,6 @@ namespace Backend {
      ::SpikingNeurons* input_neurons,
      float current_time_in_seconds, float timestep) {
 
-      // TODO: Is the dynamic cast too slow?
       ::Backend::CUDA::SpikingNeurons* neurons_backend =
         dynamic_cast<::Backend::CUDA::SpikingNeurons*>(neurons->backend());
       assert(neurons_backend);

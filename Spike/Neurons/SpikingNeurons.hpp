@@ -50,13 +50,8 @@ public:
   float* thresholds_for_action_potential_spikes = nullptr;
   unsigned char* bitarray_of_neuron_spikes = nullptr;
 
-  // float* last_spike_time_of_each_neuron = nullptr;
-  float* membrane_potentials_v = nullptr;
-  float* resting_potentials = nullptr;
-
   // Functions
   int AddGroup(neuron_parameters_struct * group_params) override;
-  void reset_state() override;
 
   virtual void update_membrane_potentials(float timestep, float current_time_in_seconds) = 0;
   virtual void check_for_neuron_spikes(float current_time_in_seconds, float timestep);

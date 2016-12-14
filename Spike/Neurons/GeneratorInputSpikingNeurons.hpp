@@ -13,7 +13,6 @@ namespace Backend {
   class GeneratorInputSpikingNeurons : public virtual InputSpikingNeurons {
   public:
     ADD_FRONTEND_GETTER(GeneratorInputSpikingNeurons);
-    virtual void reset_state() {};
   };
 } 
 
@@ -38,12 +37,7 @@ public:
   int** neuron_id_matrix_for_stimuli = nullptr;
   float** spike_times_matrix_for_stimuli = nullptr;
 
-  // Don't need this as it is inherited without change:
-  // virtual int AddGroup(neuron_parameters_struct * group_params);
-
-  virtual void reset_state();
-
-  virtual void update_membrane_potentials(float timestep, float current_time_in_seconds);
+  void update_membrane_potentials(float timestep, float current_time_in_seconds) override;
 
   void AddStimulus(int spikenumber, int* ids, float* spiketimes);
 

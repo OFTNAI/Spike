@@ -1,5 +1,6 @@
 add_library (STDP OBJECT
-    EvansSTDP.cpp
-    HigginsSTDP.cpp
-    MasquelierSTDP.cpp
-    )
+  STDP.cpp
+  EvansSTDP.cpp
+  HigginsSTDP.cpp
+  MasquelierSTDP.cpp
+  )

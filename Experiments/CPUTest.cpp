@@ -40,17 +40,13 @@ int main (int argc, char *argv[]){
         FourLayerVisionSpikingModel * four_layer_vision_spiking_model = new FourLayerVisionSpikingModel();
         four_layer_vision_spiking_model->SetTimestep(timestep);
 
+        four_layer_vision_spiking_model->high_fidelity_spike_storage = high_fidelity_spike_storage;
         four_layer_vision_spiking_model->number_of_non_input_layers = 1;
         four_layer_vision_spiking_model->INHIBITORY_NEURONS_ON = false;
 
         four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2E_FF[0] = 0.01;
 
-        //four_layer_vision_spiking_model->finalise_model();
-        four_layer_vision_spiking_model->init_backend(high_fidelity_spike_storage);
-        std::cout << "Done init_backend\n"
-                  << "model->spiking_neurons->backend: "
-                  << four_layer_vision_spiking_model->spiking_neurons->backend()
-                  << "\n";
+        four_layer_vision_spiking_model->finalise_model();
 
         // CREATE SIMULATOR
         Simulator * simulator = new Simulator(four_layer_vision_spiking_model, simulator_options);

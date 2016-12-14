@@ -11,7 +11,6 @@ public:
 	// Constructor/Destructor
 	TimerWithMessages(const char * start_message);
 	TimerWithMessages();
-	~TimerWithMessages();
 
 	clock_t clock_start;
 

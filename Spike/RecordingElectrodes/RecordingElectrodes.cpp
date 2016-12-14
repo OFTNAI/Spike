@@ -18,4 +18,8 @@ RecordingElectrodes::RecordingElectrodes(SpikingNeurons * neurons_parameter, Spi
 
 }
 
+void RecordingElectrodes::reset_state() {
+  backend()->reset_state();
+}
+
 MAKE_STUB_INIT_BACKEND(RecordingElectrodes);

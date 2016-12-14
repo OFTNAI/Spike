@@ -12,15 +12,8 @@ namespace Backend {
     }
 
     void SpikingNeurons::allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage) {
-
-      Neurons::allocate_device_pointers(maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
-
       CudaSafeCall(cudaMalloc((void **)&last_spike_time_of_each_neuron, sizeof(float)*frontend()->total_number_of_neurons));
-      printf(">>>>>>>>> %d, %p\n",
-             frontend()->total_number_of_neurons,
-             last_spike_time_of_each_neuron);
       CudaSafeCall(cudaMalloc((void **)&membrane_potentials_v, sizeof(float)*frontend()->total_number_of_neurons));
-      printf("############ %p, %p\n", this, membrane_potentials_v);
       CudaSafeCall(cudaMalloc((void **)&thresholds_for_action_potential_spikes, sizeof(float)*frontend()->total_number_of_neurons));
       CudaSafeCall(cudaMalloc((void **)&resting_potentials, sizeof(float)*frontend()->total_number_of_neurons));
 
@@ -31,25 +24,19 @@ namespace Backend {
     }
 
     void SpikingNeurons::copy_constants_to_device() {
-  
-      Neurons::copy_constants_to_device();
-
       CudaSafeCall(cudaMemcpy(thresholds_for_action_potential_spikes, thresholds_for_action_potential_spikes, sizeof(float)*frontend()->total_number_of_neurons, cudaMemcpyHostToDevice));
-      printf("<<<<<< %p, %p, %d\n",
-             resting_potentials,
-             frontend()->after_spike_reset_membrane_potentials_c,
-             frontend()->total_number_of_neurons);
       CudaSafeCall(cudaMemcpy(resting_potentials, frontend()->after_spike_reset_membrane_potentials_c, sizeof(float)*frontend()->total_number_of_neurons, cudaMemcpyHostToDevice));
     }
 
     void SpikingNeurons::prepare() {
-      // TODO: Add this to the other classes ...
-      set_threads_per_block_and_blocks_per_grid(context->params.threads_per_block_neurons);
+      Neurons::prepare();
       allocate_device_pointers(context->params.maximum_axonal_delay_in_timesteps, context->params.high_fidelity_spike_storage);
       copy_constants_to_device();
     }
 
     void SpikingNeurons::reset_state() {
+      Neurons::reset_state();
+
       // Set last spike times to -1000 so that the times do not affect current simulation.
       float* tmp_last_spike_times;
       tmp_last_spike_times = (float*)malloc(sizeof(float)*frontend()->total_number_of_neurons);
@@ -67,10 +54,6 @@ namespace Backend {
                               cudaMemcpyHostToDevice));
 
       if (frontend()->high_fidelity_spike_flag) {
-        printf("::::: %p, %p, %d\n",
-               bitarray_of_neuron_spikes,
-               frontend()->bitarray_of_neuron_spikes,
-               frontend()->bitarray_length*frontend()->total_number_of_neurons);
         CudaSafeCall(cudaMemcpy(bitarray_of_neuron_spikes,
                                 frontend()->bitarray_of_neuron_spikes,
                                 sizeof(unsigned char)*frontend()->bitarray_length*frontend()->total_number_of_neurons,
@@ -78,21 +61,15 @@ namespace Backend {
       }
     }
 
+    void SpikingNeurons::push_data_front() {
+      Neurons::push_data_front();
+    }
+
+    void SpikingNeurons::pull_data_back() {
+      Neurons::pull_data_back();
+    }
+
     void SpikingNeurons::check_for_neuron_spikes(float current_time_in_seconds, float timestep) {
-
-      printf("%p, %p, %p, %p, %p, %d, %d, %f, %f, %d, %d .....\n",
-             membrane_potentials_v,
-             thresholds_for_action_potential_spikes,
-             resting_potentials,
-             last_spike_time_of_each_neuron,
-             bitarray_of_neuron_spikes,
-             frontend()->bitarray_length,
-             frontend()->bitarray_maximum_axonal_delay_in_timesteps,
-             current_time_in_seconds,
-             timestep,
-             frontend()->total_number_of_neurons,
-             frontend()->high_fidelity_spike_flag);
-
       check_for_neuron_spikes_kernel<<<number_of_neuron_blocks_per_grid, threads_per_block>>>
         (membrane_potentials_v,
          thresholds_for_action_potential_spikes,

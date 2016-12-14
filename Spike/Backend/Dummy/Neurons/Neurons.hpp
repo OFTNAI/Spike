@@ -6,10 +6,17 @@ namespace Backend {
   namespace Dummy {
     class Neurons : public virtual ::Backend::Neurons {
     public:
-      // virtual void prepare();
-      // virtual void reset_state();
-      // virtual void push_data_front();
-      // virtual void pull_data_back();
+      void prepare() override {
+      }
+
+      void reset_state() override {
+      }
+
+      void push_data_front() override {
+      }
+
+      void pull_data_back() override {
+      }
     };
   } // namespace Dummy
 } // namespace Backend

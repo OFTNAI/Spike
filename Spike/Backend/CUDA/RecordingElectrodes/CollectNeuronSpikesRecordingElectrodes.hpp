@@ -18,14 +18,16 @@ namespace Backend {
       MAKE_BACKEND_CONSTRUCTOR(CollectNeuronSpikesRecordingElectrodes);
       using ::Backend::CollectNeuronSpikesRecordingElectrodes::frontend;
 
-      virtual void reset_state();
-      virtual void prepare();
+      void prepare() override;
+      void reset_state() override;
 
       void push_data_front() override;
+      void pull_data_back() override;
+
       void copy_spikes_to_front() override;
       void copy_spike_counts_to_front() override;
 
-      virtual void collect_spikes_for_timestep(float current_time_in_seconds);
+      void collect_spikes_for_timestep(float current_time_in_seconds) override;
 
       int* neuron_ids_of_stored_spikes_on_device = nullptr;
       int* total_number_of_spikes_stored_on_device = nullptr;

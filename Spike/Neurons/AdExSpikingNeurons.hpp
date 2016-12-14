@@ -50,9 +50,8 @@ public:
   float * adaptation_changes_b = nullptr;
   float absolute_refractory_period = 0;
 
-  virtual int AddGroup(neuron_parameters_struct * group_params);
-  virtual void update_membrane_potentials(float timestep, float current_time_in_seconds);
-  virtual void reset_state();
+  int AddGroup(neuron_parameters_struct * group_params) override;
+  void update_membrane_potentials(float timestep, float current_time_in_seconds) override;
 
 private:
   ::Backend::AdExSpikingNeurons* _backend = nullptr;

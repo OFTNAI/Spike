@@ -8,17 +8,12 @@ namespace Backend {
       CudaSafeCall(cudaFree(membrane_resistances_R));
     }
 
-    void LIFSpikingNeurons::allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage) {
-      SpikingNeurons::allocate_device_pointers(maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
-
+    void LIFSpikingNeurons::allocate_device_pointers() {
       CudaSafeCall(cudaMalloc((void **)&membrane_time_constants_tau_m, sizeof(float)*frontend()->total_number_of_neurons));
       CudaSafeCall(cudaMalloc((void **)&membrane_resistances_R, sizeof(float)*frontend()->total_number_of_neurons));
     }
 
     void LIFSpikingNeurons::copy_constants_to_device() {
-
-      SpikingNeurons::copy_constants_to_device();
-
       CudaSafeCall(cudaMemcpy(membrane_time_constants_tau_m,
                               frontend()->membrane_time_constants_tau_m,
                               sizeof(float)*frontend()->total_number_of_neurons,
@@ -29,8 +24,25 @@ namespace Backend {
                               cudaMemcpyHostToDevice));
     }
 
-    void LIFSpikingNeurons::update_membrane_potentials(float timestep, float current_time_in_seconds) {
+    void LIFSpikingNeurons::prepare() {
+      SpikingNeurons::prepare();
+      allocate_device_pointers();
+      copy_constants_to_device();
+    }
 
+    void LIFSpikingNeurons::reset_state() {
+      SpikingNeurons::reset_state();
+    }
+
+    void LIFSpikingNeurons::push_data_front() {
+      SpikingNeurons::push_data_front();
+    }
+
+    void LIFSpikingNeurons::pull_data_back() {
+      SpikingNeurons::pull_data_back();
+    }
+
+    void LIFSpikingNeurons::update_membrane_potentials(float timestep, float current_time_in_seconds) {
       lif_update_membrane_potentials<<<number_of_neuron_blocks_per_grid, threads_per_block>>>
         (membrane_potentials_v,
          last_spike_time_of_each_neuron,

@@ -55,12 +55,12 @@ public:
 
   struct higgins_stdp_parameters_struct* stdp_params = nullptr;
 
-  virtual void init_backend(Context* ctx = _global_ctx);
+  void init_backend(Context* ctx = _global_ctx) override;
 
   // Set STDP Parameters
-  virtual void Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons* neurons, SpikingNeurons* input_neurons, stdp_parameters_struct* stdp_parameters);
+  void Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons* neurons, SpikingNeurons* input_neurons, stdp_parameters_struct* stdp_parameters) override;
   // STDP
-  virtual void Run_STDP(float current_time_in_seconds, float timestep);
+  void Run_STDP(float current_time_in_seconds, float timestep) override;
 
   // LTP & LTD for this model
   void apply_ltd_to_synapse_weights(float current_time_in_seconds);

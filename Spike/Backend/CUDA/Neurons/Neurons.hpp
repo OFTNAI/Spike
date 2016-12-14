@@ -11,6 +11,12 @@ namespace Backend {
     public:
       ~Neurons();
 
+      void prepare() override;
+      void reset_state() override;
+
+      void push_data_front() override;
+      void pull_data_back() override;
+
       // Device Pointers
       int * per_neuron_afferent_synapse_count = nullptr;	/**< A (device-side) count of the number of afferent synapses for each neuron */
       float* current_injections = nullptr;				/**< Device array for the storage of current to be injected into each neuron on each timestep. */
@@ -18,26 +24,19 @@ namespace Backend {
       dim3 number_of_neuron_blocks_per_grid;		/**< CUDA Device number of blocks */
       dim3 threads_per_block;						/**< CUDA Device number of threads */
 
-      /**  
-       *  Exclusively for the allocation of device memory. This class requires allocation of d_current_injections only.
-       \param maximum_axonal_delay_in_timesteps The length (in timesteps) of the largest axonal delay in the simulation. Unused in this class.
-       \param high_fidelity_spike_storage A flag determining whether a bit mask based method is used to store spike times of neurons (ensure no spike transmission failure).
-      */
-      virtual void allocate_device_pointers(int maximum_axonal_delay_in_timesteps,  bool high_fidelity_spike_flag);
+      void allocate_device_pointers(); // Not virtual
 	
       /**  
-       *  Unused in this class. Allows copying of static data related to neuron dynamics to the device.
+       *  Allows copying of static data related to neuron dynamics to the device.
        */
-      virtual void copy_constants_to_device();
+      void copy_constants_to_device(); // Not virtual
 
       /**  
        *  A local, non-polymorphic function called in to determine the CUDA Device thread (Neurons::threads_per_block) and block dimensions (Neurons::number_of_neuron_blocks_per_grid).
        */
-      void set_threads_per_block_and_blocks_per_grid(int threads);
+      void set_threads_per_block_and_blocks_per_grid(int threads); // Not virtual
 
-      // void prepare() override;
-      void reset_state() override;
-      virtual void reset_current_injections();
+      void reset_current_injections(); // Not virtual
 
     private:
       ADD_FRONTEND_GETTER(Neurons);

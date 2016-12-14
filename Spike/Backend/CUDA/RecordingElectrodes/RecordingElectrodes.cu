@@ -9,5 +9,14 @@ namespace Backend {
         (frontend()->neurons->backend());
       assert(neurons_backend);
     }
+
+    void RecordingElectrodes::reset_state() {
+    }
+
+    void RecordingElectrodes::push_data_front() {
+    }
+
+    void RecordingElectrodes::pull_data_back() {
+    }
   }
 }

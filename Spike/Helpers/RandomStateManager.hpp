@@ -15,20 +15,18 @@ namespace Backend {
   public:
     ADD_FRONTEND_GETTER(RandomStateManager);
 
-    // void prepare() override;
-    
     void reset_state() override {
+      // Unorthodox: reset_state doesn't usually just mean, 'call prepare()'
       prepare();
     }
-
-    void push_data_front() override {} // TODO
-    void pull_data_back() override {} // TODO
+    void push_data_front() override {}
+    void pull_data_back() override {}
   };
 }
 
-#include "Spike/Backend/Dummy/RandomStateManager.hpp"
+#include "Spike/Backend/Dummy/Helpers/RandomStateManager.hpp"
 #ifdef SPIKE_WITH_CUDA
-#include "Spike/Backend/CUDA/RandomStateManager.hpp"
+#include "Spike/Backend/CUDA/Helpers/RandomStateManager.hpp"
 #endif
 
 

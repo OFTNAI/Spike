@@ -36,16 +36,16 @@ public:
                       const char * prefix_string_param);
 
   ADD_BACKEND_GETSET(RecordingElectrodes, SpikeBase);
-  virtual void init_backend(Context* ctx = _global_ctx) = 0;
-  virtual void reset_state() = 0;
+  void init_backend(Context* ctx = _global_ctx) override;
+  void reset_state() override;
 
   // Variables
   std::string full_directory_name_for_simulation_data_files;
-  const char * prefix_string;
+  const char * prefix_string = nullptr;
 
   // Host Pointers
-  SpikingNeurons * neurons;
-  SpikingSynapses * synapses;
+  SpikingNeurons * neurons = nullptr;
+  SpikingSynapses * synapses = nullptr;
 
 private:
   ::Backend::RecordingElectrodes* _backend = nullptr;

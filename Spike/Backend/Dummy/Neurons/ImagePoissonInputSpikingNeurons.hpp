@@ -10,30 +10,28 @@ namespace Backend {
     public:
       MAKE_BACKEND_CONSTRUCTOR(ImagePoissonInputSpikingNeurons);
 
-      void update_membrane_potentials
-      (float timestep, float current_time_in_seconds) override {
-        // TODO
-      }
-
-      void copy_rates_to_device() override {
-        // TODO
-      }
-      
-      void check_for_neuron_spikes
-      (float current_time_in_seconds, float timestep) override {
-        // printf("TODO Backend::Dummy::ImagePoissonInputSpikingNeurons::check_for_neuron_spikes\n");
+      void prepare() override {
+        PoissonInputSpikingNeurons::prepare();
       }
 
       void reset_state() override {
-        // printf("TODO Backend::Dummy::ImagePoissonInputSpikingNeurons::reset_state\n");
+        PoissonInputSpikingNeurons::reset_state();
       }
 
-      void prepare() override {
-        printf("TODO Backend::Dummy::ImagePoissonInputSpikingNeurons::prepare\n");
+      void push_data_front() override {
+        PoissonInputSpikingNeurons::push_data_front();
       }
 
-      void push_data_front() override {}
-      void pull_data_back() override {}
+      void pull_data_back() override {
+        PoissonInputSpikingNeurons::pull_data_back();
+      }
+
+      void copy_rates_to_device() override {
+      }
+      
+      // May want to override these when writing a new backend, or may not:
+      using ::Backend::Dummy::SpikingNeurons::check_for_neuron_spikes;
+      using ::Backend::Dummy::SpikingNeurons::update_membrane_potentials;
     };
   }
 }

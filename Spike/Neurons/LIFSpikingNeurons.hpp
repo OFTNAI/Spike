@@ -19,10 +19,6 @@ namespace Backend {
   class LIFSpikingNeurons : public virtual SpikingNeurons {
   public:
     ADD_FRONTEND_GETTER(LIFSpikingNeurons);
-    void push_data_front() override {} // TODO
-    void pull_data_back() override {} // TODO
-
-    virtual void update_membrane_potentials(float timestep, float current_time_in_seconds) = 0;
   };
 }
 
@@ -46,7 +42,6 @@ public:
 
   float refractory_period_in_seconds;
 
-  void reset_state() override;
   int AddGroup(neuron_parameters_struct * group_params) override;
   void update_membrane_potentials(float timestep,float current_time_in_seconds) override;
 

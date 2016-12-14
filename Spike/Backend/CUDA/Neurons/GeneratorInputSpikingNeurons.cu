@@ -9,14 +9,20 @@ namespace Backend {
     }
     
     // Allocate device pointers for the longest stimulus so that they do not need to be replaced
-    void GeneratorInputSpikingNeurons::allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage) {
-      InputSpikingNeurons::allocate_device_pointers(maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
+    void GeneratorInputSpikingNeurons::allocate_device_pointers() {
+      CudaSafeCall(cudaMalloc((void **)&neuron_ids_for_stimulus, sizeof(int)*frontend()->length_of_longest_stimulus));
+      CudaSafeCall(cudaMalloc((void **)&spike_times_for_stimulus, sizeof(float)*frontend()->length_of_longest_stimulus));
+    }
 
+    void GeneratorInputSpikingNeurons::prepare() {
+      InputSpikingNeurons::prepare();
       CudaSafeCall(cudaMalloc((void **)&neuron_ids_for_stimulus, sizeof(int)*frontend()->length_of_longest_stimulus));
       CudaSafeCall(cudaMalloc((void **)&spike_times_for_stimulus, sizeof(float)*frontend()->length_of_longest_stimulus));
     }
 
     void GeneratorInputSpikingNeurons::reset_state() {
+      InputSpikingNeurons::reset_state();
+
       CudaSafeCall(cudaMemcpy(neuron_ids_for_stimulus,
                               frontend()->neuron_id_matrix_for_stimuli[frontend()->current_stimulus_index],
                               sizeof(int)*frontend()->number_of_spikes_in_stimuli[frontend()->current_stimulus_index],
@@ -25,6 +31,14 @@ namespace Backend {
                               frontend()->spike_times_matrix_for_stimuli[frontend()->current_stimulus_index],
                               sizeof(float)*frontend()->number_of_spikes_in_stimuli[frontend()->current_stimulus_index],
                               cudaMemcpyHostToDevice));
+    }
+
+    void GeneratorInputSpikingNeurons::push_data_front() {
+      InputSpikingNeurons::push_data_front();
+    }
+
+    void GeneratorInputSpikingNeurons::pull_data_back() {
+      InputSpikingNeurons::pull_data_back();
     }
 
     void GeneratorInputSpikingNeurons::check_for_neuron_spikes(float current_time_in_seconds, float timestep) {

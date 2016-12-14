@@ -2,7 +2,7 @@
 
 #include "Spike/Backend/Device.hpp"
 #include "Spike/Backend/Backend.hpp"
-#include "Spike/Backend/CUDA/ErrorCheckHelpers.hpp"
+#include "Spike/Backend/CUDA/Helpers/ErrorCheck.hpp"
 
 /*
 namespace Backend {

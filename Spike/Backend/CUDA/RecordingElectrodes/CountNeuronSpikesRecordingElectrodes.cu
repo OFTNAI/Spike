@@ -8,15 +8,23 @@ namespace Backend {
     }
 
     void CountNeuronSpikesRecordingElectrodes::reset_state() {
+      RecordingElectrodes::reset_state();
+
       CudaSafeCall(cudaMemset(per_neuron_spike_counts, 0, sizeof(int) * frontend()->neurons->total_number_of_neurons));
     }
 
     void CountNeuronSpikesRecordingElectrodes::prepare() {
-      // set neurons_frontend and neurons_backend pointers:
       RecordingElectrodes::prepare();
 
-      // TODO: Check this
       allocate_pointers_for_spike_count();
+    }
+
+    void CountNeuronSpikesRecordingElectrodes::push_data_front() {
+      RecordingElectrodes::push_data_front();
+    }
+
+    void CountNeuronSpikesRecordingElectrodes::pull_data_back() {
+      RecordingElectrodes::pull_data_back();
     }
 
     void CountNeuronSpikesRecordingElectrodes::allocate_pointers_for_spike_count() {

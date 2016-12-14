@@ -10,24 +10,25 @@ namespace Backend {
     public:
       MAKE_BACKEND_CONSTRUCTOR(LIFSpikingNeurons);
 
-      void check_for_neuron_spikes(float current_time_in_seconds, float timestep) override {
-        // printf("TODO Backend::Dummy::LIFSpikingNeurons::check_for_neuron_spikes\n");
-      }
-
-      void update_membrane_potentials(float timestep, float current_time_in_seconds) override {
-        // TODO
+      void prepare() override {
+        SpikingNeurons::prepare();
       }
 
       void reset_state() override {
-        // printf("TODO Backend::Dummy::LIFSpikingNeurons::reset_state\n");
+        SpikingNeurons::reset_state();
       }
 
-      void prepare() override {
-        printf("TODO Backend::Dummy::LIFSpikingNeurons::prepare\n");
+      void push_data_front() override {
+        SpikingNeurons::push_data_front();
       }
 
-      void push_data_front() override {}
-      void pull_data_back() override {}
+      void pull_data_back() override {
+        SpikingNeurons::pull_data_back();
+      }
+
+      // May want to override these when writing a new backend, or may not:
+      using ::Backend::Dummy::SpikingNeurons::check_for_neuron_spikes;
+      using ::Backend::Dummy::SpikingNeurons::update_membrane_potentials;
     };
   }
 }

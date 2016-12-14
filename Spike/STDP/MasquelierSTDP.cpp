@@ -7,6 +7,12 @@
 #include "MasquelierSTDP.hpp"
 #include "../Helpers/TerminalHelpers.hpp"
 
+MasquelierSTDP::~MasquelierSTDP() {
+  free(index_of_last_afferent_synapse_to_spike);
+  free(isindexed_ltd_synapse_spike);
+  free(index_of_first_synapse_spiked_after_postneuron);
+}
+
 void MasquelierSTDP::prepare_backend_late() {
   // Add the correct space for last synapse
   index_of_last_afferent_synapse_to_spike = (int*)malloc(sizeof(int)*neurs->total_number_of_neurons);
@@ -28,18 +34,12 @@ void MasquelierSTDP::Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeuro
 	neurs = neurons;
 }
 
-void MasquelierSTDP::reset_state(){
-  STDP::reset_state();
-  backend()->reset_state();
-}
-
 // Run the STDP
 void MasquelierSTDP::Run_STDP(float current_time_in_seconds, float timestep){
   apply_stdp_to_synapse_weights(current_time_in_seconds);
 }
 
 void MasquelierSTDP::apply_stdp_to_synapse_weights(float current_time_in_seconds) {
-  // TODO: Check that this doesn't need to be called with input neurons ..
   backend()->apply_stdp_to_synapse_weights(current_time_in_seconds);
 }
 

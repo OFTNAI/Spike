@@ -26,8 +26,6 @@ namespace Backend {
     }
 
     void Synapses::allocate_device_pointers() {
-      printf("Allocating synapse device pointers...\n");
-
       CudaSafeCall(cudaMalloc((void **)&presynaptic_neuron_indices,
                               sizeof(int)*frontend()->total_number_of_synapses));
       CudaSafeCall(cudaMalloc((void **)&postsynaptic_neuron_indices,
@@ -40,8 +38,6 @@ namespace Backend {
 
 
     void Synapses::copy_constants_and_initial_efficacies_to_device() {
-      printf("Copying synaptic constants and initial efficacies to device...\n");
-
       CudaSafeCall(cudaMemcpy(presynaptic_neuron_indices,
                               frontend()->presynaptic_neuron_indices,
                               sizeof(int)*frontend()->total_number_of_synapses,
@@ -113,11 +109,6 @@ namespace Backend {
          random_state_manager_backend->states);
       CudaCheckError();
 
-      printf("--------- %p, %p, %p, %d\n",
-             frontend()->presynaptic_neuron_indices,
-             &frontend()->presynaptic_neuron_indices[original_number_of_synapses],
-             temp_presynaptic_neuron_indices,
-             sizeof(int)*total_number_of_new_synapses);
       CudaSafeCall(cudaMemcpy(&(frontend()->presynaptic_neuron_indices)[original_number_of_synapses], temp_presynaptic_neuron_indices, sizeof(int)*total_number_of_new_synapses, cudaMemcpyDeviceToHost));
       CudaSafeCall(cudaMemcpy(&(frontend()->postsynaptic_neuron_indices)[original_number_of_synapses], temp_postsynaptic_neuron_indices, sizeof(int)*total_number_of_new_synapses, cudaMemcpyDeviceToHost));
     }

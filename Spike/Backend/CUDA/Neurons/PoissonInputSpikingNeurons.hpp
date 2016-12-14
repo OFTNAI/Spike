@@ -20,16 +20,19 @@ namespace Backend {
       MAKE_BACKEND_CONSTRUCTOR(PoissonInputSpikingNeurons);
       using ::Backend::PoissonInputSpikingNeurons::frontend;
 
+      void prepare() override;
+      void reset_state() override;
+
+      void push_data_front() override;
+      void pull_data_back() override;
+
       ::Backend::CUDA::RandomStateManager* random_state_manager_backend = nullptr;
       float * rates = nullptr;
       
-      void allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage) override;
-      void copy_constants_to_device() override;
-      void update_membrane_potentials(float timestep, float current_time_in_seconds) override;
-      // virtual void setup_random_states_on_device();
+      void allocate_device_pointers(); // Not virtual
+      void copy_constants_to_device(); // Not virtual
 
-      void reset_state() override;
-      void prepare() override;
+      void update_membrane_potentials(float timestep, float current_time_in_secods) override;
     };
 
     __global__ void poisson_update_membrane_potentials_kernel(curandState_t* d_states,

@@ -11,25 +11,31 @@ namespace Backend {
     public:
       MAKE_BACKEND_CONSTRUCTOR(CollectNeuronSpikesRecordingElectrodes);
 
+      void prepare() override {
+        RecordingElectrodes::prepare();
+      }
+
       void reset_state() override {
-        // TODO
+        RecordingElectrodes::reset_state();
+      }
+
+      void push_data_front() override {
+        RecordingElectrodes::push_data_front();
+      }
+
+      void pull_data_back() override {
+        RecordingElectrodes::pull_data_back();
       }
 
       void copy_spikes_to_front() override {
-        printf("TODO copy_spikes_to_front\n");
       }
 
       void copy_spike_counts_to_front() override {
-        printf("TODO copy_spike_counts_to_front\n");
       }
 
       void collect_spikes_for_timestep
-      (float current_time_in_seconds) override{
-        printf("TODO collect_spikes_for_timestep\n");
+      (float current_time_in_seconds) override {
       }
-
-      void push_data_front() override {}
-      void pull_data_back() override {}
     };
   }
 }

@@ -39,11 +39,14 @@ void PoissonInputSpikingNeurons::init_random_state(bool force) {
     random_state_manager = new RandomStateManager();
     random_state_manager->init_backend(backend()->context);
   }
-  printf("TODO: RNG should be managed globally...\n");
 }
 
 void PoissonInputSpikingNeurons::prepare_backend_early() {
   InputSpikingNeurons::prepare_backend_early();
   init_random_state();
+}
+
+void PoissonInputSpikingNeurons::update_membrane_potentials(float timestep, float current_time_in_seconds) {
+  backend()->update_membrane_potentials(timestep, current_time_in_seconds);
 }
 

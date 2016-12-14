@@ -10,14 +10,6 @@ namespace Backend {
   class NetworkStateArchiveRecordingElectrodes : public virtual RecordingElectrodes {
   public:
     ADD_FRONTEND_GETTER(NetworkStateArchiveRecordingElectrodes);
-
-    void prepare() override {
-      printf("TODO Backend::NetworkStateArchiveRecordingElectrodes::prepare\n");
-    }
-
-    // virtual void copy_state_to_front(::NetworkStateArchiveRecordingElectrodes* front) = 0;
-    void push_data_front() override {} // TODO
-    void pull_data_back() override {} // TODO
   };
 }
 
@@ -40,8 +32,7 @@ class NetworkStateArchiveRecordingElectrodes  : public RecordingElectrodes {
 public:
   ADD_BACKEND_GETSET(NetworkStateArchiveRecordingElectrodes,
                      RecordingElectrodes);
-  virtual void init_backend(Context* ctx = _global_ctx);
-  virtual void reset_state();
+  void init_backend(Context* ctx = _global_ctx) override;
 
   // Host Pointers
   Network_State_Archive_Optional_Parameters * network_state_archive_optional_parameters = nullptr;

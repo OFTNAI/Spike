@@ -20,7 +20,6 @@ namespace Backend {
     }
 
     void CurrentSpikingSynapses::calculate_postsynaptic_current_injection(::SpikingNeurons * neurons, float current_time_in_seconds, float timestep) {
-      printf("number_of_synapse_blocks_per_grid.x: %d\n", number_of_synapse_blocks_per_grid.x);
       ::Backend::CUDA::SpikingNeurons* neurons_backend
           = dynamic_cast<::Backend::CUDA::SpikingNeurons*>(neurons->backend());
       current_calculate_postsynaptic_current_injection_kernel<<<number_of_synapse_blocks_per_grid, threads_per_block>>>

@@ -16,7 +16,6 @@ public:
 
 	// Constructor/Destructor
 	Plotter(std::string experimentName_param);
-	~Plotter();
 
 	void plot_single_cell_information_analysis(SpikeAnalyser * spike_analyser_for_untrained_network, SpikeAnalyser * spike_analyser_for_trained_network);
 

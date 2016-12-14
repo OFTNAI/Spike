@@ -10,16 +10,16 @@ namespace Backend {
     }
 
     void CollectNeuronSpikesRecordingElectrodes::reset_state() {
+      RecordingElectrodes::reset_state();
+
       CudaSafeCall(cudaMemset(&(total_number_of_spikes_stored_on_device[0]), 0, sizeof(int)));
       CudaSafeCall(cudaMemset(neuron_ids_of_stored_spikes_on_device, -1, sizeof(int)*neurons_frontend->total_number_of_neurons));
       CudaSafeCall(cudaMemset(time_in_seconds_of_stored_spikes_on_device, -1.0f, sizeof(float)*neurons_frontend->total_number_of_neurons));
     }
 
     void CollectNeuronSpikesRecordingElectrodes::prepare() {
-      // set neurons_frontend and neurons_backend pointers:
       RecordingElectrodes::prepare();
 
-      printf("TODO Backend::CUDA::CollectNeuronSpikesRecordingElectrodes::prepare\n");
       CudaSafeCall(cudaMalloc((void **)&neuron_ids_of_stored_spikes_on_device, sizeof(int)*frontend()->size_of_device_spike_store));
       CudaSafeCall(cudaMalloc((void **)&time_in_seconds_of_stored_spikes_on_device, sizeof(float)*frontend()->size_of_device_spike_store));
       CudaSafeCall(cudaMalloc((void **)&total_number_of_spikes_stored_on_device, sizeof(int)));
@@ -41,8 +41,13 @@ namespace Backend {
     }
 
     void CollectNeuronSpikesRecordingElectrodes::push_data_front() {
+      RecordingElectrodes::push_data_front();
       copy_spikes_to_front();
       copy_spike_counts_to_front();
+    }
+
+    void CollectNeuronSpikesRecordingElectrodes::pull_data_back() {
+      RecordingElectrodes::pull_data_back();
     }
 
     void CollectNeuronSpikesRecordingElectrodes::collect_spikes_for_timestep

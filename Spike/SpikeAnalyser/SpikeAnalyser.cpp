@@ -47,6 +47,10 @@ SpikeAnalyser::SpikeAnalyser(SpikingNeurons *neurons_parameter,
 }
 
 
+void SpikeAnalyser::reset_state() {
+  backend()->reset_state();
+}
+
 void SpikeAnalyser::store_spike_counts_for_stimulus_index(int stimulus_index) {
   backend()->store_spike_counts_for_stimulus_index(stimulus_index);
 }

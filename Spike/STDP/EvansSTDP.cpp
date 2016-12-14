@@ -9,7 +9,6 @@
 
 
 EvansSTDP::~EvansSTDP() {
-  // TODO Check before free
   free(recent_postsynaptic_activities_D);
   free(recent_presynaptic_activities_C);
 }
@@ -34,17 +33,11 @@ void EvansSTDP::Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons* n
 }
 
 // Run the STDP
-void EvansSTDP::Run_STDP(float current_time_in_seconds, float timestep){
+void EvansSTDP::Run_STDP (float current_time_in_seconds, float timestep){
   // Update
-  // TODO: Check that this doesn't need to be called with input neurons ..
   update_synaptic_efficacies_or_weights(current_time_in_seconds);
   update_presynaptic_activities(timestep, current_time_in_seconds);
   update_postsynaptic_activities(timestep, current_time_in_seconds);
-}
-
-void EvansSTDP::reset_state() {
-  backend()->reset_state();
-  // STDP::reset_state(); // NB: STDP::reset_state is pure virtual at the moment
 }
 
 void EvansSTDP::update_synaptic_efficacies_or_weights(float current_time_in_seconds) {

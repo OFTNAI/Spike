@@ -18,12 +18,16 @@ namespace Backend {
       MAKE_BACKEND_CONSTRUCTOR(CountNeuronSpikesRecordingElectrodes);
       using ::Backend::CountNeuronSpikesRecordingElectrodes::frontend;
       
-      virtual void reset_state();
-      virtual void prepare();
-      void allocate_pointers_for_spike_count();
+      void prepare() override;
+      void reset_state() override;
 
-      virtual void add_spikes_to_per_neuron_spike_count
-      (float current_time_in_seconds);
+      void push_data_front() override;
+      void pull_data_back() override;
+
+      void allocate_pointers_for_spike_count(); // Not virtual
+
+      void add_spikes_to_per_neuron_spike_count
+      (float current_time_in_seconds) override;
 
       int * per_neuron_spike_counts = nullptr;
     };

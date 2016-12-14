@@ -1,7 +1,4 @@
-CUDA_ADD_LIBRARY(SpikeCUDAMisc
-  RandomStateManager.cu
-  STATIC)
-
+add_subdirectory(Helpers)
 add_subdirectory(Neurons)
 add_subdirectory(RecordingElectrodes)
 add_subdirectory(SpikeAnalyser)

@@ -15,16 +15,11 @@
 
 using namespace std;
 
-// Constructors
-Simulator::Simulator() {}
-
-
 Simulator::Simulator(SpikingModel * spiking_model_param, Simulator_Options * simulator_options_param) {
 
 	spiking_model = spiking_model_param;
 	simulator_options = simulator_options_param;
-        // TODO: spiking_model should probably have its own context member
-        context = spiking_model->spiking_neurons->backend()->context;
+        context = spiking_model->context;
 
 	simulations_run_count = 0;
 
@@ -76,7 +71,6 @@ Simulator::Simulator(SpikingModel * spiking_model_param, Simulator_Options * sim
           (spiking_model->spiking_neurons,
            spiking_model->input_spiking_neurons,
            count_neuron_spikes_recording_electrodes);
-        // TODO: Perhaps init automatically? ..
         spike_analyser->init_backend(spiking_model->spiking_neurons->backend()->context);
 
 	timer->stop_timer_and_log_time_and_message("Recording electrodes setup.\n", true);
@@ -148,13 +142,6 @@ void Simulator::RunSimulation() {
 		TimerWithMessages * epoch_timer = new TimerWithMessages();
 		printf("Starting Epoch: %d\n", epoch_number);
 
-                printf("--- %p, %p, %p, %p, %p, %p\n",
-                       spiking_model->spiking_synapses,
-                       spiking_model->spiking_synapses->backend()->frontend(),
-                       (::ConductanceSpikingSynapses*)(spiking_model->spiking_synapses),
-                       (::ConductanceSpikingSynapses*)(spiking_model->spiking_synapses->backend()->frontend()),
-                       ((::ConductanceSpikingSynapses*)(spiking_model->spiking_synapses))->synaptic_conductances_g,
-                       ((::ConductanceSpikingSynapses*)(spiking_model->spiking_synapses->backend()->frontend()))->synaptic_conductances_g);
                 spiking_model->reset_state();
 
 		float current_time_in_seconds = 0.0f;

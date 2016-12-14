@@ -1,5 +1,5 @@
 // -*- mode: c++ -*-
-#include "Spike/Backend/CUDA/RandomStateManager.hpp"
+#include "RandomStateManager.hpp"
 #include "Spike/Helpers/TimerWithMessages.hpp"
 
 #include <thrust/device_vector.h>
@@ -13,16 +13,14 @@ namespace Backend {
     }
 
     void RandomStateManager::setup_random_states(int threads_per_blocks_x, int number_of_blocks_x, int seed) {
-      // TODO: Random seed should be set *once* (globally) per executable
-
-      TimerWithMessages * set_up_random_states_timer = new TimerWithMessages("Setting up random states for RandomStateManager...\n");;	
+      TimerWithMessages * set_up_random_states_timer = new TimerWithMessages("Setting up random states for RandomStateManager...\n");
 
       threads_per_block = dim3(threads_per_blocks_x);
       block_dimensions = dim3(number_of_blocks_x);
       total_number_of_states = threads_per_blocks_x * number_of_blocks_x;
 
       // In case it has already been allocated
-      if (states != nullptr) {
+      if (states) {
         CudaSafeCall(cudaFree(states));
         states = nullptr;
       }
@@ -36,7 +34,7 @@ namespace Backend {
     }
 
     void RandomStateManager::prepare() {
-      setup_random_states(); // TODO: Check context for params
+      setup_random_states();
     }
 
     __global__ void generate_random_states_kernel(unsigned int seed, curandState_t* d_states, size_t total_number) {

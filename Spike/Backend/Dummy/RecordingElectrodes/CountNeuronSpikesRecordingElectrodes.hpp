@@ -11,17 +11,25 @@ namespace Backend {
     public:
       MAKE_BACKEND_CONSTRUCTOR(CountNeuronSpikesRecordingElectrodes);
 
-      virtual void reset_state() {
-        // TODO
+      void prepare() override {
+        RecordingElectrodes::prepare();
       }
 
-      virtual void add_spikes_to_per_neuron_spike_count
-      (float current_time_in_seconds) {
-        // printf("TODO add_spikes_to_per_neuron_spike_count\n");
+      void reset_state() override {
+        RecordingElectrodes::reset_state();
       }
 
-      virtual void push_data_front() {}
-      virtual void pull_data_back() {}
+      void push_data_front() override {
+        RecordingElectrodes::push_data_front();
+      }
+
+      void pull_data_back() override {
+        RecordingElectrodes::pull_data_back();
+      }
+
+      void add_spikes_to_per_neuron_spike_count
+      (float current_time_in_seconds) override {
+      }
     };
   }
 }

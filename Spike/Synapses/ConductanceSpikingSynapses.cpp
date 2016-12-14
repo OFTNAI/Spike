@@ -37,24 +37,12 @@ void ConductanceSpikingSynapses::AddGroup(int presynaptic_group_id,
 }
 
 void ConductanceSpikingSynapses::increment_number_of_synapses(int increment) {
-
   SpikingSynapses::increment_number_of_synapses(increment);
 
   synaptic_conductances_g = (float*)realloc(synaptic_conductances_g, total_number_of_synapses * sizeof(float));
   biological_conductance_scaling_constants_lambda = (float*)realloc(biological_conductance_scaling_constants_lambda, total_number_of_synapses * sizeof(float));
   reversal_potentials_Vhat = (float*)realloc(reversal_potentials_Vhat, total_number_of_synapses * sizeof(float));
   decay_terms_tau_g = (float*)realloc(decay_terms_tau_g, total_number_of_synapses * sizeof(float));
-
-  printf("increment at %p: %d; %p\n",
-         this, increment,
-         synaptic_conductances_g);
-
-}
-
-
-void ConductanceSpikingSynapses::reset_state() {
-  SpikingSynapses::reset_state();
-  backend()->reset_state();
 }
 
 

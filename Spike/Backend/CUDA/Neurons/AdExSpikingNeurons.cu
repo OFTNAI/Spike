@@ -14,10 +14,7 @@ namespace Backend {
       CudaSafeCall(cudaFree(adaptation_changes_b));
     }
 
-    void AdExSpikingNeurons::allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage) {
-	
-      SpikingNeurons::allocate_device_pointers(maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
-
+    void AdExSpikingNeurons::allocate_device_pointers() {
       CudaSafeCall(cudaMalloc((void **)&adaptation_values_w, sizeof(float)*frontend()->total_number_of_neurons));
       CudaSafeCall(cudaMalloc((void **)&membrane_capacitances_Cm, sizeof(float)*frontend()->total_number_of_neurons));
       CudaSafeCall(cudaMalloc((void **)&membrane_leakage_conductances_g0, sizeof(float)*frontend()->total_number_of_neurons));
@@ -30,8 +27,6 @@ namespace Backend {
 
 
     void AdExSpikingNeurons::copy_constants_to_device() {
-      SpikingNeurons::copy_constants_to_device();
-
       CudaSafeCall(cudaMemcpy(adaptation_values_w,
                               frontend()->adaptation_values_w,
                               sizeof(float)*frontend()->total_number_of_neurons,
@@ -64,6 +59,29 @@ namespace Backend {
                               frontend()->adaptation_changes_b,
                               sizeof(float)*frontend()->total_number_of_neurons,
                               cudaMemcpyHostToDevice));
+    }
+
+    void AdExSpikingNeurons::prepare() {
+      SpikingNeurons::prepare();
+      allocate_device_pointers();
+      copy_constants_to_device();
+    }
+
+    void AdExSpikingNeurons::reset_state() {
+      SpikingNeurons::reset_state();
+      // Set adapatation value to zero
+      CudaSafeCall(cudaMemcpy(adaptation_values_w,
+                              frontend()->adaptation_values_w,
+                              sizeof(float)*frontend()->total_number_of_neurons,
+                              cudaMemcpyHostToDevice));
+    }
+
+    void AdExSpikingNeurons::push_data_front() {
+      SpikingNeurons::push_data_front();
+    }
+
+    void AdExSpikingNeurons::pull_data_back() {
+      SpikingNeurons::pull_data_back();
     }
 
     void AdExSpikingNeurons::update_membrane_potentials(float timestep, float current_time_in_seconds) {
@@ -106,14 +124,6 @@ namespace Backend {
            frontend()->high_fidelity_spike_flag);
 
 	CudaCheckError();
-    }
-
-    void AdExSpikingNeurons::reset_state() {
-      // Set adapatation value to zero
-      CudaSafeCall(cudaMemcpy(adaptation_values_w,
-                              frontend()->adaptation_values_w,
-                              sizeof(float)*frontend()->total_number_of_neurons,
-                              cudaMemcpyHostToDevice));
     }
 
     __global__ void AdEx_update_membrane_potentials(float *d_membrane_potentials_v,

@@ -19,15 +19,20 @@ namespace Backend {
       MAKE_BACKEND_CONSTRUCTOR(GeneratorInputSpikingNeurons);
       using ::Backend::GeneratorInputSpikingNeurons::frontend;
       
+      void prepare() override;
+      void reset_state() override;
+
+      void push_data_front() override;
+      void pull_data_back() override;
+
       // Device Pointers
       int* neuron_ids_for_stimulus = nullptr;
       float* spike_times_for_stimulus = nullptr;
 
-      virtual void allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage);
-      virtual void check_for_neuron_spikes(float current_time_in_seconds, float timestep);
-      virtual void update_membrane_potentials(float timestep, float current_time_in_seconds);
-      virtual void reset_state();
+      void allocate_device_pointers(); // Not virtual
 
+      void check_for_neuron_spikes(float current_time_in_seconds, float timestep) override;
+      void update_membrane_potentials(float timestep, float current_time_in_seconds) override;
     };
 
     __global__ void check_for_generator_spikes_kernel(int *d_neuron_ids_for_stimulus,

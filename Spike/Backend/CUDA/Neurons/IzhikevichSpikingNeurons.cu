@@ -11,10 +11,7 @@ namespace Backend {
       CudaSafeCall(cudaFree(states_u));
     }
     
-    void IzhikevichSpikingNeurons::allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage) {
- 	
-      SpikingNeurons::allocate_device_pointers(maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
-
+    void IzhikevichSpikingNeurons::allocate_device_pointers() {
       CudaSafeCall(cudaMalloc((void **)&param_a, sizeof(float)*frontend()->total_number_of_neurons));
       CudaSafeCall(cudaMalloc((void **)&param_b, sizeof(float)*frontend()->total_number_of_neurons));
       CudaSafeCall(cudaMalloc((void **)&param_d, sizeof(float)*frontend()->total_number_of_neurons));
@@ -22,11 +19,28 @@ namespace Backend {
     }
 
     void IzhikevichSpikingNeurons::copy_constants_to_device() {
-      SpikingNeurons::copy_constants_to_device();
-
       CudaSafeCall(cudaMemcpy(param_a, frontend()->param_a, sizeof(float)*frontend()->total_number_of_neurons, cudaMemcpyHostToDevice));
       CudaSafeCall(cudaMemcpy(param_b, frontend()->param_b, sizeof(float)*frontend()->total_number_of_neurons, cudaMemcpyHostToDevice));
       CudaSafeCall(cudaMemcpy(param_d, frontend()->param_d, sizeof(float)*frontend()->total_number_of_neurons, cudaMemcpyHostToDevice));
+    }
+
+    void IzhikevichSpikingNeurons::prepare() {
+      SpikingNeurons::prepare();
+      allocate_device_pointers();
+      copy_constants_to_device();
+    }
+
+    void IzhikevichSpikingNeurons::reset_state() {
+      SpikingNeurons::reset_state();
+      CudaSafeCall(cudaMemset(states_u, 0.0f, sizeof(float)*frontend()->total_number_of_neurons));
+    }
+
+    void IzhikevichSpikingNeurons::push_data_front() {
+      SpikingNeurons::push_data_front();
+    }
+
+    void IzhikevichSpikingNeurons::pull_data_back() {
+      SpikingNeurons::pull_data_back();
     }
 
     void IzhikevichSpikingNeurons::check_for_neuron_spikes(float current_time_in_seconds, float timestep) {
@@ -53,10 +67,6 @@ namespace Backend {
          frontend()->total_number_of_neurons);
 
       CudaCheckError();
-    }
-
-    void IzhikevichSpikingNeurons::reset_state() {
-      CudaSafeCall(cudaMemset(states_u, 0.0f, sizeof(float)*frontend()->total_number_of_neurons));
     }
 
     __global__ void reset_states_u_after_spikes_kernel(float *d_states_u,

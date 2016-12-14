@@ -11,7 +11,6 @@ class InputSpikingNeurons; // forward definition
 namespace Backend {
   class InputSpikingNeurons : public virtual SpikingNeurons {
   public:
-    void reset_state() override {};
   };
 }
 
@@ -27,9 +26,8 @@ public:
   int total_number_of_objects = 0;
   int total_number_of_transformations_per_object = 0;
 
-  virtual int AddGroup(neuron_parameters_struct * group_params);
+  int AddGroup(neuron_parameters_struct * group_params) override;
   virtual bool stimulus_is_new_object_for_object_by_object_presentation(int stimulus_index);
-  virtual void reset_state();
 
 private:
   ::Backend::InputSpikingNeurons* _backend = nullptr;

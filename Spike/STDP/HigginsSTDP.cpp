@@ -23,7 +23,6 @@ void HigginsSTDP::Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons*
 
 // Run the STDP
 void HigginsSTDP::Run_STDP(float current_time_in_seconds, float timestep){
-  // TODO: Check that this doesn't need to be called with input neurons ..
   apply_ltd_to_synapse_weights(current_time_in_seconds);
   apply_ltp_to_synapse_weights(current_time_in_seconds);
 }

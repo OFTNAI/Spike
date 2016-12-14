@@ -67,12 +67,6 @@ void CollectNeuronSpikesRecordingElectrodes::allocate_pointers_for_spike_store()
 	}
 }
 
-void CollectNeuronSpikesRecordingElectrodes::reset_state() {
-  backend()->reset_state();
-  // NB: RecordingElectrodes::reset_state is pure virtual at the moment ::
-  // RecordingElectrodes::reset_state();
-}
-
 void CollectNeuronSpikesRecordingElectrodes::delete_and_reset_collected_spikes() {
 
 	// Reset the spike store
@@ -81,7 +75,7 @@ void CollectNeuronSpikesRecordingElectrodes::delete_and_reset_collected_spikes()
 	total_number_of_spikes_stored_on_device[0] = 0;
 	// Free/Clear Device stuff
 	// Reset the number on the device
-        backend()->reset_state(); // TODO!! cf reset_state above ...
+        backend()->reset_state();
 
 	// Free malloced host stuff
 	free(neuron_ids_of_stored_spikes_on_host);

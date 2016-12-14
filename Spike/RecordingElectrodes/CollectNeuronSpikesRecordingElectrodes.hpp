@@ -11,15 +11,8 @@ namespace Backend {
   public:
     ADD_FRONTEND_GETTER(CollectNeuronSpikesRecordingElectrodes);
 
-    void prepare() override {
-      printf("TODO Backend::CollectNeuronSpikesRecordingElectrodes::prepare\n");
-    }
-
-    void push_data_front() override {} // TODO
-    void pull_data_back() override {} // TODO
-
-    virtual void copy_spikes_to_front() = 0;
-    virtual void copy_spike_counts_to_front() = 0;
+    virtual void copy_spikes_to_front() = 0; // Called by push_data_front
+    virtual void copy_spike_counts_to_front() = 0; // Called by push_data_front
     virtual void collect_spikes_for_timestep(float current_time_in_seconds) = 0;
   };
 }
@@ -47,8 +40,7 @@ class CollectNeuronSpikesRecordingElectrodes : public RecordingElectrodes {
 public:
   ADD_BACKEND_GETSET(CollectNeuronSpikesRecordingElectrodes,
                      RecordingElectrodes);
-  virtual void init_backend(Context* ctx = _global_ctx);
-  virtual void reset_state();
+  void init_backend(Context* ctx = _global_ctx) override;
 
   // Variables
   int size_of_device_spike_store;

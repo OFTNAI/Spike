@@ -7,35 +7,25 @@ namespace Backend {
       CudaSafeCall(cudaFree(rates));
     }
 
-    void PoissonInputSpikingNeurons::allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage) {
-      InputSpikingNeurons::allocate_device_pointers(maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
+    void PoissonInputSpikingNeurons::allocate_device_pointers() {
       CudaSafeCall(cudaMalloc((void **)&rates, sizeof(float)*frontend()->total_number_of_neurons));
     }
 
     void PoissonInputSpikingNeurons::copy_constants_to_device() {
-      InputSpikingNeurons::copy_constants_to_device();
-
-      if (rates != nullptr && frontend()->rates) {
-        // TODO: Above check shouldn't be necessary (esp. the frontend() bit!)
-        // So many bugs ...
-        printf(";;;;;; %p, %p, %d\n",
-               rates, frontend()->rates,
-               frontend()->total_number_of_neurons);
+      if (frontend()->rates) {
         CudaSafeCall(cudaMemcpy(rates, frontend()->rates, sizeof(float)*frontend()->total_number_of_neurons, cudaMemcpyHostToDevice));
       }
     }
 
     void PoissonInputSpikingNeurons::reset_state() {
-      printf("!!! TODO PoissonInputSpikingNeurons::reset_state called\n");
+      InputSpikingNeurons::reset_state();
     }
 
     void PoissonInputSpikingNeurons::prepare() {
-      // TODO: Check (call copy_constants, set_up_states etc?)
-      // set_threads_per_block_and_blocks_per_grid(threads_per_block_neurons);
-      // allocate_device_pointers(spiking_synapses->maximum_axonal_delay_in_timesteps, high_fidelity_spike_storage);
-      // copy_constants_to_device();
-
       InputSpikingNeurons::prepare();
+
+      allocate_device_pointers();
+      copy_constants_to_device();
 
       // Crudely assume that the RandomStateManager backend is also CUDA:
       random_state_manager_backend
@@ -44,8 +34,15 @@ namespace Backend {
       assert(random_state_manager_backend);
     }
 
-    void PoissonInputSpikingNeurons::update_membrane_potentials(float timestep, float current_time_in_seconds) {
+    void PoissonInputSpikingNeurons::push_data_front() {
+      InputSpikingNeurons::push_data_front();
+    }
 
+    void PoissonInputSpikingNeurons::pull_data_back() {
+      InputSpikingNeurons::pull_data_back();
+    }
+
+    void PoissonInputSpikingNeurons::update_membrane_potentials(float timestep, float current_time_in_seconds) {
       poisson_update_membrane_potentials_kernel<<<random_state_manager_backend->block_dimensions, random_state_manager_backend->threads_per_block>>>
         (random_state_manager_backend->states,
          rates,

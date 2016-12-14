@@ -32,6 +32,7 @@ public:
   ~SpikingSynapses();
 
   ADD_BACKEND_GETSET(SpikingSynapses, Synapses);
+  void init_backend(Context* ctx = _global_ctx) override;
 
   // Host Pointers
   int* delays = nullptr;
@@ -41,17 +42,15 @@ public:
   int maximum_axonal_delay_in_timesteps = 0;
 
   // Synapse Functions
-  virtual void AddGroup(int presynaptic_group_id, 
-                        int postsynaptic_group_id, 
-                        Neurons * neurons,
-                        Neurons * input_neurons,
-                        float timestep,
-                        synapse_parameters_struct * synapse_params);
+  void AddGroup(int presynaptic_group_id, 
+                int postsynaptic_group_id, 
+                Neurons * neurons,
+                Neurons * input_neurons,
+                float timestep,
+                synapse_parameters_struct * synapse_params) override;
 
-  virtual void init_backend(Context* ctx = _global_ctx);
-  virtual void reset_state();
-  virtual void increment_number_of_synapses(int increment);
-  virtual void shuffle_synapses();
+  void increment_number_of_synapses(int increment) override;
+  void shuffle_synapses() override;
 
   virtual void update_synaptic_conductances(float timestep, float current_time_in_seconds) = 0;
   virtual void calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds, float timestep) = 0;

@@ -107,6 +107,8 @@ public:
   virtual void increment_number_of_synapses(int increment);
   virtual void shuffle_synapses();
 
+  void reset_state() override;
+
   RandomStateManager * random_state_manager;
 
 private:

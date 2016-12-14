@@ -19,14 +19,17 @@ namespace Backend {
       MAKE_BACKEND_CONSTRUCTOR(LIFSpikingNeurons);
       using ::Backend::LIFSpikingNeurons::frontend;
 
+      void prepare() override;
+      void reset_state() override;
+
+      void push_data_front() override;
+      void pull_data_back() override;
+
+      void copy_constants_to_device(); // Not virtual
+      void allocate_device_pointers(); // Not virtual
+
       // void check_for_neuron_spikes(float current_time_in_seconds, float timestep) override;
-      // void reset_state() override;
-      // void prepare() override;
-
-      void allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage) override;
-      void copy_constants_to_device() override;
       void update_membrane_potentials(float timestep, float current_time_in_seconds) override;
-
     };
 
     __global__ void lif_update_membrane_potentials(float *d_membrane_potentials_v,

@@ -80,34 +80,37 @@ void SpikingModel::AddSynapseGroupsForNeuronGroupAndEachInputGroup(int postsynap
 
 }
 
-void SpikingModel::init_backend(bool high_fidelity_spike_storage) {
+
+void SpikingModel::finalise_model() {
+  init_backend();
+}
+  
+
+void SpikingModel::init_backend() {
   Backend::init_global_context();
-  Context* ctx = Backend::get_current_context(); // TODO: Add param to choose
+  context = Backend::get_current_context();
 
   TimerWithMessages* timer = new TimerWithMessages("Setting Up Network...\n");
 
-  ctx->params.high_fidelity_spike_storage = high_fidelity_spike_storage;
-  ctx->params.threads_per_block_neurons = 512;
-  ctx->params.threads_per_block_synapses = 512;
-  ctx->params.maximum_axonal_delay_in_timesteps = spiking_synapses->maximum_axonal_delay_in_timesteps;
+  context->params.high_fidelity_spike_storage = high_fidelity_spike_storage;
+  context->params.threads_per_block_neurons = 512;
+  context->params.threads_per_block_synapses = 512;
+  context->params.maximum_axonal_delay_in_timesteps = spiking_synapses->maximum_axonal_delay_in_timesteps;
 
   // Provides order of magnitude speedup for LIF (All to all atleast). 
   // Because all synapses contribute to current_injection on every iteration, having all threads in a block accessing only 1 or 2 positions in memory causes massive slowdown.
   // Randomising order of synapses means that each block is accessing a larger number of points in memory.
   // if (temp_model_type == 1) spiking_synapses->shuffle_synapses();
 
-  /* TODO TODO TODO !!!
-
-
-     TODO TODO TODO !!! */
-
-  spiking_synapses->init_backend(ctx);
-  spiking_neurons->init_backend(ctx);
-  input_spiking_neurons->init_backend(ctx);
-  stdp_rule->init_backend(ctx);
+  // NB All these also call prepare_backed for the initial state:
+  spiking_synapses->init_backend(context);
+  spiking_neurons->init_backend(context);
+  input_spiking_neurons->init_backend(context);
+  stdp_rule->init_backend(context);
 
   timer->stop_timer_and_log_time_and_message("Network Setup.", true);
 }
+
 
 void SpikingModel::prepare_backend() {
   spiking_synapses->prepare_backend();
@@ -116,13 +119,12 @@ void SpikingModel::prepare_backend() {
   stdp_rule->prepare_backend();
 }
 
-void SpikingModel::reset_state() {
 
+void SpikingModel::reset_state() {
   spiking_neurons->reset_state();
   input_spiking_neurons->reset_state();
   spiking_synapses->reset_state();
   stdp_rule->reset_state();
-
 }
 
 

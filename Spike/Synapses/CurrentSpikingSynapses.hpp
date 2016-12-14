@@ -21,18 +21,16 @@ namespace Backend {
 class CurrentSpikingSynapses : public SpikingSynapses {
 public:
   ADD_BACKEND_GETSET(CurrentSpikingSynapses, SpikingSynapses);
+  void init_backend(Context* ctx = _global_ctx) override;
   
-  virtual void AddGroup(int presynaptic_group_id, 
-                        int postsynaptic_group_id, 
-                        Neurons * neurons,
-                        Neurons * input_neurons,
-                        float timestep,
-                        synapse_parameters_struct * synapse_params);
+  void AddGroup(int presynaptic_group_id, 
+                int postsynaptic_group_id, 
+                Neurons * neurons,
+                Neurons * input_neurons,
+                float timestep,
+                synapse_parameters_struct * synapse_params) override;
 
-
-  virtual void calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds, float timestep);
-
-  virtual void init_backend(Context* ctx = _global_ctx);
+  void calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds, float timestep) override;
 
 private:
   ::Backend::CurrentSpikingSynapses* _backend = nullptr;

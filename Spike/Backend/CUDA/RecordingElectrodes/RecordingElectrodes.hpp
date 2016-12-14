@@ -12,7 +12,13 @@ namespace Backend {
     class RecordingElectrodes : public virtual ::Backend::RecordingElectrodes {
     public:
       using ::Backend::RecordingElectrodes::frontend;
+
       void prepare() override;
+      void reset_state() override;
+
+      void push_data_front() override;
+      void pull_data_back() override;
+
     protected:
       ::SpikingNeurons* neurons_frontend = nullptr;
       ::Backend::CUDA::SpikingNeurons* neurons_backend = nullptr;

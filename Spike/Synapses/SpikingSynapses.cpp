@@ -66,18 +66,10 @@ void SpikingSynapses::AddGroup(int presynaptic_group_id,
 }
 
 void SpikingSynapses::increment_number_of_synapses(int increment) {
-
   Synapses::increment_number_of_synapses(increment);
 
-    delays = (int*)realloc(delays, total_number_of_synapses * sizeof(int));
-    stdp = (bool*)realloc(stdp, total_number_of_synapses * sizeof(bool));
-
-}
-
-
-void SpikingSynapses::reset_state() {
-  backend()->reset_state();
-  // Synapses::reset_state(); // TODO: Synapses::reset_state is pure virtual right now
+  delays = (int*)realloc(delays, total_number_of_synapses * sizeof(int));
+  stdp = (bool*)realloc(stdp, total_number_of_synapses * sizeof(bool));
 }
 
 

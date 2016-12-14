@@ -126,7 +126,6 @@ struct Simulator_Options {
 class Simulator{
 public:
 	// Constructor/Destructor
-	Simulator();
 	Simulator(SpikingModel * spiking_model_param, Simulator_Options * simulator_options_param);
 	~Simulator();
 

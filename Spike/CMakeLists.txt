@@ -32,7 +32,7 @@ add_library(Spike
 
 if (BUILD_WITH_CUDA)
   target_link_libraries(Spike
-    SpikeCUDAMisc
+    SpikeCUDAHelpers
     SpikeCUDANeurons
     SpikeCUDARecordingElectrodes
     SpikeCUDASpikeAnalyser

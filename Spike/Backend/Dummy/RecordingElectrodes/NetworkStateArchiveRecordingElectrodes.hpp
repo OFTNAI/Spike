@@ -11,16 +11,21 @@ namespace Backend {
     public:
       MAKE_BACKEND_CONSTRUCTOR(NetworkStateArchiveRecordingElectrodes);
 
-      virtual void reset_state() {
-        // TODO
+      void prepare() override {
+        RecordingElectrodes::prepare();
       }
 
-      virtual void copy_state_to_front(::NetworkStateArchiveRecordingElectrodes* front) {
-        printf("TODO copy_state_to_front\n");
+      void reset_state() override {
+        RecordingElectrodes::reset_state();
       }
 
-      virtual void push_data_front() {}
-      virtual void pull_data_back() {}
+      void push_data_front() override {
+        RecordingElectrodes::push_data_front();
+      }
+
+      void pull_data_back() override {
+        RecordingElectrodes::pull_data_back();
+      }
     };
   }
 }

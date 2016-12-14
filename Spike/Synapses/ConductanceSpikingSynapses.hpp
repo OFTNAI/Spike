@@ -34,6 +34,7 @@ public:
   ~ConductanceSpikingSynapses();
 
   ADD_BACKEND_GETSET(ConductanceSpikingSynapses, SpikingSynapses);
+  void init_backend(Context* ctx = _global_ctx) override;
 
   float * synaptic_conductances_g = nullptr;
   float * biological_conductance_scaling_constants_lambda = nullptr;
@@ -41,21 +42,18 @@ public:
   float * decay_terms_tau_g = nullptr;
 
   // Synapse Functions
-  virtual void AddGroup(int presynaptic_group_id, 
-                        int postsynaptic_group_id, 
-                        Neurons * neurons,
-                        Neurons * input_neurons,
-                        float timestep,
-                        synapse_parameters_struct * synapse_params);
+  void AddGroup(int presynaptic_group_id, 
+                int postsynaptic_group_id, 
+                Neurons * neurons,
+                Neurons * input_neurons,
+                float timestep,
+                synapse_parameters_struct * synapse_params) override;
 
-  virtual void increment_number_of_synapses(int increment);
-  virtual void shuffle_synapses();
+  void increment_number_of_synapses(int increment) override;
+  void shuffle_synapses() override;
 
-  virtual void calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds, float timestep);
+  void calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds, float timestep) override;
   virtual void update_synaptic_conductances(float timestep, float current_time_in_seconds);
-
-  virtual void init_backend(Context* ctx = _global_ctx);
-  virtual void reset_state();
 
 private:
   ::Backend::ConductanceSpikingSynapses* _backend = nullptr;

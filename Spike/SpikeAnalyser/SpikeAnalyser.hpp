@@ -23,15 +23,7 @@ namespace Backend {
     ADD_FRONTEND_GETTER(SpikeAnalyser);
 
     virtual void store_spike_counts_for_stimulus_index
-    // (int stimulus_index, int *d_neuron_spike_counts_for_stimulus) = 0;
     (int stimulus_index) = 0;
-
-    void reset_state() override {
-      // TODO?
-    }
-
-    void push_data_front() override {} // TODO
-    void pull_data_back() override {} // TODO
   };
 }
 
@@ -44,7 +36,7 @@ class SpikeAnalyser : public virtual SpikeBase {
 public:
   ADD_BACKEND_GETSET(SpikeAnalyser, SpikeBase);
   void init_backend(Context* ctx = _global_ctx);
-  virtual void reset_state() {}
+  void reset_state() override;
 
   SpikeAnalyser(SpikingNeurons *neurons_parameter,
                 InputSpikingNeurons *input_neurons_parameter,

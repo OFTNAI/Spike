@@ -14,21 +14,26 @@ namespace Backend {
     public:
       ~IzhikevichSpikingNeurons();
 
+      MAKE_BACKEND_CONSTRUCTOR(IzhikevichSpikingNeurons);
+      using ::Backend::IzhikevichSpikingNeurons::frontend;
+
+      void prepare() override;
+      void reset_state() override;
+
+      void push_data_front() override;
+      void pull_data_back() override;
+
       // Device Pointers
       float * param_a = nullptr;
       float * param_b = nullptr;
       float * param_d = nullptr;
       float * states_u = nullptr;
 
-      MAKE_BACKEND_CONSTRUCTOR(IzhikevichSpikingNeurons);
-      using ::Backend::IzhikevichSpikingNeurons::frontend;
+      void allocate_device_pointers(); // Not virtual
+      void copy_constants_to_device(); // Not virtual
 
-      virtual void allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage);
-      virtual void copy_constants_to_device();
-      virtual void check_for_neuron_spikes(float current_time_in_seconds, float timestep);
-      virtual void update_membrane_potentials(float timestep, float current_time_in_seconds);
-      virtual void reset_state();
-
+      void check_for_neuron_spikes(float current_time_in_seconds, float timestep) override;
+      void update_membrane_potentials(float timestep, float current_time_in_seconds) override;
     };
 
     __global__ void reset_states_u_after_spikes_kernel(float *d_states_u,

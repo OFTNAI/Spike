@@ -3,10 +3,10 @@
 Context* _global_ctx = nullptr;
 
 namespace Backend {
+  /* Set up default context */
   void init_global_context() {
     if (!_global_ctx)
       _global_ctx = new Context;
-    // TODO: Add other device types (esp CUDA)
 #ifdef SPIKE_WITH_CUDA
     _global_ctx->device = SPIKE_DEVICE_CUDA;
 #else

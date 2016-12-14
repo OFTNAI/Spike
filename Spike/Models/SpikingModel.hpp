@@ -2,6 +2,7 @@
 #define SpikingModel_H
 
 #include <stdio.h>
+#include "../Backend/Context.hpp"
 #include "../Synapses/ConductanceSpikingSynapses.hpp"
 #include "../STDP/STDP.hpp"
 #include "../STDP/EvansSTDP.hpp"
@@ -31,8 +32,12 @@ public:
   SpikingModel();
   ~SpikingModel();
 
+  Context* context = nullptr; // Call init_backend to set this up!
+
   float timestep;
   void SetTimestep(float timestep_parameter);
+
+  bool high_fidelity_spike_storage;
 
   SpikingNeurons * spiking_neurons;
   SpikingSynapses * spiking_synapses;
@@ -48,8 +53,9 @@ public:
   void reset_state();
   void perform_per_timestep_model_instructions(float current_time_in_seconds, bool apply_stdp_to_relevant_synapses);
 
-  // virtual void finalise_model();
-  virtual void init_backend(bool high_fidelity_spike_storage);
+  virtual void finalise_model();
+
+  virtual void init_backend();
   virtual void prepare_backend();
 };
 

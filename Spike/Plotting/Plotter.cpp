@@ -13,13 +13,6 @@ Plotter::Plotter(string experimentName_param) {
 }
 
 
-// Plotter Destructor
-Plotter::~Plotter() {
-
-}
-
-
-
 void Plotter::plot_single_cell_information_analysis(SpikeAnalyser * spike_analyser_for_untrained_network, SpikeAnalyser * spike_analyser_for_trained_network) {
 
 	if (spike_analyser_for_untrained_network->descending_maximum_information_score_for_each_neuron == nullptr)
