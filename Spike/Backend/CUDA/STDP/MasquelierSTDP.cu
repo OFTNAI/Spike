@@ -8,6 +8,8 @@ namespace Backend {
     }
 
     void MasquelierSTDP::reset_state() {
+      STDP::reset_state();
+
       CudaSafeCall(cudaMemcpy((void*)index_of_last_afferent_synapse_to_spike,
                               (void*)frontend()->index_of_last_afferent_synapse_to_spike,
                               sizeof(int)*frontend()->neurs->total_number_of_neurons,
@@ -23,9 +25,17 @@ namespace Backend {
     }
 
     void MasquelierSTDP::prepare() {
-      ::Backend::CUDA::STDP::prepare();
+      STDP::prepare();
 
       allocate_device_pointers();
+    }
+
+    void MasquelierSTDP::push_data_front() {
+      STDP::push_data_front();
+    }
+
+    void MasquelierSTDP::pull_data_back() {
+      STDP::pull_data_back();
     }
 
     void MasquelierSTDP::allocate_device_pointers() {

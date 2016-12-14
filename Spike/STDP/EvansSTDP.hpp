@@ -25,13 +25,6 @@ namespace Backend {
   public:
     ADD_FRONTEND_GETTER(EvansSTDP);
 
-    // void prepare() override {
-    //   printf("TODO Backend::EvansSTDP::prepare\n");
-    // }
-
-    void push_data_front() override {} // TODO
-    void pull_data_back() override {} // TODO
-
     virtual void update_synaptic_efficacies_or_weights(float current_time_in_seconds) = 0;
     virtual void update_presynaptic_activities(float timestep, float current_time_in_seconds) = 0;
     virtual void update_postsynaptic_activities(float timestep, float current_time_in_seconds) = 0;

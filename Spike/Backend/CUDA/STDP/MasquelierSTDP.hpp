@@ -25,9 +25,13 @@ namespace Backend {
       MAKE_BACKEND_CONSTRUCTOR(MasquelierSTDP);
       using ::Backend::MasquelierSTDP::frontend;
 
-      void allocate_device_pointers();
       void prepare() override;
       void reset_state() override;
+
+      void push_data_front() override;
+      void pull_data_back() override;
+
+      void allocate_device_pointers();
       void apply_stdp_to_synapse_weights(float current_time_in_seconds) override;
     };
 

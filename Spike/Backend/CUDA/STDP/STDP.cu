@@ -5,12 +5,19 @@
 namespace Backend {
   namespace CUDA {
     void STDP::prepare() {
-      std::cout << "????4 " << frontend() << "  "
-                << frontend()->neurs << "\n";    
       neurons_backend = dynamic_cast<::Backend::CUDA::SpikingNeurons*>
         (frontend()->neurs->backend());
       synapses_backend = dynamic_cast<::Backend::CUDA::SpikingSynapses*>
         (frontend()->syns->backend());
+    }
+
+    void STDP::reset_state() {
+    }
+
+    void STDP::push_data_front() {
+    }
+
+    void STDP::pull_data_back() {
     }
   }
 }

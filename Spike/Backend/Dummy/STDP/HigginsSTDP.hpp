@@ -11,23 +11,26 @@ namespace Backend {
       MAKE_BACKEND_CONSTRUCTOR(HigginsSTDP);
 
       void prepare() override {
-        // TODO
+        STDP::prepare();
       }
 
       void reset_state() override {
-        // TODO
+        STDP::reset_state();
+      }
+
+      void push_data_front() override {
+        STDP::push_data_front();
+      }
+
+      void pull_data_back() override {
+        STDP::pull_data_back();
       }
 
       void apply_ltp_to_synapse_weights(float current_time_in_seconds) override {
-        printf("TODO HigginsSTDP::apply_ltp_to_synapse_weights\n");
       }
 
       void apply_ltd_to_synapse_weights(float current_time_in_seconds) override {
-        printf("TODO HigginsSTDP::apply_ltd_to_synapse_weights\n");
       }
-
-      void push_data_front() override {}
-      void pull_data_back() override {}
     };
   }
 }

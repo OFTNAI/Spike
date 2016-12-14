@@ -10,12 +10,14 @@ namespace Backend {
     }
 
     void EvansSTDP::prepare() {
-      ::Backend::CUDA::STDP::prepare();
+      STDP::prepare();
 
       allocate_device_pointers();
     }
 
     void EvansSTDP::reset_state() {
+      STDP::reset_state();
+
       CudaSafeCall(cudaMemcpy(recent_presynaptic_activities_C,
                               frontend()->recent_presynaptic_activities_C,
                               sizeof(float)*frontend()->syns->total_number_of_synapses,
@@ -24,6 +26,14 @@ namespace Backend {
                               frontend()->recent_postsynaptic_activities_D,
                               sizeof(float)*frontend()->neurs->total_number_of_neurons,
                               cudaMemcpyHostToDevice));
+    }
+
+    void EvansSTDP::push_data_front() {
+      STDP::push_data_front();
+    }
+
+    void EvansSTDP::pull_data_back() {
+      STDP::pull_data_back();
     }
 
     // RUN AFTER NETWORK HAS BEEN STARTED -- TODO: Check this?..

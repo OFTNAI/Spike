@@ -11,9 +11,14 @@ namespace Backend {
   namespace CUDA {
     class STDP : public virtual ::Backend::STDP {
     public:
-      void prepare() override;
       using ::Backend::STDP::frontend;
-    protected:
+
+      void prepare() override;
+      void reset_state() override;
+
+      void push_data_front() override;
+      void pull_data_back() override;
+protected:
       ::Backend::CUDA::SpikingNeurons* neurons_backend = nullptr;
       ::Backend::CUDA::SpikingSynapses* synapses_backend = nullptr;
     };

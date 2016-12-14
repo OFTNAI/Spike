@@ -22,6 +22,10 @@ namespace Backend {
 
       void prepare() override;
       void reset_state() override;
+
+      void push_data_front() override;
+      void pull_data_back() override;
+
       void allocate_device_pointers();
       void update_synaptic_efficacies_or_weights(float current_time_in_seconds) override;
       void update_presynaptic_activities(float timestep, float current_time_in_seconds) override;
