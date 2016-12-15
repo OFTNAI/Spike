@@ -1,7 +1,7 @@
 #ifndef Simulator_H
 #define Simulator_H
-// Silences the printfs
-//#define QUIETSTART
+
+#define SILENCE_SIMULATOR_SETUP
 
 #include "Spike/RecordingElectrodes/CountNeuronSpikesRecordingElectrodes.hpp"
 #include "Spike/RecordingElectrodes/CollectNeuronSpikesRecordingElectrodes.hpp"

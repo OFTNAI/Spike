@@ -9,7 +9,7 @@ int InputSpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
 };
 
 bool InputSpikingNeurons::stimulus_is_new_object_for_object_by_object_presentation(int stimulus_index) {
-  return true;
+  return (stimulus_index % total_number_of_transformations_per_object == 0) ? true : false;
 }
 
 

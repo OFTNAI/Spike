@@ -27,7 +27,8 @@ token = '*';
 % psi   = [0, pi, -pi/2, pi/2];       % phase, [0, pi, -pi/2, pi/2]
 psi   = [0, pi];       % phase, [0, pi, -pi/2, pi/2]
 scale = filterScale;                % wavelength (pixels)
-orient= [0, pi/4, pi/2, 3*pi/4];    % orientation
+% orient= [0, pi/4, pi/2, 3*pi/4];    % orientation
+orient= [0, pi/2];
 bw    = 1.5;                        % bandwidth
 gamma = 0.5;                        % aspect ratio
 

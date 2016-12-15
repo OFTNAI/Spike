@@ -90,7 +90,9 @@ void SpikingModel::init_backend() {
   Backend::init_global_context();
   context = Backend::get_current_context();
 
+  #ifndef SILENCE_MODEL_SETUP
   TimerWithMessages* timer = new TimerWithMessages("Setting Up Network...\n");
+  #endif
 
   context->params.high_fidelity_spike_storage = high_fidelity_spike_storage;
   context->params.threads_per_block_neurons = 512;
@@ -108,7 +110,9 @@ void SpikingModel::init_backend() {
   input_spiking_neurons->init_backend(context);
   stdp_rule->init_backend(context);
 
-  timer->stop_timer_and_log_time_and_message("Network Setup.", true);
+  #ifndef SILENCE_MODEL_SETUP
+  timer->stop_timer_and_log_time_and_message("Network set up.", true);
+  #endif
 }
 
 
@@ -130,21 +134,21 @@ void SpikingModel::reset_state() {
 
 void SpikingModel::perform_per_timestep_model_instructions(float current_time_in_seconds, bool apply_stdp_to_relevant_synapses){
 
-	spiking_neurons->reset_state();
+	spiking_neurons->update_membrane_potentials(timestep, current_time_in_seconds);
+	input_spiking_neurons->update_membrane_potentials(timestep, current_time_in_seconds);
 
 	spiking_neurons->check_for_neuron_spikes(current_time_in_seconds, timestep);
 	input_spiking_neurons->check_for_neuron_spikes(current_time_in_seconds, timestep);
 
 	spiking_synapses->interact_spikes_with_synapses(spiking_neurons, input_spiking_neurons, current_time_in_seconds, timestep);
 
+	spiking_neurons->reset_state();
+
 	spiking_synapses->calculate_postsynaptic_current_injection(spiking_neurons, current_time_in_seconds, timestep);
 
 	if (apply_stdp_to_relevant_synapses){
           stdp_rule->Run_STDP(current_time_in_seconds, timestep); // spiking_neurons, 
 	}
-
-	spiking_neurons->update_membrane_potentials(timestep, current_time_in_seconds);
-	input_spiking_neurons->update_membrane_potentials(timestep, current_time_in_seconds);
 
 }
 

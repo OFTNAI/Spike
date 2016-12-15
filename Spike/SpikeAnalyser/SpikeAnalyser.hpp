@@ -42,9 +42,9 @@ public:
                 InputSpikingNeurons *input_neurons_parameter,
                 CountNeuronSpikesRecordingElectrodes *electrodes_parameter);
 
-  SpikingNeurons *neurons;
-  InputSpikingNeurons *input_neurons;
-  CountNeuronSpikesRecordingElectrodes *count_electrodes;
+  SpikingNeurons *neurons  = nullptr;
+  InputSpikingNeurons *input_neurons = nullptr;
+  CountNeuronSpikesRecordingElectrodes *count_electrodes = nullptr;
 
   std::vector<int> number_of_neurons_in_single_cell_analysis_group_vec;
   std::vector<std::vector<float> > descending_maximum_information_score_for_each_neuron_vec;
@@ -52,32 +52,36 @@ public:
   std::vector<std::vector<float> > descending_average_information_score_for_each_neuron_vec;
   std::vector<std::vector<float> > average_information_score_for_each_neuron_vec;
 
-  int ** per_stimulus_per_neuron_spike_counts;
+  int ** per_stimulus_per_neuron_spike_counts = nullptr;
 
   float maximum_possible_information_score;
   float optimal_average_firing_rate;
   float optimal_max_firing_rate;
 
-  float ** information_scores_for_each_object_and_neuron;
-  float ** descending_information_scores_for_each_object_and_neuron;
-  float * maximum_information_score_for_each_neuron;
-  float * descending_maximum_information_score_for_each_neuron;
-  float * average_information_score_for_each_neuron;
-  float * descending_average_information_score_for_each_neuron;
+  float ** information_scores_for_each_object_and_neuron = nullptr;
+  float ** descending_information_scores_for_each_object_and_neuron = nullptr;
+  float * maximum_information_score_for_each_neuron = nullptr;
+  float * descending_maximum_information_score_for_each_neuron = nullptr;
+  float * average_information_score_for_each_neuron = nullptr;
+  float * descending_average_information_score_for_each_neuron = nullptr;
 
-  int ** number_of_spikes_per_stimulus_per_neuron_group;
-  float ** average_number_of_spikes_per_stimulus_per_neuron_group_per_second;
-  int * total_number_of_spikes_per_neuron_group;
-  float * average_number_of_spikes_per_neuron_group_per_second;
-  float * max_number_of_spikes_per_neuron_group_per_second;
+  int ** number_of_spikes_per_stimulus_per_neuron_group = nullptr;
+  float ** average_number_of_spikes_per_stimulus_per_neuron_group_per_second = nullptr;
+  float ** average_number_of_spikes_per_stimulus_per_neuron_group_per_second_excluding_silent_neurons = nullptr;
+  int * total_number_of_spikes_per_neuron_group = nullptr;
+  float * average_number_of_spikes_per_neuron_group_per_second = nullptr;
+  float * average_number_of_spikes_per_neuron_group_per_second_excluding_silent_neurons = nullptr;
+  float * max_number_of_spikes_per_neuron_group_per_second = nullptr;
   int total_number_of_neuron_spikes;
   float average_number_of_neuron_spikes_per_second;
 
+  int * running_count_of_non_silent_neurons_per_neuron_group = nullptr;
+
   float combined_powered_distance_from_average_score;
-  float * combined_powered_distance_from_average_score_for_each_neuron_group;
+  float * combined_powered_distance_from_average_score_for_each_neuron_group = nullptr;
 
   float combined_powered_distance_from_max_score;
-  float * combined_powered_distance_from_max_score_for_each_neuron_group;
+  float * combined_powered_distance_from_max_score_for_each_neuron_group = nullptr;
 
   bool spike_totals_and_averages_were_calculated;
 

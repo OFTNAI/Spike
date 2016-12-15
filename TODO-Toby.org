@@ -229,8 +229,22 @@ CLOSED: [2016-12-14 Wed 18:40]
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2016-12-14 Wed 18:40]
 :END:
-* TODO Merge upstream changes since fork
+* DONE Check that RandomStateManager should indeed be set up at each stimulus presentation (around Simulator.cpp:156-159)
+CLOSED: [2016-12-15 Thu 14:10]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2016-12-15 Thu 14:10] \\
+  Answer was "no" (now commented out)
+:END:
+* PROGRESS Merge upstream changes since fork
+:LOGBOOK:
+- State "PROGRESS"   from "TODO"       [2016-12-14 Wed 19:50]
+:END:
+* TODO Check that all calls to reset_state are correct.
++ It seems that occasionally too much state is reset -- be more specific where necessary
++ At the same time, calling `reset' seems very inelegant ...
+** TODO Consequently, perhaps it would be better to minimize the number of reset calls ...
 * TODO Fix all current Experiments to match changes
+* TODO Perhaps call 'Experiments' 'Examples'?
 * TODO Get tests working again
 * TODO Move tests to CTest ?
 * TODO Unify coding style (discuss this)
@@ -246,4 +260,5 @@ CLOSED: [2016-12-14 Wed 18:40]
 * TODO Make it easier to choose backend (ie, set up context)
 * TODO Write SYCL backend.
 * TODO Write plain C++ backend. (Use ViennaCL for linalg acceleration?)
+* TODO Support for backend fall-back
 * TODO Write rate-coded neuron/synapse/model classes.

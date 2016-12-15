@@ -38,6 +38,9 @@ int main (int argc, char *argv[]){
 
         // MODEL
         FourLayerVisionSpikingModel * four_layer_vision_spiking_model = new FourLayerVisionSpikingModel();
+
+        four_layer_vision_spiking_model->inputs_directory = "MatlabGaborFilter/Inputs/";
+
         four_layer_vision_spiking_model->SetTimestep(timestep);
 
         four_layer_vision_spiking_model->high_fidelity_spike_storage = high_fidelity_spike_storage;

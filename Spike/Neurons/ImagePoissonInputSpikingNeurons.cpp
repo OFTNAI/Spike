@@ -54,7 +54,9 @@ void ImagePoissonInputSpikingNeurons::AddGroupForEachGaborType(neuron_parameters
 
 
 void ImagePoissonInputSpikingNeurons::set_up_rates(const char * fileList, const char * filterParameters, const char * inputDirectory, float max_rate_scaling_factor) {
+  #ifndef SILENCE_IMAGE_POISSON_INPUT_SPIKING_NEURONS_SETUP
   printf("--- Setting up Input Neuron Rates from Gabor files...\n");
+  #endif
 
   load_image_names_from_file_list(fileList, inputDirectory);
   load_gabor_filter_parameters(filterParameters, inputDirectory);
@@ -115,8 +117,10 @@ void ImagePoissonInputSpikingNeurons::load_image_names_from_file_list(const char
   }
 	
   total_number_of_transformations_per_object = lastNrOfTransformsFound;
-	
+
+  #ifndef SILENCE_IMAGE_POISSON_INPUT_SPIKING_NEURONS_SETUP
   cout << "--- --- Objects: " << total_number_of_objects << ", Transforms per Object: " << total_number_of_transformations_per_object << endl;
+  #endif
 	
   total_number_of_input_stimuli = total_number_of_objects * total_number_of_transformations_per_object;
 }
@@ -144,12 +148,16 @@ void ImagePoissonInputSpikingNeurons::load_gabor_filter_parameters(const char * 
 
   string dirNameBase;
 
+  #ifndef SILENCE_IMAGE_POISSON_INPUT_SPIKING_NEURONS_SETUP
   cout << "--- --- Gabor Parameters:" << endl;
+  #endif
 
   int line_index = 0;
   while(getline(filterParametersStream, dirNameBase)) {
 
+    #ifndef SILENCE_IMAGE_POISSON_INPUT_SPIKING_NEURONS_SETUP
     cout << "--- --- --- " << dirNameBase << endl;
+    #endif
 
     stringstream lineStream(dirNameBase);
 
@@ -196,7 +204,7 @@ void ImagePoissonInputSpikingNeurons::load_gabor_filter_parameters(const char * 
   total_number_of_rates_per_image = total_number_of_gabor_types * image_width * image_width;
   total_number_of_rates = total_number_of_input_stimuli * total_number_of_rates_per_image;
 
-  printf("\ntotal_number_of_rates: %d\n", total_number_of_rates);
+  // printf("\ntotal_number_of_rates: %d\n", total_number_of_rates);
 }
 
 
@@ -286,10 +294,6 @@ int ImagePoissonInputSpikingNeurons::calculate_gabor_index(int orientationIndex,
   return orientationIndex * (total_number_of_wavelengths * total_number_of_phases) + wavelengthIndex * total_number_of_phases + phaseIndex;
 }
 
-
-bool ImagePoissonInputSpikingNeurons::stimulus_is_new_object_for_object_by_object_presentation(int stimulus_index) {
-  return (stimulus_index % total_number_of_transformations_per_object == 0) ? true : false;
-}
 
 MAKE_INIT_BACKEND(ImagePoissonInputSpikingNeurons);
 

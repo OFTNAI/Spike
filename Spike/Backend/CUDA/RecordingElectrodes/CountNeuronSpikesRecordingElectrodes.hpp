@@ -11,7 +11,7 @@
 namespace Backend {
   namespace CUDA {
     class CountNeuronSpikesRecordingElectrodes :
-      protected virtual ::Backend::CUDA::RecordingElectrodes,
+      public virtual ::Backend::CUDA::RecordingElectrodes,
       public virtual ::Backend::CountNeuronSpikesRecordingElectrodes {
     public:
       ~CountNeuronSpikesRecordingElectrodes();

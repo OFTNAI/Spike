@@ -1,6 +1,8 @@
 #ifndef SpikingModel_H
 #define SpikingModel_H
 
+#define SILENCE_MODEL_SETUP
+
 #include <stdio.h>
 #include "../Backend/Context.hpp"
 #include "../Synapses/ConductanceSpikingSynapses.hpp"
@@ -37,7 +39,7 @@ public:
   float timestep;
   void SetTimestep(float timestep_parameter);
 
-  bool high_fidelity_spike_storage;
+  bool high_fidelity_spike_storage = false;
 
   SpikingNeurons * spiking_neurons;
   SpikingSynapses * spiking_synapses;
@@ -57,6 +59,9 @@ public:
 
   virtual void init_backend();
   virtual void prepare_backend();
+
+protected:
+  virtual void create_parameter_arrays() {}
 };
 
 #endif

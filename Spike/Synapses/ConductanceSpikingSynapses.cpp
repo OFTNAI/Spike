@@ -27,7 +27,7 @@ void ConductanceSpikingSynapses::AddGroup(int presynaptic_group_id,
 
   conductance_spiking_synapse_parameters_struct * conductance_spiking_synapse_group_params = (conductance_spiking_synapse_parameters_struct*)synapse_params;
 
-  for (int i = (total_number_of_synapses - temp_number_of_synapses_in_last_group); i < total_number_of_synapses-1; i++){
+  for (int i = (total_number_of_synapses - temp_number_of_synapses_in_last_group); i < total_number_of_synapses; i++) {
     synaptic_conductances_g[i] = 0.0f;
     biological_conductance_scaling_constants_lambda[i] = conductance_spiking_synapse_group_params->biological_conductance_scaling_constant_lambda;
     reversal_potentials_Vhat[i] = conductance_spiking_synapse_group_params->reversal_potential_Vhat;
@@ -71,9 +71,10 @@ void ConductanceSpikingSynapses::shuffle_synapses() {
 
 
 void ConductanceSpikingSynapses::calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds, float timestep) {
-  backend()->calculate_postsynaptic_current_injection(neurons, current_time_in_seconds, timestep);
-  // After injecting current, update the conductances
+  // First update the conductances
   update_synaptic_conductances(timestep, current_time_in_seconds);
+
+  backend()->calculate_postsynaptic_current_injection(neurons, current_time_in_seconds, timestep);
 }
 
 void ConductanceSpikingSynapses::update_synaptic_conductances(float timestep, float current_time_in_seconds) {

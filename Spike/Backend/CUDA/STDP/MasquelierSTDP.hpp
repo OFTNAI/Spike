@@ -14,7 +14,7 @@
 
 namespace Backend {
   namespace CUDA {
-    class MasquelierSTDP : protected virtual ::Backend::CUDA::STDP,
+    class MasquelierSTDP : public virtual ::Backend::CUDA::STDP,
                            public virtual ::Backend::MasquelierSTDP {
     public:
       int* index_of_last_afferent_synapse_to_spike = nullptr;

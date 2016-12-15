@@ -1,10 +1,7 @@
 // -*- mode: c++ -*-
 #include "RandomStateManager.hpp"
 #include "Spike/Helpers/TimerWithMessages.hpp"
-
-#include <thrust/device_vector.h>
-#include <thrust/host_vector.h>
-#include <thrust/count.h>
+#include "Spike/Helpers/TerminalHelpers.hpp"
 
 namespace Backend {
   namespace CUDA {
@@ -13,7 +10,7 @@ namespace Backend {
     }
 
     void RandomStateManager::setup_random_states(int threads_per_blocks_x, int number_of_blocks_x, int seed) {
-      TimerWithMessages * set_up_random_states_timer = new TimerWithMessages("Setting up random states for RandomStateManager...\n");
+      // TimerWithMessages * set_up_random_states_timer = new TimerWithMessages("Setting up random states for RandomStateManager...\n");
 
       threads_per_block = dim3(threads_per_blocks_x);
       block_dimensions = dim3(number_of_blocks_x);
@@ -30,7 +27,7 @@ namespace Backend {
       generate_random_states_kernel<<<block_dimensions, threads_per_block>>>(seed, states, threads_per_blocks_x * number_of_blocks_x);
       CudaCheckError();
 
-      set_up_random_states_timer->stop_timer_and_log_time_and_message("Random states set up...", true);
+      // set_up_random_states_timer->stop_timer_and_log_time_and_message("Random states set up...", true);
     }
 
     void RandomStateManager::prepare() {

@@ -29,7 +29,8 @@ Synapses::~Synapses() {
   free(synaptic_efficacies_or_weights);
   free(original_synapse_indices);
   free(synapse_postsynaptic_neuron_count_index);
-  free(random_state_manager);
+
+  delete random_state_manager;
 }
 
 
@@ -277,7 +278,7 @@ void Synapses::increment_number_of_synapses(int increment) {
 // Because all synapses contribute to current_injection on every iteration, having all threads in a block accessing only 1 or 2 positions in memory causing massive slowdown.
 // Randomising order of synapses means that each block is accessing a larger number of points in memory.
 void Synapses::shuffle_synapses() {
-  printf("Shuffling synapses...\n");
+  // printf("Shuffling synapses...\n");
 
   std::random_shuffle(&original_synapse_indices[0], &original_synapse_indices[total_number_of_synapses]);
 

@@ -25,7 +25,9 @@ Simulator::Simulator(SpikingModel * spiking_model_param, Simulator_Options * sim
 
 	full_directory_name_for_simulation_data_files = "output/"; // Put into struct!!
 
+        #ifndef SILENCE_SIMULATOR_SETUP
 	TimerWithMessages * timer = new TimerWithMessages("Setting up recording electrodes...\n");
+        #endif
 
 	if (simulator_options->recording_electrodes_options->count_neuron_spikes_recording_electrodes_bool) {
 		count_neuron_spikes_recording_electrodes = new CountNeuronSpikesRecordingElectrodes(spiking_model->spiking_neurons, spiking_model->spiking_synapses, full_directory_name_for_simulation_data_files, "Neurons");
@@ -73,7 +75,9 @@ Simulator::Simulator(SpikingModel * spiking_model_param, Simulator_Options * sim
            count_neuron_spikes_recording_electrodes);
         spike_analyser->init_backend(spiking_model->spiking_neurons->backend()->context);
 
+        #ifndef SILENCE_SIMULATOR_SETUP
 	timer->stop_timer_and_log_time_and_message("Recording electrodes setup.\n", true);
+        #endif
 
 }
 
@@ -154,8 +158,8 @@ void Simulator::RunSimulation() {
 			perform_pre_stimulus_presentation_instructions(stimuli_presentation_order[stimulus_index]);
 
 			//TEMP 
-			delete ((FourLayerVisionSpikingModel*)spiking_model)->image_poisson_input_spiking_neurons->random_state_manager;
-			((FourLayerVisionSpikingModel*)spiking_model)->image_poisson_input_spiking_neurons->init_random_state(true);
+			// delete ((FourLayerVisionSpikingModel*)spiking_model)->image_poisson_input_spiking_neurons->random_state_manager;
+			// ((FourLayerVisionSpikingModel*)spiking_model)->image_poisson_input_spiking_neurons->init_random_state(true);
 
 			int number_of_timesteps_per_stimulus_per_epoch = simulator_options->run_simulation_general_options->presentation_time_per_stimulus_per_epoch / spiking_model->timestep;
 		
@@ -306,7 +310,7 @@ void Simulator::perform_per_timestep_recording_electrode_instructions(float curr
 void Simulator::perform_pre_stimulus_presentation_instructions(int stimulus_index) {
 
 	printf("Stimulus Index: %d\n", stimulus_index);
-	printf("simulator_options->stimuli_presentation_options->presentation_format: %d\n", simulator_options->stimuli_presentation_options->presentation_format);
+	// printf("simulator_options->stimuli_presentation_options->presentation_format: %d\n", simulator_options->stimuli_presentation_options->presentation_format);
 
 	switch (simulator_options->stimuli_presentation_options->presentation_format) {
 		case PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_STIMULI: case PRESENTATION_FORMAT_RANDOM_RESET_BETWEEN_EACH_STIMULUS:
@@ -318,7 +322,7 @@ void Simulator::perform_pre_stimulus_presentation_instructions(int stimulus_inde
 		case PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_OBJECTS:
 		{
 			bool stimulus_is_new_object = spiking_model->input_spiking_neurons->stimulus_is_new_object_for_object_by_object_presentation(stimulus_index);
-			(stimulus_is_new_object) ? printf("Stimulus is new object\n") : printf("Stimulus is not new object\n");
+			// (stimulus_is_new_object) ? printf("Stimulus is new object\n") : printf("Stimulus is not new object\n");
 
 			if (stimulus_is_new_object) {
 				spiking_model->reset_state();
