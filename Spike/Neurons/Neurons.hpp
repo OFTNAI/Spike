@@ -21,7 +21,10 @@
 class Neurons; // forward definition
 
 namespace Backend {
-  class Neurons : public virtual SpikeBackendBase {};
+  class Neurons : public virtual SpikeBackendBase {
+  public:
+    virtual void reset_current_injections() = 0;
+  };
 }
 
 #include "Spike/Backend/Dummy/Neurons/Neurons.hpp"
@@ -79,6 +82,7 @@ public:
   /**  
    *  Resets any undesired data which is dynamically reassigned during a simulation. In this case, the current to be injected at the next time step.
    */
+  void reset_current_injections(); // Not virtual
   void reset_state() override;
 
 private:

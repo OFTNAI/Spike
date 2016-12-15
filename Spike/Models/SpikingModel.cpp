@@ -142,7 +142,7 @@ void SpikingModel::perform_per_timestep_model_instructions(float current_time_in
 
 	spiking_synapses->interact_spikes_with_synapses(spiking_neurons, input_spiking_neurons, current_time_in_seconds, timestep);
 
-	spiking_neurons->reset_state();
+	spiking_neurons->reset_current_injections();
 
 	spiking_synapses->calculate_postsynaptic_current_injection(spiking_neurons, current_time_in_seconds, timestep);
 

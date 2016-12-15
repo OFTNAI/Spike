@@ -10,6 +10,10 @@ namespace Backend {
       }
 
       void reset_state() override {
+        reset_current_injections();
+      }
+
+      void reset_current_injections() override {
       }
 
       void push_data_front() override {

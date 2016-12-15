@@ -70,5 +70,9 @@ void Neurons::reset_state() {
   backend()->reset_state();
 }
 
+void Neurons::reset_current_injections() {
+  backend()->reset_current_injections();
+}
+
 MAKE_STUB_INIT_BACKEND(Neurons);
 
