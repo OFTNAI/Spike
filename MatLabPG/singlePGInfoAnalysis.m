@@ -92,7 +92,9 @@ for trainedNet = [1]
             end
         end
     end
-    IRs = infoAnalysis(triggerCountMatrix,trainedNet);
+    
+    nBins = 2;
+    IRs = infoAnalysis_PG(triggerCountMatrix,trainedNet,nBins);
     
     
 
@@ -176,3 +178,5 @@ for trainedNet = [1]
     ylabel('Index of Polychronous Groups');
     xlabel('Time [s]');
 end
+
+

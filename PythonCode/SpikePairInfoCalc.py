@@ -22,13 +22,13 @@ def corr2(a,b):
 
 # experimentName = '20160904_FF_successful';
 # experimentName = '20160908_FF_LAT';
-experimentName = '1.5--FF_FB_LAT_stdp_0.005_nCon5_seed1';
+experimentName = '1.1e--nCon2_useDiffInputsForTrainTest_10ep';
 phases = ['Untrained','Trained'];
 # phases = ['Untrained'];
 # phases = ['Trained'];
 
-nObj = 3;
-nTrans = 2;
+nObj = 2;
+nTrans = 4;
 nLayers = 4;
 presentationTime = 2000;
 exDim = 64;

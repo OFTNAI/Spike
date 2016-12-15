@@ -1,4 +1,4 @@
-function IRs = infoAnalysis(inputMatrix,trained,nBins)
+function IRs = infoAnalysis_PG(inputMatrix,trained,num_bins)
     plotAllSingleCellInfo = 0;
 %     hold off;
 %    num_bins =  2;%num_transforms;   %can be adjusted
@@ -15,26 +15,26 @@ function IRs = infoAnalysis(inputMatrix,trained,nBins)
 
     disp('** Data loading **');
 
-    sumPerBin = zeros(num_PGs,nBins);
+    sumPerBin = zeros(num_PGs,num_bins);
     sumPerObj = num_transforms;
     sumPerCell = num_transforms*num_stimulus;
     IRs = zeros(num_PGs,num_stimulus);   %I(R,s) single cell information
     IRs_weighted = zeros(num_PGs,num_stimulus);   %I(R,s) single cell information
 
-    binMatrix = zeros(num_PGs, num_stimulus, nBins); %number of times when fr is classified into a specific bin within a specific objects's transformations
+    binMatrix = zeros(num_PGs, num_stimulus, num_bins); %number of times when fr is classified into a specific bin within a specific objects's transformations
+    binMatrixTrans = zeros(num_PGs, num_stimulus, num_bins, num_transforms);  %TF table to show if a certain cell is classified into a certain bin at a certain transformation
 
-    
-    if max(inputMatrix(:))>0.001
-        FR_tmp = inputMatrix./max(inputMatrix(:));
-    end
-
-    
-    for obj = 1:num_stimulus;
-        disp([num2str(obj) '/' num2str(num_stimulus)]);
-        for trans = 1:num_transforms;
-            for i = 1:num_PGs;
-                bin = min(floor(FR_tmp(obj,trans,i))*nBins,nBins-1)+1;
-                binMatrix(i,obj,bin)=binMatrix(i,obj,1)+1;
+    for object = 1:num_stimulus;
+        disp([num2str(object) '/' num2str(num_stimulus)]);
+        for translation = 1:num_transforms;
+            for index_pg = 1:num_PGs;
+                if(inputMatrix(object,translation,index_pg)>0)
+                    binMatrix(index_pg,object,1)=binMatrix(index_pg,object,1)+1;
+                    binMatrixTrans(index_pg,object,1,translation)=1;
+                else
+                    binMatrix(index_pg,object,2)=binMatrix(index_pg,object,1)+1;
+                    binMatrixTrans(index_pg,object,2,translation)=1;
+                end
             end
         end
     end
@@ -47,21 +47,21 @@ function IRs = infoAnalysis(inputMatrix,trained,nBins)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     % Loop through all cells to calculate single cell information
-    for i=1:num_PGs
+    for index_pg=1:num_PGs
         % For each cell, count the number of transforms per bin
-        for bin=1:nBins
-            sumPerBin(i,bin)=sum(binMatrix(i,:,bin));
+        for bin=1:num_bins
+            sumPerBin(index_pg,bin)=sum(binMatrix(index_pg,:,bin));
         end
 
         % Calculate the information for cell_x cell_y per stimulus
-        for obj=1:num_stimulus
-            for bin=1:nBins
-                Pr = sumPerBin(i,bin)/sumPerCell;
-                Prs = binMatrix(i,obj,bin)/sumPerObj;
+        for object=1:num_stimulus
+            for bin=1:num_bins
+                Pr = sumPerBin(index_pg,bin)/sumPerCell;
+                Prs = binMatrix(index_pg,object,bin)/sumPerObj;
                 if(Pr~=0&&Prs~=0&&Pr<Prs)
-                    IRs(i,obj)=IRs(i,obj)+(Prs*(log2(Prs/Pr)));%*((bin-1)/(num_bins-1)); %could be added to weight the degree of firing rates.
+                    IRs(index_pg,object)=IRs(index_pg,object)+(Prs*(log2(Prs/Pr)));%*((bin-1)/(num_bins-1)); %could be added to weight the degree of firing rates.
                     %IRs(row,col,object)=IRs(row,col,object)+(Prs*(log2(Prs/Pr)))*((bin-1)/(num_bins-1)); %could be added to weight the degree of firing rates.
-                    IRs_weighted(i,obj)=IRs_weighted(i,obj)+(Prs*(log2(Prs/Pr)))*((bin-1)/(nBins-1)); %could be added to weight the degree of firing rates.
+                    IRs_weighted(index_pg,object)=IRs_weighted(index_pg,object)+(Prs*(log2(Prs/Pr)))*((bin-1)/(num_bins-1)); %could be added to weight the degree of firing rates.
                 end
             end
         end
@@ -104,8 +104,7 @@ function IRs = infoAnalysis(inputMatrix,trained,nBins)
     
     
     %axis([0 num_PGs/10 -0.1 log2(num_stimulus)+0.1]);
-    nCellsWithNonZeroInfo = length(find(IRs>0));
-    axis([0 nCellsWithNonZeroInfo*1.2 -0.1 log2(num_stimulus)+0.1]);
+    axis([0 num_PGs -0.1 log2(num_stimulus)+0.1]);
     title('Single Cell Information Analysis');
     ylabel('Information [bit]');
     xlabel('Cell Rank');

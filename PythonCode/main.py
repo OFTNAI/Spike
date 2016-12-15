@@ -3,8 +3,8 @@ import SpikePlot
 # import PolyGroup
 
 
-nObj = 3;
-nTrans = 2;
+nObj = 2;
+nTrans = 4;
 nLayers = 4;
 presentationTime = 2.0;
 exDim = 64;
@@ -14,13 +14,18 @@ inDim = 32;
 # experimentName = '20160904_FF_successful';
 # experimentName = '20160908_FF_LAT';
 # experimentName = '20160908_FF_FB';
-experimentName = '20160909_FF_noLat';
+experimentName = '1.1e--nCon2_useDiffInputsForTrainTest_10ep';
+# experimentName = 'test';
 
 #INFO ANALYSIS:
 ia = InfoAnalysis.InfoAnalysis()
 ia.loadParams(globals());
-ia.singleCellInfoAnalysis(experimentName,['Untrained', 'Trained'],weightedAnalysis = False, saveImage = True, showImage = False, nBins=5,plotAllSingleCellInfo = False);
-ia.singleCellInfoAnalysis(experimentName,['Untrained', 'Trained'],weightedAnalysis = False, saveImage = True, showImage = False, nBins=5,plotAllSingleCellInfo = True);
+
+# ia.singleCellInfoAnalysis(experimentName,['Untrained', 'Trained'],weightedAnalysis = False, saveImage = True, showImage = False, nBins=3,plotAllSingleCellInfo = False);
+
+
+# ia.singleCellInfoAnalysis(experimentName,['Untrained', 'Trained'],weightedAnalysis = False, saveImage = True, showImage = False, nBins=5,plotAllSingleCellInfo = False);
+# ia.singleCellInfoAnalysis(experimentName,['Untrained', 'Trained'],weightedAnalysis = False, saveImage = True, showImage = False, nBins=5,plotAllSingleCellInfo = True);
 
 # ia.singleCellInfoAnalysis(experimentName,['Untrained'],weightedAnalysis = False, saveImage = True, showImage = False, nBins=5,plotAllSingleCellInfo = False);
 # ia.singleCellInfoAnalysis(experimentName,['Untrained'],weightedAnalysis = False, saveImage = True, showImage = False, nBins=5,plotAllSingleCellInfo = True);

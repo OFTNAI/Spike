@@ -62,7 +62,8 @@ int main (int argc, char *argv[]){
 	//*1 Bair, W., & Movshon, J. A. (2004).  Adaptive Temporal Integration of Motion in Direction-Selective Neurons in Macaque Visual Cortex. The Journal of Neuroscience, 24(33), 7305遯ｶ�ｿｽ7323.
 
 	// Simulator Parameters
-	string experimentName = "1.5--FF_FB_LAT_stdp_0.005_nCon5_seed1";
+	string experimentName = "1.1e--nCon2_useDiffInputsForTrainTest_10ep";
+	//try changing the order of presentation, original FF const
 	float timestep = 0.00002;
 	bool simulate_network_to_test_untrained = true;
 	bool simulate_network_to_train_network = true;
@@ -77,7 +78,7 @@ int main (int argc, char *argv[]){
 
 	// Network Parameters
 	const int number_of_layers = 4;
-	int max_number_of_connections_per_pair = 5;
+	int max_number_of_connections_per_pair = 2;
 	int dim_excit_layer = 64;
 	int dim_inhib_layer = 32;
 
@@ -96,14 +97,14 @@ int main (int argc, char *argv[]){
 
 	float gaussian_synapses_standard_deviation_G2E_FF = 1.0;
 //	float gaussian_synapses_standard_deviation_E2E_FF = 8.0; //15.0;//10.0;//28.166444920;//10.0;//9.3631908834;//5.0;
-	float gaussian_synapses_standard_deviation_E2E_FF[number_of_layers-1] = {8.0, 12.0, 16.0};
+	float gaussian_synapses_standard_deviation_E2E_FF[number_of_layers-1] = {8.0, 16.0, 24.0};//{8.0, 12.0, 16.0};
 	float gaussian_synapses_standard_deviation_E2I_L = 1.0;
 	float gaussian_synapses_standard_deviation_I2E_L = 8.0;
 	float gaussian_synapses_standard_deviation_E2E_L = 4.0;
 	float gaussian_synapses_standard_deviation_E2E_FB = 8.0;
 
-	float biological_conductance_scaling_constant_lambda_G2E_FF = 0.00002;
-	float biological_conductance_scaling_constant_lambda_E2E_FF = 0.00008;//0.0001;
+	float biological_conductance_scaling_constant_lambda_G2E_FF = 0.00002;//0.00002;
+	float biological_conductance_scaling_constant_lambda_E2E_FF = 0.00008;//0.00008;
 	float biological_conductance_scaling_constant_lambda_E2I_L = 0.002;
 	float biological_conductance_scaling_constant_lambda_I2E_L = 0.004;
 	float biological_conductance_scaling_constant_lambda_E2E_L = 0.00008;
@@ -145,7 +146,7 @@ int main (int argc, char *argv[]){
 	bool save_recorded_spikes_and_states_to_file_test = true;
 
 	// Parameters for training
-	float presentation_time_per_stimulus_per_epoch_train = 2.0f;//0.5f;
+	float presentation_time_per_stimulus_per_epoch_train = 0.1;//2.0f;
 	int number_of_epochs_train = 10;//10;
 
 	// Parameters for Information Analysis
@@ -480,6 +481,10 @@ int main (int argc, char *argv[]){
 	bool record_spikes = record_spikes_test;
 	bool save_recorded_spikes_and_states_to_file = save_recorded_spikes_and_states_to_file_test;
 
+	if (is_optimisation)
+		input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "../../MatlabGaborFilter/Inputs/", 100.0f);
+	else
+		input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "MatlabGaborFilter/Inputs/", 100.0f);
 
 	SpikeAnalyser * spike_analyser_for_untrained_network = new SpikeAnalyser(simulator.neurons, (ImagePoissonInputSpikingNeurons*)simulator.input_neurons);
 	spike_analyser_for_untrained_network->optimal_average_firing_rate = optimal_average_firing_rate;
@@ -496,6 +501,12 @@ int main (int argc, char *argv[]){
 
 
 	/////////// SIMULATE NETWORK TRAINING ///////////
+
+	if (is_optimisation)
+		input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "../../MatlabGaborFilter/Inputs_train/", 100.0f);
+	else
+		input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "MatlabGaborFilter/Inputs_train/", 100.0f);
+
 	if (simulate_network_to_train_network) {
 		presentation_time_per_stimulus_per_epoch = presentation_time_per_stimulus_per_epoch_train;
 		int stimulus_presentation_order_seed = 1;
@@ -511,9 +522,15 @@ int main (int argc, char *argv[]){
 
 
 	/////////// SIMULATE NETWORK TO TEST TRAINED ///////////
+	if (is_optimisation)
+		input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "../../MatlabGaborFilter/Inputs/", 100.0f);
+	else
+		input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "MatlabGaborFilter/Inputs/", 100.0f);
+
 	SpikeAnalyser * spike_analyser_for_trained_network = new SpikeAnalyser(simulator.neurons, (ImagePoissonInputSpikingNeurons*)simulator.input_neurons);
 	spike_analyser_for_trained_network->optimal_average_firing_rate = optimal_average_firing_rate;
 	spike_analyser_for_trained_network->optimal_max_firing_rate = optimal_max_firing_rate;
+
 	if (simulate_network_to_test_trained) {
 		presentation_time_per_stimulus_per_epoch = presentation_time_per_stimulus_per_epoch_test;
 		record_spikes = record_spikes_test;
