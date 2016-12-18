@@ -8,6 +8,7 @@ add_subdirectory(Backend)
 add_subdirectory(Helpers)
 add_subdirectory(Models)
 add_subdirectory(Neurons)
+add_subdirectory(Optimiser)
 add_subdirectory(Plotting)
 add_subdirectory(RecordingElectrodes)
 add_subdirectory(Simulator)
@@ -20,6 +21,7 @@ add_library(Spike
   $<TARGET_OBJECTS:Helpers>
   $<TARGET_OBJECTS:Models>
   $<TARGET_OBJECTS:Neurons>
+  $<TARGET_OBJECTS:Optimiser>
 #  $<TARGET_OBJECTS:Plotting>
   $<TARGET_OBJECTS:RecordingElectrodes>
   $<TARGET_OBJECTS:Simulator>

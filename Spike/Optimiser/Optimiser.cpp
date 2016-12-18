@@ -1,9 +1,9 @@
-#include "Optimiser.h"
+#include "Optimiser.hpp"
 
-#include "../SpikeAnalyser/SpikeAnalyser.h"
-#include "../Helpers/TimerWithMessages.h"
-#include "../Helpers/TerminalHelpers.h"
-#include "../Helpers/MemoryUsage.h"
+#include "../SpikeAnalyser/SpikeAnalyser.hpp"
+#include "../Helpers/TimerWithMessages.hpp"
+#include "../Helpers/TerminalHelpers.hpp"
+#include "../Helpers/MemoryUsage.hpp"
 
 
 
@@ -104,15 +104,15 @@ void Optimiser::RunOptimisation(int start_optimisation_stage_index) {
 
 			// FINALISE MODEL + COPY TO DEVICE
 			four_layer_vision_spiking_model->finalise_model();
-			four_layer_vision_spiking_model->copy_model_to_device();
 
 			// CREATE SIMULATOR
 			Simulator * simulator = new Simulator(four_layer_vision_spiking_model, simulator_options_for_each_optimisation_stage[optimisation_stage]);
 
 
 			// RUN SIMULATION
-			spike_analyser_from_last_optimisation_stage = new SpikeAnalyser(four_layer_vision_spiking_model->spiking_neurons, four_layer_vision_spiking_model->input_spiking_neurons);
-			simulator->RunSimulation(spike_analyser_from_last_optimisation_stage);
+			// spike_analyser_from_last_optimisation_stage = new SpikeAnalyser(four_layer_vision_spiking_model->spiking_neurons, four_layer_vision_spiking_model->input_spiking_neurons);
+			simulator->RunSimulation();
+                        spike_analyser_from_last_optimisation_stage = simulator->spike_analyser;
 
 
 			// CALCULATE AVERAGES + OPTIMISATION OUTPUT SCORE
@@ -147,7 +147,7 @@ void Optimiser::RunOptimisation(int start_optimisation_stage_index) {
 
 			float difference_between_ideal_score_and_output_score = optimisation_ideal_output_score - optimisation_output_score; // Supposing the function we are trying to optimise is monotonic, the sign of this value gives the direction that the optimisation must move in.
 
-			if (abs(difference_between_ideal_score_and_output_score) < optimisation_minimum_error_for_each_optimisation_stage[optimisation_stage]) {
+			if (fabs(difference_between_ideal_score_and_output_score) < optimisation_minimum_error_for_each_optimisation_stage[optimisation_stage]) {
 			
 				final_optimal_parameter_for_each_optimisation_stage[optimisation_stage] = test_optimisation_parameter_value;
 				break;

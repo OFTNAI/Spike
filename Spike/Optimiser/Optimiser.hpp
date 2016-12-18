@@ -1,8 +1,8 @@
 #ifndef Optimiser_H
 #define Optimiser_H
 
-#include "../Simulator/Simulator.h"
-#include "../Models/FourLayerVisionSpikingModel.h"
+#include "../Simulator/Simulator.hpp"
+#include "../Models/FourLayerVisionSpikingModel.hpp"
 
 #include <stdio.h>
 #include <math.h>  
