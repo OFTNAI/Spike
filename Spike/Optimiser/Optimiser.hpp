@@ -51,27 +51,27 @@ public:
 	Optimiser(FourLayerVisionSpikingModel* four_layer_vision_spiking_model_parameter);
 	~Optimiser();
 
-	FourLayerVisionSpikingModel * four_layer_vision_spiking_model;
+	FourLayerVisionSpikingModel * four_layer_vision_spiking_model = nullptr;
 
 	int number_of_optimisation_stages = 0;
 
-	Simulator_Options ** simulator_options_for_each_optimisation_stage;
-	float** model_pointers_to_be_optimised_for_each_optimisation_stage;
-	bool** synapse_bool_pointers_to_turn_on_for_each_optimisation_stage;
-	bool* use_inhibitory_neurons_for_each_optimisation_stage;
-	int* number_of_non_input_layers_to_simulate_for_each_optimisation_stage;
-	int* index_of_neuron_group_of_interest_for_each_optimisation_stage;
-	float* initial_optimisation_parameter_min_for_each_optimisation_stage;
-	float* initial_optimisation_parameter_max_for_each_optimisation_stage;
-	float* ideal_output_scores_for_each_optimisation_stage;
-	float* optimisation_minimum_error_for_each_optimisation_stage;
-	bool* positive_effect_of_postive_change_in_parameter_for_each_optimisation_stage;
-	int* score_to_use_for_each_optimisation_stage;
+	Simulator_Options ** simulator_options_for_each_optimisation_stage = nullptr;
+	float** model_pointers_to_be_optimised_for_each_optimisation_stage = nullptr;
+	bool** synapse_bool_pointers_to_turn_on_for_each_optimisation_stage = nullptr;
+	bool* use_inhibitory_neurons_for_each_optimisation_stage = nullptr;
+	int* number_of_non_input_layers_to_simulate_for_each_optimisation_stage = nullptr;
+	int* index_of_neuron_group_of_interest_for_each_optimisation_stage = nullptr;
+	float* initial_optimisation_parameter_min_for_each_optimisation_stage = nullptr;
+	float* initial_optimisation_parameter_max_for_each_optimisation_stage = nullptr;
+	float* ideal_output_scores_for_each_optimisation_stage = nullptr;
+	float* optimisation_minimum_error_for_each_optimisation_stage = nullptr;
+	bool* positive_effect_of_postive_change_in_parameter_for_each_optimisation_stage = nullptr;
+	int* score_to_use_for_each_optimisation_stage = nullptr;
 
-	float* final_optimal_parameter_for_each_optimisation_stage;
-	int* final_iteration_count_for_each_optimisation_stage;
+	float* final_optimal_parameter_for_each_optimisation_stage = nullptr;
+	int* final_iteration_count_for_each_optimisation_stage = nullptr;
 
-	SpikeAnalyser * spike_analyser_from_last_optimisation_stage;
+	SpikeAnalyser * spike_analyser_from_last_optimisation_stage = nullptr;
 
 
 	void AddOptimisationStage(Optimiser_Options * optimisation_stage_options, Simulator_Options * simulator_options_parameter);

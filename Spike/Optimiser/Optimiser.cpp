@@ -12,30 +12,6 @@ Optimiser::Optimiser(FourLayerVisionSpikingModel* four_layer_vision_spiking_mode
 
 	four_layer_vision_spiking_model = four_layer_vision_spiking_model_parameter;
 
-	number_of_optimisation_stages = 0;
-
-	simulator_options_for_each_optimisation_stage = NULL;
-	model_pointers_to_be_optimised_for_each_optimisation_stage = NULL;
-	synapse_bool_pointers_to_turn_on_for_each_optimisation_stage = NULL;
-	use_inhibitory_neurons_for_each_optimisation_stage = NULL;
-	number_of_non_input_layers_to_simulate_for_each_optimisation_stage = NULL;
-	index_of_neuron_group_of_interest_for_each_optimisation_stage = NULL;
-	initial_optimisation_parameter_min_for_each_optimisation_stage = NULL;
-	initial_optimisation_parameter_max_for_each_optimisation_stage = NULL;
-	ideal_output_scores_for_each_optimisation_stage = NULL;
-	optimisation_minimum_error_for_each_optimisation_stage = NULL;
-
-	final_optimal_parameter_for_each_optimisation_stage = NULL;
-	final_iteration_count_for_each_optimisation_stage = NULL;
-
-	spike_analyser_from_last_optimisation_stage = NULL;
-
-}
-
-
-// Destructor
-Optimiser::~Optimiser(){
-
 }
 
 
@@ -108,14 +84,11 @@ void Optimiser::RunOptimisation(int start_optimisation_stage_index) {
 			// CREATE SIMULATOR
 			Simulator * simulator = new Simulator(four_layer_vision_spiking_model, simulator_options_for_each_optimisation_stage[optimisation_stage]);
 
-
 			// RUN SIMULATION
-			// spike_analyser_from_last_optimisation_stage = new SpikeAnalyser(four_layer_vision_spiking_model->spiking_neurons, four_layer_vision_spiking_model->input_spiking_neurons);
 			simulator->RunSimulation();
-                        spike_analyser_from_last_optimisation_stage = simulator->spike_analyser;
-
 
 			// CALCULATE AVERAGES + OPTIMISATION OUTPUT SCORE
+                        spike_analyser_from_last_optimisation_stage = simulator->spike_analyser;
 			spike_analyser_from_last_optimisation_stage->calculate_various_neuron_spike_totals_and_averages(simulator_options_for_each_optimisation_stage[optimisation_stage]->run_simulation_general_options->presentation_time_per_stimulus_per_epoch);
 
 			float optimisation_output_score = 0.0;
@@ -168,7 +141,6 @@ void Optimiser::RunOptimisation(int start_optimisation_stage_index) {
 
 					
 			delete simulator;
-			delete spike_analyser_from_last_optimisation_stage;
 
 		}
 
