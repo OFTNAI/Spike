@@ -241,8 +241,15 @@ CLOSED: [2016-12-15 Thu 14:10]
 - State "PROGRESS"   from "TODO"       [2016-12-14 Wed 19:50]
 :END:
 *** TODO Integrate changes to tests (simple patch, then fix later)
-*** TODO Integrate new Optimiser code
-*** TODO Check merge diff
+*** DONE Integrate new Optimiser code
+CLOSED: [2016-12-18 Sun 21:55]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2016-12-18 Sun 21:55]
+:END:
+*** PROGRESS Check merge diff
+:LOGBOOK:
+- State "PROGRESS"   from "TODO"       [2016-12-18 Sun 21:55]
+:END:
 ** PROGRESS Check that all calls to reset_state are correct.
 :LOGBOOK:
 - State "PROGRESS"   from "TODO"       [2016-12-15 Thu 18:15]
@@ -250,8 +257,20 @@ CLOSED: [2016-12-15 Thu 14:10]
 + It seems that occasionally too much state is reset -- be more specific where necessary
 + At the same time, calling `reset' seems very inelegant ...
 *** TODO Consequently, perhaps it would be better to minimize the number of reset calls ...
-** TODO Fix all current Experiments to match changes
-*** TODO Perhaps call 'Experiments' 'Examples'?
+** CANCELLED Fix all current Experiments to match changes
+CLOSED: [2016-12-18 Sun 21:55]
+:LOGBOOK:
+- State "CANCELLED"  from "TODO"       [2016-12-18 Sun 21:55] \\
+  Experiments removed from upstream, so this is obsolete now.
+  
+  Probably needs discussing with team.
+:END:
+*** CANCELLED Perhaps call 'Experiments' 'Examples'?
+CLOSED: [2016-12-18 Sun 21:55]
+:LOGBOOK:
+- State "CANCELLED"  from "TODO"       [2016-12-18 Sun 21:55] \\
+  Unnecessary because of rethink
+:END:
 ** TODO Get tests working again
 ** TODO Integrate Nas' documentation work
 *** TODO Describe backend work in the docs
