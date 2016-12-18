@@ -47,9 +47,7 @@ struct Optimiser_Options {
 class Optimiser{
 public:
 	// Constructor/Destructor
-	Optimiser();
 	Optimiser(FourLayerVisionSpikingModel* four_layer_vision_spiking_model_parameter);
-	~Optimiser();
 
 	FourLayerVisionSpikingModel * four_layer_vision_spiking_model = nullptr;
 
