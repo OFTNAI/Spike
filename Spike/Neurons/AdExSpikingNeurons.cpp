@@ -37,4 +37,4 @@ int AdExSpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
 //   backend()->update_membrane_potentials(timestep, current_time_in_seconds);
 // }
 
-// MAKE_INIT_BACKEND(AdExSpikingNeurons); // Commented out because we just use SpikingNeurons::init_backend
+MAKE_INIT_BACKEND(AdExSpikingNeurons);

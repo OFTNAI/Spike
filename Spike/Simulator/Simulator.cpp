@@ -69,11 +69,13 @@ Simulator::Simulator(SpikingModel * spiking_model_param, Simulator_Options * sim
 		network_state_archive_recording_electrodes = nullptr;
 	}
 
-        spike_analyser = new SpikeAnalyser
-          (spiking_model->spiking_neurons,
-           spiking_model->input_spiking_neurons,
-           count_neuron_spikes_recording_electrodes);
-        spike_analyser->init_backend(spiking_model->spiking_neurons->backend()->context);
+        if (count_neuron_spikes_recording_electrodes) {
+          spike_analyser = new SpikeAnalyser
+            (spiking_model->spiking_neurons,
+             spiking_model->input_spiking_neurons,
+             count_neuron_spikes_recording_electrodes);
+          spike_analyser->init_backend(spiking_model->spiking_neurons->backend()->context);
+        }
 
         #ifndef SILENCE_SIMULATOR_SETUP
 	timer->stop_timer_and_log_time_and_message("Recording electrodes setup.\n", true);
@@ -165,12 +167,14 @@ void Simulator::RunSimulation() {
 		
 
 			for (int timestep_index = 0; timestep_index < number_of_timesteps_per_stimulus_per_epoch; timestep_index++){
-				
+
 				spiking_model->perform_per_timestep_model_instructions(current_time_in_seconds, simulator_options->run_simulation_general_options->apply_stdp_to_relevant_synapses);
 
 				perform_per_timestep_recording_electrode_instructions(current_time_in_seconds, timestep_index, number_of_timesteps_per_stimulus_per_epoch);
 
 				current_time_in_seconds += float(spiking_model->timestep);
+
+                                printf("\r%f", current_time_in_seconds);
 
 			}
 

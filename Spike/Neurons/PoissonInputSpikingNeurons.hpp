@@ -31,6 +31,7 @@ public:
   PoissonInputSpikingNeurons() = default;
   ~PoissonInputSpikingNeurons();
 
+  void init_backend(Context* ctx) override;
   ADD_BACKEND_GETSET(PoissonInputSpikingNeurons, InputSpikingNeurons);
   
   float rate = 0;

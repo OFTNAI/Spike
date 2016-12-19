@@ -32,6 +32,7 @@ public:
   IzhikevichSpikingNeurons();
   ~IzhikevichSpikingNeurons();
 
+  void init_backend(Context* ctx) override;
   ADD_BACKEND_GETSET(IzhikevichSpikingNeurons, SpikingNeurons);
   
   float * param_a = nullptr;

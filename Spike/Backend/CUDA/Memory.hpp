@@ -2,11 +2,11 @@
 
 #include <cstddef>
 
-#include "Spike/Backend/CUDA/ErrorCheckHelpers.hpp"
+#include "Spike/Backend/CUDA/Helpers/ErrorCheck.hpp"
 
 namespace Backend {
-  namespace Dummy {
-    size_t total_memory(Context* ctx = _global_ctx) {
+  namespace CUDA {
+    inline size_t total_memory(Context* ctx = _global_ctx) {
       size_t tmp_free, tmp_total;
       cudaError_t cuda_status = cudaMemGetInfo(&tmp_free, &tmp_total) ;
       if ( cudaSuccess != cuda_status ){
@@ -16,7 +16,7 @@ namespace Backend {
       return tmp_total;
     }
 
-    size_t free_memory(Context* ctx = _global_ctx) {
+    inline size_t free_memory(Context* ctx = _global_ctx) {
       size_t tmp_free, tmp_total;
       cudaError_t cuda_status = cudaMemGetInfo(&tmp_free, &tmp_total) ;
       if ( cudaSuccess != cuda_status ){

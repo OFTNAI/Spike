@@ -50,3 +50,4 @@ void PoissonInputSpikingNeurons::update_membrane_potentials(float timestep, floa
   backend()->update_membrane_potentials(timestep, current_time_in_seconds);
 }
 
+MAKE_INIT_BACKEND(PoissonInputSpikingNeurons);

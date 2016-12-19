@@ -1,3 +1,7 @@
+if (BUILD_SHARED_LIBS)
+  set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+endif()
+
 # Please do not use globbing: list targets explicitly!
 # Listing targets / files makes for much easier debugging
 # and clearer collaboration!
@@ -42,4 +46,3 @@ if (BUILD_WITH_CUDA)
     SpikeCUDASynapses
     )
 endif()
-

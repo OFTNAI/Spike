@@ -6,7 +6,7 @@ namespace Backend {
     void HigginsSTDP::prepare() {
       STDP::prepare();
 
-      allocate_device_pointers();
+      // allocate_device_pointers();
     }
 
     void HigginsSTDP::reset_state() {

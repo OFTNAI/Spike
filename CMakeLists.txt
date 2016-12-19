@@ -27,9 +27,17 @@ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 # User options
 ##############
 
+option(BUILD_SHARED_LIBS
+  "Build shared libSpike (else static)"
+  ON)
+
 option(BUILD_WITH_CUDA
   "Enable CUDA backend"
-  OFF)
+  ON)
+
+option(BUILD_EXAMPLES
+  "Build examples"
+  ON)
 
 option(BUILD_DOXYGEN_DOCS
   "Build the Doxygen-generated API docs"
@@ -64,9 +72,9 @@ include_directories(BEFORE "${PROJECT_SOURCE_DIR}")
 
 add_subdirectory(Spike)
 
-#if(BUILD_EXPERIMENTS)
-   add_subdirectory(Experiments)
-#endif()
+if(BUILD_EXAMPLES)
+  add_subdirectory(Examples)
+endif()
 
 # if(BUILD_TESTING)
 #    INCLUDE(CTest)

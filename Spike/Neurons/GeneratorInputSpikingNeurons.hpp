@@ -25,6 +25,7 @@ class GeneratorInputSpikingNeurons : public InputSpikingNeurons {
 public:
   ~GeneratorInputSpikingNeurons();
 
+  void init_backend(Context* ctx) override;
   ADD_BACKEND_GETSET(GeneratorInputSpikingNeurons, InputSpikingNeurons);
   
   // Variables

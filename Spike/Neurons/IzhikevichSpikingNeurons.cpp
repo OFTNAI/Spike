@@ -30,4 +30,4 @@ int IzhikevichSpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
   return new_group_id;
 }
 
-// MAKE_INIT_BACKEND(IzhikevichSpikingNeurons); // Commented out because we just use SpikingNeurons::init_backend
+MAKE_INIT_BACKEND(IzhikevichSpikingNeurons);

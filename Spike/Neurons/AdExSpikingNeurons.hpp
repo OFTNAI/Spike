@@ -34,6 +34,7 @@ namespace Backend {
 
 class AdExSpikingNeurons : public SpikingNeurons {
 public:
+  void init_backend(Context* ctx) override;
   ADD_BACKEND_GETSET(AdExSpikingNeurons, SpikingNeurons);
   
   float * adaptation_values_w = nullptr;
