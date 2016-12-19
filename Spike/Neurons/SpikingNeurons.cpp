@@ -56,4 +56,8 @@ void SpikingNeurons::check_for_neuron_spikes(float current_time_in_seconds, floa
   backend()->check_for_neuron_spikes(current_time_in_seconds, timestep);
 }
 
+void SpikingNeurons::update_membrane_potentials(float timestep, float current_time_in_seconds) {
+  backend()->update_membrane_potentials(timestep, current_time_in_seconds);
+}
+
 MAKE_STUB_INIT_BACKEND(SpikingNeurons);

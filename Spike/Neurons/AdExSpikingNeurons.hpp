@@ -34,10 +34,6 @@ namespace Backend {
 
 class AdExSpikingNeurons : public SpikingNeurons {
 public:
-  // Constructor/Destructor
-  AdExSpikingNeurons();
-  ~AdExSpikingNeurons();
-
   ADD_BACKEND_GETSET(AdExSpikingNeurons, SpikingNeurons);
   
   float * adaptation_values_w = nullptr;
@@ -51,7 +47,7 @@ public:
   float absolute_refractory_period = 0;
 
   int AddGroup(neuron_parameters_struct * group_params) override;
-  void update_membrane_potentials(float timestep, float current_time_in_seconds) override;
+  // void update_membrane_potentials(float timestep, float current_time_in_seconds) override;
 
 private:
   ::Backend::AdExSpikingNeurons* _backend = nullptr;

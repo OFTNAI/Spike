@@ -53,7 +53,7 @@ public:
   // Functions
   int AddGroup(neuron_parameters_struct * group_params) override;
 
-  virtual void update_membrane_potentials(float timestep, float current_time_in_seconds) = 0;
+  virtual void update_membrane_potentials(float timestep, float current_time_in_seconds);
   virtual void check_for_neuron_spikes(float current_time_in_seconds, float timestep);
 
 private:

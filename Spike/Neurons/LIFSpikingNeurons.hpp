@@ -43,7 +43,7 @@ public:
   float refractory_period_in_seconds;
 
   int AddGroup(neuron_parameters_struct * group_params) override;
-  void update_membrane_potentials(float timestep,float current_time_in_seconds) override;
+  // void update_membrane_potentials(float timestep,float current_time_in_seconds) override;
 
 private:
   ::Backend::LIFSpikingNeurons* _backend = nullptr;

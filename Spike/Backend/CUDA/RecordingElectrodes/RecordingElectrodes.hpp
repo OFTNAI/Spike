@@ -2,6 +2,9 @@
 
 #include "Spike/RecordingElectrodes/RecordingElectrodes.hpp"
 #include "Spike/Backend/CUDA/CUDABackend.hpp"
+
+#include "Spike/Neurons/SpikingNeurons.hpp"
+
 #include <cuda.h>
 #include <vector_types.h>
 #include <curand.h>

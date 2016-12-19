@@ -23,8 +23,6 @@ namespace Backend {
 
 class GeneratorInputSpikingNeurons : public InputSpikingNeurons {
 public:
-  // Constructor/Destructor
-  GeneratorInputSpikingNeurons();
   ~GeneratorInputSpikingNeurons();
 
   ADD_BACKEND_GETSET(GeneratorInputSpikingNeurons, InputSpikingNeurons);

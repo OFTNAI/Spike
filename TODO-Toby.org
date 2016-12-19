@@ -250,6 +250,7 @@ CLOSED: [2016-12-18 Sun 21:55]
 :LOGBOOK:
 - State "PROGRESS"   from "TODO"       [2016-12-18 Sun 21:55]
 :END:
+*** TODO Mark complete merge in git using `ours' strategy
 ** PROGRESS Check that all calls to reset_state are correct.
 :LOGBOOK:
 - State "PROGRESS"   from "TODO"       [2016-12-15 Thu 18:15]
