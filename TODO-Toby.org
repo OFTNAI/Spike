@@ -239,14 +239,20 @@ CLOSED: [2016-12-14 Wed 18:40]
 :LOGBOOK:
 - State "PROGRESS"   from "TODO"       [2016-12-14 Wed 19:50]
 :END:
-*** TODO Integrate changes to tests (simple patch, then fix later)
+*** DONE Integrate changes to tests (simple patch, then fix later)
+CLOSED: [2016-12-20 Tue 21:55]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2016-12-20 Tue 21:55]
+:END:
 *** DONE Integrate new Optimiser code
 CLOSED: [2016-12-18 Sun 21:55]
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2016-12-18 Sun 21:55]
 :END:
-*** PROGRESS Check merge diff
+*** DONE Check merge diff
+CLOSED: [2016-12-20 Tue 22:10]
 :LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2016-12-20 Tue 22:10]
 - State "PROGRESS"   from "TODO"       [2016-12-18 Sun 21:55]
 :END:
 *** TODO Mark complete merge in git using `ours' strategy
