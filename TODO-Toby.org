@@ -235,8 +235,10 @@ CLOSED: [2016-12-14 Wed 18:40]
 - State "DONE"       from "TODO"       [2016-12-15 Thu 14:10] \\
   Answer was "no" (now commented out)
 :END:
-** PROGRESS Merge upstream changes since fork
+** DONE Merge upstream changes since fork
+CLOSED: [2016-12-20 Tue 22:15]
 :LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2016-12-20 Tue 22:15]
 - State "PROGRESS"   from "TODO"       [2016-12-14 Wed 19:50]
 :END:
 *** DONE Integrate changes to tests (simple patch, then fix later)
@@ -255,7 +257,11 @@ CLOSED: [2016-12-20 Tue 22:10]
 - State "DONE"       from "PROGRESS"   [2016-12-20 Tue 22:10]
 - State "PROGRESS"   from "TODO"       [2016-12-18 Sun 21:55]
 :END:
-*** TODO Mark complete merge in git using `ours' strategy
+*** DONE Mark complete merge in git using `ours' strategy
+CLOSED: [2016-12-20 Tue 22:15]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2016-12-20 Tue 22:15]
+:END:
 ** PROGRESS Check that all calls to reset_state are correct.
 :LOGBOOK:
 - State "PROGRESS"   from "TODO"       [2016-12-15 Thu 18:15]
@@ -277,7 +283,10 @@ CLOSED: [2016-12-18 Sun 21:55]
 - State "CANCELLED"  from "TODO"       [2016-12-18 Sun 21:55] \\
   Unnecessary because of rethink
 :END:
-** TODO Fix bugs exposed by TSCSOptimiseFourLayerVisionSpikingModelFiringRates
+** PROGRESS Fix bugs exposed by TSCSOptimiseFourLayerVisionSpikingModelFiringRates
+:LOGBOOK:
+- State "PROGRESS"   from "TODO"       [2016-12-20 Tue 22:15]
+:END:
 *** DONE Segfault on freeing ConductanceSpikingSynapses after 1st epoch
 CLOSED: [2016-12-20 Tue 21:35]
 :LOGBOOK:
@@ -289,6 +298,7 @@ CLOSED: [2016-12-20 Tue 21:35]
 - State "DONE"       from "TODO"       [2016-12-20 Tue 21:35] \\
   Good enough for now!
 :END:
+*** TODO Investigate and fix memory leaks...
 ** TODO Get tests working again
 ** TODO Integrate Nas' documentation work
 *** TODO Describe backend work in the docs
