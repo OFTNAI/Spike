@@ -42,7 +42,14 @@ void SpikingSynapses::AddGroup(int presynaptic_group_id,
 		if ((delay_range_in_timesteps[0] < 1) || (delay_range_in_timesteps[1] < 1)) {
 			printf("%d\n", delay_range_in_timesteps[0]);
 			printf("%d\n", delay_range_in_timesteps[1]);
-			print_message_and_exit("Delay range must be at least one timestep.");
+#ifdef CRAZY_DEBUG
+                        // spiking_synapse_group_params->delay_range[0] = timestep;
+                        // spiking_synapse_group_params->delay_range[1] = timestep;
+			printf("################### Delay range must be at least one timestep\n");
+#else
+
+                        print_message_and_exit("Delay range must be at least one timestep.");
+#endif
 		}
 
 		// Setup Delays

@@ -1,7 +1,7 @@
 #ifndef SpikingModel_H
 #define SpikingModel_H
 
-#define SILENCE_MODEL_SETUP
+// #define SILENCE_MODEL_SETUP
 
 #include <stdio.h>
 #include "../Backend/Context.hpp"

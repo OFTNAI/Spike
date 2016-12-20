@@ -17,7 +17,7 @@ int main (int argc, char *argv[]){
 	TimerWithMessages * experiment_timer = new TimerWithMessages();
 
 	// Simulator Parameters
-	float timestep = 0.5; // 0.00002;
+	float timestep = 0.05; // 0.00002;
 	bool high_fidelity_spike_storage = true;
 
 	float presentation_time_per_stimulus_per_epoch = 2.0;
@@ -26,7 +26,7 @@ int main (int argc, char *argv[]){
 	Simulator_Options * simulator_options = new Simulator_Options();
 
 	simulator_options->run_simulation_general_options->presentation_time_per_stimulus_per_epoch = presentation_time_per_stimulus_per_epoch;
-	simulator_options->run_simulation_general_options->number_of_epochs = 1;
+	simulator_options->run_simulation_general_options->number_of_epochs = 2;
 	simulator_options->run_simulation_general_options->apply_stdp_to_relevant_synapses = false;
 	simulator_options->run_simulation_general_options->stimulus_presentation_order_seed = 1;
 
@@ -39,8 +39,9 @@ int main (int argc, char *argv[]){
         // MODEL
         FourLayerVisionSpikingModel * four_layer_vision_spiking_model = new FourLayerVisionSpikingModel();
 
-        four_layer_vision_spiking_model->inputs_directory = "MatlabGaborFilter/Inputs/";
+        four_layer_vision_spiking_model->inputs_directory = "Inputs_9L9T/";
 
+        /*
         four_layer_vision_spiking_model->SetTimestep(timestep);
 
         four_layer_vision_spiking_model->high_fidelity_spike_storage = high_fidelity_spike_storage;
@@ -48,17 +49,24 @@ int main (int argc, char *argv[]){
         four_layer_vision_spiking_model->INHIBITORY_NEURONS_ON = false;
 
         four_layer_vision_spiking_model->LBL_biological_conductance_scaling_constant_lambda_E2E_FF[0] = 0.01;
+        */
 
-        four_layer_vision_spiking_model->finalise_model();
+        four_layer_vision_spiking_model->setup_full_standard_model_using_optimal_parameters();
+        // four_layer_vision_spiking_model->SetTimestep(timestep);
 
-        // CREATE SIMULATOR
-        Simulator * simulator = new Simulator(four_layer_vision_spiking_model, simulator_options);
+        for (int count = 0; count < 10; ++count) {
+          four_layer_vision_spiking_model->finalise_model();
 
-        // RUN SIMULATION
-        simulator->RunSimulation();
+          // CREATE SIMULATOR
+          Simulator * simulator = new Simulator(four_layer_vision_spiking_model, simulator_options);
+
+          // RUN SIMULATION
+          simulator->RunSimulation();
+
+          delete simulator;
+        }
 
         delete four_layer_vision_spiking_model;
-        delete simulator;
 
 	print_line_of_dashes_with_blank_lines_either_side();
 

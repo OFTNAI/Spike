@@ -1,7 +1,7 @@
 #ifndef ImagePoissonInputSpikingNeurons_H
 #define ImagePoissonInputSpikingNeurons_H
 
-#define SILENCE_IMAGE_POISSON_INPUT_SPIKING_NEURONS_SETUP
+// #define SILENCE_IMAGE_POISSON_INPUT_SPIKING_NEURONS_SETUP
 
 #include "PoissonInputSpikingNeurons.hpp"
 

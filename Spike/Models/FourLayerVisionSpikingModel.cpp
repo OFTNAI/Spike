@@ -43,9 +43,6 @@ void FourLayerVisionSpikingModel::create_parameter_arrays() {
 
 void FourLayerVisionSpikingModel::set_default_parameter_values() {
 
-  /* Don't need these because we can set them using initializer values
-     in the class definition ...
-  
 	// Network Parameters
 	dim_excit_layer = 64;
 	dim_inhib_layer = 32;
@@ -89,7 +86,24 @@ void FourLayerVisionSpikingModel::set_default_parameter_values() {
 	E2E_L_minDelay = 0.0005;
 	E2E_L_maxDelay = 0.01;
 
-  */
+        /*
+        float minDelay = 2*timestep;
+        float maxDelay = 4*timestep;
+        E2E_FF_minDelay = minDelay;
+	E2E_FF_maxDelay = maxDelay;
+
+	E2I_L_minDelay = minDelay;
+	E2I_L_maxDelay = maxDelay;
+
+	I2E_L_minDelay = minDelay;
+	I2E_L_maxDelay = maxDelay;
+
+	E2E_FB_minDelay = minDelay;
+	E2E_FB_maxDelay = maxDelay;
+
+	E2E_L_minDelay = minDelay;
+	E2E_L_maxDelay = maxDelay;
+        */
 
 	for (int layer_index = 0; layer_index  < number_of_non_input_layers; layer_index ++) {
 
@@ -317,6 +331,13 @@ void FourLayerVisionSpikingModel::finalise_model() {
 
 	for (int layer_index = 0; layer_index < number_of_non_input_layers_to_simulate; layer_index++) {
 
+#ifdef CRAZY_DEBUG
+          std::cout << "layer_index " << layer_index << "\n";
+          std::cout << "EXCITATORY_NEURONS[l] = "
+                    << EXCITATORY_NEURONS[layer_index]
+                    << "\n";
+#endif
+
 		if (E2E_FF_SYNAPSES_ON) {
 			if (layer_index == 0) {
 
@@ -408,7 +429,7 @@ void FourLayerVisionSpikingModel::set_LBL_values_for_pointer_from_layer_to_layer
 //Regularly Used Helper
 void FourLayerVisionSpikingModel::setup_full_standard_model_using_optimal_parameters() {
 
-	SetTimestep(0.00002);
+        SetTimestep(0.00002);
 	high_fidelity_spike_storage = true;
 
 	number_of_non_input_layers_to_simulate = 4;

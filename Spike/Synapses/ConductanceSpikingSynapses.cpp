@@ -3,10 +3,34 @@
 
 // ConductanceSpikingSynapses Destructor
 ConductanceSpikingSynapses::~ConductanceSpikingSynapses() {
+
+#ifdef CRAZY_DEBUG
+  std::cout << "@@@@@@@@@@ 0 " << synaptic_conductances_g << " \n";
+#endif
+
   free(synaptic_conductances_g);
+
+#ifdef CRAZY_DEBUG
+  std::cout << "@@@@@@@@@@ 1\n";
+#endif
+
   free(biological_conductance_scaling_constants_lambda);
+
+#ifdef CRAZY_DEBUG
+  std::cout << "@@@@@@@@@@ 2\n";
+#endif
+
   free(reversal_potentials_Vhat);
+
+#ifdef CRAZY_DEBUG
+  std::cout << "@@@@@@@@@@ 3\n";
+#endif
+
   free(decay_terms_tau_g);
+
+#ifdef CRAZY_DEBUG
+  std::cout << "@@@@@@@@@@ 4\n";
+#endif
 }
 
 

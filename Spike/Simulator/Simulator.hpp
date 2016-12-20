@@ -1,7 +1,7 @@
 #ifndef Simulator_H
 #define Simulator_H
 
-#define SILENCE_SIMULATOR_SETUP
+// #define SILENCE_SIMULATOR_SETUP
 
 #include "Spike/RecordingElectrodes/CountNeuronSpikesRecordingElectrodes.hpp"
 #include "Spike/RecordingElectrodes/CollectNeuronSpikesRecordingElectrodes.hpp"

@@ -26,6 +26,13 @@ namespace Backend {
     }
 
     void Synapses::allocate_device_pointers() {
+#ifdef CRAZY_DEBUG
+      // if (frontend()->total_number_of_synapses == 0)
+      //   return;
+      std::cout << "DEBUG:::: " << frontend()->total_number_of_synapses << "\n"
+                << "     :::: " << &presynaptic_neuron_indices << "\n"
+        ;
+#endif
       CudaSafeCall(cudaMalloc((void **)&presynaptic_neuron_indices,
                               sizeof(int)*frontend()->total_number_of_synapses));
       CudaSafeCall(cudaMalloc((void **)&postsynaptic_neuron_indices,
