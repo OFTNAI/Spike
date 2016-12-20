@@ -6,7 +6,7 @@
 
 namespace Backend {
   namespace CUDA {
-    inline size_t total_memory(Context* ctx = _global_ctx) {
+    inline size_t memory_total_bytes(Context* ctx = _global_ctx) {
       size_t tmp_free, tmp_total;
       cudaError_t cuda_status = cudaMemGetInfo(&tmp_free, &tmp_total) ;
       if ( cudaSuccess != cuda_status ){
@@ -16,7 +16,7 @@ namespace Backend {
       return tmp_total;
     }
 
-    inline size_t free_memory(Context* ctx = _global_ctx) {
+    inline size_t memory_free_bytes(Context* ctx = _global_ctx) {
       size_t tmp_free, tmp_total;
       cudaError_t cuda_status = cudaMemGetInfo(&tmp_free, &tmp_total) ;
       if ( cudaSuccess != cuda_status ){

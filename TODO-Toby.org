@@ -272,12 +272,25 @@ CLOSED: [2016-12-18 Sun 21:55]
   Unnecessary because of rethink
 :END:
 ** TODO Fix bugs exposed by TSCSOptimiseFourLayerVisionSpikingModelFiringRates
-*** TODO Segfault on freeing ConductanceSpikingSynapses after 1st epoch
-*** TODO Check [correctness of] reinitialisation of RandomStatesManager at Synapse prepare_backend
+*** DONE Segfault on freeing ConductanceSpikingSynapses after 1st epoch
+CLOSED: [2016-12-20 Tue 21:35]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2016-12-20 Tue 21:35]
+:END:
+*** DONE Check [correctness of] reinitialisation of RandomStatesManager at Synapse prepare_backend
+CLOSED: [2016-12-20 Tue 21:35]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2016-12-20 Tue 21:35] \\
+  Good enough for now!
+:END:
 ** TODO Get tests working again
 ** TODO Integrate Nas' documentation work
 *** TODO Describe backend work in the docs
-** TODO Example repository and build scripts with submodule structure
+** DONE Example repository and build scripts with submodule structure
+CLOSED: [2016-12-20 Tue 21:40]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2016-12-20 Tue 21:40]
+:END:
 * Style / interface design
 ** TODO Unify coding style (discuss this)
 ** PROGRESS Check for unused member pointers
