@@ -7,8 +7,8 @@
 
 inline void print_memory_usage() {
   const Context* ctx = Backend::get_current_context();
-  float total_backend_bytes = Backend::total_memory();
-  float free_backend_bytes = Backend::free_memory();
+  float total_backend_bytes = Backend::memory_total_bytes();
+  float free_backend_bytes = Backend::memory_free_bytes();
   float used_backend_bytes = total_backend_bytes - free_backend_bytes;
 
   printf("Backend memory usage: used = %f, free = %f MB, total = %f MB\n",
