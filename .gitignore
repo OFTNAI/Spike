@@ -1,7 +1,12 @@
 *~
 *.DS_Store
+*.a
 *.o
+*.so
+CMakeFiles
+Makefile
 Build
+cmake_install.cmake
 /Tests/catch.hpp
 /Tests/unittests
 /MatlabGaborFilter/Inputs*/*
