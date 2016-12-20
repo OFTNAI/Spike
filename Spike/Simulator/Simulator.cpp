@@ -91,7 +91,7 @@ Simulator::~Simulator(){
 	delete collect_neuron_spikes_recording_electrodes;
 	delete collect_input_neuron_spikes_recording_electrodes;
 	delete network_state_archive_recording_electrodes;
-        delete spike_analyser;
+    delete spike_analyser;
 
 }
 

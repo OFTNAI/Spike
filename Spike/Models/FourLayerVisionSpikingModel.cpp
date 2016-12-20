@@ -1,6 +1,5 @@
 #include "FourLayerVisionSpikingModel.hpp"
 
-
 // FourLayerVisionSpikingModel Constructor
 FourLayerVisionSpikingModel::FourLayerVisionSpikingModel () { 
         create_parameter_arrays();
@@ -170,26 +169,27 @@ void FourLayerVisionSpikingModel::delete_model_components() {
 	delete conductance_spiking_synapses;
 	delete evans_stdp;
 
-        EXCITATORY_NEURONS.clear();
-        INHIBITORY_NEURONS.clear();
+    EXCITATORY_NEURONS.clear();
+    INHIBITORY_NEURONS.clear();
 }
 
 
 void FourLayerVisionSpikingModel::finalise_model() {
-        delete_model_components();
+    
+    delete_model_components();
         
 	lif_spiking_neurons = new LIFSpikingNeurons();
 	image_poisson_input_spiking_neurons = new ImagePoissonInputSpikingNeurons();
 	conductance_spiking_synapses = new ConductanceSpikingSynapses();
 	evans_stdp = new EvansSTDP();
 
-        spiking_neurons = lif_spiking_neurons;
+    spiking_neurons = lif_spiking_neurons;
 	spiking_synapses = conductance_spiking_synapses;
 	input_spiking_neurons = image_poisson_input_spiking_neurons;
 	stdp_rule = evans_stdp;
 
 
-        /////////// STDP SETUP ///////////
+    /////////// STDP SETUP ///////////
 	evans_stdp_parameters_struct * STDP_PARAMS = new evans_stdp_parameters_struct();
 	STDP_PARAMS->decay_term_tau_C = decay_term_tau_C;
 	STDP_PARAMS->decay_term_tau_D = decay_term_tau_D;
@@ -197,8 +197,8 @@ void FourLayerVisionSpikingModel::finalise_model() {
 	evans_stdp->Set_STDP_Parameters((SpikingSynapses *) conductance_spiking_synapses, (SpikingNeurons *) lif_spiking_neurons, (SpikingNeurons *) image_poisson_input_spiking_neurons, (stdp_parameters_struct *) STDP_PARAMS);
 
 
-        // NOW INITIALIZE BACKEND WITH NEW COMPONENTS:
-        init_backend();
+    // NOW INITIALIZE BACKEND WITH NEW COMPONENTS:
+    init_backend();
 
 	conductance_spiking_synapses->print_synapse_group_details = false;
 
@@ -208,7 +208,7 @@ void FourLayerVisionSpikingModel::finalise_model() {
 	TimerWithMessages * adding_image_poisson_input_spiking_neurons_timer = new TimerWithMessages("Adding Input Neurons...\n");
         #endif
 
-        image_poisson_input_spiking_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", inputs_directory, 100.0f);
+    image_poisson_input_spiking_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", inputs_directory, 100.0f);
 
 	image_poisson_input_spiking_neuron_parameters_struct * image_poisson_input_spiking_group_params = new image_poisson_input_spiking_neuron_parameters_struct();
 	image_poisson_input_spiking_group_params->rate = 30.0f; // ??????
@@ -245,9 +245,7 @@ void FourLayerVisionSpikingModel::finalise_model() {
 	INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS->absolute_refractory_period = absolute_refractory_period;
 
 	
-	for (int layer_index = 0;
-             layer_index < number_of_non_input_layers;
-             layer_index++){
+	for (int layer_index = 0; layer_index < number_of_non_input_layers_to_simulate; layer_index++){
 
 		EXCITATORY_NEURONS.push_back(AddNeuronGroup(EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS));
                 #ifndef SILENCE_MODEL_SETUP
@@ -324,9 +322,6 @@ void FourLayerVisionSpikingModel::finalise_model() {
 	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->connectivity_type = CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE;
 	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->stdp_on = E2E_L_STDP_ON;
 	E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->reversal_potential_Vhat = 0.0;
-
-
-
 	
 
 	for (int layer_index = 0; layer_index < number_of_non_input_layers_to_simulate; layer_index++) {

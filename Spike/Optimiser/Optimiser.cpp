@@ -3,7 +3,7 @@
 #include "../SpikeAnalyser/SpikeAnalyser.hpp"
 #include "../Helpers/TimerWithMessages.hpp"
 #include "../Helpers/TerminalHelpers.hpp"
-#include "../Helpers/MemoryUsage.hpp"
+#include "../Backend/Memory.hpp"
 
 
 
@@ -65,6 +65,8 @@ void Optimiser::RunOptimisation(int start_optimisation_stage_index) {
 
 		while (true) {
 
+			// printf("Backend::CUDA::total_memory(): %lu\n", Backend::CUDA::total_memory());
+
 			iteration_count_for_optimisation_stage++;
 
 			print_line_of_dashes_with_blank_lines_either_side();
@@ -88,7 +90,7 @@ void Optimiser::RunOptimisation(int start_optimisation_stage_index) {
 			simulator->RunSimulation();
 
 			// CALCULATE AVERAGES + OPTIMISATION OUTPUT SCORE
-                        spike_analyser_from_last_optimisation_stage = simulator->spike_analyser;
+            spike_analyser_from_last_optimisation_stage = simulator->spike_analyser;
 			spike_analyser_from_last_optimisation_stage->calculate_various_neuron_spike_totals_and_averages(simulator_options_for_each_optimisation_stage[optimisation_stage]->run_simulation_general_options->presentation_time_per_stimulus_per_epoch);
 
 			float optimisation_output_score = 0.0;
@@ -141,6 +143,8 @@ void Optimiser::RunOptimisation(int start_optimisation_stage_index) {
 
 					
 			delete simulator;
+
+			printf("Backend::CUDA::total_memory(): %lu", Backend::CUDA::total_memory());
 
 		}
 
