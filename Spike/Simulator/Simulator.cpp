@@ -188,9 +188,6 @@ void Simulator::RunSimulation() {
 	
 	perform_end_of_simulation_instructions(simulation_timer);
         printf("\n");
-
-        if (spike_analyser)
-          spike_analyser->calculate_various_neuron_spike_totals_and_averages(simulator_options->run_simulation_general_options->presentation_time_per_stimulus_per_epoch);
 	
 }
 
