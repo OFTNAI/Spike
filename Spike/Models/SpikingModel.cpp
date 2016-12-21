@@ -87,6 +87,7 @@ void SpikingModel::finalise_model() {
   
 
 void SpikingModel::init_backend() {
+
   Backend::init_global_context();
   context = Backend::get_current_context();
 
@@ -97,7 +98,6 @@ void SpikingModel::init_backend() {
   context->params.high_fidelity_spike_storage = high_fidelity_spike_storage;
   context->params.threads_per_block_neurons = 512;
   context->params.threads_per_block_synapses = 512;
-  context->params.maximum_axonal_delay_in_timesteps = spiking_synapses->maximum_axonal_delay_in_timesteps;
 
   // Provides order of magnitude speedup for LIF (All to all atleast). 
   // Because all synapses contribute to current_injection on every iteration, having all threads in a block accessing only 1 or 2 positions in memory causes massive slowdown.
@@ -117,7 +117,9 @@ void SpikingModel::init_backend() {
 
 
 void SpikingModel::prepare_backend() {
+
   spiking_synapses->prepare_backend();
+  context->params.maximum_axonal_delay_in_timesteps = spiking_synapses->maximum_axonal_delay_in_timesteps;
   spiking_neurons->prepare_backend();
   input_spiking_neurons->prepare_backend();
   stdp_rule->prepare_backend();

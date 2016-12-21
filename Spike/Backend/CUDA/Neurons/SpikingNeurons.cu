@@ -30,8 +30,7 @@ namespace Backend {
 
     void SpikingNeurons::prepare() {
       Neurons::prepare();
-      allocate_device_pointers(1, context->params.high_fidelity_spike_storage);
-      // allocate_device_pointers(context->params.maximum_axonal_delay_in_timesteps, context->params.high_fidelity_spike_storage);
+      allocate_device_pointers(context->params.maximum_axonal_delay_in_timesteps, context->params.high_fidelity_spike_storage);
       copy_constants_to_device();
     }
 
@@ -106,8 +105,6 @@ namespace Backend {
 
           // Set current time as last spike time of neuron
           last_spike_time_of_each_neuron[idx] = current_time_in_seconds;
-
-          bitarray_maximum_axonal_delay_in_timesteps = 1;
 
           // Reset membrane potential
           membrane_potentials_v[idx] = resting_potentials[idx];

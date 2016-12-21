@@ -25,7 +25,6 @@ void SpikingNeurons::prepare_backend_early() {
   // Choosing Spike Mechanism
   high_fidelity_spike_flag = backend()->context->params.high_fidelity_spike_storage;
   bitarray_maximum_axonal_delay_in_timesteps = backend()->context->params.maximum_axonal_delay_in_timesteps;
-  bitarray_maximum_axonal_delay_in_timesteps = 1;
 
   if (high_fidelity_spike_flag){
     // Create bit array of correct length
