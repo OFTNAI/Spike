@@ -299,7 +299,14 @@ CLOSED: [2016-12-20 Tue 21:35]
   Good enough for now!
 :END:
 *** TODO Investigate and fix memory leaks...
+*** PROGRESS No spikes !!!
+:LOGBOOK:
+- State "PROGRESS"   from "TODO"       [2016-12-21 Wed 10:25]
+:END:
+** TODO Check cudaMemcpy calls for correctness again ...
+** TODO Check Context params
 ** TODO Get tests working again
+http://stackoverflow.com/questions/34896891/catch-lib-unit-testing-and-ctest-cmake-integration
 ** TODO Integrate Nas' documentation work
 *** TODO Describe backend work in the docs
 ** DONE Example repository and build scripts with submodule structure
