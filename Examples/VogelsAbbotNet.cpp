@@ -280,7 +280,7 @@ int main (int argc, char *argv[]){
 	// Create the simulator options
 	Simulator_Options* simoptions = new Simulator_Options();
 	simoptions->run_simulation_general_options->presentation_time_per_stimulus_per_epoch = 10.0f;
-	// simoptions->recording_electrodes_options->count_neuron_spikes_recording_electrodes_bool = true;
+	simoptions->recording_electrodes_options->count_neuron_spikes_recording_electrodes_bool = true;
 	// simoptions->recording_electrodes_options->count_input_neuron_spikes_recording_electrodes_bool = true;
 	// simoptions->recording_electrodes_options->collect_neuron_spikes_recording_electrodes_bool = true;
 	// simoptions->recording_electrodes_options->collect_input_neuron_spikes_recording_electrodes_bool = true;

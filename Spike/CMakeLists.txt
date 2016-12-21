@@ -26,7 +26,6 @@ add_library(Spike
   $<TARGET_OBJECTS:Models>
   $<TARGET_OBJECTS:Neurons>
   $<TARGET_OBJECTS:Optimiser>
-#  $<TARGET_OBJECTS:Plotting>
   $<TARGET_OBJECTS:RecordingElectrodes>
   $<TARGET_OBJECTS:Simulator>
   $<TARGET_OBJECTS:SpikeAnalyser>
@@ -45,4 +44,8 @@ if (BUILD_WITH_CUDA)
     SpikeCUDASTDP
     SpikeCUDASynapses
     )
+endif()
+
+if (ENABLE_PLOTTING)
+  target_link_libraries(Spike SpikePlotting)
 endif()

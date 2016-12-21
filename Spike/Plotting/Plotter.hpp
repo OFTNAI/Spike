@@ -1,13 +1,11 @@
 #ifndef Plotter_H
 #define Plotter_H
 
-#include <cuda.h>
-#include <curand_kernel.h> // Provides dim3 type. Annoyingly (and strangely) Plotter won't compile without despite curand_kernal not being used specifically.
 #include <string>
 
 #include "mgl2/mgl.h"
 
-#include "../SpikeAnalyser/SpikeAnalyser.hpp"
+#include "Spike/SpikeAnalyser/SpikeAnalyser.hpp"
 
 
 class Plotter{

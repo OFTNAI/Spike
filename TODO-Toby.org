@@ -298,13 +298,26 @@ CLOSED: [2016-12-20 Tue 21:35]
 - State "DONE"       from "TODO"       [2016-12-20 Tue 21:35] \\
   Good enough for now!
 :END:
-*** TODO Investigate and fix memory leaks...
-*** PROGRESS No spikes !!!
+*** PROGRESS Investigate and fix memory leaks...
 :LOGBOOK:
+- State "PROGRESS"   from "TODO"       [2016-12-21 Wed 11:15]
+:END:
+*** DONE No spikes !!!
+CLOSED: [2016-12-21 Wed 11:15]
+:LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2016-12-21 Wed 11:15]
 - State "PROGRESS"   from "TODO"       [2016-12-21 Wed 10:25]
 :END:
-** TODO Check cudaMemcpy calls for correctness again ...
-** TODO Check Context params
+** DONE Check cudaMemcpy calls for correctness again ...
+CLOSED: [2016-12-21 Wed 11:10]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2016-12-21 Wed 11:10]
+:END:
+** PROGRESS Check Context params
+:LOGBOOK:
+- State "PROGRESS"   from "TODO"       [2016-12-21 Wed 11:00]
+:END:
++ maximum_axonal_delay_in_timestep is a bit hacky
 ** TODO Get tests working again
 http://stackoverflow.com/questions/34896891/catch-lib-unit-testing-and-ctest-cmake-integration
 ** TODO Integrate Nas' documentation work
@@ -314,6 +327,11 @@ CLOSED: [2016-12-20 Tue 21:40]
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2016-12-20 Tue 21:40]
 :END:
+** PROGRESS Integrate Plotter
+:LOGBOOK:
+- State "PROGRESS"   from "TODO"       [2016-12-21 Wed 11:20]
+:END:
++ mgl seems to have problems with C++11 ...
 * Style / interface design
 ** TODO Unify coding style (discuss this)
 ** PROGRESS Check for unused member pointers
@@ -323,8 +341,9 @@ CLOSED: [2016-12-20 Tue 21:40]
 ** TODO RNG should be managed globally (ie, static)
 ** TODO Make it easier to choose backend (ie, set up context)
 * Project organisation
-** TODO Move tests to CTest ?
+** PROGRESS Move tests to CTest ?
 :LOGBOOK:
+- State "PROGRESS"   from "TODO"       [2016-12-21 Wed 11:15]
 - State "PROGRESS"   from "TODO"       [2016-12-14 Wed 18:15]
 :END:
 ** TODO Put external dependencies (eg mgl) into git submodules

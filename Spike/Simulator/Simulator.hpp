@@ -2,6 +2,7 @@
 #define Simulator_H
 
 // #define SILENCE_SIMULATOR_SETUP
+// #define VERBOSE_SIMULATION
 
 #include "Spike/RecordingElectrodes/CountNeuronSpikesRecordingElectrodes.hpp"
 #include "Spike/RecordingElectrodes/CollectNeuronSpikesRecordingElectrodes.hpp"

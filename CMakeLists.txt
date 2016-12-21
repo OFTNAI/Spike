@@ -39,6 +39,10 @@ option(BUILD_EXAMPLES
   "Build examples"
   ON)
 
+option(ENABLE_PLOTTING
+  "Enable Plotting module -- requires mgl2"
+  OFF)
+
 option(BUILD_DOXYGEN_DOCS
   "Build the Doxygen-generated API docs"
   OFF)
