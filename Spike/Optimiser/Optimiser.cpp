@@ -61,7 +61,9 @@ void Optimiser::RunOptimisation(int start_optimisation_stage_index) {
 		float optimisation_parameter_max = initial_optimisation_parameter_max_for_each_optimisation_stage[optimisation_stage];
 		float optimisation_ideal_output_score = ideal_output_scores_for_each_optimisation_stage[optimisation_stage];
 
-		int iteration_count_for_optimisation_stage = 0;
+		int iteration_count_for_optimisation_stage = -1;
+
+		bool test_last_spikes_match = true;
 
 		while (true) {
 
@@ -75,6 +77,7 @@ void Optimiser::RunOptimisation(int start_optimisation_stage_index) {
 		
 			float test_optimisation_parameter_value = (optimisation_parameter_max + optimisation_parameter_min) / 2.0;
 			*model_pointers_to_be_optimised_for_each_optimisation_stage[optimisation_stage] = test_optimisation_parameter_value;
+			if (test_last_spikes_match) *model_pointers_to_be_optimised_for_each_optimisation_stage[optimisation_stage] = 0.1;
 
 			printf("OPTIMISATION ITERATION BEGINNING... \nOptimisation Stage: %d\nIteration Count for Optimisation Stage: %d\nNew Test Optimisaton Parameter: %f\n", optimisation_stage, iteration_count_for_optimisation_stage, test_optimisation_parameter_value);
 
@@ -83,6 +86,10 @@ void Optimiser::RunOptimisation(int start_optimisation_stage_index) {
 			// FINALISE MODEL + COPY TO DEVICE
 			four_layer_vision_spiking_model->finalise_model();
 
+			
+			simulator_options_for_each_optimisation_stage[optimisation_stage]->run_simulation_general_options->delete_spike_analyser_on_simulator_destruction = !test_last_spikes_match;
+
+
 			// CREATE SIMULATOR
 			Simulator * simulator = new Simulator(four_layer_vision_spiking_model, simulator_options_for_each_optimisation_stage[optimisation_stage]);
 
@@ -90,8 +97,44 @@ void Optimiser::RunOptimisation(int start_optimisation_stage_index) {
 			simulator->RunSimulation();
 
 			// CALCULATE AVERAGES + OPTIMISATION OUTPUT SCORE
-                        spike_analyser_from_last_optimisation_stage = simulator->spike_analyser;
-			spike_analyser_from_last_optimisation_stage->calculate_various_neuron_spike_totals_and_averages(simulator_options_for_each_optimisation_stage[optimisation_stage]->run_simulation_general_options->presentation_time_per_stimulus_per_epoch);
+			SpikeAnalyser *new_spike_analyser = simulator->spike_analyser;
+			new_spike_analyser->calculate_various_neuron_spike_totals_and_averages(simulator_options_for_each_optimisation_stage[optimisation_stage]->run_simulation_general_options->presentation_time_per_stimulus_per_epoch);
+
+			// Temp testing
+			bool test_last_spikes_match = true;
+
+			if (test_last_spikes_match) {
+
+				printf("TEST: Comparte spike totals to last optimisation iteration\n");
+
+				if (iteration_count_for_optimisation_stage > 0) {
+					int total_wrong_count = 0;
+					for (int stimulus_index = 0; stimulus_index < four_layer_vision_spiking_model->input_spiking_neurons->total_number_of_input_stimuli; stimulus_index++) {
+						for (int neuron_index = 0; neuron_index < 4096; neuron_index++) {
+							if (new_spike_analyser->per_stimulus_per_neuron_spike_counts[stimulus_index][neuron_index] != spike_analyser_from_last_optimisation_stage->per_stimulus_per_neuron_spike_counts[stimulus_index][neuron_index]) {
+							// if (spike_analyser_from_last_optimisation_stage->per_stimulus_per_neuron_spike_counts[stimulus_index][neuron_index]) {
+								printf("new_spike_analyser->per_stimulus_per_neuron_spike_counts[%d][%d]: %d\n", stimulus_index, neuron_index, new_spike_analyser->per_stimulus_per_neuron_spike_counts[stimulus_index][neuron_index]);
+								printf("spike_analyser_from_last_optimisation_stage->per_stimulus_per_neuron_spike_counts[%d][%d]: %d\n", stimulus_index, neuron_index, spike_analyser_from_last_optimisation_stage->per_stimulus_per_neuron_spike_counts[stimulus_index][neuron_index]);
+								total_wrong_count++;
+								printf("neuron_index: %d\n", neuron_index);
+								print_message_and_exit("Test failure: Spike totals do not match");
+								// if (2329 == neuron_index) {
+								// 	continue;
+								// } else {
+								// 	print_message_and_exit("something else!!");
+								// }
+							}		
+						}
+					}
+					printf("total_wrong_count: %d\n", total_wrong_count);
+				}
+
+				delete spike_analyser_from_last_optimisation_stage;
+				spike_analyser_from_last_optimisation_stage = new_spike_analyser;
+
+			}
+
+
 
 			float optimisation_output_score = 0.0;
 
