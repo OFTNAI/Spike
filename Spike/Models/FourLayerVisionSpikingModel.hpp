@@ -28,7 +28,7 @@ public:
         bool E2E_FB_STDP_ON = false;
 	
 	int number_of_non_input_layers = 4;
-	int number_of_non_input_layers_to_simulate = 4;
+	int number_of_non_input_layers_to_simulate = 1;
 	int dim_excit_layer = 64;
 	int dim_inhib_layer = 32;
 

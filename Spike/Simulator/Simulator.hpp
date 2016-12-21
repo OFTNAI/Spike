@@ -2,7 +2,7 @@
 #define Simulator_H
 
 // #define SILENCE_SIMULATOR_SETUP
-// #define VERBOSE_SIMULATION
+#define VERBOSE_SIMULATION
 
 #include "Spike/RecordingElectrodes/CountNeuronSpikesRecordingElectrodes.hpp"
 #include "Spike/RecordingElectrodes/CollectNeuronSpikesRecordingElectrodes.hpp"
@@ -46,7 +46,8 @@ struct Simulator_Run_Simulation_General_Options {
 												number_of_epochs(1), 
 												apply_stdp_to_relevant_synapses(false), 
 												stimulus_presentation_order_seed(1),
-												delete_spike_analyser_on_simulator_destruction(true)
+												delete_spike_analyser_on_simulator_destruction(true),
+												specific_epoch_to_pass_to_spike_analyser(0)
 												{}
 
 
@@ -56,6 +57,7 @@ struct Simulator_Run_Simulation_General_Options {
 	int stimulus_presentation_order_seed;
 	bool reset_current_time_between_each_stimulus;
 	bool delete_spike_analyser_on_simulator_destruction;
+	int specific_epoch_to_pass_to_spike_analyser;
 
 };
 
@@ -166,7 +168,7 @@ protected:
 
 	void perform_per_timestep_recording_electrode_instructions(float current_time_in_seconds, int timestep_index, int number_of_timesteps_per_stimulus_per_epoch);
 	void perform_pre_stimulus_presentation_instructions(int stimulus_index);
-	void perform_post_stimulus_presentation_instructions();
+	void perform_post_stimulus_presentation_instructions(int epoch_number);
 	void perform_post_epoch_instructions(int epoch_number, TimerWithMessages * epoch_timer);
 	void perform_end_of_simulation_instructions(TimerWithMessages * simulation_timer);
 };

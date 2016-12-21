@@ -101,7 +101,6 @@ void Optimiser::RunOptimisation(int start_optimisation_stage_index) {
 			new_spike_analyser->calculate_various_neuron_spike_totals_and_averages(simulator_options_for_each_optimisation_stage[optimisation_stage]->run_simulation_general_options->presentation_time_per_stimulus_per_epoch);
 
 			// Temp testing
-			bool test_last_spikes_match = true;
 
 			if (test_last_spikes_match) {
 
@@ -134,8 +133,6 @@ void Optimiser::RunOptimisation(int start_optimisation_stage_index) {
 
 			}
 
-
-
 			float optimisation_output_score = 0.0;
 
 			int index_of_neuron_group_of_interest = index_of_neuron_group_of_interest_for_each_optimisation_stage[optimisation_stage];
@@ -143,24 +140,24 @@ void Optimiser::RunOptimisation(int start_optimisation_stage_index) {
 			switch(score_to_use_for_each_optimisation_stage[optimisation_stage]) {
 
 				case SCORE_TO_USE_average_number_of_spikes_per_neuron_group_per_second:
-					optimisation_output_score = spike_analyser_from_last_optimisation_stage->average_number_of_spikes_per_neuron_group_per_second[index_of_neuron_group_of_interest];
+					optimisation_output_score = new_spike_analyser->average_number_of_spikes_per_neuron_group_per_second[index_of_neuron_group_of_interest];
 					break;
 
 				case SCORE_TO_USE_max_number_of_spikes_per_neuron_group_per_second:
-					optimisation_output_score = spike_analyser_from_last_optimisation_stage->max_number_of_spikes_per_neuron_group_per_second[index_of_neuron_group_of_interest];
+					optimisation_output_score = new_spike_analyser->max_number_of_spikes_per_neuron_group_per_second[index_of_neuron_group_of_interest];
 					break;
 
 				case SCORE_TO_USE_average_number_of_spikes_per_neuron_group_per_second_excluding_silent_neurons:
-					optimisation_output_score = spike_analyser_from_last_optimisation_stage->average_number_of_spikes_per_neuron_group_per_second_excluding_silent_neurons[index_of_neuron_group_of_interest];
+					optimisation_output_score = new_spike_analyser->average_number_of_spikes_per_neuron_group_per_second_excluding_silent_neurons[index_of_neuron_group_of_interest];
 					break;
 
 				case SCORE_TO_USE_running_count_of_non_silent_neurons_per_neuron_group:
-					// optimisation_output_score = spike_analyser_from_last_optimisation_stage->running_count_of_non_silent_neurons_per_neuron_group[index_of_neuron_group_of_interest];
-					optimisation_output_score = (float)(spike_analyser_from_last_optimisation_stage->total_number_of_spikes_per_neuron_group[0])/356.0;
+					// optimisation_output_score = new_spike_analyser->running_count_of_non_silent_neurons_per_neuron_group[index_of_neuron_group_of_interest];
+					optimisation_output_score = (float)(new_spike_analyser->total_number_of_spikes_per_neuron_group[0])/356.0;
 
 			}
 
-			printf("OPTIMISATION ITERATION COMPLETED...\nTest Optimisation Parameter Value: %.16f\nOptimisation Output Score: %f\nOptimisation Ideal Output Score: %f", test_optimisation_parameter_value, optimisation_output_score, optimisation_ideal_output_score);
+			printf("OPTIMISATION ITERATION COMPLETED...\nTest Optimisation Parameter Value: %.16f\nOptimisation Output Score: %f\nOptimisation Ideal Output Score: %f\n", test_optimisation_parameter_value, optimisation_output_score, optimisation_ideal_output_score);
 
 
 			float difference_between_ideal_score_and_output_score = optimisation_ideal_output_score - optimisation_output_score; // Supposing the function we are trying to optimise is monotonic, the sign of this value gives the direction that the optimisation must move in.
@@ -187,7 +184,9 @@ void Optimiser::RunOptimisation(int start_optimisation_stage_index) {
 					
 			delete simulator;
 
-			printf("Backend::CUDA::memory_total_bytes(): %lu", Backend::CUDA::memory_total_bytes());
+			print_line_of_dashes_with_blank_lines_either_side();
+			printf("Backend::CUDA::memory_free_bytes(): %lu", Backend::CUDA::memory_free_bytes());
+			print_line_of_dashes_with_blank_lines_either_side();
 
 		}
 
@@ -218,8 +217,16 @@ void Optimiser::setup_optimisation_stage_specific_model_parameters(int optimisat
 	*synapse_bool_pointers_to_turn_on_for_each_optimisation_stage[optimisation_stage_index] = true;
 	*model_pointers_to_be_optimised_for_each_optimisation_stage[optimisation_stage_index] = final_optimal_parameter_for_each_optimisation_stage[optimisation_stage_index];
 
-	four_layer_vision_spiking_model->INHIBITORY_NEURONS_ON = use_inhibitory_neurons_for_each_optimisation_stage[optimisation_stage_index];
-	four_layer_vision_spiking_model->number_of_non_input_layers_to_simulate = number_of_non_input_layers_to_simulate_for_each_optimisation_stage[optimisation_stage_index];
+	if (use_inhibitory_neurons_for_each_optimisation_stage[optimisation_stage_index]) {
+
+		four_layer_vision_spiking_model->INHIBITORY_NEURONS_ON = use_inhibitory_neurons_for_each_optimisation_stage[optimisation_stage_index];
+
+	}
+	if (number_of_non_input_layers_to_simulate_for_each_optimisation_stage[optimisation_stage_index] > four_layer_vision_spiking_model->number_of_non_input_layers_to_simulate) {
+
+		four_layer_vision_spiking_model->number_of_non_input_layers_to_simulate = number_of_non_input_layers_to_simulate_for_each_optimisation_stage[optimisation_stage_index];
+
+	} 
 
 }
 
