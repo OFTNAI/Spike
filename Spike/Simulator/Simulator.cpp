@@ -174,7 +174,7 @@ void Simulator::RunSimulation() {
 
 				current_time_in_seconds += float(spiking_model->timestep);
 
-                                printf("\r%f\t", current_time_in_seconds);
+                                // printf("\r%f\t", current_time_in_seconds);
 
 			}
 
@@ -187,8 +187,7 @@ void Simulator::RunSimulation() {
 	}
 	
 	perform_end_of_simulation_instructions(simulation_timer);
-        printf("\n");
-	
+
 }
 
 
@@ -350,8 +349,7 @@ void Simulator::perform_post_stimulus_presentation_instructions() {
 
 	if (simulator_options->recording_electrodes_options->count_neuron_spikes_recording_electrodes_bool && spike_analyser) {
 
-          spike_analyser->store_spike_counts_for_stimulus_index
-            (spiking_model->input_spiking_neurons->current_stimulus_index);
+          spike_analyser->store_spike_counts_for_stimulus_index(spiking_model->input_spiking_neurons->current_stimulus_index);
           count_neuron_spikes_recording_electrodes->reset_state();
 
 	}

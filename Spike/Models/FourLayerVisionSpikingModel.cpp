@@ -335,7 +335,6 @@ void FourLayerVisionSpikingModel::finalise_model() {
 
 		if (E2E_FF_SYNAPSES_ON) {
 			if (layer_index == 0) {
-
 				AddSynapseGroupsForNeuronGroupAndEachInputGroup(EXCITATORY_NEURONS[0], G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 
 			} else {
@@ -426,13 +425,13 @@ void FourLayerVisionSpikingModel::setup_full_standard_model_using_optimal_parame
         SetTimestep(0.00002);
 	high_fidelity_spike_storage = true;
 
-	number_of_non_input_layers_to_simulate = 4;
+	number_of_non_input_layers_to_simulate = 1;
 
-	INHIBITORY_NEURONS_ON = true;
+	// INHIBITORY_NEURONS_ON = true;
 	E2E_FF_SYNAPSES_ON = true;
-	E2I_L_SYNAPSES_ON = true;
-	I2E_L_SYNAPSES_ON = true;
-	E2E_L_SYNAPSES_ON = true;
+	// E2I_L_SYNAPSES_ON = true;
+	// I2E_L_SYNAPSES_ON = true;
+	// E2E_L_SYNAPSES_ON = true;
 
 	LBL_biological_conductance_scaling_constant_lambda_E2E_FF[0] = 0.000292968762;
 	LBL_biological_conductance_scaling_constant_lambda_E2E_FF[1] = 0.000030517578;

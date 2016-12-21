@@ -59,9 +59,9 @@ namespace Backend {
     }
 
     void ConductanceSpikingSynapses::copy_constants_and_initial_efficacies_to_device() {
-      CudaSafeCall(cudaMemcpy(biological_conductance_scaling_constants_lambda, biological_conductance_scaling_constants_lambda, sizeof(float)*frontend()->total_number_of_synapses, cudaMemcpyHostToDevice));
-      CudaSafeCall(cudaMemcpy(reversal_potentials_Vhat, reversal_potentials_Vhat, sizeof(float)*frontend()->total_number_of_synapses, cudaMemcpyHostToDevice));
-      CudaSafeCall(cudaMemcpy(decay_terms_tau_g, decay_terms_tau_g, sizeof(float)*frontend()->total_number_of_synapses, cudaMemcpyHostToDevice));
+      CudaSafeCall(cudaMemcpy(biological_conductance_scaling_constants_lambda, frontend()->biological_conductance_scaling_constants_lambda, sizeof(float)*frontend()->total_number_of_synapses, cudaMemcpyHostToDevice));
+      CudaSafeCall(cudaMemcpy(reversal_potentials_Vhat, frontend()->reversal_potentials_Vhat, sizeof(float)*frontend()->total_number_of_synapses, cudaMemcpyHostToDevice));
+      CudaSafeCall(cudaMemcpy(decay_terms_tau_g, frontend()->decay_terms_tau_g, sizeof(float)*frontend()->total_number_of_synapses, cudaMemcpyHostToDevice));
     }
 
     void ConductanceSpikingSynapses::update_synaptic_conductances(float timestep, float current_time_in_seconds) {
@@ -122,13 +122,14 @@ namespace Backend {
 
         float synaptic_conductance_g = d_synaptic_conductances_g[idx];
         float new_conductance = (1.0 - (timestep/d_decay_terms_tau_g[idx])) * synaptic_conductance_g;
-		
+
         if (d_time_of_last_spike_to_reach_synapse[idx] == current_time_in_seconds) {
           float timestep_times_synaptic_efficacy = timestep * d_synaptic_efficacies_or_weights[idx];
           float biological_conductance_scaling_constant_lambda = d_biological_conductance_scaling_constants_lambda[idx];
           float timestep_times_synaptic_efficacy_times_scaling_constant = timestep_times_synaptic_efficacy * biological_conductance_scaling_constant_lambda;
           new_conductance += timestep_times_synaptic_efficacy_times_scaling_constant;
         }
+
 
         if (synaptic_conductance_g != new_conductance) {
           d_synaptic_conductances_g[idx] = new_conductance;

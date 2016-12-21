@@ -156,6 +156,9 @@ namespace Backend {
         bool presynaptic_is_input = PRESYNAPTIC_IS_INPUT(presynaptic_neuron_index);
         int delay = d_delays[idx];
 
+        // JI TEMP FIX
+        bitarray_maximum_axonal_delay_in_timesteps = 1;
+
         // Get offset depending upon the current timestep
         int offset_index = ((int)(round(current_time_in_seconds / timestep)) % bitarray_maximum_axonal_delay_in_timesteps) - delay;
         offset_index = (offset_index < 0) ? (offset_index + bitarray_maximum_axonal_delay_in_timesteps) : offset_index;
@@ -164,7 +167,7 @@ namespace Backend {
 
         // Get the correct neuron index
         int neuron_index = CORRECTED_PRESYNAPTIC_ID(presynaptic_neuron_index, presynaptic_is_input);
-		
+
         // Check the spike
         int neuron_id_spike_store_start = neuron_index * bitarray_length;
         int check = 0;
