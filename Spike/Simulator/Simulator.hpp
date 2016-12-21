@@ -44,10 +44,13 @@ struct Simulator_Run_Simulation_General_Options {
 
 	Simulator_Run_Simulation_General_Options(): presentation_time_per_stimulus_per_epoch(0.1), 
 												number_of_epochs(1), 
-												apply_stdp_to_relevant_synapses(false), 
+												apply_stdp_to_relevant_synapses(false),
 												stimulus_presentation_order_seed(1),
+												reset_current_time_between_each_stimulus(false),
+												reset_current_time_between_each_epoch(false),
 												delete_spike_analyser_on_simulator_destruction(true),
-												specific_epoch_to_pass_to_spike_analyser(0)
+												specific_epoch_to_pass_to_spike_analyser(0),
+												reset_model_state_between_epochs(true)
 												{}
 
 
@@ -56,8 +59,10 @@ struct Simulator_Run_Simulation_General_Options {
 	bool apply_stdp_to_relevant_synapses;
 	int stimulus_presentation_order_seed;
 	bool reset_current_time_between_each_stimulus;
+	bool reset_current_time_between_each_epoch;
 	bool delete_spike_analyser_on_simulator_destruction;
 	int specific_epoch_to_pass_to_spike_analyser;
+	bool reset_model_state_between_epochs;
 
 };
 
