@@ -2,24 +2,24 @@
 #include <cassert>
 
 namespace Backend {
-  size_t total_memory(Context* ctx) {
+  size_t memory_total_bytes(Context* ctx) {
     switch (ctx->device) {
     case Backend::SPIKE_DEVICE_DUMMY:
-      return Backend::Dummy::total_memory(ctx);
+      return Backend::Dummy::memory_total_bytes(ctx);
     case Backend::SPIKE_DEVICE_CUDA:
-      return Backend::CUDA::total_memory(ctx);
+      return Backend::CUDA::memory_total_bytes(ctx);
     default:
       assert("Unsupported backend" && false);
     };
     return -1;
   }
 
-  size_t free_memory(Context* ctx) {
+  size_t memory_free_bytes(Context* ctx) {
     switch (ctx->device) {
     case Backend::SPIKE_DEVICE_DUMMY:
-      return Backend::Dummy::free_memory(ctx);
+      return Backend::Dummy::memory_free_bytes(ctx);
     case Backend::SPIKE_DEVICE_CUDA:
-      return Backend::CUDA::free_memory(ctx);
+      return Backend::CUDA::memory_free_bytes(ctx);
     default:
       assert("Unsupported backend" && false);
     };

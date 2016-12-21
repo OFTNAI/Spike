@@ -235,21 +235,33 @@ CLOSED: [2016-12-14 Wed 18:40]
 - State "DONE"       from "TODO"       [2016-12-15 Thu 14:10] \\
   Answer was "no" (now commented out)
 :END:
-** PROGRESS Merge upstream changes since fork
+** DONE Merge upstream changes since fork
+CLOSED: [2016-12-20 Tue 22:15]
 :LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2016-12-20 Tue 22:15]
 - State "PROGRESS"   from "TODO"       [2016-12-14 Wed 19:50]
 :END:
-*** TODO Integrate changes to tests (simple patch, then fix later)
+*** DONE Integrate changes to tests (simple patch, then fix later)
+CLOSED: [2016-12-20 Tue 21:55]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2016-12-20 Tue 21:55]
+:END:
 *** DONE Integrate new Optimiser code
 CLOSED: [2016-12-18 Sun 21:55]
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2016-12-18 Sun 21:55]
 :END:
-*** PROGRESS Check merge diff
+*** DONE Check merge diff
+CLOSED: [2016-12-20 Tue 22:10]
 :LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2016-12-20 Tue 22:10]
 - State "PROGRESS"   from "TODO"       [2016-12-18 Sun 21:55]
 :END:
-*** TODO Mark complete merge in git using `ours' strategy
+*** DONE Mark complete merge in git using `ours' strategy
+CLOSED: [2016-12-20 Tue 22:15]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2016-12-20 Tue 22:15]
+:END:
 ** PROGRESS Check that all calls to reset_state are correct.
 :LOGBOOK:
 - State "PROGRESS"   from "TODO"       [2016-12-15 Thu 18:15]
@@ -271,13 +283,30 @@ CLOSED: [2016-12-18 Sun 21:55]
 - State "CANCELLED"  from "TODO"       [2016-12-18 Sun 21:55] \\
   Unnecessary because of rethink
 :END:
-** TODO Fix bugs exposed by TSCSOptimiseFourLayerVisionSpikingModelFiringRates
-*** TODO Segfault on freeing ConductanceSpikingSynapses after 1st epoch
-*** TODO Check [correctness of] reinitialisation of RandomStatesManager at Synapse prepare_backend
+** PROGRESS Fix bugs exposed by TSCSOptimiseFourLayerVisionSpikingModelFiringRates
+:LOGBOOK:
+- State "PROGRESS"   from "TODO"       [2016-12-20 Tue 22:15]
+:END:
+*** DONE Segfault on freeing ConductanceSpikingSynapses after 1st epoch
+CLOSED: [2016-12-20 Tue 21:35]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2016-12-20 Tue 21:35]
+:END:
+*** DONE Check [correctness of] reinitialisation of RandomStatesManager at Synapse prepare_backend
+CLOSED: [2016-12-20 Tue 21:35]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2016-12-20 Tue 21:35] \\
+  Good enough for now!
+:END:
+*** TODO Investigate and fix memory leaks...
 ** TODO Get tests working again
 ** TODO Integrate Nas' documentation work
 *** TODO Describe backend work in the docs
-** TODO Example repository and build scripts with submodule structure
+** DONE Example repository and build scripts with submodule structure
+CLOSED: [2016-12-20 Tue 21:40]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2016-12-20 Tue 21:40]
+:END:
 * Style / interface design
 ** TODO Unify coding style (discuss this)
 ** PROGRESS Check for unused member pointers

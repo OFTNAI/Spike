@@ -10,7 +10,7 @@
 #endif
 
 namespace Backend {
-  size_t total_memory(Context* ctx = _global_ctx);
+  size_t memory_total_bytes(Context* ctx = _global_ctx);
 
-  size_t free_memory(Context* ctx = _global_ctx);
+  size_t memory_free_bytes(Context* ctx = _global_ctx);
 }

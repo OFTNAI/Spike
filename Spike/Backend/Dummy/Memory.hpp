@@ -4,11 +4,11 @@
 
 namespace Backend {
   namespace Dummy {
-    inline size_t total_memory(Context* ctx = _global_ctx) {
-      return -1;
+    inline size_t memory_total_bytes(Context* ctx = _global_ctx) {
+      return 0;
     }
 
-    inline size_t free_memory(Context* ctx = _global_ctx) {
+    inline size_t memory_free_bytes(Context* ctx = _global_ctx) {
       return 0;
     }
   }
