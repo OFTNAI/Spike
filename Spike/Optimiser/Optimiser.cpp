@@ -53,7 +53,7 @@ void Optimiser::AddOptimisationStage(Optimiser_Options * optimisation_stage_opti
 }
 
 
-void Optimiser::RunOptimisation(int start_optimisation_stage_index) {
+void Optimiser::RunOptimisation(int start_optimisation_stage_index, bool test_last_spikes_match) {
 
 	for (int optimisation_stage = start_optimisation_stage_index; optimisation_stage < number_of_optimisation_stages; optimisation_stage++) {
 
@@ -61,9 +61,7 @@ void Optimiser::RunOptimisation(int start_optimisation_stage_index) {
 		float optimisation_parameter_max = initial_optimisation_parameter_max_for_each_optimisation_stage[optimisation_stage];
 		float optimisation_ideal_output_score = ideal_output_scores_for_each_optimisation_stage[optimisation_stage];
 
-		int iteration_count_for_optimisation_stage = -1;
-
-		bool test_last_spikes_match = true;
+		int iteration_count_for_optimisation_stage = -1;;
 
 		while (true) {
 

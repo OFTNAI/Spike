@@ -2,7 +2,7 @@
 #define Simulator_H
 
 // #define SILENCE_SIMULATOR_SETUP
-#define VERBOSE_SIMULATION
+// #define VERBOSE_SIMULATION
 
 #include "Spike/RecordingElectrodes/CountNeuronSpikesRecordingElectrodes.hpp"
 #include "Spike/RecordingElectrodes/CollectNeuronSpikesRecordingElectrodes.hpp"
@@ -171,7 +171,7 @@ public:
 protected: 
 	int* setup_stimuli_presentation_order();
 
-	void perform_per_timestep_recording_electrode_instructions(float current_time_in_seconds, int timestep_index, int number_of_timesteps_per_stimulus_per_epoch);
+	void perform_per_timestep_recording_electrode_instructions(float current_time_in_seconds, int timestep_index, int number_of_timesteps_per_stimulus_per_epoch, int epoch_number);
 	void perform_pre_stimulus_presentation_instructions(int stimulus_index);
 	void perform_post_stimulus_presentation_instructions(int epoch_number);
 	void perform_post_epoch_instructions(int epoch_number, TimerWithMessages * epoch_timer);

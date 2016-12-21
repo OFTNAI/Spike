@@ -168,7 +168,7 @@ void Simulator::RunSimulation() {
 			for (int timestep_index = 0; timestep_index < number_of_timesteps_per_stimulus_per_epoch; timestep_index++){
 				spiking_model->perform_per_timestep_model_instructions(current_time_in_seconds, simulator_options->run_simulation_general_options->apply_stdp_to_relevant_synapses);
 
-				perform_per_timestep_recording_electrode_instructions(current_time_in_seconds, timestep_index, number_of_timesteps_per_stimulus_per_epoch);
+				perform_per_timestep_recording_electrode_instructions(current_time_in_seconds, timestep_index, number_of_timesteps_per_stimulus_per_epoch, epoch_number);
 
 				current_time_in_seconds += float(spiking_model->timestep);
 
@@ -268,7 +268,7 @@ int* Simulator::setup_stimuli_presentation_order() {
 
 
 
-void Simulator::perform_per_timestep_recording_electrode_instructions(float current_time_in_seconds, int timestep_index, int number_of_timesteps_per_stimulus_per_epoch) {
+void Simulator::perform_per_timestep_recording_electrode_instructions(float current_time_in_seconds, int timestep_index, int number_of_timesteps_per_stimulus_per_epoch, int epoch_number) {
 
 	// Do various recording electrode operations
 
@@ -286,31 +286,33 @@ void Simulator::perform_per_timestep_recording_electrode_instructions(float curr
 
 	// JI PSEUDO CODE FOR COLLECTING EVENTS END
 
+	if (epoch_number == simulator_options->run_simulation_general_options->specific_epoch_to_pass_to_spike_analyser) {
 
-
-	if (simulator_options->recording_electrodes_options->count_neuron_spikes_recording_electrodes_bool) {
-	
-		count_neuron_spikes_recording_electrodes->add_spikes_to_per_neuron_spike_count(current_time_in_seconds);
-	
-	}
-
-	if (simulator_options->recording_electrodes_options->count_input_neuron_spikes_recording_electrodes_bool) {
-	
-		count_input_neuron_spikes_recording_electrodes->add_spikes_to_per_neuron_spike_count(current_time_in_seconds);
-	
-	}
-
-	if (simulator_options->recording_electrodes_options->collect_neuron_spikes_recording_electrodes_bool){
-
-		collect_neuron_spikes_recording_electrodes->collect_spikes_for_timestep(current_time_in_seconds);
-		collect_neuron_spikes_recording_electrodes->copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(current_time_in_seconds, timestep_index, number_of_timesteps_per_stimulus_per_epoch );
-	
-	}
-
-	if (simulator_options->recording_electrodes_options->collect_input_neuron_spikes_recording_electrodes_bool) {
+		if (simulator_options->recording_electrodes_options->count_neuron_spikes_recording_electrodes_bool) {
 		
-		collect_input_neuron_spikes_recording_electrodes->collect_spikes_for_timestep(current_time_in_seconds);
-		collect_input_neuron_spikes_recording_electrodes->copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(current_time_in_seconds, timestep_index, number_of_timesteps_per_stimulus_per_epoch );
+			count_neuron_spikes_recording_electrodes->add_spikes_to_per_neuron_spike_count(current_time_in_seconds);
+		
+		}
+
+		if (simulator_options->recording_electrodes_options->count_input_neuron_spikes_recording_electrodes_bool) {
+		
+			count_input_neuron_spikes_recording_electrodes->add_spikes_to_per_neuron_spike_count(current_time_in_seconds);
+		
+		}
+
+		if (simulator_options->recording_electrodes_options->collect_neuron_spikes_recording_electrodes_bool){
+
+			collect_neuron_spikes_recording_electrodes->collect_spikes_for_timestep(current_time_in_seconds);
+			collect_neuron_spikes_recording_electrodes->copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(current_time_in_seconds, timestep_index, number_of_timesteps_per_stimulus_per_epoch );
+		
+		}
+
+		if (simulator_options->recording_electrodes_options->collect_input_neuron_spikes_recording_electrodes_bool) {
+			
+			collect_input_neuron_spikes_recording_electrodes->collect_spikes_for_timestep(current_time_in_seconds);
+			collect_input_neuron_spikes_recording_electrodes->copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(current_time_in_seconds, timestep_index, number_of_timesteps_per_stimulus_per_epoch );
+
+		}
 
 	}
 
@@ -354,8 +356,8 @@ void Simulator::perform_pre_stimulus_presentation_instructions(int stimulus_inde
 
 void Simulator::perform_post_stimulus_presentation_instructions(int epoch_number) {
 
-	// if (simulator_options->recording_electrodes_options->count_neuron_spikes_recording_electrodes_bool && spike_analyser && simulator_options->run_simulation_general_options->specific_epoch_to_pass_to_spike_analyser == epoch_number) {
-		if (simulator_options->recording_electrodes_options->count_neuron_spikes_recording_electrodes_bool && spike_analyser) {
+	if (simulator_options->recording_electrodes_options->count_neuron_spikes_recording_electrodes_bool && spike_analyser && simulator_options->run_simulation_general_options->specific_epoch_to_pass_to_spike_analyser == epoch_number) {
+		// if (simulator_options->recording_electrodes_options->count_neuron_spikes_recording_electrodes_bool && spike_analyser) {
 
           spike_analyser->store_spike_counts_for_stimulus_index(spiking_model->input_spiking_neurons->current_stimulus_index);
           count_neuron_spikes_recording_electrodes->reset_state();
