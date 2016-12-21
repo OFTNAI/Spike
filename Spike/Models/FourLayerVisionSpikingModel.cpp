@@ -441,5 +441,4 @@ void FourLayerVisionSpikingModel::setup_full_standard_model_using_optimal_parame
 	set_LBL_values_for_pointer_from_layer_to_layer(0.050000000745, LBL_biological_conductance_scaling_constant_lambda_I2E_L, 0, 3);
 	set_LBL_values_for_pointer_from_layer_to_layer(0.000292968762, LBL_biological_conductance_scaling_constant_lambda_E2E_L, 0, 3);
  
-	finalise_model();
-}
+ }

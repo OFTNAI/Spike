@@ -144,7 +144,7 @@ void Optimiser::RunOptimisation(int start_optimisation_stage_index) {
 					
 			delete simulator;
 
-			printf("Backend::CUDA::total_memory(): %lu", Backend::CUDA::total_memory());
+			printf("Backend::CUDA::memory_total_bytes(): %lu", Backend::CUDA::memory_total_bytes());
 
 		}
 
