@@ -59,9 +59,9 @@ namespace Backend {
     }
 
     void ConductanceSpikingSynapses::copy_constants_and_initial_efficacies_to_device() {
-      CudaSafeCall(cudaMemcpy(biological_conductance_scaling_constants_lambda, biological_conductance_scaling_constants_lambda, sizeof(float)*frontend()->total_number_of_synapses, cudaMemcpyHostToDevice));
-      CudaSafeCall(cudaMemcpy(reversal_potentials_Vhat, reversal_potentials_Vhat, sizeof(float)*frontend()->total_number_of_synapses, cudaMemcpyHostToDevice));
-      CudaSafeCall(cudaMemcpy(decay_terms_tau_g, decay_terms_tau_g, sizeof(float)*frontend()->total_number_of_synapses, cudaMemcpyHostToDevice));
+      CudaSafeCall(cudaMemcpy(biological_conductance_scaling_constants_lambda, frontend()->biological_conductance_scaling_constants_lambda, sizeof(float)*frontend()->total_number_of_synapses, cudaMemcpyHostToDevice));
+      CudaSafeCall(cudaMemcpy(reversal_potentials_Vhat, frontend()->reversal_potentials_Vhat, sizeof(float)*frontend()->total_number_of_synapses, cudaMemcpyHostToDevice));
+      CudaSafeCall(cudaMemcpy(decay_terms_tau_g, frontend()->decay_terms_tau_g, sizeof(float)*frontend()->total_number_of_synapses, cudaMemcpyHostToDevice));
     }
 
     void ConductanceSpikingSynapses::update_synaptic_conductances(float timestep, float current_time_in_seconds) {

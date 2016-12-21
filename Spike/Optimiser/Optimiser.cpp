@@ -3,7 +3,7 @@
 #include "../SpikeAnalyser/SpikeAnalyser.hpp"
 #include "../Helpers/TimerWithMessages.hpp"
 #include "../Helpers/TerminalHelpers.hpp"
-#include "../Helpers/MemoryUsage.hpp"
+#include "../Backend/Memory.hpp"
 
 
 
@@ -64,6 +64,8 @@ void Optimiser::RunOptimisation(int start_optimisation_stage_index) {
 		int iteration_count_for_optimisation_stage = 0;
 
 		while (true) {
+
+			// printf("Backend::CUDA::total_memory(): %lu\n", Backend::CUDA::total_memory());
 
 			iteration_count_for_optimisation_stage++;
 
@@ -141,6 +143,8 @@ void Optimiser::RunOptimisation(int start_optimisation_stage_index) {
 
 					
 			delete simulator;
+
+			printf("Backend::CUDA::memory_total_bytes(): %lu", Backend::CUDA::memory_total_bytes());
 
 		}
 
