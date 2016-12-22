@@ -20,7 +20,7 @@ namespace Backend {
                               sizeof(int)*frontend()->total_number_of_synapses));
 
       // Set last spike times to -1000 so that the times do not affect current simulation.
-      float last_spike_to_reach_synapse[frontend()->total_number_of_synapses];
+      float *last_spike_to_reach_synapse = (float*)malloc(frontend()->total_number_of_synapses*sizeof(float));
       for (int i=0; i < frontend()->total_number_of_synapses; i++)
         last_spike_to_reach_synapse[i] = -1000.0f;
 

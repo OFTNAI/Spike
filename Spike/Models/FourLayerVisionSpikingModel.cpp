@@ -148,10 +148,10 @@ void FourLayerVisionSpikingModel::set_default_parameter_values() {
 
 		// DECAY TERM TAU G
 		LBL_decay_term_tau_g_E2E_FF[layer_index] = 0.15;
-		LBL_decay_term_tau_g_E2I_L[layer_index] = 0.002;
-		LBL_decay_term_tau_g_I2E_L[layer_index] = 0.025; //In Ben's model, 0.005 v 0.025 and latter produced better result
-		LBL_decay_term_tau_g_E2E_L[layer_index] = 0.15;
-		LBL_decay_term_tau_g_E2E_FB[layer_index] = 0.15;
+		LBL_decay_term_tau_g_E2I_L[layer_index] = 0.005;
+		LBL_decay_term_tau_g_I2E_L[layer_index] = 0.005; //In Ben's model, 0.005 v 0.025 and latter produced better result
+		LBL_decay_term_tau_g_E2E_L[layer_index] = 0.005;
+		LBL_decay_term_tau_g_E2E_FB[layer_index] = 0.005;
 
 	}
 

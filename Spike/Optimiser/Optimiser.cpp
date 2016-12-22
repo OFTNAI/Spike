@@ -188,6 +188,10 @@ void Optimiser::RunOptimisation(int start_optimisation_stage_index, bool test_la
 
 		}
 
+		print_line_of_dashes_with_blank_lines_either_side();
+		printf("Backend::CUDA::memory_free_bytes(): %lu", Backend::CUDA::memory_free_bytes());
+		print_line_of_dashes_with_blank_lines_either_side();
+
 		final_iteration_count_for_each_optimisation_stage[optimisation_stage] = iteration_count_for_optimisation_stage; 
 
 		print_line_of_dashes_with_blank_lines_either_side();
@@ -229,6 +233,24 @@ void Optimiser::setup_optimisation_stage_specific_model_parameters(int optimisat
 }
 
 
+void Optimiser::write_final_optimisation_parameters_to_file(string full_output_directory) {
+
+	for (int optimisation_stage = 0; optimisation_stage < number_of_optimisation_stages; optimisation_stage++) {
+
+		string file_IDs = full_output_directory + to_string(optimisation_stage);
+
+		ofstream spikeidfile, spiketimesfile;
+		spikeidfile.open((file_IDs + ".txt"), ios::out | ios::binary);
+		// spiketimesfile.open((file_Times + ".txt"), ios::out | ios::binary);
+
+		spikeidfile << to_string(final_optimal_parameter_for_each_optimisation_stage[optimisation_stage]) << endl;
+
+		spikeidfile.close();
+
+
+	}
+
+}
 
 // void Optimiser::set_final_optimised_parameters_network() {
 

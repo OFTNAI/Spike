@@ -5,7 +5,13 @@
 #include "../Models/FourLayerVisionSpikingModel.hpp"
 
 #include <stdio.h>
-#include <math.h>  
+#include <math.h> 
+
+#include <string>
+#include <stdlib.h>
+#include <iostream>
+#include <fstream>
+using namespace std;
 
 
 enum SCORE_TO_USE {
@@ -22,8 +28,8 @@ struct Optimiser_Options {
 						use_inhibitory_neurons(false),
 						number_of_non_input_layers_to_simulate(1),
 						index_of_neuron_group_of_interest(0),
-						initial_optimisation_parameter_min(1.0f*pow(10, -12)),
-						initial_optimisation_parameter_max(1.0*pow(10, 0)),
+						initial_optimisation_parameter_min(1.0f*pow(10, -10)),
+						initial_optimisation_parameter_max(1.0*pow(10, -2)),
 						ideal_output_score(100.0),
 						optimisation_minimum_error(1.0),
 						positive_effect_of_postive_change_in_parameter(true),
@@ -70,6 +76,8 @@ public:
 	int* final_iteration_count_for_each_optimisation_stage = nullptr;
 
 	SpikeAnalyser * spike_analyser_from_last_optimisation_stage = nullptr;
+
+	void write_final_optimisation_parameters_to_file(string full_output_directory);
 
 
 	void AddOptimisationStage(Optimiser_Options * optimisation_stage_options, Simulator_Options * simulator_options_parameter);
