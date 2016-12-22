@@ -18,8 +18,8 @@ namespace Backend {
       float * reversal_potentials_Vhat = nullptr;
       float * decay_terms_tau_g = nullptr;
 
-      ~ConductanceSpikingSynapses();
-      MAKE_BACKEND_CONSTRUCTOR(ConductanceSpikingSynapses);
+      ~ConductanceSpikingSynapses() override;
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(ConductanceSpikingSynapses);
       using ::Backend::ConductanceSpikingSynapses::frontend;
       
       void prepare() override;

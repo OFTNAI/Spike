@@ -74,5 +74,5 @@ void Neurons::reset_current_injections() {
   backend()->reset_current_injections();
 }
 
-MAKE_STUB_INIT_BACKEND(Neurons);
+SPIKE_MAKE_STUB_INIT_BACKEND(Neurons);
 

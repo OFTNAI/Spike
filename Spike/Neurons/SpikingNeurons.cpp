@@ -60,4 +60,4 @@ void SpikingNeurons::update_membrane_potentials(float timestep, float current_ti
   backend()->update_membrane_potentials(timestep, current_time_in_seconds);
 }
 
-MAKE_STUB_INIT_BACKEND(SpikingNeurons);
+SPIKE_MAKE_STUB_INIT_BACKEND(SpikingNeurons);

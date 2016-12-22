@@ -8,7 +8,7 @@ namespace Backend {
     class GeneratorInputSpikingNeurons : public virtual ::Backend::Dummy::InputSpikingNeurons,
                                          public virtual ::Backend::GeneratorInputSpikingNeurons {
     public:
-      MAKE_BACKEND_CONSTRUCTOR(GeneratorInputSpikingNeurons);
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(GeneratorInputSpikingNeurons);
 
       void prepare() override {
         InputSpikingNeurons::prepare();

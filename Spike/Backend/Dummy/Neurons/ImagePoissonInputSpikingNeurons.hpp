@@ -8,7 +8,7 @@ namespace Backend {
     class ImagePoissonInputSpikingNeurons : public virtual ::Backend::Dummy::PoissonInputSpikingNeurons,
                                             public virtual ::Backend::ImagePoissonInputSpikingNeurons {
     public:
-      MAKE_BACKEND_CONSTRUCTOR(ImagePoissonInputSpikingNeurons);
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(ImagePoissonInputSpikingNeurons);
 
       void prepare() override {
         PoissonInputSpikingNeurons::prepare();

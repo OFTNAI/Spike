@@ -6,6 +6,8 @@ namespace Backend {
   namespace Dummy {
     class Synapses : public virtual ::Backend::Synapses {
     public:
+      ~Synapses() override = default;
+
       void set_neuron_indices_by_sampling_from_normal_distribution
       (int original_number_of_synapses,
        int total_number_of_new_synapses,

@@ -298,7 +298,7 @@ CLOSED: [2016-12-20 Tue 21:35]
 - State "DONE"       from "TODO"       [2016-12-20 Tue 21:35] \\
   Good enough for now!
 :END:
-*** PROGRESS Investigate and fix memory leaks...
+*** PROGRESS Investigate and fix memory leak...
 :LOGBOOK:
 - State "PROGRESS"   from "TODO"       [2016-12-21 Wed 11:15]
 :END:
@@ -322,6 +322,7 @@ CLOSED: [2016-12-21 Wed 11:10]
 http://stackoverflow.com/questions/34896891/catch-lib-unit-testing-and-ctest-cmake-integration
 ** TODO Integrate Nas' documentation work
 *** TODO Describe backend work in the docs
+**** TODO Make clear that _backend destructors should be marked override
 ** DONE Example repository and build scripts with submodule structure
 CLOSED: [2016-12-20 Tue 21:40]
 :LOGBOOK:
@@ -332,6 +333,11 @@ CLOSED: [2016-12-20 Tue 21:40]
 - State "PROGRESS"   from "TODO"       [2016-12-21 Wed 11:20]
 :END:
 + mgl seems to have problems with C++11 ...
+** DONE Write destructors for AdExSpikingNeurons and SpikeAnalyser
+CLOSED: [2016-12-22 Thu 14:25]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2016-12-22 Thu 14:25]
+:END:
 * Style / interface design
 ** TODO Unify coding style (discuss this)
 ** PROGRESS Check for unused member pointers

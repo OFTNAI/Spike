@@ -14,8 +14,8 @@ namespace Backend {
       public virtual ::Backend::CUDA::RecordingElectrodes,
       public virtual ::Backend::CollectNeuronSpikesRecordingElectrodes {
     public:
-      ~CollectNeuronSpikesRecordingElectrodes();
-      MAKE_BACKEND_CONSTRUCTOR(CollectNeuronSpikesRecordingElectrodes);
+      ~CollectNeuronSpikesRecordingElectrodes() override;
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(CollectNeuronSpikesRecordingElectrodes);
       using ::Backend::CollectNeuronSpikesRecordingElectrodes::frontend;
 
       void prepare() override;

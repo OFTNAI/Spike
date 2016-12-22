@@ -8,7 +8,7 @@ namespace Backend {
     class MasquelierSTDP : public virtual ::Backend::Dummy::STDP,
                            public virtual ::Backend::MasquelierSTDP {
     public:
-      MAKE_BACKEND_CONSTRUCTOR(MasquelierSTDP);
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(MasquelierSTDP);
 
       void prepare() override {
         STDP::prepare();

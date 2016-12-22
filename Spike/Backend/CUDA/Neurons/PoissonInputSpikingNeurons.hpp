@@ -15,9 +15,9 @@ namespace Backend {
                                        public virtual ::Backend::PoissonInputSpikingNeurons {
     public:
       PoissonInputSpikingNeurons() = default;
-      ~PoissonInputSpikingNeurons();
+      ~PoissonInputSpikingNeurons() override;
 
-      MAKE_BACKEND_CONSTRUCTOR(PoissonInputSpikingNeurons);
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(PoissonInputSpikingNeurons);
       using ::Backend::PoissonInputSpikingNeurons::frontend;
 
       void prepare() override;

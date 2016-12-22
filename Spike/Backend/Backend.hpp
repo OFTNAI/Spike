@@ -12,6 +12,7 @@ namespace Backend {
 
     void* _frontend = nullptr;
 
+    virtual ~SpikeBackendBase() = default;
     virtual void reset_state() = 0;
     virtual void prepare() = 0;
     virtual void push_data_front() = 0;

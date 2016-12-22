@@ -21,8 +21,8 @@ namespace Backend {
       bool* isindexed_ltd_synapse_spike = nullptr;
       int* index_of_first_synapse_spiked_after_postneuron = nullptr;
 
-      ~MasquelierSTDP();
-      MAKE_BACKEND_CONSTRUCTOR(MasquelierSTDP);
+      ~MasquelierSTDP() override;
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(MasquelierSTDP);
       using ::Backend::MasquelierSTDP::frontend;
 
       void prepare() override;

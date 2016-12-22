@@ -22,4 +22,4 @@ void CountNeuronSpikesRecordingElectrodes::add_spikes_to_per_neuron_spike_count(
   backend()->add_spikes_to_per_neuron_spike_count(current_time_in_seconds);
 }
 
-MAKE_INIT_BACKEND(CountNeuronSpikesRecordingElectrodes);
+SPIKE_MAKE_INIT_BACKEND(CountNeuronSpikesRecordingElectrodes);

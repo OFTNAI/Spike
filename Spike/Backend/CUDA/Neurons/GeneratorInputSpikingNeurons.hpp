@@ -14,9 +14,9 @@ namespace Backend {
     class GeneratorInputSpikingNeurons : public virtual ::Backend::CUDA::InputSpikingNeurons,
                                          public virtual ::Backend::GeneratorInputSpikingNeurons {
     public:
-      ~GeneratorInputSpikingNeurons();
+      ~GeneratorInputSpikingNeurons() override;
 
-      MAKE_BACKEND_CONSTRUCTOR(GeneratorInputSpikingNeurons);
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(GeneratorInputSpikingNeurons);
       using ::Backend::GeneratorInputSpikingNeurons::frontend;
       
       void prepare() override;

@@ -21,8 +21,8 @@ namespace Backend {
       float * adaptation_time_constants_tau_w = nullptr;
       float * adaptation_changes_b = nullptr;
 
-      ~AdExSpikingNeurons();
-      MAKE_BACKEND_CONSTRUCTOR(AdExSpikingNeurons);
+      ~AdExSpikingNeurons() override;
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(AdExSpikingNeurons);
       using ::Backend::AdExSpikingNeurons::frontend;
 
       void prepare() override;

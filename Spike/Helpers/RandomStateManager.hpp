@@ -13,7 +13,7 @@ class RandomStateManager; // forward definition
 namespace Backend {
   class RandomStateManager : public virtual SpikeBackendBase {
   public:
-    ADD_FRONTEND_GETTER(RandomStateManager);
+    SPIKE_ADD_FRONTEND_GETTER(RandomStateManager);
 
     void reset_state() override {
       // Unorthodox: reset_state doesn't usually just mean, 'call prepare()'
@@ -32,12 +32,13 @@ namespace Backend {
 
 class RandomStateManager : public virtual SpikeBase {
 public:
-  ADD_BACKEND_GETSET(RandomStateManager, SpikeBase);
+  ~RandomStateManager() override = default;
+  SPIKE_ADD_BACKEND_GETSET(RandomStateManager, SpikeBase);
   void init_backend(Context* ctx = _global_ctx) override;
   void reset_state() override;
 private:
   static RandomStateManager *inst;
-  ::Backend::RandomStateManager* _backend = nullptr;
+  std::shared_ptr<::Backend::RandomStateManager> _backend;
 };
 
 #endif

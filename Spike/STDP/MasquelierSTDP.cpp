@@ -43,4 +43,4 @@ void MasquelierSTDP::apply_stdp_to_synapse_weights(float current_time_in_seconds
   backend()->apply_stdp_to_synapse_weights(current_time_in_seconds);
 }
 
-MAKE_INIT_BACKEND(MasquelierSTDP);
+SPIKE_MAKE_INIT_BACKEND(MasquelierSTDP);

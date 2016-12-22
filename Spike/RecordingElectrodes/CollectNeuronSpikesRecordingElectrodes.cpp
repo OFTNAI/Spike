@@ -182,4 +182,4 @@ void CollectNeuronSpikesRecordingElectrodes::collect_spikes_for_timestep(float c
   backend()->collect_spikes_for_timestep(current_time_in_seconds);
 }
 
-MAKE_INIT_BACKEND(CollectNeuronSpikesRecordingElectrodes);
+SPIKE_MAKE_INIT_BACKEND(CollectNeuronSpikesRecordingElectrodes);

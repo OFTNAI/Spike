@@ -9,7 +9,7 @@ class CollectNeuronSpikesRecordingElectrodes; // forward definition
 namespace Backend {
   class CollectNeuronSpikesRecordingElectrodes : public virtual RecordingElectrodes {
   public:
-    ADD_FRONTEND_GETTER(CollectNeuronSpikesRecordingElectrodes);
+    SPIKE_ADD_FRONTEND_GETTER(CollectNeuronSpikesRecordingElectrodes);
 
     virtual void copy_spikes_to_front() = 0; // Called by push_data_front
     virtual void copy_spike_counts_to_front() = 0; // Called by push_data_front
@@ -38,8 +38,8 @@ struct Collect_Neuron_Spikes_Optional_Parameters {
 
 class CollectNeuronSpikesRecordingElectrodes : public RecordingElectrodes {
 public:
-  ADD_BACKEND_GETSET(CollectNeuronSpikesRecordingElectrodes,
-                     RecordingElectrodes);
+  SPIKE_ADD_BACKEND_GETSET(CollectNeuronSpikesRecordingElectrodes,
+                           RecordingElectrodes);
   void init_backend(Context* ctx = _global_ctx) override;
 
   // Variables
@@ -54,7 +54,7 @@ public:
 
   // Constructor/Destructor
   CollectNeuronSpikesRecordingElectrodes(SpikingNeurons * neurons_parameter, SpikingSynapses * synapses_parameter, string full_directory_name_for_simulation_data_files_param, const char * prefix_string_param);
-  ~CollectNeuronSpikesRecordingElectrodes();
+  ~CollectNeuronSpikesRecordingElectrodes() override;
 
   void initialise_collect_neuron_spikes_recording_electrodes(Collect_Neuron_Spikes_Optional_Parameters * collect_neuron_spikes_optional_parameters_param);
   void allocate_pointers_for_spike_store();
@@ -68,7 +68,7 @@ public:
   void delete_and_reset_collected_spikes();
 
 private:
-  ::Backend::CollectNeuronSpikesRecordingElectrodes* _backend = nullptr;
+  std::shared_ptr<::Backend::CollectNeuronSpikesRecordingElectrodes> _backend;
 
   // Host Pointers
   int* reset_neuron_ids = nullptr;

@@ -8,7 +8,7 @@ namespace Backend {
     class HigginsSTDP : public virtual ::Backend::Dummy::STDP,
                         public virtual ::Backend::HigginsSTDP {
     public:
-      MAKE_BACKEND_CONSTRUCTOR(HigginsSTDP);
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(HigginsSTDP);
 
       void prepare() override {
         STDP::prepare();

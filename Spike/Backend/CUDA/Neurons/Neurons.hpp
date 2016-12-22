@@ -9,7 +9,7 @@ namespace Backend {
   namespace CUDA {
     class Neurons : public virtual ::Backend::Neurons {
     public:
-      ~Neurons();
+      ~Neurons() override;
 
       void prepare() override;
       void reset_state() override;
@@ -39,7 +39,7 @@ namespace Backend {
       void reset_current_injections() override;
 
     private:
-      ADD_FRONTEND_GETTER(Neurons);
+      SPIKE_ADD_FRONTEND_GETTER(Neurons);
     };
   } // namespace CUDA
 } // namespace Backend

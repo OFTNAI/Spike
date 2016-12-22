@@ -295,5 +295,5 @@ int ImagePoissonInputSpikingNeurons::calculate_gabor_index(int orientationIndex,
 }
 
 
-MAKE_INIT_BACKEND(ImagePoissonInputSpikingNeurons);
+SPIKE_MAKE_INIT_BACKEND(ImagePoissonInputSpikingNeurons);
 

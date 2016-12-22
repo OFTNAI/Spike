@@ -11,7 +11,7 @@ namespace Backend {
   namespace CUDA {
     class Synapses : public virtual ::Backend::Synapses {
     public:
-      ~Synapses();
+      ~Synapses() override;
       using ::Backend::Synapses::frontend;
 
       int* presynaptic_neuron_indices = nullptr;

@@ -19,7 +19,7 @@ namespace Backend {
       int* spikes_travelling_to_synapse = nullptr;
       float* time_of_last_spike_to_reach_synapse = nullptr;
 
-      ~SpikingSynapses();
+      ~SpikingSynapses() override;
       using ::Backend::SpikingSynapses::frontend;
 
       void prepare() override;

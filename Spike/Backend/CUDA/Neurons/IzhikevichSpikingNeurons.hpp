@@ -12,9 +12,9 @@ namespace Backend {
     class IzhikevichSpikingNeurons : public virtual ::Backend::CUDA::SpikingNeurons,
                                      public virtual ::Backend::IzhikevichSpikingNeurons {
     public:
-      ~IzhikevichSpikingNeurons();
+      ~IzhikevichSpikingNeurons() override;
 
-      MAKE_BACKEND_CONSTRUCTOR(IzhikevichSpikingNeurons);
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(IzhikevichSpikingNeurons);
       using ::Backend::IzhikevichSpikingNeurons::frontend;
 
       void prepare() override;

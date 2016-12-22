@@ -27,9 +27,13 @@ class STDP; // forward definition
 namespace Backend {
   class STDP : public virtual SpikeBackendBase {
   public:
-    ADD_FRONTEND_GETTER(STDP);
+    ~STDP() override = default;
+    SPIKE_ADD_FRONTEND_GETTER(STDP);
   };
 }
+
+static_assert(std::has_virtual_destructor<Backend::STDP>::value,
+              "contract violated");
 
 #include "Spike/Backend/Dummy/STDP/STDP.hpp"
 #ifdef SPIKE_WITH_CUDA
@@ -45,7 +49,9 @@ struct stdp_parameters_struct {
 
 class STDP : public virtual SpikeBase {
 public:
-  ADD_BACKEND_GETSET(STDP, SpikeBase);
+  ~STDP() override = default;
+
+  SPIKE_ADD_BACKEND_GETSET(STDP, SpikeBase);
   void reset_state() override;
 
   SpikingSynapses* syns = nullptr;
@@ -58,7 +64,7 @@ public:
   virtual void Run_STDP(float current_time_in_seconds, float timestep) = 0;
 
 private:
-  ::Backend::STDP* _backend = nullptr;
+  std::shared_ptr<::Backend::STDP> _backend;
 };
 
 #endif

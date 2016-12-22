@@ -13,8 +13,8 @@ namespace Backend {
     class HigginsSTDP : public virtual ::Backend::CUDA::STDP,
                         public virtual ::Backend::HigginsSTDP {
     public:
-      // ~HigginsSTDP();
-      MAKE_BACKEND_CONSTRUCTOR(HigginsSTDP);
+      ~HigginsSTDP() override = default;
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(HigginsSTDP);
       using ::Backend::HigginsSTDP::frontend;
 
       void prepare() override;

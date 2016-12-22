@@ -17,7 +17,7 @@ class ConductanceSpikingSynapses; // forward definition
 namespace Backend {
   class ConductanceSpikingSynapses : public virtual SpikingSynapses {
   public:
-    ADD_FRONTEND_GETTER(ConductanceSpikingSynapses);
+    SPIKE_ADD_FRONTEND_GETTER(ConductanceSpikingSynapses);
     virtual void update_synaptic_conductances(float timestep, float current_time_in_seconds) = 0;
   };
 }
@@ -31,9 +31,9 @@ namespace Backend {
 class ConductanceSpikingSynapses : public SpikingSynapses {
 
 public:
-  ~ConductanceSpikingSynapses();
+  ~ConductanceSpikingSynapses() override;
 
-  ADD_BACKEND_GETSET(ConductanceSpikingSynapses, SpikingSynapses);
+  SPIKE_ADD_BACKEND_GETSET(ConductanceSpikingSynapses, SpikingSynapses);
   void init_backend(Context* ctx = _global_ctx) override;
 
   float * synaptic_conductances_g = nullptr;
@@ -56,7 +56,7 @@ public:
   virtual void update_synaptic_conductances(float timestep, float current_time_in_seconds);
 
 private:
-  ::Backend::ConductanceSpikingSynapses* _backend = nullptr;
+  std::shared_ptr<::Backend::ConductanceSpikingSynapses> _backend;
 };
 
 #endif

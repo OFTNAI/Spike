@@ -8,7 +8,7 @@ namespace Backend {
     class LIFSpikingNeurons : public virtual ::Backend::Dummy::SpikingNeurons,
                               public virtual ::Backend::LIFSpikingNeurons {
     public:
-      MAKE_BACKEND_CONSTRUCTOR(LIFSpikingNeurons);
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(LIFSpikingNeurons);
 
       void prepare() override {
         SpikingNeurons::prepare();

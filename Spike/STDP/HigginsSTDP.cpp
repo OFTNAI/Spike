@@ -36,4 +36,4 @@ void HigginsSTDP::apply_ltp_to_synapse_weights(float current_time_in_seconds) {
   backend()->apply_ltp_to_synapse_weights(current_time_in_seconds);
 }
 
-MAKE_INIT_BACKEND(HigginsSTDP);
+SPIKE_MAKE_INIT_BACKEND(HigginsSTDP);

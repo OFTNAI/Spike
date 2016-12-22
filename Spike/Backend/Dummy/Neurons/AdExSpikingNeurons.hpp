@@ -8,7 +8,7 @@ namespace Backend {
     class AdExSpikingNeurons : public virtual ::Backend::Dummy::SpikingNeurons,
                                public virtual ::Backend::AdExSpikingNeurons {
     public:
-      MAKE_BACKEND_CONSTRUCTOR(AdExSpikingNeurons);
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(AdExSpikingNeurons);
 
       void prepare() override {
         SpikingNeurons::prepare();

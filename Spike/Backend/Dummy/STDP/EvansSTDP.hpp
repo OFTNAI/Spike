@@ -8,7 +8,7 @@ namespace Backend {
     class EvansSTDP : public virtual ::Backend::Dummy::STDP,
                       public virtual ::Backend::EvansSTDP {
     public:
-      MAKE_BACKEND_CONSTRUCTOR(EvansSTDP);
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(EvansSTDP);
 
       void prepare() override {
         STDP::prepare();

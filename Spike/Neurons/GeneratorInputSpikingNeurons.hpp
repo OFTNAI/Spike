@@ -12,7 +12,7 @@ class GeneratorInputSpikingNeurons; // forward definition
 namespace Backend {
   class GeneratorInputSpikingNeurons : public virtual InputSpikingNeurons {
   public:
-    ADD_FRONTEND_GETTER(GeneratorInputSpikingNeurons);
+    SPIKE_ADD_FRONTEND_GETTER(GeneratorInputSpikingNeurons);
   };
 } 
 
@@ -23,10 +23,10 @@ namespace Backend {
 
 class GeneratorInputSpikingNeurons : public InputSpikingNeurons {
 public:
-  ~GeneratorInputSpikingNeurons();
+  ~GeneratorInputSpikingNeurons() override;
 
   void init_backend(Context* ctx) override;
-  ADD_BACKEND_GETSET(GeneratorInputSpikingNeurons, InputSpikingNeurons);
+  SPIKE_ADD_BACKEND_GETSET(GeneratorInputSpikingNeurons, InputSpikingNeurons);
   
   // Variables
   int length_of_longest_stimulus;
@@ -41,7 +41,7 @@ public:
   void AddStimulus(int spikenumber, int* ids, float* spiketimes);
 
 private:
-  ::Backend::GeneratorInputSpikingNeurons* _backend = nullptr;
+  std::shared_ptr<::Backend::GeneratorInputSpikingNeurons> _backend;
 };
 
 #endif

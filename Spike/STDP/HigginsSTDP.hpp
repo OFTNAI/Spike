@@ -24,7 +24,7 @@ class HigginsSTDP; // forward definition
 namespace Backend {
   class HigginsSTDP : public virtual STDP {
   public:
-    ADD_FRONTEND_GETTER(HigginsSTDP);
+    SPIKE_ADD_FRONTEND_GETTER(HigginsSTDP);
 
     virtual void apply_ltp_to_synapse_weights(float current_time_in_seconds) = 0;
     virtual void apply_ltd_to_synapse_weights(float current_time_in_seconds) = 0;
@@ -50,8 +50,8 @@ struct higgins_stdp_parameters_struct : stdp_parameters_struct {
 
 class HigginsSTDP : public STDP {
 public:
-  ~HigginsSTDP();
-  ADD_BACKEND_GETSET(HigginsSTDP, STDP);
+  ~HigginsSTDP() override;
+  SPIKE_ADD_BACKEND_GETSET(HigginsSTDP, STDP);
 
   struct higgins_stdp_parameters_struct* stdp_params = nullptr;
 
@@ -67,7 +67,7 @@ public:
   void apply_ltp_to_synapse_weights(float current_time_in_seconds);
 
 private:
-  ::Backend::HigginsSTDP* _backend = nullptr;
+  std::shared_ptr<::Backend::HigginsSTDP> _backend;
 };
 
 #endif

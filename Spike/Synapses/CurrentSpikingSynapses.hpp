@@ -9,7 +9,7 @@ class CurrentSpikingSynapses; // forward definition
 namespace Backend {
   class CurrentSpikingSynapses : public virtual SpikingSynapses {
   public:
-    ADD_FRONTEND_GETTER(CurrentSpikingSynapses);
+    SPIKE_ADD_FRONTEND_GETTER(CurrentSpikingSynapses);
   };
 }
 
@@ -20,7 +20,7 @@ namespace Backend {
 
 class CurrentSpikingSynapses : public SpikingSynapses {
 public:
-  ADD_BACKEND_GETSET(CurrentSpikingSynapses, SpikingSynapses);
+  SPIKE_ADD_BACKEND_GETSET(CurrentSpikingSynapses, SpikingSynapses);
   void init_backend(Context* ctx = _global_ctx) override;
   
   void AddGroup(int presynaptic_group_id, 
@@ -33,7 +33,7 @@ public:
   void calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds, float timestep) override;
 
 private:
-  ::Backend::CurrentSpikingSynapses* _backend = nullptr;
+  std::shared_ptr<::Backend::CurrentSpikingSynapses> _backend;
 };
 
 #endif

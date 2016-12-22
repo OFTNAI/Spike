@@ -105,4 +105,4 @@ void ConductanceSpikingSynapses::update_synaptic_conductances(float timestep, fl
   backend()->update_synaptic_conductances(timestep, current_time_in_seconds);
 }
 
-MAKE_INIT_BACKEND(ConductanceSpikingSynapses);
+SPIKE_MAKE_INIT_BACKEND(ConductanceSpikingSynapses);

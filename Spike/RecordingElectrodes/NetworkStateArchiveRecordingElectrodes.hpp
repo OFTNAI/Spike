@@ -9,7 +9,7 @@ class NetworkStateArchiveRecordingElectrodes; // forward definition
 namespace Backend {
   class NetworkStateArchiveRecordingElectrodes : public virtual RecordingElectrodes {
   public:
-    ADD_FRONTEND_GETTER(NetworkStateArchiveRecordingElectrodes);
+    SPIKE_ADD_FRONTEND_GETTER(NetworkStateArchiveRecordingElectrodes);
   };
 }
 
@@ -30,9 +30,10 @@ struct Network_State_Archive_Optional_Parameters {
 
 class NetworkStateArchiveRecordingElectrodes  : public RecordingElectrodes {
 public:
-  ADD_BACKEND_GETSET(NetworkStateArchiveRecordingElectrodes,
-                     RecordingElectrodes);
+  SPIKE_ADD_BACKEND_GETSET(NetworkStateArchiveRecordingElectrodes,
+                           RecordingElectrodes);
   void init_backend(Context* ctx = _global_ctx) override;
+  ~NetworkStateArchiveRecordingElectrodes() = default;
 
   // Host Pointers
   Network_State_Archive_Optional_Parameters * network_state_archive_optional_parameters = nullptr;
@@ -46,7 +47,7 @@ public:
   void write_network_state_to_file();
 
 private:
-  ::Backend::NetworkStateArchiveRecordingElectrodes* _backend = nullptr;
+  std::shared_ptr<::Backend::NetworkStateArchiveRecordingElectrodes> _backend;
 };
 
 #endif

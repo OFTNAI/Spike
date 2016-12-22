@@ -9,7 +9,7 @@ namespace Backend {
       public virtual ::Backend::Dummy::RecordingElectrodes,
       public virtual ::Backend::CountNeuronSpikesRecordingElectrodes {
     public:
-      MAKE_BACKEND_CONSTRUCTOR(CountNeuronSpikesRecordingElectrodes);
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(CountNeuronSpikesRecordingElectrodes);
 
       void prepare() override {
         RecordingElectrodes::prepare();
