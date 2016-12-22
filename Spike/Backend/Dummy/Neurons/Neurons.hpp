@@ -6,6 +6,8 @@ namespace Backend {
   namespace Dummy {
     class Neurons : public virtual ::Backend::Neurons {
     public:
+      ~Neurons() override = default;
+
       void prepare() override {
       }
 

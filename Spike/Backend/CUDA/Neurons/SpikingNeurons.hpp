@@ -12,8 +12,8 @@ namespace Backend {
     class SpikingNeurons : public virtual ::Backend::CUDA::Neurons,
                            public virtual ::Backend::SpikingNeurons {
     public:
-      ~SpikingNeurons();
-      ADD_FRONTEND_GETTER(SpikingNeurons);
+      ~SpikingNeurons() override;
+      SPIKE_ADD_FRONTEND_GETTER(SpikingNeurons);
 
       void prepare() override;
       void reset_state() override;

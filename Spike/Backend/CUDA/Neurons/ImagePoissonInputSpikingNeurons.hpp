@@ -14,9 +14,9 @@ namespace Backend {
     class ImagePoissonInputSpikingNeurons : public virtual ::Backend::CUDA::PoissonInputSpikingNeurons,
                                             public virtual ::Backend::ImagePoissonInputSpikingNeurons {
     public:
-      ~ImagePoissonInputSpikingNeurons();
+      ~ImagePoissonInputSpikingNeurons() override;
       
-      MAKE_BACKEND_CONSTRUCTOR(ImagePoissonInputSpikingNeurons);
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(ImagePoissonInputSpikingNeurons);
       using ::Backend::ImagePoissonInputSpikingNeurons::frontend;
 
       void prepare() override;

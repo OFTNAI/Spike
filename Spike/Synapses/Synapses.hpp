@@ -30,7 +30,8 @@ class Synapses; // forward definition
 namespace Backend {
   class Synapses : public virtual SpikeBackendBase  {
   public:
-    ADD_FRONTEND_GETTER(Synapses);
+    SPIKE_ADD_FRONTEND_GETTER(Synapses);
+    ~Synapses() override = default;
     virtual void set_neuron_indices_by_sampling_from_normal_distribution
     (int original_number_of_synapses,
      int total_number_of_new_synapses,
@@ -44,6 +45,8 @@ namespace Backend {
      bool presynaptic_group_is_input) = 0;
   };
 }
+
+static_assert(std::has_virtual_destructor<Backend::Synapses>::value, "contract violated");
 
 #include "Spike/Backend/Dummy/Synapses/Synapses.hpp"
 #ifdef SPIKE_WITH_CUDA
@@ -77,9 +80,9 @@ class Synapses : public virtual SpikeBase {
 public:
   // Constructor/Destructor
   Synapses();
-  ~Synapses();
+  ~Synapses() override;
 
-  ADD_BACKEND_GETSET(Synapses, SpikeBase);
+  SPIKE_ADD_BACKEND_GETSET(Synapses, SpikeBase);
   void init_backend(Context* ctx = _global_ctx);
   void prepare_backend_early() override;
   
@@ -112,7 +115,7 @@ public:
   RandomStateManager * random_state_manager;
 
 private:
-  ::Backend::Synapses* _backend = nullptr;
+  std::shared_ptr<::Backend::Synapses> _backend;
 };
 
 // GAUSS random number generator

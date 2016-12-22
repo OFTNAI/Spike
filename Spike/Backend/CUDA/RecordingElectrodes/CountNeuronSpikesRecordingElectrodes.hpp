@@ -14,8 +14,8 @@ namespace Backend {
       public virtual ::Backend::CUDA::RecordingElectrodes,
       public virtual ::Backend::CountNeuronSpikesRecordingElectrodes {
     public:
-      ~CountNeuronSpikesRecordingElectrodes();
-      MAKE_BACKEND_CONSTRUCTOR(CountNeuronSpikesRecordingElectrodes);
+      ~CountNeuronSpikesRecordingElectrodes() override;
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(CountNeuronSpikesRecordingElectrodes);
       using ::Backend::CountNeuronSpikesRecordingElectrodes::frontend;
       
       void prepare() override;

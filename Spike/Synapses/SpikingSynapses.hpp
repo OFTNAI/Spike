@@ -9,7 +9,7 @@ class SpikingSynapses; // forward definition
 namespace Backend {
   class SpikingSynapses : public virtual Synapses {
   public:
-    ADD_FRONTEND_GETTER(SpikingSynapses);
+    SPIKE_ADD_FRONTEND_GETTER(SpikingSynapses);
     virtual void calculate_postsynaptic_current_injection(::SpikingNeurons * neurons, float current_time_in_seconds, float timestep) = 0;
     virtual void interact_spikes_with_synapses(::SpikingNeurons * neurons, ::SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) = 0;
   };
@@ -29,9 +29,9 @@ struct spiking_synapse_parameters_struct : synapse_parameters_struct {
 
 class SpikingSynapses : public Synapses {
 public:
-  ~SpikingSynapses();
+  ~SpikingSynapses() override;
 
-  ADD_BACKEND_GETSET(SpikingSynapses, Synapses);
+  SPIKE_ADD_BACKEND_GETSET(SpikingSynapses, Synapses);
   void init_backend(Context* ctx = _global_ctx) override;
 
   // Host Pointers
@@ -58,7 +58,7 @@ public:
   virtual void interact_spikes_with_synapses(SpikingNeurons * neurons, SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep);
 
 private:
-  ::Backend::SpikingSynapses* _backend = nullptr;
+  std::shared_ptr<::Backend::SpikingSynapses> _backend;
 };
 
 #endif

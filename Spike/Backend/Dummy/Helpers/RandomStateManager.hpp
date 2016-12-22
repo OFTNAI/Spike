@@ -6,7 +6,7 @@ namespace Backend {
   namespace Dummy {
     class RandomStateManager : public virtual ::Backend::RandomStateManager {
     public:
-      MAKE_BACKEND_CONSTRUCTOR(RandomStateManager);
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(RandomStateManager);
 
       void prepare() override {
       }

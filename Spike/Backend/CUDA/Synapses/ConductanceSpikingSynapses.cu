@@ -9,6 +9,9 @@ namespace Backend {
       CudaSafeCall(cudaFree(biological_conductance_scaling_constants_lambda));
       CudaSafeCall(cudaFree(reversal_potentials_Vhat));
       CudaSafeCall(cudaFree(decay_terms_tau_g));
+#ifdef CRAZY_DEBUG
+      std::cout << "\n!!!!!!!!!!!!!!!!!!!!---CCCCCC---!!!!!!!!!!!!!!!!!!!\n";
+#endif
     }
 
     void ConductanceSpikingSynapses::calculate_postsynaptic_current_injection(::SpikingNeurons * neurons, float current_time_in_seconds, float timestep) {

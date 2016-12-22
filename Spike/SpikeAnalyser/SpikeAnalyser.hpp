@@ -20,7 +20,8 @@ class SpikeAnalyser; // forward definition
 namespace Backend {
   class SpikeAnalyser : public virtual SpikeBackendBase {
   public:
-    ADD_FRONTEND_GETTER(SpikeAnalyser);
+    ~SpikeAnalyser() override = default;
+    SPIKE_ADD_FRONTEND_GETTER(SpikeAnalyser);
 
     virtual void store_spike_counts_for_stimulus_index
     (int stimulus_index) = 0;
@@ -34,7 +35,8 @@ namespace Backend {
 
 class SpikeAnalyser : public virtual SpikeBase {
 public:
-  ADD_BACKEND_GETSET(SpikeAnalyser, SpikeBase);
+  ~SpikeAnalyser() override;
+  SPIKE_ADD_BACKEND_GETSET(SpikeAnalyser, SpikeBase);
   void init_backend(Context* ctx = _global_ctx);
   void reset_state() override;
 
@@ -96,7 +98,7 @@ public:
   void calculate_single_cell_information_scores_for_neuron_group(int neuron_group_index, int number_of_bins, bool useThresholdForMaxFR,float optimal_max_firing_rate);
 
 private:
-  ::Backend::SpikeAnalyser* _backend = nullptr;
+  std::shared_ptr<::Backend::SpikeAnalyser> _backend;
 };
 
 #endif

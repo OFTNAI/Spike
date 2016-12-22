@@ -14,6 +14,9 @@ namespace Backend {
       CudaSafeCall(cudaFree(synaptic_efficacies_or_weights));
       CudaSafeCall(cudaFree(temp_synaptic_efficacies_or_weights));
       CudaSafeCall(cudaFree(synapse_postsynaptic_neuron_count_index));
+#ifdef CRAZY_DEBUG
+      std::cout << "\n!!!!!!!!!!!!!!!!!!!!---AAAAAA---!!!!!!!!!!!!!!!!!!!\n";
+#endif
     }
 
     void Synapses::reset_state() {

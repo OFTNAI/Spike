@@ -34,10 +34,10 @@ class SpikingNeurons : public Neurons {
 public:
   // Constructor/Destructor
   SpikingNeurons();
-  ~SpikingNeurons();
+  ~SpikingNeurons() override;
 
   void init_backend(Context* ctx) override;
-  ADD_BACKEND_GETSET(SpikingNeurons, Neurons);
+  SPIKE_ADD_BACKEND_GETSET(SpikingNeurons, Neurons);
   void prepare_backend_early() override;
   
   // Variables
@@ -57,7 +57,7 @@ public:
   virtual void check_for_neuron_spikes(float current_time_in_seconds, float timestep);
 
 private:
-  ::Backend::SpikingNeurons* _backend = nullptr;
+  std::shared_ptr<::Backend::SpikingNeurons> _backend;
 };
 
 #endif

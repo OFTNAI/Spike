@@ -2,6 +2,17 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+AdExSpikingNeurons::~AdExSpikingNeurons() {
+  free(adaptation_values_w);
+  free(membrane_capacitances_Cm);
+  free(membrane_leakage_conductances_g0);
+  free(leak_reversal_potentials_E_L);
+  free(slope_factors_Delta_T);
+  free(adaptation_coupling_coefficients_a);
+  free(adaptation_time_constants_tau_w);
+  free(adaptation_changes_b);
+}
+
 int AdExSpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
 
   int new_group_id = SpikingNeurons::AddGroup(group_params);
@@ -37,4 +48,4 @@ int AdExSpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
 //   backend()->update_membrane_potentials(timestep, current_time_in_seconds);
 // }
 
-MAKE_INIT_BACKEND(AdExSpikingNeurons);
+SPIKE_MAKE_INIT_BACKEND(AdExSpikingNeurons);

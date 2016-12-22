@@ -12,7 +12,8 @@ namespace Backend {
     class CurrentSpikingSynapses : public virtual ::Backend::CUDA::SpikingSynapses,
                                    public virtual ::Backend::CurrentSpikingSynapses {
     public:
-      MAKE_BACKEND_CONSTRUCTOR(CurrentSpikingSynapses);
+      ~CurrentSpikingSynapses() override = default;
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(CurrentSpikingSynapses);
       using ::Backend::CurrentSpikingSynapses::frontend;
 
       void prepare() override;

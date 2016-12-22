@@ -23,7 +23,7 @@ class AdExSpikingNeurons; // forward definition
 namespace Backend {
   class AdExSpikingNeurons : public virtual SpikingNeurons {
   public:
-    ADD_FRONTEND_GETTER(AdExSpikingNeurons);
+    SPIKE_ADD_FRONTEND_GETTER(AdExSpikingNeurons);
   };
 }
 
@@ -34,8 +34,9 @@ namespace Backend {
 
 class AdExSpikingNeurons : public SpikingNeurons {
 public:
+  ~AdExSpikingNeurons() override;
   void init_backend(Context* ctx) override;
-  ADD_BACKEND_GETSET(AdExSpikingNeurons, SpikingNeurons);
+  SPIKE_ADD_BACKEND_GETSET(AdExSpikingNeurons, SpikingNeurons);
   
   float * adaptation_values_w = nullptr;
   float * membrane_capacitances_Cm = nullptr;
@@ -51,7 +52,7 @@ public:
   // void update_membrane_potentials(float timestep, float current_time_in_seconds) override;
 
 private:
-  ::Backend::AdExSpikingNeurons* _backend = nullptr;
+  std::shared_ptr<::Backend::AdExSpikingNeurons> _backend;
 };
 
 #endif

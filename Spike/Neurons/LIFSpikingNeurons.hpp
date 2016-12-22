@@ -18,7 +18,7 @@ class LIFSpikingNeurons; // forward definition
 namespace Backend {
   class LIFSpikingNeurons : public virtual SpikingNeurons {
   public:
-    ADD_FRONTEND_GETTER(LIFSpikingNeurons);
+    SPIKE_ADD_FRONTEND_GETTER(LIFSpikingNeurons);
   };
 }
 
@@ -32,10 +32,10 @@ class LIFSpikingNeurons : public SpikingNeurons {
 public:
   // Constructor/Destructor
   LIFSpikingNeurons();
-  ~LIFSpikingNeurons();
+  ~LIFSpikingNeurons() override;
 
   void init_backend(Context* ctx) override;
-  ADD_BACKEND_GETSET(LIFSpikingNeurons, SpikingNeurons);
+  SPIKE_ADD_BACKEND_GETSET(LIFSpikingNeurons, SpikingNeurons);
   
   float * membrane_time_constants_tau_m;
   float * membrane_resistances_R;
@@ -46,7 +46,7 @@ public:
   // void update_membrane_potentials(float timestep,float current_time_in_seconds) override;
 
 private:
-  ::Backend::LIFSpikingNeurons* _backend = nullptr;
+  std::shared_ptr<::Backend::LIFSpikingNeurons> _backend;
 };
 
 #endif

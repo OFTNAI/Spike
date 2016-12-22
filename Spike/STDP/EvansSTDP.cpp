@@ -52,4 +52,4 @@ void EvansSTDP::update_postsynaptic_activities(float timestep, float current_tim
   backend()->update_postsynaptic_activities(timestep, current_time_in_seconds);
 }
 
-MAKE_INIT_BACKEND(EvansSTDP);
+SPIKE_MAKE_INIT_BACKEND(EvansSTDP);

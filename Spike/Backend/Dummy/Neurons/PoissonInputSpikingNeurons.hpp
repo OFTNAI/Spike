@@ -9,7 +9,7 @@ namespace Backend {
                                        public virtual ::Backend::PoissonInputSpikingNeurons {
     public:
       PoissonInputSpikingNeurons() = default;
-      MAKE_BACKEND_CONSTRUCTOR(PoissonInputSpikingNeurons);
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(PoissonInputSpikingNeurons);
 
       void prepare() override {
         InputSpikingNeurons::prepare();

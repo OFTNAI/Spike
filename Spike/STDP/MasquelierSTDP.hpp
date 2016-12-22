@@ -32,7 +32,7 @@ class MasquelierSTDP; // forward definition
 namespace Backend {
   class MasquelierSTDP : public virtual STDP {
   public:
-    ADD_FRONTEND_GETTER(MasquelierSTDP);
+    SPIKE_ADD_FRONTEND_GETTER(MasquelierSTDP);
 
     virtual void apply_stdp_to_synapse_weights(float current_time_in_seconds) = 0;
   };
@@ -55,8 +55,8 @@ struct masquelier_stdp_parameters_struct : stdp_parameters_struct {
 
 class MasquelierSTDP : public STDP {
 public:
-  ~MasquelierSTDP();
-  ADD_BACKEND_GETSET(MasquelierSTDP, STDP);
+  ~MasquelierSTDP() override;
+  SPIKE_ADD_BACKEND_GETSET(MasquelierSTDP, STDP);
 
   struct masquelier_stdp_parameters_struct* stdp_params = nullptr;
 
@@ -79,7 +79,7 @@ public:
   void apply_stdp_to_synapse_weights(float current_time_in_seconds);
 
 private:
-  ::Backend::MasquelierSTDP* _backend = nullptr;
+  std::shared_ptr<::Backend::MasquelierSTDP> _backend;
 };
 
 #endif

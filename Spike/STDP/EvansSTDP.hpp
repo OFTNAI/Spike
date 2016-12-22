@@ -23,7 +23,7 @@ class EvansSTDP; // forward definition
 namespace Backend {
   class EvansSTDP : public virtual STDP {
   public:
-    ADD_FRONTEND_GETTER(EvansSTDP);
+    SPIKE_ADD_FRONTEND_GETTER(EvansSTDP);
 
     virtual void update_synaptic_efficacies_or_weights(float current_time_in_seconds) = 0;
     virtual void update_presynaptic_activities(float timestep, float current_time_in_seconds) = 0;
@@ -50,8 +50,8 @@ struct evans_stdp_parameters_struct : stdp_parameters_struct {
 class EvansSTDP : public STDP {
 public:
   // Constructor/Destructor
-  ~EvansSTDP();
-  ADD_BACKEND_GETSET(EvansSTDP, STDP);
+  ~EvansSTDP() override;
+  SPIKE_ADD_BACKEND_GETSET(EvansSTDP, STDP);
 
   struct evans_stdp_parameters_struct* stdp_params = nullptr;
 
@@ -75,7 +75,7 @@ public:
   void update_postsynaptic_activities(float timestep, float current_time_in_seconds);
 
 private:
-  ::Backend::EvansSTDP* _backend = nullptr;
+  std::shared_ptr<::Backend::EvansSTDP> _backend;
 };
 
 #endif

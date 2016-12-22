@@ -15,8 +15,8 @@ namespace Backend {
       float * membrane_time_constants_tau_m = nullptr;
       float * membrane_resistances_R = nullptr;
 
-      ~LIFSpikingNeurons();
-      MAKE_BACKEND_CONSTRUCTOR(LIFSpikingNeurons);
+      ~LIFSpikingNeurons() override;
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(LIFSpikingNeurons);
       using ::Backend::LIFSpikingNeurons::frontend;
 
       void prepare() override;

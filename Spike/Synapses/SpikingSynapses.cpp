@@ -2,6 +2,9 @@
 #include "../Helpers/TerminalHelpers.hpp"
 
 SpikingSynapses::~SpikingSynapses() {
+#ifdef CRAZY_DEBUG
+  std::cout << "SpikingSynapses::~SpikingSynapses\n";
+#endif
   free(delays);
   free(stdp);
 }
@@ -103,4 +106,4 @@ void SpikingSynapses::interact_spikes_with_synapses(SpikingNeurons * neurons, Sp
   backend()->interact_spikes_with_synapses(neurons, input_neurons, current_time_in_seconds, timestep);
 }
 
-MAKE_STUB_INIT_BACKEND(SpikingSynapses);
+SPIKE_MAKE_STUB_INIT_BACKEND(SpikingSynapses);

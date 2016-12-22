@@ -16,7 +16,7 @@ class IzhikevichSpikingNeurons; // forward definition
 namespace Backend {
   class IzhikevichSpikingNeurons : public virtual SpikingNeurons {
   public:
-    ADD_FRONTEND_GETTER(IzhikevichSpikingNeurons);
+    SPIKE_ADD_FRONTEND_GETTER(IzhikevichSpikingNeurons);
   };
 }
 
@@ -30,10 +30,10 @@ class IzhikevichSpikingNeurons : public SpikingNeurons {
 public:
   // Constructor/Destructor
   IzhikevichSpikingNeurons();
-  ~IzhikevichSpikingNeurons();
+  ~IzhikevichSpikingNeurons() override;
 
   void init_backend(Context* ctx) override;
-  ADD_BACKEND_GETSET(IzhikevichSpikingNeurons, SpikingNeurons);
+  SPIKE_ADD_BACKEND_GETSET(IzhikevichSpikingNeurons, SpikingNeurons);
   
   float * param_a = nullptr;
   float * param_b = nullptr;
@@ -43,7 +43,7 @@ public:
   // void update_membrane_potentials(float timestep, float current_time_in_seconds) override;
 
 private:
-  ::Backend::IzhikevichSpikingNeurons* _backend = nullptr;
+  std::shared_ptr<::Backend::IzhikevichSpikingNeurons> _backend;
 };
 
 

@@ -47,6 +47,30 @@ SpikeAnalyser::SpikeAnalyser(SpikingNeurons *neurons_parameter,
 }
 
 
+SpikeAnalyser::~SpikeAnalyser() {
+  // I hacked this together very fast, so it may be incorrect! --TSCS
+
+  delete[] per_stimulus_per_neuron_spike_counts;
+  delete[] information_scores_for_each_object_and_neuron;
+  delete[] descending_information_scores_for_each_object_and_neuron;
+  delete[] number_of_spikes_per_stimulus_per_neuron_group;
+  delete[] average_number_of_spikes_per_stimulus_per_neuron_group_per_second;
+  delete[] average_number_of_spikes_per_stimulus_per_neuron_group_per_second_excluding_silent_neurons;
+
+  delete maximum_information_score_for_each_neuron;
+  delete descending_maximum_information_score_for_each_neuron;
+  delete average_information_score_for_each_neuron;
+  delete descending_average_information_score_for_each_neuron;
+  delete total_number_of_spikes_per_neuron_group;
+  delete average_number_of_spikes_per_neuron_group_per_second;
+  delete average_number_of_spikes_per_neuron_group_per_second_excluding_silent_neurons;
+  delete max_number_of_spikes_per_neuron_group_per_second;
+  delete running_count_of_non_silent_neurons_per_neuron_group;
+  delete combined_powered_distance_from_average_score_for_each_neuron_group;
+  delete combined_powered_distance_from_max_score_for_each_neuron_group;
+}
+
+
 void SpikeAnalyser::reset_state() {
   backend()->reset_state();
 }
@@ -441,4 +465,4 @@ void SpikeAnalyser::calculate_single_cell_information_scores_for_neuron_group(in
 
 }
 
-MAKE_INIT_BACKEND(SpikeAnalyser);
+SPIKE_MAKE_INIT_BACKEND(SpikeAnalyser);

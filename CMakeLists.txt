@@ -27,10 +27,6 @@ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 # User options
 ##############
 
-option(BUILD_SHARED_LIBS
-  "Build shared libSpike (else static)"
-  ON)
-
 option(BUILD_WITH_CUDA
   "Enable CUDA backend"
   ON)
@@ -46,6 +42,14 @@ option(ENABLE_PLOTTING
 option(BUILD_DOXYGEN_DOCS
   "Build the Doxygen-generated API docs"
   OFF)
+
+option(BUILD_TESTING
+  "Enable CTest tests"
+  OFF)
+
+option(BUILD_SHARED_LIBS
+  "Build shared libSpike (else static)"
+  ON)
 
 #cmake_dependent_option(ENABLE_DIST "Enable the the distribution tarball target" ON "BUILD_DOXYGEN_DOCS" OFF)
 #mark_as_advanced(BUILD_DOXYGEN_DOCS ENABLE_DIST)
@@ -80,10 +84,9 @@ if(BUILD_EXAMPLES)
   add_subdirectory(Examples)
 endif()
 
-# if(BUILD_TESTING)
-#    INCLUDE(CTest)
-#    add_subdirectory(Tests)
-# endif()
+if(BUILD_TESTING)
+   add_subdirectory(Tests)
+endif()
 
 # add_subdirectory(Doc)
 

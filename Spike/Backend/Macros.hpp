@@ -8,15 +8,15 @@
 #define TYPEID_NAME(x) abi::__cxa_demangle(typeid((x)).name(), NULL, NULL, NULL)
 #endif
 
-#define ADD_BACKEND_GETSET(TYPE, SUPER)                 \
-  void backend(Backend::TYPE* ptr) {                    \
+#define SPIKE_ADD_BACKEND_GETSET(TYPE, SUPER)           \
+  void backend(std::shared_ptr<Backend::TYPE>&& ptr) {  \
     _backend = ptr;                                     \
     SUPER::backend(ptr);                                \
   }                                                     \
   inline Backend::TYPE* backend() const {               \
     assert(_backend != nullptr &&                       \
            "Need to have backend initialized!");        \
-    return (Backend::TYPE*)_backend;                    \
+    return (Backend::TYPE*)_backend.get();              \
   }                                                     \
   inline void prepare_backend() {                       \
     prepare_backend_early();                            \
@@ -24,12 +24,12 @@
     prepare_backend_late();                             \
   }
 
-#define MAKE_BACKEND_CONSTRUCTOR(TYPE)                  \
+#define SPIKE_MAKE_BACKEND_CONSTRUCTOR(TYPE)            \
   TYPE(::TYPE* front) {                                 \
     _frontend = (void*)front;                           \
   }
 
-#define ADD_FRONTEND_GETTER(TYPE)                       \
+#define SPIKE_ADD_FRONTEND_GETTER(TYPE)                 \
   inline ::TYPE* frontend() const {                     \
     assert(_frontend != nullptr &&                      \
            "Need to have backend initialized!");        \
@@ -37,7 +37,7 @@
   }
 
 #ifdef SPIKE_WITH_CUDA
-#define MAKE_INIT_BACKEND(TYPE)                                         \
+#define SPIKE_MAKE_INIT_BACKEND(TYPE)                                   \
   void TYPE::init_backend(Context* ctx) {                               \
     ::Backend::TYPE* ptr = nullptr;                                     \
     switch (ctx->device) {                                              \
@@ -50,12 +50,12 @@
     default:                                                            \
       assert("Unsupported backend" && false);                           \
     };                                                                  \
-    backend(ptr);                                                       \
+    backend(std::shared_ptr<::Backend::TYPE>(ptr));                     \
     backend()->context = ctx;                                           \
     prepare_backend();                                                  \
   }
 #else
-#define MAKE_INIT_BACKEND(TYPE)                                         \
+#define SPIKE_MAKE_INIT_BACKEND(TYPE)                                   \
   void TYPE::init_backend(Context* ctx) {                               \
     ::Backend::TYPE* ptr = nullptr;                                     \
     switch (ctx->device) {                                              \
@@ -71,7 +71,7 @@
   }
 #endif
 
-#define MAKE_STUB_INIT_BACKEND(TYPE)                                   \
+#define SPIKE_MAKE_STUB_INIT_BACKEND(TYPE)                                   \
   void TYPE::init_backend(Context* ctx) {                              \
     assert("This type's backend cannot be instantiated!" && false);    \
   }

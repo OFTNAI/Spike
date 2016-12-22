@@ -16,8 +16,8 @@ namespace Backend {
       float* recent_postsynaptic_activities_D = nullptr; // (NEURON-WISE)
       float* recent_presynaptic_activities_C = nullptr;  // (SYNAPSE-WISE)
 
-      ~EvansSTDP();
-      MAKE_BACKEND_CONSTRUCTOR(EvansSTDP);
+      ~EvansSTDP() override;
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(EvansSTDP);
       using ::Backend::EvansSTDP::frontend;
 
       void prepare() override;

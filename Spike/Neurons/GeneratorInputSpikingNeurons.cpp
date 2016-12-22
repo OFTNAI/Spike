@@ -54,4 +54,4 @@ void GeneratorInputSpikingNeurons::AddStimulus(int spikenumber, int* ids, float*
   number_of_spikes_in_stimuli[total_number_of_input_stimuli - 1] = spikenumber;
 }
 
-MAKE_INIT_BACKEND(GeneratorInputSpikingNeurons);
+SPIKE_MAKE_INIT_BACKEND(GeneratorInputSpikingNeurons);

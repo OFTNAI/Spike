@@ -9,7 +9,7 @@ namespace Backend {
       public virtual ::Backend::Dummy::RecordingElectrodes,
       public virtual ::Backend::NetworkStateArchiveRecordingElectrodes {
     public:
-      MAKE_BACKEND_CONSTRUCTOR(NetworkStateArchiveRecordingElectrodes);
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(NetworkStateArchiveRecordingElectrodes);
 
       void prepare() override {
         RecordingElectrodes::prepare();

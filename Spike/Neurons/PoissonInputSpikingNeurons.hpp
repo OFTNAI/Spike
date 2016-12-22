@@ -16,7 +16,7 @@ class PoissonInputSpikingNeurons; // forward definition
 namespace Backend {
   class PoissonInputSpikingNeurons : public virtual InputSpikingNeurons {
   public:
-    ADD_FRONTEND_GETTER(PoissonInputSpikingNeurons);
+    SPIKE_ADD_FRONTEND_GETTER(PoissonInputSpikingNeurons);
   };
 }
 
@@ -29,10 +29,10 @@ namespace Backend {
 class PoissonInputSpikingNeurons : public InputSpikingNeurons {
 public:
   PoissonInputSpikingNeurons() = default;
-  ~PoissonInputSpikingNeurons();
+  ~PoissonInputSpikingNeurons() override;
 
   void init_backend(Context* ctx) override;
-  ADD_BACKEND_GETSET(PoissonInputSpikingNeurons, InputSpikingNeurons);
+  SPIKE_ADD_BACKEND_GETSET(PoissonInputSpikingNeurons, InputSpikingNeurons);
   
   float rate = 0;
   float * rates = nullptr;
@@ -49,7 +49,7 @@ public:
   void update_membrane_potentials(float timestep, float current_time_in_seconds) override;
 
 private:
-  ::Backend::PoissonInputSpikingNeurons* _backend = nullptr;
+  std::shared_ptr<::Backend::PoissonInputSpikingNeurons> _backend;
 };
 
 #endif

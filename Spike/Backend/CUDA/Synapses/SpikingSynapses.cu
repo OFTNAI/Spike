@@ -8,6 +8,9 @@ namespace Backend {
       CudaSafeCall(cudaFree(spikes_travelling_to_synapse));
       CudaSafeCall(cudaFree(stdp));
       CudaSafeCall(cudaFree(time_of_last_spike_to_reach_synapse));
+#ifdef CRAZY_DEBUG
+      std::cout << "\n!!!!!!!!!!!!!!!!!!!!---BBBBBB---!!!!!!!!!!!!!!!!!!!\n";
+#endif
     }
 
     void SpikingSynapses::reset_state() {

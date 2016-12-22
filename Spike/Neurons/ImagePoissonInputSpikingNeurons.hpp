@@ -21,7 +21,7 @@ class ImagePoissonInputSpikingNeurons; // forward definition
 namespace Backend {
   class ImagePoissonInputSpikingNeurons : public virtual PoissonInputSpikingNeurons {
   public:
-    ADD_FRONTEND_GETTER(ImagePoissonInputSpikingNeurons);
+    SPIKE_ADD_FRONTEND_GETTER(ImagePoissonInputSpikingNeurons);
     virtual void copy_rates_to_device() = 0;
   };
 }
@@ -36,9 +36,9 @@ class ImagePoissonInputSpikingNeurons : public PoissonInputSpikingNeurons {
 public:
   // Constructor/Destructor
   ImagePoissonInputSpikingNeurons();
-  ~ImagePoissonInputSpikingNeurons();
+  ~ImagePoissonInputSpikingNeurons() override;
 
-  ADD_BACKEND_GETSET(ImagePoissonInputSpikingNeurons, PoissonInputSpikingNeurons);
+  SPIKE_ADD_BACKEND_GETSET(ImagePoissonInputSpikingNeurons, PoissonInputSpikingNeurons);
   void init_backend(Context* ctx = _global_ctx) override;
   
   int AddGroup(neuron_parameters_struct * group_params) override;
@@ -74,7 +74,7 @@ public:
   std::vector<float> * filterOrientations;
 
 private:
-  ::Backend::ImagePoissonInputSpikingNeurons* _backend = nullptr;
+  std::shared_ptr<::Backend::ImagePoissonInputSpikingNeurons> _backend;
 };
 
 #endif

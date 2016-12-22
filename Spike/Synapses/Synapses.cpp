@@ -24,6 +24,9 @@ void Synapses::prepare_backend_early() {
 
 // Synapses Destructor
 Synapses::~Synapses() {
+#ifdef CRAZY_DEBUG
+  std::cout << "Synapses::~Synapses\n";
+#endif
   free(presynaptic_neuron_indices);
   free(postsynaptic_neuron_indices);
   free(synaptic_efficacies_or_weights);
@@ -300,4 +303,4 @@ void Synapses::shuffle_synapses() {
 
 }
 
-MAKE_STUB_INIT_BACKEND(Synapses);
+SPIKE_MAKE_STUB_INIT_BACKEND(Synapses);

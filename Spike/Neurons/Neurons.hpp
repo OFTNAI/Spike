@@ -23,9 +23,13 @@ class Neurons; // forward definition
 namespace Backend {
   class Neurons : public virtual SpikeBackendBase {
   public:
+    ~Neurons() override = default;
     virtual void reset_current_injections() = 0;
   };
 }
+
+static_assert(std::has_virtual_destructor<Backend::Neurons>::value,
+              "contract violated");
 
 #include "Spike/Backend/Dummy/Neurons/Neurons.hpp"
 #ifdef SPIKE_WITH_CUDA
@@ -54,10 +58,10 @@ struct neuron_parameters_struct {
 class Neurons : public virtual SpikeBase {
 public:  
   Neurons();
-  ~Neurons();
+  ~Neurons() override;
 
   void init_backend(Context* ctx) override;
-  ADD_BACKEND_GETSET(Neurons, SpikeBase);
+  SPIKE_ADD_BACKEND_GETSET(Neurons, SpikeBase);
   
   // Variables
   int total_number_of_neurons;				/**< Tracks the total neuron population size. */
@@ -86,7 +90,7 @@ public:
   void reset_state() override;
 
 private:
-  ::Backend::Neurons* _backend = nullptr;
+  std::shared_ptr<::Backend::Neurons> _backend;
 };
 
 #endif

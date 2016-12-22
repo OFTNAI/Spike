@@ -8,7 +8,7 @@ namespace Backend {
     class IzhikevichSpikingNeurons : public virtual ::Backend::Dummy::SpikingNeurons,
                                      public virtual ::Backend::IzhikevichSpikingNeurons {
     public:
-      MAKE_BACKEND_CONSTRUCTOR(IzhikevichSpikingNeurons);
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(IzhikevichSpikingNeurons);
 
       void prepare() override {
         SpikingNeurons::prepare();

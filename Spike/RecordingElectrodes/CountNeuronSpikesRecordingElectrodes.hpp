@@ -9,7 +9,7 @@ class CountNeuronSpikesRecordingElectrodes; // forward definition
 namespace Backend {
   class CountNeuronSpikesRecordingElectrodes : public virtual RecordingElectrodes {
   public:
-    ADD_FRONTEND_GETTER(CountNeuronSpikesRecordingElectrodes);
+    SPIKE_ADD_FRONTEND_GETTER(CountNeuronSpikesRecordingElectrodes);
 
     virtual void add_spikes_to_per_neuron_spike_count
     (float current_time_in_seconds) = 0;
@@ -24,8 +24,8 @@ namespace Backend {
 
 class CountNeuronSpikesRecordingElectrodes : public RecordingElectrodes {
 public:
-  ADD_BACKEND_GETSET(CountNeuronSpikesRecordingElectrodes,
-                     RecordingElectrodes);
+  SPIKE_ADD_BACKEND_GETSET(CountNeuronSpikesRecordingElectrodes,
+                           RecordingElectrodes);
   void init_backend(Context* ctx = _global_ctx) override;
   
   // Constructor/Destructor
@@ -33,13 +33,14 @@ public:
                                        SpikingSynapses * synapses_parameter,
                                        string full_directory_name_for_simulation_data_files_param,
                                        const char * prefix_string_param);
+  ~CountNeuronSpikesRecordingElectrodes() override = default;
 
   void initialise_count_neuron_spikes_recording_electrodes();
 
   void add_spikes_to_per_neuron_spike_count(float current_time_in_seconds);
 
 private:
-  ::Backend::CountNeuronSpikesRecordingElectrodes* _backend = nullptr;
+  std::shared_ptr<::Backend::CountNeuronSpikesRecordingElectrodes> _backend;
 };
 
 #endif

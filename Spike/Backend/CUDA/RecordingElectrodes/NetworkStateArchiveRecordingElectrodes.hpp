@@ -14,7 +14,7 @@ namespace Backend {
       public virtual ::Backend::CUDA::RecordingElectrodes,
       public virtual ::Backend::NetworkStateArchiveRecordingElectrodes {
     public:
-      MAKE_BACKEND_CONSTRUCTOR(NetworkStateArchiveRecordingElectrodes);
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(NetworkStateArchiveRecordingElectrodes);
       using ::Backend::NetworkStateArchiveRecordingElectrodes::frontend;
 
       void prepare() override;

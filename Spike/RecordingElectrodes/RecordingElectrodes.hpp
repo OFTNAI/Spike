@@ -19,7 +19,7 @@ class RecordingElectrodes; // forward definition
 namespace Backend {
   class RecordingElectrodes : public virtual SpikeBackendBase {
   public:
-    ADD_FRONTEND_GETTER(RecordingElectrodes);
+    SPIKE_ADD_FRONTEND_GETTER(RecordingElectrodes);
   };
 }
 
@@ -34,8 +34,9 @@ public:
                       SpikingSynapses * synapses_parameter,
                       string full_directory_name_for_simulation_data_files_param,
                       const char * prefix_string_param);
+  ~RecordingElectrodes() override = default;
 
-  ADD_BACKEND_GETSET(RecordingElectrodes, SpikeBase);
+  SPIKE_ADD_BACKEND_GETSET(RecordingElectrodes, SpikeBase);
   void init_backend(Context* ctx = _global_ctx) override;
   void reset_state() override;
 
@@ -48,7 +49,7 @@ public:
   SpikingSynapses * synapses = nullptr;
 
 private:
-  ::Backend::RecordingElectrodes* _backend = nullptr;
+  std::shared_ptr<::Backend::RecordingElectrodes> _backend;
 };
 
 #endif

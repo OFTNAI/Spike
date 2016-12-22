@@ -14,7 +14,7 @@ namespace Backend {
   namespace CUDA {
     class SpikeAnalyser : public virtual ::Backend::SpikeAnalyser {
     public:
-      MAKE_BACKEND_CONSTRUCTOR(SpikeAnalyser);
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(SpikeAnalyser);
       using ::Backend::SpikeAnalyser::frontend;
 
       void prepare() override;

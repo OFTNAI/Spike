@@ -17,8 +17,8 @@ namespace Backend {
       dim3 block_dimensions;
       int total_number_of_states = 0;
 
-      ~RandomStateManager();
-      MAKE_BACKEND_CONSTRUCTOR(RandomStateManager);
+      ~RandomStateManager() override;
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(RandomStateManager);
       using ::Backend::RandomStateManager::frontend;
 
       void setup_random_states(int threads_per_blocks_x = 128, int number_of_blocks_x = 64, int seed = 1);

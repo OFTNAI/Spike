@@ -6,7 +6,7 @@ namespace Backend {
   namespace Dummy {
     class SpikeAnalyser : public virtual ::Backend::SpikeAnalyser {
     public:
-      MAKE_BACKEND_CONSTRUCTOR(SpikeAnalyser);
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(SpikeAnalyser);
 
       void prepare() override {
       }
