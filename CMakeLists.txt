@@ -45,7 +45,7 @@ option(BUILD_DOXYGEN_DOCS
 
 option(BUILD_TESTING
   "Enable CTest tests"
-  OFF)
+  ON)
 
 option(BUILD_SHARED_LIBS
   "Build shared libSpike (else static)"
@@ -85,7 +85,9 @@ if(BUILD_EXAMPLES)
 endif()
 
 if(BUILD_TESTING)
-   add_subdirectory(Tests)
+  include(CTest)
+  enable_testing()
+  add_subdirectory(Tests)
 endif()
 
 # add_subdirectory(Doc)

@@ -1,12 +1,9 @@
 #include "catch.hpp"
-#include "../Helpers/CUDAErrorCheckHelpers.h"
-
-
 
 /**
-		NEURONS.CU Test Set
+		NEURONS Test Set
 **/
-#include "../Neurons/Neurons.h"
+#include "Spike/Neurons/Neurons.hpp"
 TEST_CASE("Neurons Class") {
 	// Create an instance of the neuron class
 	Neurons test_neurons;
@@ -38,9 +35,9 @@ TEST_CASE("Neurons Class") {
 
 
 /**
-		SPIKINGNEURONS.CU Test Set
+		SPIKINGNEURONS Test Set
 **/
-#include "../Neurons/SpikingNeurons.h"
+#include "Spike/Neurons/SpikingNeurons.hpp"
 TEST_CASE("Spiking Neurons Class") {
 	// Create an instance of the neuron class
 	SpikingNeurons test_neurons;
@@ -144,17 +141,17 @@ TEST_CASE("Spiking Neurons Class") {
 
 
 /**
-		INPUTSPIKINGNEURONS.CU Test Set
+		INPUTSPIKINGNEURONS Test Set
 **/
-#include "../Neurons/InputSpikingNeurons.h"
-// No tests required yet. This class if almost entirely empty.
+#include "Spike/Neurons/InputSpikingNeurons.hpp"
+// No tests required yet. This class is almost entirely empty.
 
 
 
 /**
-		GENERATORINPUTSPIKINGNEURONS.CU Test Set
+		GENERATORINPUTSPIKINGNEURONS Test Set
 **/
-#include "../Neurons/GeneratorInputSpikingNeurons.h"
+#include "Spike/Neurons/GeneratorInputSpikingNeurons.hpp"
 TEST_CASE("Generator Input Spiking Neurons Class") {
 	// Create an instance of the neuron class
 	GeneratorInputSpikingNeurons test_neurons;
@@ -257,9 +254,9 @@ TEST_CASE("Generator Input Spiking Neurons Class") {
 
 
 /**
-		IZHIKEVICHSPIKINGNEURONS.CU Test Set
+		IZHIKEVICHSPIKINGNEURONS Test Set
 **/
-#include "../Neurons/IzhikevichSpikingNeurons.h"
+#include "Spike/Neurons/IzhikevichSpikingNeurons.hpp"
 TEST_CASE("Izhikevich Spiking Neurons Class") {
 
 	// Create an instance of the neuron class
@@ -398,9 +395,9 @@ TEST_CASE("Izhikevich Spiking Neurons Class") {
 
 
 /**
-		POISSONINPUTSPIKINGNEURONS.CU Test Set
+		POISSONINPUTSPIKINGNEURONS Test Set
 **/
-#include "../Neurons/PoissonInputSpikingNeurons.h"
+#include "Spike/Neurons/PoissonInputSpikingNeurons.hpp"
 TEST_CASE("Poisson Input Spiking Neurons Class") {
 
 	// Create an instance of the neuron class
@@ -474,26 +471,26 @@ TEST_CASE("Poisson Input Spiking Neurons Class") {
 
 
 /**
-		LIFSPIKINGNEURONS.CU Test Set
+		LIFSPIKINGNEURONS Test Set
 **/
 // TO DO
-#include "../Neurons/LIFSpikingNeurons.h"
+#include "Spike/Neurons/LIFSpikingNeurons.hpp"
 TEST_CASE("LIF Spiking Neurons Class") {
 }
 
 /**
-		IMAGEPOISSONINPUTSPIKINGNEURONS.CU Test Set
+		IMAGEPOISSONINPUTSPIKINGNEURONS Test Set
 **/
 // TO DO
-#include "../Neurons/ImagePoissonInputSpikingNeurons.h"
+#include "Spike/Neurons/ImagePoissonInputSpikingNeurons.hpp"
 TEST_CASE("Image Poisson Input Spiking Neurons Class") {
 }
 
 /**
-		ADEXSPIKINGNEURONS.CU Test Set
+		ADEXSPIKINGNEURONS Test Set
 **/
 // TO DO
-#include "../Neurons/AdExSpikingNeurons.h"
+#include "Spike/Neurons/AdExSpikingNeurons.hpp"
 TEST_CASE("Adaptive Exponential Spiking Neurons Class") {
 }
 

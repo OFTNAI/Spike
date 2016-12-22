@@ -1,5 +1,4 @@
 // #include "catch.hpp"
-// #include "../Helpers/CUDAErrorCheckHelpers.h"
 // #include <iostream>
 // #include <stdio.h>
 // #include <stdlib.h>
@@ -9,11 +8,11 @@
 // // using namespace std;
 
 // /**
-// 		RECORDINGELECTRODES.CU Test Set
+// 		RECORDINGELECTRODES Test Set
 // **/
-// #include "../RecordingElectrodes/RecordingElectrodes.h"
-// #include "../Neurons/SpikingNeurons.h"
-// #include "../Synapses/SpikingSynapses.h"
+// #include "Spike/RecordingElectrodes/RecordingElectrodes.hpp"
+// #include "Spike/Neurons/SpikingNeurons.hpp"
+// #include "Spike/Synapses/SpikingSynapses.hpp"
 // TEST_CASE("RecordingElectrode") {
 // 	SpikingSynapses test_synapses;
 // 	SpikingNeurons test_neurons;

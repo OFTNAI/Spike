@@ -283,8 +283,10 @@ CLOSED: [2016-12-18 Sun 21:55]
 - State "CANCELLED"  from "TODO"       [2016-12-18 Sun 21:55] \\
   Unnecessary because of rethink
 :END:
-** PROGRESS Fix bugs exposed by TSCSOptimiseFourLayerVisionSpikingModelFiringRates
+** DONE Fix bugs exposed by TSCSOptimiseFourLayerVisionSpikingModelFiringRates
+CLOSED: [2016-12-22 Thu 14:40]
 :LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2016-12-22 Thu 14:40]
 - State "PROGRESS"   from "TODO"       [2016-12-20 Tue 22:15]
 :END:
 *** DONE Segfault on freeing ConductanceSpikingSynapses after 1st epoch
@@ -298,8 +300,11 @@ CLOSED: [2016-12-20 Tue 21:35]
 - State "DONE"       from "TODO"       [2016-12-20 Tue 21:35] \\
   Good enough for now!
 :END:
-*** PROGRESS Investigate and fix memory leak...
+*** DONE Investigate and fix memory leak...
+CLOSED: [2016-12-22 Thu 14:35]
 :LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2016-12-22 Thu 14:35] \\
+  Fixed the destructor-based leak with commit be3756c
 - State "PROGRESS"   from "TODO"       [2016-12-21 Wed 11:15]
 :END:
 *** DONE No spikes !!!
@@ -318,7 +323,10 @@ CLOSED: [2016-12-21 Wed 11:10]
 - State "PROGRESS"   from "TODO"       [2016-12-21 Wed 11:00]
 :END:
 + maximum_axonal_delay_in_timestep is a bit hacky
-** TODO Get tests working again
+** PROGRESS Get tests working again
+:LOGBOOK:
+- State "PROGRESS"   from "TODO"       [2016-12-22 Thu 18:50]
+:END:
 http://stackoverflow.com/questions/34896891/catch-lib-unit-testing-and-ctest-cmake-integration
 ** TODO Integrate Nas' documentation work
 *** TODO Describe backend work in the docs
@@ -328,8 +336,11 @@ CLOSED: [2016-12-20 Tue 21:40]
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2016-12-20 Tue 21:40]
 :END:
-** PROGRESS Integrate Plotter
+** CANCELLED Integrate Plotter
+CLOSED: [2016-12-22 Thu 18:55]
 :LOGBOOK:
+- State "CANCELLED"  from "PROGRESS"   [2016-12-22 Thu 18:55] \\
+  C++11 problems suggest abandoning MathGL
 - State "PROGRESS"   from "TODO"       [2016-12-21 Wed 11:20]
 :END:
 + mgl seems to have problems with C++11 ...

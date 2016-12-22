@@ -1,12 +1,10 @@
 #include "catch.hpp"
-#include "../Helpers/CUDAErrorCheckHelpers.h"
-
 
 /**
-		SYNAPSES.CU Test Set
+		SYNAPSES Test Set
 **/
-#include "../Synapses/Synapses.h"
-#include "../Neurons/Neurons.h"
+#include "Spike/Synapses/Synapses.hpp"
+#include "Spike/Neurons/Neurons.hpp"
 
 
 TEST_CASE("Synapses Class Tests") {
@@ -254,10 +252,10 @@ TEST_CASE("Synapses Class Tests") {
 
 
 /**
-		SPIKINGSYNAPSES.CU Test Set
+		SPIKINGSYNAPSES Test Set
 **/
-#include "../Synapses/SpikingSynapses.h"
-#include "../Neurons/SpikingNeurons.h"
+#include "Spike/Synapses/SpikingSynapses.hpp"
+#include "Spike/Neurons/SpikingNeurons.hpp"
 TEST_CASE("Spiking Synapses Class Tests") {
 	SpikingSynapses test_synapses;
 	SpikingNeurons test_neurons;
@@ -522,9 +520,9 @@ TEST_CASE("Spiking Synapses Class Tests") {
 
 
 /**
-		CURRENTSPIKINGSYNAPSES.CU Test Set
+		CURRENTSPIKINGSYNAPSES Test Set
 **/
-#include "../Synapses/CurrentSpikingSynapses.h"
+#include "Spike/Synapses/CurrentSpikingSynapses.hpp"
 TEST_CASE("Current Spiking Synapses Class Tests") {
 	CurrentSpikingSynapses test_synapses;
 	SpikingNeurons test_neurons;
@@ -614,10 +612,10 @@ TEST_CASE("Current Spiking Synapses Class Tests") {
 
 
 /**
-		CONDUCTANCESPIKINGSYNAPSES.CU Test Set
+		CONDUCTANCESPIKINGSYNAPSES Test Set
 **/
-#include "../Synapses/ConductanceSpikingSynapses.h"
+#include "Spike/Synapses/ConductanceSpikingSynapses.hpp"
 TEST_CASE("Conductance Spiking Synapses Class Tests") {
-
+  // TODO
 }
 

@@ -1,13 +1,12 @@
 #include "catch.hpp"
-#include "../Helpers/CUDAErrorCheckHelpers.h"
 
 /**
-		HIGGINSSTDP.CU Test Set
+		HIGGINSSTDP Test Set
 **/
-#include "../STDP/STDP.h"
-#include "../STDP/HigginsSTDP.h"
-#include "../Neurons/SpikingNeurons.h"
-#include "../Synapses/SpikingSynapses.h"
+#include "Spike/STDP/STDP.hpp"
+#include "Spike/STDP/HigginsSTDP.hpp"
+#include "Spike/Neurons/SpikingNeurons.hpp"
+#include "Spike/Synapses/SpikingSynapses.hpp"
 TEST_CASE("HigginsSTDP") {
 	SpikingSynapses test_synapses;
 	SpikingNeurons test_neurons;
@@ -171,17 +170,17 @@ TEST_CASE("HigginsSTDP") {
 }	
 
 /**
-		EVANSSTDP.CU Test Set
+		EVANSSTDP Test Set
 **/
-#include "../STDP/EvansSTDP.h"
+#include "Spike/STDP/EvansSTDP.hpp"
 TEST_CASE("EvansSTDP") {
-
+  // TODO
 }
 
 /**
-		MASQUELIERSTDP.CU Test Set
+		MASQUELIERSTDP Test Set
 **/
-#include "../STDP/MasquelierSTDP.h"
+#include "Spike/STDP/MasquelierSTDP.hpp"
 TEST_CASE("MasquelierSTDP") {
-
+  // TODO
 }
