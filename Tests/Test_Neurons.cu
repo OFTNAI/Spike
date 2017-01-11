@@ -405,6 +405,7 @@ TEST_CASE("Poisson Input Spiking Neurons Class") {
 
 	// Create an instance of the neuron class
 	PoissonInputSpikingNeurons test_neurons;
+	test_neurons.setup_random_states_on_device();
 
 	poisson_input_spiking_neuron_parameters_struct params;
 	int dim1 = 1;
@@ -423,11 +424,7 @@ TEST_CASE("Poisson Input Spiking Neurons Class") {
 
 	// AddGroup
 	int ID = test_neurons.AddGroup(&params);
-
-	////////// SET UP STATES FOR RANDOM STATE MANAGER SINGLETON ///////////
-	int random_states_threads_per_block_x = 128;
-	int random_states_number_of_blocks_x = 64;
-	RandomStateManager::instance()->set_up_random_states(random_states_threads_per_block_x, random_states_number_of_blocks_x, 9);
+	test_neurons.set_up_rates();
 
 
 	SECTION("AddGroup"){

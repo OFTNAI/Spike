@@ -12,14 +12,24 @@ public:
 	FourLayerVisionSpikingModel();
 	~FourLayerVisionSpikingModel();
 
-	// Network Parameters
-	bool E2E_L_ON;
-	bool E2E_FB_ON;
-	bool LI_ON;
+	const char * inputs_directory;
 
+	// Network Parameters
+	bool INHIBITORY_NEURONS_ON;
+
+	bool E2E_FF_SYNAPSES_ON;
+	bool E2E_L_SYNAPSES_ON;
+	bool E2I_L_SYNAPSES_ON;
+	bool I2E_L_SYNAPSES_ON;
+	bool E2E_FB_SYNAPSES_ON;
+
+	bool E2E_FF_STDP_ON;
 	bool E2E_L_STDP_ON;
+	bool E2E_FB_STDP_ON;
+
 	
 	int number_of_non_input_layers;
+	int number_of_non_input_layers_to_simulate;
 	int dim_excit_layer;
 	int dim_inhib_layer;
 
@@ -90,7 +100,17 @@ public:
 	vector<int> INHIBITORY_NEURONS;
 
 
+	virtual void set_default_parameter_values();
 	virtual void finalise_model();
+
+	virtual void set_LBL_values_for_pointer_from_layer_to_layer(float value, float* pointer, int start_layer, int end_layer);
+
+	// Regularly used 
+	void setup_full_standard_model_using_optimal_parameters();
+
+protected:
+	virtual void create_parameter_arrays();
+	virtual void delete_model_components();
 
 
 };

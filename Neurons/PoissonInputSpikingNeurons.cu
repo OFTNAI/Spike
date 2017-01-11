@@ -10,6 +10,9 @@ using namespace std;
 // PoissonInputSpikingNeurons Constructor
 PoissonInputSpikingNeurons::PoissonInputSpikingNeurons() {
 
+	random_state_manager = NULL;
+
+	rate = 0;
 	rates = NULL;
 	
 	d_rates = NULL;
@@ -19,6 +22,8 @@ PoissonInputSpikingNeurons::PoissonInputSpikingNeurons() {
 
 // PoissonInputSpikingNeurons Destructor
 PoissonInputSpikingNeurons::~PoissonInputSpikingNeurons() {
+
+	free(random_state_manager);
 
 	free(rates);
 
@@ -33,13 +38,33 @@ int PoissonInputSpikingNeurons::AddGroup(neuron_parameters_struct * group_params
 
 	poisson_input_spiking_neuron_parameters_struct * poisson_input_spiking_group_params = (poisson_input_spiking_neuron_parameters_struct*)group_params;
 
-	rates = (float*)realloc(rates, sizeof(float)*total_number_of_neurons);
-	for (int i = total_number_of_neurons - number_of_neurons_in_new_group; i < total_number_of_neurons; i++) {
-		rates[i] = poisson_input_spiking_group_params->rate;
-	}
+	rate = poisson_input_spiking_group_params->rate;
 
 	return new_group_id;
 
+}
+
+
+void PoissonInputSpikingNeurons::set_up_rates() {
+
+	rates = (float*)realloc(rates, sizeof(float)*total_number_of_neurons);
+	for (int i = total_number_of_neurons - number_of_neurons_in_new_group; i < total_number_of_neurons; i++) {
+		rates[i] = rate;
+	}
+
+	total_number_of_transformations_per_object = 1;
+	total_number_of_objects = 1;
+	total_number_of_input_stimuli = 1;
+}
+
+
+void PoissonInputSpikingNeurons::setup_random_states_on_device() {
+
+
+	
+	random_state_manager = new RandomStateManager();
+
+	random_state_manager->setup_random_states();
 }
 
 void PoissonInputSpikingNeurons::allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage) {
@@ -53,7 +78,9 @@ void PoissonInputSpikingNeurons::allocate_device_pointers(int maximum_axonal_del
 void PoissonInputSpikingNeurons::copy_constants_to_device() {
 	InputSpikingNeurons::copy_constants_to_device();
 
-	CudaSafeCall(cudaMemcpy(d_rates, rates, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
+	if (rates != NULL) {
+		CudaSafeCall(cudaMemcpy(d_rates, rates, sizeof(float)*total_number_of_neurons, cudaMemcpyHostToDevice));
+	}
 }
 
 
@@ -70,23 +97,10 @@ void PoissonInputSpikingNeurons::set_threads_per_block_and_blocks_per_grid(int t
 
 }
 
-int* PoissonInputSpikingNeurons::setup_stimuli_presentation_order(Stimuli_Presentation_Struct * stimuli_presentation_params) {
-	
-	int* stimuli_presentation_order = InputSpikingNeurons::setup_stimuli_presentation_order(stimuli_presentation_params);
-
-	return stimuli_presentation_order;
-}
-
-
-bool PoissonInputSpikingNeurons::stimulus_is_new_object_for_object_by_object_presentation(int stimulus_index) {
-	print_message_and_exit("Object by object presentation currently unsupported at PoissonInputSpikingNeurons level. Please use ImagePoissonInputSpikingNeurons.");
-	return false;
-}
-
 
 void PoissonInputSpikingNeurons::update_membrane_potentials(float timestep, float current_time_in_seconds) {
 
-	poisson_update_membrane_potentials_kernel<<<RandomStateManager::instance()->block_dimensions, RandomStateManager::instance()->threads_per_block>>>(RandomStateManager::instance()->d_states,
+	poisson_update_membrane_potentials_kernel<<<random_state_manager->block_dimensions, random_state_manager->threads_per_block>>>(random_state_manager->d_states,
 														d_rates,
 														d_membrane_potentials_v,
 														timestep,

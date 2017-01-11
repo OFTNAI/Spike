@@ -7,6 +7,7 @@
 SpikingModel::SpikingModel () {
 
 	timestep = 0.0001f;
+	high_fidelity_spike_storage = false;
 
 	spiking_synapses = NULL;
 	spiking_neurons = NULL;
@@ -17,7 +18,6 @@ SpikingModel::SpikingModel () {
 
 // SpikingModel Destructor
 SpikingModel::~SpikingModel () {
-
 
 }
 
@@ -69,7 +69,7 @@ void SpikingModel::AddSynapseGroup(int presynaptic_group_id,
 
 void SpikingModel::AddSynapseGroupsForNeuronGroupAndEachInputGroup(int postsynaptic_group_id, 
 							synapse_parameters_struct * synapse_params) {
-
+	
 	for (int i = 0; i < input_spiking_neurons->total_number_of_groups; i++) {
 
 		AddSynapseGroup(CORRECTED_PRESYNAPTIC_ID(i, true), 
@@ -86,9 +86,17 @@ void SpikingModel::finalise_model() {
 
 }
 
-void SpikingModel::copy_model_to_device(bool high_fidelity_spike_storage) {
 
+void SpikingModel::create_parameter_arrays() {
+
+}
+
+
+void SpikingModel::copy_model_to_device() {
+
+	#ifndef SILENCE_MODEL_SETUP
 	TimerWithMessages * timer = new TimerWithMessages("Setting Up Network...\n");
+	#endif
 
 	int threads_per_block_neurons = 512;
 	int threads_per_block_synapses = 512;
@@ -110,10 +118,63 @@ void SpikingModel::copy_model_to_device(bool high_fidelity_spike_storage) {
 	spiking_neurons->copy_constants_to_device();
 	input_spiking_neurons->copy_constants_to_device();
 
+	#ifndef SILENCE_MODEL_SETUP
 	timer->stop_timer_and_log_time_and_message("Network Setup.", true);
+	#endif
 
 
 }
 
 
+void SpikingModel::reset_model_activities() {
+
+	spiking_neurons->reset_neuron_activities();
+	input_spiking_neurons->reset_neuron_activities();
+	spiking_synapses->reset_synapse_activities();
+	stdp_rule->reset_STDP_activities();
+
+}
+
+
+void SpikingModel::perform_per_timestep_model_instructions(float current_time_in_seconds, bool apply_stdp_to_relevant_synapses){
+
+	spiking_neurons->update_membrane_potentials(timestep, current_time_in_seconds);
+	input_spiking_neurons->update_membrane_potentials(timestep, current_time_in_seconds);
+
+	spiking_neurons->check_for_neuron_spikes(current_time_in_seconds, timestep);
+	input_spiking_neurons->check_for_neuron_spikes(current_time_in_seconds, timestep);
+
+	spiking_synapses->interact_spikes_with_synapses(spiking_neurons, input_spiking_neurons, current_time_in_seconds, timestep);
+
+	spiking_neurons->reset_current_injections();
+	spiking_synapses->calculate_postsynaptic_current_injection(spiking_neurons, current_time_in_seconds, timestep);
+
+	if (apply_stdp_to_relevant_synapses){
+		stdp_rule->Run_STDP(spiking_neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds, timestep);
+	}
+
+}
+
+
+// PREVIOUS PER TIMESTEP MODEL INSTRUCTIONS. KEEP FOR NOW FOR COMPARISON, ALTHOUGH NEW ORDERING SHOULD WORK + MORE LOGICAL
+
+// void SpikingModel::perform_per_timestep_model_instructions(float current_time_in_seconds, bool apply_stdp_to_relevant_synapses){
+
+// 	spiking_neurons->reset_current_injections();
+
+// 	spiking_neurons->check_for_neuron_spikes(current_time_in_seconds, timestep);
+// 	input_spiking_neurons->check_for_neuron_spikes(current_time_in_seconds, timestep);
+
+// 	spiking_synapses->interact_spikes_with_synapses(spiking_neurons, input_spiking_neurons, current_time_in_seconds, timestep);
+
+// 	spiking_synapses->calculate_postsynaptic_current_injection(spiking_neurons, current_time_in_seconds, timestep);
+
+// 	if (apply_stdp_to_relevant_synapses){
+// 		stdp_rule->Run_STDP(spiking_neurons->d_last_spike_time_of_each_neuron, current_time_in_seconds, timestep);
+// 	}
+
+// 	spiking_neurons->update_membrane_potentials(timestep, current_time_in_seconds);
+// 	input_spiking_neurons->update_membrane_potentials(timestep, current_time_in_seconds);
+
+// }
 

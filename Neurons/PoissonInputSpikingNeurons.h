@@ -23,7 +23,9 @@ public:
 	~PoissonInputSpikingNeurons();
 
 	// Host Pointers
+	float rate;
 	float * rates;
+	RandomStateManager * random_state_manager;
 
 	// Device Pointers
 	float * d_rates;
@@ -33,11 +35,15 @@ public:
 	virtual void allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage);
 	virtual void copy_constants_to_device();
 	virtual void reset_neuron_activities();
+	void set_up_rates();
 
 	virtual void set_threads_per_block_and_blocks_per_grid(int threads);
 	virtual void update_membrane_potentials(float timestep, float current_time_in_seconds);
-	virtual int* setup_stimuli_presentation_order(Stimuli_Presentation_Struct * stimuli_presentation_params);
-	virtual bool stimulus_is_new_object_for_object_by_object_presentation(int stimulus_index);
+
+	virtual void setup_random_states_on_device();
+
+protected:
+	
 
 
 };
