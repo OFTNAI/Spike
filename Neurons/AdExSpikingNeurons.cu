@@ -29,7 +29,23 @@ AdExSpikingNeurons::AdExSpikingNeurons() {
 
 // AdExSpikingNeurons Destructor
 AdExSpikingNeurons::~AdExSpikingNeurons() {
+	free(adaptation_values_w);
+	free(membrane_capacitances_Cm);
+	free(membrane_leakage_conductances_g0);
+	free(leak_reversal_potentials_E_L);
+	free(slope_factors_Delta_T);
+	free(adaptation_coupling_coefficients_a);
+	free(adaptation_time_constants_tau_w);
+	free(adaptation_changes_b);
 
+	CudaSafeCall(cudaFree(d_adaptation_values_w));
+	CudaSafeCall(cudaFree(d_membrane_capacitances_Cm));
+	CudaSafeCall(cudaFree(d_membrane_leakage_conductances_g0));
+	CudaSafeCall(cudaFree(d_leak_reversal_potentials_E_L));
+	CudaSafeCall(cudaFree(d_slope_factors_Delta_T));
+	CudaSafeCall(cudaFree(d_adaptation_coupling_coefficients_a));
+	CudaSafeCall(cudaFree(d_adaptation_time_constants_tau_w));
+	CudaSafeCall(cudaFree(d_adaptation_changes_b));
 }
 
 
