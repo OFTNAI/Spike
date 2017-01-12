@@ -1,6 +1,8 @@
 // -*- mode: c++ -*-
 #include "Spike/Backend/CUDA/STDP/HigginsSTDP.hpp"
 
+SPIKE_EXPORT_BACKEND_TYPE(CUDA, HigginsSTDP);
+
 namespace Backend {
   namespace CUDA {
     void HigginsSTDP::prepare() {

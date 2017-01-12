@@ -11,10 +11,9 @@ class InputSpikingNeurons; // forward definition
 namespace Backend {
   class InputSpikingNeurons : public virtual SpikingNeurons {
   public:
+    SPIKE_ADD_BACKEND_FACTORY(InputSpikingNeurons);
   };
 }
-
-#include "Spike/Backend/Dummy/Neurons/InputSpikingNeurons.hpp"
 
 class InputSpikingNeurons : public SpikingNeurons {
 public:

@@ -1,6 +1,8 @@
 // -*- mode: c++ -*-
 #include "Spike/Backend/CUDA/RecordingElectrodes/CollectNeuronSpikesRecordingElectrodes.hpp"
 
+SPIKE_EXPORT_BACKEND_TYPE(CUDA, CollectNeuronSpikesRecordingElectrodes);
+
 namespace Backend {
   namespace CUDA {
     CollectNeuronSpikesRecordingElectrodes::~CollectNeuronSpikesRecordingElectrodes() {

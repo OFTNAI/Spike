@@ -1,8 +1,11 @@
 #pragma once
 
-#include "Spike/Synapses/SpikingSynapses.hpp"
 #include "Synapses.hpp"
+
+#include "Spike/Synapses/SpikingSynapses.hpp"
 #include "Spike/Backend/CUDA/CUDABackend.hpp"
+#include "Spike/Backend/CUDA/Neurons/SpikingNeurons.hpp"
+
 #include <cuda.h>
 #include <vector_types.h>
 #include <curand.h>

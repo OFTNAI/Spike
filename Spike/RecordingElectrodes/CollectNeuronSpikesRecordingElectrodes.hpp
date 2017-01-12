@@ -9,18 +9,13 @@ class CollectNeuronSpikesRecordingElectrodes; // forward definition
 namespace Backend {
   class CollectNeuronSpikesRecordingElectrodes : public virtual RecordingElectrodes {
   public:
-    SPIKE_ADD_FRONTEND_GETTER(CollectNeuronSpikesRecordingElectrodes);
+    SPIKE_ADD_BACKEND_FACTORY(CollectNeuronSpikesRecordingElectrodes);
 
     virtual void copy_spikes_to_front() = 0; // Called by push_data_front
     virtual void copy_spike_counts_to_front() = 0; // Called by push_data_front
     virtual void collect_spikes_for_timestep(float current_time_in_seconds) = 0;
   };
 }
-
-#include "Spike/Backend/Dummy/RecordingElectrodes/CollectNeuronSpikesRecordingElectrodes.hpp"
-#ifdef SPIKE_WITH_CUDA
-#include "Spike/Backend/CUDA/RecordingElectrodes/CollectNeuronSpikesRecordingElectrodes.hpp"
-#endif
 
 struct Collect_Neuron_Spikes_Optional_Parameters {
 

@@ -20,18 +20,13 @@ class SpikeAnalyser; // forward definition
 namespace Backend {
   class SpikeAnalyser : public virtual SpikeBackendBase {
   public:
+    SPIKE_ADD_BACKEND_FACTORY(SpikeAnalyser);
     ~SpikeAnalyser() override = default;
-    SPIKE_ADD_FRONTEND_GETTER(SpikeAnalyser);
 
     virtual void store_spike_counts_for_stimulus_index
     (int stimulus_index) = 0;
   };
 }
-
-#include "Spike/Backend/Dummy/SpikeAnalyser/SpikeAnalyser.hpp"
-#ifdef SPIKE_WITH_CUDA
-#include "Spike/Backend/CUDA/SpikeAnalyser/SpikeAnalyser.hpp"
-#endif
 
 class SpikeAnalyser : public virtual SpikeBase {
 public:

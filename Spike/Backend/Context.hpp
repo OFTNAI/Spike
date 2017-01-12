@@ -2,6 +2,8 @@
 
 #include "Spike/Backend/Device.hpp"
 
+#include <string>
+
 struct DeviceParameters {
   bool high_fidelity_spike_storage = false;
   int threads_per_block_neurons = 512;
@@ -13,6 +15,7 @@ class Context {
 public:
   Backend::Device device;
   DeviceParameters params;
+  std::string backend = "Dummy";
 };
 
 extern Context* _global_ctx;

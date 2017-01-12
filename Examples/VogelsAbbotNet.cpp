@@ -16,7 +16,9 @@
 
 #include "Spike/Models/SpikingModel.hpp"
 #include "Spike/Simulator/Simulator.hpp"
+#ifdef SPIKE_WITH_CUDA
 #include <cuda_profiler_api.h>
+#endif
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -46,7 +48,9 @@
 
 
 int main (int argc, char *argv[]){
+#ifdef SPIKE_WITH_CUDA
 	cudaProfilerStart();
+#endif
 	// TIMESTEP MUST BE SET BEFORE DATA IS IMPORTED. USED FOR ROUNDING.
 	// The details below shall be used in a SpikingModel
 	SpikingModel * BenchModel = new SpikingModel();
@@ -290,5 +294,7 @@ int main (int argc, char *argv[]){
 	Simulator * simulator = new Simulator(BenchModel, simoptions);
 	simulator->RunSimulation();
 
+#ifdef SPIKE_WITH_CUDA
 	cudaProfilerStop();
+#endif
 }

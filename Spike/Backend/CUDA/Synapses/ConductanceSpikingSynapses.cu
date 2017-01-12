@@ -1,6 +1,8 @@
 // -*- mode: c++ -*-
 #include "Spike/Backend/CUDA/Synapses/ConductanceSpikingSynapses.hpp"
 
+SPIKE_EXPORT_BACKEND_TYPE(CUDA, ConductanceSpikingSynapses);
+
 namespace Backend {
   namespace CUDA {
     // ConductanceSpikingSynapses Destructor

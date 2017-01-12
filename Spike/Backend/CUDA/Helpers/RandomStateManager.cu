@@ -3,6 +3,8 @@
 #include "Spike/Helpers/TimerWithMessages.hpp"
 #include "Spike/Helpers/TerminalHelpers.hpp"
 
+SPIKE_EXPORT_BACKEND_TYPE(CUDA, RandomStateManager);
+
 namespace Backend {
   namespace CUDA {
     RandomStateManager::~RandomStateManager() {

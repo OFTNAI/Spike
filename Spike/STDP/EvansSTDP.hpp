@@ -23,18 +23,13 @@ class EvansSTDP; // forward definition
 namespace Backend {
   class EvansSTDP : public virtual STDP {
   public:
-    SPIKE_ADD_FRONTEND_GETTER(EvansSTDP);
+    SPIKE_ADD_BACKEND_FACTORY(EvansSTDP);
 
     virtual void update_synaptic_efficacies_or_weights(float current_time_in_seconds) = 0;
     virtual void update_presynaptic_activities(float timestep, float current_time_in_seconds) = 0;
     virtual void update_postsynaptic_activities(float timestep, float current_time_in_seconds) = 0;
   };
 }
-
-#include "Spike/Backend/Dummy/STDP/EvansSTDP.hpp"
-#ifdef SPIKE_WITH_CUDA
-#include "Spike/Backend/CUDA/STDP/EvansSTDP.hpp"
-#endif
 
 // STDP Parameters
 struct evans_stdp_parameters_struct : stdp_parameters_struct {

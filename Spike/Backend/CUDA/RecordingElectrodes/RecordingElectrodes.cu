@@ -1,6 +1,8 @@
 // -*- mode: c++ -*-
 #include "Spike/Backend/CUDA/RecordingElectrodes/RecordingElectrodes.hpp"
 
+// SPIKE_EXPORT_BACKEND_TYPE(CUDA, RecordingElectrodes);
+
 namespace Backend {
   namespace CUDA {
     void RecordingElectrodes::prepare() {

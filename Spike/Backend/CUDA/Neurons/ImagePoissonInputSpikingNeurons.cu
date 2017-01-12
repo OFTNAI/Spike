@@ -1,6 +1,8 @@
 // -*- mode: c++ -*-
 #include "Spike/Backend/CUDA/Neurons/ImagePoissonInputSpikingNeurons.hpp"
 
+SPIKE_EXPORT_BACKEND_TYPE(CUDA, ImagePoissonInputSpikingNeurons);
+
 namespace Backend {
   namespace CUDA {
     ImagePoissonInputSpikingNeurons::~ImagePoissonInputSpikingNeurons() {

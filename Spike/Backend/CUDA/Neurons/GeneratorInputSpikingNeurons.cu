@@ -1,6 +1,8 @@
 // -*- mode: c++ -*-
 #include "Spike/Backend/CUDA/Neurons/GeneratorInputSpikingNeurons.hpp"
 
+SPIKE_EXPORT_BACKEND_TYPE(CUDA, GeneratorInputSpikingNeurons)
+
 namespace Backend {
   namespace CUDA {
     GeneratorInputSpikingNeurons::~GeneratorInputSpikingNeurons() {

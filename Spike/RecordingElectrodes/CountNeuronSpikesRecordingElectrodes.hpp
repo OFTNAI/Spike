@@ -9,18 +9,12 @@ class CountNeuronSpikesRecordingElectrodes; // forward definition
 namespace Backend {
   class CountNeuronSpikesRecordingElectrodes : public virtual RecordingElectrodes {
   public:
-    SPIKE_ADD_FRONTEND_GETTER(CountNeuronSpikesRecordingElectrodes);
+    SPIKE_ADD_BACKEND_FACTORY(CountNeuronSpikesRecordingElectrodes);
 
     virtual void add_spikes_to_per_neuron_spike_count
     (float current_time_in_seconds) = 0;
   };
 }
-
-#include "Spike/Backend/Dummy/RecordingElectrodes/CountNeuronSpikesRecordingElectrodes.hpp"
-#ifdef SPIKE_WITH_CUDA
-#include "Spike/Backend/CUDA/RecordingElectrodes/CountNeuronSpikesRecordingElectrodes.hpp"
-#endif
-
 
 class CountNeuronSpikesRecordingElectrodes : public RecordingElectrodes {
 public:

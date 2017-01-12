@@ -27,19 +27,13 @@ class STDP; // forward definition
 namespace Backend {
   class STDP : public virtual SpikeBackendBase {
   public:
+    SPIKE_ADD_BACKEND_FACTORY(STDP);
     ~STDP() override = default;
-    SPIKE_ADD_FRONTEND_GETTER(STDP);
   };
 }
 
 static_assert(std::has_virtual_destructor<Backend::STDP>::value,
               "contract violated");
-
-#include "Spike/Backend/Dummy/STDP/STDP.hpp"
-#ifdef SPIKE_WITH_CUDA
-#include "Spike/Backend/CUDA/STDP/STDP.hpp"
-#endif
-
 
 // STDP Parameters
 struct stdp_parameters_struct {

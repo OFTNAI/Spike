@@ -18,15 +18,9 @@ class LIFSpikingNeurons; // forward definition
 namespace Backend {
   class LIFSpikingNeurons : public virtual SpikingNeurons {
   public:
-    SPIKE_ADD_FRONTEND_GETTER(LIFSpikingNeurons);
+    SPIKE_ADD_BACKEND_FACTORY(LIFSpikingNeurons);
   };
 }
-
-#include "Spike/Backend/Dummy/Neurons/LIFSpikingNeurons.hpp"
-#ifdef SPIKE_WITH_CUDA
-#include "Spike/Backend/CUDA/Neurons/LIFSpikingNeurons.hpp"
-#endif
-
 
 class LIFSpikingNeurons : public SpikingNeurons {
 public:

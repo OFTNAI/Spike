@@ -21,16 +21,10 @@ class ImagePoissonInputSpikingNeurons; // forward definition
 namespace Backend {
   class ImagePoissonInputSpikingNeurons : public virtual PoissonInputSpikingNeurons {
   public:
-    SPIKE_ADD_FRONTEND_GETTER(ImagePoissonInputSpikingNeurons);
+    SPIKE_ADD_BACKEND_FACTORY(ImagePoissonInputSpikingNeurons);
     virtual void copy_rates_to_device() = 0;
   };
 }
-
-#include "Spike/Backend/Dummy/Neurons/ImagePoissonInputSpikingNeurons.hpp"
-#ifdef SPIKE_WITH_CUDA
-#include "Spike/Backend/CUDA/Neurons/ImagePoissonInputSpikingNeurons.hpp"
-#endif
-
 
 class ImagePoissonInputSpikingNeurons : public PoissonInputSpikingNeurons {
 public:

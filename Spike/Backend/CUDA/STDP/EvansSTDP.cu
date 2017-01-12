@@ -1,6 +1,8 @@
 // -*- mode: c++ -*-
 #include "Spike/Backend/CUDA/STDP/EvansSTDP.hpp"
 
+SPIKE_EXPORT_BACKEND_TYPE(CUDA, EvansSTDP);
+
 namespace Backend {
   namespace CUDA {
     EvansSTDP::~EvansSTDP() {

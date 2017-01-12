@@ -9,7 +9,7 @@ class NetworkStateArchiveRecordingElectrodes; // forward definition
 namespace Backend {
   class NetworkStateArchiveRecordingElectrodes : public virtual RecordingElectrodes {
   public:
-    SPIKE_ADD_FRONTEND_GETTER(NetworkStateArchiveRecordingElectrodes);
+    SPIKE_ADD_BACKEND_FACTORY(NetworkStateArchiveRecordingElectrodes);
   };
 }
 

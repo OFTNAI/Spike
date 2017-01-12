@@ -9,16 +9,11 @@ class SpikingSynapses; // forward definition
 namespace Backend {
   class SpikingSynapses : public virtual Synapses {
   public:
-    SPIKE_ADD_FRONTEND_GETTER(SpikingSynapses);
+    SPIKE_ADD_BACKEND_FACTORY(SpikingSynapses);
     virtual void calculate_postsynaptic_current_injection(::SpikingNeurons * neurons, float current_time_in_seconds, float timestep) = 0;
     virtual void interact_spikes_with_synapses(::SpikingNeurons * neurons, ::SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) = 0;
   };
 }
-
-#include "Spike/Backend/Dummy/Synapses/SpikingSynapses.hpp"
-#ifdef SPIKE_WITH_CUDA
-#include "Spike/Backend/CUDA/Synapses/SpikingSynapses.hpp"
-#endif
 
 struct spiking_synapse_parameters_struct : synapse_parameters_struct {
   spiking_synapse_parameters_struct(): stdp_on(true) { synapse_parameters_struct(); }

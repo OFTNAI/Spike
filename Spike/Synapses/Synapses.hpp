@@ -30,7 +30,7 @@ class Synapses; // forward definition
 namespace Backend {
   class Synapses : public virtual SpikeBackendBase  {
   public:
-    SPIKE_ADD_FRONTEND_GETTER(Synapses);
+    SPIKE_ADD_BACKEND_FACTORY(Synapses);
     ~Synapses() override = default;
     virtual void set_neuron_indices_by_sampling_from_normal_distribution
     (int original_number_of_synapses,
@@ -47,11 +47,6 @@ namespace Backend {
 }
 
 static_assert(std::has_virtual_destructor<Backend::Synapses>::value, "contract violated");
-
-#include "Spike/Backend/Dummy/Synapses/Synapses.hpp"
-#ifdef SPIKE_WITH_CUDA
-#include "Spike/Backend/CUDA/Synapses/Synapses.hpp"
-#endif
 
 enum CONNECTIVITY_TYPE
 {

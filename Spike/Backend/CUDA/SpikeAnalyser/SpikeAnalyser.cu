@@ -1,6 +1,8 @@
 // -*- mode: c++ -*-
 #include "Spike/Backend/CUDA/SpikeAnalyser/SpikeAnalyser.hpp"
 
+SPIKE_EXPORT_BACKEND_TYPE(CUDA, SpikeAnalyser);
+
 namespace Backend {
   namespace CUDA {
     void SpikeAnalyser::prepare() {

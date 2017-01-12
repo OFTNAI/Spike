@@ -13,7 +13,7 @@ class RandomStateManager; // forward definition
 namespace Backend {
   class RandomStateManager : public virtual SpikeBackendBase {
   public:
-    SPIKE_ADD_FRONTEND_GETTER(RandomStateManager);
+    SPIKE_ADD_BACKEND_FACTORY(RandomStateManager);
 
     void reset_state() override {
       // Unorthodox: reset_state doesn't usually just mean, 'call prepare()'

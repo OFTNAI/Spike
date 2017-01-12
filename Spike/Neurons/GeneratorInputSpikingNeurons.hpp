@@ -12,14 +12,9 @@ class GeneratorInputSpikingNeurons; // forward definition
 namespace Backend {
   class GeneratorInputSpikingNeurons : public virtual InputSpikingNeurons {
   public:
-    SPIKE_ADD_FRONTEND_GETTER(GeneratorInputSpikingNeurons);
+    SPIKE_ADD_BACKEND_FACTORY(GeneratorInputSpikingNeurons);
   };
 } 
-
-#include "Spike/Backend/Dummy/Neurons/GeneratorInputSpikingNeurons.hpp"
-#ifdef SPIKE_WITH_CUDA
-#include "Spike/Backend/CUDA/Neurons/GeneratorInputSpikingNeurons.hpp"
-#endif
 
 class GeneratorInputSpikingNeurons : public InputSpikingNeurons {
 public:

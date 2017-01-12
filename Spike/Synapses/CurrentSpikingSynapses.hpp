@@ -9,14 +9,9 @@ class CurrentSpikingSynapses; // forward definition
 namespace Backend {
   class CurrentSpikingSynapses : public virtual SpikingSynapses {
   public:
-    SPIKE_ADD_FRONTEND_GETTER(CurrentSpikingSynapses);
+    SPIKE_ADD_BACKEND_FACTORY(CurrentSpikingSynapses);
   };
 }
-
-#include "Spike/Backend/Dummy/Synapses/CurrentSpikingSynapses.hpp"
-#ifdef SPIKE_WITH_CUDA
-#include "Spike/Backend/CUDA/Synapses/CurrentSpikingSynapses.hpp"
-#endif
 
 class CurrentSpikingSynapses : public SpikingSynapses {
 public:

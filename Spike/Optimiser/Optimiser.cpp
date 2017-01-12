@@ -65,7 +65,7 @@ void Optimiser::RunOptimisation(int start_optimisation_stage_index, bool test_la
 
 		while (true) {
 
-			// printf("Backend::CUDA::total_memory(): %lu\n", Backend::CUDA::total_memory());
+			// printf("Backend::total_memory(): %lu\n", Backend::total_memory());
 
 			iteration_count_for_optimisation_stage++;
 
@@ -183,13 +183,13 @@ void Optimiser::RunOptimisation(int start_optimisation_stage_index, bool test_la
 			delete simulator;
 
 			print_line_of_dashes_with_blank_lines_either_side();
-			printf("Backend::CUDA::memory_free_bytes(): %lu", Backend::CUDA::memory_free_bytes());
+			printf("Backend::memory_free_bytes(): %lu", Backend::memory_free_bytes());
 			print_line_of_dashes_with_blank_lines_either_side();
 
 		}
 
 		print_line_of_dashes_with_blank_lines_either_side();
-		printf("Backend::CUDA::memory_free_bytes(): %lu", Backend::CUDA::memory_free_bytes());
+		printf("Backend::memory_free_bytes(): %lu", Backend::memory_free_bytes());
 		print_line_of_dashes_with_blank_lines_either_side();
 
 		final_iteration_count_for_each_optimisation_stage[optimisation_stage] = iteration_count_for_optimisation_stage; 

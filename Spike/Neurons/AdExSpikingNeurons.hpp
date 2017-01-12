@@ -23,14 +23,9 @@ class AdExSpikingNeurons; // forward definition
 namespace Backend {
   class AdExSpikingNeurons : public virtual SpikingNeurons {
   public:
-    SPIKE_ADD_FRONTEND_GETTER(AdExSpikingNeurons);
+    SPIKE_ADD_BACKEND_FACTORY(AdExSpikingNeurons);
   };
 }
-
-#include "Spike/Backend/Dummy/Neurons/AdExSpikingNeurons.hpp"
-#ifdef SPIKE_WITH_CUDA
-#include "Spike/Backend/CUDA/Neurons/AdExSpikingNeurons.hpp"
-#endif
 
 class AdExSpikingNeurons : public SpikingNeurons {
 public:

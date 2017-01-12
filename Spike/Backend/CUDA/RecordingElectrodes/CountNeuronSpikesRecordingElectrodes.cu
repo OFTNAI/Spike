@@ -1,6 +1,8 @@
 // -*- mode: c++ -*-
 #include "Spike/Backend/CUDA/RecordingElectrodes/CountNeuronSpikesRecordingElectrodes.hpp"
 
+SPIKE_EXPORT_BACKEND_TYPE(CUDA, CountNeuronSpikesRecordingElectrodes);
+
 namespace Backend {
   namespace CUDA {
     CountNeuronSpikesRecordingElectrodes::~CountNeuronSpikesRecordingElectrodes() {

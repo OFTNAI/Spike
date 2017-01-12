@@ -2,6 +2,8 @@
 #include "Spike/Backend/CUDA/STDP/STDP.hpp"
 #include <iostream>
 
+// SPIKE_EXPORT_BACKEND_TYPE(CUDA, STDP);
+
 namespace Backend {
   namespace CUDA {
     void STDP::prepare() {

@@ -11,7 +11,9 @@
 
 // #include "Spike/Backend/CUDA/Memory.hpp"
 
+#ifdef SPIKE_WITH_CUDA
 #include "cuda_profiler_api.h"
+#endif
 #include <string>
 #include <stdio.h>
 #include <sys/stat.h>

@@ -1,0 +1,3 @@
+#include "CollectNeuronSpikesRecordingElectrodes.hpp"
+
+SPIKE_EXPORT_BACKEND_TYPE(Dummy, CollectNeuronSpikesRecordingElectrodes);

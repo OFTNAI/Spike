@@ -19,14 +19,9 @@ class RecordingElectrodes; // forward definition
 namespace Backend {
   class RecordingElectrodes : public virtual SpikeBackendBase {
   public:
-    SPIKE_ADD_FRONTEND_GETTER(RecordingElectrodes);
+    SPIKE_ADD_BACKEND_FACTORY(RecordingElectrodes);
   };
 }
-
-#include "Spike/Backend/Dummy/RecordingElectrodes/RecordingElectrodes.hpp"
-#ifdef SPIKE_WITH_CUDA
-#include "Spike/Backend/CUDA/RecordingElectrodes/RecordingElectrodes.hpp"
-#endif
 
 class RecordingElectrodes : public virtual SpikeBase {
 public:

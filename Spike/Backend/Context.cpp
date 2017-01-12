@@ -9,8 +9,10 @@ namespace Backend {
       _global_ctx = new Context;
 #ifdef SPIKE_WITH_CUDA
     _global_ctx->device = SPIKE_DEVICE_CUDA;
+    _global_ctx->backend = "CUDA";
 #else
     _global_ctx->device = SPIKE_DEVICE_DUMMY;
+    _global_ctx->backend = "Dummy";
 #endif
   }
 

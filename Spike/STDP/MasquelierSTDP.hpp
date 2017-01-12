@@ -32,16 +32,11 @@ class MasquelierSTDP; // forward definition
 namespace Backend {
   class MasquelierSTDP : public virtual STDP {
   public:
-    SPIKE_ADD_FRONTEND_GETTER(MasquelierSTDP);
+    SPIKE_ADD_BACKEND_FACTORY(MasquelierSTDP);
 
     virtual void apply_stdp_to_synapse_weights(float current_time_in_seconds) = 0;
   };
 }
-
-#include "Spike/Backend/Dummy/STDP/MasquelierSTDP.hpp"
-#ifdef SPIKE_WITH_CUDA
-#include "Spike/Backend/CUDA/STDP/MasquelierSTDP.hpp"
-#endif
 
 // STDP Parameters
 struct masquelier_stdp_parameters_struct : stdp_parameters_struct {

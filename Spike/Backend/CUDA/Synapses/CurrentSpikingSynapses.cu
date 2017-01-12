@@ -1,6 +1,8 @@
 // -*- mode: c++ -*-
 #include "Spike/Backend/CUDA/Synapses/CurrentSpikingSynapses.hpp"
 
+SPIKE_EXPORT_BACKEND_TYPE(CUDA, CurrentSpikingSynapses);
+
 namespace Backend {
   namespace CUDA {
     void CurrentSpikingSynapses::prepare() {

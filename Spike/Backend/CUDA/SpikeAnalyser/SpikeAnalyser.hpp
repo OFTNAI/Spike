@@ -4,6 +4,7 @@
 #include "Spike/Backend/CUDA/CUDABackend.hpp"
 #include "Spike/Backend/CUDA/Neurons/SpikingNeurons.hpp"
 #include "Spike/Backend/CUDA/Neurons/InputSpikingNeurons.hpp"
+#include "Spike/Backend/CUDA/RecordingElectrodes/CountNeuronSpikesRecordingElectrodes.hpp"
 
 #include <cuda.h>
 #include <vector_types.h>

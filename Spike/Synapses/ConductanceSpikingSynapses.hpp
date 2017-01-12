@@ -17,16 +17,10 @@ class ConductanceSpikingSynapses; // forward definition
 namespace Backend {
   class ConductanceSpikingSynapses : public virtual SpikingSynapses {
   public:
-    SPIKE_ADD_FRONTEND_GETTER(ConductanceSpikingSynapses);
+    SPIKE_ADD_BACKEND_FACTORY(ConductanceSpikingSynapses);
     virtual void update_synaptic_conductances(float timestep, float current_time_in_seconds) = 0;
   };
 }
-
-#include "Spike/Backend/Dummy/Synapses/ConductanceSpikingSynapses.hpp"
-#ifdef SPIKE_WITH_CUDA
-#include "Spike/Backend/CUDA/Synapses/ConductanceSpikingSynapses.hpp"
-#endif
-
 
 class ConductanceSpikingSynapses : public SpikingSynapses {
 

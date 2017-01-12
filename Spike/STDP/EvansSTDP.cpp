@@ -7,7 +7,6 @@
 #include "EvansSTDP.hpp"
 #include "../Helpers/TerminalHelpers.hpp"
 
-
 EvansSTDP::~EvansSTDP() {
   free(recent_postsynaptic_activities_D);
   free(recent_presynaptic_activities_C);

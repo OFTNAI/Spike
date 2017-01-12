@@ -16,15 +16,9 @@ class IzhikevichSpikingNeurons; // forward definition
 namespace Backend {
   class IzhikevichSpikingNeurons : public virtual SpikingNeurons {
   public:
-    SPIKE_ADD_FRONTEND_GETTER(IzhikevichSpikingNeurons);
+    SPIKE_ADD_BACKEND_FACTORY(IzhikevichSpikingNeurons);
   };
 }
-
-#include "Spike/Backend/Dummy/Neurons/IzhikevichSpikingNeurons.hpp"
-#ifdef SPIKE_WITH_CUDA
-#include "Spike/Backend/CUDA/Neurons/IzhikevichSpikingNeurons.hpp"
-#endif
-
 
 class IzhikevichSpikingNeurons : public SpikingNeurons {
 public:

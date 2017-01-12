@@ -1,6 +1,8 @@
 // -*- mode: c++ -*-
 #include "Spike/Backend/CUDA/Neurons/AdExSpikingNeurons.hpp"
 
+SPIKE_EXPORT_BACKEND_TYPE(CUDA, AdExSpikingNeurons);
+
 namespace Backend {
   namespace CUDA {
     AdExSpikingNeurons::~AdExSpikingNeurons() {

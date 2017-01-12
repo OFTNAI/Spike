@@ -35,15 +35,24 @@ add_library(Spike
 
 # target_compile_features(Spike PUBLIC cxx_nullptr)
 
+target_link_libraries(Spike -Wl,--whole-archive
+  SpikeDummyHelpers 
+  SpikeDummyNeurons
+  SpikeDummyRecordingElectrodes
+  SpikeDummySpikeAnalyser
+  SpikeDummySTDP
+  SpikeDummySynapses
+  -Wl,--no-whole-archive)
+
 if (BUILD_WITH_CUDA)
-  target_link_libraries(Spike
+  target_link_libraries(Spike -Wl,--whole-archive
     SpikeCUDAHelpers
     SpikeCUDANeurons
     SpikeCUDARecordingElectrodes
     SpikeCUDASpikeAnalyser
     SpikeCUDASTDP
     SpikeCUDASynapses
-    )
+    -Wl,--no-whole-archive)
 endif()
 
 if (ENABLE_PLOTTING)

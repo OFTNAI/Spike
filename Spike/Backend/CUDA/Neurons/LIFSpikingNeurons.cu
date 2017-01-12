@@ -1,6 +1,8 @@
 // -*- mode: c++ -*-
 #include "Spike/Backend/CUDA/Neurons/LIFSpikingNeurons.hpp"
 
+SPIKE_EXPORT_BACKEND_TYPE(CUDA, LIFSpikingNeurons);
+
 namespace Backend {
   namespace CUDA {
     LIFSpikingNeurons::~LIFSpikingNeurons() {

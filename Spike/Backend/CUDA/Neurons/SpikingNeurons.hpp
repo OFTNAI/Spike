@@ -13,7 +13,6 @@ namespace Backend {
                            public virtual ::Backend::SpikingNeurons {
     public:
       ~SpikingNeurons() override;
-      SPIKE_ADD_FRONTEND_GETTER(SpikingNeurons);
 
       void prepare() override;
       void reset_state() override;

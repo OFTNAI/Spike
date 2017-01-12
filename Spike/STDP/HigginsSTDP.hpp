@@ -24,18 +24,12 @@ class HigginsSTDP; // forward definition
 namespace Backend {
   class HigginsSTDP : public virtual STDP {
   public:
-    SPIKE_ADD_FRONTEND_GETTER(HigginsSTDP);
+    SPIKE_ADD_BACKEND_FACTORY(HigginsSTDP);
 
     virtual void apply_ltp_to_synapse_weights(float current_time_in_seconds) = 0;
     virtual void apply_ltd_to_synapse_weights(float current_time_in_seconds) = 0;
   };
 }
-
-#include "Spike/Backend/Dummy/STDP/HigginsSTDP.hpp"
-#ifdef SPIKE_WITH_CUDA
-#include "Spike/Backend/CUDA/STDP/HigginsSTDP.hpp"
-#endif
-
 
 // STDP Parameters
 struct higgins_stdp_parameters_struct : stdp_parameters_struct {

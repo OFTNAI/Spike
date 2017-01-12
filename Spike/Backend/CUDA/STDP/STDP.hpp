@@ -2,6 +2,9 @@
 
 #include "Spike/STDP/STDP.hpp"
 #include "Spike/Backend/CUDA/CUDABackend.hpp"
+#include "Spike/Backend/CUDA/Neurons/SpikingNeurons.hpp"
+#include "Spike/Backend/CUDA/Synapses/SpikingSynapses.hpp"
+
 #include <cuda.h>
 #include <vector_types.h>
 #include <curand.h>

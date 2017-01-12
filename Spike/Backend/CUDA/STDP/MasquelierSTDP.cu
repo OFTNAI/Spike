@@ -1,6 +1,8 @@
 // -*- mode: c++ -*-
 #include "Spike/Backend/CUDA/STDP/MasquelierSTDP.hpp"
 
+SPIKE_EXPORT_BACKEND_TYPE(CUDA, MasquelierSTDP);
+
 namespace Backend {
   namespace CUDA {
     MasquelierSTDP::~MasquelierSTDP() {

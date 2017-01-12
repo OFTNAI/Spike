@@ -23,6 +23,7 @@ class Neurons; // forward definition
 namespace Backend {
   class Neurons : public virtual SpikeBackendBase {
   public:
+    SPIKE_ADD_BACKEND_FACTORY(Neurons);
     ~Neurons() override = default;
     virtual void reset_current_injections() = 0;
   };
@@ -30,11 +31,6 @@ namespace Backend {
 
 static_assert(std::has_virtual_destructor<Backend::Neurons>::value,
               "contract violated");
-
-#include "Spike/Backend/Dummy/Neurons/Neurons.hpp"
-#ifdef SPIKE_WITH_CUDA
-#include "Spike/Backend/CUDA/Neurons/Neurons.hpp"
-#endif
 
 #define PRESYNAPTIC_IS_INPUT( id ) (id < 0 ? true : false)
 #define CORRECTED_PRESYNAPTIC_ID(id, is_input) (is_input ? (-1 * (id)) - 1 : id) 

@@ -349,6 +349,16 @@ CLOSED: [2016-12-22 Thu 14:25]
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2016-12-22 Thu 14:25]
 :END:
+** PROGRESS Make SPIKE_MAKE_INIT_BACKEND more general (fewer ifdefs for sustainability...)
+:LOGBOOK:
+- State "PROGRESS"   from "TODO"       [2017-01-12 Thu 22:50]
+:END:
+*** TODO Remove SPIKE_WITH_CUDA from library code
+**** TODO This means making Memory and Optimiser code backend-agnostic
+*** TODO Sort out Context, Device, Name mess
+*** TODO Fix tests
+** TODO Remove push_ / pull_ functions
++ replace them with more expressive -- more specific -- alternatives
 * Style / interface design
 ** TODO Unify coding style (discuss this)
 ** PROGRESS Check for unused member pointers
@@ -356,7 +366,10 @@ CLOSED: [2016-12-22 Thu 14:25]
 ** TODO Add code to reset_state for front-end reset where appropriate
 ** TODO RNG should get its config from context params
 ** TODO RNG should be managed globally (ie, static)
-** TODO Make it easier to choose backend (ie, set up context)
+** PROGRESS Make it easier to choose backend (ie, set up context)
+:LOGBOOK:
+- State "PROGRESS"   from "TODO"       [2017-01-12 Thu 22:50]
+:END:
 * Project organisation
 ** PROGRESS Move tests to CTest ?
 :LOGBOOK:
@@ -365,7 +378,36 @@ CLOSED: [2016-12-22 Thu 14:25]
 :END:
 ** TODO Put external dependencies (eg mgl) into git submodules
 * Next stages
+** DONE Allow partial backends
+CLOSED: [2017-01-12 Thu 22:50]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2017-01-12 Thu 22:50]
+:END:
++ Currently, a backend must implement (at least stubs for) all frontend classes.
+  - In fact, the CUDA backend assumes that it is used uniquely (no backend mixing).
++ Ultimately, we might want some code to run on one backend, and other code on another.
++ This will require work to ensure data synchronisation
+  - as well as restructuring to allow incomplete backends to be declared and instantiated
++ The upside will be that this will facilitate hybrid models
+** DONE To improve compile times, stop having each backend depend on the headers of all the others
+CLOSED: [2017-01-12 Thu 22:50]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2017-01-12 Thu 22:50]
+:END:
 ** TODO Write SYCL backend.
 ** TODO Write plain C++ backend. (Use ViennaCL for linalg acceleration?)
 ** TODO Support for backend fall-back
 ** TODO Write rate-coded neuron/synapse/model classes.
+
+Something like this:
+
++ RateNeurons contains vectors of activation / rate
++ RateSynapses contains (sparse?) connection matrices
++ RatePlasticity contains rules to update the synapse strengths
++ RateModel contains vectors of
+  - constituent RateNeurons
+  - pairs of RateSynapses and associated RatePlasticity
+    - defines the connectivity
+
+----
+** TODO Add runtime backend loader
