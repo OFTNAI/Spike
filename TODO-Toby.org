@@ -403,7 +403,12 @@ CLOSED: [2017-01-12 Thu 22:50]
 :END:
 ** TODO Write SYCL backend.
 ** TODO Write plain C++ backend. (Use ViennaCL for linalg acceleration?)
-** TODO Support for backend fall-back
+** DONE Support for backend fall-back
+CLOSED: [2017-01-13 Fri 11:50]
+:LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2017-01-13 Fri 11:50]
+- State "PROGRESS"   from "TODO"       [2017-01-13 Fri 11:45]
+:END:
 ** TODO Write rate-coded neuron/synapse/model classes.
 
 Something like this:
