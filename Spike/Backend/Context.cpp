@@ -7,11 +7,6 @@ namespace Backend {
   void init_global_context() {
     if (!_global_ctx)
       _global_ctx = new Context;
-#ifdef SPIKE_WITH_CUDA
-    _global_ctx->backend = "CUDA";
-#else
-    _global_ctx->backend = "Dummy";
-#endif
   }
 
   Context* get_current_context() {

@@ -353,8 +353,10 @@ CLOSED: [2016-12-22 Thu 14:25]
 :LOGBOOK:
 - State "PROGRESS"   from "TODO"       [2017-01-12 Thu 22:50]
 :END:
-*** PROGRESS Remove SPIKE_WITH_CUDA from library code
+*** DONE Remove SPIKE_WITH_CUDA from library code
+CLOSED: [2017-01-13 Fri 15:25]
 :LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2017-01-13 Fri 15:25]
 - State "PROGRESS"   from "TODO"       [2017-01-13 Fri 11:30]
 :END:
 **** DONE This means making Memory and Optimiser code backend-agnostic
@@ -362,8 +364,15 @@ CLOSED: [2017-01-13 Fri 11:30]
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2017-01-13 Fri 11:30]
 :END:
-*** TODO Sort out Context, Device, Name mess
-*** TODO Fix tests
+*** PROGRESS Sort out Context, Device, Name mess
+:LOGBOOK:
+- State "PROGRESS"   from "TODO"       [2017-01-13 Fri 15:15]
+:END:
+*** DONE Fix tests
+CLOSED: [2017-01-13 Fri 15:15]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2017-01-13 Fri 15:15]
+:END:
 ** TODO Remove push_ / pull_ functions
 + replace them with more expressive -- more specific -- alternatives
 * Style / interface design

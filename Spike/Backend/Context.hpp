@@ -15,7 +15,7 @@ struct DeviceParameters {
 struct Context {
   DeviceParameters params;
 #ifdef SPIKE_DEFAULT_BACKEND
-  std::string backend = STRINGIFY(SPIKE_DEFAULT_BACKEND);
+  std::string backend = SPIKE_DEFAULT_BACKEND;
 #else
   std::string backend = "Dummy";
 #endif
