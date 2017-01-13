@@ -1,7 +1,10 @@
 #pragma once
 
 #include "Spike/Synapses/Synapses.hpp"
+
 #include "Spike/Backend/CUDA/CUDABackend.hpp"
+#include "Spike/Backend/CUDA/Helpers/RandomStateManager.hpp"
+
 #include <cuda.h>
 #include <vector_types.h>
 #include <curand.h>

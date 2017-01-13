@@ -24,12 +24,6 @@ namespace Backend {
   };
 }
 
-#include "Spike/Backend/Dummy/Helpers/RandomStateManager.hpp"
-#ifdef SPIKE_WITH_CUDA
-#include "Spike/Backend/CUDA/Helpers/RandomStateManager.hpp"
-#endif
-
-
 class RandomStateManager : public virtual SpikeBase {
 public:
   ~RandomStateManager() override = default;

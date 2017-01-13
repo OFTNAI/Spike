@@ -13,12 +13,6 @@ namespace Backend {
   };
 }
 
-#include "Spike/Backend/Dummy/RecordingElectrodes/NetworkStateArchiveRecordingElectrodes.hpp"
-#ifdef SPIKE_WITH_CUDA
-#include "Spike/Backend/CUDA/RecordingElectrodes/NetworkStateArchiveRecordingElectrodes.hpp"
-#endif
-
-
 struct Network_State_Archive_Optional_Parameters {
 
 	Network_State_Archive_Optional_Parameters(): human_readable_storage(false) {}

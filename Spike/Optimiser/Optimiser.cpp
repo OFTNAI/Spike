@@ -3,7 +3,7 @@
 #include "../SpikeAnalyser/SpikeAnalyser.hpp"
 #include "../Helpers/TimerWithMessages.hpp"
 #include "../Helpers/TerminalHelpers.hpp"
-#include "../Backend/Memory.hpp"
+#include "../Helpers/Memory.hpp"
 
 
 
