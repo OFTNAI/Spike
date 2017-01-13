@@ -35,7 +35,7 @@ add_library(Spike
 
 # target_compile_features(Spike PUBLIC cxx_nullptr)
 
-target_link_libraries(Spike -Wl,--whole-archive
+target_link_libraries(Spike PRIVATE -Wl,--whole-archive
   SpikeDummyHelpers 
   SpikeDummyNeurons
   SpikeDummyRecordingElectrodes
@@ -45,7 +45,7 @@ target_link_libraries(Spike -Wl,--whole-archive
   -Wl,--no-whole-archive)
 
 if (BUILD_WITH_CUDA)
-  target_link_libraries(Spike -Wl,--whole-archive
+  target_link_libraries(Spike PRIVATE -Wl,--whole-archive
     SpikeCUDAHelpers
     SpikeCUDANeurons
     SpikeCUDARecordingElectrodes

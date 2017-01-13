@@ -61,9 +61,9 @@
             return new ::Backend::BACKEND::TYPE(front, ctx);              \
           }                                                               \
           TYPE() {                                                        \
-            /*std::cout << "Registering Backend::" #BACKEND "::" #TYPE */ \
-            /*          << " factory (" << TYPEID_NAME(factory)        */ \
-            /*          << ") at " << factory << "\n";                 */ \
+            /*std::cout << "Registering Backend::" #BACKEND "::" #TYPE /**/ \
+            /*          << " factory (" << TYPEID_NAME(factory)        /**/ \
+            /*          << ") at " << factory << "\n";                 /**/ \
             ::Backend::TYPE::factory[#BACKEND] = factory;                 \
           }                                                               \
         };                                                                \
@@ -71,3 +71,5 @@
       }                                                                   \
     }                                                                     \
   }
+
+#define STRINGIFY(s) #s

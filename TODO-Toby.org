@@ -409,6 +409,7 @@ CLOSED: [2017-01-13 Fri 11:50]
 - State "DONE"       from "PROGRESS"   [2017-01-13 Fri 11:50]
 - State "PROGRESS"   from "TODO"       [2017-01-13 Fri 11:45]
 :END:
+** TODO Make backend fall-back flexible (select fall-back at runtime)
 ** TODO Write rate-coded neuron/synapse/model classes.
 
 Something like this:

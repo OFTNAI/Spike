@@ -65,6 +65,7 @@ if(BUILD_WITH_CUDA)
   find_package(CUDA REQUIRED)
   #list(APPEND CUDA_NVCC_FLAGS "-std=c++14")
   add_definitions(-DSPIKE_WITH_CUDA)
+  add_definitions(-DSPIKE_DEFAULT_BACKEND=CUDA)
   include_directories(BEFORE SYSTEM "${CUDA_INCLUDE_DIRS}")
 endif()
 
