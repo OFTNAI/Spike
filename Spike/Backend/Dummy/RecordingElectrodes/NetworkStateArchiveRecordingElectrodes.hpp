@@ -11,13 +11,8 @@ namespace Backend {
     public:
       SPIKE_MAKE_BACKEND_CONSTRUCTOR(NetworkStateArchiveRecordingElectrodes);
 
-      void prepare() override {
-        RecordingElectrodes::prepare();
-      }
-
-      void reset_state() override {
-        RecordingElectrodes::reset_state();
-      }
+      void prepare() override;
+      void reset_state() override;
     };
   }
 }

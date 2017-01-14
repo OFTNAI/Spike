@@ -10,16 +10,10 @@ namespace Backend {
     public:
       SPIKE_MAKE_BACKEND_CONSTRUCTOR(MasquelierSTDP);
 
-      void prepare() override {
-        STDP::prepare();
-      }
+      void prepare() override;
+      void reset_state() override;
 
-      void reset_state() override {
-        STDP::reset_state();
-      }
-
-      void apply_stdp_to_synapse_weights(float current_time_in_seconds) override {
-      }
+      void apply_stdp_to_synapse_weights(float current_time_in_seconds) override;
     };
   }
 }

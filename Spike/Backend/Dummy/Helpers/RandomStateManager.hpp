@@ -8,8 +8,7 @@ namespace Backend {
     public:
       SPIKE_MAKE_BACKEND_CONSTRUCTOR(RandomStateManager);
 
-      void prepare() override {
-      }
+      void prepare() override;
     };
   }
 }

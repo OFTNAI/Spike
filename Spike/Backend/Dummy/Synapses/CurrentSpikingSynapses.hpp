@@ -10,16 +10,12 @@ namespace Backend {
     public:
       SPIKE_MAKE_BACKEND_CONSTRUCTOR(CurrentSpikingSynapses);
 
-      void prepare() override {
-        SpikingSynapses::prepare();
-      }
+      void prepare() override;
+      void reset_state() override;
 
-      void calculate_postsynaptic_current_injection(::SpikingNeurons * neurons, float current_time_in_seconds, float timestep) final {
-      }
-
-      void reset_state() override {
-        SpikingSynapses::reset_state();
-      }
+      void calculate_postsynaptic_current_injection
+      (::SpikingNeurons * neurons,
+       float current_time_in_seconds, float timestep) final;
     };
   } // namespace Dummy
 } // namespace Backend

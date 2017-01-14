@@ -8,8 +8,7 @@ namespace Backend {
     public:
       SPIKE_MAKE_BACKEND_CONSTRUCTOR(MemoryManager);
 
-      void prepare() override {
-      }
+      void prepare() override;
 
       std::size_t total_bytes() const override;
       std::size_t free_bytes() const override;

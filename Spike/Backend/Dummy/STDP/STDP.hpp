@@ -6,11 +6,8 @@ namespace Backend {
   namespace Dummy {
     class STDP : public virtual ::Backend::STDP {
     public:
-      void prepare() override {
-      }
-
-      void reset_state() override {
-      }
+      void prepare() override;
+      void reset_state() override;
     };
   }
 }

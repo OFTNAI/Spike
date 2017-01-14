@@ -8,19 +8,13 @@ namespace Backend {
     class SpikingSynapses : public virtual ::Backend::Dummy::Synapses,
                             public virtual ::Backend::SpikingSynapses {
     public:
-      void interact_spikes_with_synapses(::SpikingNeurons * neurons, ::SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) final {
-      }
+      void prepare() override;
+      void reset_state() override;
 
-      void prepare() override {
-        Synapses::prepare();
-      }
-
-      void reset_state() override {
-        Synapses::reset_state();
-      }
-
-      void copy_weights_to_host() override {
-      }
+      void interact_spikes_with_synapses
+      (::SpikingNeurons * neurons, ::SpikingNeurons * input_neurons,
+       float current_time_in_seconds, float timestep) final;
+      void copy_weights_to_host() override;
     };
   } // namespace Dummy
 } // namespace Backend

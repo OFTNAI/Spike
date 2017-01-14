@@ -10,13 +10,8 @@ namespace Backend {
     public:
       SPIKE_MAKE_BACKEND_CONSTRUCTOR(LIFSpikingNeurons);
 
-      void prepare() override {
-        SpikingNeurons::prepare();
-      }
-
-      void reset_state() override {
-        SpikingNeurons::reset_state();
-      }
+      void prepare() override;
+      void reset_state() override;
 
       // May want to override these when writing a new backend, or may not:
       using ::Backend::Dummy::SpikingNeurons::check_for_neuron_spikes;

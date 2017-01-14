@@ -6,11 +6,8 @@ namespace Backend {
   namespace Dummy {
     class RecordingElectrodes : public virtual ::Backend::RecordingElectrodes {
     public:
-      void prepare() override {
-      }
-
-      void reset_state() override {
-      }
+      void prepare() override;
+      void reset_state() override;
     };
   }
 }

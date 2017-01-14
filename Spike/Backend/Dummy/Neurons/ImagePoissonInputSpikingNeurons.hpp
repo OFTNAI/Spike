@@ -10,16 +10,10 @@ namespace Backend {
     public:
       SPIKE_MAKE_BACKEND_CONSTRUCTOR(ImagePoissonInputSpikingNeurons);
 
-      void prepare() override {
-        PoissonInputSpikingNeurons::prepare();
-      }
+      void prepare() override;
+      void reset_state() override;
 
-      void reset_state() override {
-        PoissonInputSpikingNeurons::reset_state();
-      }
-
-      void copy_rates_to_device() override {
-      }
+      void copy_rates_to_device() override;
       
       // May want to override these when writing a new backend, or may not:
       using ::Backend::Dummy::SpikingNeurons::check_for_neuron_spikes;

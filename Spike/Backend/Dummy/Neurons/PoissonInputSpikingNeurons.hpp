@@ -11,13 +11,8 @@ namespace Backend {
       PoissonInputSpikingNeurons() = default;
       SPIKE_MAKE_BACKEND_CONSTRUCTOR(PoissonInputSpikingNeurons);
 
-      void prepare() override {
-        InputSpikingNeurons::prepare();
-      }
-
-      void reset_state() override {
-        InputSpikingNeurons::reset_state();
-      }
+      void prepare() override;
+      void reset_state() override;
     };
   }
 }

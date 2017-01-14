@@ -8,13 +8,8 @@ namespace Backend {
     class InputSpikingNeurons : public virtual ::Backend::Dummy::SpikingNeurons,
                                 public virtual ::Backend::InputSpikingNeurons {
     public:
-      void prepare() override {
-        SpikingNeurons::prepare();
-      }
-
-      void reset_state() override {
-        SpikingNeurons::reset_state();
-      }
+      void prepare() override;
+      void reset_state() override;
     };
   }
 }
