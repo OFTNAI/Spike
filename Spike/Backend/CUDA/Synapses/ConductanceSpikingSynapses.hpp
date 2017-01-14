@@ -34,9 +34,6 @@ namespace Backend {
        float timestep) final; // Overrides ::Backend::SpikingSynapses:: ...
 
       void update_synaptic_conductances(float timestep, float current_time_in_seconds) final;
-
-      void push_data_front() override;
-      void pull_data_back() override;
     };
 
     __global__ void conductance_calculate_postsynaptic_current_injection_kernel

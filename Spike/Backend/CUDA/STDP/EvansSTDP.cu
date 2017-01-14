@@ -29,14 +29,6 @@ namespace Backend {
                               cudaMemcpyHostToDevice));
     }
 
-    void EvansSTDP::push_data_front() {
-      STDP::push_data_front();
-    }
-
-    void EvansSTDP::pull_data_back() {
-      STDP::pull_data_back();
-    }
-
     void EvansSTDP::allocate_device_pointers(){
       // RUN AFTER NETWORK HAS BEEN STARTED
       // (eg, see prepare_backend() call at end of

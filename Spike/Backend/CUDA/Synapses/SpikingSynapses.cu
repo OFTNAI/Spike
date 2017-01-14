@@ -32,16 +32,11 @@ namespace Backend {
                               cudaMemcpyHostToDevice));
     }
 
-    void SpikingSynapses::push_data_front() {
-      Synapses::push_data_front();
+    void SpikingSynapses::copy_weights_to_host() {
       CudaSafeCall(cudaMemcpy(frontend()->synaptic_efficacies_or_weights,
                               synaptic_efficacies_or_weights,
                               sizeof(float)*frontend()->total_number_of_synapses,
                               cudaMemcpyDeviceToHost));
-    }
-
-    void SpikingSynapses::pull_data_back() {
-      Synapses::pull_data_back();
     }
 
     void SpikingSynapses::prepare() {

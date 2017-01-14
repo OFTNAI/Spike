@@ -19,12 +19,7 @@ namespace Backend {
         Synapses::reset_state();
       }
 
-      void push_data_front() override {
-        Synapses::push_data_front();
-      }
-
-      void pull_data_back() override {
-        Synapses::pull_data_back();
+      void copy_weights_to_host() override {
       }
     };
   } // namespace Dummy

@@ -21,14 +21,6 @@ namespace Backend {
       allocate_pointers_for_spike_count();
     }
 
-    void CountNeuronSpikesRecordingElectrodes::push_data_front() {
-      RecordingElectrodes::push_data_front();
-    }
-
-    void CountNeuronSpikesRecordingElectrodes::pull_data_back() {
-      RecordingElectrodes::pull_data_back();
-    }
-
     void CountNeuronSpikesRecordingElectrodes::allocate_pointers_for_spike_count() {
       CudaSafeCall(cudaMalloc((void **)&per_neuron_spike_counts,
                               sizeof(int) * frontend()->neurons->total_number_of_neurons));

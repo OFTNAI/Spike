@@ -21,9 +21,6 @@ namespace Backend {
       void prepare() override;
       void reset_state() override;
 
-      void push_data_front() override;
-      void pull_data_back() override;
-
       void copy_spikes_to_front() override;
       void copy_spike_counts_to_front() override;
 

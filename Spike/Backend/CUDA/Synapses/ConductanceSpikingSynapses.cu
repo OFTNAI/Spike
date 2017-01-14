@@ -48,14 +48,6 @@ namespace Backend {
       copy_constants_and_initial_efficacies_to_device();
     }
 
-    void ConductanceSpikingSynapses::push_data_front() {
-      SpikingSynapses::push_data_front();
-    }
-
-    void ConductanceSpikingSynapses::pull_data_back() {
-      SpikingSynapses::pull_data_back();
-    }
-
     void ConductanceSpikingSynapses::allocate_device_pointers() {
 	CudaSafeCall(cudaMalloc((void **)&biological_conductance_scaling_constants_lambda, sizeof(float)*frontend()->total_number_of_synapses));
 	CudaSafeCall(cudaMalloc((void **)&reversal_potentials_Vhat, sizeof(float)*frontend()->total_number_of_synapses));

@@ -18,14 +18,6 @@ namespace Backend {
       void reset_state() override {
         InputSpikingNeurons::reset_state();
       }
-
-      void push_data_front() override {
-        InputSpikingNeurons::push_data_front();
-      }
-
-      void pull_data_back() override {
-        InputSpikingNeurons::pull_data_back();
-      }
     };
   }
 }

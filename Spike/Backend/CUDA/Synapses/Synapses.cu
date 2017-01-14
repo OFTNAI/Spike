@@ -24,12 +24,6 @@ namespace Backend {
     void Synapses::reset_state() {
     }
 
-    void Synapses::push_data_front() {
-    }
-
-    void Synapses::pull_data_back() {
-    }
-
     void Synapses::allocate_device_pointers() {
 #ifdef CRAZY_DEBUG
       // if (frontend()->total_number_of_synapses == 0)

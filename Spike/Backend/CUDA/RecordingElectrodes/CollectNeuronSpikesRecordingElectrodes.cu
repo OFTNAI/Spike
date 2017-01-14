@@ -42,16 +42,6 @@ namespace Backend {
       CudaSafeCall(cudaMemcpy(&(frontend()->total_number_of_spikes_stored_on_device[0]), &(total_number_of_spikes_stored_on_device[0]), (sizeof(int)), cudaMemcpyDeviceToHost));
     }
 
-    void CollectNeuronSpikesRecordingElectrodes::push_data_front() {
-      RecordingElectrodes::push_data_front();
-      copy_spikes_to_front();
-      copy_spike_counts_to_front();
-    }
-
-    void CollectNeuronSpikesRecordingElectrodes::pull_data_back() {
-      RecordingElectrodes::pull_data_back();
-    }
-
     void CollectNeuronSpikesRecordingElectrodes::collect_spikes_for_timestep
     (float current_time_in_seconds) {
       collect_spikes_for_timestep_kernel<<<neurons_backend->number_of_neuron_blocks_per_grid, neurons_backend->threads_per_block>>>

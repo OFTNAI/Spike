@@ -21,9 +21,6 @@ namespace Backend {
       void prepare() override;
       void reset_state() override;
 
-      void push_data_front() override;
-      void pull_data_back() override;
-
       void allocate_pointers_for_spike_count(); // Not virtual
 
       void add_spikes_to_per_neuron_spike_count

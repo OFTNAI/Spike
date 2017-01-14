@@ -318,8 +318,10 @@ CLOSED: [2016-12-21 Wed 11:10]
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2016-12-21 Wed 11:10]
 :END:
-** PROGRESS Check Context params
+** DONE Check Context params
+CLOSED: [2017-01-13 Fri 15:35]
 :LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2017-01-13 Fri 15:35]
 - State "PROGRESS"   from "TODO"       [2016-12-21 Wed 11:00]
 :END:
 + maximum_axonal_delay_in_timestep is a bit hacky
@@ -349,8 +351,10 @@ CLOSED: [2016-12-22 Thu 14:25]
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2016-12-22 Thu 14:25]
 :END:
-** PROGRESS Make SPIKE_MAKE_INIT_BACKEND more general (fewer ifdefs for sustainability...)
+** DONE Make SPIKE_MAKE_INIT_BACKEND more general (fewer ifdefs for sustainability...)
+CLOSED: [2017-01-13 Fri 15:35]
 :LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2017-01-13 Fri 15:35]
 - State "PROGRESS"   from "TODO"       [2017-01-12 Thu 22:50]
 :END:
 *** DONE Remove SPIKE_WITH_CUDA from library code
@@ -364,8 +368,11 @@ CLOSED: [2017-01-13 Fri 11:30]
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2017-01-13 Fri 11:30]
 :END:
-*** PROGRESS Sort out Context, Device, Name mess
+*** CANCELLED Sort out Context, Device, Name mess
+CLOSED: [2017-01-13 Fri 15:35]
 :LOGBOOK:
+- State "CANCELLED"  from "PROGRESS"   [2017-01-13 Fri 15:35] \\
+  Postponed; purpose is suited fine with a simple string right now.
 - State "PROGRESS"   from "TODO"       [2017-01-13 Fri 15:15]
 :END:
 *** DONE Fix tests
@@ -373,7 +380,11 @@ CLOSED: [2017-01-13 Fri 15:15]
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2017-01-13 Fri 15:15]
 :END:
-** TODO Remove push_ / pull_ functions
+** DONE Remove push_ / pull_ functions
+CLOSED: [2017-01-14 Sat 17:10]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2017-01-14 Sat 17:10]
+:END:
 + replace them with more expressive -- more specific -- alternatives
 * Style / interface design
 ** TODO Unify coding style (discuss this)
@@ -410,6 +421,7 @@ CLOSED: [2017-01-12 Thu 22:50]
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2017-01-12 Thu 22:50]
 :END:
+** TODO Generalize Context for more flexible backend-specific options
 ** TODO Write SYCL backend.
 ** TODO Write plain C++ backend. (Use ViennaCL for linalg acceleration?)
 ** DONE Support for backend fall-back

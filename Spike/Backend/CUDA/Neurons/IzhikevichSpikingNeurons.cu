@@ -37,14 +37,6 @@ namespace Backend {
       CudaSafeCall(cudaMemset(states_u, 0.0f, sizeof(float)*frontend()->total_number_of_neurons));
     }
 
-    void IzhikevichSpikingNeurons::push_data_front() {
-      SpikingNeurons::push_data_front();
-    }
-
-    void IzhikevichSpikingNeurons::pull_data_back() {
-      SpikingNeurons::pull_data_back();
-    }
-
     void IzhikevichSpikingNeurons::check_for_neuron_spikes(float current_time_in_seconds, float timestep) {
 	SpikingNeurons::check_for_neuron_spikes(current_time_in_seconds, timestep);
 

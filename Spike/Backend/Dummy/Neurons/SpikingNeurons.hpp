@@ -16,14 +16,6 @@ namespace Backend {
         Neurons::reset_state();
       }
 
-      void push_data_front() override {
-        Neurons::push_data_front();
-      }
-
-      void pull_data_back() override {
-        Neurons::pull_data_back();
-      }
-
       void check_for_neuron_spikes(float current_time_in_seconds, float timestep) override {
       }
 

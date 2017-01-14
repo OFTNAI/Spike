@@ -14,9 +14,6 @@ namespace Backend {
       void prepare() override;
       void reset_state() override;
 
-      void push_data_front() override;
-      void pull_data_back() override;
-
       // Device Pointers
       int * per_neuron_afferent_synapse_count = nullptr;	/**< A (device-side) count of the number of afferent synapses for each neuron */
       float* current_injections = nullptr;				/**< Device array for the storage of current to be injected into each neuron on each timestep. */

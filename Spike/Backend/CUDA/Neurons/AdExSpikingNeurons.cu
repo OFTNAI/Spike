@@ -78,14 +78,6 @@ namespace Backend {
                               cudaMemcpyHostToDevice));
     }
 
-    void AdExSpikingNeurons::push_data_front() {
-      SpikingNeurons::push_data_front();
-    }
-
-    void AdExSpikingNeurons::pull_data_back() {
-      SpikingNeurons::pull_data_back();
-    }
-
     void AdExSpikingNeurons::update_membrane_potentials(float timestep, float current_time_in_seconds) {
 
 	AdEx_update_membrane_potentials<<<number_of_neuron_blocks_per_grid, threads_per_block>>>

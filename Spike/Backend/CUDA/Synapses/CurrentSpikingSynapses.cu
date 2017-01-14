@@ -13,14 +13,6 @@ namespace Backend {
       SpikingSynapses::reset_state();
     }
 
-    void CurrentSpikingSynapses::push_data_front() {
-      SpikingSynapses::push_data_front();
-    }
-
-    void CurrentSpikingSynapses::pull_data_back() {
-      SpikingSynapses::pull_data_back();
-    }
-
     void CurrentSpikingSynapses::calculate_postsynaptic_current_injection(::SpikingNeurons * neurons, float current_time_in_seconds, float timestep) {
       ::Backend::CUDA::SpikingNeurons* neurons_backend
           = dynamic_cast<::Backend::CUDA::SpikingNeurons*>(neurons->backend());

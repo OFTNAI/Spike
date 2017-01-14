@@ -18,14 +18,6 @@ namespace Backend {
         PoissonInputSpikingNeurons::reset_state();
       }
 
-      void push_data_front() override {
-        PoissonInputSpikingNeurons::push_data_front();
-      }
-
-      void pull_data_back() override {
-        PoissonInputSpikingNeurons::pull_data_back();
-      }
-
       void copy_rates_to_device() override {
       }
       

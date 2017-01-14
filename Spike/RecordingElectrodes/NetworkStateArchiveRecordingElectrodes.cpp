@@ -47,7 +47,7 @@ void NetworkStateArchiveRecordingElectrodes::write_network_state_to_file() {
 	clock_t save_network_state_start = clock();
 
 	// Copy back the data that we might want:
-        backend()->push_data_front(); //copy_state_to_front(this);
+        synapses->backend()->copy_weights_to_host();
 	
 	if (network_state_archive_optional_parameters->human_readable_storage){
 		// Creating and Opening all the files

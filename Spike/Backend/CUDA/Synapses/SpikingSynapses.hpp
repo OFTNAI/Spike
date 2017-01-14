@@ -31,10 +31,9 @@ namespace Backend {
       void allocate_device_pointers(); // Not virtual
       void copy_constants_and_initial_efficacies_to_device(); // Not virtual
 
-      void interact_spikes_with_synapses(::SpikingNeurons * neurons, ::SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) final;
+      void copy_weights_to_host() override;
 
-      void push_data_front() override;
-      void pull_data_back() override;
+      void interact_spikes_with_synapses(::SpikingNeurons * neurons, ::SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) final;
     };
 
     __global__ void move_spikes_towards_synapses_kernel(int* d_presynaptic_neuron_indices,

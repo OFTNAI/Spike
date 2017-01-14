@@ -26,9 +26,6 @@ namespace Backend {
       void prepare() override;
       void reset_state() override;
 
-      void push_data_front() override;
-      void pull_data_back() override;
-
       ::Backend::CUDA::RandomStateManager* random_state_manager_backend = nullptr;
       float * rates = nullptr;
       

@@ -11,8 +11,8 @@ namespace Backend {
   public:
     SPIKE_ADD_BACKEND_FACTORY(CollectNeuronSpikesRecordingElectrodes);
 
-    virtual void copy_spikes_to_front() = 0; // Called by push_data_front
-    virtual void copy_spike_counts_to_front() = 0; // Called by push_data_front
+    virtual void copy_spikes_to_front() = 0;
+    virtual void copy_spike_counts_to_front() = 0;
     virtual void collect_spikes_for_timestep(float current_time_in_seconds) = 0;
   };
 }

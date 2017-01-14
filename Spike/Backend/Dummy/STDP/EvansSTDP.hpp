@@ -18,14 +18,6 @@ namespace Backend {
         STDP::reset_state();
       }
 
-      void push_data_front() override {
-        STDP::push_data_front();
-      }
-
-      void pull_data_back() override {
-        STDP::pull_data_back();
-      }
-
       void update_synaptic_efficacies_or_weights(float current_time_in_seconds) override {
       }
 

@@ -34,14 +34,6 @@ namespace Backend {
       allocate_device_pointers();
     }
 
-    void MasquelierSTDP::push_data_front() {
-      STDP::push_data_front();
-    }
-
-    void MasquelierSTDP::pull_data_back() {
-      STDP::pull_data_back();
-    }
-
     void MasquelierSTDP::allocate_device_pointers() {
       // The following doesn't do anything in original code...
       // ::Backend::CUDA::STDP::allocate_device_pointers();

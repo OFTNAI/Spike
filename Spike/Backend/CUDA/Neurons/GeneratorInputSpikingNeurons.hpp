@@ -22,9 +22,6 @@ namespace Backend {
       void prepare() override;
       void reset_state() override;
 
-      void push_data_front() override;
-      void pull_data_back() override;
-
       // Device Pointers
       int* neuron_ids_for_stimulus = nullptr;
       float* spike_times_for_stimulus = nullptr;

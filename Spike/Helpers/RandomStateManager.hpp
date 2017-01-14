@@ -19,8 +19,6 @@ namespace Backend {
       // Unorthodox: reset_state doesn't usually just mean, 'call prepare()'
       prepare();
     }
-    void push_data_front() override {}
-    void pull_data_back() override {}
   };
 }
 

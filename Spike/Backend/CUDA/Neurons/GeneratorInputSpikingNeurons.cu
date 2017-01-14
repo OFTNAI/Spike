@@ -35,14 +35,6 @@ namespace Backend {
                               cudaMemcpyHostToDevice));
     }
 
-    void GeneratorInputSpikingNeurons::push_data_front() {
-      InputSpikingNeurons::push_data_front();
-    }
-
-    void GeneratorInputSpikingNeurons::pull_data_back() {
-      InputSpikingNeurons::pull_data_back();
-    }
-
     void GeneratorInputSpikingNeurons::check_for_neuron_spikes(float current_time_in_seconds, float timestep) {
       check_for_generator_spikes_kernel<<<number_of_neuron_blocks_per_grid, threads_per_block>>>
         (neuron_ids_for_stimulus,

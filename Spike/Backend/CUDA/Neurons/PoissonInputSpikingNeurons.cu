@@ -36,14 +36,6 @@ namespace Backend {
       assert(random_state_manager_backend);
     }
 
-    void PoissonInputSpikingNeurons::push_data_front() {
-      InputSpikingNeurons::push_data_front();
-    }
-
-    void PoissonInputSpikingNeurons::pull_data_back() {
-      InputSpikingNeurons::pull_data_back();
-    }
-
     void PoissonInputSpikingNeurons::update_membrane_potentials(float timestep, float current_time_in_seconds) {
       poisson_update_membrane_potentials_kernel<<<random_state_manager_backend->block_dimensions, random_state_manager_backend->threads_per_block>>>
         (random_state_manager_backend->states,

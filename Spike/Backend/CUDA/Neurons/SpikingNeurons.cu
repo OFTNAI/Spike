@@ -63,14 +63,6 @@ namespace Backend {
       }
     }
 
-    void SpikingNeurons::push_data_front() {
-      Neurons::push_data_front();
-    }
-
-    void SpikingNeurons::pull_data_back() {
-      Neurons::pull_data_back();
-    }
-
     void SpikingNeurons::check_for_neuron_spikes(float current_time_in_seconds, float timestep) {
       check_for_neuron_spikes_kernel<<<number_of_neuron_blocks_per_grid, threads_per_block>>>
         (membrane_potentials_v,

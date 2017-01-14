@@ -22,9 +22,6 @@ namespace Backend {
       void prepare() override;
       void reset_state() override;
 
-      void push_data_front() override;
-      void pull_data_back() override;
-
       void copy_constants_to_device(); // Not virtual
       void allocate_device_pointers(); // Not virtual
 

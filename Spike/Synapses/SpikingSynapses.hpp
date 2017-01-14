@@ -10,6 +10,7 @@ namespace Backend {
   class SpikingSynapses : public virtual Synapses {
   public:
     SPIKE_ADD_BACKEND_FACTORY(SpikingSynapses);
+    virtual void copy_weights_to_host() = 0;
     virtual void calculate_postsynaptic_current_injection(::SpikingNeurons * neurons, float current_time_in_seconds, float timestep) = 0;
     virtual void interact_spikes_with_synapses(::SpikingNeurons * neurons, ::SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) = 0;
   };

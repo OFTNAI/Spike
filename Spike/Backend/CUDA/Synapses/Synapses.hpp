@@ -33,9 +33,6 @@ namespace Backend {
       void prepare() override;
       void reset_state() override;
 
-      void push_data_front() override;
-      void pull_data_back() override;
-
       void allocate_device_pointers(); // Not virtual
       void copy_constants_and_initial_efficacies_to_device(); // Not virtual
       void set_threads_per_block_and_blocks_per_grid(int threads); // Not virtual

@@ -20,14 +20,6 @@ namespace Backend {
       void reset_state() override {
         SpikingSynapses::reset_state();
       }
-
-      void push_data_front() override {
-        SpikingSynapses::push_data_front();
-      }
-
-      void pull_data_back() override {
-        SpikingSynapses::pull_data_back();
-      }
     };
   } // namespace Dummy
 } // namespace Backend

@@ -15,11 +15,5 @@ namespace Backend {
 
     void STDP::reset_state() {
     }
-
-    void STDP::push_data_front() {
-    }
-
-    void STDP::pull_data_back() {
-    }
   }
 }
