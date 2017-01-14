@@ -331,7 +331,10 @@ CLOSED: [2017-01-13 Fri 15:35]
 :END:
 http://stackoverflow.com/questions/34896891/catch-lib-unit-testing-and-ctest-cmake-integration
 ** TODO Integrate Nas' documentation work
-*** TODO Describe backend work in the docs
+*** PROGRESS Describe backend work in the docs
+:LOGBOOK:
+- State "PROGRESS"   from "TODO"       [2017-01-14 Sat 17:40]
+:END:
 **** TODO Make clear that _backend destructors should be marked override
 ** DONE Example repository and build scripts with submodule structure
 CLOSED: [2016-12-20 Tue 21:40]
@@ -386,6 +389,7 @@ CLOSED: [2017-01-14 Sat 17:10]
 - State "DONE"       from "TODO"       [2017-01-14 Sat 17:10]
 :END:
 + replace them with more expressive -- more specific -- alternatives
+** TODO Write new build instructions
 * Style / interface design
 ** TODO Unify coding style (discuss this)
 ** PROGRESS Check for unused member pointers
