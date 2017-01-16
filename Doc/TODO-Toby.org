@@ -335,7 +335,9 @@ http://stackoverflow.com/questions/34896891/catch-lib-unit-testing-and-ctest-cma
 :LOGBOOK:
 - State "PROGRESS"   from "TODO"       [2017-01-14 Sat 17:40]
 :END:
-**** TODO Make clear that _backend destructors should be marked override
+**** TODO Make clear that _backend destructors (amongst other things) should be marked override
+**** TODO Why are some things (eg SPIKE_EXPORT_BACKENDs) commented out in some places?
+(cf SPIKE_MAKE_STUB_INIT_BACKEND ...)
 ** DONE Example repository and build scripts with submodule structure
 CLOSED: [2016-12-20 Tue 21:40]
 :LOGBOOK:
@@ -389,6 +391,7 @@ CLOSED: [2017-01-14 Sat 17:10]
 - State "DONE"       from "TODO"       [2017-01-14 Sat 17:10]
 :END:
 + replace them with more expressive -- more specific -- alternatives
+** TODO Ensure successful builds with static as well as shared Spike library
 ** TODO Write new build instructions
 * Style / interface design
 ** TODO Unify coding style (discuss this)
