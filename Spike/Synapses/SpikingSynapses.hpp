@@ -1,12 +1,12 @@
 #ifndef SPIKINGSYNAPSES_H
 #define SPIKINGSYNAPSES_H
 
-#include "Synapses.hpp"
-#include "../STDP/STDP.hpp"
-#include "../Neurons/SpikingNeurons.hpp"
-#include <vector>
-
 class SpikingSynapses; // forward definition
+
+#include "Synapses.hpp"
+#include "Spike/STDP/STDP.hpp"
+#include "Spike/Neurons/SpikingNeurons.hpp"
+#include <vector>
 
 namespace Backend {
   class SpikingSynapses : public virtual Synapses {
@@ -35,8 +35,8 @@ public:
   // Host Pointers
   int* delays = nullptr;
   bool* stdp = nullptr;
-  vector<STDP*> stdp_rule_vec;
-  vector<int> stdp_synapse_number_per_rule;
+  std::vector<STDP*> stdp_rule_vec;
+  std::vector<int> stdp_synapse_number_per_rule;
   int** stdp_synapse_indices_per_rule = nullptr;
 
 

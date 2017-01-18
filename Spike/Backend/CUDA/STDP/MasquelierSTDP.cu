@@ -9,7 +9,6 @@ namespace Backend {
       CudaSafeCall(cudaFree(index_of_last_afferent_synapse_to_spike));
       CudaSafeCall(cudaFree(isindexed_ltd_synapse_spike));
       CudaSafeCall(cudaFree(index_of_first_synapse_spiked_after_postneuron));
-      CudaSafeCall(cudaFree(total_number_of_stdp_synapses));
     }
 
     void MasquelierSTDP::reset_state() {

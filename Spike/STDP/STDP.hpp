@@ -7,6 +7,8 @@
 #ifndef STDP_H
 #define STDP_H
 
+class STDP; // forward definition
+
 #include "Spike/Backend/Macros.hpp"
 #include "Spike/Backend/Context.hpp"
 #include "Spike/Backend/Backend.hpp"
@@ -21,8 +23,6 @@
 #include <stdio.h>
 // allows maths
 #include <math.h>
-
-class STDP; // forward definition
 
 namespace Backend {
   class STDP : public virtual SpikeBackendBase {
