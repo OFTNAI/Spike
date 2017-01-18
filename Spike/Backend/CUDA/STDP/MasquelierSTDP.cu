@@ -9,6 +9,7 @@ namespace Backend {
       CudaSafeCall(cudaFree(index_of_last_afferent_synapse_to_spike));
       CudaSafeCall(cudaFree(isindexed_ltd_synapse_spike));
       CudaSafeCall(cudaFree(index_of_first_synapse_spiked_after_postneuron));
+      CudaSafeCall(cudaFree(total_number_of_stdp_synapses));
     }
 
     void MasquelierSTDP::reset_state() {
@@ -46,19 +47,19 @@ namespace Backend {
     void MasquelierSTDP::apply_stdp_to_synapse_weights(float current_time_in_seconds) {
       // First reset the indices array
       // In order to carry out nearest spike potentiation only, we must find the spike arriving at each neuron which has the smallest time diff
-    get_indices_to_apply_stdp<<<neurons_backend->number_of_neuron_blocks_per_grid, synapses_backend->threads_per_block>>>
+    get_indices_to_apply_stdp<<<synapses_backend->number_of_synapse_blocks_per_grid, synapses_backend->threads_per_block>>>
       (synapses_backend->postsynaptic_neuron_indices,
        neurons_backend->last_spike_time_of_each_neuron,
-       synapses_backend->stdp,
        synapses_backend->time_of_last_spike_to_reach_synapse,
        index_of_last_afferent_synapse_to_spike,
        isindexed_ltd_synapse_spike,
        index_of_first_synapse_spiked_after_postneuron,
+       stdp_synapse_indices,
        current_time_in_seconds,
-       frontend()->syns->total_number_of_synapses);
+       total_number_of_stdp_synapses);
     CudaCheckError();
 
-    apply_stdp_to_synapse_weights_kernel<<<synapses_backend->number_of_synapse_blocks_per_grid, synapses_backend->threads_per_block>>>
+    apply_stdp_to_synapse_weights_kernel<<<neurons_backend->number_of_neuron_blocks_per_grid, neurons_backend->threads_per_block>>>
       (synapses_backend->postsynaptic_neuron_indices,
        neurons_backend->last_spike_time_of_each_neuron,
        synapses_backend->stdp,
@@ -89,36 +90,38 @@ namespace Backend {
       // Global Index
       int idx = threadIdx.x + blockIdx.x * blockDim.x;
 
-      // Running though all synapses
+      // Running though all neurons
       while (idx < total_number_of_post_neurons) {
         // Get the synapse on which to do LTP/LTD
         int index_of_LTP_synapse = d_index_of_last_afferent_synapse_to_spike[idx];
         int index_of_LTD_synapse = d_index_of_first_synapse_spiked_after_postneuron[idx];
 
         // If we are to carry out STDP on LTP synapse
-        if(d_stdp[index_of_LTP_synapse]){
-          float last_syn_spike_time = d_time_of_last_spike_to_reach_synapse[index_of_LTP_synapse];
-          float last_neuron_spike_time = d_last_spike_time_of_each_neuron[idx];
-          float new_syn_weight = d_synaptic_efficacies_or_weights[index_of_LTP_synapse];
+        if (index_of_LTP_synapse >= 0){
+          if(d_stdp[index_of_LTP_synapse]){
+            float last_syn_spike_time = d_time_of_last_spike_to_reach_synapse[index_of_LTP_synapse];
+            float last_neuron_spike_time = d_last_spike_time_of_each_neuron[idx];
+            float new_syn_weight = d_synaptic_efficacies_or_weights[index_of_LTP_synapse];
 
-          if (last_neuron_spike_time == currtime){
-            float diff = currtime - last_syn_spike_time;
-            // Only carry out LTP if the difference is greater than some range
-            if (diff < 7*stdp_vars.tau_plus && diff > 0){
-              float weightchange = stdp_vars.a_plus * expf(-diff / stdp_vars.tau_plus);
-              // Update weights
-              new_syn_weight += weightchange;
-              // Ensure that the weights are clipped to 1.0f
-              new_syn_weight = min(new_syn_weight, 1.0f);
+            if (last_neuron_spike_time == currtime){
+              float diff = currtime - last_syn_spike_time;
+              // Only carry out LTP if the difference is greater than some range
+              if (diff < 7*stdp_vars.tau_plus && diff > 0){
+                float weightchange = stdp_vars.a_plus * expf(-diff / stdp_vars.tau_plus);
+                // Update weights
+                new_syn_weight += weightchange;
+                // Ensure that the weights are clipped to 1.0f
+                new_syn_weight = min(new_syn_weight, 1.0f);
+              }
             }
+            // Update the synaptic weight as required
+            d_synaptic_efficacies_or_weights[index_of_LTP_synapse] = new_syn_weight;
           }
-          // Update the synaptic weight as required
-          d_synaptic_efficacies_or_weights[index_of_LTP_synapse] = new_syn_weight;
         }
 
         // Get the synapse for LTD
-        if (d_isindexed_ltd_synapse_spike[idx]){
-          if (index_of_LTD_synapse >= 0){
+        if (index_of_LTD_synapse >= 0){
+          if (d_isindexed_ltd_synapse_spike[idx]){
             if (d_stdp[index_of_LTD_synapse]){
 
               float last_syn_spike_time = d_time_of_last_spike_to_reach_synapse[index_of_LTD_synapse];
@@ -149,17 +152,18 @@ namespace Backend {
     __global__ void get_indices_to_apply_stdp
     (int* d_postsyns,
      float* d_last_spike_time_of_each_neuron,
-     bool* d_stdp,
      float* d_time_of_last_spike_to_reach_synapse,
      int* d_index_of_last_afferent_synapse_to_spike,
      bool* d_isindexed_ltd_synapse_spike,
      int* d_index_of_first_synapse_spiked_after_postneuron,
+     int* d_stdp_synapse_indices,
      float currtime,
-     size_t total_number_of_synapse){
-      int idx = threadIdx.x + blockIdx.x * blockDim.x;
+     size_t total_number_of_stdp_synapses){
+      int indx = threadIdx.x + blockIdx.x * blockDim.x;
 
-      // Running through all neurons:
-      while (idx < total_number_of_synapse){
+      // Running through all relevant synapses:
+      while (indx < total_number_of_stdp_synapses){
+        int idx = d_stdp_synapse_indices[indx];
         int postsynaptic_neuron = d_postsyns[idx];
 
         // Check whether a synapse reached a neuron this timestep
@@ -180,7 +184,7 @@ namespace Backend {
           d_isindexed_ltd_synapse_spike[postsynaptic_neuron] = false;
         }
         // Increment index
-        idx += blockDim.x * gridDim.x;
+        indx += blockDim.x * gridDim.x;
       }
     }
   }

@@ -50,6 +50,7 @@ public:
 
   SpikingSynapses* syns = nullptr;
   SpikingNeurons* neurs = nullptr;
+  int stdp_rule_id = -1;
 
   // Set STDP Parameters
   // TODO: Shouldn't this be done in the constructor?

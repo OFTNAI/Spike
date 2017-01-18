@@ -36,6 +36,28 @@ void SpikingSynapses::AddGroup(int presynaptic_group_id,
 
 	spiking_synapse_parameters_struct * spiking_synapse_group_params = (spiking_synapse_parameters_struct*)synapse_params;
 
+	// Store STDP Rule as necessary
+	int stdp_id = -1;
+	if (spiking_synapse_group_params->stdp_ptr != nullptr){
+		stdp_id = spiking_synapse_group_params->stdp_ptr->stdp_rule_id;
+		// Store or recall STDP Pointer
+		// Check if this pointer has already been stored
+		if (stdp_id < 0){
+			stdp_id = stdp_rule_vec.size();
+			stdp_rule_vec.push_back(spiking_synapse_group_params->stdp_ptr);
+			// Allocate space to store stdp indices
+			stdp_synapse_indices_per_rule = (int**)realloc(stdp_synapse_indices_per_rule, stdp_rule_vec.size() * sizeof(int*));
+			stdp_synapse_indices_per_rule[stdp_id] = nullptr;
+			stdp_synapse_number_per_rule.push_back(0);
+			// Apply ID to STDP class
+			spiking_synapse_group_params->stdp_ptr->stdp_rule_id = stdp_id
+		}
+
+		// Allocate memory for the new incoming synapses
+		stdp_synapse_indices_per_rule[stdp_id] += temp_number_of_synapses_in_last_group;
+		stdp_synapse_indices_per_rule[stdp_id] = (int*)realloc(stdp_synapse_indices_per_rule, stdp_synapse_indices_per_rule[stdp_id] * sizeof(int));
+	}
+
 	for (int i = (total_number_of_synapses - temp_number_of_synapses_in_last_group); i < total_number_of_synapses; i++){
 		
 		// Convert delay range from time to number of timesteps
@@ -69,8 +91,12 @@ void SpikingSynapses::AddGroup(int presynaptic_group_id,
 			maximum_axonal_delay_in_timesteps = delay_range_in_timesteps[1];
 		}
 
-		//Set STDP on or off for synapse
-		stdp[i] = spiking_synapse_group_params->stdp_on;
+		//Set STDP on or off for synapse (now using stdp id)
+		stdp[i] = false;
+		if (stdp_id >= 0){
+			stdp[i] = true;
+			stdp_synapse_indices_per_rule[stdp_id][stdp_synapse_indices_per_rule[stdp_id] - temp_number_of_synapses_in_last_group + i] = i;
+		}
 	}
 
 }

@@ -49,12 +49,12 @@ namespace Backend {
     __global__ void get_indices_to_apply_stdp
     (int* d_postsyns,
      float* d_last_spike_time_of_each_neuron,
-     bool* d_stdp,
      float* d_time_of_last_spike_to_reach_synapse,
      int* d_index_of_last_afferent_synapse_to_spike,
      bool* d_isindexed_ltd_synapse_spike,
      int* d_index_of_first_synapse_spiked_after_postneuron,
+     int* d_stdp_synapse_indices,
      float currtime,
-     size_t total_number_of_synapse);
+     size_t total_number_of_stdp_synapses);
   }
 }

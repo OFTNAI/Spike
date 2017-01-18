@@ -44,13 +44,15 @@ public:
   SpikingNeurons * spiking_neurons;
   SpikingSynapses * spiking_synapses;
   InputSpikingNeurons * input_spiking_neurons;
-  STDP* stdp_rule; 
+  vector<STDP*> stdp_rule_vec; 
 
   int AddNeuronGroup(neuron_parameters_struct * group_params);
   int AddInputNeuronGroup(neuron_parameters_struct * group_params);
 	
   void AddSynapseGroup(int presynaptic_group_id, int postsynaptic_group_id, synapse_parameters_struct * synapse_params);
   void AddSynapseGroupsForNeuronGroupAndEachInputGroup(int postsynaptic_group_id, synapse_parameters_struct * synapse_params);
+
+  void AddSTDPRule(STDP * stdp_rule);
 
   void reset_state();
   void perform_per_timestep_model_instructions(float current_time_in_seconds, bool apply_stdp_to_relevant_synapses);

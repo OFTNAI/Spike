@@ -2,7 +2,9 @@
 #define SPIKINGSYNAPSES_H
 
 #include "Synapses.hpp"
+#include "../STDP/STDP.hpp"
 #include "../Neurons/SpikingNeurons.hpp"
+#include <vector>
 
 class SpikingSynapses; // forward definition
 
@@ -17,9 +19,9 @@ namespace Backend {
 }
 
 struct spiking_synapse_parameters_struct : synapse_parameters_struct {
-  spiking_synapse_parameters_struct(): stdp_on(true) { synapse_parameters_struct(); }
+  spiking_synapse_parameters_struct(): stdp_ptr(nullptr) { synapse_parameters_struct(); }
 
-  bool stdp_on;
+  STDP * stdp_ptr;
   float delay_range[2];
 };
 
@@ -33,6 +35,10 @@ public:
   // Host Pointers
   int* delays = nullptr;
   bool* stdp = nullptr;
+  vector<STDP*> stdp_rule_vec;
+  vector<int> stdp_synapse_number_per_rule;
+  int** stdp_synapse_indices_per_rule = nullptr;
+
 
   // For spike array stuff
   int maximum_axonal_delay_in_timesteps = 0;
