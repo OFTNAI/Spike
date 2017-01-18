@@ -34,7 +34,8 @@ namespace Backend {
      int* d_postsyns,
      float currtime,
      struct higgins_stdp_parameters_struct stdp_vars,
-     size_t total_number_of_synapse);
+     int* d_stdp_synapse_indices,
+     size_t total_number_of_stdp_synapses);
 
     __global__ void izhikevich_apply_ltp_to_synapse_weights_kernel
     (int* d_postsyns,
@@ -44,6 +45,7 @@ namespace Backend {
      float* d_synaptic_efficacies_or_weights,
      struct higgins_stdp_parameters_struct stdp_vars,
      float currtime,
-     size_t total_number_of_synapse);
+     int* d_stdp_synapse_indices,
+     size_t total_number_of_stdp_synapses);
   }
 }

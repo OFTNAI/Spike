@@ -54,8 +54,8 @@ namespace Backend {
        index_of_last_afferent_synapse_to_spike,
        isindexed_ltd_synapse_spike,
        index_of_first_synapse_spiked_after_postneuron,
-       stdp_synapse_indices,
        current_time_in_seconds,
+       stdp_synapse_indices,
        total_number_of_stdp_synapses);
     CudaCheckError();
 
@@ -156,8 +156,8 @@ namespace Backend {
      int* d_index_of_last_afferent_synapse_to_spike,
      bool* d_isindexed_ltd_synapse_spike,
      int* d_index_of_first_synapse_spiked_after_postneuron,
-     int* d_stdp_synapse_indices,
      float currtime,
+     int* d_stdp_synapse_indices,
      size_t total_number_of_stdp_synapses){
       int indx = threadIdx.x + blockIdx.x * blockDim.x;
 
