@@ -85,7 +85,7 @@ void SpikingModel::AddSTDPRule(STDP * stdp_rule){
 	// Adds the new STDP rule to the vector of STDP Rule
 	stdp_rule_vec.push_back(stdp_rule);
 	// Returns an ID corresponding to this STDP Rule
-	return(stdp_rule_vec.size());
+	// return(stdp_rule_vec.size());
 }
 
 

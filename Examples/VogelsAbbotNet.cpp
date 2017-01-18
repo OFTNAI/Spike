@@ -68,7 +68,8 @@ int main (int argc, char *argv[]){
 	BenchModel->spiking_neurons = adex_spiking_neurons;
 	BenchModel->input_spiking_neurons = generator_input_spiking_neurons;
 	BenchModel->spiking_synapses = conductance_spiking_synapses;
-	BenchModel->stdp_rule = masquelier_stdp;
+	BenchModel->AddSTDPRule(masquelier_stdp);
+	// BenchModel->stdp_rule = masquelier_stdp;
 
 	// Set up Neuron Parameters
 	// AdEx
@@ -259,9 +260,9 @@ int main (int argc, char *argv[]){
 	EXC_OUT_SYN_PARAMS->connectivity_type = CONNECTIVITY_TYPE_RANDOM;
 	INH_OUT_SYN_PARAMS->connectivity_type = CONNECTIVITY_TYPE_RANDOM;
 	INPUT_SYN_PARAMS->connectivity_type = CONNECTIVITY_TYPE_RANDOM;
-	EXC_OUT_SYN_PARAMS->stdp_on = false;
-	INH_OUT_SYN_PARAMS->stdp_on = false;
-	INPUT_SYN_PARAMS->stdp_on = false;
+	EXC_OUT_SYN_PARAMS->stdp_ptr = nullptr;
+	INH_OUT_SYN_PARAMS->stdp_ptr = nullptr;
+	INPUT_SYN_PARAMS->stdp_ptr = nullptr;
 	EXC_OUT_SYN_PARAMS->random_connectivity_probability = 0.02; // 2%
 	INH_OUT_SYN_PARAMS->random_connectivity_probability = 0.02; // 2%
 	INPUT_SYN_PARAMS->random_connectivity_probability = 0.01; // 1%

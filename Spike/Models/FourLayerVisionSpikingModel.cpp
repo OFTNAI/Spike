@@ -60,9 +60,9 @@ void FourLayerVisionSpikingModel::set_default_parameter_values() {
 	decay_term_tau_C = 0.3;//(In Ben's model, tau_C/tau_D = 3/5 v 15/25 v 75/125, and the first one produces the best result)
 	decay_term_tau_D = 0.3;
 
-	E2E_FF_STDP_ON = false;
-	E2E_L_STDP_ON = false;
-	E2E_FB_STDP_ON = false;
+	E2E_FF_STDP_ON = nullptr;
+	E2E_L_STDP_ON = nullptr;
+	E2E_FB_STDP_ON = nullptr;
 
 
 	// Neuronal Parameters
@@ -186,7 +186,7 @@ void FourLayerVisionSpikingModel::finalise_model() {
         spiking_neurons = lif_spiking_neurons;
 	spiking_synapses = conductance_spiking_synapses;
 	input_spiking_neurons = image_poisson_input_spiking_neurons;
-	stdp_rule = evans_stdp;
+	AddSTDPRule(evans_stdp);
 
 
         /////////// STDP SETUP ///////////
@@ -282,7 +282,7 @@ void FourLayerVisionSpikingModel::finalise_model() {
 	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_per_postsynaptic_neuron = LBL_fanInCount_E2E_FF[0];
 	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->biological_conductance_scaling_constant_lambda = LBL_biological_conductance_scaling_constant_lambda_E2E_FF[0];
 	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->connectivity_type = CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE;
-	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->stdp_on = false;
+	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->stdp_ptr = nullptr;
 	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_standard_deviation = LBL_gaussian_synapses_sd_E2E_FF[0];
 	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->reversal_potential_Vhat = 0.0;
 	G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->decay_term_tau_g = LBL_decay_term_tau_g_E2E_FF[0];
