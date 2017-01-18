@@ -7,6 +7,11 @@ SpikingSynapses::~SpikingSynapses() {
 #endif
   free(delays);
   free(stdp);
+
+  for (int stdp_id=0; stdp_id < stdp_synapse_number_per_rule.size(); stdp_id++){
+  	free(stdp_synapse_indices_per_rule[stdp_id]);
+  }
+  free(stdp_synapse_indices_per_rule);
 }
 
 // Connection Detail implementation

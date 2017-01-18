@@ -6,6 +6,10 @@
 
 namespace Backend {
   namespace CUDA {
+    STDP::~STDP() {
+      CudaSafeCall(cudaFree(stdp_synapse_indices));
+    }
+
     void STDP::prepare() {
       neurons_backend = dynamic_cast<::Backend::CUDA::SpikingNeurons*>
         (frontend()->neurs->backend());
