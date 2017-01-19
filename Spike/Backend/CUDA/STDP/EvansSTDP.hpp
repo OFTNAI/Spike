@@ -59,7 +59,7 @@ namespace Backend {
      bool* d_stdp,
      float learning_rate_rho,
      int* d_stdp_synapse_indices,
-     size_t total_number_of_stdp_synapses));
+     size_t total_number_of_stdp_synapses);
 
   }
 }

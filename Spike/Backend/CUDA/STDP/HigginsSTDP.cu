@@ -58,7 +58,7 @@ namespace Backend {
 
       int indx = threadIdx.x + blockIdx.x * blockDim.x;
       while (indx < total_number_of_stdp_synapses) {
-        idx = d_stdp_synapse_indices[indx];
+        int idx = d_stdp_synapse_indices[indx];
         // Get the synapses upon which we should do LTP
         // Reversed indexing to check post->pre synapses
         if ((d_last_spike_time_of_each_neuron[d_postsyns[idx]] == currtime) && (d_stdp[idx])){
@@ -88,7 +88,7 @@ namespace Backend {
 
       int indx = threadIdx.x + blockIdx.x * blockDim.x;
       while (indx < total_number_of_stdp_synapses) {
-        idx = d_stdp_synapse_indices[indx];
+        int idx = d_stdp_synapse_indices[indx];
         // Get the locations for updating
         // Get the synapses that are to be LTD'd
         if ((d_time_of_last_spike_to_reach_synapse[idx] == currtime) && (d_stdp[idx])) {

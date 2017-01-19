@@ -167,7 +167,7 @@ namespace Backend {
       int indx = threadIdx.x + blockIdx.x * blockDim.x;
 
       while (indx < total_number_of_stdp_synapses) {
-        idx = d_stdp_synapse_indices[indx];
+        int idx = d_stdp_synapse_indices[indx];
 
         if (d_stdp[idx] == true) {
 
