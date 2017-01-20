@@ -1,18 +1,19 @@
 #include "catch.hpp"
+#include "../Helpers/CUDAErrorCheckHelpers.h"
 
 /**
-		HIGGINSSTDP Test Set
+		HIGGINSSTDP.CU Test Set
 **/
-#include "Spike/STDP/STDP.hpp"
-#include "Spike/STDP/HigginsSTDP.hpp"
-#include "Spike/Neurons/SpikingNeurons.hpp"
-#include "Spike/Synapses/SpikingSynapses.hpp"
+#include "../STDP/STDP.h"
+#include "../STDP/HigginsSTDP.h"
+#include "../Neurons/SpikingNeurons.h"
+#include "../Synapses/SpikingSynapses.h"
 TEST_CASE("HigginsSTDP") {
 	SpikingSynapses test_synapses;
 	SpikingNeurons test_neurons;
 	SpikingNeurons input_neurons;
 
-	// Assigning these neurons and synapses to the 
+	// Assigning these neurons and synapses to the
 	HigginsSTDP test_stdp;
 	higgins_stdp_parameters_struct * STDP_PARAMS = new higgins_stdp_parameters_struct();
 	test_stdp.Set_STDP_Parameters(
@@ -29,7 +30,7 @@ TEST_CASE("HigginsSTDP") {
 	neuron_params_1.group_shape[1] = dim2;
 
 	int presynaptic_population = test_neurons.AddGroup(&neuron_params_1);
-	
+
 	// Post-synaptic Population
 	neuron_parameters_struct neuron_params_2;
 	int dim1_2 = 1;
@@ -81,7 +82,7 @@ TEST_CASE("HigginsSTDP") {
 	test_neurons.reset_neuron_activities();
 	test_synapses.reset_synapse_activities();
 	test_stdp.reset_STDP_activities();
-	
+
 	SECTION("LTP Test"){
 		// Set some of the synapses as having a spike at them
 		float* last_synapse_spike_times = (float*)malloc(sizeof(float)*test_synapses.total_number_of_synapses);
@@ -104,7 +105,7 @@ TEST_CASE("HigginsSTDP") {
 		CudaSafeCall(cudaMemcpy(last_neuron_spike_times, test_neurons.d_last_spike_time_of_each_neuron, sizeof(float)*test_neurons.total_number_of_neurons, cudaMemcpyDeviceToHost));
 		// Set of the neuron spike times to now
 		for (int i=0; i < 5; i++){
-			// Setting it to half the current_time so that it can 
+			// Setting it to half the current_time so that it can
 			last_neuron_spike_times[indices[i]] = current_time;
 		}
 		// Return the data to the device
@@ -147,7 +148,7 @@ TEST_CASE("HigginsSTDP") {
 		CudaSafeCall(cudaMemcpy(last_neuron_spike_times, test_neurons.d_last_spike_time_of_each_neuron, sizeof(float)*test_neurons.total_number_of_neurons, cudaMemcpyDeviceToHost));
 		// Set of the neuron spike times to now
 		for (int i=0; i < 5; i++){
-			// Setting it to half the current_time so that it can 
+			// Setting it to half the current_time so that it can
 			last_neuron_spike_times[indices[i]] = spike_times[i];
 		}
 		// Return the data to the device
@@ -167,20 +168,20 @@ TEST_CASE("HigginsSTDP") {
 			REQUIRE(std::abs(synaptic_weights[i] - (0.5f + weightscale)) < 0.00005f);
 		}
 	}
-}	
-
-/**
-		EVANSSTDP Test Set
-**/
-#include "Spike/STDP/EvansSTDP.hpp"
-TEST_CASE("EvansSTDP") {
-  // TODO
 }
 
 /**
-		MASQUELIERSTDP Test Set
+		EVANSSTDP.CU Test Set
 **/
-#include "Spike/STDP/MasquelierSTDP.hpp"
+#include "../STDP/EvansSTDP.h"
+TEST_CASE("EvansSTDP") {
+
+}
+
+/**
+		MASQUELIERSTDP.CU Test Set
+**/
+#include "../STDP/MasquelierSTDP.h"
 TEST_CASE("MasquelierSTDP") {
 	SpikingSynapses test_synapses;
 	SpikingNeurons test_neurons;

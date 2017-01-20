@@ -91,6 +91,12 @@ namespace Backend {
 
       // Running though all neurons
       while (idx < total_number_of_post_neurons) {
+        // Check whether a neuron has fired, if so: reset flag
+        if (d_last_spike_time_of_each_neuron[idx] == currtime){
+          d_isindexed_ltd_synapse_spike[idx] = false;
+        }
+
+
         // Get the synapse on which to do LTP/LTD
         int index_of_LTP_synapse = d_index_of_last_afferent_synapse_to_spike[idx];
         int index_of_LTD_synapse = d_index_of_first_synapse_spiked_after_postneuron[idx];
