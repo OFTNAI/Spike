@@ -46,7 +46,7 @@ namespace Backend {
     void MasquelierSTDP::apply_stdp_to_synapse_weights(float current_time_in_seconds) {
       // First reset the indices array
       // In order to carry out nearest spike potentiation only, we must find the spike arriving at each neuron which has the smallest time diff
-    get_indices_to_apply_stdp<<<synapses_backend->number_of_synapse_blocks_per_grid, synapses_backend->threads_per_block>>>
+    masquelier_get_indices_to_apply_stdp<<<synapses_backend->number_of_synapse_blocks_per_grid, synapses_backend->threads_per_block>>>
       (synapses_backend->postsynaptic_neuron_indices,
        neurons_backend->last_spike_time_of_each_neuron,
        synapses_backend->time_of_last_spike_to_reach_synapse,
@@ -58,7 +58,7 @@ namespace Backend {
        total_number_of_stdp_synapses);
     CudaCheckError();
 
-    apply_stdp_to_synapse_weights_kernel<<<neurons_backend->number_of_neuron_blocks_per_grid, neurons_backend->threads_per_block>>>
+    masquelier_apply_stdp_to_synapse_weights_kernel<<<neurons_backend->number_of_neuron_blocks_per_grid, neurons_backend->threads_per_block>>>
       (synapses_backend->postsynaptic_neuron_indices,
        neurons_backend->last_spike_time_of_each_neuron,
        synapses_backend->stdp,
@@ -74,7 +74,7 @@ namespace Backend {
     }
 
     // Find nearest spike
-    __global__ void apply_stdp_to_synapse_weights_kernel
+    __global__ void masquelier_apply_stdp_to_synapse_weights_kernel
     (int* d_postsyns,
      float* d_last_spike_time_of_each_neuron,
      bool* d_stdp,
@@ -95,7 +95,6 @@ namespace Backend {
         if (d_last_spike_time_of_each_neuron[idx] == currtime){
           d_isindexed_ltd_synapse_spike[idx] = false;
         }
-
 
         // Get the synapse on which to do LTP/LTD
         int index_of_LTP_synapse = d_index_of_last_afferent_synapse_to_spike[idx];
@@ -125,8 +124,8 @@ namespace Backend {
         }
 
         // Get the synapse for LTD
-        if (index_of_LTD_synapse >= 0){
-          if (d_isindexed_ltd_synapse_spike[idx]){
+        if (d_isindexed_ltd_synapse_spike[idx]){
+          if (index_of_LTD_synapse >= 0){
             if (d_stdp[index_of_LTD_synapse]){
 
               float last_syn_spike_time = d_time_of_last_spike_to_reach_synapse[index_of_LTD_synapse];
@@ -147,14 +146,14 @@ namespace Backend {
               }
               d_synaptic_efficacies_or_weights[index_of_LTD_synapse] = new_syn_weight;
             }
-          }	
+          }
         }
         idx += blockDim.x * gridDim.x;
       }
       __syncthreads();
     }
 
-    __global__ void get_indices_to_apply_stdp
+    __global__ void masquelier_get_indices_to_apply_stdp
     (int* d_postsyns,
      float* d_last_spike_time_of_each_neuron,
      float* d_time_of_last_spike_to_reach_synapse,
@@ -164,11 +163,10 @@ namespace Backend {
      float currtime,
      int* d_stdp_synapse_indices,
      size_t total_number_of_stdp_synapses){
-      int indx = threadIdx.x + blockIdx.x * blockDim.x;
+      int idx = threadIdx.x + blockIdx.x * blockDim.x;
 
-      // Running through all relevant synapses:
-      while (indx < total_number_of_stdp_synapses){
-        int idx = d_stdp_synapse_indices[indx];
+      // Running through all neurons:
+      while (idx < total_number_of_synapse){
         int postsynaptic_neuron = d_postsyns[idx];
 
         // Check whether a synapse reached a neuron this timestep
@@ -176,21 +174,16 @@ namespace Backend {
           // Atomic Exchange the new synapse index
           atomicExch(&d_index_of_last_afferent_synapse_to_spike[postsynaptic_neuron], idx);
         }
-		
+
         // Check (if we need to) whether a synapse has fired
-        if (d_isindexed_ltd_synapse_spike[postsynaptic_neuron]){
+        if (!d_isindexed_ltd_synapse_spike[postsynaptic_neuron]){
           if (d_time_of_last_spike_to_reach_synapse[idx] == currtime){
             d_isindexed_ltd_synapse_spike[postsynaptic_neuron] = true;
             atomicExch(&d_index_of_first_synapse_spiked_after_postneuron[postsynaptic_neuron], idx);
           }
         }
-        // Check whether a neuron has fired
-        if (d_last_spike_time_of_each_neuron[postsynaptic_neuron] == currtime){
-          d_isindexed_ltd_synapse_spike[postsynaptic_neuron] = false;
-        }
         // Increment index
-        indx += blockDim.x * gridDim.x;
+        idx += blockDim.x * gridDim.x;
       }
     }
-  }
 }

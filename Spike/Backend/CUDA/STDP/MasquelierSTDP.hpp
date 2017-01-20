@@ -33,7 +33,7 @@ namespace Backend {
     };
 
     // Kernel to carry out LTP/LTD
-    __global__ void apply_stdp_to_synapse_weights_kernel
+    __global__ void masquelier_apply_stdp_to_synapse_weights_kernel
     (int* d_postsyns,
      float* d_last_spike_time_of_each_neuron,
      bool* d_stdp,
@@ -46,7 +46,7 @@ namespace Backend {
      float currtime,
      size_t total_number_of_post_neurons);
 
-    __global__ void get_indices_to_apply_stdp
+    __global__ void masquelier_get_indices_to_apply_stdp
     (int* d_postsyns,
      float* d_last_spike_time_of_each_neuron,
      float* d_time_of_last_spike_to_reach_synapse,
