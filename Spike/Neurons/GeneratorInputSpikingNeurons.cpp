@@ -6,6 +6,7 @@ GeneratorInputSpikingNeurons::~GeneratorInputSpikingNeurons() {
   free(neuron_id_matrix_for_stimuli);
   free(spike_times_matrix_for_stimuli);
   free(number_of_spikes_in_stimuli);
+  free(temporal_lengths_of_stimuli);
 }
 
 /* Don't need this as it is inherited without change:
@@ -29,6 +30,7 @@ void GeneratorInputSpikingNeurons::AddStimulus(int spikenumber, int* ids, float*
   }
 
   number_of_spikes_in_stimuli = (int*)realloc(number_of_spikes_in_stimuli, sizeof(int)*total_number_of_input_stimuli);
+  temporal_lengths_of_stimuli = (float*)realloc(temporal_lengths_of_stimuli, sizeof(float)*total_number_of_input_stimuli);
   neuron_id_matrix_for_stimuli = (int**)realloc(neuron_id_matrix_for_stimuli, sizeof(int*)*total_number_of_input_stimuli);
   spike_times_matrix_for_stimuli = (float**)realloc(spike_times_matrix_for_stimuli, sizeof(float*)*total_number_of_input_stimuli);
 	
@@ -52,6 +54,16 @@ void GeneratorInputSpikingNeurons::AddStimulus(int spikenumber, int* ids, float*
 
   // Increment the number of entries the generator population
   number_of_spikes_in_stimuli[total_number_of_input_stimuli - 1] = spikenumber;
+
+  // Get the maximum length of this stimulus
+  float maxlen = 0.0f;
+  for (int spikeidx; spikeidx < spikenumber; spikeidx++){
+    if (spiketimes[spikeidx] > maxlen){
+      maxlen = spiketimes[spikeidx];
+    }
+  }
+  // Set the correct array location for maximum length
+  temporal_lengths_of_stimuli[total_number_of_input_stimuli - 1] = maxlen;
 }
 
 SPIKE_MAKE_INIT_BACKEND(GeneratorInputSpikingNeurons);
