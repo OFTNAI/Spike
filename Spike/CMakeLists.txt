@@ -35,24 +35,33 @@ add_library(Spike
 
 # target_compile_features(Spike PUBLIC cxx_nullptr)
 
-target_link_libraries(Spike PRIVATE -Wl,--whole-archive
+
+set(whole, "--whole-archive")
+set(no_whole, "--no-whole-archive")
+
+if (APPLE)
+  set(whole, "-all_load")
+  set(no_whole, "-noall_load")
+endif()
+
+target_link_libraries(Spike PRIVATE -Wl,${whole}
   SpikeDummyHelpers 
   SpikeDummyNeurons
   SpikeDummyRecordingElectrodes
   SpikeDummySpikeAnalyser
   SpikeDummySTDP
   SpikeDummySynapses
-  -Wl,--no-whole-archive)
+  -Wl,${no_whole})
 
 if (BUILD_WITH_CUDA)
-  target_link_libraries(Spike PRIVATE -Wl,--whole-archive
+  target_link_libraries(Spike PRIVATE -Wl,${whole}
     SpikeCUDAHelpers
     SpikeCUDANeurons
     SpikeCUDARecordingElectrodes
     SpikeCUDASpikeAnalyser
     SpikeCUDASTDP
     SpikeCUDASynapses
-    -Wl,--no-whole-archive)
+    -Wl,${no_whole})
 endif()
 
 if (ENABLE_PLOTTING)
