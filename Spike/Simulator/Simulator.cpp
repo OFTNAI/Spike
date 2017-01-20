@@ -62,9 +62,9 @@ Simulator::Simulator(SpikingModel * spiking_model_param, Simulator_Options * sim
 	}
 
 	if (simulator_options->recording_electrodes_options->network_state_archive_recording_electrodes_bool) {
-		network_state_archive_recording_electrodes->initialise_network_state_archive_recording_electrodes(simulator_options->recording_electrodes_options->network_state_archive_optional_parameters);
+				network_state_archive_recording_electrodes = new NetworkStateArchiveRecordingElectrodes(spiking_model->spiking_neurons, spiking_model->spiking_synapses, full_directory_name_for_simulation_data_files, "Synapses");
                 network_state_archive_recording_electrodes->init_backend(context);
-		network_state_archive_recording_electrodes = new NetworkStateArchiveRecordingElectrodes(spiking_model->spiking_neurons, spiking_model->spiking_synapses, full_directory_name_for_simulation_data_files, "Synapses");
+		network_state_archive_recording_electrodes->initialise_network_state_archive_recording_electrodes(simulator_options->recording_electrodes_options->network_state_archive_optional_parameters);
 	} else {
 		network_state_archive_recording_electrodes = nullptr;
 	}

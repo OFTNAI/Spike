@@ -167,6 +167,8 @@ namespace Backend {
           d_adaptation_values_w[idx] += timestep*update_adaptation_value;
           d_membrane_potentials_v[idx] += timestep*update_membrane_potential;
 
+        } else {
+          d_current_injections[idx] = 0.0f;
         }
         idx += blockDim.x * gridDim.x;
 
