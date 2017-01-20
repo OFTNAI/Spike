@@ -94,6 +94,7 @@ namespace Backend {
            thresholds_for_action_potential_spikes,
            last_spike_time_of_each_neuron,
            frontend()->absolute_refractory_period,
+           frontend()->background_current,
            current_time_in_seconds,
            timestep,
            frontend()->total_number_of_neurons);
@@ -133,6 +134,7 @@ namespace Backend {
                                                     float * d_thresholds_for_action_potential_spikes,
                                                     float * d_last_spike_time_of_each_neuron,
                                                     float absolute_refractory_period,
+                                                    float background_current,
                                                     float current_time_in_seconds,
                                                     float timestep,
                                                     size_t total_number_of_neurons){
@@ -154,7 +156,7 @@ namespace Backend {
             slope_adaptation = d_membrane_leakage_conductances_g0[idx]*d_slope_factors_Delta_T[idx]*expf(membrane_thresh_diff / d_slope_factors_Delta_T[idx]);
           }
 
-          float update_membrane_potential = inverse_capacitance*(membrane_leakage + slope_adaptation - d_adaptation_values_w[idx] + d_current_injections[idx]);
+          float update_membrane_potential = inverse_capacitance*(membrane_leakage + slope_adaptation - d_adaptation_values_w[idx] + d_current_injections[idx] + background_current);
 
           // Updating the adaptation parameter
           float inverse_tau_w = (1.0f / d_adaptation_time_constants_tau_w[idx]);
