@@ -182,7 +182,8 @@ namespace Backend {
           }
         }
         // Increment index
-        idnx += blockDim.x * gridDim.x;
+        indx += blockDim.x * gridDim.x;
       }
     }
+  }
 }
