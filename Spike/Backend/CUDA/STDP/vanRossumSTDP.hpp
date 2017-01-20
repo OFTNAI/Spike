@@ -46,7 +46,7 @@ namespace Backend {
      float currtime,
      size_t total_number_of_post_neurons);
 
-    __global__ void vanrossom_get_indices_to_apply_stdp
+    __global__ void vanrossum_get_indices_to_apply_stdp
     (int* d_postsyns,
      float* d_last_spike_time_of_each_neuron,
      float* d_time_of_last_spike_to_reach_synapse,

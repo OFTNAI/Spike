@@ -187,4 +187,5 @@ namespace Backend {
         indx += blockDim.x * gridDim.x;
       }
     }
+  }
 }

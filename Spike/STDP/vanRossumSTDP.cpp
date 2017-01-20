@@ -5,7 +5,7 @@
 //  Date: 03/10/2016
 
 
-#include "vanRossumSTDP.h"
+#include "vanRossumSTDP.hpp"
 #include "../Helpers/TerminalHelpers.hpp"
 
 vanRossumSTDP::~vanRossumSTDP() {
@@ -30,7 +30,7 @@ void vanRossumSTDP::prepare_backend_late() {
 
 // Implementation of the STDP Rule for Irina's Model
 void vanRossumSTDP::Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons* neurons, SpikingNeurons* input_neurons, stdp_parameters_struct* stdp_parameters){
-	stdp_params = (masquelier_stdp_parameters_struct *)stdp_parameters;
+	stdp_params = (vanrossum_stdp_parameters_struct *)stdp_parameters;
 	syns = synapses;
 	neurs = neurons;
 }
