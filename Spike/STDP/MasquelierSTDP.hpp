@@ -16,8 +16,8 @@
 #define MASQUELIER_STDP_H
 
 // Get Synapses & Neurons Class
-#include "../Synapses/SpikingSynapses.hpp"
-#include "../Neurons/SpikingNeurons.hpp"
+// #include "../Synapses/SpikingSynapses.hpp"
+// #include "../Neurons/SpikingNeurons.hpp"
 #include "../STDP/STDP.hpp"
 
 // stdlib allows random numbers

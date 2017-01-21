@@ -3,9 +3,6 @@
 #include "Spike/STDP/MasquelierSTDP.hpp"
 #include "STDP.hpp"
 
-#include "Spike/Backend/CUDA/Neurons/SpikingNeurons.hpp"
-#include "Spike/Backend/CUDA/Synapses/SpikingSynapses.hpp"
-
 #include "Spike/Backend/CUDA/CUDABackend.hpp"
 #include <cuda.h>
 #include <vector_types.h>
