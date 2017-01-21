@@ -39,7 +39,7 @@ add_library(Spike
 set(whole "--whole-archive")
 set(no_whole "--no-whole-archive")
 
-if (APPLE)
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   set(whole "-all_load")
   set(no_whole "-noall_load")
 endif()
