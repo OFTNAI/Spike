@@ -10,6 +10,7 @@
 #include "../STDP/EvansSTDP.hpp"
 #include "../STDP/HigginsSTDP.hpp"
 #include "../STDP/MasquelierSTDP.hpp"
+#include "../STDP/vanRossumSTDP.hpp"
 #include "../Neurons/Neurons.hpp"
 #include "../Neurons/SpikingNeurons.hpp"
 #include "../Neurons/LIFSpikingNeurons.hpp"
