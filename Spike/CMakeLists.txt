@@ -36,12 +36,12 @@ add_library(Spike
 # target_compile_features(Spike PUBLIC cxx_nullptr)
 
 
-set(whole, "--whole-archive")
-set(no_whole, "--no-whole-archive")
+set(whole "--whole-archive")
+set(no_whole "--no-whole-archive")
 
 if (APPLE)
-  set(whole, "-all_load")
-  set(no_whole, "-noall_load")
+  set(whole "-all_load")
+  set(no_whole "-noall_load")
 endif()
 
 target_link_libraries(Spike PRIVATE -Wl,${whole}
