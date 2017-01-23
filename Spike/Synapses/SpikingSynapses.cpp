@@ -59,7 +59,7 @@ void SpikingSynapses::AddGroup(int presynaptic_group_id,
 		}
 
 		// Allocate memory for the new incoming synapses
-		stdp_synapse_indices_per_rule[stdp_id] += temp_number_of_synapses_in_last_group;
+		stdp_synapse_number_per_rule[stdp_id] += temp_number_of_synapses_in_last_group;
 		stdp_synapse_indices_per_rule[stdp_id] = (int*)realloc(stdp_synapse_indices_per_rule, stdp_synapse_number_per_rule[stdp_id] * sizeof(int));
 	}
 
@@ -100,7 +100,7 @@ void SpikingSynapses::AddGroup(int presynaptic_group_id,
 		stdp[i] = false;
 		if (stdp_id >= 0){
 			stdp[i] = true;
-			stdp_synapse_indices_per_rule[stdp_id][stdp_synapse_number_per_rule[stdp_id] - temp_number_of_synapses_in_last_group + i] = i;
+			stdp_synapse_indices_per_rule[stdp_id][stdp_synapse_number_per_rule[stdp_id] + i  - total_number_of_synapses] = i;
 		}
 	}
 
