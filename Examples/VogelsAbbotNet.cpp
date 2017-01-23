@@ -262,7 +262,7 @@ int main (int argc, char *argv[]){
 	INPUT_SYN_PARAMS->connectivity_type = CONNECTIVITY_TYPE_RANDOM;
 	EXC_OUT_SYN_PARAMS->stdp_ptr = nullptr;
 	INH_OUT_SYN_PARAMS->stdp_ptr = nullptr;
-	INPUT_SYN_PARAMS->stdp_ptr = nullptr;
+	INPUT_SYN_PARAMS->stdp_ptr = masquelier_stdp;
 	EXC_OUT_SYN_PARAMS->random_connectivity_probability = 0.02; // 2%
 	INH_OUT_SYN_PARAMS->random_connectivity_probability = 0.02; // 2%
 	INPUT_SYN_PARAMS->random_connectivity_probability = 0.01; // 1%
