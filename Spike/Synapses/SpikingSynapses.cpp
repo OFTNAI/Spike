@@ -11,7 +11,6 @@ SpikingSynapses::~SpikingSynapses() {
   for (int stdp_id=0; stdp_id < stdp_synapse_number_per_rule.size(); stdp_id++){
   	free(stdp_synapse_indices_per_rule[stdp_id]);
   }
-  free(stdp_synapse_indices_per_rule);
 }
 
 // Connection Detail implementation
@@ -51,8 +50,9 @@ void SpikingSynapses::AddGroup(int presynaptic_group_id,
 			stdp_id = stdp_rule_vec.size();
 			stdp_rule_vec.push_back(spiking_synapse_group_params->stdp_ptr);
 			// Allocate space to store stdp indices
-			stdp_synapse_indices_per_rule = (int**)realloc(stdp_synapse_indices_per_rule, stdp_rule_vec.size() * sizeof(int*));
-			stdp_synapse_indices_per_rule[stdp_id] = nullptr;
+			stdp_synapse_indices_per_rule.push_back(nullptr);
+			// stdp_synapse_indices_per_rule = (int**)realloc(stdp_synapse_indices_per_rule, stdp_rule_vec.size() * sizeof(int*));
+			// stdp_synapse_indices_per_rule[stdp_id] = nullptr;
 			stdp_synapse_number_per_rule.push_back(0);
 			// Apply ID to STDP class
 			spiking_synapse_group_params->stdp_ptr->stdp_rule_id = stdp_id;
@@ -60,7 +60,7 @@ void SpikingSynapses::AddGroup(int presynaptic_group_id,
 
 		// Allocate memory for the new incoming synapses
 		stdp_synapse_number_per_rule[stdp_id] += temp_number_of_synapses_in_last_group;
-		stdp_synapse_indices_per_rule[stdp_id] = (int*)realloc(stdp_synapse_indices_per_rule, stdp_synapse_number_per_rule[stdp_id] * sizeof(int));
+		stdp_synapse_indices_per_rule[stdp_id] = (int*)realloc(stdp_synapse_indices_per_rule[stdp_id], stdp_synapse_number_per_rule[stdp_id] * sizeof(int));
 	}
 
 	for (int i = (total_number_of_synapses - temp_number_of_synapses_in_last_group); i < total_number_of_synapses; i++){

@@ -37,7 +37,7 @@ public:
   bool* stdp = nullptr;
   std::vector<STDP*> stdp_rule_vec;
   std::vector<int> stdp_synapse_number_per_rule;
-  int** stdp_synapse_indices_per_rule = nullptr;
+  std::vector<int*> stdp_synapse_indices_per_rule;
 
 
   // For spike array stuff
