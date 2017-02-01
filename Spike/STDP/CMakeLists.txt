@@ -4,4 +4,5 @@ add_library (STDP OBJECT
   HigginsSTDP.cpp
   MasquelierSTDP.cpp
   vanRossumSTDP.cpp
+  VogelsSTDP.cpp
   )

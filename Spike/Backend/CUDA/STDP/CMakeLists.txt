@@ -4,4 +4,5 @@ CUDA_ADD_LIBRARY (SpikeCUDASTDP
   HigginsSTDP.cu
   MasquelierSTDP.cu
   vanRossumSTDP.cu
+  VogelsSTDP.cu
   STATIC)

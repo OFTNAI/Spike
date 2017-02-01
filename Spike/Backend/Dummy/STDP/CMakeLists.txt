@@ -4,4 +4,5 @@ add_library(SpikeDummySTDP STATIC
   HigginsSTDP.cpp
   MasquelierSTDP.cpp
   vanRossumSTDP.cpp
+  VogelsSTDP.cpp
   )
