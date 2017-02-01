@@ -37,6 +37,7 @@ namespace Backend {
     vogels_update_memory_trace<<<neurons_backend->number_of_neuron_blocks_per_grid, neurons_backend->threads_per_block>>>
       (neurons_backend->last_spike_time_of_each_neuron,
        current_time_in_seconds,
+       timestep,
        vogels_memory_trace,
        *(frontend()->stdp_params),
        frontend()->neurs->total_number_of_neurons);
@@ -105,6 +106,7 @@ namespace Backend {
     __global__ void vogels_update_memory_trace
     (float* d_last_spike_time_of_each_neuron,
      float currtime,
+     float timestep,
      float* vogels_memory_trace,
      struct vogels_stdp_parameters_struct stdp_vars,
      size_t total_number_of_neurons){
@@ -122,7 +124,7 @@ namespace Backend {
         }
 
         // Increment index
-        indx += blockDim.x * gridDim.x;
+        idx += blockDim.x * gridDim.x;
       }
     }
   }

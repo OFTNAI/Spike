@@ -47,6 +47,7 @@ namespace Backend {
     __global__ void vogels_update_memory_trace
     (float* d_last_spike_time_of_each_neuron,
      float currtime,
+     float timestep,
      float* vogels_memory_trace,
      struct vogels_stdp_parameters_struct stdp_vars,
      size_t total_number_of_neurons);
