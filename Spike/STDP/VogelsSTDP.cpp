@@ -7,9 +7,6 @@
 #include "../Helpers/TerminalHelpers.hpp"
 
 VogelsSTDP::~VogelsSTDP() {
-  free(index_of_last_afferent_synapse_to_spike);
-  free(isindexed_ltd_synapse_spike);
-  free(index_of_first_synapse_spiked_after_postneuron);
   free(vogels_memory_trace);
 }
 
@@ -39,6 +36,4 @@ void VogelsSTDP::apply_stdp_to_synapse_weights(float current_time_in_seconds, fl
   backend()->apply_stdp_to_synapse_weights(current_time_in_seconds, timestep);
 }
 
-SPIKE_MAKE_INIT_BACKEND(Vogels
-STDP
-);
+SPIKE_MAKE_INIT_BACKEND(VogelsSTDP);
