@@ -61,14 +61,14 @@ int main (int argc, char *argv[]){
 	AdExSpikingNeurons * adex_spiking_neurons = new AdExSpikingNeurons();
 	GeneratorInputSpikingNeurons * generator_input_spiking_neurons = new GeneratorInputSpikingNeurons();
 	ConductanceSpikingSynapses * conductance_spiking_synapses = new ConductanceSpikingSynapses();
-	MasquelierSTDP * masquelier_stdp = new MasquelierSTDP();
+	VogelsSTDP * vogels_stdp = new VogelsSTDP();
 	// No STDP implemented
 
 	// Add my populations to the SpikingModel
 	BenchModel->spiking_neurons = adex_spiking_neurons;
 	BenchModel->input_spiking_neurons = generator_input_spiking_neurons;
 	BenchModel->spiking_synapses = conductance_spiking_synapses;
-	BenchModel->AddSTDPRule(masquelier_stdp);
+	BenchModel->AddSTDPRule(vogels_stdp);
 	// BenchModel->stdp_rule = masquelier_stdp;
 
 	// Set up Neuron Parameters
@@ -115,12 +115,12 @@ int main (int argc, char *argv[]){
 	/*
 		Set up STDP Parameters
 	*/
-	masquelier_stdp_parameters_struct * STDP_PARAMS = new masquelier_stdp_parameters_struct();
-	STDP_PARAMS->a_minus = 0.001f;
-	STDP_PARAMS->a_plus = 0.001f;
-	STDP_PARAMS->tau_minus = 0.50f;
-	STDP_PARAMS->tau_plus = 0.05f;
-	masquelier_stdp->Set_STDP_Parameters((SpikingSynapses *) conductance_spiking_synapses, (SpikingNeurons *) adex_spiking_neurons, (SpikingNeurons *) generator_input_spiking_neurons, (stdp_parameters_struct *) STDP_PARAMS);
+	vogels_stdp_parameters_struct * STDP_PARAMS = new vogels_stdp_parameters_struct();
+	// STDP_PARAMS->a_minus = 0.001f;
+	// STDP_PARAMS->a_plus = 0.001f;
+	// STDP_PARAMS->tau_minus = 0.50f;
+	// STDP_PARAMS->tau_plus = 0.05f;
+	vogels_stdp->Set_STDP_Parameters((SpikingSynapses *) conductance_spiking_synapses, (SpikingNeurons *) adex_spiking_neurons, (SpikingNeurons *) generator_input_spiking_neurons, (stdp_parameters_struct *) STDP_PARAMS);
 
 
 	/*
@@ -261,8 +261,8 @@ int main (int argc, char *argv[]){
 	INH_OUT_SYN_PARAMS->connectivity_type = CONNECTIVITY_TYPE_RANDOM;
 	INPUT_SYN_PARAMS->connectivity_type = CONNECTIVITY_TYPE_RANDOM;
 	EXC_OUT_SYN_PARAMS->stdp_ptr = nullptr;
-	INH_OUT_SYN_PARAMS->stdp_ptr = nullptr;
-	INPUT_SYN_PARAMS->stdp_ptr = masquelier_stdp;
+	INH_OUT_SYN_PARAMS->stdp_ptr = vogels_stdp;
+	INPUT_SYN_PARAMS->stdp_ptr = nullptr;
 	EXC_OUT_SYN_PARAMS->random_connectivity_probability = 0.02; // 2%
 	INH_OUT_SYN_PARAMS->random_connectivity_probability = 0.02; // 2%
 	INPUT_SYN_PARAMS->random_connectivity_probability = 0.01; // 1%
