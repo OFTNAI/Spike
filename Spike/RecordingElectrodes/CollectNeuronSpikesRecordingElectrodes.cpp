@@ -49,7 +49,6 @@ void CollectNeuronSpikesRecordingElectrodes::initialise_collect_neuron_spikes_re
 	size_of_device_spike_store = collect_neuron_spikes_optional_parameters->device_spike_store_size_multiple_of_total_neurons * neurons->total_number_of_neurons;
 
 	allocate_pointers_for_spike_store();
-	delete_and_reset_collected_spikes();
 
 }
 
@@ -58,6 +57,7 @@ void CollectNeuronSpikesRecordingElectrodes::initialise_collect_neuron_spikes_re
 void CollectNeuronSpikesRecordingElectrodes::allocate_pointers_for_spike_store() {
 
 	total_number_of_spikes_stored_on_device = (int*)malloc(sizeof(int));
+	total_number_of_spikes_stored_on_device[0] = 0;
 
 	reset_neuron_ids = (int *)malloc(sizeof(int)*size_of_device_spike_store);
 	reset_neuron_times = (float *)malloc(sizeof(float)*size_of_device_spike_store);
@@ -75,7 +75,7 @@ void CollectNeuronSpikesRecordingElectrodes::delete_and_reset_collected_spikes()
 	total_number_of_spikes_stored_on_device[0] = 0;
 	// Free/Clear Device stuff
 	// Reset the number on the device
-        backend()->reset_state();
+    backend()->reset_state();
 
 	// Free malloced host stuff
 	free(neuron_ids_of_stored_spikes_on_host);

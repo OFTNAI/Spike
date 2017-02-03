@@ -46,6 +46,8 @@ public:
   int* neuron_ids_of_stored_spikes_on_host = nullptr;
   int* total_number_of_spikes_stored_on_device = nullptr;
   float* time_in_seconds_of_stored_spikes_on_host = nullptr;
+  int* reset_neuron_ids = nullptr;
+  float* reset_neuron_times = nullptr;
 
   // Constructor/Destructor
   CollectNeuronSpikesRecordingElectrodes(SpikingNeurons * neurons_parameter, SpikingSynapses * synapses_parameter, string full_directory_name_for_simulation_data_files_param, const char * prefix_string_param);
@@ -64,10 +66,6 @@ public:
 
 private:
   std::shared_ptr<::Backend::CollectNeuronSpikesRecordingElectrodes> _backend;
-
-  // Host Pointers
-  int* reset_neuron_ids = nullptr;
-  float* reset_neuron_times = nullptr;
 
 };
 

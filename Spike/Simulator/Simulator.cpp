@@ -47,16 +47,16 @@ Simulator::Simulator(SpikingModel * spiking_model_param, Simulator_Options * sim
 
 	if (simulator_options->recording_electrodes_options->collect_neuron_spikes_recording_electrodes_bool) {
 		collect_neuron_spikes_recording_electrodes = new CollectNeuronSpikesRecordingElectrodes(spiking_model->spiking_neurons, spiking_model->spiking_synapses, full_directory_name_for_simulation_data_files, "Neurons");
-                collect_neuron_spikes_recording_electrodes->init_backend(context);
 		collect_neuron_spikes_recording_electrodes->initialise_collect_neuron_spikes_recording_electrodes(simulator_options->recording_electrodes_options->collect_neuron_spikes_optional_parameters);
+		collect_neuron_spikes_recording_electrodes->init_backend(context);
 	} else {
 		collect_neuron_spikes_recording_electrodes = nullptr;
 	}
 
 	if (simulator_options->recording_electrodes_options->collect_input_neuron_spikes_recording_electrodes_bool) {
 		collect_input_neuron_spikes_recording_electrodes = new CollectNeuronSpikesRecordingElectrodes(spiking_model->input_spiking_neurons, spiking_model->spiking_synapses, full_directory_name_for_simulation_data_files, "Input_Neurons");
-                collect_input_neuron_spikes_recording_electrodes->init_backend(context);
 		collect_input_neuron_spikes_recording_electrodes->initialise_collect_neuron_spikes_recording_electrodes(simulator_options->recording_electrodes_options->collect_input_neuron_spikes_optional_parameters);
+		collect_input_neuron_spikes_recording_electrodes->init_backend(context);
 	} else {
 		collect_input_neuron_spikes_recording_electrodes = nullptr;
 	}
@@ -192,7 +192,7 @@ void Simulator::RunSimulation() {
         #endif
 		
 	}
-	
+
 	perform_end_of_simulation_instructions(simulation_timer);
 
         
@@ -372,12 +372,14 @@ void Simulator::perform_post_epoch_instructions(int epoch_number, TimerWithMessa
 	printf("Epoch %d, Complete.\n", epoch_number);
 	epoch_timer->stop_timer_and_log_time_and_message(" ", true);
 	
-	if (simulator_options->recording_electrodes_options->collect_neuron_spikes_recording_electrodes_bool) printf(" Number of Spikes: %d\n", collect_neuron_spikes_recording_electrodes->total_number_of_spikes_stored_on_host);
-	if (simulator_options->recording_electrodes_options->collect_input_neuron_spikes_recording_electrodes_bool) printf(" Number of Input Spikes: %d\n", collect_input_neuron_spikes_recording_electrodes->total_number_of_spikes_stored_on_host);
-
-	if (simulator_options->file_storage_options->save_recorded_neuron_spikes_to_file) collect_neuron_spikes_recording_electrodes->write_spikes_to_file(epoch_number, simulator_options->file_storage_options->network_is_trained);
-	if (simulator_options->file_storage_options->save_recorded_input_neuron_spikes_to_file) collect_input_neuron_spikes_recording_electrodes->write_spikes_to_file(epoch_number, simulator_options->file_storage_options->network_is_trained);
-
+	if (simulator_options->recording_electrodes_options->collect_neuron_spikes_recording_electrodes_bool) {
+		printf(" Number of Spikes: %d\n", collect_neuron_spikes_recording_electrodes->total_number_of_spikes_stored_on_host);
+		if (simulator_options->file_storage_options->save_recorded_neuron_spikes_to_file) collect_neuron_spikes_recording_electrodes->write_spikes_to_file(epoch_number, simulator_options->file_storage_options->network_is_trained);
+	}
+	if (simulator_options->recording_electrodes_options->collect_input_neuron_spikes_recording_electrodes_bool) {
+		printf(" Number of Input Spikes: %d\n", collect_input_neuron_spikes_recording_electrodes->total_number_of_spikes_stored_on_host);
+		if (simulator_options->file_storage_options->save_recorded_input_neuron_spikes_to_file) collect_input_neuron_spikes_recording_electrodes->write_spikes_to_file(epoch_number, simulator_options->file_storage_options->network_is_trained);
+	}
 }
 
 
