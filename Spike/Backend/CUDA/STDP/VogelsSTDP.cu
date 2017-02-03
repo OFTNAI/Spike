@@ -98,7 +98,7 @@ namespace Backend {
           new_syn_weight += stdp_vars.learningrate*(vogels_memory_trace[pre_neuron_id]);
           d_synaptic_efficacies_or_weights[idx] = new_syn_weight;
         }
-        idx += blockDim.x * gridDim.x;
+        indx += blockDim.x * gridDim.x;
       }
       __syncthreads();
     }
