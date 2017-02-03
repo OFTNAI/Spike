@@ -58,14 +58,14 @@ int main (int argc, char *argv[]){
 	BenchModel->SetTimestep(timestep);
 
 	// Create neuron, synapse and stdp types for this model
-	AdExSpikingNeurons * adex_spiking_neurons = new AdExSpikingNeurons();
+	LIFSpikingNeurons * lif_spiking_neurons = new LIFSpikingNeurons();
 	GeneratorInputSpikingNeurons * generator_input_spiking_neurons = new GeneratorInputSpikingNeurons();
 	ConductanceSpikingSynapses * conductance_spiking_synapses = new ConductanceSpikingSynapses();
 	VogelsSTDP * vogels_stdp = new VogelsSTDP();
 	// No STDP implemented
 
 	// Add my populations to the SpikingModel
-	BenchModel->spiking_neurons = adex_spiking_neurons;
+	BenchModel->spiking_neurons = lif_spiking_neurons;
 	BenchModel->input_spiking_neurons = generator_input_spiking_neurons;
 	BenchModel->spiking_synapses = conductance_spiking_synapses;
 	BenchModel->AddSTDPRule(vogels_stdp);
@@ -73,17 +73,17 @@ int main (int argc, char *argv[]){
 
 	// Set up Neuron Parameters
 	// AdEx
-	AdEx_spiking_neuron_parameters_struct * EXC_NEURON_PARAMS = new AdEx_spiking_neuron_parameters_struct();
-	AdEx_spiking_neuron_parameters_struct * INH_NEURON_PARAMS = new AdEx_spiking_neuron_parameters_struct();
+	lif_spiking_neuron_parameters_struct * EXC_NEURON_PARAMS = new lif_spiking_neuron_parameters_struct();
+	lif_spiking_neuron_parameters_struct * INH_NEURON_PARAMS = new lif_spiking_neuron_parameters_struct();
 
-	EXC_NEURON_PARAMS->membrane_capacitance_Cm = 200.0f*pow(10.0, -12);  // pF
-	INH_NEURON_PARAMS->membrane_capacitance_Cm = 200.0f*pow(10.0, -12);  // pF
+	EXC_NEURON_PARAMS->somatic_capacitance_Cm = 200.0f*pow(10.0, -12);  // pF
+	INH_NEURON_PARAMS->somatic_capacitance_Cm = 200.0f*pow(10.0, -12);  // pF
 
-	EXC_NEURON_PARAMS->membrane_leakage_conductance_g0 = 10.0f*pow(10.0, -9);  // nS
-	INH_NEURON_PARAMS->membrane_leakage_conductance_g0 = 10.0f*pow(10.0, -9);  // nS
+	EXC_NEURON_PARAMS->somatic_leakage_conductance_g0 = 10.0f*pow(10.0, -9);  // nS
+	INH_NEURON_PARAMS->somatic_leakage_conductance_g0 = 10.0f*pow(10.0, -9);  // nS
 
-	EXC_NEURON_PARAMS->leak_reversal_potential_E_L = -80.0f*pow(10.0, -3);
-	INH_NEURON_PARAMS->leak_reversal_potential_E_L = -80.0f*pow(10.0, -3);
+	// EXC_NEURON_PARAMS->leak_reversal_potential_E_L = -80.0f*pow(10.0, -3);
+	// INH_NEURON_PARAMS->leak_reversal_potential_E_L = -80.0f*pow(10.0, -3);
 
 	EXC_NEURON_PARAMS->resting_potential_v0 = -60.0f*pow(10.0, -3);	// -74mV
 	INH_NEURON_PARAMS->resting_potential_v0 = -60.0f*pow(10.0, -3);	// -82mV
@@ -99,18 +99,18 @@ int main (int argc, char *argv[]){
 	EXC_NEURON_PARAMS->background_current = 400.0f*pow(10.0, -12); //
 	// INH_NEURON_PARAMS->background_current = 400.0f*pow(10.0, -12); //
 
-	// Turning these off for normal LIF behaviour
-	EXC_NEURON_PARAMS->slope_factor_Delta_T = 0.0f*pow(10.0, -3);  // mV
-	INH_NEURON_PARAMS->slope_factor_Delta_T = 0.0f*pow(10.0, -3);  // mV
+	// // Turning these off for normal LIF behaviour
+	// EXC_NEURON_PARAMS->slope_factor_Delta_T = 0.0f*pow(10.0, -3);  // mV
+	// INH_NEURON_PARAMS->slope_factor_Delta_T = 0.0f*pow(10.0, -3);  // mV
 
-	EXC_NEURON_PARAMS->adaptation_coupling_coefficient_a = 0.0f*pow(10, -9);  // nS
-	INH_NEURON_PARAMS->adaptation_coupling_coefficient_a = 0.0f*pow(10, -9);  // nS
+	// EXC_NEURON_PARAMS->adaptation_coupling_coefficient_a = 0.0f*pow(10, -9);  // nS
+	// INH_NEURON_PARAMS->adaptation_coupling_coefficient_a = 0.0f*pow(10, -9);  // nS
 
-	EXC_NEURON_PARAMS->adaptation_time_constant_tau_w = 1.0f;  // ms
-	INH_NEURON_PARAMS->adaptation_time_constant_tau_w = 1.0f;  // ms
+	// EXC_NEURON_PARAMS->adaptation_time_constant_tau_w = 1.0f;  // ms
+	// INH_NEURON_PARAMS->adaptation_time_constant_tau_w = 1.0f;  // ms
 
-	EXC_NEURON_PARAMS->adaptation_change_b = 0.0f*pow(10, -9);  // nA
-	INH_NEURON_PARAMS->adaptation_change_b = 0.0f*pow(10, -9);  // nA
+	// EXC_NEURON_PARAMS->adaptation_change_b = 0.0f*pow(10, -9);  // nA
+	// INH_NEURON_PARAMS->adaptation_change_b = 0.0f*pow(10, -9);  // nA
 
 	/*
 		Set up STDP Parameters
@@ -120,7 +120,7 @@ int main (int argc, char *argv[]){
 	// STDP_PARAMS->a_plus = 0.001f;
 	// STDP_PARAMS->tau_minus = 0.50f;
 	// STDP_PARAMS->tau_plus = 0.05f;
-	vogels_stdp->Set_STDP_Parameters((SpikingSynapses *) conductance_spiking_synapses, (SpikingNeurons *) adex_spiking_neurons, (SpikingNeurons *) generator_input_spiking_neurons, (stdp_parameters_struct *) STDP_PARAMS);
+	vogels_stdp->Set_STDP_Parameters((SpikingSynapses *) conductance_spiking_synapses, (SpikingNeurons *) lif_spiking_neurons, (SpikingNeurons *) generator_input_spiking_neurons, (stdp_parameters_struct *) STDP_PARAMS);
 
 
 	/*
@@ -297,6 +297,8 @@ int main (int argc, char *argv[]){
 
 	simoptions->recording_electrodes_options->network_state_archive_recording_electrodes_bool = true;
 	simoptions->recording_electrodes_options->network_state_archive_optional_parameters->human_readable_storage = true;
+
+	simoptions->file_storage_options->write_initial_synaptic_weights_to_file_bool = true;
 	
 	simoptions->file_storage_options->save_recorded_neuron_spikes_to_file = true;
 	simoptions->file_storage_options->save_recorded_input_neuron_spikes_to_file = true;

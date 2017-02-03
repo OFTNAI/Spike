@@ -44,6 +44,7 @@ namespace Backend {
          membrane_time_constants_tau_m,
          resting_potentials,
          current_injections,
+         frontend()->background_current,
          timestep,
          current_time_in_seconds,
          frontend()->refractory_period_in_seconds,
@@ -58,6 +59,7 @@ namespace Backend {
                                                    float * d_membrane_time_constants_tau_m,
                                                    float * d_resting_potentials,
                                                    float* d_current_injections,
+                                                   float background_current,
                                                    float timestep,
                                                    float current_time_in_seconds,
                                                    float refractory_period_in_seconds,
@@ -73,7 +75,7 @@ namespace Backend {
           float resting_potential_V0 = d_resting_potentials[idx];
           float temp_membrane_resistance_R = d_membrane_resistances_R[idx];
 	
-          float new_membrane_potential = equation_constant * (resting_potential_V0 + temp_membrane_resistance_R * current_injection_Ii) + (1 - equation_constant) * membrane_potential_Vi;
+          float new_membrane_potential = equation_constant * (resting_potential_V0 + temp_membrane_resistance_R * (current_injection_Ii + background_current)) + (1 - equation_constant) * membrane_potential_Vi;
           d_membrane_potentials_v[idx] = new_membrane_potential;
         }
 
