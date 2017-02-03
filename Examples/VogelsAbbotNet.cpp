@@ -96,7 +96,7 @@ int main (int argc, char *argv[]){
 
 	// EXC_NEURON_PARAMS->background_current = 0.000000030000365f*pow(10.0, -2); //
 	// INH_NEURON_PARAMS->background_current = 0.000000030000365f*pow(10.0, -2); //
-	// EXC_NEURON_PARAMS->background_current = 400.0f*pow(10.0, -12); //
+	EXC_NEURON_PARAMS->background_current = 400.0f*pow(10.0, -12); //
 	// INH_NEURON_PARAMS->background_current = 400.0f*pow(10.0, -12); //
 
 	// Turning these off for normal LIF behaviour
@@ -185,7 +185,7 @@ int main (int argc, char *argv[]){
 			string token;
 			while ( getline( iss, token, ','))
 			{
-				spike_times_vec.push_back( roundf(std::stof(token) / timestep) * timestep );
+				spike_times_vec.push_back( roundf(std::stof(token) / timestep) * timestep);
 			}
 		}
 
@@ -198,6 +198,7 @@ int main (int argc, char *argv[]){
 			for (int j = 0; j < num_spikes[i]; j++){
 				spike_ids[index] = i;
 				spike_times[index] = spike_times_vec[index];
+				// printf("Index %d = %f\n", index, spike_times_vec[index]);
 				index++;
 			}
 		}
@@ -284,12 +285,21 @@ int main (int argc, char *argv[]){
 
 	// Create the simulator options
 	Simulator_Options* simoptions = new Simulator_Options();
-	simoptions->run_simulation_general_options->presentation_time_per_stimulus_per_epoch = 10.0f;
+	simoptions->run_simulation_general_options->presentation_time_per_stimulus_per_epoch = 5.0f;
+
 	simoptions->recording_electrodes_options->count_neuron_spikes_recording_electrodes_bool = true;
-	// simoptions->recording_electrodes_options->count_input_neuron_spikes_recording_electrodes_bool = true;
-	// simoptions->recording_electrodes_options->collect_neuron_spikes_recording_electrodes_bool = true;
-	// simoptions->recording_electrodes_options->collect_input_neuron_spikes_recording_electrodes_bool = true;
-	// simoptions->file_storage_options->save_recorded_neuron_spikes_to_file = true;
+	simoptions->recording_electrodes_options->count_input_neuron_spikes_recording_electrodes_bool = true;
+
+	simoptions->recording_electrodes_options->collect_neuron_spikes_recording_electrodes_bool = true;
+	simoptions->recording_electrodes_options->collect_neuron_spikes_optional_parameters->human_readable_storage = true;
+	simoptions->recording_electrodes_options->collect_input_neuron_spikes_recording_electrodes_bool = true;
+	simoptions->recording_electrodes_options->collect_input_neuron_spikes_optional_parameters->human_readable_storage = true;
+
+	simoptions->recording_electrodes_options->network_state_archive_recording_electrodes_bool = true;
+	simoptions->recording_electrodes_options->network_state_archive_optional_parameters->human_readable_storage = true;
+	
+	simoptions->file_storage_options->save_recorded_neuron_spikes_to_file = true;
+	simoptions->file_storage_options->save_recorded_input_neuron_spikes_to_file = true;
 	// simoptions->file_storage_options->human_readable_storage = true;
 
 	Simulator * simulator = new Simulator(BenchModel, simoptions);

@@ -57,7 +57,7 @@ void GeneratorInputSpikingNeurons::AddStimulus(int spikenumber, int* ids, float*
 
   // Get the maximum length of this stimulus
   float maxlen = 0.0f;
-  for (int spikeidx; spikeidx < spikenumber; spikeidx++){
+  for (int spikeidx = 0; spikeidx < spikenumber; spikeidx++){
     if (spiketimes[spikeidx] > maxlen){
       maxlen = spiketimes[spikeidx];
     }
