@@ -97,7 +97,7 @@ int main (int argc, char *argv[]){
 	// EXC_NEURON_PARAMS->background_current = 0.000000030000365f*pow(10.0, -2); //
 	// INH_NEURON_PARAMS->background_current = 0.000000030000365f*pow(10.0, -2); //
 	EXC_NEURON_PARAMS->background_current = 400.0f*pow(10.0, -12); //
-	// INH_NEURON_PARAMS->background_current = 400.0f*pow(10.0, -12); //
+	INH_NEURON_PARAMS->background_current = 400.0f*pow(10.0, -12); //
 
 	// // Turning these off for normal LIF behaviour
 	// EXC_NEURON_PARAMS->slope_factor_Delta_T = 0.0f*pow(10.0, -3);  // mV
@@ -256,6 +256,7 @@ int main (int argc, char *argv[]){
 	// Biological Scaling factors
 	EXC_OUT_SYN_PARAMS->biological_conductance_scaling_constant_lambda = 1.0;
 	INH_OUT_SYN_PARAMS->biological_conductance_scaling_constant_lambda = 1.0;
+	INPUT_SYN_PARAMS->biological_conductance_scaling_constant_lambda = 1.0;
 
 	// Creating Synapse Populations
 	EXC_OUT_SYN_PARAMS->connectivity_type = CONNECTIVITY_TYPE_RANDOM;
@@ -285,7 +286,8 @@ int main (int argc, char *argv[]){
 
 	// Create the simulator options
 	Simulator_Options* simoptions = new Simulator_Options();
-	simoptions->run_simulation_general_options->presentation_time_per_stimulus_per_epoch = 5.0f;
+	simoptions->run_simulation_general_options->presentation_time_per_stimulus_per_epoch = 30.0f;
+	simoptions->run_simulation_general_options->apply_stdp_to_relevant_synapses = true;
 
 	simoptions->recording_electrodes_options->count_neuron_spikes_recording_electrodes_bool = true;
 	simoptions->recording_electrodes_options->count_input_neuron_spikes_recording_electrodes_bool = true;

@@ -88,7 +88,7 @@ namespace Backend {
           float new_syn_weight = d_synaptic_efficacies_or_weights[idx];
           new_syn_weight += stdp_vars.learningrate*(vogels_memory_trace[post_neuron_id]);
           // Alpha must be calculated as 2 * targetrate * tau_istdp
-          new_syn_weight += stdp_vars.learningrate*(2.0*stdp_vars.targetrate*stdp_vars.tau_istdp);
+          new_syn_weight += - stdp_vars.learningrate*(2.0*stdp_vars.targetrate*stdp_vars.tau_istdp);
           d_synaptic_efficacies_or_weights[idx] = new_syn_weight;
         }
 
