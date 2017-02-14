@@ -23,7 +23,11 @@ Simulator::Simulator(SpikingModel * spiking_model_param, Simulator_Options * sim
 
 	simulations_run_count = 0;
 
-	full_directory_name_for_simulation_data_files = "output/"; // Put into struct!!
+	full_directory_name_for_simulation_data_files = simulator_options->file_storage_options->output_directory;
+	if (mkdir(full_directory_name_for_simulation_data_files.c_str(),S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH)==0) {
+		printf("Folder Successfully Created.\n");
+	}
+
 
         #ifndef SILENCE_SIMULATOR_SETUP
 	TimerWithMessages * timer = new TimerWithMessages("Setting up recording electrodes...\n");
@@ -159,7 +163,7 @@ void Simulator::RunSimulation() {
 		int* stimuli_presentation_order = setup_stimuli_presentation_order();
 		for (int stimulus_index = 0; stimulus_index < spiking_model->input_spiking_neurons->total_number_of_input_stimuli; stimulus_index++) {
 
-			// if (simulator_options->stimuli_presentation_options->reset_current_time_between_each_stimulus) current_time_in_seconds = 0.0f; // For GeneratorInputSpikingNeurons?
+			if (simulator_options->stimuli_presentation_options->reset_current_time_between_each_stimulus) current_time_in_seconds = 0.0f; // For GeneratorInputSpikingNeurons?
 
 			perform_pre_stimulus_presentation_instructions(stimuli_presentation_order[stimulus_index]);
 
