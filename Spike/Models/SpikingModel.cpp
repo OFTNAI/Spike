@@ -139,9 +139,9 @@ void SpikingModel::prepare_backend() {
 
 
 void SpikingModel::reset_state() {
+  spiking_synapses->reset_state();
   spiking_neurons->reset_state();
   input_spiking_neurons->reset_state();
-  spiking_synapses->reset_state();
   for (int stdp_id = 0; stdp_id < stdp_rule_vec.size(); stdp_id++){
 	stdp_rule_vec[stdp_id]->reset_state();
   }
