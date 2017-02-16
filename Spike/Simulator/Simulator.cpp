@@ -328,6 +328,8 @@ void Simulator::perform_pre_stimulus_presentation_instructions(int stimulus_inde
 	printf("Stimulus Index: %d\n", stimulus_index);
 	// printf("simulator_options->stimuli_presentation_options->presentation_format: %d\n", simulator_options->stimuli_presentation_options->presentation_format);
 
+	spiking_model->input_spiking_neurons->current_stimulus_index = stimulus_index;
+	
 	switch (simulator_options->stimuli_presentation_options->presentation_format) {
 		case PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_STIMULI: case PRESENTATION_FORMAT_RANDOM_RESET_BETWEEN_EACH_STIMULUS:
 		{
@@ -351,8 +353,6 @@ void Simulator::perform_pre_stimulus_presentation_instructions(int stimulus_inde
 
 	}
 
-
-	spiking_model->input_spiking_neurons->current_stimulus_index = stimulus_index;
 
 }
 
