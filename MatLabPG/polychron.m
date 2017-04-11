@@ -15,19 +15,19 @@ model_izhikevich = 1;
 model_conductanceLIAF = 2;
 neuronModel = model_conductanceLIAF;
 
-experimentName = '1.5--FF_FB_LAT_stdp_0.005_nCon2'
+experimentName = '6.3grayAndBlack_a--StatDec_FFLATFB_20EP_FB5_rand8910'
 
 
-biological_conductance_scaling_constant_lambda_G2E_FF = 0.00002;
-biological_conductance_scaling_constant_lambda_E2E_FF = 0.0001;
-biological_conductance_scaling_constant_lambda_E2I_L = 0.002;
-biological_conductance_scaling_constant_lambda_I2E_L = 0.004;
-biological_conductance_scaling_constant_lambda_E2E_L = 0.00005;
+biological_conductance_scaling_constant_lambda_G2E_FF = 0.0001;
+biological_conductance_scaling_constant_lambda_E2E_FF = 0.00005;
+biological_conductance_scaling_constant_lambda_E2I_L = 0.001;
+biological_conductance_scaling_constant_lambda_I2E_L = 0.005;
+biological_conductance_scaling_constant_lambda_E2E_L = 0.0001;
 %biological_conductance_scaling_constant_lambda_E2E_FB = 0.00001;
 
 
 
-for trainedNet = [1]
+for trainedNet = [0]
     if (trainedNet)
         networkStatesName = 'networkStates_trained.mat'
     else
@@ -54,7 +54,7 @@ for trainedNet = [1]
     nLayers = 4;
     N = (ExcitDim*ExcitDim+InhibDim*InhibDim)*nLayers;% N: num neurons
     timestep = 0.00002;
-    targetInputLayer = nLayers-1;
+    targetInputLayer = 1%nLayers-1;
     
     
     
@@ -205,7 +205,7 @@ for trainedNet = [1]
     %%% filter synaptic weights %%%
     if (neuronModel == model_conductanceLIAF)
         
-        sm = 0.0001 * 0.0008 %0.0008; %is the biological synaptic constant E2E_FF
+        sm = 0.0001 * 0.0007 %0.0008; %is the biological synaptic constant E2E_FF
         sm_threshold = 0.8*sm %0.8*sm;
 %         sm_threshold_input = 0.95*sm;
         E2I_const = 10.0;
@@ -433,10 +433,10 @@ for trainedNet = [1]
 %                             if(plotFigure && saveImages  && longest_path>=min_group_path_to_plot)
 
                             if(plotFigure && saveImages  && length( find(gr.gr(:,6) == 2 ) )>min_multi_fanin_syns_to_plot && longest_path>=min_group_path_to_plot)
-                                saveas(fig,['../output/' experimentName '/' num2str(trainedNet) '_poly_i_' num2str(length(groups)) strrep(mat2str(ppre{i_post}(strong_pre_id_to_specific_postCell(anchors))), ';', '_') '.fig']);
+                                saveas(fig,['../output/' experimentName '/PG_imgs/' num2str(trainedNet) '_poly_i_' num2str(length(groups)) strrep(mat2str(ppre{i_post}(strong_pre_id_to_specific_postCell(anchors))), ';', '_') '.fig']);
     %                             saveas(fig,['../output/' experimentName '/' num2str(trainedNet) '_poly_i_' num2str(length(groups)) strrep(mat2str(ppre{i_post}(strong_pre(anchors))), ';', '_') '.png']);
                                 set(gcf,'PaperPositionMode','auto')
-                                print(['../output/' experimentName '/' num2str(trainedNet) '_poly_i_' num2str(length(groups)) strrep(mat2str(ppre{i_post}(strong_pre_id_to_specific_postCell(anchors))), ';', '_')],'-dpng','-r0')
+                                print(['../output/' experimentName '/PG_imgs/' num2str(trainedNet) '_poly_i_' num2str(length(groups)) strrep(mat2str(ppre{i_post}(strong_pre_id_to_specific_postCell(anchors))), ';', '_')],'-dpng','-r0')
                             end
                         end;
                     end

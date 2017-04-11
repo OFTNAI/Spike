@@ -1,8 +1,8 @@
 function FR = loadFR(experimentName,layer,trainedNet)
 
     presentationTime = 2.0;
-    nObjs = 3;
-    nTrans = 2;
+    nObjs = 2;
+    nTrans = 4;
 %     trainedNet = 1;
 
     ExcitDim = 64;

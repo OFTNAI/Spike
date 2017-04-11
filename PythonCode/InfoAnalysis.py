@@ -21,7 +21,7 @@ class InfoAnalysis(object):
         
         useMaxFRTh = True;
         
-        maxFRTh = 100;
+        maxFRTh = 50;#100;
 #         
 #         dimExcitLayers = 64;
 #         
@@ -115,7 +115,7 @@ class InfoAnalysis(object):
                 print("**Loading data**")
                 binMatrix = np.zeros((nExcitCells, nObj, nBins));# #number of times when fr is classified into a specific bin within a specific objs's transformations
                 for obj in range(nObj):
-                    print str(obj) + '/' + str(nObj);
+                    print(str(obj) + '/' + str(nObj));
                     for trans in range(nTrans):
                         for cell in range(nExcitCells):
 #                             bin = np.around(FR_tmp[obj,trans,l,cell]*(nBins-1));
@@ -137,7 +137,7 @@ class InfoAnalysis(object):
                                     
                 
                 
-                print "** single-cell information analysis **";
+                print("** single-cell information analysis **");
                 # Loop through all cells to calculate single cell information
                 for cell in range(nExcitCells):
                     # For each cell, count the number of transforms per bin

@@ -22,7 +22,7 @@ def corr2(a,b):
 
 # experimentName = '20160904_FF_successful';
 # experimentName = '20160908_FF_LAT';
-experimentName = '1.1e--nCon2_useDiffInputsForTrainTest_10ep';
+experimentName = '6.3grayAndBlack_a--StatDec_FFLATFB_20EP_testBO_FB5_rand123';
 phases = ['Untrained','Trained'];
 # phases = ['Untrained'];
 # phases = ['Trained'];
@@ -40,7 +40,7 @@ maxDelay = 10;
 mimNumSpikeTh = 10;
 # minSizeSpikeChain = 2;
 SpikeChainDetectionProbTh = 0.2;
-nPairsPlotForInfo = 10000;
+nPairsPlotForInfo = 3000;
 
 nBins = 3;
 
@@ -57,6 +57,7 @@ fig=plt.figure(4 , figsize=(20, 5),dpi=150);
 
 phaseIndex=1;
 for phase in phases:
+    print("\n* analysinng phase: " + phase + " (" + experimentName + ")\n");
     fn_id = "../output/"+experimentName+"/Neurons_SpikeIDs_" + phase + "_Epoch0.bin";
     fn_t = "../output/"+experimentName+"/Neurons_SpikeTimes_" + phase + "_Epoch0.bin";  
     dtIDs = np.dtype('int32');
@@ -71,10 +72,10 @@ for phase in phases:
 
     for l in range(0,nLayers):
 #         l = 3;
-        print(phase + " -- layer: "+str(l));
+        print("** " + phase + " -- layer: "+str(l));
         #     maxSCindex=np.zeros((nObj,nTrans,4,nExcitCells));
         #     probTable_list = np.zeros((nObj,nTrans,nExcitCells,nExcitCells,maxDelay));#targetcell, 
-        spikePair_maxNum = 1000000;
+        spikePair_maxNum = 10000000;
         spikePairDetector = np.zeros((nObj,nTrans,spikePair_maxNum));#targetcell, 
         
 #         l = 3;
@@ -103,12 +104,12 @@ for phase in phases:
 #             SpikeChain.append([]);
             SpikePair.append([]);
             for trans in range(nTrans):
-                probTable_list = np.zeros((nExcitCells,nExcitCells,maxDelay));#targetcell, 
+                probTable_list = np.zeros((nExcitCells,nExcitCells+1,maxDelay));#targetcell, 
                 
 #                 SpikeChain[obj].append([]);
                 SpikePair[obj].append([]);
     
-                print('time: [' + str((presentationTime*(obj*nTrans+trans))) + ', ' + str(presentationTime*(obj*nTrans+trans+1)) + ') -- obj:' +str(obj) + ', trans:' + str(trans));
+                print('\t time: [' + str((presentationTime*(obj*nTrans+trans))) + ', ' + str(presentationTime*(obj*nTrans+trans+1)) + ') -- obj:' +str(obj) + ', trans:' + str(trans));
                 
                 #extract spikes during the presentation of a specific object obj at specific transform trans.
                 cond_perStim = ((presentationTime*(obj*nTrans+trans)) <= spikeTimes_layer) & (spikeTimes_layer < (presentationTime*(obj*nTrans+trans+1)));
@@ -165,7 +166,7 @@ for phase in phases:
                 count+=len(SpikePair[obj][trans]);
     #                 print(str(SpikePair[obj][trans]));
     #                 print('new SpikeChain:' + str(len(SpikeChain[obj][trans])) + ' total:' + str(count) +' uniequ total:' + str(len(SpikeChain_string)));
-                print('new SpikePairs:' + str(len(SpikePair[obj][trans])) + ' total:' + str(count) +' unique total:' + str(len(SpikePair_string)) + '\n');
+                print('\t new SpikePairs:' + str(len(SpikePair[obj][trans])) + ' total:' + str(count) +' unique total:' + str(len(SpikePair_string)) + '\n');
     #                 for plot_i in range(1,21):
     #                     plt.subplot(2,10,plot_i)
     #                     plt.imshow(probTable_list[obj,trans,ListOfSignificantSC[plot_i]], extent=[0,maxDelay,0,nExcitCells], aspect='auto', interpolation='none');
@@ -195,10 +196,10 @@ for phase in phases:
         Ps = 1/nObj   #Prob(s) 
         
         
-        print("**Loading data**")
+        print("\t **Loading data**")
         binMatrix = np.zeros((nPairs, nObj, nBins));# #number of times when fr is classified into a specific bin within a specific objs's transformations
         for obj in range(nObj):
-            print str(obj) + '/' + str(nObj);
+            print(str(obj) + '/' + str(nObj));
             for trans in range(nTrans):
                 for cell in range(nPairs):
     #                             bin = np.around(FR_tmp[obj,trans,l,cell]*(nBins-1));
@@ -220,7 +221,7 @@ for phase in phases:
                             
         
         
-        print "** single-cell information analysis **";
+        print("\t ** single-cell information analysis **");
         # Loop through all cells to calculate single cell information
         for cell in range(nPairs):
             # For each cell, count the number of transforms per bin
@@ -302,7 +303,7 @@ if saveImage:
         fig.savefig("../output/"+experimentName+"/SingleCellInfo_SpikePairs_MAX.eps");
 #                   fig.savefig("../output/SingleCellInfo_MAX.eps");              
 
-    print("figure SingleCellInfo.png is exported in Results");
+    print("\n * figure SingleCellInfo.png is exported in Results");
 
 plt.close();
     

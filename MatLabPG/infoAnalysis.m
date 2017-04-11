@@ -2,7 +2,7 @@ function IRs = infoAnalysis(inputMatrix,trained,nBins)
     plotAllSingleCellInfo = 0;
 %     hold off;
 %    num_bins =  2;%num_transforms;   %can be adjusted
-    weightedAnalysis = 0;%exclude the selectivity by not responding to a particular stimulus
+    weightedAnalysis = 1;%exclude the selectivity by not responding to a particular stimulus
 
 
     num_transforms = size(inputMatrix,2);
@@ -105,7 +105,7 @@ function IRs = infoAnalysis(inputMatrix,trained,nBins)
     
     %axis([0 num_PGs/10 -0.1 log2(num_stimulus)+0.1]);
     nCellsWithNonZeroInfo = length(find(IRs>0));
-    axis([0 nCellsWithNonZeroInfo*1.2 -0.1 log2(num_stimulus)+0.1]);
+    axis([1 nCellsWithNonZeroInfo*1.2 -0.1 log2(num_stimulus)+0.1]);
     title('Single Cell Information Analysis');
     ylabel('Information [bit]');
     xlabel('Cell Rank');

@@ -1,4 +1,4 @@
-7.3302177184e-05
-2.6976963813e-04
-3.0246080930e-03
-1.5446066837e-03
+1.2631752276e-03
+7.4854756229e-04
+efficient_global//1/"BestFunctions"
+ArraySpans:"BestSets"

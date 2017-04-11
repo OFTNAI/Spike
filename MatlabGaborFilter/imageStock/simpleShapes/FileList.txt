@@ -1,0 +1,9 @@
+circle1
+circle2
+*
+heart1
+heart2
+*
+satr1
+satr2
+*

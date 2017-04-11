@@ -1,0 +1,15 @@
+circle1
+circle2
+*
+heart1
+heart2
+*
+rectangle1
+rectangle2
+*
+satr1
+satr2
+*
+triangle1
+triangle2
+*

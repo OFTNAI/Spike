@@ -1,0 +1,15 @@
+circle_x00_y00
+circle_x00_y01
+circle_x01_y00
+circle_x01_y01
+*
+rectangle_x00_y00
+rectangle_x00_y01
+rectangle_x01_y00
+rectangle_x01_y01
+*
+triangle_x00_y00
+triangle_x00_y01
+triangle_x01_y00
+triangle_x01_y01
+*

@@ -8,10 +8,10 @@
 
 
 
-function weightMap = traceGabor(experimentName, targetNeuronID, plotOn)
+function weightMap = traceGabor(experimentName, targetNeuronID,weightTh)
 
     traceMode = 2; %0: trace by threshold, 1: trace by fixed number of connections, 2:take min(threshold,fixed number)
-    weightTh = 0.99;
+    %weightTh = 0.99;
     v1Dimension = 128;
     numberOfConTracePerCell = 15;
 

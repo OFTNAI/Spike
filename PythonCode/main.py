@@ -14,14 +14,14 @@ inDim = 32;
 # experimentName = '20160904_FF_successful';
 # experimentName = '20160908_FF_LAT';
 # experimentName = '20160908_FF_FB';
-experimentName = '1.1e--nCon2_useDiffInputsForTrainTest_10ep';
+experimentName = 'test';
 # experimentName = 'test';
 
 #INFO ANALYSIS:
 ia = InfoAnalysis.InfoAnalysis()
 ia.loadParams(globals());
 
-# ia.singleCellInfoAnalysis(experimentName,['Untrained', 'Trained'],weightedAnalysis = False, saveImage = True, showImage = False, nBins=3,plotAllSingleCellInfo = False);
+ia.singleCellInfoAnalysis(experimentName,['Untrained', 'Trained'],weightedAnalysis = False, saveImage = True, showImage = False, nBins=3,plotAllSingleCellInfo = False);
 
 
 # ia.singleCellInfoAnalysis(experimentName,['Untrained', 'Trained'],weightedAnalysis = False, saveImage = True, showImage = False, nBins=5,plotAllSingleCellInfo = False);
@@ -39,9 +39,9 @@ ia.loadParams(globals());
 
 
 #PLOT SPIKES
-sp = SpikePlot.SpikePlot();
-sp.loadParams(globals());
-sp.plotSpikes(experimentName,['Untrained', 'Trained'],saveImage = True, showImage = False);
+# sp = SpikePlot.SpikePlot();
+# sp.loadParams(globals());
+# sp.plotSpikes(experimentName,['Untrained', 'Trained'],saveImage = True, showImage = False);
 # sp.plotSpikes(experimentName,['Trained'],saveImage = True, showImage = False, nLayers = 4);
 # sp.plotSpikes(experimentName,['Untrained'],saveImage = True, showImage = False, nLayers = 4);
 

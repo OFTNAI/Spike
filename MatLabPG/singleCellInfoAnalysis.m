@@ -1,8 +1,8 @@
-experimentName = '1.4--FF_FB_LAT_stdp_0.005';
+experimentName = 'test';
 layer = 4;
 
 %for trainedNet = [0 1]
-for trainedNet = [1]
+for trainedNet = [0 1]
     FR = loadFR(experimentName,layer,trainedNet);
 
 

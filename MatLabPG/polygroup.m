@@ -57,7 +57,7 @@ if (neuronModel==model_conductanceLIAF)
 
     I_rev(v0+N*(t0-1))=0.001; %set input current
 %     recentTh = 0.001/timestep; %s 0.001/timestep;
-    recentTh = 1;
+    recentTh = 1;%1;
     
     for t=1:T
         %conductance_calculate_postsynaptic_current_injection_kernel
