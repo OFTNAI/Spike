@@ -41,6 +41,7 @@ namespace Backend {
      int* presynaptic_group_shape,
      int number_of_new_synapses_per_postsynaptic_neuron,
      int number_of_postsynaptic_neurons_in_group,
+     int max_number_of_connections_per_pair,
      float standard_deviation_sigma,
      bool presynaptic_group_is_input) = 0;
   };
