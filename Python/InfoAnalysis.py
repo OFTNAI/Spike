@@ -1,16 +1,3 @@
-Skip to content
-Personal Open source Business Explore
-Sign upSign inPricingBlogSupport
-This repository
-Search
- Watch 6  Star 7  Fork 0 OFTNAI/Spike
- Code  Issues 0  Pull requests 0  Projects 0  Pulse  Graphs
-Branch: nas_master Find file Copy pathSpike/PythonCode/InfoAnalysis.py
-5976d01  6 days ago
-@aeguchi aeguchi 1. revised infoAnalysis in spike analyser to give an option to set max
-1 contributor
-RawBlameHistory     
-215 lines (164 sloc)  9.35 KB
 import numpy as np
 import pylab as plt
 import pickle
@@ -23,7 +10,7 @@ class InfoAnalysis(object):
         globals().update(borrowed_globals);
     
     
-    def singleCellInfoAnalysis(self,phases,saveImage = True, showImage = True, nBins=3,weightedAnalysis = False,plotAllSingleCellInfo = True):
+    def singleCellInfoAnalysis(self,experimentName,phases,saveImage = True, showImage = True, nBins=3,weightedAnalysis = False,plotAllSingleCellInfo = True):
         fig=plt.figure(4 , figsize=(20, 5),dpi=150);
         
 #         plotFRMap = True;
@@ -34,7 +21,7 @@ class InfoAnalysis(object):
         
         useMaxFRTh = True;
         
-        maxFRTh = 100;
+        maxFRTh = 50;#100;
 #         
 #         dimExcitLayers = 64;
 #         
@@ -56,8 +43,8 @@ class InfoAnalysis(object):
 #             spikeIDs = np.loadtxt(fn_id);
 #             spikeTimes = np.loadtxt(fn_t);
             
-            fn_id = "../output/Neurons_SpikeIDs_" + phase + "_Epoch0.bin";
-            fn_t = "../output/Neurons_SpikeTimes_" + phase + "_Epoch0.bin";  
+            fn_id = "../output/"+experimentName+"/Neurons_SpikeIDs_" + phase + "_Epoch0.bin";
+            fn_t = "../output/"+experimentName+"/Neurons_SpikeTimes_" + phase + "_Epoch0.bin";  
             dtIDs = np.dtype('int32');
             dtTimes = np.dtype('f4');
             
@@ -66,7 +53,7 @@ class InfoAnalysis(object):
             
 
             FR = np.zeros((nObj, nTrans,nLayers, nExcitCells));
-            for l in range(nLayers):
+            for l in range(0,nLayers):
                 cond_ids = (l*(nExcitCells+nInhibCells) < spikeIDs) & (spikeIDs < l*(nInhibCells+nExcitCells)+nExcitCells);
                 spikeIDs_layer = np.extract(cond_ids, spikeIDs);
                 spikeTimes_layer = np.extract(cond_ids, spikeTimes);
@@ -102,7 +89,7 @@ class InfoAnalysis(object):
             performanceMeasure = 0.0;
             FR/=presentationTime;
             
-            for l in range(nLayers):
+            for l in range(0,nLayers):
                 if(not useMaxFRTh):
                     maxFRTh = FR[:,:,l,:].max()
                 print(" Maximum Firing Rate Threshold of " + str(maxFRTh) +" is used");
@@ -128,7 +115,7 @@ class InfoAnalysis(object):
                 print("**Loading data**")
                 binMatrix = np.zeros((nExcitCells, nObj, nBins));# #number of times when fr is classified into a specific bin within a specific objs's transformations
                 for obj in range(nObj):
-                    print str(obj) + '/' + str(nObj);
+                    print(str(obj) + '/' + str(nObj));
                     for trans in range(nTrans):
                         for cell in range(nExcitCells):
 #                             bin = np.around(FR_tmp[obj,trans,l,cell]*(nBins-1));
@@ -150,7 +137,7 @@ class InfoAnalysis(object):
                                     
                 
                 
-                print "** single-cell information analysis **";
+                print("** single-cell information analysis **");
                 # Loop through all cells to calculate single cell information
                 for cell in range(nExcitCells):
                     # For each cell, count the number of transforms per bin
@@ -170,6 +157,10 @@ class InfoAnalysis(object):
              
                 if (weightedAnalysis):
                     IRs = IRs_weighted;
+                
+                IRs_sorted = np.sort(IRs*-1)*-1;
+                np.savetxt("../output/"+experimentName+"/SingleCellInfo_l" + str(l) + phase + ".csv",IRs_sorted, delimiter=',');
+
                 
                 
                 if (plotAllSingleCellInfo):
@@ -193,6 +184,8 @@ class InfoAnalysis(object):
                 
                 
                     infos = reversed_arr;
+                    np.savetxt("../output/"+experimentName+"/SingleCellInfo_l" + str(l) + phase + "_max.csv",infos, delimiter=',');
+
                 
                     plt.subplot(1,nLayers,l+1)
                     if phaseIndex==1:
@@ -216,14 +209,12 @@ class InfoAnalysis(object):
             plt.show();
         if saveImage:
             if (plotAllSingleCellInfo):
-                fig.savefig("../output/SingleCellInfo_ALL.png");
+                fig.savefig("../output/"+experimentName+"/SingleCellInfo_ALL.png");
 #                 fig.savefig("../output/SingleCellInfo_ALL.eps");
             else:
-                  fig.savefig("../output/SingleCellInfo_MAX.png");
+                  fig.savefig("../output/"+experimentName+"/SingleCellInfo_MAX.png");
 #                   fig.savefig("../output/SingleCellInfo_MAX.eps");              
     
             print("figure SingleCellInfo.png is exported in Results") 
         
         plt.close();
-Contact GitHub API Training Shop Blog About
-© 2016 GitHub, Inc. Terms Privacy Security Status Help
