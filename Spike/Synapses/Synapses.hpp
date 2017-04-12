@@ -79,7 +79,7 @@ public:
   ~Synapses() override;
 
   SPIKE_ADD_BACKEND_GETSET(Synapses, SpikeBase);
-  void init_backend(Context* ctx = _global_ctx);
+  void init_backend(Context* ctx = _global_ctx) override;
   void prepare_backend_early() override;
   
   // Variables

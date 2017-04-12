@@ -47,7 +47,7 @@ public:
   void shuffle_synapses() override;
 
   void calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds, float timestep) override;
-  virtual void update_synaptic_conductances(float timestep, float current_time_in_seconds);
+  void update_synaptic_conductances(float timestep, float current_time_in_seconds) override;
 
 private:
   std::shared_ptr<::Backend::ConductanceSpikingSynapses> _backend;

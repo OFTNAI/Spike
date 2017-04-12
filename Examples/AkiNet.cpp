@@ -6,6 +6,7 @@
 // make FILE='ConductanceExperiment1' EXPERIMENT_DIRECTORY='Experiments'  model -j8
 
 
+#include "Spike/Models/SpikingModel.hpp"
 #include "Spike/Simulator/Simulator.hpp"
 #include "Spike/Synapses/ConductanceSpikingSynapses.hpp"
 #include "Spike/STDP/STDP.hpp"
@@ -297,10 +298,13 @@ int main (int argc, char *argv[]){
 		}
 	}
 
+        // Create the SpikingModel
+        SpikingModel model;
+        model.SetTimestep(timestep);
 
 	// Create an instance of the Simulator and set the timestep
-	Simulator simulator;
-	simulator.SetTimestep(timestep);
+        Simulator_Options simulator_options;
+	Simulator simulator(&model, &simulator_options);
 	if (!is_optimisation){ 	// copy cpp file to save parameters for future references
 		simulator.CreateDirectoryForSimulationDataFiles(experimentName);
 		string source = "Experiments/ConductanceExperiment1.cpp";
@@ -309,7 +313,7 @@ int main (int argc, char *argv[]){
 		ofstream dest(destination.c_str(), ios::binary ) ;
 		dest << srce.rdbuf() ;
 	}
-	simulator.high_fidelity_spike_storage = true;
+        bool high_fidelity_spike_storage = true;
 
 
 
@@ -325,19 +329,12 @@ int main (int argc, char *argv[]){
 	STDP_PARAMS->learning_rate_rho = learning_rate_rho;
 	evans_stdp->Set_STDP_Parameters((SpikingSynapses *) conductance_spiking_synapses, (SpikingNeurons *) lif_spiking_neurons, (SpikingNeurons *) input_neurons, (stdp_parameters_struct *) STDP_PARAMS);
 
-	simulator.SetNeuronType(lif_spiking_neurons);
-	simulator.SetInputNeuronType(input_neurons);
-	simulator.SetSynapseType(conductance_spiking_synapses);
-	simulator.SetSTDPType(evans_stdp);
+	// simulator.SetNeuronType(lif_spiking_neurons);
+	// simulator.SetInputNeuronType(input_neurons);
+	// simulator.SetSynapseType(conductance_spiking_synapses);
+	// simulator.SetSTDPType(evans_stdp);
 
 	conductance_spiking_synapses->print_synapse_group_details = false;
-
-	////////// SET UP STATES FOR RANDOM STATE MANAGER SINGLETON ///////////
-	int random_states_threads_per_block_x = 128;
-	int random_states_number_of_blocks_x = 64;
-	int randomSeed = 123;//234;//123;//9;
-	RandomStateManager::instance()->set_up_random_states(random_states_threads_per_block_x, random_states_number_of_blocks_x, randomSeed);
-
 
 	/////////// ADD INPUT NEURONS ///////////
 	TimerWithMessages * adding_input_neurons_timer = new TimerWithMessages("Adding Input Neurons...\n");
@@ -379,8 +376,8 @@ int main (int argc, char *argv[]){
 	vector<int> EXCITATORY_NEURONS;
 	vector<int> INHIBITORY_NEURONS;
 	for (int l=0;l<number_of_layers;l++){
-		EXCITATORY_NEURONS.push_back(simulator.AddNeuronGroup(EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS));
-		INHIBITORY_NEURONS.push_back(simulator.AddNeuronGroup(INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS));
+		EXCITATORY_NEURONS.push_back(model.AddNeuronGroup(EXCITATORY_LIF_SPIKING_NEURON_GROUP_PARAMS));
+		INHIBITORY_NEURONS.push_back(model.AddNeuronGroup(INHIBITORY_LIF_SPIKING_NEURON_GROUP_PARAMS));
 		cout<<"Neuron Group "<<EXCITATORY_NEURONS[l]<<": Excitatory layer "<<l<<endl;
 		cout<<"Neuron Group "<<INHIBITORY_NEURONS[l]<<": Inhibitory layer "<<l<<endl;
 	}
@@ -493,31 +490,27 @@ int main (int argc, char *argv[]){
 
 	for (int l=0; l<number_of_layers; l++){
 		if(l==0)
-			simulator.AddSynapseGroupsForNeuronGroupAndEachInputGroup(EXCITATORY_NEURONS[l], G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
+			model.AddSynapseGroupsForNeuronGroupAndEachInputGroup(EXCITATORY_NEURONS[l], G2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 		else{
 			E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS->gaussian_synapses_standard_deviation = gaussian_synapses_standard_deviation_E2E_FF[l-1];
-			simulator.AddSynapseGroup(EXCITATORY_NEURONS[l-1], EXCITATORY_NEURONS[l], E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
+			model.AddSynapseGroup(EXCITATORY_NEURONS[l-1], EXCITATORY_NEURONS[l], E2E_FF_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 			if(E2E_FB_ON)
-				simulator.AddSynapseGroup(EXCITATORY_NEURONS[l], EXCITATORY_NEURONS[l-1], E2E_FB_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
+				model.AddSynapseGroup(EXCITATORY_NEURONS[l], EXCITATORY_NEURONS[l-1], E2E_FB_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 		}
-		simulator.AddSynapseGroup(EXCITATORY_NEURONS[l], INHIBITORY_NEURONS[l], E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
-		simulator.AddSynapseGroup(INHIBITORY_NEURONS[l], EXCITATORY_NEURONS[l], I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
+		model.AddSynapseGroup(EXCITATORY_NEURONS[l], INHIBITORY_NEURONS[l], E2I_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
+		model.AddSynapseGroup(INHIBITORY_NEURONS[l], EXCITATORY_NEURONS[l], I2E_L_INHIBITORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 		if(E2E_L_ON)
-			simulator.AddSynapseGroup(EXCITATORY_NEURONS[l], EXCITATORY_NEURONS[l], E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
+			model.AddSynapseGroup(EXCITATORY_NEURONS[l], EXCITATORY_NEURONS[l], E2E_L_EXCITATORY_CONDUCTANCE_SPIKING_SYNAPSE_PARAMETERS);
 	}
 	
 	adding_synapses_timer->stop_timer_and_log_time_and_message("Synapses Added.", true);
 
 
 	/////////// SETUP NETWORK ///////////
-	simulator.setup_network();
-
+        model.finalise_model();
 
 	/////////// SETUP RECORDING ELECTRODES ///////////
-	int number_of_timesteps_per_device_spike_copy_check = 50;
-	int device_spike_store_size_multiple_of_total_neurons = 52;
-	float proportion_of_device_spike_store_full_before_copy = 0.2;
-	simulator.setup_recording_electrodes_for_neurons(number_of_timesteps_per_device_spike_copy_check, device_spike_store_size_multiple_of_total_neurons, proportion_of_device_spike_store_full_before_copy);
+	// simulator.setup_recording_electrodes_for_neurons(number_of_timesteps_per_device_spike_copy_check, device_spike_store_size_multiple_of_total_neurons, proportion_of_device_spike_store_full_before_copy);
 	// simulator.setup_recording_electrodes_for_input_neurons(number_of_timesteps_per_device_spike_copy_check, device_spike_store_size_multiple_of_total_neurons, proportion_of_device_spike_store_full_before_copy);
 
 	float single_score_to_write_to_file_for_dakota_optimisation_excit = 0.0;
@@ -537,11 +530,13 @@ int main (int argc, char *argv[]){
 		input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", ("MatlabGaborFilter/"+inputs_for_test_name+"/").c_str(), 100.0f);
 
 
-	SpikeAnalyser * spike_analyser_for_untrained_network = new SpikeAnalyser(simulator.neurons, (ImagePoissonInputSpikingNeurons*)simulator.input_neurons);
+	SpikeAnalyser * spike_analyser_for_untrained_network = new SpikeAnalyser(model.spiking_neurons, model.input_spiking_neurons, simulator.count_neuron_spikes_recording_electrodes);
 	spike_analyser_for_untrained_network->optimal_average_firing_rate = optimal_average_firing_rate;
 	spike_analyser_for_untrained_network->optimal_max_firing_rate = optimal_max_firing_rate;
 	if (simulate_network_to_test_untrained) {
-		simulator.RunSimulationToCountNeuronSpikes(presentation_time_per_stimulus_per_epoch, record_spikes, save_recorded_spikes_and_states_to_file, spike_analyser_for_untrained_network,human_readable_storage,isTrained);
+                // TODO!!!
+                simulator.RunSimulation();
+		// simulator.RunSimulationToCountNeuronSpikes(presentation_time_per_stimulus_per_epoch, record_spikes, save_recorded_spikes_and_states_to_file, spike_analyser_for_untrained_network,human_readable_storage,isTrained);
 		
 		spike_analyser_for_untrained_network->calculate_various_neuron_spike_totals_and_averages(presentation_time_per_stimulus_per_epoch);
 		for(int l=0;l<number_of_layers;l++)
@@ -569,7 +564,9 @@ int main (int argc, char *argv[]){
 		stimuli_presentation_params->object_order = OBJECT_ORDER_ORIGINAL;//OBJECT_ORDER_RANDOM;
 		stimuli_presentation_params->transform_order = TRANSFORM_ORDER_RANDOM;
 
-		simulator.RunSimulationToTrainNetwork(presentation_time_per_stimulus_per_epoch, number_of_epochs, stimuli_presentation_params, stimulus_presentation_order_seed);
+                // TODO!!!
+                simulator.RunSimulation();
+		// simulator.RunSimulationToTrainNetwork(presentation_time_per_stimulus_per_epoch, number_of_epochs, stimuli_presentation_params, stimulus_presentation_order_seed);
 	}
 
 
@@ -582,7 +579,7 @@ int main (int argc, char *argv[]){
 		// input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", "MatlabGaborFilter/Inputs/", 100.0f);
 		input_neurons->set_up_rates("FileList.txt", "FilterParameters.txt", ("MatlabGaborFilter/"+inputs_for_test_name+"/").c_str(), 100.0f);
 
-	SpikeAnalyser * spike_analyser_for_trained_network = new SpikeAnalyser(simulator.neurons, (ImagePoissonInputSpikingNeurons*)simulator.input_neurons);
+	SpikeAnalyser * spike_analyser_for_trained_network = new SpikeAnalyser(model.spiking_neurons, model.input_spiking_neurons, simulator.count_neuron_spikes_recording_electrodes);
 	spike_analyser_for_trained_network->optimal_average_firing_rate = optimal_average_firing_rate;
 	spike_analyser_for_trained_network->optimal_max_firing_rate = optimal_max_firing_rate;
 
@@ -591,7 +588,9 @@ int main (int argc, char *argv[]){
 		record_spikes = record_spikes_test;
 		save_recorded_spikes_and_states_to_file = save_recorded_spikes_and_states_to_file_test;
 
-		simulator.RunSimulationToCountNeuronSpikes(presentation_time_per_stimulus_per_epoch, record_spikes, save_recorded_spikes_and_states_to_file, spike_analyser_for_trained_network,human_readable_storage,isTrained);
+                // TODO!!!
+                simulator.RunSimulation();
+		// simulator.RunSimulationToCountNeuronSpikes(presentation_time_per_stimulus_per_epoch, record_spikes, save_recorded_spikes_and_states_to_file, spike_analyser_for_trained_network,human_readable_storage,isTrained);
 
 		spike_analyser_for_trained_network->calculate_various_neuron_spike_totals_and_averages(presentation_time_per_stimulus_per_epoch);
 		for(int l=0;l<number_of_layers;l++)
@@ -623,7 +622,7 @@ int main (int argc, char *argv[]){
 
 		switch (objective_function){
 			case OBJFUNC_AVGFR:		//output combined powered distance as a objective function of the optimization
-				spike_analyser_for_untrained_network->calculate_fitness_score();
+                          spike_analyser_for_untrained_network->calculate_fitness_score(optimal_average_firing_rate, optimal_max_firing_rate);
 
 				for (int l=0;l<number_of_layers;l++){
 					scoreMean_excit += spike_analyser_for_untrained_network->combined_powered_distance_from_average_score_for_each_neuron_group[l*2];
@@ -635,7 +634,7 @@ int main (int argc, char *argv[]){
 				resultsfile << to_string(scoreMean_excit) <<endl << to_string(scoreMean_inhib) << endl;
 				break;
 			case OBJFUNC_MAXFR:
-				spike_analyser_for_untrained_network->calculate_fitness_score();
+				spike_analyser_for_untrained_network->calculate_fitness_score(optimal_average_firing_rate, optimal_max_firing_rate);
 				for (int l=0;l<number_of_layers;l++){
 					scoreMax_excit += spike_analyser_for_untrained_network->combined_powered_distance_from_max_score_for_each_neuron_group[l*2];
 					scoreMax_inhib += spike_analyser_for_untrained_network->combined_powered_distance_from_max_score_for_each_neuron_group[l*2 + 1];
@@ -658,7 +657,7 @@ int main (int argc, char *argv[]){
 				resultsfile << to_string(combined_information_score_training_increase)<<endl;
 				break;
 			case OBJFUNC_AVGFR_AND_MAXINFO:
-				spike_analyser_for_untrained_network->calculate_fitness_score();
+				spike_analyser_for_untrained_network->calculate_fitness_score(optimal_average_firing_rate, optimal_max_firing_rate);
 				for (int l=0;l<number_of_layers;l++){
 					scoreMean_excit += spike_analyser_for_untrained_network->combined_powered_distance_from_average_score_for_each_neuron_group[l*2];
 					scoreMean_inhib += spike_analyser_for_untrained_network->combined_powered_distance_from_average_score_for_each_neuron_group[l*2 + 1];
@@ -674,7 +673,7 @@ int main (int argc, char *argv[]){
 				break;
 
 			case OBJFUNC_AVGFR_AND_AVGINFO:
-				spike_analyser_for_untrained_network->calculate_fitness_score();
+				spike_analyser_for_untrained_network->calculate_fitness_score(optimal_average_firing_rate, optimal_max_firing_rate);
 				for (int l=0;l<number_of_layers;l++){
 					scoreMean_excit += spike_analyser_for_untrained_network->combined_powered_distance_from_average_score_for_each_neuron_group[l*2];
 					scoreMean_inhib += spike_analyser_for_untrained_network->combined_powered_distance_from_average_score_for_each_neuron_group[l*2 + 1];
@@ -690,7 +689,7 @@ int main (int argc, char *argv[]){
 				break;
 
 			case OBJFUNC_MAXFR_AND_AVGINFO:
-				spike_analyser_for_trained_network->calculate_fitness_score();
+				spike_analyser_for_trained_network->calculate_fitness_score(optimal_average_firing_rate, optimal_max_firing_rate);
 				scoreMean_excit += spike_analyser_for_trained_network->combined_powered_distance_from_max_score_for_each_neuron_group[(number_of_layers-1)*2];
 				printf("maxFR score excit in the last layer: %f \n",scoreMean_excit);
 				resultsfile << to_string(scoreMean_excit) <<endl;
@@ -705,7 +704,7 @@ int main (int argc, char *argv[]){
 				printf("increase in number of cells with maximum info in average: %f\n", combined_information_score_training_increase);
 				resultsfile << to_string(combined_information_score_training_increase)<<endl;
 
-				spike_analyser_for_trained_network->calculate_fitness_score();
+				spike_analyser_for_trained_network->calculate_fitness_score(optimal_average_firing_rate, optimal_max_firing_rate);
 				scoreMean_excit += spike_analyser_for_trained_network->combined_powered_distance_from_max_score_for_each_neuron_group[(number_of_layers-1)*2];
 				printf("maxFR score excit in the last layer: %f \n",scoreMean_excit);
 				resultsfile << to_string(scoreMean_excit) <<endl;
@@ -717,7 +716,7 @@ int main (int argc, char *argv[]){
 				printf("increase in number of cells with maximum info in average: %f\n", combined_information_score_training_increase);
 				resultsfile << to_string(combined_information_score_training_increase)<<endl;
 
-				spike_analyser_for_trained_network->calculate_fitness_score();
+				spike_analyser_for_trained_network->calculate_fitness_score(optimal_average_firing_rate, optimal_max_firing_rate);
 				scoreMean_excit += spike_analyser_for_trained_network->combined_powered_distance_from_max_score_for_each_neuron_group[(number_of_layers-1)*2];
 				printf("maxFR score excit in the last layer: %f \n",scoreMean_excit);
 				resultsfile << to_string(scoreMean_excit) <<endl;
