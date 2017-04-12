@@ -599,11 +599,11 @@ int main (int argc, char *argv[]){
 	}
 
 	/////////// PLOT INFOANALYSIS RESULTS //////////////////
-	if (simulate_network_to_test_untrained && simulate_network_to_test_trained && plotInfoAnalysis){
-		Plotter * plotter = new Plotter(experimentName);
-		plotter->plot_single_cell_information_analysis(spike_analyser_for_untrained_network, spike_analyser_for_trained_network);
+	// if (simulate_network_to_test_untrained && simulate_network_to_test_trained && plotInfoAnalysis){
+	// 	Plotter * plotter = new Plotter(experimentName);
+	// 	plotter->plot_single_cell_information_analysis(spike_analyser_for_untrained_network, spike_analyser_for_trained_network);
 
-	}
+	// }
 
 	/////////// WRITE INFORMATION ////////////////////
 //	if (simulate_network_to_test_untrained && simulate_network_to_test_trained && writeInformation){
