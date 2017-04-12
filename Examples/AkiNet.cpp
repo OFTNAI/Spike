@@ -319,6 +319,8 @@ int main (int argc, char *argv[]){
 	STDP_PARAMS.learning_rate_rho = learning_rate_rho;
 	evans_stdp.Set_STDP_Parameters(&conductance_spiking_synapses, &lif_spiking_neurons, &input_neurons, &STDP_PARAMS);
 
+        model.init_backend();
+
 	conductance_spiking_synapses.print_synapse_group_details = false;
 
 	/////////// ADD INPUT NEURONS ///////////
