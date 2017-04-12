@@ -302,25 +302,15 @@ int main (int argc, char *argv[]){
         SpikingModel model;
         model.SetTimestep(timestep);
 
-	// Create an instance of the Simulator and set the timestep
-        Simulator_Options simulator_options;
-	Simulator simulator(&model, &simulator_options);
-	if (!is_optimisation){ 	// copy cpp file to save parameters for future references
-		simulator.CreateDirectoryForSimulationDataFiles(experimentName);
-		string source = "Experiments/ConductanceExperiment1.cpp";
-		string destination = "output/"+experimentName+"/ConductanceExperiment1.cpp";
-		ifstream srce(source.c_str(), ios::binary ) ;
-		ofstream dest(destination.c_str(), ios::binary ) ;
-		dest << srce.rdbuf() ;
-	}
-        bool high_fidelity_spike_storage = true;
-
-
-
 	LIFSpikingNeurons lif_spiking_neurons;
 	ImagePoissonInputSpikingNeurons input_neurons;
 	ConductanceSpikingSynapses conductance_spiking_synapses;
 	EvansSTDP evans_stdp;
+
+        model.spiking_neurons = &lif_spiking_neurons;
+        model.input_spiking_neurons = &input_neurons;
+        model.spiking_synapses = &conductance_spiking_synapses;
+        model.stdp_rule = &evans_stdp;
 
 	/////////// STDP SETUP ///////////
 	evans_stdp_parameters_struct STDP_PARAMS;
@@ -328,11 +318,6 @@ int main (int argc, char *argv[]){
 	STDP_PARAMS.decay_term_tau_D = decay_term_tau_D;
 	STDP_PARAMS.learning_rate_rho = learning_rate_rho;
 	evans_stdp.Set_STDP_Parameters(&conductance_spiking_synapses, &lif_spiking_neurons, &input_neurons, &STDP_PARAMS);
-
-	// simulator.SetNeuronType(lif_spiking_neurons);
-	// simulator.SetInputNeuronType(input_neurons);
-	// simulator.SetSynapseType(conductance_spiking_synapses);
-	// simulator.SetSTDPType(evans_stdp);
 
 	conductance_spiking_synapses.print_synapse_group_details = false;
 
@@ -508,6 +493,20 @@ int main (int argc, char *argv[]){
 
 	/////////// SETUP NETWORK ///////////
         model.finalise_model();
+
+
+	// Create an instance of the Simulator and set the timestep
+        Simulator_Options simulator_options;
+	Simulator simulator(&model, &simulator_options);
+	if (!is_optimisation){ 	// copy cpp file to save parameters for future references
+		simulator.CreateDirectoryForSimulationDataFiles(experimentName);
+		string source = "Experiments/ConductanceExperiment1.cpp";
+		string destination = "output/"+experimentName+"/ConductanceExperiment1.cpp";
+		ifstream srce(source.c_str(), ios::binary ) ;
+		ofstream dest(destination.c_str(), ios::binary ) ;
+		dest << srce.rdbuf() ;
+	}
+
 
 	/////////// SETUP RECORDING ELECTRODES ///////////
 	// simulator.setup_recording_electrodes_for_neurons(number_of_timesteps_per_device_spike_copy_check, device_spike_store_size_multiple_of_total_neurons, proportion_of_device_spike_store_full_before_copy);
