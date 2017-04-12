@@ -36,8 +36,8 @@ add_library(Spike
 # target_compile_features(Spike PUBLIC cxx_nullptr)
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  set(WHOLE_ARCHIVE_FLAG "")
-  set(NO_WHOLE_ARCHIVE_FLAG "")
+  set(WHOLE_ARCHIVE_FLAG "-Wl,-all_load")
+  set(NO_WHOLE_ARCHIVE_FLAG "-Wl,-noall_load")
 else()
   set(WHOLE_ARCHIVE_FLAG "-Wl,--whole-archive")
   set(NO_WHOLE_ARCHIVE_FLAG "-Wl,--no-whole-archive")
