@@ -139,7 +139,7 @@ namespace Backend {
 
       int idx = threadIdx.x + blockIdx.x * blockDim.x;
       int t_idx = idx;
-      while (idx < round(total_number_of_new_synapses/max_number_of_connections_per_pair)) {
+      while (idx < floor((float)total_number_of_new_synapses/max_number_of_connections_per_pair)) {
 
         int postsynaptic_neuron_id = (idx*max_number_of_connections_per_pair) / number_of_new_synapses_per_postsynaptic_neuron;
         d_postsynaptic_neuron_indices[idx] = poststart + postsynaptic_neuron_id;
