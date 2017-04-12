@@ -499,6 +499,8 @@ int main (int argc, char *argv[]){
 
 	// Create an instance of the Simulator and set the timestep
         Simulator_Options simulator_options;
+        simulator_options.recording_electrodes_options->count_neuron_spikes_recording_electrodes_bool = true; // TODO PROPERLY
+
 	Simulator simulator(&model, &simulator_options);
 	if (!is_optimisation){ 	// copy cpp file to save parameters for future references
 		simulator.CreateDirectoryForSimulationDataFiles(experimentName);
