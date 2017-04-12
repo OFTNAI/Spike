@@ -6,16 +6,16 @@ environment,
 	results_output
 
 method
-#	efficient_global
-    coliny_solis_wets
+	efficient_global
+#    coliny_solis_wets
 	seed = 123456
 
 variables,
 
-	continuous_design = 3			
-	cdv_lower_bounds    3.0     3.0     3.0	
-	cdv_upper_bounds    30.0    30.0    30.0
-	cdv_descriptor      'gaussian_synapses_standard_deviation_FF_G2E'      'gaussian_synapses_standard_deviation_FF' 'gaussian_synapses_standard_deviation_LAT'
+	continuous_design = 2			
+	cdv_lower_bounds    2.0     2.0
+	cdv_upper_bounds    20.0    20.0
+	cdv_descriptor      'gaussian_synapses_standard_deviation_I2E_L'   'gaussian_synapses_standard_deviation_E2E_L'
 
 
 #	discrete_design_set_integer 3

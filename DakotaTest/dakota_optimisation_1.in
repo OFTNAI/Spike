@@ -49,7 +49,7 @@ interface,
 	    file_save
 
 responses,
-	objective_functions = 2
+	objective_functions = 1
 	sense = 'max'
 	no_gradients
 	no_hessians
