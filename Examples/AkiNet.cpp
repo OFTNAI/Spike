@@ -6,21 +6,21 @@
 // make FILE='ConductanceExperiment1' EXPERIMENT_DIRECTORY='Experiments'  model -j8
 
 
-#include "../Simulator/Simulator.h"
-#include "../Synapses/ConductanceSpikingSynapses.h"
-#include "../STDP/STDP.h"
-#include "../STDP/EvansSTDP.h"
-#include "../Neurons/Neurons.h"
-#include "../Neurons/SpikingNeurons.h"
-#include "../Neurons/LIFSpikingNeurons.h"
-#include "../Neurons/ImagePoissonInputSpikingNeurons.h"
-#include "../Helpers/TerminalHelpers.h"
-#include "../SpikeAnalyser/SpikeAnalyser.h"
-#include "../Helpers/TimerWithMessages.h"
-#include "../Helpers/RandomStateManager.h"
+#include "Spike/Simulator/Simulator.hpp"
+#include "Spike/Synapses/ConductanceSpikingSynapses.hpp"
+#include "Spike/STDP/STDP.hpp"
+#include "Spike/STDP/EvansSTDP.hpp"
+#include "Spike/Neurons/Neurons.hpp"
+#include "Spike/Neurons/SpikingNeurons.hpp"
+#include "Spike/Neurons/LIFSpikingNeurons.hpp"
+#include "Spike/Neurons/ImagePoissonInputSpikingNeurons.hpp"
+#include "Spike/Helpers/TerminalHelpers.hpp"
+#include "Spike/SpikeAnalyser/SpikeAnalyser.hpp"
+#include "Spike/Helpers/TimerWithMessages.hpp"
+#include "Spike/Helpers/RandomStateManager.hpp"
 #include <string>
 #include <fstream>
-#include "../Plotting/Plotter.h"
+//#include "Spike/Plotting/Plotter.hpp" // NB Not C++11 compatible
 #include <vector>
 #include <fstream>
 
