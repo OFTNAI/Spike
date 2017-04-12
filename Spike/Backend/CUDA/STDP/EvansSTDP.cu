@@ -48,8 +48,9 @@ namespace Backend {
          synapses_backend->time_of_last_spike_to_reach_synapse,
          neurons_backend->last_spike_time_of_each_neuron,
          synapses_backend->stdp,
-         frontend()->syns->total_number_of_synapses,
-         frontend()->stdp_params->learning_rate_rho); // Here learning_rate_rho represents timestep/tau_delta_g in finite difference equation
+         frontend()->stdp_params->learning_rate_rho,
+         stdp_synapse_indices,
+         total_number_of_stdp_synapses); // Here learning_rate_rho represents timestep/tau_delta_g in finite difference equation
 
       CudaCheckError();
     }
@@ -61,9 +62,10 @@ namespace Backend {
          synapses_backend->stdp,
          timestep,
          current_time_in_seconds,
-         frontend()->syns->total_number_of_synapses,
          frontend()->stdp_params->synaptic_neurotransmitter_concentration_alpha_C,
-         frontend()->stdp_params->decay_term_tau_C);
+         frontend()->stdp_params->decay_term_tau_C,
+         stdp_synapse_indices,
+         total_number_of_stdp_synapses);
 
       CudaCheckError();
     }
@@ -116,15 +118,16 @@ namespace Backend {
     (float* d_recent_presynaptic_activities_C,
      float* d_time_of_last_spike_to_reach_synapse,
      bool* d_stdp,
-     float timestep, 
+     float timestep,
      float current_time_in_seconds,
-     size_t total_number_of_synapses,
      float synaptic_neurotransmitter_concentration_alpha_C,
-     float decay_term_tau_C) {
+     float decay_term_tau_C,
+     int* d_stdp_synapse_indices,
+     size_t total_number_of_stdp_synapses) {
 
-      int t_idx = threadIdx.x + blockIdx.x * blockDim.x;
-      int idx = t_idx;
-      while (idx < total_number_of_synapses) {
+      int indx = threadIdx.x + blockIdx.x * blockDim.x;
+      while (indx < total_number_of_stdp_synapses) {
+        int idx = d_stdp_synapse_indices[indx];
 
         if (d_stdp[idx] == true) {
 
@@ -142,7 +145,7 @@ namespace Backend {
 
         }
 
-        idx += blockDim.x * gridDim.x;
+        indx += blockDim.x * gridDim.x;
 
       }
 
@@ -157,12 +160,14 @@ namespace Backend {
      float * d_time_of_last_spike_to_reach_synapse,
      float * d_last_spike_time_of_each_neuron,
      bool* d_stdp,
-     size_t total_number_of_synapses,
-     float learning_rate_rho) {
+     float learning_rate_rho,
+     int* d_stdp_synapse_indices,
+     size_t total_number_of_stdp_synapses) {
 
-      int idx = threadIdx.x + blockIdx.x * blockDim.x;
+      int indx = threadIdx.x + blockIdx.x * blockDim.x;
 
-      while (idx < total_number_of_synapses) {
+      while (indx < total_number_of_stdp_synapses) {
+        int idx = d_stdp_synapse_indices[indx];
 
         if (d_stdp[idx] == true) {
 
@@ -198,7 +203,7 @@ namespace Backend {
 
         }
 
-        idx += blockDim.x * gridDim.x;
+        indx += blockDim.x * gridDim.x;
       }
     }
 

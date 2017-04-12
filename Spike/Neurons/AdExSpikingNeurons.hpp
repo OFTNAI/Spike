@@ -5,7 +5,7 @@
 
 
 struct AdEx_spiking_neuron_parameters_struct : spiking_neuron_parameters_struct {
-	AdEx_spiking_neuron_parameters_struct() : membrane_capacitance_Cm(0.0f), membrane_leakage_conductance_g0(0.0f), absolute_refractory_period(0.002f)  { spiking_neuron_parameters_struct(); }
+	AdEx_spiking_neuron_parameters_struct() : membrane_capacitance_Cm(0.0f), membrane_leakage_conductance_g0(0.0f), absolute_refractory_period(0.002f), background_current(0.0f)  { spiking_neuron_parameters_struct(); }
 
 	float membrane_capacitance_Cm;
 	float membrane_leakage_conductance_g0;
@@ -15,6 +15,7 @@ struct AdEx_spiking_neuron_parameters_struct : spiking_neuron_parameters_struct 
 	float adaptation_time_constant_tau_w;
 	float adaptation_change_b;
 	float absolute_refractory_period;
+  float background_current;
 
 };
 
@@ -42,6 +43,7 @@ public:
   float * adaptation_time_constants_tau_w = nullptr;
   float * adaptation_changes_b = nullptr;
   float absolute_refractory_period = 0;
+  float background_current = 0;
 
   int AddGroup(neuron_parameters_struct * group_params) override;
   // void update_membrane_potentials(float timestep, float current_time_in_seconds) override;

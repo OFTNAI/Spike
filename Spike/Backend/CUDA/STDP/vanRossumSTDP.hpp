@@ -1,7 +1,10 @@
 #pragma once
 
-#include "Spike/STDP/MasquelierSTDP.hpp"
+#include "Spike/STDP/vanRossumSTDP.hpp"
 #include "STDP.hpp"
+
+#include "Spike/Backend/CUDA/Neurons/SpikingNeurons.hpp"
+#include "Spike/Backend/CUDA/Synapses/SpikingSynapses.hpp"
 
 #include "Spike/Backend/CUDA/CUDABackend.hpp"
 #include <cuda.h>
@@ -11,16 +14,16 @@
 
 namespace Backend {
   namespace CUDA {
-    class MasquelierSTDP : public virtual ::Backend::CUDA::STDP,
-                           public virtual ::Backend::MasquelierSTDP {
+    class vanRossumSTDP : public virtual ::Backend::CUDA::STDP,
+                           public virtual ::Backend::vanRossumSTDP {
     public:
       int* index_of_last_afferent_synapse_to_spike = nullptr;
       bool* isindexed_ltd_synapse_spike = nullptr;
       int* index_of_first_synapse_spiked_after_postneuron = nullptr;
 
-      ~MasquelierSTDP() override;
-      SPIKE_MAKE_BACKEND_CONSTRUCTOR(MasquelierSTDP);
-      using ::Backend::MasquelierSTDP::frontend;
+      ~vanRossumSTDP() override;
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(vanRossumSTDP);
+      using ::Backend::vanRossumSTDP::frontend;
 
       void prepare() override;
       void reset_state() override;
@@ -30,7 +33,7 @@ namespace Backend {
     };
 
     // Kernel to carry out LTP/LTD
-    __global__ void masquelier_apply_stdp_to_synapse_weights_kernel
+    __global__ void vanrossum_apply_stdp_to_synapse_weights_kernel
     (int* d_postsyns,
      float* d_last_spike_time_of_each_neuron,
      bool* d_stdp,
@@ -39,11 +42,11 @@ namespace Backend {
      int* d_index_of_last_afferent_synapse_to_spike,
      bool* d_isindexed_ltd_synapse_spike,
      int* d_index_of_first_synapse_spiked_after_postneuron,
-     struct masquelier_stdp_parameters_struct stdp_vars,
+     struct vanrossum_stdp_parameters_struct stdp_vars,
      float currtime,
      size_t total_number_of_post_neurons);
 
-    __global__ void masquelier_get_indices_to_apply_stdp
+    __global__ void vanrossum_get_indices_to_apply_stdp
     (int* d_postsyns,
      float* d_last_spike_time_of_each_neuron,
      float* d_time_of_last_spike_to_reach_synapse,

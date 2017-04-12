@@ -73,9 +73,10 @@ struct Simulator_File_Storage_Options_Struct {
 											save_recorded_input_neuron_spikes_to_file(false), 
 											write_initial_synaptic_weights_to_file_bool(false), 
 											human_readable_storage(false), 
-											network_is_trained(false) 
+											network_is_trained(false),
+											output_directory("output/")
 											{}
-
+	std::string output_directory;
 	bool save_recorded_neuron_spikes_to_file;
 	bool save_recorded_input_neuron_spikes_to_file;
 	bool write_initial_synaptic_weights_to_file_bool;

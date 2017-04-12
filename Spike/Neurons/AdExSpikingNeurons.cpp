@@ -29,6 +29,7 @@ int AdExSpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
   adaptation_changes_b = (float*)realloc(adaptation_changes_b, total_number_of_neurons*sizeof(float));
 
   absolute_refractory_period = AdEx_spiking_group_params->absolute_refractory_period;
+  background_current = AdEx_spiking_group_params->background_current;
 
   for (int i = total_number_of_neurons - number_of_neurons_in_new_group; i < total_number_of_neurons; i++) {
     adaptation_values_w[i] = 0.0f;

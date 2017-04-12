@@ -23,9 +23,9 @@ public:
 	bool I2E_L_SYNAPSES_ON = false;
 	bool E2E_FB_SYNAPSES_ON = false;
 
-        bool E2E_FF_STDP_ON = false;
-        bool E2E_L_STDP_ON = false;
-        bool E2E_FB_STDP_ON = false;
+    STDP * E2E_FF_STDP_ON = nullptr;
+    STDP * E2E_L_STDP_ON = nullptr;
+    STDP * E2E_FB_STDP_ON = nullptr;
 	
 	int number_of_non_input_layers = 4;
 	int number_of_non_input_layers_to_simulate = 1;

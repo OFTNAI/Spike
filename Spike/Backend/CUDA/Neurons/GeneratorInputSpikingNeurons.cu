@@ -18,8 +18,7 @@ namespace Backend {
 
     void GeneratorInputSpikingNeurons::prepare() {
       InputSpikingNeurons::prepare();
-      CudaSafeCall(cudaMalloc((void **)&neuron_ids_for_stimulus, sizeof(int)*frontend()->length_of_longest_stimulus));
-      CudaSafeCall(cudaMalloc((void **)&spike_times_for_stimulus, sizeof(float)*frontend()->length_of_longest_stimulus));
+      allocate_device_pointers();
     }
 
     void GeneratorInputSpikingNeurons::reset_state() {
@@ -33,22 +32,25 @@ namespace Backend {
                               frontend()->spike_times_matrix_for_stimuli[frontend()->current_stimulus_index],
                               sizeof(float)*frontend()->number_of_spikes_in_stimuli[frontend()->current_stimulus_index],
                               cudaMemcpyHostToDevice));
+      num_spikes_in_current_stimulus = frontend()->number_of_spikes_in_stimuli[frontend()->current_stimulus_index];
     }
 
     void GeneratorInputSpikingNeurons::check_for_neuron_spikes(float current_time_in_seconds, float timestep) {
-      check_for_generator_spikes_kernel<<<number_of_neuron_blocks_per_grid, threads_per_block>>>
-        (neuron_ids_for_stimulus,
-         spike_times_for_stimulus,
-         last_spike_time_of_each_neuron,
-         bitarray_of_neuron_spikes,
-         frontend()->bitarray_length,
-         frontend()->bitarray_maximum_axonal_delay_in_timesteps,
-         current_time_in_seconds,
-         timestep,
-         frontend()->number_of_spikes_in_stimuli[frontend()->current_stimulus_index],
-         frontend()->high_fidelity_spike_flag);
+      if ((frontend()->temporal_lengths_of_stimuli[frontend()->current_stimulus_index] +  timestep) > current_time_in_seconds){
+        check_for_generator_spikes_kernel<<<number_of_neuron_blocks_per_grid, threads_per_block>>>
+          (neuron_ids_for_stimulus,
+           spike_times_for_stimulus,
+           last_spike_time_of_each_neuron,
+           bitarray_of_neuron_spikes,
+           frontend()->bitarray_length,
+           frontend()->bitarray_maximum_axonal_delay_in_timesteps,
+           current_time_in_seconds,
+           timestep,
+           num_spikes_in_current_stimulus,
+           frontend()->high_fidelity_spike_flag);
 
-      CudaCheckError();
+        CudaCheckError();
+      }
     }
 
     void GeneratorInputSpikingNeurons::update_membrane_potentials(float timestep, float current_time_in_seconds) {
@@ -69,7 +71,6 @@ namespace Backend {
       int idx = threadIdx.x + blockIdx.x * blockDim.x;
       while (idx < number_of_spikes_in_stimulus) {
         if (fabs(current_time_in_seconds - d_spike_times_for_stimulus[idx]) < 0.5 * timestep) {
-          __syncthreads();
           d_last_spike_time_of_each_neuron[d_neuron_ids_for_stimulus[idx]] = current_time_in_seconds;
 
           if (high_fidelity_spike_flag){

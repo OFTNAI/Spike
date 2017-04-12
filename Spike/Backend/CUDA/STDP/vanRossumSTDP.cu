@@ -1,17 +1,17 @@
 // -*- mode: c++ -*-
-#include "Spike/Backend/CUDA/STDP/MasquelierSTDP.hpp"
+#include "Spike/Backend/CUDA/STDP/vanRossumSTDP.hpp"
 
-SPIKE_EXPORT_BACKEND_TYPE(CUDA, MasquelierSTDP);
+SPIKE_EXPORT_BACKEND_TYPE(CUDA, vanRossumSTDP);
 
 namespace Backend {
   namespace CUDA {
-    MasquelierSTDP::~MasquelierSTDP() {
+    vanRossumSTDP::~vanRossumSTDP() {
       CudaSafeCall(cudaFree(index_of_last_afferent_synapse_to_spike));
       CudaSafeCall(cudaFree(isindexed_ltd_synapse_spike));
       CudaSafeCall(cudaFree(index_of_first_synapse_spiked_after_postneuron));
     }
 
-    void MasquelierSTDP::reset_state() {
+    void vanRossumSTDP::reset_state() {
       STDP::reset_state();
 
       CudaSafeCall(cudaMemcpy((void*)index_of_last_afferent_synapse_to_spike,
@@ -28,13 +28,13 @@ namespace Backend {
                               cudaMemcpyHostToDevice));
     }
 
-    void MasquelierSTDP::prepare() {
+    void vanRossumSTDP::prepare() {
       STDP::prepare();
 
       allocate_device_pointers();
     }
 
-    void MasquelierSTDP::allocate_device_pointers() {
+    void vanRossumSTDP::allocate_device_pointers() {
       // The following doesn't do anything in original code...
       // ::Backend::CUDA::STDP::allocate_device_pointers();
 
@@ -43,10 +43,10 @@ namespace Backend {
       CudaSafeCall(cudaMalloc((void **)&index_of_first_synapse_spiked_after_postneuron, sizeof(int)*frontend()->neurs->total_number_of_neurons));
     }
 
-    void MasquelierSTDP::apply_stdp_to_synapse_weights(float current_time_in_seconds) {
+    void vanRossumSTDP::apply_stdp_to_synapse_weights(float current_time_in_seconds) {
       // First reset the indices array
       // In order to carry out nearest spike potentiation only, we must find the spike arriving at each neuron which has the smallest time diff
-    masquelier_get_indices_to_apply_stdp<<<synapses_backend->number_of_synapse_blocks_per_grid, synapses_backend->threads_per_block>>>
+    vanrossum_get_indices_to_apply_stdp<<<synapses_backend->number_of_synapse_blocks_per_grid, synapses_backend->threads_per_block>>>
       (synapses_backend->postsynaptic_neuron_indices,
        neurons_backend->last_spike_time_of_each_neuron,
        synapses_backend->time_of_last_spike_to_reach_synapse,
@@ -58,7 +58,7 @@ namespace Backend {
        total_number_of_stdp_synapses);
     CudaCheckError();
 
-    masquelier_apply_stdp_to_synapse_weights_kernel<<<neurons_backend->number_of_neuron_blocks_per_grid, neurons_backend->threads_per_block>>>
+    vanrossum_apply_stdp_to_synapse_weights_kernel<<<neurons_backend->number_of_neuron_blocks_per_grid, neurons_backend->threads_per_block>>>
       (synapses_backend->postsynaptic_neuron_indices,
        neurons_backend->last_spike_time_of_each_neuron,
        synapses_backend->stdp,
@@ -74,7 +74,7 @@ namespace Backend {
     }
 
     // Find nearest spike
-    __global__ void masquelier_apply_stdp_to_synapse_weights_kernel
+    __global__ void vanrossum_apply_stdp_to_synapse_weights_kernel
     (int* d_postsyns,
      float* d_last_spike_time_of_each_neuron,
      bool* d_stdp,
@@ -83,7 +83,7 @@ namespace Backend {
      int* d_index_of_last_afferent_synapse_to_spike,
      bool* d_isindexed_ltd_synapse_spike,
      int* d_index_of_first_synapse_spiked_after_postneuron,
-     struct masquelier_stdp_parameters_struct stdp_vars,
+     struct vanrossum_stdp_parameters_struct stdp_vars,
      float currtime,
      size_t total_number_of_post_neurons){
       // Global Index
@@ -138,11 +138,9 @@ namespace Backend {
               float diff = last_syn_spike_time - last_neuron_spike_time;
               // Only carry out LTD if the difference is in some range
               if (diff < 7*stdp_vars.tau_minus && diff > 0){
-                float weightchange = stdp_vars.a_minus * expf(-diff / stdp_vars.tau_minus);
+                float weightchange = new_syn_weight * stdp_vars.a_minus * expf(-diff / stdp_vars.tau_minus);
                 // Update the weights
                 new_syn_weight -= weightchange;
-                // Ensure that the weights are clipped to 0.0f
-                new_syn_weight = max(new_syn_weight, 0.0f);
               }
               d_synaptic_efficacies_or_weights[index_of_LTD_synapse] = new_syn_weight;
             }
@@ -153,7 +151,7 @@ namespace Backend {
       __syncthreads();
     }
 
-    __global__ void masquelier_get_indices_to_apply_stdp
+    __global__ void vanrossum_get_indices_to_apply_stdp
     (int* d_postsyns,
      float* d_last_spike_time_of_each_neuron,
      float* d_time_of_last_spike_to_reach_synapse,
@@ -165,7 +163,7 @@ namespace Backend {
      size_t total_number_of_stdp_synapses){
       int indx = threadIdx.x + blockIdx.x * blockDim.x;
 
-      // Running through all neurons:
+      // Running through all synapses:
       while (indx < total_number_of_stdp_synapses){
         int idx = d_stdp_synapse_indices[indx];
         int postsynaptic_neuron = d_postsyns[idx];

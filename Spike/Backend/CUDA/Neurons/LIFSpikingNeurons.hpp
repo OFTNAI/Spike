@@ -35,6 +35,7 @@ namespace Backend {
                                                    float * d_membrane_time_constants_tau_m,
                                                    float * d_resting_potentials,
                                                    float* d_current_injections,
+                                                   float background_current,
                                                    float timestep,
                                                    float current_time_in_seconds,
                                                    float refactory_period_in_seconds,

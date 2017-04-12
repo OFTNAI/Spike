@@ -64,6 +64,7 @@ namespace Backend {
      float * d_thresholds_for_action_potential_spikes,
      float * d_last_spike_time_of_each_neuron,
      float absolute_refractory_period,
+     float background_current,
      float current_time_in_seconds,
      float timestep,
      size_t total_number_of_neurons);

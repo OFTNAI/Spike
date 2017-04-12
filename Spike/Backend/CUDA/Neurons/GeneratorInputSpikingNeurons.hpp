@@ -25,6 +25,7 @@ namespace Backend {
       // Device Pointers
       int* neuron_ids_for_stimulus = nullptr;
       float* spike_times_for_stimulus = nullptr;
+      int num_spikes_in_current_stimulus = 0;
 
       void allocate_device_pointers(); // Not virtual
 
