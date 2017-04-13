@@ -134,7 +134,7 @@ public:
      *  A function called in to reallocate memory for a given number more synapses.
      /param increment The number of synapses for which allocated memory must be expanded.
   */
-  virtual void increment_number_of_synapses(int increment);
+  void increment_number_of_synapses(int increment);
 
   /**
      *  A function to shuffle the order of synapse array storage for increased GPU memory write speeds. Currently Unused.

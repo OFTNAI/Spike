@@ -50,6 +50,9 @@ void ConductanceSpikingSynapses::AddGroup(int presynaptic_group_id,
                             synapse_params);
 
   conductance_spiking_synapse_parameters_struct * conductance_spiking_synapse_group_params = (conductance_spiking_synapse_parameters_struct*)synapse_params;
+  
+  # Incrementing number of synapses
+  ConductanceSpikingSynapses::increment_number_of_synapses(temp_number_of_synapses_in_last_group);
 
   for (int i = (total_number_of_synapses - temp_number_of_synapses_in_last_group); i < total_number_of_synapses; i++) {
     synaptic_conductances_g[i] = 0.0f;
@@ -61,7 +64,6 @@ void ConductanceSpikingSynapses::AddGroup(int presynaptic_group_id,
 }
 
 void ConductanceSpikingSynapses::increment_number_of_synapses(int increment) {
-  SpikingSynapses::increment_number_of_synapses(increment);
 
   synaptic_conductances_g = (float*)realloc(synaptic_conductances_g, total_number_of_synapses * sizeof(float));
   biological_conductance_scaling_constants_lambda = (float*)realloc(biological_conductance_scaling_constants_lambda, total_number_of_synapses * sizeof(float));

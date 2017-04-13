@@ -51,7 +51,7 @@ public:
                 float timestep,
                 synapse_parameters_struct * synapse_params) override;
 
-  void increment_number_of_synapses(int increment) override;
+  void increment_number_of_synapses(int increment);
   void shuffle_synapses() override;
 
   virtual void update_synaptic_conductances(float timestep, float current_time_in_seconds) = 0;

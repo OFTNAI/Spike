@@ -43,7 +43,7 @@ public:
                 float timestep,
                 synapse_parameters_struct * synapse_params) override;
 
-  void increment_number_of_synapses(int increment) override;
+  void increment_number_of_synapses(int increment);
   void shuffle_synapses() override;
 
   void calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds, float timestep) override;

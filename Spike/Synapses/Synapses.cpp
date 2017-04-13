@@ -126,7 +126,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
           {
             
             int increment = (preend-prestart)*(postend-poststart);
-            this->increment_number_of_synapses(increment);
+            Synapses::increment_number_of_synapses(increment);
 
             // If the connectivity is all_to_all
             for (int i = prestart; i < preend; i++){
@@ -143,7 +143,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
         case CONNECTIVITY_TYPE_ONE_TO_ONE:
           {
             int increment = (preend-prestart);
-            this->increment_number_of_synapses(increment);
+            Synapses::increment_number_of_synapses(increment);
             
             // If the connectivity is one_to_one
             if ((preend-prestart) != (postend-poststart)) print_message_and_exit("Unequal populations for one_to_one.");
@@ -166,7 +166,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
                 // If it is within the probability range, connect!
                 if (prob < synapse_params->random_connectivity_probability){
 						
-                  this->increment_number_of_synapses(1);
+                  Synapses::increment_number_of_synapses(1);
 
                   // Setup Synapses
                   presynaptic_neuron_indices[total_number_of_synapses - 1] = CORRECTED_PRESYNAPTIC_ID(i, presynaptic_group_is_input);
@@ -185,7 +185,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 			
             int number_of_postsynaptic_neurons_in_group = postend - poststart;
             int total_number_of_new_synapses = number_of_new_synapses_per_postsynaptic_neuron * number_of_postsynaptic_neurons_in_group;
-            this->increment_number_of_synapses(total_number_of_new_synapses);
+            Synapses::increment_number_of_synapses(total_number_of_new_synapses);
 
             backend()->set_neuron_indices_by_sampling_from_normal_distribution
               (original_number_of_synapses,
@@ -208,7 +208,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
         case CONNECTIVITY_TYPE_SINGLE:
           {
             // If we desire a single connection
-            this->increment_number_of_synapses(1);
+            Synapses::increment_number_of_synapses(1);
 
             // // Setup Synapses
             presynaptic_neuron_indices[original_number_of_synapses] = CORRECTED_PRESYNAPTIC_ID(prestart + int(synapse_params->pairwise_connect_presynaptic), presynaptic_group_is_input);
