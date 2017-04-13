@@ -61,6 +61,9 @@ namespace Backend {
                                 sizeof(unsigned char)*frontend()->bitarray_length*frontend()->total_number_of_neurons,
                                 cudaMemcpyHostToDevice));
       }
+
+      // Free tmp_last_spike_times
+      free (tmp_last_spike_times);
     }
 
     void SpikingNeurons::check_for_neuron_spikes(float current_time_in_seconds, float timestep) {
