@@ -185,7 +185,7 @@ namespace Backend {
           int postid = d_postsyns[idx];
           stdp_post_memory_trace[indx] *= expf( - timestep / stdp_vars.tau_minus);
           if (d_last_spike_time_of_each_neuron[postid] == current_time_in_seconds){
-            stdp_post_memory_trace[indx] += stdp.a_minus;
+            stdp_post_memory_trace[indx] += stdp_vars.a_minus;
 
 	    // If output neuron just fired, do LTP
             d_synaptic_efficacies_or_weights[idx] += stdp_pre_memory_trace[indx];
