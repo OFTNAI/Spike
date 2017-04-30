@@ -163,16 +163,16 @@ namespace Backend {
         int delay = d_delays[idx];
         float effecttime = presynaptic_is_input ? d_input_neurons_last_spike_time[CORRECTED_PRESYNAPTIC_ID(presynaptic_neuron_index, presynaptic_is_input)] : d_last_spike_time_of_each_neuron[presynaptic_neuron_index];
         // Add to the effect time the length of a delay and a decay time ~10 tau (When current injection has reduced to 0.005% of the original value)
-        effecttime += (delay + 1)*timestep + 10.0f*d_decay_terms_tau_g[idx];
+        effecttime += (delay + 1)*timestep + 25.0f*d_decay_terms_tau_g[idx];
 
         if (effecttime > current_time_in_seconds){
           int pos = atomicAdd(&d_num_active_synapses[0], 1);
           d_active_synapses[pos] = idx;
         }
 
+      	__syncthreads();
         idx += blockDim.x * gridDim.x;
       }
-      __syncthreads();
     }
 
     __global__ void conductance_calculate_postsynaptic_current_injection_kernel(int * d_presynaptic_neuron_indices,
@@ -198,10 +198,10 @@ namespace Backend {
           atomicAdd(&d_neurons_current_injections[postsynaptic_neuron_index], component_for_sum);
         }
 
+      	__syncthreads();
         indx += blockDim.x * gridDim.x;
 
       }
-      __syncthreads();
     }
 
     __global__ void conductance_update_synaptic_conductances_kernel(float timestep,

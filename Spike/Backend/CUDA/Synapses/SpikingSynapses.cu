@@ -131,11 +131,11 @@ namespace Backend {
           }
         } 
 
+      	__syncthreads();
         d_spikes_travelling_to_synapse[idx] = timesteps_until_spike_reaches_synapse;
 
         idx += blockDim.x * gridDim.x;
       }
-      __syncthreads();
     }
 
     __global__ void check_bitarray_for_presynaptic_neuron_spikes(int* d_presynaptic_neuron_indices,
