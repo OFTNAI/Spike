@@ -51,7 +51,7 @@ void ConductanceSpikingSynapses::AddGroup(int presynaptic_group_id,
 
   conductance_spiking_synapse_parameters_struct * conductance_spiking_synapse_group_params = (conductance_spiking_synapse_parameters_struct*)synapse_params;
   
-  # Incrementing number of synapses
+  // Incrementing number of synapses
   ConductanceSpikingSynapses::increment_number_of_synapses(temp_number_of_synapses_in_last_group);
 
   for (int i = (total_number_of_synapses - temp_number_of_synapses_in_last_group); i < total_number_of_synapses; i++) {

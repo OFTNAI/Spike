@@ -38,7 +38,7 @@ void SpikingSynapses::AddGroup(int presynaptic_group_id,
 							timestep,
 							synapse_params);
 
-	# First incrementing the synapses
+	// First incrementing the synapses
 	SpikingSynapses::increment_number_of_synapses(temp_number_of_synapses_in_last_group);
 
 	spiking_synapse_parameters_struct * spiking_synapse_group_params = (spiking_synapse_parameters_struct*)synapse_params;
