@@ -38,13 +38,15 @@ namespace Backend {
 
 // STDP Parameters
 struct vanrossum_stdp_parameters_struct : stdp_parameters_struct {
-  vanrossum_stdp_parameters_struct() : a_minus(0.003), a_plus(7.0f*pow(10.0, -12)), tau_minus(0.02f), tau_plus(0.02f) { } // default Constructor
+  vanrossum_stdp_parameters_struct() : a_minus(0.003), a_plus(7.0f*pow(10.0, -12)), tau_minus(0.02f), tau_plus(0.02f), allspikes(true), timestep(0.0f) { } // default Constructor
   // STDP Parameters
   float a_minus;
   float a_plus;
   float tau_minus;
   float tau_plus;
-
+  // All-To-All vs Nearest
+  bool allspikes;
+  float timestep;
 };
 
 
@@ -55,6 +57,7 @@ public:
 
   struct vanrossum_stdp_parameters_struct* stdp_params;
 
+  // Nearest STDP Variables
   int* index_of_last_afferent_synapse_to_spike = nullptr;
   bool* isindexed_ltd_synapse_spike = nullptr;
   int* index_of_first_synapse_spiked_after_postneuron = nullptr;

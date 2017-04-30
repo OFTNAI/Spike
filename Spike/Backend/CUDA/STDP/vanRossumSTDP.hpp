@@ -20,6 +20,9 @@ namespace Backend {
       int* index_of_last_afferent_synapse_to_spike = nullptr;
       bool* isindexed_ltd_synapse_spike = nullptr;
       int* index_of_first_synapse_spiked_after_postneuron = nullptr;
+      float* stdp_pre_memory_trace = nullptr;
+      float* stdp_post_memory_trace = nullptr;
+      float* h_stdp_trace = nullptr;
 
       ~vanRossumSTDP() override;
       SPIKE_MAKE_BACKEND_CONSTRUCTOR(vanRossumSTDP);
@@ -32,8 +35,34 @@ namespace Backend {
       void apply_stdp_to_synapse_weights(float current_time_in_seconds) override;
     };
 
-    // Kernel to carry out LTP/LTD
-    __global__ void vanrossum_apply_stdp_to_synapse_weights_kernel
+    __global__ void vanrossum_pretrace_and_ltd
+          (int* d_postsyns
+           bool* d_stdp,
+           float* d_time_of_last_spike_to_reach_synapse,
+           float* d_synaptic_efficacies_or_weights,
+           float* stdp_pre_memory_trace,
+           float* stdp_post_memory_trace,
+           struct vanrossum_stdp_parameters_struct stdp_vars,
+           float timestep,
+           float current_time_in_seconds,
+           int* d_stdp_synapse_indices,
+           size_t total_number_of_stdp_synapses);
+
+    __global__ void vanrossum_posttrace_and_ltp
+    (int* d_postsyns,
+     float* d_last_spike_time_of_each_neuron,
+     bool* d_stdp,
+     float* d_synaptic_efficacies_or_weights,
+     float* stdp_pre_memory_trace,
+     float* stdp_post_memory_trace,
+     struct vanrossum_stdp_parameters_struct stdp_vars,
+     float timestep,
+     float current_time_in_seconds,
+     int* d_stdp_synapse_indices,
+     size_t total_number_of_stdp_synapses);
+    
+
+    __global__ void vanrossum_apply_stdp_to_synapse_weights_kernel_nearest
     (int* d_postsyns,
      float* d_last_spike_time_of_each_neuron,
      bool* d_stdp,

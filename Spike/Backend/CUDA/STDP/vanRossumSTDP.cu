@@ -9,23 +9,37 @@ namespace Backend {
       CudaSafeCall(cudaFree(index_of_last_afferent_synapse_to_spike));
       CudaSafeCall(cudaFree(isindexed_ltd_synapse_spike));
       CudaSafeCall(cudaFree(index_of_first_synapse_spiked_after_postneuron));
+      CudaSafeCall(cudaFree(stdp_pre_memory_trace));
+      CudaSafeCall(cudaFree(stdp_post_memory_trace));
+      free(h_stdp_trace);
     }
 
     void vanRossumSTDP::reset_state() {
       STDP::reset_state();
-
-      CudaSafeCall(cudaMemcpy((void*)index_of_last_afferent_synapse_to_spike,
-                              (void*)frontend()->index_of_last_afferent_synapse_to_spike,
-                              sizeof(int)*frontend()->neurs->total_number_of_neurons,
-                              cudaMemcpyHostToDevice));
-      CudaSafeCall(cudaMemcpy((void*)isindexed_ltd_synapse_spike,
-                              (void*)frontend()->isindexed_ltd_synapse_spike,
-                              sizeof(bool)*frontend()->neurs->total_number_of_neurons,
-                              cudaMemcpyHostToDevice));
-      CudaSafeCall(cudaMemcpy((void*)index_of_first_synapse_spiked_after_postneuron,
-                              (void*)frontend()->index_of_first_synapse_spiked_after_postneuron,
-                              sizeof(int)*frontend()->neurs->total_number_of_neurons,
-                              cudaMemcpyHostToDevice));
+      
+      if (frontend()->stdp_params->allspikes){
+        CudaSafeCall(cudaMemcpy((void*)stdp_pre_memory_trace,
+                                (void*)h_stdp_trace,
+                                sizeof(float)*total_number_of_stdp_synapses,
+                                cudaMemcpyHostToDevice));
+        CudaSafeCall(cudaMemcpy((void*)stdp_post_memory_trace,
+                                (void*)h_stdp_trace,
+                                sizeof(float)*total_number_of_stdp_synapses,
+                                cudaMemcpyHostToDevice));
+      } else {
+        CudaSafeCall(cudaMemcpy((void*)index_of_last_afferent_synapse_to_spike,
+                                (void*)frontend()->index_of_last_afferent_synapse_to_spike,
+                                sizeof(int)*frontend()->neurs->total_number_of_neurons,
+                                cudaMemcpyHostToDevice));
+        CudaSafeCall(cudaMemcpy((void*)isindexed_ltd_synapse_spike,
+                                (void*)frontend()->isindexed_ltd_synapse_spike,
+                                sizeof(bool)*frontend()->neurs->total_number_of_neurons,
+                                cudaMemcpyHostToDevice));
+        CudaSafeCall(cudaMemcpy((void*)index_of_first_synapse_spiked_after_postneuron,
+                                (void*)frontend()->index_of_first_synapse_spiked_after_postneuron,
+                                sizeof(int)*frontend()->neurs->total_number_of_neurons,
+                                cudaMemcpyHostToDevice));
+      }
     }
 
     void vanRossumSTDP::prepare() {
@@ -37,44 +51,153 @@ namespace Backend {
     void vanRossumSTDP::allocate_device_pointers() {
       // The following doesn't do anything in original code...
       // ::Backend::CUDA::STDP::allocate_device_pointers();
-
-      CudaSafeCall(cudaMalloc((void **)&index_of_last_afferent_synapse_to_spike, sizeof(int)*frontend()->neurs->total_number_of_neurons));
-      CudaSafeCall(cudaMalloc((void **)&isindexed_ltd_synapse_spike, sizeof(int)*frontend()->neurs->total_number_of_neurons));
-      CudaSafeCall(cudaMalloc((void **)&index_of_first_synapse_spiked_after_postneuron, sizeof(int)*frontend()->neurs->total_number_of_neurons));
+      if (frontend()->stdp_params->allspikes){
+        CudaSafeCall(cudaMalloc((void **)&stdp_pre_memory_trace, sizeof(float)*total_number_of_stdp_synapses));
+        CudaSafeCall(cudaMalloc((void **)&stdp_post_memory_trace, sizeof(float)*total_number_of_stdp_synapses));
+        // Also allocate and set trace template
+	h_stdp_trace = (float *)malloc( sizeof(float) * total_number_of_stdp_synapses);
+        for (int i=0; i < total_number_of_stdp_synapses; i++){
+          h_stdp_trace[i] = 0.0f;
+        }
+      } else {
+        CudaSafeCall(cudaMalloc((void **)&index_of_last_afferent_synapse_to_spike, sizeof(int)*frontend()->neurs->total_number_of_neurons));
+        CudaSafeCall(cudaMalloc((void **)&isindexed_ltd_synapse_spike, sizeof(int)*frontend()->neurs->total_number_of_neurons));
+        CudaSafeCall(cudaMalloc((void **)&index_of_first_synapse_spiked_after_postneuron, sizeof(int)*frontend()->neurs->total_number_of_neurons));
+      }
     }
 
     void vanRossumSTDP::apply_stdp_to_synapse_weights(float current_time_in_seconds) {
-      // First reset the indices array
-      // In order to carry out nearest spike potentiation only, we must find the spike arriving at each neuron which has the smallest time diff
-    vanrossum_get_indices_to_apply_stdp<<<synapses_backend->number_of_synapse_blocks_per_grid, synapses_backend->threads_per_block>>>
-      (synapses_backend->postsynaptic_neuron_indices,
-       neurons_backend->last_spike_time_of_each_neuron,
-       synapses_backend->time_of_last_spike_to_reach_synapse,
-       index_of_last_afferent_synapse_to_spike,
-       isindexed_ltd_synapse_spike,
-       index_of_first_synapse_spiked_after_postneuron,
-       current_time_in_seconds,
-       stdp_synapse_indices,
-       total_number_of_stdp_synapses);
-    CudaCheckError();
+   
+      // If nearest spike, get the indices:
+      if (!frontend()->stdp_params->allspike){ 
+        vanrossum_get_indices_to_apply_stdp<<<synapses_backend->number_of_synapse_blocks_per_grid, synapses_backend->threads_per_block>>>
+          (synapses_backend->postsynaptic_neuron_indices,
+           neurons_backend->last_spike_time_of_each_neuron,
+           synapses_backend->time_of_last_spike_to_reach_synapse,
+           index_of_last_afferent_synapse_to_spike,
+           isindexed_ltd_synapse_spike,
+           index_of_first_synapse_spiked_after_postneuron,
+           current_time_in_seconds,
+           stdp_synapse_indices,
+           total_number_of_stdp_synapses);
+        CudaCheckError();
 
-    vanrossum_apply_stdp_to_synapse_weights_kernel<<<neurons_backend->number_of_neuron_blocks_per_grid, neurons_backend->threads_per_block>>>
-      (synapses_backend->postsynaptic_neuron_indices,
-       neurons_backend->last_spike_time_of_each_neuron,
-       synapses_backend->stdp,
-       synapses_backend->time_of_last_spike_to_reach_synapse,
-       synapses_backend->synaptic_efficacies_or_weights,
-       index_of_last_afferent_synapse_to_spike,
-       isindexed_ltd_synapse_spike,
-       index_of_first_synapse_spiked_after_postneuron,
-       *(frontend()->stdp_params),
-       current_time_in_seconds,
-       frontend()->neurs->total_number_of_neurons);
-    CudaCheckError();
+        // Either way, run the synapse update
+        vanrossum_apply_stdp_to_synapse_weights_kernel_nearest<<<neurons_backend->number_of_neuron_blocks_per_grid, neurons_backend->threads_per_block>>>
+          (synapses_backend->postsynaptic_neuron_indices,
+           neurons_backend->last_spike_time_of_each_neuron,
+           synapses_backend->stdp,
+           synapses_backend->time_of_last_spike_to_reach_synapse,
+           synapses_backend->synaptic_efficacies_or_weights,
+           index_of_last_afferent_synapse_to_spike,
+           isindexed_ltd_synapse_spike,
+           index_of_first_synapse_spiked_after_postneuron,
+           *(frontend()->stdp_params),
+           current_time_in_seconds,
+           frontend()->neurs->total_number_of_neurons);
+        CudaCheckError();
+      } else {
+        vanrossum_pretrace_and_ltd<<<synapses_backend->number_of_synapse_blocks_per_grid, synapses_backend->threads_per_block>>>
+          (synapses_backend->postsynaptic_neuron_indices,
+           synapses_backend->stdp,
+           synapses_backend->time_of_last_spike_to_reach_synapse,
+           stdp_pre_memory_trace,
+           stdp_post_memory_trace,
+           *(frontend()->stdp_params),
+           frontend()->stdp_params->timestep,
+           current_time_in_seconds,
+           stdp_synapse_indices,
+           total_number_of_stdp_synapses);
+        
+        vanrossum_posttrace_and_ltp<<<neurons_backend->number_of_neuron_blocks_per_grid, neurons_backend->threads_per_block>>>
+          (synapses_backend->postsynaptic_neuron_indices,
+           neurons_backend->last_spike_time_of_each_neuron,
+           synapses_backend->stdp,
+           stdp_pre_memory_trace,
+           stdp_post_memory_trace,
+           *(frontend()->stdp_params),
+           frontend()->stdp_params->timestep,
+           current_time_in_seconds,
+           stdp_synapse_indices,
+           total_number_of_stdp_synapses);
+      }
     }
 
-    // Find nearest spike
-    __global__ void vanrossum_apply_stdp_to_synapse_weights_kernel
+    // ALL SPIKE IMPLEMENTATION
+    __global__ void vanrossum_pretrace_and_ltd
+          (int* d_postsyns
+           bool* d_stdp,
+           float* d_time_of_last_spike_to_reach_synapse,
+           float* d_synaptic_efficacies_or_weights,
+           float* stdp_pre_memory_trace,
+           float* stdp_post_memory_trace,
+           struct vanrossum_stdp_parameters_struct stdp_vars,
+           float timestep,
+           float current_time_in_seconds,
+           int* d_stdp_synapse_indices,
+           size_t total_number_of_stdp_synapses){
+      // Global Index
+      int indx = threadIdx.x + blockIdx.x * blockDim.x;
+
+      // Running though all neurons
+      while (indx < total_number_of_stdp_synapses) {
+	int idx = d_stdp_synapse_indices[indx];
+        if (d_stdp[idx]){
+          // First decay the memory trace (USING INDX FOR TRACE HERE AND BELOW)
+          stdp_pre_memory_trace[indx] *= expf(- timestep / stdp_vars.tau_plus);
+
+          // First update the memory trace for every pre and post neuron
+          if (d_time_of_last_spike_to_reach_synapse[idx] == current_time_in_seconds){
+            // Update the presynaptic memory trace
+            stdp_pre_memory_trace[indx] += stdp_vars.a_plus;
+            // Carry out the necessary LTD
+            int postid = d_postsyns[idx];
+            d_synaptic_efficacies_or_weights[idx] -= stdp_post_memory_trace[postid];
+          }	
+        }
+        indx += blockDim.x * gridDim.x;
+      }
+
+    }
+    
+    __global__ void vanrossum_posttrace_and_ltp
+    (int* d_postsyns,
+     float* d_last_spike_time_of_each_neuron,
+     bool* d_stdp,
+     float* d_synaptic_efficacies_or_weights,
+     float* stdp_pre_memory_trace,
+     float* stdp_post_memory_trace,
+     struct vanrossum_stdp_parameters_struct stdp_vars,
+     float timestep,
+     float current_time_in_seconds,
+     int* d_stdp_synapse_indices,
+     size_t total_number_of_stdp_synapses){
+      // Global Index
+      int indx = threadIdx.x + blockIdx.x * blockDim.x;
+
+      // Running though all neurons
+      while (indx < total_number_of_stdp_synapses) {
+	int idx = d_stdp_synapse_indices[indx];
+
+        if (d_stdp[idx]){
+          int postid = d_postsyns[idx];
+          stdp_post_memory_trace[indx] *= expf( - timestep / stdp_vars.tau_minus);
+          if (d_last_spike_time_of_each_neuron[postid] == current_time_in_seconds){
+            stdp_post_memory_trace[indx] += stdp.a_minus;
+
+	    // If output neuron just fired, do LTP
+            d_synaptic_efficacies_or_weights[idx] += stdp_pre_memory_trace[indx];
+          }
+        }
+
+	// Now if 
+        indx += blockDim.x * gridDim.x;
+      }
+    }
+
+
+    // NEAREST SPIKE IMPLEMENTATION
+    __global__ void vanrossum_apply_stdp_to_synapse_weights_kernel_nearest
     (int* d_postsyns,
      float* d_last_spike_time_of_each_neuron,
      bool* d_stdp,
