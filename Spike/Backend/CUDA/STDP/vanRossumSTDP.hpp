@@ -36,7 +36,7 @@ namespace Backend {
     };
 
     __global__ void vanrossum_pretrace_and_ltd
-          (int* d_postsyns
+          (int* d_postsyns,
            bool* d_stdp,
            float* d_time_of_last_spike_to_reach_synapse,
            float* d_synaptic_efficacies_or_weights,

@@ -69,7 +69,7 @@ namespace Backend {
     void vanRossumSTDP::apply_stdp_to_synapse_weights(float current_time_in_seconds) {
    
       // If nearest spike, get the indices:
-      if (!frontend()->stdp_params->allspike){ 
+      if (!frontend()->stdp_params->allspikes){ 
         vanrossum_get_indices_to_apply_stdp<<<synapses_backend->number_of_synapse_blocks_per_grid, synapses_backend->threads_per_block>>>
           (synapses_backend->postsynaptic_neuron_indices,
            neurons_backend->last_spike_time_of_each_neuron,
@@ -101,6 +101,7 @@ namespace Backend {
           (synapses_backend->postsynaptic_neuron_indices,
            synapses_backend->stdp,
            synapses_backend->time_of_last_spike_to_reach_synapse,
+           synapses_backend->synaptic_efficacies_or_weights,
            stdp_pre_memory_trace,
            stdp_post_memory_trace,
            *(frontend()->stdp_params),
@@ -113,6 +114,7 @@ namespace Backend {
           (synapses_backend->postsynaptic_neuron_indices,
            neurons_backend->last_spike_time_of_each_neuron,
            synapses_backend->stdp,
+           synapses_backend->synaptic_efficacies_or_weights,
            stdp_pre_memory_trace,
            stdp_post_memory_trace,
            *(frontend()->stdp_params),
@@ -125,7 +127,7 @@ namespace Backend {
 
     // ALL SPIKE IMPLEMENTATION
     __global__ void vanrossum_pretrace_and_ltd
-          (int* d_postsyns
+          (int* d_postsyns,
            bool* d_stdp,
            float* d_time_of_last_spike_to_reach_synapse,
            float* d_synaptic_efficacies_or_weights,
