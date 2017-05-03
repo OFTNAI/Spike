@@ -223,10 +223,10 @@ namespace Backend {
         float new_conductance = (1.0 - (timestep/d_decay_terms_tau_g[idx])) * synaptic_conductance_g;
 
         if (d_time_of_last_spike_to_reach_synapse[idx] == current_time_in_seconds) {
-          float timestep_times_synaptic_efficacy = timestep * d_synaptic_efficacies_or_weights[idx];
+          float synaptic_efficacy = d_synaptic_efficacies_or_weights[idx];
           float biological_conductance_scaling_constant_lambda = d_biological_conductance_scaling_constants_lambda[idx];
-          float timestep_times_synaptic_efficacy_times_scaling_constant = timestep_times_synaptic_efficacy * biological_conductance_scaling_constant_lambda;
-          new_conductance += timestep_times_synaptic_efficacy_times_scaling_constant;
+          float synaptic_efficacy_times_scaling_constant = synaptic_efficacy * biological_conductance_scaling_constant_lambda;
+          new_conductance += synaptic_efficacy_times_scaling_constant;
         }
 
         d_synaptic_conductances_g[idx] = new_conductance;

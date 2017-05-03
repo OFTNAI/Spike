@@ -154,7 +154,8 @@ namespace Backend {
             stdp_pre_memory_trace[indx] += stdp_vars.a_plus;
             // Carry out the necessary LTD
             int postid = d_postsyns[idx];
-            d_synaptic_efficacies_or_weights[idx] -= stdp_post_memory_trace[postid];
+	    float old_synaptic_weight = d_synaptic_efficacies_or_weights[idx];
+            d_synaptic_efficacies_or_weights[idx] -= old_synaptic_weight * stdp_post_memory_trace[postid];
           }	
         }
         indx += blockDim.x * gridDim.x;
