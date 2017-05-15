@@ -115,7 +115,7 @@ void SpikeAnalyser::calculate_fitness_score(float optimal_average_firing_rate, f
 			if (average_number_of_neuron_spikes_per_second_for_neuron_group < optimal_average_firing_rate) {
 				neuron_group_score_based_on_avg = maxScore * (1- (optimal_average_firing_rate - average_number_of_neuron_spikes_per_second_for_neuron_group)/optimal_average_firing_rate);
 			} else {
-				neuron_group_score_based_on_avg = maxScore/(std::abs(average_number_of_neuron_spikes_per_second_for_neuron_group - optimal_average_firing_rate)+1);
+				neuron_group_score_based_on_avg = maxScore/(std::fabs(average_number_of_neuron_spikes_per_second_for_neuron_group - optimal_average_firing_rate)+1);
 			}
 //			neuron_group_score = 100.0/(abs(average_number_of_neuron_spikes_per_second_for_neuron_group - optimal_average_firing_rate)+1);
 
@@ -123,7 +123,7 @@ void SpikeAnalyser::calculate_fitness_score(float optimal_average_firing_rate, f
 			if (max_number_of_neuron_spikes_per_second_for_neuron_group < optimal_max_firing_rate) {
 				neuron_group_score_based_on_max = maxScore * (1- (optimal_max_firing_rate - max_number_of_neuron_spikes_per_second_for_neuron_group)/optimal_max_firing_rate);
 			} else {
-				neuron_group_score_based_on_max = maxScore/(std::abs(max_number_of_neuron_spikes_per_second_for_neuron_group - optimal_max_firing_rate)+1);
+				neuron_group_score_based_on_max = maxScore/(std::fabs(max_number_of_neuron_spikes_per_second_for_neuron_group - optimal_max_firing_rate)+1);
 			}
 		}
 		

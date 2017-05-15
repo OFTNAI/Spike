@@ -1,4 +1,5 @@
 foreach(example
+    AkiNet
     CPUTest
     TSCSOptimiseFourLayerVisionSpikingModelFiringRates
     VogelsAbbotNet

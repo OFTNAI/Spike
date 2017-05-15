@@ -87,6 +87,7 @@ namespace Backend {
      int* presynaptic_group_shape,
      int number_of_new_synapses_per_postsynaptic_neuron,
      int number_of_postsynaptic_neurons_in_group,
+     int max_number_of_connections_per_pair,
      float standard_deviation_sigma,
      bool presynaptic_group_is_input) {
 
@@ -107,6 +108,7 @@ namespace Backend {
          presynaptic_group_shape[1],
          number_of_new_synapses_per_postsynaptic_neuron,
          number_of_postsynaptic_neurons_in_group,
+         max_number_of_connections_per_pair,
          temp_presynaptic_neuron_indices,
          temp_postsynaptic_neuron_indices,
          temp_synaptic_efficacies_or_weights,
@@ -127,6 +129,7 @@ namespace Backend {
      int pre_width, int pre_height,
      int number_of_new_synapses_per_postsynaptic_neuron,
      int number_of_postsynaptic_neurons_in_group,
+     int max_number_of_connections_per_pair,
      int * d_presynaptic_neuron_indices,
      int * d_postsynaptic_neuron_indices,
      float * d_synaptic_efficacies_or_weights,
@@ -136,9 +139,9 @@ namespace Backend {
 
       int idx = threadIdx.x + blockIdx.x * blockDim.x;
       int t_idx = idx;
-      while (idx < total_number_of_new_synapses) {
-		
-        int postsynaptic_neuron_id = idx / number_of_new_synapses_per_postsynaptic_neuron;
+      while (idx < floor((float)total_number_of_new_synapses/max_number_of_connections_per_pair)) {
+
+        int postsynaptic_neuron_id = (idx*max_number_of_connections_per_pair) / number_of_new_synapses_per_postsynaptic_neuron;
         d_postsynaptic_neuron_indices[idx] = poststart + postsynaptic_neuron_id;
 
         int postsynaptic_x = postsynaptic_neuron_id % post_width; 
@@ -180,7 +183,11 @@ namespace Backend {
           }
 
           if (presynaptic_x_set && presynaptic_y_set) {
-            d_presynaptic_neuron_indices[idx] = CORRECTED_PRESYNAPTIC_ID(prestart + presynaptic_x + presynaptic_y*pre_width, presynaptic_group_is_input);
+            //d_presynaptic_neuron_indices[idx] = CORRECTED_PRESYNAPTIC_ID(prestart + presynaptic_x + presynaptic_y*pre_width, presynaptic_group_is_input);
+            for(int idx_multipleContact=0; idx_multipleContact < max_number_of_connections_per_pair; idx_multipleContact++) {
+              d_presynaptic_neuron_indices[idx*max_number_of_connections_per_pair+idx_multipleContact] = CORRECTED_PRESYNAPTIC_ID(prestart + presynaptic_x + presynaptic_y*pre_width, presynaptic_group_is_input);
+              d_postsynaptic_neuron_indices[idx*max_number_of_connections_per_pair+idx_multipleContact] = poststart + postsynaptic_neuron_id;
+            }
             break;
           }
 			

@@ -35,33 +35,32 @@ add_library(Spike
 
 # target_compile_features(Spike PUBLIC cxx_nullptr)
 
+set(WHOLE_ARCHIVE_FLAG "-Wl,--whole-archive")
+set(NO_WHOLE_ARCHIVE_FLAG "-Wl,--no-whole-archive")
 
-set(whole "--whole-archive")
-set(no_whole "--no-whole-archive")
-
-if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  set(whole "-all_load")
-  set(no_whole "-noall_load")
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  set(WHOLE_ARCHIVE_FLAG "-Wl,-all_load")
+  set(NO_WHOLE_ARCHIVE_FLAG "-Wl,-noall_load")
 endif()
 
-target_link_libraries(Spike PRIVATE -Wl,${whole}
+target_link_libraries(Spike PRIVATE ${WHOLE_ARCHIVE_FLAG}
   SpikeDummyHelpers 
   SpikeDummyNeurons
   SpikeDummyRecordingElectrodes
   SpikeDummySpikeAnalyser
   SpikeDummySTDP
   SpikeDummySynapses
-  -Wl,${no_whole})
+  ${NO_WHOLE_ARCHIVE_FLAG})
 
 if (BUILD_WITH_CUDA)
-  target_link_libraries(Spike PRIVATE -Wl,${whole}
+  target_link_libraries(Spike PRIVATE ${WHOLE_ARCHIVE_FLAG}
     SpikeCUDAHelpers
     SpikeCUDANeurons
     SpikeCUDARecordingElectrodes
     SpikeCUDASpikeAnalyser
     SpikeCUDASTDP
     SpikeCUDASynapses
-    -Wl,${no_whole})
+    ${NO_WHOLE_ARCHIVE_FLAG})
 endif()
 
 if (ENABLE_PLOTTING)

@@ -55,7 +55,7 @@ public:
   float* vogels_memory_trace = nullptr;
 
   void init_backend(Context* ctx = _global_ctx) override;
-  void prepare_backend_late();
+  void prepare_backend_late() override;
 
   // Set STDP Parameters
   void Set_STDP_Parameters(SpikingSynapses* synapses,

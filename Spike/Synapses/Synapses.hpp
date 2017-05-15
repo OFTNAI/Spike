@@ -44,6 +44,7 @@ namespace Backend {
      int* presynaptic_group_shape,
      int number_of_new_synapses_per_postsynaptic_neuron,
      int number_of_postsynaptic_neurons_in_group,
+     int max_number_of_connections_per_pair,
      float standard_deviation_sigma,
      bool presynaptic_group_is_input) = 0;
   };
@@ -94,7 +95,7 @@ public:
   ~Synapses() override;
 
   SPIKE_ADD_BACKEND_GETSET(Synapses, SpikeBase);
-  void init_backend(Context* ctx = _global_ctx);
+  void init_backend(Context* ctx = _global_ctx) override;
   void prepare_backend_early() override;
   
   // Variables

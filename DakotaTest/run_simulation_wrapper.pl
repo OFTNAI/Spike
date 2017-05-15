@@ -63,6 +63,10 @@
 	my $par2 = sprintf("%.11f", $table[2][0]);
 	my $par3 = sprintf("%.11f", $table[3][0]);
 	my $par4 = sprintf("%.11f", $table[4][0]);
+	my $par5 = sprintf("%.11f", $table[5][0]);
+	my $par6 = sprintf("%.11f", $table[6][0]);
+	my $par7 = sprintf("%.11f", $table[7][0]);
+	my $par8 = sprintf("%.11f", $table[8][0]);
 
 
 	# Read optimisation iteration index from file
@@ -79,7 +83,7 @@
 
 
 	# Use when optimising entire network layer by layer.
-	system("../../Experiments/binaries/ConductanceExperiment1 $outdir $simulation_index $optimisation_iteration_index $par1 $par2 $par3 $par4 1");
+	system("../../Experiments/binaries/ConductanceExperiment1 $outdir $simulation_index $optimisation_iteration_index $par1 $par2 $par3 $par4 $par5 $par6 1");
 
 	# Use when optimising particular layer.
 	# system("../../Experiments/bin/ConductanceExperiment1 $outdir $simulation_index 0 $par1 $par2 $par3 $par4 0");

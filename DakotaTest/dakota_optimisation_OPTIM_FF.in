@@ -13,9 +13,9 @@ method
 variables,
 
 	continuous_design = 2			
-	cdv_lower_bounds    3.0     0.00002	
-	cdv_upper_bounds    30.0    0.00010
-	cdv_descriptor      'gaussian_synapses_standard_deviation_FF'      'biological_conductance_scaling_constant_lambda_E2E_FF'
+	cdv_lower_bounds    0.0001	0.15	
+	cdv_upper_bounds    0.0005	0.5	
+	cdv_descriptor      'scaling_const_E2E_FF'	'decay_term_tau_g_E2E_FF'
 
 
 #	discrete_design_set_integer 3
@@ -53,7 +53,7 @@ interface,
 	    file_save
 
 responses,
-	objective_functions = 2
+	objective_functions = 1
 	sense = 'max'
 	no_gradients
 	no_hessians

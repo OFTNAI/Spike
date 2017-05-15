@@ -181,6 +181,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
           {
 
             float standard_deviation_sigma = synapse_params->gaussian_synapses_standard_deviation;
+            int max_number_of_connections_per_pair = synapse_params->max_number_of_connections_per_pair;
             int number_of_new_synapses_per_postsynaptic_neuron = synapse_params->gaussian_synapses_per_postsynaptic_neuron;
 			
             int number_of_postsynaptic_neurons_in_group = postend - poststart;
@@ -196,6 +197,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
                presynaptic_group_shape,
                number_of_new_synapses_per_postsynaptic_neuron,
                number_of_postsynaptic_neurons_in_group,
+               max_number_of_connections_per_pair,
                standard_deviation_sigma,
                presynaptic_group_is_input);
 
