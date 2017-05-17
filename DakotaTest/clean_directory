@@ -1,6 +1,0 @@
-rm -r workdir.*
-rm results.out.*
-rm params.in.*
-rm dakota_tabular.dat
-rm dakota.rst
-rm optimisation_iteration_index.txt
