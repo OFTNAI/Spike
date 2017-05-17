@@ -10,7 +10,8 @@ namespace Backend {
       CudaSafeCall(cudaFree(membrane_potentials_v));
       CudaSafeCall(cudaFree(thresholds_for_action_potential_spikes));
       CudaSafeCall(cudaFree(resting_potentials));
-      CudaSafeCall(cudaFree(bitarray_of_neuron_spikes));
+      if (bitarray_of_neuron_spikes)
+      	CudaSafeCall(cudaFree(bitarray_of_neuron_spikes));
     }
 
     void SpikingNeurons::allocate_device_pointers(int maximum_axonal_delay_in_timesteps, bool high_fidelity_spike_storage) {
