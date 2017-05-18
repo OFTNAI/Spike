@@ -12,8 +12,8 @@
 
 
 // Import the SpikingModel and Simulator files
-#include "Spike/Spike/Models/SpikingModel.hpp"
-#include "Spike/Spike/Simulator/Simulator.hpp"
+#include "Spike/Models/SpikingModel.hpp"
+#include "Spike/Simulator/Simulator.hpp"
 
 // The function which will autorun when the executable is created
 int main (int argc, char *argv[]){
@@ -166,17 +166,21 @@ int main (int argc, char *argv[]){
 	Simulator_Options* simoptions = new Simulator_Options();
 
 	// Some examples of options that can be set up:
+	// Set up amount of time per stimulus
+	simoptions->run_simulation_general_options->presentation_time_per_stimulus_per_epoch = 1.0f;
 	// General options, e.g. turn on or off STDP
-	simoptions->run_simulation_general_options->apply_stdp_to_relevant_synapases = true;
+	simoptions->run_simulation_general_options->apply_stdp_to_relevant_synapses = true;
 	// Presentation options (only applicable for multiple stimuli)
 	simoptions->stimuli_presentation_options->presentation_format = PRESENTATION_FORMAT_RANDOM_RESET_BETWEEN_EACH_STIMULUS;
 	// Recoding electrode options: Allow the saving of spike times in the simulation
-	simoptions->recording_electrode_options->collect_neuron_spiking_recording_electrodes_bool = true;
+	simoptions->recording_electrodes_options->collect_neuron_spikes_recording_electrodes_bool = true;
+	simoptions->recording_electrodes_options->count_neuron_spikes_recording_electrodes_bool = true;
 	// File storage options
-	simoptions->file_storage_options->save_recorded_neuron_spikes_to_files = true;
+	simoptions->file_storage_options->save_recorded_neuron_spikes_to_file = true;
 	
-	// Finally, execute the simulation that you desire
+	// Finally, create and execute the simulation that you desire
 	Simulator * simulator = new Simulator(ExampleModel, simoptions);
+	simulator->RunSimulation();
 	return 0;
 }
 
