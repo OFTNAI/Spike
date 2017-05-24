@@ -22,5 +22,7 @@ void CurrentSpikingSynapses::calculate_postsynaptic_current_injection(SpikingNeu
   backend()->calculate_postsynaptic_current_injection(neurons, current_time_in_seconds, timestep);
 }
 
+void CurrentSpikingSynapses::update_synaptic_conductances(float timestep, float current_time_in_seconds) {}
+
 SPIKE_MAKE_INIT_BACKEND(CurrentSpikingSynapses);
 

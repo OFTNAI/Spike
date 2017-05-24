@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include "../Backend/Context.hpp"
 #include "../Synapses/ConductanceSpikingSynapses.hpp"
+#include "../Synapses/CurrentSpikingSynapses.hpp"
 #include "../STDP/STDP.hpp"
 #include "../STDP/EvansSTDP.hpp"
 #include "../STDP/HigginsSTDP.hpp"
