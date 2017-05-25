@@ -264,7 +264,7 @@ namespace Backend {
               float diff = last_syn_spike_time - last_neuron_spike_time;
               // Only carry out LTD if the difference is in some range
               if (diff < 7*stdp_vars.tau_minus && diff > 0){
-                float weightchange = new_syn_weight * stdp_vars.a_minus * expf(-diff / stdp_vars.tau_minus);
+                float weightchange = powf(new_syn_weight, stdp_vars.weight_dependency_factor) * stdp_vars.a_minus * expf(-diff / stdp_vars.tau_minus);
                 // Update the weights
                 new_syn_weight -= weightchange;
               }

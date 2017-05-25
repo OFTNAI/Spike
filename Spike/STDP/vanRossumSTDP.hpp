@@ -38,12 +38,13 @@ namespace Backend {
 
 // STDP Parameters
 struct vanrossum_stdp_parameters_struct : stdp_parameters_struct {
-  vanrossum_stdp_parameters_struct() : a_minus(0.003), a_plus(7.0f*pow(10.0, -12)), tau_minus(0.02f), tau_plus(0.02f), allspikes(true), timestep(0.0f) { } // default Constructor
+  vanrossum_stdp_parameters_struct() : a_minus(0.003), a_plus(7.0f*pow(10.0, -12)), tau_minus(0.02f), tau_plus(0.02f), weight_dependency_factor(1.0f), allspikes(true), timestep(0.0f) { } // default Constructor
   // STDP Parameters
   float a_minus;
   float a_plus;
   float tau_minus;
   float tau_plus;
+  float weight_dependency_factor;
   // All-To-All vs Nearest
   bool allspikes;
   float timestep;
