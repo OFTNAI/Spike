@@ -1,18 +1,18 @@
 // -*- mode: c++ -*-
-#include "Spike/Backend/CUDA/STDP/MasquelierSTDP.hpp"
+#include "Spike/Backend/CUDA/Plasticity/MasquelierSTDPPlasticity.hpp"
 
-SPIKE_EXPORT_BACKEND_TYPE(CUDA, MasquelierSTDP);
+SPIKE_EXPORT_BACKEND_TYPE(CUDA, MasquelierSTDPPlasticity);
 
 namespace Backend {
   namespace CUDA {
-    MasquelierSTDP::~MasquelierSTDP() {
+    MasquelierSTDPPlasticity::~MasquelierSTDPPlasticity() {
       CudaSafeCall(cudaFree(index_of_last_afferent_synapse_to_spike));
       CudaSafeCall(cudaFree(isindexed_ltd_synapse_spike));
       CudaSafeCall(cudaFree(index_of_first_synapse_spiked_after_postneuron));
     }
 
-    void MasquelierSTDP::reset_state() {
-      STDP::reset_state();
+    void MasquelierSTDPPlasticity::reset_state() {
+      STDPPlasticity::reset_state();
 
       CudaSafeCall(cudaMemcpy((void*)index_of_last_afferent_synapse_to_spike,
                               (void*)frontend()->index_of_last_afferent_synapse_to_spike,
@@ -28,22 +28,22 @@ namespace Backend {
                               cudaMemcpyHostToDevice));
     }
 
-    void MasquelierSTDP::prepare() {
-      STDP::prepare();
+    void MasquelierSTDPPlasticity::prepare() {
+      STDPPlasticity::prepare();
 
       allocate_device_pointers();
     }
 
-    void MasquelierSTDP::allocate_device_pointers() {
+    void MasquelierSTDPPlasticity::allocate_device_pointers() {
       // The following doesn't do anything in original code...
-      // ::Backend::CUDA::STDP::allocate_device_pointers();
+      // ::Backend::CUDA::STDPPlasticity::allocate_device_pointers();
 
       CudaSafeCall(cudaMalloc((void **)&index_of_last_afferent_synapse_to_spike, sizeof(int)*frontend()->neurs->total_number_of_neurons));
       CudaSafeCall(cudaMalloc((void **)&isindexed_ltd_synapse_spike, sizeof(int)*frontend()->neurs->total_number_of_neurons));
       CudaSafeCall(cudaMalloc((void **)&index_of_first_synapse_spiked_after_postneuron, sizeof(int)*frontend()->neurs->total_number_of_neurons));
     }
 
-    void MasquelierSTDP::apply_stdp_to_synapse_weights(float current_time_in_seconds) {
+    void MasquelierSTDPPlasticity::apply_stdp_to_synapse_weights(float current_time_in_seconds) {
       // First reset the indices array
       // In order to carry out nearest spike potentiation only, we must find the spike arriving at each neuron which has the smallest time diff
     masquelier_get_indices_to_apply_stdp<<<synapses_backend->number_of_synapse_blocks_per_grid, synapses_backend->threads_per_block>>>
@@ -83,7 +83,7 @@ namespace Backend {
      int* d_index_of_last_afferent_synapse_to_spike,
      bool* d_isindexed_ltd_synapse_spike,
      int* d_index_of_first_synapse_spiked_after_postneuron,
-     struct masquelier_stdp_parameters_struct stdp_vars,
+     struct masquelier_stdp_plasticity_parameters_struct stdp_vars,
      float currtime,
      size_t total_number_of_post_neurons){
       // Global Index

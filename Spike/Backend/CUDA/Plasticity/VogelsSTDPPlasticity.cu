@@ -1,16 +1,16 @@
 // -*- mode: c++ -*-
-#include "Spike/Backend/CUDA/STDP/VogelsSTDP.hpp"
+#include "Spike/Backend/CUDA/Plasticity/VogelsSTDPPlasticity.hpp"
 
-SPIKE_EXPORT_BACKEND_TYPE(CUDA, VogelsSTDP);
+SPIKE_EXPORT_BACKEND_TYPE(CUDA, VogelsSTDPPlasticity);
 
 namespace Backend {
   namespace CUDA {
-    VogelsSTDP::~VogelsSTDP() {
+    VogelsSTDPPlasticity::~VogelsSTDPPlasticity() {
       CudaSafeCall(cudaFree(vogels_memory_trace));
     }
 
-    void VogelsSTDP::reset_state() {
-      STDP::reset_state();
+    void VogelsSTDPPlasticity::reset_state() {
+      STDPPlasticity::reset_state();
 
       CudaSafeCall(cudaMemcpy((void*)vogels_memory_trace,
                               (void*)frontend()->vogels_memory_trace,
@@ -18,20 +18,20 @@ namespace Backend {
                               cudaMemcpyHostToDevice));
     }
 
-    void VogelsSTDP::prepare() {
-      STDP::prepare();
+    void VogelsSTDPPlasticity::prepare() {
+      STDPPlasticity::prepare();
 
       allocate_device_pointers();
     }
 
-    void VogelsSTDP::allocate_device_pointers() {
+    void VogelsSTDPPlasticity::allocate_device_pointers() {
       // The following doesn't do anything in original code...
-      // ::Backend::CUDA::STDP::allocate_device_pointers();
+      // ::Backend::CUDA::STDPPlasticity::allocate_device_pointers();
 
       CudaSafeCall(cudaMalloc((void **)&vogels_memory_trace, sizeof(int)*frontend()->neurs->total_number_of_neurons));
     }
 
-    void VogelsSTDP::apply_stdp_to_synapse_weights(float current_time_in_seconds, float timestep) {
+    void VogelsSTDPPlasticity::apply_stdp_to_synapse_weights(float current_time_in_seconds, float timestep) {
 
     // Vogels update rule requires a neuron wise memory trace. This must be updated upon neuron firing.
     vogels_update_memory_trace<<<neurons_backend->number_of_neuron_blocks_per_grid, neurons_backend->threads_per_block>>>
@@ -66,7 +66,7 @@ namespace Backend {
      bool* d_stdp,
      float* d_synaptic_efficacies_or_weights,
      float* vogels_memory_trace,
-     struct vogels_stdp_parameters_struct stdp_vars,
+     struct vogels_stdp_plasticity_parameters_struct stdp_vars,
      float currtime,
      float timestep,
      int* d_stdp_synapse_indices,
@@ -108,7 +108,7 @@ namespace Backend {
      float currtime,
      float timestep,
      float* vogels_memory_trace,
-     struct vogels_stdp_parameters_struct stdp_vars,
+     struct vogels_stdp_plasticity_parameters_struct stdp_vars,
      size_t total_number_of_neurons){
       int idx = threadIdx.x + blockIdx.x * blockDim.x;
 

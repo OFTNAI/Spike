@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Spike/STDP/vanRossumSTDP.hpp"
-#include "STDP.hpp"
+#include "Spike/Plasticity/vanRossumSTDPPlasticity.hpp"
+#include "STDPPlasticity.hpp"
 
 #include "Spike/Backend/CUDA/Neurons/SpikingNeurons.hpp"
 #include "Spike/Backend/CUDA/Synapses/SpikingSynapses.hpp"
@@ -14,8 +14,8 @@
 
 namespace Backend {
   namespace CUDA {
-    class vanRossumSTDP : public virtual ::Backend::CUDA::STDP,
-                           public virtual ::Backend::vanRossumSTDP {
+    class vanRossumSTDPPlasticity : public virtual ::Backend::CUDA::STDPPlasticity,
+                           public virtual ::Backend::vanRossumSTDPPlasticity {
     public:
       int* index_of_last_afferent_synapse_to_spike = nullptr;
       bool* isindexed_ltd_synapse_spike = nullptr;
@@ -24,9 +24,9 @@ namespace Backend {
       float* stdp_post_memory_trace = nullptr;
       float* h_stdp_trace = nullptr;
 
-      ~vanRossumSTDP() override;
-      SPIKE_MAKE_BACKEND_CONSTRUCTOR(vanRossumSTDP);
-      using ::Backend::vanRossumSTDP::frontend;
+      ~vanRossumSTDPPlasticity() override;
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(vanRossumSTDPPlasticity);
+      using ::Backend::vanRossumSTDPPlasticity::frontend;
 
       void prepare() override;
       void reset_state() override;
@@ -42,7 +42,7 @@ namespace Backend {
            float* d_synaptic_efficacies_or_weights,
            float* stdp_pre_memory_trace,
            float* stdp_post_memory_trace,
-           struct vanrossum_stdp_parameters_struct stdp_vars,
+           struct vanrossum_stdp_plasticity_parameters_struct stdp_vars,
            float timestep,
            float current_time_in_seconds,
            int* d_stdp_synapse_indices,
@@ -55,7 +55,7 @@ namespace Backend {
      float* d_synaptic_efficacies_or_weights,
      float* stdp_pre_memory_trace,
      float* stdp_post_memory_trace,
-     struct vanrossum_stdp_parameters_struct stdp_vars,
+     struct vanrossum_stdp_plasticity_parameters_struct stdp_vars,
      float timestep,
      float current_time_in_seconds,
      int* d_stdp_synapse_indices,
@@ -71,7 +71,7 @@ namespace Backend {
      int* d_index_of_last_afferent_synapse_to_spike,
      bool* d_isindexed_ltd_synapse_spike,
      int* d_index_of_first_synapse_spiked_after_postneuron,
-     struct vanrossum_stdp_parameters_struct stdp_vars,
+     struct vanrossum_stdp_plasticity_parameters_struct stdp_vars,
      float currtime,
      size_t total_number_of_post_neurons);
 

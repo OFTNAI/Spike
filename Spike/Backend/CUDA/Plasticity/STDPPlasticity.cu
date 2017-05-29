@@ -1,16 +1,16 @@
 // -*- mode: c++ -*-
-#include "Spike/Backend/CUDA/STDP/STDP.hpp"
+#include "Spike/Backend/CUDA/Plasticity/STDPPlasticity.hpp"
 #include <iostream>
 
-// SPIKE_EXPORT_BACKEND_TYPE(CUDA, STDP);
+// SPIKE_EXPORT_BACKEND_TYPE(CUDA, STDPPlasticity);
 
 namespace Backend {
   namespace CUDA {
-    STDP::~STDP() {
+    STDPPlasticity::~STDPPlasticity() {
       CudaSafeCall(cudaFree(stdp_synapse_indices));
     }
 
-    void STDP::prepare() {
+    void STDPPlasticity::prepare() {
 
       neurons_backend = dynamic_cast<::Backend::CUDA::SpikingNeurons*>
         (frontend()->neurs->backend());
@@ -28,7 +28,7 @@ namespace Backend {
       allocate_device_pointers();
     }
 
-    void STDP::allocate_device_pointers(){
+    void STDPPlasticity::allocate_device_pointers(){
       if (total_number_of_stdp_synapses > 0){
         CudaSafeCall(cudaMalloc((void **)&stdp_synapse_indices, sizeof(int)*total_number_of_stdp_synapses));
         CudaSafeCall(cudaMemcpy((void*)stdp_synapse_indices,
@@ -38,7 +38,7 @@ namespace Backend {
       }
     }
 
-    void STDP::reset_state() {
+    void STDPPlasticity::reset_state() {
     }
   }
 }

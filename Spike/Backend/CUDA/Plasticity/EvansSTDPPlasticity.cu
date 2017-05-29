@@ -1,23 +1,23 @@
 // -*- mode: c++ -*-
-#include "Spike/Backend/CUDA/STDP/EvansSTDP.hpp"
+#include "Spike/Backend/CUDA/Plasticity/EvansSTDPPlasticity.hpp"
 
-SPIKE_EXPORT_BACKEND_TYPE(CUDA, EvansSTDP);
+SPIKE_EXPORT_BACKEND_TYPE(CUDA, EvansSTDPPlasticity);
 
 namespace Backend {
   namespace CUDA {
-    EvansSTDP::~EvansSTDP() {
+    EvansSTDPPlasticity::~EvansSTDPPlasticity() {
       CudaSafeCall(cudaFree(recent_postsynaptic_activities_D));
       CudaSafeCall(cudaFree(recent_presynaptic_activities_C));
     }
 
-    void EvansSTDP::prepare() {
-      STDP::prepare();
+    void EvansSTDPPlasticity::prepare() {
+      STDPPlasticity::prepare();
 
       allocate_device_pointers();
     }
 
-    void EvansSTDP::reset_state() {
-      STDP::reset_state();
+    void EvansSTDPPlasticity::reset_state() {
+      STDPPlasticity::reset_state();
 
       CudaSafeCall(cudaMemcpy(recent_presynaptic_activities_C,
                               frontend()->recent_presynaptic_activities_C,
@@ -29,7 +29,7 @@ namespace Backend {
                               cudaMemcpyHostToDevice));
     }
 
-    void EvansSTDP::allocate_device_pointers(){
+    void EvansSTDPPlasticity::allocate_device_pointers(){
       // RUN AFTER NETWORK HAS BEEN STARTED
       // (eg, see prepare_backend() call at end of
       //  FourLayerVisionSpikingModel::finalise_model)
@@ -38,7 +38,7 @@ namespace Backend {
 
     }
 
-    void EvansSTDP::update_synaptic_efficacies_or_weights(float current_time_in_seconds) {
+    void EvansSTDPPlasticity::update_synaptic_efficacies_or_weights(float current_time_in_seconds) {
       update_synaptic_efficacies_or_weights_kernel<<<synapses_backend->number_of_synapse_blocks_per_grid, synapses_backend->threads_per_block>>>
         (recent_presynaptic_activities_C,
          recent_postsynaptic_activities_D,
@@ -55,7 +55,7 @@ namespace Backend {
       CudaCheckError();
     }
 
-    void EvansSTDP::update_presynaptic_activities(float timestep, float current_time_in_seconds) {
+    void EvansSTDPPlasticity::update_presynaptic_activities(float timestep, float current_time_in_seconds) {
       update_presynaptic_activities_C_kernel<<<synapses_backend->number_of_synapse_blocks_per_grid, synapses_backend->threads_per_block>>>
         (recent_presynaptic_activities_C,
          synapses_backend->time_of_last_spike_to_reach_synapse,
@@ -70,7 +70,7 @@ namespace Backend {
       CudaCheckError();
     }
 
-    void EvansSTDP::update_postsynaptic_activities(float timestep, float current_time_in_seconds) {
+    void EvansSTDPPlasticity::update_postsynaptic_activities(float timestep, float current_time_in_seconds) {
       update_postsynaptic_activities_kernel<<<neurons_backend->number_of_neuron_blocks_per_grid, neurons_backend->threads_per_block>>>
         (timestep,
          frontend()->neurs->total_number_of_neurons,

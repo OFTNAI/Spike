@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Spike/STDP/STDP.hpp"
+#include "Spike/Plasticity/STDPPlasticity.hpp"
 #include "Spike/Backend/CUDA/CUDABackend.hpp"
 #include "Spike/Backend/CUDA/Neurons/SpikingNeurons.hpp"
 #include "Spike/Backend/CUDA/Synapses/SpikingSynapses.hpp"
@@ -12,10 +12,10 @@
 
 namespace Backend {
   namespace CUDA {
-    class STDP : public virtual ::Backend::STDP {
+    class STDPPlasticity : public virtual ::Backend::STDPPlasticity {
     public:
-      ~STDP() override;
-      using ::Backend::STDP::frontend;
+      ~STDPPlasticity() override;
+      using ::Backend::STDPPlasticity::frontend;
       int* stdp_synapse_indices = nullptr;
       int total_number_of_stdp_synapses;
 

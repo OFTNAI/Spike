@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Spike/STDP/EvansSTDP.hpp"
-#include "STDP.hpp"
+#include "Spike/Plasticity/EvansSTDPPlasticity.hpp"
+#include "STDPPlasticity.hpp"
 #include "Spike/Backend/CUDA/CUDABackend.hpp"
 #include <cuda.h>
 #include <vector_types.h>
@@ -10,15 +10,15 @@
 
 namespace Backend {
   namespace CUDA {
-    class EvansSTDP : public virtual ::Backend::CUDA::STDP,
-                      public virtual ::Backend::EvansSTDP {
+    class EvansSTDPPlasticity : public virtual ::Backend::CUDA::STDPPlasticity,
+                      public virtual ::Backend::EvansSTDPPlasticity {
     public:
       float* recent_postsynaptic_activities_D = nullptr; // (NEURON-WISE)
       float* recent_presynaptic_activities_C = nullptr;  // (SYNAPSE-WISE)
 
-      ~EvansSTDP() override;
-      SPIKE_MAKE_BACKEND_CONSTRUCTOR(EvansSTDP);
-      using ::Backend::EvansSTDP::frontend;
+      ~EvansSTDPPlasticity() override;
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(EvansSTDPPlasticity);
+      using ::Backend::EvansSTDPPlasticity::frontend;
 
       void prepare() override;
       void reset_state() override;

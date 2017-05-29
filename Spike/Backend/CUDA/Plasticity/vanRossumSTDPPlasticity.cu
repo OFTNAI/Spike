@@ -1,11 +1,11 @@
 // -*- mode: c++ -*-
-#include "Spike/Backend/CUDA/STDP/vanRossumSTDP.hpp"
+#include "Spike/Backend/CUDA/Plasticity/vanRossumSTDPPlasticity.hpp"
 
-SPIKE_EXPORT_BACKEND_TYPE(CUDA, vanRossumSTDP);
+SPIKE_EXPORT_BACKEND_TYPE(CUDA, vanRossumSTDPPlasticity);
 
 namespace Backend {
   namespace CUDA {
-    vanRossumSTDP::~vanRossumSTDP() {
+    vanRossumSTDPPlasticity::~vanRossumSTDPPlasticity() {
       CudaSafeCall(cudaFree(index_of_last_afferent_synapse_to_spike));
       CudaSafeCall(cudaFree(isindexed_ltd_synapse_spike));
       CudaSafeCall(cudaFree(index_of_first_synapse_spiked_after_postneuron));
@@ -14,8 +14,8 @@ namespace Backend {
       free(h_stdp_trace);
     }
 
-    void vanRossumSTDP::reset_state() {
-      STDP::reset_state();
+    void vanRossumSTDPPlasticity::reset_state() {
+      STDPPlasticity::reset_state();
       
       if (frontend()->stdp_params->allspikes){
         CudaSafeCall(cudaMemcpy((void*)stdp_pre_memory_trace,
@@ -42,15 +42,15 @@ namespace Backend {
       }
     }
 
-    void vanRossumSTDP::prepare() {
-      STDP::prepare();
+    void vanRossumSTDPPlasticity::prepare() {
+      STDPPlasticity::prepare();
 
       allocate_device_pointers();
     }
 
-    void vanRossumSTDP::allocate_device_pointers() {
+    void vanRossumSTDPPlasticity::allocate_device_pointers() {
       // The following doesn't do anything in original code...
-      // ::Backend::CUDA::STDP::allocate_device_pointers();
+      // ::Backend::CUDA::STDPPlasticity::allocate_device_pointers();
       if (frontend()->stdp_params->allspikes){
         CudaSafeCall(cudaMalloc((void **)&stdp_pre_memory_trace, sizeof(float)*total_number_of_stdp_synapses));
         CudaSafeCall(cudaMalloc((void **)&stdp_post_memory_trace, sizeof(float)*total_number_of_stdp_synapses));
@@ -66,7 +66,7 @@ namespace Backend {
       }
     }
 
-    void vanRossumSTDP::apply_stdp_to_synapse_weights(float current_time_in_seconds) {
+    void vanRossumSTDPPlasticity::apply_stdp_to_synapse_weights(float current_time_in_seconds) {
    
       // If nearest spike, get the indices:
       if (!frontend()->stdp_params->allspikes){ 
@@ -133,7 +133,7 @@ namespace Backend {
            float* d_synaptic_efficacies_or_weights,
            float* stdp_pre_memory_trace,
            float* stdp_post_memory_trace,
-           struct vanrossum_stdp_parameters_struct stdp_vars,
+           struct vanrossum_stdp_plasticity_parameters_struct stdp_vars,
            float timestep,
            float current_time_in_seconds,
            int* d_stdp_synapse_indices,
@@ -170,7 +170,7 @@ namespace Backend {
      float* d_synaptic_efficacies_or_weights,
      float* stdp_pre_memory_trace,
      float* stdp_post_memory_trace,
-     struct vanrossum_stdp_parameters_struct stdp_vars,
+     struct vanrossum_stdp_plasticity_parameters_struct stdp_vars,
      float timestep,
      float current_time_in_seconds,
      int* d_stdp_synapse_indices,
@@ -209,7 +209,7 @@ namespace Backend {
      int* d_index_of_last_afferent_synapse_to_spike,
      bool* d_isindexed_ltd_synapse_spike,
      int* d_index_of_first_synapse_spiked_after_postneuron,
-     struct vanrossum_stdp_parameters_struct stdp_vars,
+     struct vanrossum_stdp_plasticity_parameters_struct stdp_vars,
      float currtime,
      size_t total_number_of_post_neurons){
       // Global Index

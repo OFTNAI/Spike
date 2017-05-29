@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Spike/STDP/MasquelierSTDP.hpp"
-#include "STDP.hpp"
+#include "Spike/Plasticity/MasquelierSTDPPlasticity.hpp"
+#include "STDPPlasticity.hpp"
 
 #include "Spike/Backend/CUDA/CUDABackend.hpp"
 #include <cuda.h>
@@ -11,16 +11,16 @@
 
 namespace Backend {
   namespace CUDA {
-    class MasquelierSTDP : public virtual ::Backend::CUDA::STDP,
-                           public virtual ::Backend::MasquelierSTDP {
+    class MasquelierSTDPPlasticity : public virtual ::Backend::CUDA::STDPPlasticity,
+                           public virtual ::Backend::MasquelierSTDPPlasticity {
     public:
       int* index_of_last_afferent_synapse_to_spike = nullptr;
       bool* isindexed_ltd_synapse_spike = nullptr;
       int* index_of_first_synapse_spiked_after_postneuron = nullptr;
 
-      ~MasquelierSTDP() override;
-      SPIKE_MAKE_BACKEND_CONSTRUCTOR(MasquelierSTDP);
-      using ::Backend::MasquelierSTDP::frontend;
+      ~MasquelierSTDPPlasticity() override;
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(MasquelierSTDPPlasticity);
+      using ::Backend::MasquelierSTDPPlasticity::frontend;
 
       void prepare() override;
       void reset_state() override;
@@ -39,7 +39,7 @@ namespace Backend {
      int* d_index_of_last_afferent_synapse_to_spike,
      bool* d_isindexed_ltd_synapse_spike,
      int* d_index_of_first_synapse_spiked_after_postneuron,
-     struct masquelier_stdp_parameters_struct stdp_vars,
+     struct masquelier_stdp_plasticity_parameters_struct stdp_vars,
      float currtime,
      size_t total_number_of_post_neurons);
 

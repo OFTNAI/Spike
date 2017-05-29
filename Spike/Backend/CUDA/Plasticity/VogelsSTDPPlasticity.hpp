@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Spike/STDP/VogelsSTDP.hpp"
-#include "STDP.hpp"
+#include "Spike/Plasticity/VogelsSTDPPlasticity.hpp"
+#include "STDPPlasticity.hpp"
 
 #include "Spike/Backend/CUDA/Neurons/SpikingNeurons.hpp"
 #include "Spike/Backend/CUDA/Synapses/SpikingSynapses.hpp"
@@ -14,14 +14,14 @@
 
 namespace Backend {
   namespace CUDA {
-    class VogelsSTDP : public virtual ::Backend::CUDA::STDP,
-                           public virtual ::Backend::VogelsSTDP {
+    class VogelsSTDPPlasticity : public virtual ::Backend::CUDA::STDPPlasticity,
+                           public virtual ::Backend::VogelsSTDPPlasticity {
     public:
       float* vogels_memory_trace = nullptr;
 
-      ~VogelsSTDP() override;
-      SPIKE_MAKE_BACKEND_CONSTRUCTOR(VogelsSTDP);
-      using ::Backend::VogelsSTDP::frontend;
+      ~VogelsSTDPPlasticity() override;
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(VogelsSTDPPlasticity);
+      using ::Backend::VogelsSTDPPlasticity::frontend;
 
       void prepare() override;
       void reset_state() override;
@@ -38,7 +38,7 @@ namespace Backend {
      bool* d_stdp,
      float* d_synaptic_efficacies_or_weights,
      float* vogels_memory_trace,
-     struct vogels_stdp_parameters_struct stdp_vars,
+     struct vogels_stdp_plasticity_parameters_struct stdp_vars,
      float currtime,
      float timestep,
      int* d_stdp_synapse_indices,
@@ -49,7 +49,7 @@ namespace Backend {
      float currtime,
      float timestep,
      float* vogels_memory_trace,
-     struct vogels_stdp_parameters_struct stdp_vars,
+     struct vogels_stdp_plasticity_parameters_struct stdp_vars,
      size_t total_number_of_neurons);
   }
 }
