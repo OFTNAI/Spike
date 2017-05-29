@@ -17,7 +17,7 @@ add_subdirectory(Plotting)
 add_subdirectory(RecordingElectrodes)
 add_subdirectory(Simulator)
 add_subdirectory(SpikeAnalyser)
-add_subdirectory(STDP)
+add_subdirectory(Plasticity)
 add_subdirectory(Synapses)
 
 add_library(Spike
@@ -29,7 +29,7 @@ add_library(Spike
   $<TARGET_OBJECTS:RecordingElectrodes>
   $<TARGET_OBJECTS:Simulator>
   $<TARGET_OBJECTS:SpikeAnalyser>
-  $<TARGET_OBJECTS:STDP>
+  $<TARGET_OBJECTS:Plasticity>
   $<TARGET_OBJECTS:Synapses>
   )
 
@@ -48,7 +48,7 @@ target_link_libraries(Spike PRIVATE ${WHOLE_ARCHIVE_FLAG}
   SpikeDummyNeurons
   SpikeDummyRecordingElectrodes
   SpikeDummySpikeAnalyser
-  SpikeDummySTDP
+  SpikeDummyPlasticity
   SpikeDummySynapses
   ${NO_WHOLE_ARCHIVE_FLAG})
 
@@ -58,7 +58,7 @@ if (BUILD_WITH_CUDA)
     SpikeCUDANeurons
     SpikeCUDARecordingElectrodes
     SpikeCUDASpikeAnalyser
-    SpikeCUDASTDP
+    SpikeCUDAPlasticity
     SpikeCUDASynapses
     ${NO_WHOLE_ARCHIVE_FLAG})
 endif()

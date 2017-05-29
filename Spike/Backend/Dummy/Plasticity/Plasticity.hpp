@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Spike/STDP/STDP.hpp"
+#include "Spike/Plasticity/Plasticity.hpp"
 
 namespace Backend {
   namespace Dummy {
-    class STDP : public virtual ::Backend::STDP {
+    class Plasticity : public virtual ::Backend::Plasticity {
     public:
       void prepare() override;
       void reset_state() override;

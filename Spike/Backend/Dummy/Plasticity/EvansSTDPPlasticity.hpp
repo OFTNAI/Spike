@@ -1,14 +1,14 @@
 #pragma once
 
-#include "Spike/STDP/EvansSTDP.hpp"
-#include "STDP.hpp"
+#include "Spike/Plasticity/EvansSTDPPlasticity.hpp"
+#include "STDPPlasticity.hpp"
 
 namespace Backend {
   namespace Dummy {
-    class EvansSTDP : public virtual ::Backend::Dummy::STDP,
-                      public virtual ::Backend::EvansSTDP {
+    class EvansSTDPPlasticity : public virtual ::Backend::Dummy::STDPPlasticity,
+                      public virtual ::Backend::EvansSTDPPlasticity {
     public:
-      SPIKE_MAKE_BACKEND_CONSTRUCTOR(EvansSTDP);
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(EvansSTDPPlasticity);
 
       void prepare() override;
       void reset_state() override;
