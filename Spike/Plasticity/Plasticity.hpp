@@ -9,13 +9,15 @@
 
 class Plasticity; // forward definition
 
+#include "Spike/Base.hpp"
+
 #include "Spike/Backend/Macros.hpp"
 #include "Spike/Backend/Context.hpp"
 #include "Spike/Backend/Backend.hpp"
 #include "Spike/Backend/Device.hpp"
 
-#include "Spike/Synapses/SpikingSynapses.hpp"
-#include "Spike/Neurons/SpikingNeurons.hpp"
+//#include "Spike/Synapses/Synapses.hpp"
+//#include "Spike/Neurons/SpikingNeurons.hpp"
 
 // stdlib allows random numbers
 #include <stdlib.h>

@@ -4,7 +4,6 @@
 class SpikingSynapses; // forward definition
 
 #include "Synapses.hpp"
-#include "Spike/Plasticity/Plasticity.hpp"
 #include "Spike/Neurons/SpikingNeurons.hpp"
 #include <vector>
 
@@ -19,9 +18,7 @@ namespace Backend {
 }
 
 struct spiking_synapse_parameters_struct : synapse_parameters_struct {
-  spiking_synapse_parameters_struct(): plasticity_ptr(nullptr) { synapse_parameters_struct(); }
-
-  Plasticity * plasticity_ptr;
+//  spiking_synapse_parameters_struct(): plasticity_ptr(nullptr) { synapse_parameters_struct(); }
   float delay_range[2];
 };
 
@@ -34,11 +31,6 @@ public:
 
   // Host Pointers
   int* delays = nullptr;
-  bool* plastic = nullptr;
-  std::vector<Plasticity*> plasticity_rule_vec;
-  std::vector<int> plasticity_synapse_number_per_rule;
-  std::vector<int*> plasticity_synapse_indices_per_rule;
-
 
   // For spike array stuff
   int maximum_axonal_delay_in_timesteps = 0;

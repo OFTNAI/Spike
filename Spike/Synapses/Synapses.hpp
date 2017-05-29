@@ -16,7 +16,7 @@
 #include "Spike/Backend/Context.hpp"
 #include "Spike/Backend/Backend.hpp"
 #include "Spike/Backend/Device.hpp"
-
+#include "Spike/Plasticity/Plasticity.hpp"
 #include "Spike/Neurons/Neurons.hpp"
 
 // stdlib allows random numbers
@@ -25,6 +25,7 @@
 #include <stdio.h>
 // allows maths
 #include <math.h>
+#include <vector>
 
 #include "Spike/Helpers/RandomStateManager.hpp"
 
@@ -81,6 +82,7 @@ struct synapse_parameters_struct {
   float weight_range_top = 1.0;
   float random_connectivity_probability;
   int connectivity_type = CONNECTIVITY_TYPE_ALL_TO_ALL;
+  Plasticity * plasticity_ptr = nullptr;
 };
 
 /*!
@@ -103,6 +105,10 @@ public:
   int temp_number_of_synapses_in_last_group = 0;    /**< Tracks the number of synapses in the last added group. */
   int largest_synapse_group_size = 0;               /**< Tracks the size of the largest synaptic group. */
   bool print_synapse_group_details = false;         /**< A flag used to indicate whether group details should be printed */
+  std::vector<Plasticity*> plasticity_rule_vec;     /**< A vector of pointers to the plasticity rules to be used in the simulation */
+  std::vector<int> plasticity_synapse_number_per_rule;  /**< A vector of the number of synapse ids to be associated with each plasticity rule */
+  
+
 	
   // Host Pointers
   int* presynaptic_neuron_indices = nullptr;                /**< Indices of presynaptic neuron IDs */
@@ -110,6 +116,8 @@ public:
   int* original_synapse_indices = nullptr;                  /**< Indices by which to order the presynaptic and postsynaptic neuron IDs if a shuffle is carried out */
   int* synapse_postsynaptic_neuron_count_index = nullptr;   /**< An array of the number of incoming synapses to each postsynaptic neuron */
   float* synaptic_efficacies_or_weights = nullptr;          /**< An array of synaptic efficacies/weights accompanying the pre/postsynaptic_neuron_indices */
+  bool* plastic = nullptr;                                  /**< An array of boolean values to indicate plasticity or not */
+  std::vector<int*> plasticity_synapse_indices_per_rule;    /**< A vector (host-side) which contains the list of synapse ids that each corresponding plasticity rule must be applied to */
 
   // Functions
 
