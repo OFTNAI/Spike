@@ -40,15 +40,15 @@ int main (int argc, char *argv[]){
 	LIFSpikingNeurons * lif_spiking_neurons = new LIFSpikingNeurons();
 	GeneratorInputSpikingNeurons * generator_input_spiking_neurons = new GeneratorInputSpikingNeurons();
 	ConductanceSpikingSynapses * conductance_spiking_synapses = new ConductanceSpikingSynapses();
-	VogelsSTDP * vogels_stdp = new VogelsSTDP();
-	// No STDP implemented
+	// Set STDP
+	vogels_stdp_plasticity_parameters_struct * STDP_PARAMS = new vogels_stdp_plasticity_parameters_struct();
+	VogelsSTDPPlasticity * vogels_stdp = new VogelsSTDPPlasticity((SpikingSynapses *) conductance_spiking_synapses, (SpikingNeurons *) lif_spiking_neurons, (SpikingNeurons *) generator_input_spiking_neurons, (stdp_plasticity_parameters_struct *) STDP_PARAMS);
 
 	// Add my populations to the SpikingModel
 	BenchModel->spiking_neurons = lif_spiking_neurons;
 	BenchModel->input_spiking_neurons = generator_input_spiking_neurons;
 	BenchModel->spiking_synapses = conductance_spiking_synapses;
-	BenchModel->AddSTDPRule(vogels_stdp);
-	// BenchModel->stdp_rule = masquelier_stdp;
+	BenchModel->AddPlasticityRule(vogels_stdp);
 
 	// Set up Neuron Parameters
 	// AdEx
@@ -94,12 +94,10 @@ int main (int argc, char *argv[]){
 	/*
 		Set up STDP Parameters
 	*/
-	vogels_stdp_parameters_struct * STDP_PARAMS = new vogels_stdp_parameters_struct();
 	// STDP_PARAMS->a_minus = 0.001f;
 	// STDP_PARAMS->a_plus = 0.001f;
 	// STDP_PARAMS->tau_minus = 0.50f;
 	// STDP_PARAMS->tau_plus = 0.05f;
-	vogels_stdp->Set_STDP_Parameters((SpikingSynapses *) conductance_spiking_synapses, (SpikingNeurons *) lif_spiking_neurons, (SpikingNeurons *) generator_input_spiking_neurons, (stdp_parameters_struct *) STDP_PARAMS);
 
 
 	/*
@@ -241,9 +239,9 @@ int main (int argc, char *argv[]){
 	EXC_OUT_SYN_PARAMS->connectivity_type = CONNECTIVITY_TYPE_RANDOM;
 	INH_OUT_SYN_PARAMS->connectivity_type = CONNECTIVITY_TYPE_RANDOM;
 	INPUT_SYN_PARAMS->connectivity_type = CONNECTIVITY_TYPE_RANDOM;
-	EXC_OUT_SYN_PARAMS->stdp_ptr = nullptr;
-	INH_OUT_SYN_PARAMS->stdp_ptr = vogels_stdp;
-	INPUT_SYN_PARAMS->stdp_ptr = nullptr;
+	EXC_OUT_SYN_PARAMS->plasticity_ptr = nullptr;
+	INH_OUT_SYN_PARAMS->plasticity_ptr = vogels_stdp;
+	INPUT_SYN_PARAMS->plasticity_ptr = nullptr;
 	EXC_OUT_SYN_PARAMS->random_connectivity_probability = 0.02; // 2%
 	INH_OUT_SYN_PARAMS->random_connectivity_probability = 0.02; // 2%
 	INPUT_SYN_PARAMS->random_connectivity_probability = 0.01; // 1%
@@ -266,7 +264,7 @@ int main (int argc, char *argv[]){
 	// Create the simulator options
 	Simulator_Options* simoptions = new Simulator_Options();
 	simoptions->run_simulation_general_options->presentation_time_per_stimulus_per_epoch = 30.0f;
-	simoptions->run_simulation_general_options->apply_stdp_to_relevant_synapses = true;
+	simoptions->run_simulation_general_options->apply_plasticity_to_relevant_synapses = true;
 
 	simoptions->recording_electrodes_options->count_neuron_spikes_recording_electrodes_bool = true;
 	simoptions->recording_electrodes_options->count_input_neuron_spikes_recording_electrodes_bool = true;
