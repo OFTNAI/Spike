@@ -21,7 +21,7 @@ namespace Backend {
 struct spiking_synapse_parameters_struct : synapse_parameters_struct {
   spiking_synapse_parameters_struct(): plasticity_ptr(nullptr) { synapse_parameters_struct(); }
 
-  STDP * plasticity_ptr;
+  Plasticity * plasticity_ptr;
   float delay_range[2];
 };
 

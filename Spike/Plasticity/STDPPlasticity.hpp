@@ -44,7 +44,7 @@ struct stdp_plasticity_parameters_struct : plasticity_parameters_struct {
 
 class STDPPlasticity : public Plasticity {
 public:
-  ~STDPPlasticity(SpikingSynapses* synapses, SpikingNeurons* neurons, SpikingNeurons* input_neurons, stdp_parameters_struct* stdp_parameters) override = default;
+  ~STDPPlasticity() override = default;
 
   SPIKE_ADD_BACKEND_GETSET(STDPPlasticity, SpikeBase);
   void reset_state() override;
@@ -52,7 +52,7 @@ public:
   SpikingSynapses* syns = nullptr;
   SpikingNeurons* neurs = nullptr;
 
-  virtual void Run_Plasticity(float current_time_in_seconds, float timestep) = 0;
+  virtual void Run_Plasticity(float current_time_in_seconds, float timestep) override = 0;
 
 private:
   std::shared_ptr<::Backend::STDPPlasticity> _backend;

@@ -23,9 +23,9 @@ public:
 	bool I2E_L_SYNAPSES_ON = false;
 	bool E2E_FB_SYNAPSES_ON = false;
 
-    STDP * E2E_FF_STDP_ON = nullptr;
-    STDP * E2E_L_STDP_ON = nullptr;
-    STDP * E2E_FB_STDP_ON = nullptr;
+    STDPPlasticity * E2E_FF_STDP_ON = nullptr;
+    STDPPlasticity * E2E_L_STDP_ON = nullptr;
+    STDPPlasticity * E2E_FB_STDP_ON = nullptr;
 	
 	int number_of_non_input_layers = 4;
 	int number_of_non_input_layers_to_simulate = 1;
@@ -91,7 +91,7 @@ public:
 	LIFSpikingNeurons * lif_spiking_neurons = nullptr;
 	ImagePoissonInputSpikingNeurons * image_poisson_input_spiking_neurons = nullptr;
 	ConductanceSpikingSynapses * conductance_spiking_synapses = nullptr;
-	EvansSTDP * evans_stdp = nullptr;
+	EvansSTDPPlasticity * evans_stdp = nullptr;
 
 
 

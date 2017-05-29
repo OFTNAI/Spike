@@ -6,7 +6,7 @@
 #include "VogelsSTDPPlasticity.hpp"
 #include "../Helpers/TerminalHelpers.hpp"
 
-void VogelsSTDPPlasticity::VogelsSTDPPlasticity(SpikingSynapses* synapses, SpikingNeurons* neurons, SpikingNeurons* input_neurons, stdp_plasticity_parameters_struct* stdp_parameters){
+VogelsSTDPPlasticity::VogelsSTDPPlasticity(SpikingSynapses* synapses, SpikingNeurons* neurons, SpikingNeurons* input_neurons, stdp_plasticity_parameters_struct* stdp_parameters){
 	stdp_params = (vogels_stdp_plasticity_parameters_struct *)stdp_parameters;
 	syns = synapses;
 	neurs = neurons;

@@ -7,7 +7,7 @@
 #include "EvansSTDPPlasticity.hpp"
 #include "../Helpers/TerminalHelpers.hpp"
 
-EvansSTDPPlasticity::EvansSTDPPlasticity(spikingsynapses* synapses, spikingneurons* neurons, spikingneurons* input_neurons, stdp_plasticity_parameters_struct* stdp_parameters){
+EvansSTDPPlasticity::EvansSTDPPlasticity(SpikingSynapses* synapses, SpikingNeurons* neurons, SpikingNeurons* input_neurons, stdp_plasticity_parameters_struct* stdp_parameters){
   stdp_params = (evans_stdp_plasticity_parameters_struct *)stdp_parameters;
   syns = synapses;
   neurs = neurons;

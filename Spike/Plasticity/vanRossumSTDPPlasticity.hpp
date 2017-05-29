@@ -16,7 +16,7 @@
 // Get Synapses & Neurons Class
 #include "../Synapses/SpikingSynapses.hpp"
 #include "../Neurons/SpikingNeurons.hpp"
-#include "../Plasticity/STDP.hpp"
+#include "../Plasticity/STDPPlasticity.hpp"
 
 // stdlib allows random numbers
 #include <stdlib.h>
@@ -25,21 +25,21 @@
 // allows maths
 #include <math.h>
 
-class vanRossumSTDP; // forward definition
+class vanRossumSTDPPlasticity; // forward definition
 
 namespace Backend {
-  class vanRossumSTDP : public virtual STDP {
+  class vanRossumSTDPPlasticity : public virtual STDPPlasticity {
   public:
-    SPIKE_ADD_BACKEND_FACTORY(vanRossumSTDP);
+    SPIKE_ADD_BACKEND_FACTORY(vanRossumSTDPPlasticity);
 
     virtual void apply_stdp_to_synapse_weights(float current_time_in_seconds) = 0;
   };
 }
 
 // STDP Parameters
-struct vanrossum_stdp_parameters_struct : stdp_parameters_struct {
-  vanrossum_stdp_parameters_struct() : a_minus(0.003), a_plus(7.0f*pow(10.0, -12)), tau_minus(0.02f), tau_plus(0.02f), weight_dependency_factor(1.0f), allspikes(true), timestep(0.0f) { } // default Constructor
-  // STDP Parameters
+struct vanrossum_stdp_plasticity_parameters_struct : stdp_plasticity_parameters_struct {
+  vanrossum_stdp_plasticity_parameters_struct() : a_minus(0.003), a_plus(7.0f*pow(10.0, -12)), tau_minus(0.02f), tau_plus(0.02f), weight_dependency_factor(1.0f), allspikes(true), timestep(0.0f) { } // default Constructor
+  // STDPPlasticity Parameters
   float a_minus;
   float a_plus;
   float tau_minus;
@@ -51,12 +51,16 @@ struct vanrossum_stdp_parameters_struct : stdp_parameters_struct {
 };
 
 
-class vanRossumSTDP : public STDP {
+class vanRossumSTDPPlasticity : public STDPPlasticity {
 public:
-  ~vanRossumSTDP() override;
-  SPIKE_ADD_BACKEND_GETSET(vanRossumSTDP, STDP);
+  vanRossumSTDPPlasticity(SpikingSynapses* synapses,
+                           SpikingNeurons* neurons,
+                           SpikingNeurons* input_neurons,
+                           stdp_plasticity_parameters_struct* stdp_parameters);
+  ~vanRossumSTDPPlasticity() override;
+  SPIKE_ADD_BACKEND_GETSET(vanRossumSTDPPlasticity, STDPPlasticity);
 
-  struct vanrossum_stdp_parameters_struct* stdp_params;
+  struct vanrossum_stdp_plasticity_parameters_struct* stdp_params;
 
   // Nearest STDP Variables
   int* index_of_last_afferent_synapse_to_spike = nullptr;
@@ -66,19 +70,14 @@ public:
   void init_backend(Context* ctx = _global_ctx) override;
   void prepare_backend_late() override;
 
-  // Set STDP Parameters
-  void Set_STDP_Parameters(SpikingSynapses* synapses,
-                           SpikingNeurons* neurons,
-                           SpikingNeurons* input_neurons,
-                           stdp_parameters_struct* stdp_parameters) override;
   // STDP
-  void Run_STDP(float current_time_in_seconds, float timestep) override;
+  void Run_Plasticity(float current_time_in_seconds, float timestep) override;
 
   // LTP & LTD for this model
   void apply_stdp_to_synapse_weights(float current_time_in_seconds);
 
 private:
-  std::shared_ptr<::Backend::vanRossumSTDP> _backend;
+  std::shared_ptr<::Backend::vanRossumSTDPPlasticity> _backend;
 };
 
 #endif

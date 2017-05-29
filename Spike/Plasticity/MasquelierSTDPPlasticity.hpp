@@ -53,7 +53,7 @@ public:
   MasquelierSTDPPlasticity(SpikingSynapses* synapses,
                            SpikingNeurons* neurons,
                            SpikingNeurons* input_neurons,
-                           stdp_plasticity_parameters_struct* stdp_parameters) override;
+                           stdp_plasticity_parameters_struct* stdp_parameters);
   ~MasquelierSTDPPlasticity() override;
   SPIKE_ADD_BACKEND_GETSET(MasquelierSTDPPlasticity, STDPPlasticity);
 

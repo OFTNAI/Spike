@@ -45,7 +45,8 @@ struct evans_stdp_plasticity_parameters_struct : stdp_plasticity_parameters_stru
 class EvansSTDPPlasticity : public STDPPlasticity {
 public:
   // Constructor/Destructor
-  ~EvansSTDPPlasticity(SpikingSynapses* synapses, SpikingNeurons* neurons, SpikingNeurons* input_neurons, stdp_plasticity_parameters_struct* stdp_parameters) override;
+  EvansSTDPPlasticity(SpikingSynapses* synapses, SpikingNeurons* neurons, SpikingNeurons* input_neurons, stdp_plasticity_parameters_struct* stdp_parameters);
+  ~EvansSTDPPlasticity() override;
   SPIKE_ADD_BACKEND_GETSET(EvansSTDPPlasticity, STDPPlasticity);
 
   struct evans_stdp_plasticity_parameters_struct* stdp_params = nullptr;
@@ -67,7 +68,7 @@ public:
   void update_postsynaptic_activities(float timestep, float current_time_in_seconds);
 
 private:
-  std::shared_ptr<::Backend::EvansSTDP> _backend;
+  std::shared_ptr<::Backend::EvansSTDPPlasticity> _backend;
 };
 
 #endif

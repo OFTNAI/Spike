@@ -47,10 +47,10 @@ struct vogels_stdp_plasticity_parameters_struct : stdp_plasticity_parameters_str
 
 class VogelsSTDPPlasticity : public STDPPlasticity {
 public:
-  VogelsSTDPPlasticity::VogelsSTDPPlasticity(SpikingSynapses* synapses,
+  VogelsSTDPPlasticity(SpikingSynapses* synapses,
                            SpikingNeurons* neurons,
                            SpikingNeurons* input_neurons,
-                           stdp_plasticity_parameters_struct* stdp_parameters) override;
+                           stdp_plasticity_parameters_struct* stdp_parameters);
   ~VogelsSTDPPlasticity() override;
   SPIKE_ADD_BACKEND_GETSET(VogelsSTDPPlasticity, STDPPlasticity);
 

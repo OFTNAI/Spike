@@ -45,7 +45,7 @@ int main (int argc, char *argv[]){
 
 	// Choose an STDP type, it must be initialized with a set of parameters
 	evans_stdp_plasticity_parameters_struct * STDP_PARAMS = new evans_stdp_plasticity_parameters_struct();	// You can use the default Values
-	EvansSTDP * evans_stdp = new EvansSTDP((SpikingSynapses *) current_spiking_synapses, (SpikingNeurons *) lif_spiking_neurons, (SpikingNeurons *) generator_input_neurons, (stdp_plasticity_parameters_struct *) STDP_PARAMS);
+	EvansSTDPPlasticity * evans_stdp = new EvansSTDPPlasticity((SpikingSynapses *) current_spiking_synapses, (SpikingNeurons *) lif_spiking_neurons, (SpikingNeurons *) generator_input_neurons, (stdp_plasticity_parameters_struct *) STDP_PARAMS);
 
 	// Allocate your chosen components to the simulator
 	ExampleModel->input_spiking_neurons = generator_input_neurons;

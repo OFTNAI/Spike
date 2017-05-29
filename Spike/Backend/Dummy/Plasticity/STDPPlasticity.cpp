@@ -1,4 +1,4 @@
-#include "STDP.hpp"
+#include "STDPPlasticity.hpp"
 
 // SPIKE_EXPORT_BACKEND_TYPE(Dummy, STDPPlasticity);
 

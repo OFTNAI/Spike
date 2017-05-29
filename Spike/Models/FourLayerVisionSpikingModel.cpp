@@ -192,7 +192,7 @@ void FourLayerVisionSpikingModel::finalise_model() {
 	STDP_PARAMS->decay_term_tau_C = decay_term_tau_C;
 	STDP_PARAMS->decay_term_tau_D = decay_term_tau_D;
 	STDP_PARAMS->learning_rate_rho = learning_rate_rho;
-	evans_stdp = new EvansSTDPPlasticity(((SpikingSynapses *) conductance_spiking_synapses, (SpikingNeurons *) lif_spiking_neurons, (SpikingNeurons *) image_poisson_input_spiking_neurons, (stdp_parameters_struct *) STDP_PARAMS);
+	evans_stdp = new EvansSTDPPlasticity((SpikingSynapses *) conductance_spiking_synapses, (SpikingNeurons *) lif_spiking_neurons, (SpikingNeurons *) image_poisson_input_spiking_neurons, (stdp_plasticity_parameters_struct *) STDP_PARAMS);
 	AddPlasticityRule(evans_stdp);
 
 
