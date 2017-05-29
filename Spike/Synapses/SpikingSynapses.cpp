@@ -6,10 +6,10 @@ SpikingSynapses::~SpikingSynapses() {
   std::cout << "SpikingSynapses::~SpikingSynapses\n";
 #endif
   free(delays);
-  free(stdp);
+  free(plastic);
 
-  for (int stdp_id=0; stdp_id < stdp_synapse_number_per_rule.size(); stdp_id++){
-  	free(stdp_synapse_indices_per_rule[stdp_id]);
+  for (int plasticity_id=0; plasticity_id < plasticity_synapse_number_per_rule.size(); plasticity_id++){
+  	free(plasticity_synapse_indices_per_rule[plasticity_id]);
   }
 }
 
@@ -44,28 +44,28 @@ void SpikingSynapses::AddGroup(int presynaptic_group_id,
 	spiking_synapse_parameters_struct * spiking_synapse_group_params = (spiking_synapse_parameters_struct*)synapse_params;
 
 	// Store STDP Rule as necessary
-	int stdp_id = -1;
-	int original_num_stdp_indices = 0;
-	if (spiking_synapse_group_params->stdp_ptr != nullptr){
-		stdp_id = spiking_synapse_group_params->stdp_ptr->stdp_rule_id;
+	int plasticity_id = -1;
+	int original_num_plasticity_indices = 0;
+	if (spiking_synapse_group_params->plasticity_ptr != nullptr){
+		plasticity_id = spiking_synapse_group_params->plasticity_ptr->plasticity_rule_id;
 		// Store or recall STDP Pointer
 		// Check if this pointer has already been stored
-		if (stdp_id < 0){
-			stdp_id = stdp_rule_vec.size();
-			stdp_rule_vec.push_back(spiking_synapse_group_params->stdp_ptr);
+		if (plasticity_id < 0){
+			plasticity_id = plasticity_rule_vec.size();
+			plasticity_rule_vec.push_back(spiking_synapse_group_params->plasticity_ptr);
 			// Allocate space to store stdp indices
-			stdp_synapse_indices_per_rule.push_back(nullptr);
-			// stdp_synapse_indices_per_rule = (int**)realloc(stdp_synapse_indices_per_rule, stdp_rule_vec.size() * sizeof(int*));
-			// stdp_synapse_indices_per_rule[stdp_id] = nullptr;
-			stdp_synapse_number_per_rule.push_back(0);
+			plasticity_synapse_indices_per_rule.push_back(nullptr);
+			// plasticity_synapse_indices_per_rule = (int**)realloc(plasticity_synapse_indices_per_rule, plasticity_rule_vec.size() * sizeof(int*));
+			// plasticity_synapse_indices_per_rule[plasticity_id] = nullptr;
+			plasticity_synapse_number_per_rule.push_back(0);
 			// Apply ID to STDP class
-			spiking_synapse_group_params->stdp_ptr->stdp_rule_id = stdp_id;
+			spiking_synapse_group_params->plasticity_ptr->plasticity_rule_id = plasticity_id;
 		}
 
 		// Allocate memory for the new incoming synapses
-		original_num_stdp_indices = stdp_synapse_number_per_rule[stdp_id];
-		stdp_synapse_number_per_rule[stdp_id] += temp_number_of_synapses_in_last_group;
-		stdp_synapse_indices_per_rule[stdp_id] = (int*)realloc(stdp_synapse_indices_per_rule[stdp_id], stdp_synapse_number_per_rule[stdp_id] * sizeof(int));
+		original_num_plasticity_indices = plasticity_synapse_number_per_rule[plasticity_id];
+		plasticity_synapse_number_per_rule[plasticity_id] += temp_number_of_synapses_in_last_group;
+		plasticity_synapse_indices_per_rule[plasticity_id] = (int*)realloc(plasticity_synapse_indices_per_rule[plasticity_id], plasticity_synapse_number_per_rule[plasticity_id] * sizeof(int));
 	}
 
 	for (int i = (total_number_of_synapses - temp_number_of_synapses_in_last_group); i < total_number_of_synapses; i++){
@@ -102,10 +102,10 @@ void SpikingSynapses::AddGroup(int presynaptic_group_id,
 		}
 
 		//Set STDP on or off for synapse (now using stdp id)
-		stdp[i] = false;
-		if (stdp_id >= 0){
-			stdp[i] = true;
-			stdp_synapse_indices_per_rule[stdp_id][original_num_stdp_indices + (i  - (total_number_of_synapses - temp_number_of_synapses_in_last_group))] = i;
+		plastic[i] = false;
+		if (plasticity_id >= 0){
+			plastic[i] = true;
+			plasticity_synapse_indices_per_rule[plasticity_id][original_num_plasticity_indices + (i  - (total_number_of_synapses - temp_number_of_synapses_in_last_group))] = i;
 		}
 	}
 
@@ -113,7 +113,7 @@ void SpikingSynapses::AddGroup(int presynaptic_group_id,
 
 void SpikingSynapses::increment_number_of_synapses(int increment) {
   delays = (int*)realloc(delays, total_number_of_synapses * sizeof(int));
-  stdp = (bool*)realloc(stdp, total_number_of_synapses * sizeof(bool));
+  plastic = (bool*)realloc(plastic, total_number_of_synapses * sizeof(bool));
 }
 
 
@@ -122,16 +122,16 @@ void SpikingSynapses::shuffle_synapses() {
 	Synapses::shuffle_synapses();
 
 	int * temp_delays = (int *)malloc(total_number_of_synapses*sizeof(int));
-	bool * temp_stdp = (bool *)malloc(total_number_of_synapses*sizeof(bool));
+	bool * temp_plastic = (bool *)malloc(total_number_of_synapses*sizeof(bool));
 	for(int i = 0; i < total_number_of_synapses; i++) {
 
 		temp_delays[i] = delays[original_synapse_indices[i]];
-		temp_stdp[i] = stdp[original_synapse_indices[i]];
+		temp_plastic[i] = plastic[original_synapse_indices[i]];
 
 	}
 
 	delays = temp_delays;
-	stdp = temp_stdp;
+	plastic = temp_plastic;
 
 }
 

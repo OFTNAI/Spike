@@ -16,7 +16,7 @@
 // Get Synapses & Neurons Class
 #include "../Synapses/SpikingSynapses.hpp"
 #include "../Neurons/SpikingNeurons.hpp"
-#include "../STDP/STDP.hpp"
+#include "../Plasticity/STDP.hpp"
 
 // stdlib allows random numbers
 #include <stdlib.h>

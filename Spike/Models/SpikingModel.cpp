@@ -81,11 +81,11 @@ void SpikingModel::AddSynapseGroupsForNeuronGroupAndEachInputGroup(int postsynap
 }
 
 
-void SpikingModel::AddSTDPRule(STDP * stdp_rule){
+void SpikingModel::AddPlasticityRule(Plasticity * plasticity_rule){
 	// Adds the new STDP rule to the vector of STDP Rule
-	stdp_rule_vec.push_back(stdp_rule);
+	plasticity_rule_vec.push_back(plasticity_rule);
 	// Returns an ID corresponding to this STDP Rule
-	// return(stdp_rule_vec.size());
+	// return(plasticity_rule_vec.size());
 }
 
 
@@ -116,8 +116,8 @@ void SpikingModel::init_backend() {
   spiking_synapses->init_backend(context);
   spiking_neurons->init_backend(context);
   input_spiking_neurons->init_backend(context);
-  for (int stdp_id = 0; stdp_id < stdp_rule_vec.size(); stdp_id++){
-	stdp_rule_vec[stdp_id]->init_backend(context);
+  for (int plasticity_id = 0; plasticity_id < plasticity_rule_vec.size(); plasticity_id++){
+	plasticity_rule_vec[plasticity_id]->init_backend(context);
   }
 
   #ifndef SILENCE_MODEL_SETUP
@@ -132,8 +132,8 @@ void SpikingModel::prepare_backend() {
   context->params.maximum_axonal_delay_in_timesteps = spiking_synapses->maximum_axonal_delay_in_timesteps;
   spiking_neurons->prepare_backend();
   input_spiking_neurons->prepare_backend();
-  for (int stdp_id = 0; stdp_id < stdp_rule_vec.size(); stdp_id++){
-	stdp_rule_vec[stdp_id]->prepare_backend();
+  for (int plasticity_id = 0; plasticity_id < plasticity_rule_vec.size(); plasticity_id++){
+	plasticity_rule_vec[plasticity_id]->prepare_backend();
   }
 }
 
@@ -142,13 +142,13 @@ void SpikingModel::reset_state() {
   spiking_synapses->reset_state();
   spiking_neurons->reset_state();
   input_spiking_neurons->reset_state();
-  for (int stdp_id = 0; stdp_id < stdp_rule_vec.size(); stdp_id++){
-	stdp_rule_vec[stdp_id]->reset_state();
+  for (int plasticity_id = 0; plasticity_id < plasticity_rule_vec.size(); plasticity_id++){
+	plasticity_rule_vec[plasticity_id]->reset_state();
   }
 }
 
 
-void SpikingModel::perform_per_timestep_model_instructions(float current_time_in_seconds, bool apply_stdp_to_relevant_synapses){
+void SpikingModel::perform_per_timestep_model_instructions(float current_time_in_seconds, bool apply_plasticity_to_relevant_synapses){
 
 	spiking_neurons->update_membrane_potentials(timestep, current_time_in_seconds);
 	input_spiking_neurons->update_membrane_potentials(timestep, current_time_in_seconds);
@@ -162,9 +162,9 @@ void SpikingModel::perform_per_timestep_model_instructions(float current_time_in
 
 	spiking_synapses->calculate_postsynaptic_current_injection(spiking_neurons, current_time_in_seconds, timestep);
 
-	if (apply_stdp_to_relevant_synapses){
-		for (int stdp_id = 0; stdp_id < stdp_rule_vec.size(); stdp_id++){
-			stdp_rule_vec[stdp_id]->Run_STDP(current_time_in_seconds, timestep); // spiking_neurons, 
+	if (apply_plasticity_to_relevant_synapses){
+		for (int plasticity_id = 0; plasticity_id < plasticity_rule_vec.size(); plasticity_id++){
+			plasticity_rule_vec[plasticity_id]->Run_Plasticity(current_time_in_seconds, timestep); // spiking_neurons, 
 		}
 	}
 

@@ -57,7 +57,7 @@ namespace Backend {
       CudaSafeCall(cudaMemcpy(delays, frontend()->delays,
                               sizeof(int)*frontend()->total_number_of_synapses,
                               cudaMemcpyHostToDevice));
-      CudaSafeCall(cudaMemcpy(stdp, frontend()->stdp,
+      CudaSafeCall(cudaMemcpy(stdp, frontend()->plastic,
                               sizeof(bool)*frontend()->total_number_of_synapses,
                               cudaMemcpyHostToDevice));
     }

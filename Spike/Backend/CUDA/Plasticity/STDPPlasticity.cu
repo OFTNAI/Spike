@@ -18,9 +18,9 @@ namespace Backend {
         (frontend()->syns->backend());
 
       // Get the correct ID
-      int stdp_id = frontend()->stdp_rule_id;
-      if (stdp_id >= 0){
-        total_number_of_stdp_synapses = frontend()->syns->stdp_synapse_number_per_rule[stdp_id];
+      int plasticity_id = frontend()->plasticity_rule_id;
+      if (plasticity_id >= 0){
+        total_number_of_stdp_synapses = frontend()->syns->plasticity_synapse_number_per_rule[plasticity_id];
       } else {
         total_number_of_stdp_synapses = 0;
       }
@@ -32,7 +32,7 @@ namespace Backend {
       if (total_number_of_stdp_synapses > 0){
         CudaSafeCall(cudaMalloc((void **)&stdp_synapse_indices, sizeof(int)*total_number_of_stdp_synapses));
         CudaSafeCall(cudaMemcpy((void*)stdp_synapse_indices,
-                                (void*)frontend()->syns->stdp_synapse_indices_per_rule[frontend()->stdp_rule_id],
+                                (void*)frontend()->syns->plasticity_synapse_indices_per_rule[frontend()->plasticity_rule_id],
                                 sizeof(int)*total_number_of_stdp_synapses,
                                 cudaMemcpyHostToDevice));
       }

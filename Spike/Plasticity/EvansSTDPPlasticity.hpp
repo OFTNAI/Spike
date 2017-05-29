@@ -9,7 +9,7 @@
 
 // Get Synapses Class
 #include "../Synapses/Synapses.hpp"
-#include "../STDP/STDPPlasticity.hpp"
+#include "../Plasticity/STDPPlasticity.hpp"
 
 // stdlib allows random numbers
 #include <stdlib.h>
