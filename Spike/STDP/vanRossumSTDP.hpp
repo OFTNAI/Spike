@@ -64,7 +64,7 @@ public:
   int* index_of_first_synapse_spiked_after_postneuron = nullptr;
 
   void init_backend(Context* ctx = _global_ctx) override;
-  void prepare_backend_late();
+  void prepare_backend_late() override;
 
   // Set STDP Parameters
   void Set_STDP_Parameters(SpikingSynapses* synapses,

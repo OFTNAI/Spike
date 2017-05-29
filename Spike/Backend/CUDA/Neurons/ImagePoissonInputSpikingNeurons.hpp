@@ -25,7 +25,7 @@ namespace Backend {
       float * gabor_input_rates = nullptr;
 
       void allocate_device_pointers(); // Not virtual
-      void copy_rates_to_device(); // Not virtual
+      void copy_rates_to_device() override;
 
       void update_membrane_potentials(float timestep, float current_time_in_seconds) override;
     };

@@ -32,7 +32,7 @@ class SpikeAnalyser : public virtual SpikeBase {
 public:
   ~SpikeAnalyser() override;
   SPIKE_ADD_BACKEND_GETSET(SpikeAnalyser, SpikeBase);
-  void init_backend(Context* ctx = _global_ctx);
+  void init_backend(Context* ctx = _global_ctx) override;
   void reset_state() override;
 
   SpikeAnalyser(SpikingNeurons *neurons_parameter,

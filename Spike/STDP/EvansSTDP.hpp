@@ -57,7 +57,7 @@ public:
   float* recent_presynaptic_activities_C = nullptr;
 
   void init_backend(Context* ctx = _global_ctx) override;
-  void prepare_backend_late();
+  void prepare_backend_late() override;
 
   // Set STDP Parameters
   void Set_STDP_Parameters(SpikingSynapses* synapses, SpikingNeurons* neurons, SpikingNeurons* input_neurons, stdp_parameters_struct* stdp_parameters) override;

@@ -32,7 +32,7 @@ public:
   float * rates = nullptr;
   RandomStateManager * random_state_manager = nullptr;
 
-  void prepare_backend_early();
+  void prepare_backend_early() override;
 
   void set_up_rates();
 

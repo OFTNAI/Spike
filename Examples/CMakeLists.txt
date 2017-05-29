@@ -1,6 +1,5 @@
 foreach(example
-    CPUTest
-    TSCSOptimiseFourLayerVisionSpikingModelFiringRates
+    ExampleExperiment
     VogelsAbbotNet
     )
   add_executable(${example} ${example}.cpp)

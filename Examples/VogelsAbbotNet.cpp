@@ -25,27 +25,6 @@
 #include <string>
 #include <math.h>
 
-/*
-	When running simulations with the AdEx neuron type, I need a number of parameters:
-		membrane_capacitance_Cm
-		membrane_leakage_conductance_g0
-		leak_reversal_potential_E_Lo
-		slope_factor_Delta_T
-		adaptation_coupling_coefficient_a
-		adaptation_time_constant_tau_w
-		adaptation_change_b
-
-	In order to simply this AdEx model to a LIF neuron, we can:
-	(See: http://www.scholarpedia.org/article/Adaptive_exponential_integrate-and-fire_model)
-	-> Take the limit Delta_T => 0
-		-> To do this I shall introduce an if so we can set Delta_T = 0
-	-> Remove the adaptation variable w
-		-> Set adaption coupling coefficient a = 0
-		-> Set adaptation change on spike b = 0
-		-> Adaptation time constant does not have an effect, tau_w = 1 (we take the inverse so cannot be zero)
-
-*/
-
 
 int main (int argc, char *argv[]){
 #ifdef SPIKE_WITH_CUDA

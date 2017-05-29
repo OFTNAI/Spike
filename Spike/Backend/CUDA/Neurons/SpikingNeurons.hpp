@@ -22,7 +22,7 @@ namespace Backend {
       float* membrane_potentials_v;
       float* thresholds_for_action_potential_spikes;
       float* resting_potentials;
-      unsigned char * bitarray_of_neuron_spikes;
+      unsigned char * bitarray_of_neuron_spikes = nullptr;
 
       /**  
        *  Exclusively for the allocation of device memory. This class requires allocation of d_current_injections only.

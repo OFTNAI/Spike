@@ -159,7 +159,7 @@ public:
 	
 	// Functions
 
-	void CreateDirectoryForSimulationDataFiles(std::string directory_name_for_simulation_data_files);
+	static void CreateDirectoryForSimulationDataFiles(std::string directory_name_for_simulation_data_files);
 
 	void reset_all_recording_electrodes();
 
