@@ -1,7 +1,7 @@
-// Masquelier STDP Class Header
-// MasquelierSTDP.h
+// Masquelier STDPPlasticity Class Header
+// MasquelierSTDPPlasticity.h
 //
-// This STDP learning rule is extracted from the following paper:
+// This STDPPlasticity learning rule is extracted from the following paper:
 
 //	Timothee Masquelier, Rudy Guyonneau, and Simon J Thorpe. Spike timing 
 //	dependent plasticity finds the start of repeating patterns in continuous spike
@@ -18,7 +18,7 @@
 // Get Synapses & Neurons Class
 // #include "../Synapses/SpikingSynapses.hpp"
 // #include "../Neurons/SpikingNeurons.hpp"
-#include "../STDP/STDP.hpp"
+#include "../Plasticity/STDPPlasticity.hpp"
 
 // stdlib allows random numbers
 #include <stdlib.h>
@@ -27,20 +27,20 @@
 // allows maths
 #include <math.h>
 
-class MasquelierSTDP; // forward definition
+class MasquelierSTDPPlasticity; // forward definition
 
 namespace Backend {
-  class MasquelierSTDP : public virtual STDP {
+  class MasquelierSTDPPlasticity : public virtual STDPPlasticity {
   public:
-    SPIKE_ADD_BACKEND_FACTORY(MasquelierSTDP);
+    SPIKE_ADD_BACKEND_FACTORY(MasquelierSTDPPlasticity);
 
     virtual void apply_stdp_to_synapse_weights(float current_time_in_seconds) = 0;
   };
 }
 
-// STDP Parameters
-struct masquelier_stdp_parameters_struct : stdp_parameters_struct {
-  // STDP Parameters
+// STDPPlasticity Parameters
+struct masquelier_stdp_plasticity_parameters_struct : stdp_plasticity_parameters_struct {
+  // STDPPlasticity Parameters
   float a_minus = 0.85*0.03125;
   float a_plus = 0.03125;
   float tau_minus = 0.033;
@@ -48,12 +48,16 @@ struct masquelier_stdp_parameters_struct : stdp_parameters_struct {
 };
 
 
-class MasquelierSTDP : public STDP {
+class MasquelierSTDPPlasticity : public STDPPlasticity {
 public:
-  ~MasquelierSTDP() override;
-  SPIKE_ADD_BACKEND_GETSET(MasquelierSTDP, STDP);
+  MasquelierSTDPPlasticity(SpikingSynapses* synapses,
+                           SpikingNeurons* neurons,
+                           SpikingNeurons* input_neurons,
+                           stdp_plasticity_parameters_struct* stdp_parameters) override;
+  ~MasquelierSTDPPlasticity() override;
+  SPIKE_ADD_BACKEND_GETSET(MasquelierSTDPPlasticity, STDPPlasticity);
 
-  struct masquelier_stdp_parameters_struct* stdp_params = nullptr;
+  struct masquelier_stdp_plasticity_parameters_struct* stdp_params = nullptr;
 
   int* index_of_last_afferent_synapse_to_spike = nullptr;
   bool* isindexed_ltd_synapse_spike = nullptr;
@@ -62,19 +66,13 @@ public:
   void init_backend(Context* ctx = _global_ctx) override;
   void prepare_backend_late() override;
 
-  // Set STDP Parameters
-  void Set_STDP_Parameters(SpikingSynapses* synapses,
-                           SpikingNeurons* neurons,
-                           SpikingNeurons* input_neurons,
-                           stdp_parameters_struct* stdp_parameters) override;
-  // STDP
-  void Run_STDP(float current_time_in_seconds, float timestep) override;
+  void Run_Plasticity(float current_time_in_seconds, float timestep) override;
 
   // LTP & LTD for this model
   void apply_stdp_to_synapse_weights(float current_time_in_seconds);
 
 private:
-  std::shared_ptr<::Backend::MasquelierSTDP> _backend;
+  std::shared_ptr<::Backend::MasquelierSTDPPlasticity> _backend;
 };
 
 #endif
