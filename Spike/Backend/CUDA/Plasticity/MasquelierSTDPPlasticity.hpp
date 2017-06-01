@@ -33,7 +33,6 @@ namespace Backend {
     __global__ void masquelier_apply_stdp_to_synapse_weights_kernel
     (int* d_postsyns,
      float* d_last_spike_time_of_each_neuron,
-     bool* d_stdp,
      float* d_time_of_last_spike_to_reach_synapse,
      float* d_synaptic_efficacies_or_weights,
      int* d_index_of_last_afferent_synapse_to_spike,

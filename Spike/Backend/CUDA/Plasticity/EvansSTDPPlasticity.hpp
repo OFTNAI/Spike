@@ -40,7 +40,6 @@ namespace Backend {
     __global__ void update_presynaptic_activities_C_kernel
     (float* d_recent_presynaptic_activities_C,
      float* d_time_of_last_spike_to_reach_synapse,
-     bool* d_stdp,
      float timestep,
      float current_time_in_seconds,
      float synaptic_neurotransmitter_concentration_alpha_C,
@@ -56,7 +55,6 @@ namespace Backend {
      float current_time_in_seconds,
      float * d_time_of_last_spike_to_reach_synapse,
      float * d_last_spike_time_of_each_neuron,
-     bool* d_stdp,
      float learning_rate_rho,
      int* d_plastic_synapse_indices,
      size_t total_number_of_plastic_synapses);

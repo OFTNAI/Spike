@@ -61,7 +61,6 @@ namespace Backend {
     masquelier_apply_stdp_to_synapse_weights_kernel<<<neurons_backend->number_of_neuron_blocks_per_grid, neurons_backend->threads_per_block>>>
       (synapses_backend->postsynaptic_neuron_indices,
        neurons_backend->last_spike_time_of_each_neuron,
-       synapses_backend->stdp,
        synapses_backend->time_of_last_spike_to_reach_synapse,
        synapses_backend->synaptic_efficacies_or_weights,
        index_of_last_afferent_synapse_to_spike,
@@ -77,7 +76,6 @@ namespace Backend {
     __global__ void masquelier_apply_stdp_to_synapse_weights_kernel
     (int* d_postsyns,
      float* d_last_spike_time_of_each_neuron,
-     bool* d_stdp,
      float* d_time_of_last_spike_to_reach_synapse,
      float* d_synaptic_efficacies_or_weights,
      int* d_index_of_last_afferent_synapse_to_spike,
@@ -102,52 +100,50 @@ namespace Backend {
 
         // If we are to carry out STDP on LTP synapse
         if (index_of_LTP_synapse >= 0){
-          if(d_stdp[index_of_LTP_synapse]){
-            float last_syn_spike_time = d_time_of_last_spike_to_reach_synapse[index_of_LTP_synapse];
-            float last_neuron_spike_time = d_last_spike_time_of_each_neuron[idx];
-            float new_syn_weight = d_synaptic_efficacies_or_weights[index_of_LTP_synapse];
+          float last_syn_spike_time = d_time_of_last_spike_to_reach_synapse[index_of_LTP_synapse];
+          float last_neuron_spike_time = d_last_spike_time_of_each_neuron[idx];
+          float new_syn_weight = d_synaptic_efficacies_or_weights[index_of_LTP_synapse];
 
-            if (last_neuron_spike_time == currtime){
-              float diff = currtime - last_syn_spike_time;
-              // Only carry out LTP if the difference is greater than some range
-              if (diff < 7*stdp_vars.tau_plus && diff > 0){
-                float weightchange = stdp_vars.a_plus * expf(-diff / stdp_vars.tau_plus);
-                // Update weights
-                new_syn_weight += weightchange;
-                // Ensure that the weights are clipped to 1.0f
-                new_syn_weight = min(new_syn_weight, 1.0f);
-              }
+          if (last_neuron_spike_time == currtime){
+            float diff = currtime - last_syn_spike_time;
+            // Only carry out LTP if the difference is greater than some range
+            if (diff < 7*stdp_vars.tau_plus && diff > 0){
+              float weightchange = stdp_vars.a_plus * expf(-diff / stdp_vars.tau_plus);
+              // Update weights
+              new_syn_weight += weightchange;
+              // Ensure that the weights are clipped to 1.0f
+              new_syn_weight = min(new_syn_weight, 1.0f);
             }
-            // Update the synaptic weight as required
-            d_synaptic_efficacies_or_weights[index_of_LTP_synapse] = new_syn_weight;
           }
+          // Update the synaptic weight as required
+          d_synaptic_efficacies_or_weights[index_of_LTP_synapse] = new_syn_weight;
+         
         }
 
         // Get the synapse for LTD
         if (d_isindexed_ltd_synapse_spike[idx]){
           if (index_of_LTD_synapse >= 0){
-            if (d_stdp[index_of_LTD_synapse]){
 
-              float last_syn_spike_time = d_time_of_last_spike_to_reach_synapse[index_of_LTD_synapse];
-              float last_neuron_spike_time = d_last_spike_time_of_each_neuron[idx];
-              float new_syn_weight = d_synaptic_efficacies_or_weights[index_of_LTD_synapse];
+            float last_syn_spike_time = d_time_of_last_spike_to_reach_synapse[index_of_LTD_synapse];
+            float last_neuron_spike_time = d_last_spike_time_of_each_neuron[idx];
+            float new_syn_weight = d_synaptic_efficacies_or_weights[index_of_LTD_synapse];
 
-              // Set the index to negative (i.e. Reset it)
-              d_index_of_first_synapse_spiked_after_postneuron[idx] = -1;
+            // Set the index to negative (i.e. Reset it)
+            d_index_of_first_synapse_spiked_after_postneuron[idx] = -1;
 
-              float diff = last_syn_spike_time - last_neuron_spike_time;
-              // Only carry out LTD if the difference is in some range
-              if (diff < 7*stdp_vars.tau_minus && diff > 0){
-                float weightchange = stdp_vars.a_minus * expf(-diff / stdp_vars.tau_minus);
-                // Update the weights
-                new_syn_weight -= weightchange;
-                // Ensure that the weights are clipped to 0.0f
-                new_syn_weight = max(new_syn_weight, 0.0f);
-              }
-              d_synaptic_efficacies_or_weights[index_of_LTD_synapse] = new_syn_weight;
+            float diff = last_syn_spike_time - last_neuron_spike_time;
+            // Only carry out LTD if the difference is in some range
+            if (diff < 7*stdp_vars.tau_minus && diff > 0){
+            float weightchange = stdp_vars.a_minus * expf(-diff / stdp_vars.tau_minus);
+              // Update the weights
+              new_syn_weight -= weightchange;
+              // Ensure that the weights are clipped to 0.0f
+              new_syn_weight = max(new_syn_weight, 0.0f);
             }
+            d_synaptic_efficacies_or_weights[index_of_LTD_synapse] = new_syn_weight;
           }
         }
+      
         idx += blockDim.x * gridDim.x;
       }
       __syncthreads();

@@ -35,7 +35,6 @@ namespace Backend {
     (int* d_presyns,
      int* d_postsyns,
      float* d_last_spike_time_of_each_neuron,
-     bool* d_stdp,
      float* d_synaptic_efficacies_or_weights,
      float* vogels_memory_trace,
      struct vogels_stdp_plasticity_parameters_struct stdp_vars,

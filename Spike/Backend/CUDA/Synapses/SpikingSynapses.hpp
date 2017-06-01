@@ -18,7 +18,6 @@ namespace Backend {
     public:
       // Device pointers
       int* delays = nullptr;
-      bool* stdp = nullptr;
       int* spikes_travelling_to_synapse = nullptr;
       float* time_of_last_spike_to_reach_synapse = nullptr;
 

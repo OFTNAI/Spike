@@ -33,8 +33,6 @@ Synapses::~Synapses() {
   free(original_synapse_indices);
   free(synapse_postsynaptic_neuron_count_index);
 
-  free(plastic);
-
   for (int plasticity_id=0; plasticity_id < plasticity_synapse_number_per_rule.size(); plasticity_id++){
     free(plasticity_synapse_indices_per_rule[plasticity_id]);
   }
@@ -260,32 +258,36 @@ void Synapses::AddGroup(int presynaptic_group_id,
   // SETTING UP PLASTICITY
   int plasticity_id = -1;
   int original_num_plasticity_indices = 0;
-  if (synapse_params->plasticity_ptr != nullptr){
-    plasticity_id = synapse_params->plasticity_ptr->plasticity_rule_id;
-    // Store or recall STDP Pointer
-    // Check if this pointer has already been stored
-    if (plasticity_id < 0){
-      plasticity_id = plasticity_rule_vec.size();
-      plasticity_rule_vec.push_back(synapse_params->plasticity_ptr);
-      // Allocate space to store stdp indices
-      plasticity_synapse_indices_per_rule.push_back(nullptr);
-      // plasticity_synapse_indices_per_rule = (int**)realloc(plasticity_synapse_indices_per_rule, plasticity_rule_vec.size() * sizeof(int*));
-      // plasticity_synapse_indices_per_rule[plasticity_id] = nullptr;
-      plasticity_synapse_number_per_rule.push_back(0);
-      // Apply ID to STDP class
-      synapse_params->plasticity_ptr->plasticity_rule_id = plasticity_id;
-    }
+  if (synapse_params->plasticity_vec.size() > 0){
+    for (int vecid = 0; vecid < synapse_params->plasticity_vec.size(); vecid++){
+      Plasticity* plasticity_ptr = synapse_params->plasticity_vec[vecid];
+      // Check first for nullptr
+      if (plasticity_ptr == nullptr)
+	continue;
 
-    // Allocate memory for the new incoming synapses
-    original_num_plasticity_indices = plasticity_synapse_number_per_rule[plasticity_id];
-    plasticity_synapse_number_per_rule[plasticity_id] += temp_number_of_synapses_in_last_group;
-    plasticity_synapse_indices_per_rule[plasticity_id] = (int*)realloc(plasticity_synapse_indices_per_rule[plasticity_id], plasticity_synapse_number_per_rule[plasticity_id] * sizeof(int));
+      plasticity_id = plasticity_ptr->plasticity_rule_id;
+      // Store or recall STDP Pointer
+      // Check if this pointer has already been stored
+      if (plasticity_id < 0){
+        plasticity_id = plasticity_rule_vec.size();
+        plasticity_rule_vec.push_back(plasticity_ptr);
+        // Allocate space to store stdp indices
+        plasticity_synapse_indices_per_rule.push_back(nullptr);
+        // plasticity_synapse_indices_per_rule = (int**)realloc(plasticity_synapse_indices_per_rule, plasticity_rule_vec.size() * sizeof(int*));
+        // plasticity_synapse_indices_per_rule[plasticity_id] = nullptr;
+        plasticity_synapse_number_per_rule.push_back(0);
+        // Apply ID to STDP class
+        plasticity_ptr->plasticity_rule_id = plasticity_id;
+      }
 
-    for (int i = (total_number_of_synapses - temp_number_of_synapses_in_last_group); i < total_number_of_synapses; i++){
-      //Set STDP on or off for synapse (now using stdp id)
-      plastic[i] = false;
-      if (plasticity_id >= 0){
-        plastic[i] = true;
+
+      // Allocate memory for the new incoming synapses
+      original_num_plasticity_indices = plasticity_synapse_number_per_rule[plasticity_id];
+      plasticity_synapse_number_per_rule[plasticity_id] += temp_number_of_synapses_in_last_group;
+      plasticity_synapse_indices_per_rule[plasticity_id] = (int*)realloc(plasticity_synapse_indices_per_rule[plasticity_id], plasticity_synapse_number_per_rule[plasticity_id] * sizeof(int));
+
+      for (int i = (total_number_of_synapses - temp_number_of_synapses_in_last_group); i < total_number_of_synapses; i++){
+        //Set STDP on or off for synapse (now using stdp id)
         plasticity_synapse_indices_per_rule[plasticity_id][original_num_plasticity_indices + (i  - (total_number_of_synapses - temp_number_of_synapses_in_last_group))] = i;
       }
     }
@@ -316,8 +318,6 @@ void Synapses::increment_number_of_synapses(int increment) {
     if (temp_original_synapse_indices != nullptr) original_synapse_indices = temp_original_synapse_indices;
     if (temp_synapse_postsynaptic_neuron_count_index != nullptr) synapse_postsynaptic_neuron_count_index = temp_synapse_postsynaptic_neuron_count_index;
   }
-
-  plastic = (bool*)realloc(plastic, total_number_of_synapses * sizeof(bool));
 
 }
 

@@ -8,7 +8,6 @@ namespace Backend {
     SpikingSynapses::~SpikingSynapses() {
       CudaSafeCall(cudaFree(delays));
       CudaSafeCall(cudaFree(spikes_travelling_to_synapse));
-      CudaSafeCall(cudaFree(stdp));
       CudaSafeCall(cudaFree(time_of_last_spike_to_reach_synapse));
 #ifdef CRAZY_DEBUG
       std::cout << "\n!!!!!!!!!!!!!!!!!!!!---BBBBBB---!!!!!!!!!!!!!!!!!!!\n";
@@ -47,7 +46,6 @@ namespace Backend {
 
     void SpikingSynapses::allocate_device_pointers() {
       CudaSafeCall(cudaMalloc((void **)&delays, sizeof(int)*frontend()->total_number_of_synapses));
-      CudaSafeCall(cudaMalloc((void **)&stdp, sizeof(bool)*frontend()->total_number_of_synapses));
 
       CudaSafeCall(cudaMalloc((void **)&spikes_travelling_to_synapse, sizeof(int)*frontend()->total_number_of_synapses));
       CudaSafeCall(cudaMalloc((void **)&time_of_last_spike_to_reach_synapse, sizeof(float)*frontend()->total_number_of_synapses));
@@ -56,9 +54,6 @@ namespace Backend {
     void SpikingSynapses::copy_constants_and_initial_efficacies_to_device() {
       CudaSafeCall(cudaMemcpy(delays, frontend()->delays,
                               sizeof(int)*frontend()->total_number_of_synapses,
-                              cudaMemcpyHostToDevice));
-      CudaSafeCall(cudaMemcpy(stdp, frontend()->plastic,
-                              sizeof(bool)*frontend()->total_number_of_synapses,
                               cudaMemcpyHostToDevice));
     }
 

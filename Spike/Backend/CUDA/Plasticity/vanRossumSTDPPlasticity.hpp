@@ -37,7 +37,6 @@ namespace Backend {
 
     __global__ void vanrossum_pretrace_and_ltd
           (int* d_postsyns,
-           bool* d_stdp,
            float* d_time_of_last_spike_to_reach_synapse,
            float* d_synaptic_efficacies_or_weights,
            float* stdp_pre_memory_trace,
@@ -51,7 +50,6 @@ namespace Backend {
     __global__ void vanrossum_posttrace_and_ltp
     (int* d_postsyns,
      float* d_last_spike_time_of_each_neuron,
-     bool* d_stdp,
      float* d_synaptic_efficacies_or_weights,
      float* stdp_pre_memory_trace,
      float* stdp_post_memory_trace,
@@ -65,7 +63,6 @@ namespace Backend {
     __global__ void vanrossum_apply_stdp_to_synapse_weights_kernel_nearest
     (int* d_postsyns,
      float* d_last_spike_time_of_each_neuron,
-     bool* d_stdp,
      float* d_time_of_last_spike_to_reach_synapse,
      float* d_synaptic_efficacies_or_weights,
      int* d_index_of_last_afferent_synapse_to_spike,

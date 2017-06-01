@@ -82,7 +82,7 @@ struct synapse_parameters_struct {
   float weight_range_top = 1.0;
   float random_connectivity_probability;
   int connectivity_type = CONNECTIVITY_TYPE_ALL_TO_ALL;
-  Plasticity * plasticity_ptr = nullptr;
+  std::vector<Plasticity*> plasticity_vec;
 };
 
 /*!
@@ -116,7 +116,6 @@ public:
   int* original_synapse_indices = nullptr;                  /**< Indices by which to order the presynaptic and postsynaptic neuron IDs if a shuffle is carried out */
   int* synapse_postsynaptic_neuron_count_index = nullptr;   /**< An array of the number of incoming synapses to each postsynaptic neuron */
   float* synaptic_efficacies_or_weights = nullptr;          /**< An array of synaptic efficacies/weights accompanying the pre/postsynaptic_neuron_indices */
-  bool* plastic = nullptr;                                  /**< An array of boolean values to indicate plasticity or not */
   std::vector<int*> plasticity_synapse_indices_per_rule;    /**< A vector (host-side) which contains the list of synapse ids that each corresponding plasticity rule must be applied to */
 
   // Functions

@@ -87,16 +87,13 @@ void SpikingSynapses::shuffle_synapses() {
 	Synapses::shuffle_synapses();
 
 	int * temp_delays = (int *)malloc(total_number_of_synapses*sizeof(int));
-	bool * temp_plastic = (bool *)malloc(total_number_of_synapses*sizeof(bool));
 	for(int i = 0; i < total_number_of_synapses; i++) {
 
 		temp_delays[i] = delays[original_synapse_indices[i]];
-		temp_plastic[i] = plastic[original_synapse_indices[i]];
 
 	}
 
 	delays = temp_delays;
-	plastic = temp_plastic;
 
 }
 

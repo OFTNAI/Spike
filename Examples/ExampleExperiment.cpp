@@ -120,7 +120,8 @@ int main (int argc, char *argv[]){
 		// CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE
 		// CONNECTIVITY_TYPE_SINGLE
 	input_to_excitatory_parameters->connectivity_type = CONNECTIVITY_TYPE_ALL_TO_ALL;
-	input_to_excitatory_parameters->plasticity_ptr = norm_plasticity;
+	input_to_excitatory_parameters->plasticity_vec.push_back(evans_stdp);
+	input_to_excitatory_parameters->plasticity_vec.push_back(norm_plasticity);
 
 	// Creating a set of synapse parameters for connections from the excitatory neurons to the inhibitory neurons
 	spiking_synapse_parameters_struct * excitatory_to_inhibitory_parameters = new spiking_synapse_parameters_struct();
@@ -129,7 +130,7 @@ int main (int argc, char *argv[]){
 	excitatory_to_inhibitory_parameters->delay_range[0] = 5.0*timestep;
 	excitatory_to_inhibitory_parameters->delay_range[1] = 3.0f*pow(10, -3);
 	excitatory_to_inhibitory_parameters->connectivity_type = CONNECTIVITY_TYPE_ONE_TO_ONE;
-	excitatory_to_inhibitory_parameters->plasticity_ptr = nullptr;
+	excitatory_to_inhibitory_parameters->plasticity_vec.push_back(nullptr);
 
 	// Creating a set of synapse parameters from the inhibitory neurons to the excitatory neurons
 	spiking_synapse_parameters_struct * inhibitory_to_excitatory_parameters = new spiking_synapse_parameters_struct();
@@ -138,7 +139,7 @@ int main (int argc, char *argv[]){
 	inhibitory_to_excitatory_parameters->delay_range[0] = 5.0*timestep;
 	inhibitory_to_excitatory_parameters->delay_range[1] = 3.0f*pow(10, -3);
 	inhibitory_to_excitatory_parameters->connectivity_type = CONNECTIVITY_TYPE_ALL_TO_ALL;
-	inhibitory_to_excitatory_parameters->plasticity_ptr = nullptr;
+	inhibitory_to_excitatory_parameters->plasticity_vec.push_back(nullptr);
 	
 
 	// CREATING SYNAPSES
