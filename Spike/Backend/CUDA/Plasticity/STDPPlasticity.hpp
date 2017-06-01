@@ -12,7 +12,8 @@
 
 namespace Backend {
   namespace CUDA {
-    class STDPPlasticity : public virtual ::Backend::STDPPlasticity {
+    class STDPPlasticity : public virtual ::Backend::CUDA::Plasticity,
+			public virtual ::Backend::STDPPlasticity {
     public:
       ~STDPPlasticity() override;
       using ::Backend::STDPPlasticity::frontend;

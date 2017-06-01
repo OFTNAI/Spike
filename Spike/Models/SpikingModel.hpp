@@ -13,6 +13,7 @@
 #include "../Plasticity/MasquelierSTDPPlasticity.hpp"
 #include "../Plasticity/vanRossumSTDPPlasticity.hpp"
 #include "../Plasticity/VogelsSTDPPlasticity.hpp"
+#include "../Plasticity/WeightNormSpikingPlasticity.hpp"
 #include "../Neurons/Neurons.hpp"
 #include "../Neurons/SpikingNeurons.hpp"
 #include "../Neurons/LIFSpikingNeurons.hpp"

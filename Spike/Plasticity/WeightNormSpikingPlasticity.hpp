@@ -7,7 +7,7 @@
 #ifndef SPIKINGWEIGHTNORMPLASTICITY_H
 #define SPIKINGWEIGHTNORMPLASTICITY_H
 
-class SpikingWeightNormPlasticity; // forward definition
+class WeightNormSpikingPlasticity; // forward definition
 
 #include "Spike/Backend/Macros.hpp"
 #include "Spike/Backend/Context.hpp"
@@ -26,19 +26,19 @@ class SpikingWeightNormPlasticity; // forward definition
 #include <math.h>
 
 namespace Backend {
-  class SpikingWeightNormPlasticity : public virtual Plasticity {
+  class WeightNormSpikingPlasticity : public virtual Plasticity {
   public:
-    SPIKE_ADD_BACKEND_FACTORY(SpikingWeightNormPlasticity);
-    ~SpikingWeightNormPlasticity() override = default;
+    SPIKE_ADD_BACKEND_FACTORY(WeightNormSpikingPlasticity);
+    ~WeightNormSpikingPlasticity() override = default;
 
     void weight_normalization();
   };
 }
 
-static_assert(std::has_virtual_destructor<Backend::SpikingWeightNormPlasticity>::value,
+static_assert(std::has_virtual_destructor<Backend::WeightNormSpikingPlasticity>::value,
               "contract violated");
 
-// SpikingWeightNormPlasticity Parameters
+// WeightNormSpikingPlasticity Parameters
 struct weightnorm_spiking_plasticity_parameters_struct : plasticity_parameters_struct {
 	weightnorm_spiking_plasticity_parameters_struct() {}
 	// The normalization can be either done with the initialized total or with a specific target
@@ -47,12 +47,12 @@ struct weightnorm_spiking_plasticity_parameters_struct : plasticity_parameters_s
 };
 
 
-class SpikingWeightNormPlasticity : public Plasticity {
+class WeightNormSpikingPlasticity : public Plasticity {
 public:
-  SpikingWeightNormPlasticity(SpikingSynapses* synapses, SpikingNeurons* neurons, SpikingNeurons* input_neurons, plasticity_parameters_struct* parameters);
-  ~SpikingWeightNormPlasticity() override;
+  WeightNormSpikingPlasticity(SpikingSynapses* synapses, SpikingNeurons* neurons, SpikingNeurons* input_neurons, plasticity_parameters_struct* parameters);
+  ~WeightNormSpikingPlasticity() override;
 
-  SPIKE_ADD_BACKEND_GETSET(SpikingWeightNormPlasticity, SpikeBase);
+  SPIKE_ADD_BACKEND_GETSET(WeightNormSpikingPlasticity, SpikeBase);
   void reset_state() override;
 
   weightnorm_spiking_plasticity_parameters_struct* plasticity_parameters = nullptr;
@@ -60,14 +60,15 @@ public:
   SpikingNeurons* neurs = nullptr;
 
   float* total_afferent_synapse_initial = nullptr;
-  float* total_afferent_synapse_changes = nullptr;
+  float* afferent_synapse_changes = nullptr;
+  bool* neuron_in_set = nullptr;
 
   void init_backend(Context* ctx = _global_ctx) override;
   void prepare_backend_early() override;
   virtual void Run_Plasticity(float current_time_in_seconds, float timestep) override;
 
 private:
-  std::shared_ptr<::Backend::SpikingWeightNormPlasticity> _backend;
+  std::shared_ptr<::Backend::WeightNormSpikingPlasticity> _backend;
 };
 
 #endif
