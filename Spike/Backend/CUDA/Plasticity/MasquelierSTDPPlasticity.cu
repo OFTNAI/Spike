@@ -54,8 +54,8 @@ namespace Backend {
        isindexed_ltd_synapse_spike,
        index_of_first_synapse_spiked_after_postneuron,
        current_time_in_seconds,
-       stdp_synapse_indices,
-       total_number_of_stdp_synapses);
+       plastic_synapse_indices,
+       total_number_of_plastic_synapses);
     CudaCheckError();
 
     masquelier_apply_stdp_to_synapse_weights_kernel<<<neurons_backend->number_of_neuron_blocks_per_grid, neurons_backend->threads_per_block>>>
@@ -161,13 +161,13 @@ namespace Backend {
      bool* d_isindexed_ltd_synapse_spike,
      int* d_index_of_first_synapse_spiked_after_postneuron,
      float currtime,
-     int* d_stdp_synapse_indices,
-     size_t total_number_of_stdp_synapses){
+     int* d_plastic_synapse_indices,
+     size_t total_number_of_plastic_synapses){
       int indx = threadIdx.x + blockIdx.x * blockDim.x;
 
       // Running through all neurons:
-      while (indx < total_number_of_stdp_synapses){
-        int idx = d_stdp_synapse_indices[indx];
+      while (indx < total_number_of_plastic_synapses){
+        int idx = d_plastic_synapse_indices[indx];
         int postsynaptic_neuron = d_postsyns[idx];
 
         // Check whether a synapse reached a neuron this timestep

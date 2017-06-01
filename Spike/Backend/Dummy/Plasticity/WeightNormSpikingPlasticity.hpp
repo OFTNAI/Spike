@@ -10,7 +10,7 @@ namespace Backend {
 			   public virtual ::Backend::WeightNormSpikingPlasticity {
     public:
       void prepare() override;
-      void weight_normalization();
+      void weight_normalization() override;
       void reset_state() override;
     };
   }

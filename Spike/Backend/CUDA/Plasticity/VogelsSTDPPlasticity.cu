@@ -53,8 +53,8 @@ namespace Backend {
        *(frontend()->stdp_params),
        current_time_in_seconds,
        timestep,
-       stdp_synapse_indices,
-       total_number_of_stdp_synapses);
+       plastic_synapse_indices,
+       total_number_of_plastic_synapses);
     CudaCheckError();
     }
 
@@ -69,15 +69,15 @@ namespace Backend {
      struct vogels_stdp_plasticity_parameters_struct stdp_vars,
      float currtime,
      float timestep,
-     int* d_stdp_synapse_indices,
-     size_t total_number_of_stdp_synapses){
+     int* d_plastic_synapse_indices,
+     size_t total_number_of_plastic_synapses){
       // Global Index
       int indx = threadIdx.x + blockIdx.x * blockDim.x;
 
       // Running though all stdp synapses
-      while (indx < total_number_of_stdp_synapses){
+      while (indx < total_number_of_plastic_synapses){
         // Getting an index for the correct synapse
-        int idx = d_stdp_synapse_indices[indx];
+        int idx = d_plastic_synapse_indices[indx];
 
         // Find the pre and post synaptic neuron ids:
         int pre_neuron_id = d_presyns[idx];

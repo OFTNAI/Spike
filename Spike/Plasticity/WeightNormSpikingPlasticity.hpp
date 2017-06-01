@@ -29,9 +29,8 @@ namespace Backend {
   class WeightNormSpikingPlasticity : public virtual Plasticity {
   public:
     SPIKE_ADD_BACKEND_FACTORY(WeightNormSpikingPlasticity);
-    ~WeightNormSpikingPlasticity() override = default;
 
-    void weight_normalization();
+    virtual void weight_normalization() = 0;
   };
 }
 
@@ -61,7 +60,7 @@ public:
 
   float* total_afferent_synapse_initial = nullptr;
   float* afferent_synapse_changes = nullptr;
-  bool* neuron_in_set = nullptr;
+  bool* neuron_in_plasticity_set = nullptr;
 
   void init_backend(Context* ctx = _global_ctx) override;
   void prepare_backend_early() override;

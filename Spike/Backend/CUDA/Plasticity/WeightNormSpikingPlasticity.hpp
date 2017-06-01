@@ -21,7 +21,10 @@ namespace Backend {
       SPIKE_MAKE_BACKEND_CONSTRUCTOR(WeightNormSpikingPlasticity);
       using ::Backend::WeightNormSpikingPlasticity::frontend;
 
-      bool* neuron_in_set = nullptr;
+      int total_number_of_plastic_synapses = 0;
+      int* plastic_synapse_indices = nullptr;
+
+      bool* neuron_in_plasticity_set = nullptr;
       float* total_afferent_synapse_initial = nullptr;
       float* afferent_synapse_changes = nullptr;
 
@@ -32,16 +35,24 @@ namespace Backend {
       void reset_state() override;
 
       void allocate_device_pointers();
-      void weight_normalization();
+      virtual void weight_normalization() ovverride;
 
     protected:
-      ::Backend::CUDA::SpikingNeurons* neurons_backend = nullptr;
-      ::Backend::CUDA::SpikingSynapses* synapses_backend = nullptr;
+      ::Backend::CUDA::Synapses* synapses_backend = nullptr;
 
     };
 
   // CUDA Kernel for calculating synapse changes
-  __global__ void weight_norm_change_detection
+  __global__ void weight_change_calculations
+	(float* current_weight,
+	 float* initial_weights,
+         float* weight_changes,
+	 int* d_plastic_synapse_indices,
+	 size_t total_number_of_plastic_synapses);
+
+
+  // CUDA Kernel for weight change summation
+  
 
 
   }

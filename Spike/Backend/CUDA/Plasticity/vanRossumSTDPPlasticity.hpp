@@ -45,8 +45,8 @@ namespace Backend {
            struct vanrossum_stdp_plasticity_parameters_struct stdp_vars,
            float timestep,
            float current_time_in_seconds,
-           int* d_stdp_synapse_indices,
-           size_t total_number_of_stdp_synapses);
+           int* d_plastic_synapse_indices,
+           size_t total_number_of_plastic_synapses);
 
     __global__ void vanrossum_posttrace_and_ltp
     (int* d_postsyns,
@@ -58,8 +58,8 @@ namespace Backend {
      struct vanrossum_stdp_plasticity_parameters_struct stdp_vars,
      float timestep,
      float current_time_in_seconds,
-     int* d_stdp_synapse_indices,
-     size_t total_number_of_stdp_synapses);
+     int* d_plastic_synapse_indices,
+     size_t total_number_of_plastic_synapses);
     
 
     __global__ void vanrossum_apply_stdp_to_synapse_weights_kernel_nearest
@@ -83,7 +83,7 @@ namespace Backend {
      bool* d_isindexed_ltd_synapse_spike,
      int* d_index_of_first_synapse_spiked_after_postneuron,
      float currtime,
-     int* d_stdp_synapse_indices,
-     size_t total_number_of_stdp_synapses);
+     int* d_plastic_synapse_indices,
+     size_t total_number_of_plastic_synapses);
   }
 }

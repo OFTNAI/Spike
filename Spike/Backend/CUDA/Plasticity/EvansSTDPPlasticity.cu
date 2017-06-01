@@ -49,8 +49,8 @@ namespace Backend {
          neurons_backend->last_spike_time_of_each_neuron,
          synapses_backend->stdp,
          frontend()->stdp_params->learning_rate_rho,
-         stdp_synapse_indices,
-         total_number_of_stdp_synapses); // Here learning_rate_rho represents timestep/tau_delta_g in finite difference equation
+         plastic_synapse_indices,
+         total_number_of_plastic_synapses); // Here learning_rate_rho represents timestep/tau_delta_g in finite difference equation
 
       CudaCheckError();
     }
@@ -64,8 +64,8 @@ namespace Backend {
          current_time_in_seconds,
          frontend()->stdp_params->synaptic_neurotransmitter_concentration_alpha_C,
          frontend()->stdp_params->decay_term_tau_C,
-         stdp_synapse_indices,
-         total_number_of_stdp_synapses);
+         plastic_synapse_indices,
+         total_number_of_plastic_synapses);
 
       CudaCheckError();
     }
@@ -122,12 +122,12 @@ namespace Backend {
      float current_time_in_seconds,
      float synaptic_neurotransmitter_concentration_alpha_C,
      float decay_term_tau_C,
-     int* d_stdp_synapse_indices,
-     size_t total_number_of_stdp_synapses) {
+     int* d_plastic_synapse_indices,
+     size_t total_number_of_plastic_synapses) {
 
       int indx = threadIdx.x + blockIdx.x * blockDim.x;
-      while (indx < total_number_of_stdp_synapses) {
-        int idx = d_stdp_synapse_indices[indx];
+      while (indx < total_number_of_plastic_synapses) {
+        int idx = d_plastic_synapse_indices[indx];
 
         if (d_stdp[idx] == true) {
 
@@ -161,13 +161,13 @@ namespace Backend {
      float * d_last_spike_time_of_each_neuron,
      bool* d_stdp,
      float learning_rate_rho,
-     int* d_stdp_synapse_indices,
-     size_t total_number_of_stdp_synapses) {
+     int* d_plastic_synapse_indices,
+     size_t total_number_of_plastic_synapses) {
 
       int indx = threadIdx.x + blockIdx.x * blockDim.x;
 
-      while (indx < total_number_of_stdp_synapses) {
-        int idx = d_stdp_synapse_indices[indx];
+      while (indx < total_number_of_plastic_synapses) {
+        int idx = d_plastic_synapse_indices[indx];
 
         if (d_stdp[idx] == true) {
 

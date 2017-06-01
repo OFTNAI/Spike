@@ -45,8 +45,8 @@ namespace Backend {
      float current_time_in_seconds,
      float synaptic_neurotransmitter_concentration_alpha_C,
      float decay_term_tau_C,
-     int* d_stdp_synapse_indices,
-     size_t total_number_of_stdp_synapses);
+     int* d_plastic_synapse_indices,
+     size_t total_number_of_plastic_synapses);
 
     __global__ void update_synaptic_efficacies_or_weights_kernel
     (float * d_recent_presynaptic_activities_C,
@@ -58,8 +58,8 @@ namespace Backend {
      float * d_last_spike_time_of_each_neuron,
      bool* d_stdp,
      float learning_rate_rho,
-     int* d_stdp_synapse_indices,
-     size_t total_number_of_stdp_synapses);
+     int* d_plastic_synapse_indices,
+     size_t total_number_of_plastic_synapses);
 
   }
 }

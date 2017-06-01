@@ -41,8 +41,8 @@ namespace Backend {
      struct vogels_stdp_plasticity_parameters_struct stdp_vars,
      float currtime,
      float timestep,
-     int* d_stdp_synapse_indices,
-     size_t total_number_of_stdp_synapses);
+     int* d_plastic_synapse_indices,
+     size_t total_number_of_plastic_synapses);
 
     __global__ void vogels_update_memory_trace
     (float* d_last_spike_time_of_each_neuron,

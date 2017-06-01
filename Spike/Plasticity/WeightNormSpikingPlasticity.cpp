@@ -1,6 +1,6 @@
 #include "WeightNormSpikingPlasticity.hpp"
 
-WeightNormSpikingPlasticity::WeightNormSpikingPlasticity(SpikingSynapses* synapses, SpikingNeurons* neurons, SpikingNeurons input_neurons, plasticity_parameters_struct* parameters){
+WeightNormSpikingPlasticity::WeightNormSpikingPlasticity(SpikingSynapses* synapses, SpikingNeurons* neurons, SpikingNeurons* input_neurons, plasticity_parameters_struct* parameters){
 	
 	plasticity_parameters = (weightnorm_spiking_plasticity_parameters_struct*) parameters;
 	syns = synapses;
@@ -8,7 +8,7 @@ WeightNormSpikingPlasticity::WeightNormSpikingPlasticity(SpikingSynapses* synaps
 
 }
 
-~WeightNormSpikingPlasticity::WeightNormSpikingPlasticity(){
+WeightNormSpikingPlasticity::~WeightNormSpikingPlasticity(){
 	free(total_afferent_synapse_initial);
 	free(afferent_synapse_changes);
 	free(neuron_in_plasticity_set);
@@ -26,7 +26,7 @@ void WeightNormSpikingPlasticity::reset_state() {
 void WeightNormSpikingPlasticity::prepare_backend_early(){
   // By making use of the neuron and synapses, I can determine which weights are contributing to the calculation to be done
   if (syns && neurs && plasticity_parameters) {
-	total_afferent_synapse_intial = (float*) malloc (neurs->total_number_of_neurons*sizeof(float));
+	total_afferent_synapse_initial = (float*) malloc (neurs->total_number_of_neurons*sizeof(float));
 	afferent_synapse_changes = (float*) malloc (neurs->total_number_of_neurons*sizeof(float));
 	neuron_in_plasticity_set = (bool*) malloc (neurs->total_number_of_neurons*sizeof(bool));
 	// Initialize the above values to -1, Only those neurons involved in the weight normalization rule should be counted.

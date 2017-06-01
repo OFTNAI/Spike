@@ -51,7 +51,7 @@ namespace Backend {
      bool* d_isindexed_ltd_synapse_spike,
      int* d_index_of_first_synapse_spiked_after_postneuron,
      float currtime,
-     int* d_stdp_synapse_indices,
-     size_t total_number_of_stdp_synapses);
+     int* d_plastic_synapse_indices,
+     size_t total_number_of_plastic_synapses);
   }
 }

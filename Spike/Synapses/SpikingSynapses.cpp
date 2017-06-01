@@ -6,11 +6,7 @@ SpikingSynapses::~SpikingSynapses() {
   std::cout << "SpikingSynapses::~SpikingSynapses\n";
 #endif
   free(delays);
-  free(plastic);
 
-  for (int plasticity_id=0; plasticity_id < plasticity_synapse_number_per_rule.size(); plasticity_id++){
-  	free(plasticity_synapse_indices_per_rule[plasticity_id]);
-  }
 }
 
 // Connection Detail implementation
