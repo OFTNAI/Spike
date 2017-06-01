@@ -47,11 +47,15 @@ int main (int argc, char *argv[]){
 	evans_stdp_plasticity_parameters_struct * STDP_PARAMS = new evans_stdp_plasticity_parameters_struct();	// You can use the default Values
 	EvansSTDPPlasticity * evans_stdp = new EvansSTDPPlasticity((SpikingSynapses *) current_spiking_synapses, (SpikingNeurons *) lif_spiking_neurons, (SpikingNeurons *) generator_input_neurons, (stdp_plasticity_parameters_struct *) STDP_PARAMS);
 
+	weightnorm_spiking_plasticity_parameters_struct * NORM_PARAMS = new weightnorm_spiking_plasticity_parameters_struct();
+	WeightNormSpikingPlasticity * norm_plasticity = new WeightNormSpikingPlasticity((SpikingSynapses *) current_spiking_synapses, (SpikingNeurons *) lif_spiking_neurons, (SpikingNeurons *) generator_input_neurons, (stdp_plasticity_parameters_struct *) NORM_PARAMS);
+
 	// Allocate your chosen components to the simulator
 	ExampleModel->input_spiking_neurons = generator_input_neurons;
 	ExampleModel->spiking_neurons = lif_spiking_neurons;
 	ExampleModel->spiking_synapses = current_spiking_synapses;
 	ExampleModel->AddPlasticityRule(evans_stdp);
+	ExampleModel->AddPlasticityRule(norm_plasticity);
 
 	/*
 			SETUP PROPERTIES AND CREATE NETWORK:
@@ -116,7 +120,7 @@ int main (int argc, char *argv[]){
 		// CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE
 		// CONNECTIVITY_TYPE_SINGLE
 	input_to_excitatory_parameters->connectivity_type = CONNECTIVITY_TYPE_ALL_TO_ALL;
-	input_to_excitatory_parameters->plasticity_ptr = evans_stdp;
+	input_to_excitatory_parameters->plasticity_ptr = norm_plasticity;
 
 	// Creating a set of synapse parameters for connections from the excitatory neurons to the inhibitory neurons
 	spiking_synapse_parameters_struct * excitatory_to_inhibitory_parameters = new spiking_synapse_parameters_struct();

@@ -5,4 +5,5 @@ CUDA_ADD_LIBRARY (SpikeCUDAPlasticity
   MasquelierSTDPPlasticity.cu
   vanRossumSTDPPlasticity.cu
   VogelsSTDPPlasticity.cu
+  WeightNormSpikingPlasticity.cu
   STATIC)

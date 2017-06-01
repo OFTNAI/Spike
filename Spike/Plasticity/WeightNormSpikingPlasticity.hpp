@@ -58,8 +58,8 @@ public:
   SpikingSynapses* syns = nullptr;
   SpikingNeurons* neurs = nullptr;
 
-  float* total_afferent_synapse_initial = nullptr;
-  float* afferent_synapse_changes = nullptr;
+  float* sum_squared_afferent_values = nullptr;
+  float* afferent_weight_change_updater = nullptr;
   bool* neuron_in_plasticity_set = nullptr;
 
   void init_backend(Context* ctx = _global_ctx) override;
