@@ -78,6 +78,10 @@ namespace Backend {
 
     void WeightNormSpikingPlasticity::weight_normalization(){
 	if (total_number_of_plastic_synapses > 0) {
+	CudaSafeCall(cudaMemcpy((void*)afferent_weight_change_updater,
+			(void*)frontend()->afferent_weight_change_updater,
+			sizeof(float)*frontend()->neurs->total_number_of_neurons, cudaMemcpyHostToDevice));
+
 	// First calculate the weight change
 	weight_change_calculations<<<synapses_backend->number_of_synapse_blocks_per_grid, synapses_backend->threads_per_block>>>(
 		synapses_backend->postsynaptic_neuron_indices,
@@ -120,9 +124,9 @@ namespace Backend {
 			// Get the current synapse index
 			int idx = d_plastic_synapse_indices[indx];
 			int post_id = postsyn_ids[idx];
-			float weight_change = initial_weights[indx] - current_weight[idx];
+			float weight_change = current_weight[idx] - initial_weights[indx];
 			if (weight_change != 0.0){
-				float update_value = weight_change*weight_change + 2*initial_weights[indx]*weight_change;
+				float update_value = weight_change*weight_change + 2.0f*initial_weights[indx]*weight_change;
 				atomicAdd(&afferent_weight_change_updater[post_id], update_value);
 			}
 			indx += blockDim.x * gridDim.x;
@@ -143,10 +147,13 @@ namespace Backend {
 		while (idx < total_number_of_neurons) {
 			if (neuron_in_plasticity_set[idx])
 			{
+				if ((sum_squared_afferent_values[idx] - afferent_weight_change_updater[idx] < 0.01))
+					printf("NORMALIZATION DIFF VERY LARGE. DANGER OF SYNAPSES ALL -> ZERO");
 				weight_divisor[idx] = sqrtf(sum_squared_afferent_values[idx] + afferent_weight_change_updater[idx]) / sqrtf(sum_squared_afferent_values[idx]);
 			}
 			idx += blockDim.x * gridDim.x;		
 		}
+		__syncthreads();
 	}
 
 
@@ -166,7 +173,10 @@ namespace Backend {
 			int postneuron = postsyn_neuron[idx];
 			if (neuron_in_plasticity_set[postneuron]){
 				float division_value = weight_divisor[postneuron];
-				current_weight[idx] = current_weight[idx] / division_value;
+				//if (division_value != 1.0)
+				//printf("%f, %f, %f wat \n", division_value, current_weight[idx], (current_weight[idx] / division_value));
+				if (division_value != 1.0)
+					current_weight[idx] /= division_value;
 			}
 			indx += blockDim.x * gridDim.x;
 		}
