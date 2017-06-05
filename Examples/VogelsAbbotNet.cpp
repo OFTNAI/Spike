@@ -239,9 +239,9 @@ int main (int argc, char *argv[]){
 	EXC_OUT_SYN_PARAMS->connectivity_type = CONNECTIVITY_TYPE_RANDOM;
 	INH_OUT_SYN_PARAMS->connectivity_type = CONNECTIVITY_TYPE_RANDOM;
 	INPUT_SYN_PARAMS->connectivity_type = CONNECTIVITY_TYPE_RANDOM;
-	EXC_OUT_SYN_PARAMS->plasticity_ptr = nullptr;
-	INH_OUT_SYN_PARAMS->plasticity_ptr = vogels_stdp;
-	INPUT_SYN_PARAMS->plasticity_ptr = nullptr;
+	EXC_OUT_SYN_PARAMS->plasticity_vec.push_back(nullptr);
+	INH_OUT_SYN_PARAMS->plasticity_vec.push_back(vogels_stdp);
+	INPUT_SYN_PARAMS->plasticity_vec.push_back(nullptr);
 	EXC_OUT_SYN_PARAMS->random_connectivity_probability = 0.02; // 2%
 	INH_OUT_SYN_PARAMS->random_connectivity_probability = 0.02; // 2%
 	INPUT_SYN_PARAMS->random_connectivity_probability = 0.01; // 1%
@@ -281,7 +281,7 @@ int main (int argc, char *argv[]){
 	
 	simoptions->file_storage_options->save_recorded_neuron_spikes_to_file = true;
 	simoptions->file_storage_options->save_recorded_input_neuron_spikes_to_file = true;
-	// simoptions->file_storage_options->human_readable_storage = true;
+	simoptions->file_storage_options->human_readable_storage = true;
 
 	Simulator * simulator = new Simulator(BenchModel, simoptions);
 	simulator->RunSimulation();

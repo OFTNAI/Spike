@@ -24,6 +24,7 @@ int main (int argc, char *argv[]){
 
 	// Create an instance of the Model
 	SpikingModel* ExampleModel = new SpikingModel();
+	// ExampleModel->high_fidelity_spike_storage = true;
 		
 
 	// Set up the simulator with a timestep at which the neuron, synapse and STDP properties will be calculated 
@@ -48,6 +49,8 @@ int main (int argc, char *argv[]){
 	EvansSTDPPlasticity * evans_stdp = new EvansSTDPPlasticity((SpikingSynapses *) current_spiking_synapses, (SpikingNeurons *) lif_spiking_neurons, (SpikingNeurons *) generator_input_neurons, (stdp_plasticity_parameters_struct *) STDP_PARAMS);
 
 	weightnorm_spiking_plasticity_parameters_struct * NORM_PARAMS = new weightnorm_spiking_plasticity_parameters_struct();
+	NORM_PARAMS->settarget = true;
+	NORM_PARAMS->target = 1.0f;
 	WeightNormSpikingPlasticity * norm_plasticity = new WeightNormSpikingPlasticity((SpikingSynapses *) current_spiking_synapses, (SpikingNeurons *) lif_spiking_neurons, (SpikingNeurons *) generator_input_neurons, (stdp_plasticity_parameters_struct *) NORM_PARAMS);
 
 	// Allocate your chosen components to the simulator
@@ -175,8 +178,12 @@ int main (int argc, char *argv[]){
 	// Recoding electrode options: Allow the saving of spike times in the simulation
 	simoptions->recording_electrodes_options->collect_neuron_spikes_recording_electrodes_bool = true;
 	simoptions->recording_electrodes_options->count_neuron_spikes_recording_electrodes_bool = true;
+	simoptions->recording_electrodes_options->network_state_archive_recording_electrodes_bool = true;
+	simoptions->recording_electrodes_options->network_state_archive_optional_parameters->human_readable_storage = true;
 	// File storage options
 	simoptions->file_storage_options->save_recorded_neuron_spikes_to_file = true;
+	simoptions->file_storage_options->write_initial_synaptic_weights_to_file_bool = true;
+	simoptions->file_storage_options->human_readable_storage = true;	
 	
 	// Finally, create and execute the simulation that you desire
 	Simulator * simulator = new Simulator(ExampleModel, simoptions);
