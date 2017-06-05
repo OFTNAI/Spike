@@ -126,7 +126,7 @@ namespace Backend {
 			int post_id = postsyn_ids[idx];
 			float weight_change = current_weight[idx] - initial_weights[indx];
 			if (weight_change != 0.0){
-				float update_value = weight_change*weight_change + 2.0f*current_weight[idx]*weight_change;
+				float update_value = weight_change*weight_change + 2.0f*initial_weights[indx]*weight_change;
 				atomicAdd(&afferent_weight_change_updater[post_id], update_value);
 			}
 			indx += blockDim.x * gridDim.x;
