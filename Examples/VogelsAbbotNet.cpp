@@ -83,7 +83,7 @@ int main (int argc, char *argv[]){
 	poisson_input_spiking_neuron_parameters_struct* input_neuron_params = new poisson_input_spiking_neuron_parameters_struct();
 	// Setting the dimensions of the input neuron layer
 	input_neuron_params->group_shape[0] = 1;		// x-dimension of the input neuron layer
-	input_neuron_params->group_shape[1] = 200;		// y-dimension of the input neuron layer
+	input_neuron_params->group_shape[1] = 20;		// y-dimension of the input neuron layer
 	input_neuron_params->rate = 10.0f; // Hz
 	// Create a group of input neurons. This function returns the ID of the input neuron group
 	int input_layer_ID = BenchModel->AddInputNeuronGroup(input_neuron_params);
@@ -243,25 +243,25 @@ int main (int argc, char *argv[]){
 
 	// Create the simulator options
 	Simulator_Options* simoptions = new Simulator_Options();
-	simoptions->run_simulation_general_options->presentation_time_per_stimulus_per_epoch = 10.0f;
-	simoptions->run_simulation_general_options->apply_plasticity_to_relevant_synapses = true;
+	simoptions->run_simulation_general_options->presentation_time_per_stimulus_per_epoch = 6.0f;
+	//simoptions->run_simulation_general_options->apply_plasticity_to_relevant_synapses = true;
 
-	simoptions->recording_electrodes_options->count_neuron_spikes_recording_electrodes_bool = true;
-	simoptions->recording_electrodes_options->count_input_neuron_spikes_recording_electrodes_bool = true;
+	//simoptions->recording_electrodes_options->count_neuron_spikes_recording_electrodes_bool = true;
+	//simoptions->recording_electrodes_options->count_input_neuron_spikes_recording_electrodes_bool = true;
 
-	simoptions->recording_electrodes_options->collect_neuron_spikes_recording_electrodes_bool = true;
-	simoptions->recording_electrodes_options->collect_neuron_spikes_optional_parameters->human_readable_storage = true;
-	simoptions->recording_electrodes_options->collect_input_neuron_spikes_recording_electrodes_bool = true;
-	simoptions->recording_electrodes_options->collect_input_neuron_spikes_optional_parameters->human_readable_storage = true;
+	//simoptions->recording_electrodes_options->collect_neuron_spikes_recording_electrodes_bool = true;
+	//simoptions->recording_electrodes_options->collect_neuron_spikes_optional_parameters->human_readable_storage = true;
+	//simoptions->recording_electrodes_options->collect_input_neuron_spikes_recording_electrodes_bool = true;
+	//simoptions->recording_electrodes_options->collect_input_neuron_spikes_optional_parameters->human_readable_storage = true;
 
-	simoptions->recording_electrodes_options->network_state_archive_recording_electrodes_bool = true;
-	simoptions->recording_electrodes_options->network_state_archive_optional_parameters->human_readable_storage = true;
+	//simoptions->recording_electrodes_options->network_state_archive_recording_electrodes_bool = true;
+	//simoptions->recording_electrodes_options->network_state_archive_optional_parameters->human_readable_storage = true;
 
-	simoptions->file_storage_options->write_initial_synaptic_weights_to_file_bool = true;
+	//simoptions->file_storage_options->write_initial_synaptic_weights_to_file_bool = true;
 	
-	simoptions->file_storage_options->save_recorded_neuron_spikes_to_file = true;
-	simoptions->file_storage_options->save_recorded_input_neuron_spikes_to_file = true;
-	simoptions->file_storage_options->human_readable_storage = true;
+	//simoptions->file_storage_options->save_recorded_neuron_spikes_to_file = true;
+	//simoptions->file_storage_options->save_recorded_input_neuron_spikes_to_file = true;
+	//simoptions->file_storage_options->human_readable_storage = true;
 
 	Simulator * simulator = new Simulator(BenchModel, simoptions);
 	simulator->RunSimulation();
