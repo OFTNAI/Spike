@@ -75,7 +75,7 @@ namespace Backend {
           float resting_potential_V0 = d_resting_potentials[idx];
           float temp_membrane_resistance_R = d_membrane_resistances_R[idx];
 	
-          float new_membrane_potential = equation_constant * (resting_potential_V0 + temp_membrane_resistance_R * (current_injection_Ii + background_current)) + (1 - equation_constant) * membrane_potential_Vi;
+          float new_membrane_potential = equation_constant * (resting_potential_V0 + temp_membrane_resistance_R * current_injection_Ii) + (1 - equation_constant) * membrane_potential_Vi + equation_constant * background_current;
           d_membrane_potentials_v[idx] = new_membrane_potential;
         }
 
