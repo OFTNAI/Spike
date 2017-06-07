@@ -115,13 +115,15 @@ namespace Backend {
                       frontend()->total_number_of_synapses);
       CudaCheckError();
 
-      CudaSafeCall(cudaMemcpy(h_num_active_synapses, num_active_synapses, sizeof(int), cudaMemcpyDeviceToHost));
-      if (h_num_active_synapses[0] > 0)
-	active_syn_blocks_per_grid = dim3((h_num_active_synapses[0] + threads_per_block.x)/threads_per_block.x);
-      else
-        active_syn_blocks_per_grid = dim3(1);
-      if (active_syn_blocks_per_grid.x > number_of_synapse_blocks_per_grid.x)
-	active_syn_blocks_per_grid = number_of_synapse_blocks_per_grid;
+      if (fmod(current_time_in_seconds,(0.01)) < timestep){
+	      CudaSafeCall(cudaMemcpy(h_num_active_synapses, num_active_synapses, sizeof(int), cudaMemcpyDeviceToHost));
+	      if (h_num_active_synapses[0] > 0)
+		active_syn_blocks_per_grid = dim3((h_num_active_synapses[0] + threads_per_block.x)/threads_per_block.x);
+	      else
+		active_syn_blocks_per_grid = dim3(1);
+	      if (active_syn_blocks_per_grid.x > number_of_synapse_blocks_per_grid.x)
+		active_syn_blocks_per_grid = number_of_synapse_blocks_per_grid;
+      }
       //printf("%d\n", active_syn_blocks_per_grid.x);
       if (neurons_backend->frontend()->high_fidelity_spike_flag){
       conductance_check_bitarray_for_presynaptic_neuron_spikes<<<active_syn_blocks_per_grid, threads_per_block>>>(
