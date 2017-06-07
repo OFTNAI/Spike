@@ -21,9 +21,18 @@ namespace Backend {
 
     void Neurons::set_threads_per_block_and_blocks_per_grid(int threads) {
       threads_per_block.x = threads;
+      cudaDeviceProp deviceProp;
+      int deviceID;
+
+      cudaGetDevice(&deviceID);
+      cudaGetDeviceProperties(&deviceProp, deviceID);
+
+      int max_num_blocks = deviceProp.multiProcessorCount*(deviceProp.maxThreadsPerMultiProcessor / threads);
 
       int number_of_neuron_blocks = (frontend()->total_number_of_neurons + threads) / threads;
-      number_of_neuron_blocks_per_grid.x = number_of_neuron_blocks;
+      number_of_neuron_blocks_per_grid = dim3(number_of_neuron_blocks);
+      if (number_of_neuron_blocks > max_num_blocks)
+	number_of_neuron_blocks_per_grid = dim3(max_num_blocks);
     }
 
     void Neurons::prepare() {

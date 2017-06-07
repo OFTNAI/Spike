@@ -1,8 +1,5 @@
 // -*- mode: c++ -*-
 #include "Spike/Backend/CUDA/Synapses/Synapses.hpp"
-#include <thrust/device_vector.h>
-#include <thrust/host_vector.h>
-#include <thrust/count.h>
 
 // SPIKE_EXPORT_BACKEND_TYPE(CUDA, Synapses);
 
@@ -65,7 +62,17 @@ namespace Backend {
 
     void Synapses::set_threads_per_block_and_blocks_per_grid(int threads) {
       threads_per_block.x = threads;
-      number_of_synapse_blocks_per_grid = dim3(1000);
+      cudaDeviceProp deviceProp;
+      int deviceID;
+      cudaGetDevice(&deviceID);
+      cudaGetDeviceProperties(&deviceProp, deviceID);
+      int max_num_blocks_per_grid = deviceProp.multiProcessorCount*(deviceProp.maxThreadsPerMultiProcessor / threads);
+      int theoretical_number = (frontend()->total_number_of_synapses + threads) / threads;
+      if (theoretical_number < max_num_blocks_per_grid)
+	number_of_synapse_blocks_per_grid = dim3(theoretical_number);
+      else
+	number_of_synapse_blocks_per_grid = dim3(max_num_blocks_per_grid);
+      printf("%d, %d\n", max_num_blocks_per_grid, theoretical_number); 
     }
 
     void Synapses::prepare() {
