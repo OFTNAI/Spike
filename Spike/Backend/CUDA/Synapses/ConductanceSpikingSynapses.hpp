@@ -43,6 +43,7 @@ namespace Backend {
 
     __global__ void get_active_synapses_kernel(int* d_presynaptic_neuron_indices,
                 int* d_delays,
+		int* d_spikes_travelling_to_synapse,
                 float* d_last_spike_time_of_each_neuron,
                 float* d_input_neurons_last_spike_time,
                 float * d_synaptic_conductances_g,

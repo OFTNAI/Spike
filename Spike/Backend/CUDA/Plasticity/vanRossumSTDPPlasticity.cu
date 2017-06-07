@@ -67,7 +67,7 @@ namespace Backend {
     }
 
     void vanRossumSTDPPlasticity::apply_stdp_to_synapse_weights(float current_time_in_seconds) {
-   
+      if (total_number_of_plastic_synapses > 0){ 
       // If nearest spike, get the indices:
       if (!frontend()->stdp_params->allspikes){ 
         vanrossum_get_indices_to_apply_stdp<<<synapses_backend->number_of_synapse_blocks_per_grid, synapses_backend->threads_per_block>>>
@@ -108,7 +108,7 @@ namespace Backend {
            plastic_synapse_indices,
            total_number_of_plastic_synapses);
         
-        vanrossum_posttrace_and_ltp<<<neurons_backend->number_of_neuron_blocks_per_grid, neurons_backend->threads_per_block>>>
+        vanrossum_posttrace_and_ltp<<<synapses_backend->number_of_synapse_blocks_per_grid, synapses_backend->threads_per_block>>>
           (synapses_backend->postsynaptic_neuron_indices,
            neurons_backend->last_spike_time_of_each_neuron,
            synapses_backend->synaptic_efficacies_or_weights,
@@ -119,6 +119,7 @@ namespace Backend {
            current_time_in_seconds,
            plastic_synapse_indices,
            total_number_of_plastic_synapses);
+      }
       }
     }
 
