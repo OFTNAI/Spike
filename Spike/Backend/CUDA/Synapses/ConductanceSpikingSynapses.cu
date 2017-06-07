@@ -12,6 +12,7 @@ namespace Backend {
       CudaSafeCall(cudaFree(reversal_potentials_Vhat));
       CudaSafeCall(cudaFree(decay_terms_tau_g));
       CudaSafeCall(cudaFree(num_active_synapses));
+      CudaSafeCall(cudaFreeHost(h_num_active_synapses));
       CudaSafeCall(cudaFree(active_synapse_indices));
 #ifdef CRAZY_DEBUG
       std::cout << "\n!!!!!!!!!!!!!!!!!!!!---CCCCCC---!!!!!!!!!!!!!!!!!!!\n";
@@ -59,6 +60,8 @@ namespace Backend {
 	CudaSafeCall(cudaMalloc((void **)&synaptic_conductances_g, sizeof(float)*frontend()->total_number_of_synapses));
   CudaSafeCall(cudaMalloc((void **)&active_synapse_indices, sizeof(int)*frontend()->total_number_of_synapses));
   CudaSafeCall(cudaMalloc((void **)&num_active_synapses, sizeof(int)));
+  CudaSafeCall(cudaMallocHost((void **)&h_num_active_synapses, sizeof(int)));
+
     }
 
     void ConductanceSpikingSynapses::copy_constants_and_initial_efficacies_to_device() {
@@ -112,10 +115,9 @@ namespace Backend {
                       frontend()->total_number_of_synapses);
       CudaCheckError();
 
-      int h_num_active_syns = 0;
-      CudaSafeCall(cudaMemcpy(&h_num_active_syns, num_active_synapses, sizeof(int), cudaMemcpyDeviceToHost));
-      if (h_num_active_syns > 0)
-	active_syn_blocks_per_grid = dim3((h_num_active_syns + threads_per_block.x)/threads_per_block.x);
+      CudaSafeCall(cudaMemcpy(h_num_active_synapses, num_active_synapses, sizeof(int), cudaMemcpyDeviceToHost));
+      if (h_num_active_synapses[0] > 0)
+	active_syn_blocks_per_grid = dim3((h_num_active_synapses[0] + threads_per_block.x)/threads_per_block.x);
       else
         active_syn_blocks_per_grid = dim3(1);
       if (active_syn_blocks_per_grid.x > number_of_synapse_blocks_per_grid.x)
