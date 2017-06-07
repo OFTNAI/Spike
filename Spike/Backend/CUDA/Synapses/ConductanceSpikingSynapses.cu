@@ -24,7 +24,7 @@ namespace Backend {
         dynamic_cast<::Backend::CUDA::SpikingNeurons*>(neurons->backend());
       assert(neurons_backend);
 
-      	conductance_calculate_postsynaptic_current_injection_kernel<<<number_of_synapse_blocks_per_grid, threads_per_block>>>
+      	conductance_calculate_postsynaptic_current_injection_kernel<<<active_syn_blocks_per_grid, threads_per_block>>>
           (presynaptic_neuron_indices,
            postsynaptic_neuron_indices,
            reversal_potentials_Vhat,
@@ -115,7 +115,7 @@ namespace Backend {
       int h_num_active_syns = 0;
       CudaSafeCall(cudaMemcpy(&h_num_active_syns, num_active_synapses, sizeof(int), cudaMemcpyDeviceToHost));
       if (h_num_active_syns > 0)
-	active_syn_blocks_per_grid = dim3(h_num_active_syns);
+	active_syn_blocks_per_grid = dim3((h_num_active_syns + threads_per_block.x)/threads_per_block.x);
       else
         active_syn_blocks_per_grid = dim3(1);
       if (active_syn_blocks_per_grid.x > number_of_synapse_blocks_per_grid.x)
