@@ -8,15 +8,35 @@ namespace Backend {
     Neurons::~Neurons() {
       CudaSafeCall(cudaFree(per_neuron_afferent_synapse_count));
       CudaSafeCall(cudaFree(current_injections));
+      CudaSafeCall(cudaFree(per_neuron_efferent_synapse_count));
+      CudaSafeCall(cudaFree(per_neuron_efferent_synapse_total));
+      CudaSafeCall(cudaFree(per_neuron_efferent_synapse_indices));
+      free(h_per_neuron_efferent_synapse_total);
     }
 
     void Neurons::allocate_device_pointers() {
+      h_per_neuron_efferent_synapse_total = (int*)malloc(sizeof(int)*frontend()->total_number_of_neurons);
+      for (int i = 0; i < frontend()->total_number_of_neurons; i++){
+        if (i == 0)
+          h_per_neuron_efferent_synapse_total[i] = frontend()->per_neuron_efferent_synapse_count[i];
+	else
+	  h_per_neuron_efferent_synapse_total[i] = h_per_neuron_efferent_synapse_total[i-1] + frontend()->per_neuron_efferent_synapse_count[i];
+      }
       CudaSafeCall(cudaMalloc((void **)&current_injections, sizeof(float)*frontend()->total_number_of_neurons));
       CudaSafeCall(cudaMalloc((void **)&per_neuron_afferent_synapse_count, sizeof(int)*frontend()->total_number_of_neurons));
+      CudaSafeCall(cudaMalloc((void **)&per_neuron_efferent_synapse_total, sizeof(int)*frontend()->total_number_of_neurons));
+      CudaSafeCall(cudaMalloc((void **)&per_neuron_efferent_synapse_count, sizeof(int)*frontend()->total_number_of_neurons));
+      CudaSafeCall(cudaMalloc((void **)&per_neuron_efferent_synapse_indices, sizeof(int)*(h_per_neuron_efferent_synapse_total[frontend()->total_number_of_neurons - 1])));
     }
 
     void Neurons::copy_constants_to_device() {
+	printf("Before Neuron Copys\n");
       CudaSafeCall(cudaMemcpy(per_neuron_afferent_synapse_count, frontend()->per_neuron_afferent_synapse_count, sizeof(int)*frontend()->total_number_of_neurons, cudaMemcpyHostToDevice));
+      CudaSafeCall(cudaMemcpy(per_neuron_efferent_synapse_total, h_per_neuron_efferent_synapse_total, sizeof(int)*frontend()->total_number_of_neurons, cudaMemcpyHostToDevice));
+      CudaSafeCall(cudaMemcpy(per_neuron_efferent_synapse_count, frontend()->per_neuron_efferent_synapse_count, sizeof(int)*frontend()->total_number_of_neurons, cudaMemcpyHostToDevice));
+      for (int i = 0; i < frontend()->total_number_of_neurons; i++)
+	CudaSafeCall(cudaMemcpy(&per_neuron_efferent_synapse_indices[h_per_neuron_efferent_synapse_total[i] - frontend()->per_neuron_efferent_synapse_count[i]], frontend()->per_neuron_efferent_synapse_indices[i], sizeof(int)*frontend()->per_neuron_efferent_synapse_count[i], cudaMemcpyHostToDevice));
+	
     }
 
     void Neurons::set_threads_per_block_and_blocks_per_grid(int threads) {

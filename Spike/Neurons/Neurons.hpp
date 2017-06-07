@@ -69,6 +69,9 @@ public:
   int *last_neuron_indices_for_each_group;	/**< Indices of the final neuron in each group. */
   int * per_neuron_afferent_synapse_count;	/**< A (host-side) count of the number of afferent synapses for each neuron */
   int **group_shapes;							/**< The 2D shape of each group. */
+
+  int *per_neuron_efferent_synapse_count;	/**< An array containing the number of output synapses from each neuron */
+  int **per_neuron_efferent_synapse_indices;	/**< A 2D array detailing the synapse indices of efferent synapses from each neuron */
   
   /**  
    *  Determines the total number of neurons by which the simulation should increase.
@@ -84,6 +87,14 @@ public:
    */
   void reset_current_injections(); // Not virtual
   void reset_state() override;
+
+
+  /**
+   * Adds efferent synapse IDs to the per neuron efferent synapse groiups
+   \param neuron_id the id of the presynaptic neuron from which the synapse emerges
+   \param synapse_id the id of the efferent synapse
+  */
+  void AddEfferentSynapse(int neuron_id, int synapse_id);
 
 private:
   std::shared_ptr<::Backend::Neurons> _backend;

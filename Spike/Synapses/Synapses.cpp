@@ -253,6 +253,12 @@ void Synapses::AddGroup(int presynaptic_group_id,
           synapse_postsynaptic_neuron_count_index[postsynaptic_neuron_indices[i]] = neurons->per_neuron_afferent_synapse_count[postsynaptic_neuron_indices[i]];
           neurons->per_neuron_afferent_synapse_count[postsynaptic_neuron_indices[i]] ++;
 
+	  int presynaptic_id = CORRECTED_PRESYNAPTIC_ID(presynaptic_neuron_indices[i], presynaptic_group_is_input);
+	  if (presynaptic_group_is_input)
+		input_neurons->AddEfferentSynapse(presynaptic_id, i);
+	  else
+		neurons->AddEfferentSynapse(presynaptic_id, i);
+	 
 	}
 
   // SETTING UP PLASTICITY

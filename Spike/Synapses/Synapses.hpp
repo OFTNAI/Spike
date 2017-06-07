@@ -117,6 +117,7 @@ public:
   int* synapse_postsynaptic_neuron_count_index = nullptr;   /**< An array of the number of incoming synapses to each postsynaptic neuron */
   float* synaptic_efficacies_or_weights = nullptr;          /**< An array of synaptic efficacies/weights accompanying the pre/postsynaptic_neuron_indices */
   std::vector<int*> plasticity_synapse_indices_per_rule;    /**< A vector (host-side) which contains the list of synapse ids that each corresponding plasticity rule must be applied to */
+  
 
   // Functions
 
