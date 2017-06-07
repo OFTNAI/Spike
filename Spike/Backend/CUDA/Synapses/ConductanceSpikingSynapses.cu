@@ -259,15 +259,16 @@ namespace Backend {
 
         int timesteps_until_spike_reaches_synapse = d_spikes_travelling_to_synapse[idx];
 
+	if (timesteps_until_spike_reaches_synapse > 0) {
+	  timesteps_until_spike_reaches_synapse -= 1;
 
-        if ((timesteps_until_spike_reaches_synapse - 1) == 0) {
-          timesteps_until_spike_reaches_synapse -= 1;
-          d_time_of_last_spike_to_reach_synapse[idx] = current_time_in_seconds;
+   	  if (timesteps_until_spike_reaches_synapse == 0)
+            d_time_of_last_spike_to_reach_synapse[idx] = current_time_in_seconds;
         }
 
-        if (timesteps_until_spike_reaches_synapse < 0) {
+        if (timesteps_until_spike_reaches_synapse < 0)
             timesteps_until_spike_reaches_synapse = d_delays[idx];
-        }
+   
 
         d_spikes_travelling_to_synapse[idx] = timesteps_until_spike_reaches_synapse;
 
