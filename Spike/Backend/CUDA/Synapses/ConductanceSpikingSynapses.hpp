@@ -39,6 +39,7 @@ namespace Backend {
       void update_synaptic_conductances(float timestep, float current_time_in_seconds) final;
       void interact_spikes_with_synapses(::SpikingNeurons * neurons, ::SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) final;
 
+      dim3 active_syn_blocks_per_grid = dim3(1); // Threads for active synapses
     };
 
     __global__ void get_active_synapses_kernel(int* d_presynaptic_neuron_indices,

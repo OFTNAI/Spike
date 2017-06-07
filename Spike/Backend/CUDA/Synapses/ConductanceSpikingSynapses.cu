@@ -69,7 +69,7 @@ namespace Backend {
     }
 
     void ConductanceSpikingSynapses::update_synaptic_conductances(float timestep, float current_time_in_seconds) {
-	conductance_update_synaptic_conductances_kernel<<<number_of_synapse_blocks_per_grid, threads_per_block>>>
+	conductance_update_synaptic_conductances_kernel<<<active_syn_blocks_per_grid, threads_per_block>>>
           (timestep, 
            synaptic_conductances_g, 
            synaptic_efficacies_or_weights, 
@@ -112,8 +112,17 @@ namespace Backend {
                       frontend()->total_number_of_synapses);
       CudaCheckError();
 
+      int h_num_active_syns = 0;
+      CudaSafeCall(cudaMemcpy(&h_num_active_syns, num_active_synapses, sizeof(int), cudaMemcpyDeviceToHost));
+      if (h_num_active_syns > 0)
+	active_syn_blocks_per_grid = dim3(h_num_active_syns);
+      else
+        active_syn_blocks_per_grid = dim3(1);
+      if (active_syn_blocks_per_grid.x > number_of_synapse_blocks_per_grid.x)
+	active_syn_blocks_per_grid = number_of_synapse_blocks_per_grid;
+      //printf("%d\n", active_syn_blocks_per_grid.x);
       if (neurons_backend->frontend()->high_fidelity_spike_flag){
-      conductance_check_bitarray_for_presynaptic_neuron_spikes<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(
+      conductance_check_bitarray_for_presynaptic_neuron_spikes<<<active_syn_blocks_per_grid, threads_per_block>>>(
                   presynaptic_neuron_indices,
                   delays,
                   neurons_backend->bitarray_of_neuron_spikes,
@@ -128,7 +137,7 @@ namespace Backend {
       CudaCheckError();
     }
     else{
-      conductance_move_spikes_towards_synapses_kernel<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(
+      conductance_move_spikes_towards_synapses_kernel<<<active_syn_blocks_per_grid, threads_per_block>>>(
                                         presynaptic_neuron_indices,
                                         delays,
                                         spikes_travelling_to_synapse,
