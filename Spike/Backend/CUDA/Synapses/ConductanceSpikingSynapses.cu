@@ -105,19 +105,19 @@ namespace Backend {
       ::Backend::CUDA::SpikingNeurons* input_neurons_backend =
         dynamic_cast<::Backend::CUDA::SpikingNeurons*>(input_neurons->backend());
       assert(input_neurons_backend);
-      std::vector<SpikingNeurons*> neuron_backends_vec;
+      
+      std::vector<::Backend::CUDA::SpikingNeurons*> neuron_backends_vec;
       neuron_backends_vec.push_back(neurons_backend);
       neuron_backends_vec.push_back(input_neurons_backend);
-
       // Get Active Synapses
       for (int neuron_pop = 0; neuron_pop < neuron_backends_vec.size(); neuron_pop++){      
-        get_active_synapses_kernel<<<neurons_backend->number_of_neuron_blocks_per_grid, threads_per_block>>>(
+        get_active_synapses_kernel<<<neuron_backends_vec[neuron_pop]->number_of_neuron_blocks_per_grid, threads_per_block>>>(
                 neuron_backends_vec[neuron_pop]->per_neuron_efferent_synapse_count,
                 neuron_backends_vec[neuron_pop]->per_neuron_efferent_synapse_total,
                 neuron_backends_vec[neuron_pop]->per_neuron_efferent_synapse_indices,
                 delays,
                 spikes_travelling_to_synapse,
-                neurons_backend->last_spike_time_of_each_neuron,
+                neuron_backends_vec[neuron_pop]->last_spike_time_of_each_neuron,
                 decay_terms_tau_g,
                 current_time_in_seconds,
                 num_active_synapses,
