@@ -30,7 +30,6 @@ namespace Backend {
     }
 
     void Neurons::copy_constants_to_device() {
-	printf("Before Neuron Copys\n");
       CudaSafeCall(cudaMemcpy(per_neuron_afferent_synapse_count, frontend()->per_neuron_afferent_synapse_count, sizeof(int)*frontend()->total_number_of_neurons, cudaMemcpyHostToDevice));
       CudaSafeCall(cudaMemcpy(per_neuron_efferent_synapse_total, h_per_neuron_efferent_synapse_total, sizeof(int)*frontend()->total_number_of_neurons, cudaMemcpyHostToDevice));
       CudaSafeCall(cudaMemcpy(per_neuron_efferent_synapse_count, frontend()->per_neuron_efferent_synapse_count, sizeof(int)*frontend()->total_number_of_neurons, cudaMemcpyHostToDevice));
