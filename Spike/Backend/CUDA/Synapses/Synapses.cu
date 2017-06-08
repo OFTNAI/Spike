@@ -72,7 +72,7 @@ namespace Backend {
 	number_of_synapse_blocks_per_grid = dim3(theoretical_number);
       else
 	number_of_synapse_blocks_per_grid = dim3(max_num_blocks_per_grid);
-      printf("%d, %d\n", max_num_blocks_per_grid, theoretical_number); 
+      //printf("%d, %d\n", max_num_blocks_per_grid, theoretical_number);
     }
 
     void Synapses::prepare() {
