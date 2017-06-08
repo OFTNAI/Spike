@@ -12,6 +12,7 @@ namespace Backend {
       CudaSafeCall(cudaFree(reversal_potentials_Vhat));
       CudaSafeCall(cudaFree(decay_terms_tau_g));
       CudaSafeCall(cudaFree(num_active_synapses));
+      CudaSafeCall(cudaFreeHost(h_num_active_synapses));
       CudaSafeCall(cudaFree(active_synapse_indices));
 #ifdef CRAZY_DEBUG
       std::cout << "\n!!!!!!!!!!!!!!!!!!!!---CCCCCC---!!!!!!!!!!!!!!!!!!!\n";
@@ -24,7 +25,7 @@ namespace Backend {
         dynamic_cast<::Backend::CUDA::SpikingNeurons*>(neurons->backend());
       assert(neurons_backend);
 
-      	conductance_calculate_postsynaptic_current_injection_kernel<<<number_of_synapse_blocks_per_grid, threads_per_block>>>
+      	conductance_calculate_postsynaptic_current_injection_kernel<<<active_syn_blocks_per_grid, threads_per_block>>>
           (presynaptic_neuron_indices,
            postsynaptic_neuron_indices,
            reversal_potentials_Vhat,
@@ -59,6 +60,7 @@ namespace Backend {
 	CudaSafeCall(cudaMalloc((void **)&synaptic_conductances_g, sizeof(float)*frontend()->total_number_of_synapses));
   CudaSafeCall(cudaMalloc((void **)&active_synapse_indices, sizeof(int)*frontend()->total_number_of_synapses));
   CudaSafeCall(cudaMalloc((void **)&num_active_synapses, sizeof(int)));
+  CudaSafeCall(cudaMallocHost((void **)&h_num_active_synapses, sizeof(int)));
     }
 
     void ConductanceSpikingSynapses::copy_constants_and_initial_efficacies_to_device() {
@@ -69,7 +71,7 @@ namespace Backend {
     }
 
     void ConductanceSpikingSynapses::update_synaptic_conductances(float timestep, float current_time_in_seconds) {
-	conductance_update_synaptic_conductances_kernel<<<number_of_synapse_blocks_per_grid, threads_per_block>>>
+	conductance_update_synaptic_conductances_kernel<<<active_syn_blocks_per_grid, threads_per_block>>>
           (timestep, 
            synaptic_conductances_g, 
            synaptic_efficacies_or_weights, 
@@ -124,8 +126,16 @@ namespace Backend {
                       input_neurons->total_number_of_neurons);
       CudaCheckError();
 
+      // Setting up the custom block size for active synapses only:
+    if (fmod(current_time_in_seconds, 50.0*timestep) < timestep){
+	      CudaSafeCall(cudaMemcpy(h_num_active_synapses, num_active_synapses, sizeof(int), cudaMemcpyDeviceToHost));
+	     active_syn_blocks_per_grid = dim3((h_num_active_synapses[0] + threads_per_block.x) /  threads_per_block.x);
+	     if (active_syn_blocks_per_grid.x > number_of_synapse_blocks_per_grid.x)
+		active_syn_blocks_per_grid = number_of_synapse_blocks_per_grid;
+     }
+
       if (neurons_backend->frontend()->high_fidelity_spike_flag){
-      conductance_check_bitarray_for_presynaptic_neuron_spikes<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(
+      conductance_check_bitarray_for_presynaptic_neuron_spikes<<<active_syn_blocks_per_grid, threads_per_block>>>(
                   presynaptic_neuron_indices,
                   delays,
                   neurons_backend->bitarray_of_neuron_spikes,
@@ -140,7 +150,7 @@ namespace Backend {
       CudaCheckError();
     }
     else{
-      conductance_move_spikes_towards_synapses_kernel<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(
+      conductance_move_spikes_towards_synapses_kernel<<<active_syn_blocks_per_grid, threads_per_block>>>(
                                         presynaptic_neuron_indices,
                                         delays,
                                         spikes_travelling_to_synapse,
@@ -184,18 +194,6 @@ namespace Backend {
 		if ((effecttime == current_time_in_seconds) && (d_spikes_travelling_to_synapse[synapse_id] == 0))
 			d_spikes_travelling_to_synapse[synapse_id] = -1;
 	}
-
-//        int delay = d_delays[idx];
-//        int presynaptic_neuron_index = d_presynaptic_neuron_indices[idx];
-//        bool presynaptic_is_input = PRESYNAPTIC_IS_INPUT(presynaptic_neuron_index);
-//
-//        // Add to the effect time the length of a delay and a decay time ~10 tau (When current injection has reduced to 0.005% of the original value)
-//        effecttime += (delay + 1)*timestep + 10.0f*d_decay_terms_tau_g[idx];
-//
-//        if (effecttime > current_time_in_seconds){
-//          int pos = atomicAdd(&d_num_active_synapses[0], 1);
-//          d_active_synapses[pos] = idx;
-//        }
 
       	__syncthreads();
         idx += blockDim.x * gridDim.x;

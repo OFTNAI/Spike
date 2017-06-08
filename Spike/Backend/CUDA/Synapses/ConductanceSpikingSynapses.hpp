@@ -18,7 +18,9 @@ namespace Backend {
       float * reversal_potentials_Vhat = nullptr;
       float * decay_terms_tau_g = nullptr;
       int * num_active_synapses = nullptr;
+      int * h_num_active_synapses = nullptr;
       int * active_synapse_indices = nullptr;
+      dim3 active_syn_blocks_per_grid = dim3(1);
 
 
       ~ConductanceSpikingSynapses() override;
