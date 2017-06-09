@@ -144,8 +144,6 @@ namespace Backend {
         // Ensure we do not exceed the maximum number of efficient blocks
         if (active_syn_blocks_per_grid.x > number_of_synapse_blocks_per_grid.x)
           active_syn_blocks_per_grid = number_of_synapse_blocks_per_grid;
-        if (h_num_active_synapses[0] > frontend()->total_number_of_synapses)
-          printf("EXCEEDING BOUNDS\n");
       }
 
       // Option for high fidelity. Ensures that a synapse can support multiple spikes
@@ -252,8 +250,10 @@ namespace Backend {
       int indx = threadIdx.x + blockIdx.x * blockDim.x;
       while (indx < d_num_active_synapses[0]) {
         int idx = d_active_synapses[indx];
-        if (idx < 0)
+        if (idx < 0){
+          indx += blockDim.x * gridDim.x;
           continue;
+        }
 
         float reversal_potential_Vhat = d_reversal_potentials_Vhat[idx];
         int postsynaptic_neuron_index = d_postsynaptic_neuron_indices[idx];
@@ -285,8 +285,10 @@ namespace Backend {
       int indx = threadIdx.x + blockIdx.x * blockDim.x;
       while (indx < d_num_active_synapses[0]) {
         int idx = d_active_synapses[indx];
-        if (idx < 0)
+        if (idx < 0){
+          indx += blockDim.x * gridDim.x;
           continue;
+        }
 
         float synaptic_conductance_g = d_synaptic_conductances_g[idx];
 
@@ -322,8 +324,10 @@ namespace Backend {
       int indx = threadIdx.x + blockIdx.x * blockDim.x;
       while (indx < d_num_active_synapses[0]) {
         int idx = d_active_synapses[indx];
-        if (idx < 0)
+        if (idx < 0){
+          indx += blockDim.x * gridDim.x;
           continue;
+        }
         //synapse_switches[indx] = d_active_synapses[indx];
         int timesteps_until_spike_reaches_synapse = d_spikes_travelling_to_synapse[idx];
 
