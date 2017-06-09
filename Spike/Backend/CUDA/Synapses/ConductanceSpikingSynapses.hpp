@@ -28,6 +28,8 @@ namespace Backend {
       int * num_active_synapses = nullptr;
       int * h_num_active_synapses = nullptr;
       int * active_synapse_indices = nullptr;
+      int * num_after_deactivation = nullptr;
+      int * synapse_switches = nullptr;
       dim3 active_syn_blocks_per_grid = dim3(1);
 
 
@@ -58,6 +60,8 @@ namespace Backend {
       float current_time_in_seconds,
       int* d_num_active_synapses,
       int* d_active_synapses,
+      int* num_after_deactivation,
+      int* synapse_switches,
       float timestep,
       size_t total_number_of_neurons);
 
@@ -90,6 +94,8 @@ namespace Backend {
       float currtime,
       int* d_num_active_synapses,
       int* d_active_synapses,
+      int* num_after_deactivation,
+      int* synapse_switches,
       float* d_time_of_last_spike_to_reach_synapse,
       float timestep);
 
