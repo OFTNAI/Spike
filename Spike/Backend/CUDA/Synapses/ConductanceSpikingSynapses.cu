@@ -137,13 +137,15 @@ namespace Backend {
 
       // Setting up the custom block size for active synapses only:
       // Carry out the update every 10 timesteps. This timescale affects speed of the kernels not which syns
-      if (fmod(current_time_in_seconds, 10.0*timestep) < timestep){
+      if (fmod(current_time_in_seconds, 100.0*timestep) < timestep){
         // Copying to a pinned memory location (h_num_active_synapses) is much faster
         CudaSafeCall(cudaMemcpy(h_num_active_synapses, num_active_synapses, sizeof(int), cudaMemcpyDeviceToHost));
         active_syn_blocks_per_grid = dim3((h_num_active_synapses[0] + threads_per_block.x) /  threads_per_block.x);
         // Ensure we do not exceed the maximum number of efficient blocks
         if (active_syn_blocks_per_grid.x > number_of_synapse_blocks_per_grid.x)
           active_syn_blocks_per_grid = number_of_synapse_blocks_per_grid;
+        if (h_num_active_synapses[0] > frontend()->total_number_of_synapses)
+          printf("EXCEEDING BOUNDS\n");
       }
 
       // Option for high fidelity. Ensures that a synapse can support multiple spikes
@@ -163,6 +165,9 @@ namespace Backend {
         CudaCheckError();
       } else {
         //CudaSafeCall(cudaMemcpy(num_after_deactivation, num_active_synapses, sizeof(int), cudaMemcpyDeviceToDevice));
+        CudaSafeCall(cudaMemcpy(h_num_active_synapses, num_after_deactivation, sizeof(int), cudaMemcpyDeviceToHost));
+        if (h_num_active_synapses[0] < 0)
+         CudaSafeCall(cudaMemset(num_after_deactivation, 0, sizeof(int)));
         conductance_move_spikes_towards_synapses_kernel<<<active_syn_blocks_per_grid, threads_per_block>>>(
                   presynaptic_neuron_indices,
                   delays,
@@ -247,6 +252,8 @@ namespace Backend {
       int indx = threadIdx.x + blockIdx.x * blockDim.x;
       while (indx < d_num_active_synapses[0]) {
         int idx = d_active_synapses[indx];
+        if (idx < 0)
+          continue;
 
         float reversal_potential_Vhat = d_reversal_potentials_Vhat[idx];
         int postsynaptic_neuron_index = d_postsynaptic_neuron_indices[idx];
@@ -278,6 +285,8 @@ namespace Backend {
       int indx = threadIdx.x + blockIdx.x * blockDim.x;
       while (indx < d_num_active_synapses[0]) {
         int idx = d_active_synapses[indx];
+        if (idx < 0)
+          continue;
 
         float synaptic_conductance_g = d_synaptic_conductances_g[idx];
 
@@ -311,12 +320,11 @@ namespace Backend {
             float timestep){
 
       int indx = threadIdx.x + blockIdx.x * blockDim.x;
-      if ((indx == 0) && (num_after_deactivation[0] < 0)){
-        num_after_deactivation[0] = 0;  
-      }
       while (indx < d_num_active_synapses[0]) {
         int idx = d_active_synapses[indx];
-        synapse_switches[indx] = d_active_synapses[indx];
+        if (idx < 0)
+          continue;
+        //synapse_switches[indx] = d_active_synapses[indx];
         int timesteps_until_spike_reaches_synapse = d_spikes_travelling_to_synapse[idx];
 
         // If the spike is about to reach the synapse, set the spike time to next timestep
@@ -331,7 +339,7 @@ namespace Backend {
         if (-timesteps_until_spike_reaches_synapse*timestep > 10.0f*d_decay_terms_tau_g[idx]){
           int pos = atomicAdd(&num_after_deactivation[0], 1);
           synapse_switches[pos] = indx;
-
+          d_active_synapses[indx] = -1;
           timesteps_until_spike_reaches_synapse = 0;
 //          while (true){
 //            int pos = atomicAdd(&num_after_deactivation[0], -1);

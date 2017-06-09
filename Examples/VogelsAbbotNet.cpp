@@ -17,8 +17,8 @@
 #include "Spike/Models/SpikingModel.hpp"
 #include "Spike/Simulator/Simulator.hpp"
 #ifdef SPIKE_WITH_CUDA
-#include <cuda_profiler_api.h>
 #endif
+#include <cuda_profiler_api.h>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -243,15 +243,15 @@ int main (int argc, char *argv[]){
 
 	// Create the simulator options
 	Simulator_Options* simoptions = new Simulator_Options();
-	simoptions->run_simulation_general_options->presentation_time_per_stimulus_per_epoch = 6.0f;
-	//simoptions->run_simulation_general_options->apply_plasticity_to_relevant_synapses = true;
+	simoptions->run_simulation_general_options->presentation_time_per_stimulus_per_epoch = 10.0f;
+	// simoptions->run_simulation_general_options->apply_plasticity_to_relevant_synapses = true;
 
-	//simoptions->recording_electrodes_options->count_neuron_spikes_recording_electrodes_bool = true;
-	//simoptions->recording_electrodes_options->count_input_neuron_spikes_recording_electrodes_bool = true;
+	simoptions->recording_electrodes_options->count_neuron_spikes_recording_electrodes_bool = true;
+	simoptions->recording_electrodes_options->count_input_neuron_spikes_recording_electrodes_bool = true;
 
-	//simoptions->recording_electrodes_options->collect_neuron_spikes_recording_electrodes_bool = true;
+	simoptions->recording_electrodes_options->collect_neuron_spikes_recording_electrodes_bool = true;
 	//simoptions->recording_electrodes_options->collect_neuron_spikes_optional_parameters->human_readable_storage = true;
-	//simoptions->recording_electrodes_options->collect_input_neuron_spikes_recording_electrodes_bool = true;
+	simoptions->recording_electrodes_options->collect_input_neuron_spikes_recording_electrodes_bool = true;
 	//simoptions->recording_electrodes_options->collect_input_neuron_spikes_optional_parameters->human_readable_storage = true;
 
 	//simoptions->recording_electrodes_options->network_state_archive_recording_electrodes_bool = true;
@@ -265,8 +265,8 @@ int main (int argc, char *argv[]){
 
 	Simulator * simulator = new Simulator(BenchModel, simoptions);
 	simulator->RunSimulation();
-
-#ifdef SPIKE_WITH_CUDA
 	cudaProfilerStop();
+	return(0);
+#ifdef SPIKE_WITH_CUDA
 #endif
 }
