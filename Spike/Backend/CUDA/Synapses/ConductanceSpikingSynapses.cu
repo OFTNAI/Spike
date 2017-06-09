@@ -129,7 +129,7 @@ namespace Backend {
 
       // Setting up the custom block size for active synapses only:
       // Carry out the update every 10 timesteps. This timescale affects speed of the kernels not which syns
-      if (fmod(current_time_in_seconds, 10.0*timestep) < timestep){
+      if (fmod(current_time_in_seconds, 100.0*timestep) < timestep){
         // Copying to a pinned memory location (h_num_active_synapses) is much faster
         CudaSafeCall(cudaMemcpy(h_num_active_synapses, num_active_synapses, sizeof(int), cudaMemcpyDeviceToHost));
         active_syn_blocks_per_grid = dim3((h_num_active_synapses[0] + threads_per_block.x) /  threads_per_block.x);
@@ -299,7 +299,7 @@ namespace Backend {
         if (timesteps_until_spike_reaches_synapse != 0) 
           timesteps_until_spike_reaches_synapse -= 1;
         // Given a spike injection window, check if the synapse is within it. If not, remove the synapse from active
-        if (-timesteps_until_spike_reaches_synapse*timestep > 100.0f*d_decay_terms_tau_g[idx]){
+        if (-timesteps_until_spike_reaches_synapse*timestep > 10.0f*d_decay_terms_tau_g[idx]){
           timesteps_until_spike_reaches_synapse = 0;
           int pos = atomicAdd(&d_num_active_synapses[0], -1);
           //atomicExch(&d_active_synapses[indx], d_active_synapses[atomicAdd(&d_num_active_synapses[0], -1) - 1]);;
