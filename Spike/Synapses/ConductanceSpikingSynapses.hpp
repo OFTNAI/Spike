@@ -34,6 +34,7 @@ public:
   float * biological_conductance_scaling_constants_lambda = nullptr;
   float * reversal_potentials_Vhat = nullptr;
   float * decay_terms_tau_g = nullptr;
+  int neuron_pop_size = 0; // parameter for efficient conductance trace
 
   // Synapse Functions
   void AddGroup(int presynaptic_group_id, 

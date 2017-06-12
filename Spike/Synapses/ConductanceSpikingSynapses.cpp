@@ -60,7 +60,8 @@ void ConductanceSpikingSynapses::AddGroup(int presynaptic_group_id,
     reversal_potentials_Vhat[i] = conductance_spiking_synapse_group_params->reversal_potential_Vhat;
     decay_terms_tau_g[i] = conductance_spiking_synapse_group_params->decay_term_tau_g;
   }
-
+    if (neurons->total_number_of_neurons > neuron_pop_size)
+      neuron_pop_size = neurons->total_number_of_neurons; 
 }
 
 void ConductanceSpikingSynapses::increment_number_of_synapses(int increment) {
