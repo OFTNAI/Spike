@@ -43,12 +43,17 @@ namespace Backend {
                                                    float *d_thresholds_for_action_potential_spikes,
                                                    float *d_resting_potentials,
                                                    float* d_last_spike_time_of_each_neuron,
+                                                   float current_time_in_seconds,
+                                                   size_t total_number_of_neurons);
+    __global__ void high_fidelity_check_for_neuron_spikes_kernel(float *d_membrane_potentials_v,
+                                                   float *d_thresholds_for_action_potential_spikes,
+                                                   float *d_resting_potentials,
+                                                   float* d_last_spike_time_of_each_neuron,
                                                    unsigned char* d_bitarray_of_neuron_spikes,
                                                    int bitarray_length,
                                                    int bitarray_maximum_axonal_delay_in_timesteps,
                                                    float current_time_in_seconds,
                                                    float timestep,
-                                                   size_t total_number_of_neurons,
-                                                   bool high_fidelity_spike_flag);
+                                                   size_t total_number_of_neurons);
   } // namespace CUDA
 } // namespace Backend
