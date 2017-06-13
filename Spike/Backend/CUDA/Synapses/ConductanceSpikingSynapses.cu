@@ -23,7 +23,8 @@ namespace Backend {
 
     void ConductanceSpikingSynapses::prepare() {
       SpikingSynapses::prepare();
-      // Set up tau values and ids (Host-Side)
+
+      // Set up tau and reversal potential values and ids (Host-Side)
       h_synapse_decay_id = (int*)realloc(h_synapse_decay_id, frontend()->total_number_of_synapses*sizeof(int));
       // Prepare the tau synaptic conductance host-side vars
       for (int syn_id = 0; syn_id < frontend()->total_number_of_synapses; syn_id++){
@@ -37,6 +38,7 @@ namespace Backend {
             id = i;       
         }
         if (id < 0){
+	  // If this combination of tau/reversal potential doesn't exist, add it:
           num_decay_terms += 1;
           h_decay_term_values = (float*)realloc(h_decay_term_values, (num_decay_terms)*sizeof(float));
           h_reversal_values = (float*)realloc(h_reversal_values, (num_decay_terms)*sizeof(float));
@@ -52,11 +54,8 @@ namespace Backend {
       h_neuron_wise_conductance_trace = (float*)realloc(h_neuron_wise_conductance_trace, conductance_trace_length*sizeof(float));
       for (int id = 0; id < conductance_trace_length; id++)
         h_neuron_wise_conductance_trace[id] = 0.0f;
-      // Set up block size for conductances
-      // conductance_trace_blocks_per_grid = dim3((conductance_trace_length + threads_per_block.x) / threads_per_block.x);
-      // if (conductance_trace_blocks_per_grid.x > number_of_synapse_blocks_per_grid.x)
-      //   conductance_trace_blocks_per_grid = number_of_synapse_blocks_per_grid;
 
+      // Carry out remaining device actions
       allocate_device_pointers();
       copy_constants_and_initial_efficacies_to_device();
     }
@@ -210,7 +209,6 @@ namespace Backend {
                   time_of_last_spike_to_reach_synapse);
         CudaCheckError();
       } else {
-        //CudaSafeCall(cudaMemcpy(num_after_deactivation, num_active_synapses, sizeof(int), cudaMemcpyDeviceToDevice));
         CudaSafeCall(cudaMemcpy(h_num_active_synapses, num_after_deactivation, sizeof(int), cudaMemcpyDeviceToHost));
         if (h_num_active_synapses[0] < 0)
          CudaSafeCall(cudaMemset(num_after_deactivation, 0, sizeof(int)));
@@ -223,8 +221,6 @@ namespace Backend {
                   synapse_switches,
                   time_of_last_spike_to_reach_synapse,
                   timestep);
-        //CudaSafeCall(cudaMemcpy(num_active_synapses, num_after_deactivation, sizeof(int), cudaMemcpyDeviceToDevice));
-        //CudaSafeCall(cudaMemcpy(active_synapse_indices, synapse_switches, sizeof(int)*frontend()->total_number_of_synapses, cudaMemcpyDeviceToDevice));
       }
     }
 
@@ -307,8 +303,6 @@ namespace Backend {
           d_neurons_current_injections[idx] += synaptic_conductance_g * (reversal_values[decay_id] - membrane_potential_v);
         }
 
-        //if (d_neurons_current_injections[idx] > 0.0001)
-        //printf("%f in here!\n", d_neurons_current_injections[idx]);
         idx += blockDim.x * gridDim.x;
 
       }
@@ -365,7 +359,6 @@ namespace Backend {
           indx += blockDim.x * gridDim.x;
           continue;
         }
-        //synapse_switches[indx] = d_active_synapses[indx];
         int timesteps_until_spike_reaches_synapse = d_spikes_travelling_to_synapse[idx];
 
         // If the spike is anything but zero (reset value) decrement it
