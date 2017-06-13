@@ -48,13 +48,6 @@ namespace Backend {
       void allocate_device_pointers(); // Not virtual
       void copy_constants_and_initial_efficacies_to_device(); // Not virtual
 
-      void calculate_postsynaptic_current_injection
-        (::SpikingNeurons * neurons,
-         float current_time_in_seconds,
-         float timestep) ; // Overrides ::Backend::SpikingSynapses:: ...
-
-      void update_synaptic_conductances(float timestep, float current_time_in_seconds) ;
-      
       void state_update(::SpikingNeurons * neurons, ::SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) final;
 
     };
