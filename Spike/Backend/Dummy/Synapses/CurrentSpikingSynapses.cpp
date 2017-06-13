@@ -8,11 +8,6 @@ namespace Backend {
       SpikingSynapses::prepare();
     }
 
-    void CurrentSpikingSynapses::calculate_postsynaptic_current_injection
-    (::SpikingNeurons * neurons,
-     float current_time_in_seconds, float timestep) {
-    }
-
     void CurrentSpikingSynapses::reset_state() {
       SpikingSynapses::reset_state();
     }

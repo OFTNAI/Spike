@@ -8,6 +8,8 @@ namespace Backend {
     public:
       void prepare() override;
       void reset_state() override;
+
+      void state_update(float current_time_in_seconds, float timestep) override;
     };
   }
 }

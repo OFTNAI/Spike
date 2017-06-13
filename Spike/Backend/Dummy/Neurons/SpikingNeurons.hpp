@@ -11,10 +11,8 @@ namespace Backend {
       void prepare() override;
       void reset_state() override;
 
-      void check_for_neuron_spikes(float current_time_in_seconds,
+      void state_update(float current_time_in_seconds,
                                    float timestep) override;
-      void update_membrane_potentials(float timestep,
-                                      float current_time_in_seconds) override;
     };
   } // namespace Dummy
 } // namespace Backend

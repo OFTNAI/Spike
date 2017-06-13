@@ -11,10 +11,9 @@ namespace Backend {
       void prepare() override;
       void reset_state() override;
 
-      void interact_spikes_with_synapses
+      void state_update
       (::SpikingNeurons * neurons, ::SpikingNeurons * input_neurons,
        float current_time_in_seconds, float timestep) final;
-      void copy_weights_to_host() override;
     };
   } // namespace Dummy
 } // namespace Backend

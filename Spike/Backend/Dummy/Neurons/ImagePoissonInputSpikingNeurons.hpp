@@ -16,8 +16,7 @@ namespace Backend {
       void copy_rates_to_device() override;
       
       // May want to override these when writing a new backend, or may not:
-      using ::Backend::Dummy::SpikingNeurons::check_for_neuron_spikes;
-      using ::Backend::Dummy::SpikingNeurons::update_membrane_potentials;
+      using ::Backend::Dummy::SpikingNeurons::state_update;
     };
   }
 }

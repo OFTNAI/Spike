@@ -12,13 +12,6 @@ namespace Backend {
       
       void prepare() override;
       void reset_state() override;
-
-      void calculate_postsynaptic_current_injection
-      (::SpikingNeurons * neurons,
-       float current_time_in_seconds,
-       float timestep) final;
-
-      void update_synaptic_conductances(float timestep, float current_time_in_seconds) final;
     };
   } // namespace Dummy
 } // namespace Backend

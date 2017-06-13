@@ -12,14 +12,5 @@ namespace Backend {
       SpikingSynapses::reset_state();
     }
 
-    void ConductanceSpikingSynapses::calculate_postsynaptic_current_injection
-    (::SpikingNeurons * neurons,
-     float current_time_in_seconds,
-     float timestep) {
-    }
-
-    void ConductanceSpikingSynapses::update_synaptic_conductances
-    (float timestep, float current_time_in_seconds) {
-    }
   }
 }
