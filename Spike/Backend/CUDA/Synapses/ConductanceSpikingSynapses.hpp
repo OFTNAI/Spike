@@ -58,19 +58,24 @@ namespace Backend {
     };
 
     __global__ void get_active_synapses_kernel(
-      int* d_per_neuron_efferent_synapse_count,
-      int* d_per_neuron_efferent_synapse_total,
-      int* d_per_neuron_efferent_synapse_indice,
-      int* d_delays,
-      int* d_spikes_travelling_to_synapse,
-      float* d_last_spike_time_of_each_neuron,
-      float current_time_in_seconds,
-      int* d_num_active_synapses,
-      int* d_active_synapses,
-      int* num_after_deactivation,
-      int* synapse_switches,
-      float timestep,
-      size_t total_number_of_neurons);
+		int* d_per_neuron_efferent_synapse_count,
+        	int* d_per_neuron_efferent_synapse_total,
+                int* d_per_neuron_efferent_synapse_indices,
+		int* d_per_input_neuron_efferent_synapse_count,
+        	int* d_per_input_neuron_efferent_synapse_total,
+                int* d_per_input_neuron_efferent_synapse_indices,
+                int* d_delays,
+                int* d_spikes_travelling_to_synapse,
+                float* d_last_spike_time_of_each_neuron,
+                float* d_last_spike_time_of_each_input_neuron,
+                float current_time_in_seconds,
+                int* d_num_active_synapses,
+                int* d_active_synapses,
+                int* num_after_deactivation,
+                int* synapse_switches,
+                float timestep,
+		int number_of_input_neurons,
+                size_t total_number_of_neurons); 
 
     __global__ void conductance_calculate_postsynaptic_current_injection_kernel(
       float* decay_term_values,

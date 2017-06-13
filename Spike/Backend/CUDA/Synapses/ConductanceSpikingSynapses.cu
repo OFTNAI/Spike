@@ -159,29 +159,29 @@ namespace Backend {
       ::Backend::CUDA::SpikingNeurons* input_neurons_backend =
         dynamic_cast<::Backend::CUDA::SpikingNeurons*>(input_neurons->backend());
       assert(input_neurons_backend);
-      
-      std::vector<::Backend::CUDA::SpikingNeurons*> neuron_backends_vec;
-      neuron_backends_vec.push_back(neurons_backend);
-      neuron_backends_vec.push_back(input_neurons_backend);
-      // Get Active Synapses
-      for (int neuron_pop = 0; neuron_pop < neuron_backends_vec.size(); neuron_pop++){      
-        get_active_synapses_kernel<<<neuron_backends_vec[neuron_pop]->number_of_neuron_blocks_per_grid, threads_per_block>>>(
-                neuron_backends_vec[neuron_pop]->per_neuron_efferent_synapse_count,
-                neuron_backends_vec[neuron_pop]->per_neuron_efferent_synapse_total,
-                neuron_backends_vec[neuron_pop]->per_neuron_efferent_synapse_indices,
+
+
+        get_active_synapses_kernel<<<neurons_backend->number_of_neuron_blocks_per_grid, threads_per_block>>>(
+                neurons_backend->per_neuron_efferent_synapse_count,
+                neurons_backend->per_neuron_efferent_synapse_total,
+                neurons_backend->per_neuron_efferent_synapse_indices,
+                input_neurons_backend->per_neuron_efferent_synapse_count,
+                input_neurons_backend->per_neuron_efferent_synapse_total,
+                input_neurons_backend->per_neuron_efferent_synapse_indices,
                 delays,
                 spikes_travelling_to_synapse,
-                neuron_backends_vec[neuron_pop]->last_spike_time_of_each_neuron,
+                neurons_backend->last_spike_time_of_each_neuron,
+                input_neurons_backend->last_spike_time_of_each_neuron,
                 current_time_in_seconds,
                 num_active_synapses,
                 active_synapse_indices,
                 num_after_deactivation,
                 synapse_switches,
                 timestep,
-                neuron_backends_vec[neuron_pop]->frontend()->total_number_of_neurons);
+		input_neurons_backend->frontend()->total_number_of_neurons,
+                (neurons_backend->frontend()->total_number_of_neurons + input_neurons_backend->frontend()->total_number_of_neurons));
         CudaCheckError();
-      }
-
+      
       // Setting up the custom block size for active synapses only:
       // Carry out the update every 10 timesteps. This timescale affects speed of the kernels not which syns
       if (fmod(current_time_in_seconds, 100.0*timestep) < timestep){
@@ -226,31 +226,39 @@ namespace Backend {
 
 
     /* KERNELS BELOW */
-    __global__ void get_active_synapses_kernel(int* d_per_neuron_efferent_synapse_count,
-        int* d_per_neuron_efferent_synapse_total,
+    __global__ void get_active_synapses_kernel(
+		int* d_per_neuron_efferent_synapse_count,
+        	int* d_per_neuron_efferent_synapse_total,
                 int* d_per_neuron_efferent_synapse_indices,
+		int* d_per_input_neuron_efferent_synapse_count,
+        	int* d_per_input_neuron_efferent_synapse_total,
+                int* d_per_input_neuron_efferent_synapse_indices,
                 int* d_delays,
                 int* d_spikes_travelling_to_synapse,
                 float* d_last_spike_time_of_each_neuron,
+                float* d_last_spike_time_of_each_input_neuron,
                 float current_time_in_seconds,
                 int* d_num_active_synapses,
                 int* d_active_synapses,
                 int* num_after_deactivation,
                 int* synapse_switches,
                 float timestep,
+		int num_input_neurons,
                 size_t total_number_of_neurons) {
 
-      int idx = threadIdx.x + blockIdx.x * blockDim.x;
-      while (idx < total_number_of_neurons) {
-    
+      int indx = threadIdx.x + blockIdx.x * blockDim.x;
+      while (indx < total_number_of_neurons) {
+   	int idx = indx - (num_input_neurons); 
         bool presynaptic_is_input = PRESYNAPTIC_IS_INPUT(idx);
-        float effecttime = d_last_spike_time_of_each_neuron[CORRECTED_PRESYNAPTIC_ID(idx, presynaptic_is_input)];
+	bool corr_idx = CORRECTED_PRESYNAPTIC_ID(idx, presynaptic_is_input);
+        float effecttime = presynaptic_is_input ? d_last_spike_time_of_each_input_neuron[corr_idx] : d_last_spike_time_of_each_neuron[corr_idx];
 
         // Check if spike occurred within the last timestep    
         if (fabs(effecttime - current_time_in_seconds) < 0.5*timestep){
+	  int synapse_count = presynaptic_is_input ? d_per_input_neuron_efferent_synapse_count[corr_idx] : d_per_neuron_efferent_synapse_count[corr_idx];  
           // For each of this neuron's efferent synapses
-          for (int i = 0; i < d_per_neuron_efferent_synapse_count[idx]; i++){
-            int synapse_id = d_per_neuron_efferent_synapse_indices[d_per_neuron_efferent_synapse_total[idx] - i - 1];
+          for (int i = 0; i < synapse_count; i++){
+            int synapse_id = presynaptic_is_input ? d_per_input_neuron_efferent_synapse_indices[d_per_input_neuron_efferent_synapse_total[corr_idx] - i - 1] : d_per_neuron_efferent_synapse_indices[d_per_neuron_efferent_synapse_total[corr_idx] - i - 1];
             // If this synapse is not active, make it active
             if (d_spikes_travelling_to_synapse[synapse_id] == 0) {
               int pos = atomicAdd(&num_after_deactivation[0], -1);
@@ -273,7 +281,7 @@ namespace Backend {
         }
 
         __syncthreads();
-        idx += blockDim.x * gridDim.x;
+        indx += blockDim.x * gridDim.x;
       }
     }
 
