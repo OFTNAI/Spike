@@ -60,7 +60,7 @@ public:
   void init_backend(Context* ctx = _global_ctx) override;
   void prepare_backend_late() override;
 
-  void Run_Plasticity(float current_time_in_seconds, float timestep) override;
+  void state_update(float current_time_in_seconds, float timestep) override;
 	
   // Updates for this model
   void update_presynaptic_activities(float timestep, float current_time_in_seconds);

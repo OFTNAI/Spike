@@ -46,8 +46,8 @@ void PoissonInputSpikingNeurons::prepare_backend_early() {
   init_random_state();
 }
 
-void PoissonInputSpikingNeurons::update_membrane_potentials(float timestep, float current_time_in_seconds) {
-  backend()->update_membrane_potentials(timestep, current_time_in_seconds);
+void PoissonInputSpikingNeurons::state_update(float current_time_in_seconds, float timestep) {
+  backend()->state_update(current_time_in_seconds, timestep);
 }
 
 SPIKE_MAKE_INIT_BACKEND(PoissonInputSpikingNeurons);

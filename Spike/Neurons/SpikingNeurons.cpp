@@ -52,12 +52,8 @@ int SpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
 	return new_group_id;
 }
 
-void SpikingNeurons::check_for_neuron_spikes(float current_time_in_seconds, float timestep) {
-  backend()->check_for_neuron_spikes(current_time_in_seconds, timestep);
-}
-
-void SpikingNeurons::update_membrane_potentials(float timestep, float current_time_in_seconds) {
-  backend()->update_membrane_potentials(timestep, current_time_in_seconds);
+void SpikingNeurons::state_update(float current_time_in_seconds, float timestep) {
+  backend()->state_update(current_time_in_seconds, timestep);
 }
 
 SPIKE_MAKE_STUB_INIT_BACKEND(SpikingNeurons);

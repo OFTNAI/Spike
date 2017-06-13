@@ -53,7 +53,7 @@ public:
   // ID for Plasticity Rules
   int plasticity_rule_id = -1;
 
-  virtual void Run_Plasticity(float current_time_in_seconds, float timestep) = 0;
+  virtual void state_update(float current_time_in_seconds, float timestep) = 0;
 
 private:
   std::shared_ptr<::Backend::Plasticity> _backend;

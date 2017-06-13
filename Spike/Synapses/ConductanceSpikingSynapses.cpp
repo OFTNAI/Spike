@@ -96,20 +96,8 @@ void ConductanceSpikingSynapses::shuffle_synapses() {
 
 }
 
-
-void ConductanceSpikingSynapses::calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds, float timestep) {
-  // First update the conductances
-  update_synaptic_conductances(timestep, current_time_in_seconds);
-
-  backend()->calculate_postsynaptic_current_injection(neurons, current_time_in_seconds, timestep);
-}
-
-void ConductanceSpikingSynapses::update_synaptic_conductances(float timestep, float current_time_in_seconds) {
-  backend()->update_synaptic_conductances(timestep, current_time_in_seconds);
-}
-
-void ConductanceSpikingSynapses::interact_spikes_with_synapses(SpikingNeurons * neurons, SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) {
-  backend()->interact_spikes_with_synapses(neurons, input_neurons, current_time_in_seconds, timestep);
+void ConductanceSpikingSynapses::state_update(SpikingNeurons * neurons, SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) {
+  backend()->state_update(neurons, input_neurons, current_time_in_seconds, timestep);
 }
 
 SPIKE_MAKE_INIT_BACKEND(ConductanceSpikingSynapses);

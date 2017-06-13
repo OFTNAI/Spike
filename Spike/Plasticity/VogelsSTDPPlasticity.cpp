@@ -27,7 +27,7 @@ void VogelsSTDPPlasticity::prepare_backend_late() {
 }
 
 // Run the STDP
-void VogelsSTDPPlasticity::Run_Plasticity(float current_time_in_seconds, float timestep){
+void VogelsSTDPPlasticity::state_update(float current_time_in_seconds, float timestep){
   apply_stdp_to_synapse_weights(current_time_in_seconds, timestep);
 }
 

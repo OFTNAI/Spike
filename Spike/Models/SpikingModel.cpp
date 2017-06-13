@@ -150,22 +150,15 @@ void SpikingModel::reset_state() {
 
 void SpikingModel::perform_per_timestep_model_instructions(float current_time_in_seconds, bool apply_plasticity_to_relevant_synapses){
 
-	spiking_neurons->update_membrane_potentials(timestep, current_time_in_seconds);
-	input_spiking_neurons->update_membrane_potentials(timestep, current_time_in_seconds);
+	spiking_neurons->state_update(current_time_in_seconds, timestep);
+	input_spiking_neurons->state_update(current_time_in_seconds, timestep);
 
-	spiking_neurons->check_for_neuron_spikes(current_time_in_seconds, timestep);
-	input_spiking_neurons->check_for_neuron_spikes(current_time_in_seconds, timestep);
-
-	spiking_synapses->interact_spikes_with_synapses(spiking_neurons, input_spiking_neurons, current_time_in_seconds, timestep);
-
-	//spiking_neurons->reset_current_injections();
-
-	spiking_synapses->calculate_postsynaptic_current_injection(spiking_neurons, current_time_in_seconds, timestep);
+	spiking_synapses->state_update(spiking_neurons, input_spiking_neurons, current_time_in_seconds, timestep);
 
 	if (apply_plasticity_to_relevant_synapses){
-		for (int plasticity_id = 0; plasticity_id < plasticity_rule_vec.size(); plasticity_id++){
-			plasticity_rule_vec[plasticity_id]->Run_Plasticity(current_time_in_seconds, timestep); // spiking_neurons, 
-		}
+		for (int plasticity_id = 0; plasticity_id < plasticity_rule_vec.size(); plasticity_id++)
+			plasticity_rule_vec[plasticity_id]->state_update(current_time_in_seconds, timestep); // spiking_neurons, 
+	}
 	}
 
 }

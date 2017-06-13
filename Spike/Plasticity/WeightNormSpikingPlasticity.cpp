@@ -14,7 +14,7 @@ WeightNormSpikingPlasticity::~WeightNormSpikingPlasticity(){
 	free(neuron_in_plasticity_set);
 }
 
-void WeightNormSpikingPlasticity::Run_Plasticity(float current_time_in_seconds, float timestep){
+void WeightNormSpikingPlasticity::state_update(float current_time_in_seconds, float timestep){
 	backend()->weight_normalization();
 }
 

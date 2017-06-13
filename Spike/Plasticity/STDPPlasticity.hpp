@@ -52,7 +52,7 @@ public:
   SpikingSynapses* syns = nullptr;
   SpikingNeurons* neurs = nullptr;
 
-  virtual void Run_Plasticity(float current_time_in_seconds, float timestep) override = 0;
+  virtual void state_update(float current_time_in_seconds, float timestep) override = 0;
 
 private:
   std::shared_ptr<::Backend::STDPPlasticity> _backend;

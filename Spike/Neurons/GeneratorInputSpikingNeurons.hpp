@@ -32,7 +32,7 @@ public:
   float** spike_times_matrix_for_stimuli = nullptr;
   float* temporal_lengths_of_stimuli = nullptr;
 
-  void update_membrane_potentials(float timestep, float current_time_in_seconds) override;
+  void state_update(float current_time_in_seconds, float timestep) override;
 
   void AddStimulus(int spikenumber, int* ids, float* spiketimes);
 

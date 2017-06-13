@@ -22,9 +22,9 @@ ImagePoissonInputSpikingNeurons::~ImagePoissonInputSpikingNeurons() {
   free(gabor_input_rates);
 }
 
-void ImagePoissonInputSpikingNeurons::update_membrane_potentials
-(float timestep, float current_time_in_seconds) {
-  backend()->update_membrane_potentials(timestep, current_time_in_seconds);
+void ImagePoissonInputSpikingNeurons::state_update
+(float current_time_in_seconds, float timestep) {
+  backend()->state_update(current_time_in_seconds, timestep);
 }
 
 int ImagePoissonInputSpikingNeurons::AddGroup(neuron_parameters_struct * group_params){

@@ -39,9 +39,5 @@ int LIFSpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
 	return new_group_id;
 }
 
-// void LIFSpikingNeurons::update_membrane_potentials(float timestep, float current_time_in_seconds) {
-//   backend()->update_membrane_potentials(timestep, current_time_in_seconds);
-// }
-
 SPIKE_MAKE_INIT_BACKEND(LIFSpikingNeurons);
 

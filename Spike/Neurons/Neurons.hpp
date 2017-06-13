@@ -25,7 +25,6 @@ namespace Backend {
   public:
     SPIKE_ADD_BACKEND_FACTORY(Neurons);
     ~Neurons() override = default;
-    virtual void reset_current_injections() = 0;
   };
 }
 
@@ -83,9 +82,8 @@ public:
   virtual int AddGroup(neuron_parameters_struct * group_params);
 
   /**  
-   *  Resets any undesired data which is dynamically reassigned during a simulation. In this case, the current to be injected at the next time step.
+   *  Resets any undesired data which is dynamically reassigned during a simulation. 
    */
-  void reset_current_injections(); // Not virtual
   void reset_state() override;
 
 

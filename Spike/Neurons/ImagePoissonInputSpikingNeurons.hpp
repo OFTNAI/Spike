@@ -38,7 +38,7 @@ public:
   int AddGroup(neuron_parameters_struct * group_params) override;
   void AddGroupForEachGaborType(neuron_parameters_struct * group_params);
 
-  void update_membrane_potentials(float timestep, float current_time_in_seconds) override;
+  void state_update(float current_time_in_seconds, float timestep) override;
 
   void set_up_rates(const char * fileList, const char * filterParameters, const char * inputDirectory, float max_rate_scaling_factor);
   void load_image_names_from_file_list(const char * fileList, const char * inputDirectory);

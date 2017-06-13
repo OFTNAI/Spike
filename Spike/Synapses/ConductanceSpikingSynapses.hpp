@@ -18,7 +18,6 @@ namespace Backend {
   class ConductanceSpikingSynapses : public virtual SpikingSynapses {
   public:
     SPIKE_ADD_BACKEND_FACTORY(ConductanceSpikingSynapses);
-    virtual void update_synaptic_conductances(float timestep, float current_time_in_seconds) = 0;
   };
 }
 
@@ -47,9 +46,7 @@ public:
   void increment_number_of_synapses(int increment);
   void shuffle_synapses() override;
 
-  void calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds, float timestep) override;
-  void update_synaptic_conductances(float timestep, float current_time_in_seconds) override;
-  void interact_spikes_with_synapses(SpikingNeurons * neurons, SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) override;
+  void state_update(SpikingNeurons * neurons, SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) override;
 
 private:
   std::shared_ptr<::Backend::ConductanceSpikingSynapses> _backend;

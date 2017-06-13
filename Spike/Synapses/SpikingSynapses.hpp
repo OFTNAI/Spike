@@ -12,8 +12,7 @@ namespace Backend {
   public:
     SPIKE_ADD_BACKEND_FACTORY(SpikingSynapses);
     virtual void copy_weights_to_host() = 0;
-    virtual void calculate_postsynaptic_current_injection(::SpikingNeurons * neurons, float current_time_in_seconds, float timestep) = 0;
-    virtual void interact_spikes_with_synapses(::SpikingNeurons * neurons, ::SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) = 0;
+    virtual void state_update(::SpikingNeurons * neurons, ::SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) = 0;
   };
 }
 
@@ -46,10 +45,7 @@ public:
   void increment_number_of_synapses(int increment);
   void shuffle_synapses() override;
 
-  virtual void update_synaptic_conductances(float timestep, float current_time_in_seconds) = 0;
-  virtual void calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds, float timestep) = 0;
-
-  virtual void interact_spikes_with_synapses(SpikingNeurons * neurons, SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep);
+  virtual void state_update(SpikingNeurons * neurons, SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep);
 
 private:
   std::shared_ptr<::Backend::SpikingSynapses> _backend;

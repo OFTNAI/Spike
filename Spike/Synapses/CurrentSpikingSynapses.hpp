@@ -24,9 +24,7 @@ public:
                 Neurons * input_neurons,
                 float timestep,
                 synapse_parameters_struct * synapse_params) override;
-  virtual void update_synaptic_conductances(float timestep, float current_time_in_seconds) override;
-  void calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds, float timestep) override;
-
+  void state_update( SpikingNeurons* input_neurons, SpikingNeurons* neurons, float current_time_in_seconds, float timestep) override;
 private:
   std::shared_ptr<::Backend::CurrentSpikingSynapses> _backend;
 };

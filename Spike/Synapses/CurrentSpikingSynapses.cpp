@@ -18,11 +18,9 @@ void CurrentSpikingSynapses::AddGroup(int presynaptic_group_id,
 }
 
 
-void CurrentSpikingSynapses::calculate_postsynaptic_current_injection(SpikingNeurons * neurons, float current_time_in_seconds, float timestep) {
-  backend()->calculate_postsynaptic_current_injection(neurons, current_time_in_seconds, timestep);
+void CurrentSpikingSynapses::state_update(SpikingNeurons * input_neurons, SpikingNeurons * neurons, float current_time_in_seconds, float timestep) {
+  backend()->state_update(input_neurons, neurons, current_time_in_seconds, timestep);
 }
-
-void CurrentSpikingSynapses::update_synaptic_conductances(float timestep, float current_time_in_seconds) {}
 
 SPIKE_MAKE_INIT_BACKEND(CurrentSpikingSynapses);
 

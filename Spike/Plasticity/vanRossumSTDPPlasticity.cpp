@@ -37,7 +37,7 @@ void vanRossumSTDPPlasticity::prepare_backend_late() {
 
 
 // Run the STDP
-void vanRossumSTDPPlasticity::Run_Plasticity(float current_time_in_seconds, float timestep){
+void vanRossumSTDPPlasticity::state_update(float current_time_in_seconds, float timestep){
   stdp_params->timestep = timestep;
   apply_stdp_to_synapse_weights(current_time_in_seconds);
 }

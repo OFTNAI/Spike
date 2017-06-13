@@ -31,7 +31,7 @@ void EvansSTDPPlasticity::prepare_backend_late() {
 }
 
 // Run the STDP
-void EvansSTDPPlasticity::Run_Plasticity (float current_time_in_seconds, float timestep){
+void EvansSTDPPlasticity::state_update (float current_time_in_seconds, float timestep){
   // Update
   update_synaptic_efficacies_or_weights(current_time_in_seconds);
   update_presynaptic_activities(timestep, current_time_in_seconds);

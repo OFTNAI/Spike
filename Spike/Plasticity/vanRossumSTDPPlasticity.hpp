@@ -71,7 +71,7 @@ public:
   void prepare_backend_late() override;
 
   // STDP
-  void Run_Plasticity(float current_time_in_seconds, float timestep) override;
+  void state_update(float current_time_in_seconds, float timestep) override;
 
   // LTP & LTD for this model
   void apply_stdp_to_synapse_weights(float current_time_in_seconds);

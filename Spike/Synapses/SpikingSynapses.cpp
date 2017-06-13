@@ -98,8 +98,8 @@ void SpikingSynapses::shuffle_synapses() {
 }
 
 
-void SpikingSynapses::interact_spikes_with_synapses(SpikingNeurons * neurons, SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) {
-  backend()->interact_spikes_with_synapses(neurons, input_neurons, current_time_in_seconds, timestep);
+void SpikingSynapses::state_update(SpikingNeurons * neurons, SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) {
+  backend()->state_update(neurons, input_neurons, current_time_in_seconds, timestep);
 }
 
 SPIKE_MAKE_STUB_INIT_BACKEND(SpikingSynapses);

@@ -40,7 +40,7 @@ public:
   
   int AddGroup(neuron_parameters_struct * group_params) override;
 
-  void update_membrane_potentials(float timestep, float current_time_in_seconds) override;
+  void state_update(float current_time_in_seconds, float timestep) override;
 
 private:
   std::shared_ptr<::Backend::PoissonInputSpikingNeurons> _backend;
