@@ -10,6 +10,7 @@ namespace Backend {
       CudaSafeCall(cudaFree(biological_conductance_scaling_constants_lambda));
       CudaSafeCall(cudaFree(num_active_synapses));
       CudaSafeCall(cudaFreeHost(h_num_active_synapses));
+      CudaSafeCall(cudaFreeHost(reset_deactivation));
       CudaSafeCall(cudaFree(active_synapse_indices));
       CudaSafeCall(cudaFree(num_after_deactivation));
       CudaSafeCall(cudaFree(synapse_switches));
@@ -68,6 +69,7 @@ namespace Backend {
         neuron_wise_conductance_trace,
         h_neuron_wise_conductance_trace,
         sizeof(float)*conductance_trace_length, cudaMemcpyHostToDevice));
+      reset_deactivation[0] = false;
     }
 
 
@@ -76,6 +78,7 @@ namespace Backend {
       CudaSafeCall(cudaMalloc((void **)&active_synapse_indices, sizeof(int)*frontend()->total_number_of_synapses));
       CudaSafeCall(cudaMalloc((void **)&num_active_synapses, sizeof(int)));
       CudaSafeCall(cudaMallocHost((void **)&h_num_active_synapses, sizeof(int)));
+      CudaSafeCall(cudaMallocHost((void **)&reset_deactivation, sizeof(bool)));
       CudaSafeCall(cudaMalloc((void **)&num_after_deactivation, sizeof(int)));
       CudaSafeCall(cudaMalloc((void **)&synapse_switches, sizeof(int)*frontend()->total_number_of_synapses));
       CudaSafeCall(cudaMalloc((void **)&synapse_decay_id, sizeof(int)*frontend()->total_number_of_synapses));
@@ -106,6 +109,7 @@ namespace Backend {
         sizeof(float)*num_decay_terms, cudaMemcpyHostToDevice));
       CudaSafeCall(cudaMemset(num_active_synapses, 0, sizeof(int)));
       CudaSafeCall(cudaMemset(num_after_deactivation, 0, sizeof(int)));
+      reset_deactivation[0] = false;
     }
 
 
@@ -177,6 +181,7 @@ namespace Backend {
                 active_synapse_indices,
                 num_after_deactivation,
                 synapse_switches,
+		reset_deactivation,
                 timestep,
 		input_neurons_backend->frontend()->total_number_of_neurons,
                 (neurons_backend->frontend()->total_number_of_neurons + input_neurons_backend->frontend()->total_number_of_neurons));
@@ -209,9 +214,9 @@ namespace Backend {
                   time_of_last_spike_to_reach_synapse);
         CudaCheckError();
       } else {
-        CudaSafeCall(cudaMemcpy(h_num_active_synapses, num_after_deactivation, sizeof(int), cudaMemcpyDeviceToHost));
-        if (h_num_active_synapses[0] < 0)
-         CudaSafeCall(cudaMemset(num_after_deactivation, 0, sizeof(int)));
+        //CudaSafeCall(cudaMemcpy(h_num_active_synapses, num_after_deactivation, sizeof(int), cudaMemcpyDeviceToHost));
+        if (reset_deactivation[0])
+	 CudaSafeCall(cudaMemset(num_after_deactivation, 0, sizeof(int)));
         conductance_move_spikes_towards_synapses_kernel<<<active_syn_blocks_per_grid, threads_per_block>>>(
                   spikes_travelling_to_synapse,
                   current_time_in_seconds,
@@ -219,6 +224,7 @@ namespace Backend {
                   active_synapse_indices,
                   num_after_deactivation,
                   synapse_switches,
+		  reset_deactivation,
                   time_of_last_spike_to_reach_synapse,
                   timestep);
       }
@@ -242,6 +248,7 @@ namespace Backend {
                 int* d_active_synapses,
                 int* num_after_deactivation,
                 int* synapse_switches,
+		bool* reset_deactivation,
                 float timestep,
 		int num_input_neurons,
                 size_t total_number_of_neurons) {
@@ -267,7 +274,7 @@ namespace Backend {
                 d_active_synapses[synapse_switches[pos]] = synapse_id;
                 d_spikes_travelling_to_synapse[synapse_id] = d_delays[synapse_id] + 1;
               } else {
-                // SET SOME FLAG TO TRUE!
+		reset_deactivation[0] = true;
                 pos = atomicAdd(&d_num_active_synapses[0], 1);
                 d_active_synapses[pos] = synapse_id;  
                 d_spikes_travelling_to_synapse[synapse_id] = d_delays[synapse_id] + 1;
@@ -357,6 +364,7 @@ namespace Backend {
                     int* d_active_synapses,
                     int* num_after_deactivation,
                     int* synapse_switches,
+		    bool* reset_deactivation,
                     float* d_time_of_last_spike_to_reach_synapse,
                     float timestep){
 
@@ -381,6 +389,7 @@ namespace Backend {
           int pos = atomicAdd(&num_after_deactivation[0], 1);
           synapse_switches[pos] = indx;
           d_active_synapses[indx] = -1;
+	  reset_deactivation[0] = false;
         }
 
         d_spikes_travelling_to_synapse[idx] = timesteps_until_spike_reaches_synapse;

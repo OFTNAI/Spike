@@ -27,6 +27,7 @@ namespace Backend {
       int * active_synapse_indices = nullptr;
       int * num_after_deactivation = nullptr;
       int * synapse_switches = nullptr;
+      bool * reset_deactivation = nullptr;
       dim3 active_syn_blocks_per_grid = dim3(1);
 
       // Variables used for memory-trace based synaptic input
@@ -73,6 +74,7 @@ namespace Backend {
                 int* d_active_synapses,
                 int* num_after_deactivation,
                 int* synapse_switches,
+		bool* reset_deactivation,
                 float timestep,
 		int number_of_input_neurons,
                 size_t total_number_of_neurons); 
@@ -109,6 +111,7 @@ namespace Backend {
       int* d_active_synapses,
       int* num_after_deactivation,
       int* synapse_switches,
+      bool* reset_deactivation,
       float* d_time_of_last_spike_to_reach_synapse,
       float timestep);
 
