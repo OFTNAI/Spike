@@ -32,7 +32,7 @@ namespace Backend {
 
       void copy_weights_to_host() override;
 
-      void interact_spikes_with_synapses(::SpikingNeurons * neurons, ::SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) override;
+      void state_update(::SpikingNeurons * neurons, ::SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) override;
     };
 
     __global__ void move_spikes_towards_synapses_kernel(int* d_presynaptic_neuron_indices,

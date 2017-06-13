@@ -26,8 +26,7 @@ namespace Backend {
       void copy_constants_to_device(); // Not virtual
       void allocate_device_pointers(); // Not virtual
 
-      // void check_for_neuron_spikes(float current_time_in_seconds, float timestep) override;
-      void update_membrane_potentials(float timestep, float current_time_in_seconds) override;
+      void state_update(float current_time_in_seconds, float timestep) override;
     };
 
     __global__ void lif_update_membrane_potentials(float *d_membrane_potentials_v,

@@ -36,7 +36,7 @@ namespace Backend {
        */
       void copy_constants_to_device(); // Not virtual
 
-      void check_for_neuron_spikes(float current_time_in_seconds, float timestep) override;
+      void state_update(float current_time_in_seconds, float timestep) override;
     };
 
     __device__ void check_for_neuron_spikes_kernel(float& d_membrane_potentials_v,

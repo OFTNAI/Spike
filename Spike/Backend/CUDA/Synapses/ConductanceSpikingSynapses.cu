@@ -151,7 +151,7 @@ namespace Backend {
      // CudaCheckError();
     }
 
-    void ConductanceSpikingSynapses::interact_spikes_with_synapses
+    void ConductanceSpikingSynapses::state_update
     (::SpikingNeurons* neurons,
      ::SpikingNeurons* input_neurons,
      float current_time_in_seconds, float timestep) {

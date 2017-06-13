@@ -57,7 +57,7 @@ namespace Backend {
                               cudaMemcpyHostToDevice));
     }
 
-    void SpikingSynapses::interact_spikes_with_synapses
+    void SpikingSynapses::state_update
     (::SpikingNeurons* neurons,
      ::SpikingNeurons* input_neurons,
      float current_time_in_seconds, float timestep) {

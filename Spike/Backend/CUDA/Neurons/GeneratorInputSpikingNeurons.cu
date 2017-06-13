@@ -35,7 +35,7 @@ namespace Backend {
       num_spikes_in_current_stimulus = frontend()->number_of_spikes_in_stimuli[frontend()->current_stimulus_index];
     }
 
-    void GeneratorInputSpikingNeurons::check_for_neuron_spikes(float current_time_in_seconds, float timestep) {
+    void GeneratorInputSpikingNeurons::state_update(float current_time_in_seconds, float timestep) {
       if ((frontend()->temporal_lengths_of_stimuli[frontend()->current_stimulus_index] +  timestep) > current_time_in_seconds){
         check_for_generator_spikes_kernel<<<number_of_neuron_blocks_per_grid, threads_per_block>>>
           (neuron_ids_for_stimulus,
@@ -53,8 +53,6 @@ namespace Backend {
       }
     }
 
-    void GeneratorInputSpikingNeurons::update_membrane_potentials(float timestep, float current_time_in_seconds) {
-    }
 
     __global__ void check_for_generator_spikes_kernel(int *d_neuron_ids_for_stimulus,
                                                       float *d_spike_times_for_stimulus,

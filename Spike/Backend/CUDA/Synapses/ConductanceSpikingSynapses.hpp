@@ -54,7 +54,8 @@ namespace Backend {
          float timestep) final; // Overrides ::Backend::SpikingSynapses:: ...
 
       void update_synaptic_conductances(float timestep, float current_time_in_seconds) final;
-      void interact_spikes_with_synapses(::SpikingNeurons * neurons, ::SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) final;
+      
+      void state_update(::SpikingNeurons * neurons, ::SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) final;
 
     };
 

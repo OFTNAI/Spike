@@ -29,8 +29,7 @@ namespace Backend {
       void allocate_device_pointers(); // Not virtual
       void copy_constants_to_device(); // Not virtual
 
-      void check_for_neuron_spikes(float current_time_in_seconds, float timestep) override;
-      void update_membrane_potentials(float timestep, float current_time_in_seconds) override;
+      void state_update(float current_time_in_seconds, float timestep) override;
     };
 
     __global__ void reset_states_u_after_spikes_kernel(float *d_states_u,
@@ -44,6 +43,10 @@ namespace Backend {
                                                                  float *d_param_a,
                                                                  float *d_param_b,
                                                                  float *d_current_injections,
+								 float *thresholds_for_action_potential_spikes,
+								 float *last_spike_time_of_each_neuron,
+								 float *resting_potentials,
+								 float current_time_in_seconds,
                                                                  float timestep,
                                                                  size_t total_number_of_neurons);
   }

@@ -13,7 +13,7 @@ namespace Backend {
       SpikingSynapses::reset_state();
     }
 
-    void CurrentSpikingSynapses::calculate_postsynaptic_current_injection(::SpikingNeurons * neurons, float current_time_in_seconds, float timestep) {
+    void CurrentSpikingSynapses::state_update(::SpikingNeurons * neurons, ::SpikingNeurons* input_neurons, float current_time_in_seconds, float timestep) {
       ::Backend::CUDA::SpikingNeurons* neurons_backend
           = dynamic_cast<::Backend::CUDA::SpikingNeurons*>(neurons->backend());
       current_calculate_postsynaptic_current_injection_kernel<<<number_of_synapse_blocks_per_grid, threads_per_block>>>

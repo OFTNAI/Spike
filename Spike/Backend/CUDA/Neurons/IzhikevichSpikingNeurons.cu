@@ -57,7 +57,11 @@ namespace Backend {
          param_a,
          param_b,
          current_injections,
+	 thresholds_for_action_potentials,
+	 last_spike_time_of_each_neuron,
+	 resting_potentials,
          timestep,
+	 current_time_in_seconds,
          frontend()->total_number_of_neurons);
 
       CudaCheckError();
@@ -87,6 +91,10 @@ namespace Backend {
                                                                  float *d_param_a,
                                                                  float *d_param_b,
                                                                  float* d_current_injections,
+								 float* thresholds_for_action_potentials,
+								 float* last_spike_time_of_each_neuron,
+								 float* resting_potentials,
+								 float current_time_in_seconds,
                                                                  float timestep,
                                                                  size_t total_number_of_neurons) {
 
@@ -105,6 +113,11 @@ namespace Backend {
         d_membrane_potentials_v[idx] += eqtimestep*v_update;
         d_states_u[idx] += eqtimestep*(d_param_a[idx] * (d_param_b[idx] * d_membrane_potentials_v[idx] - 
                                                          d_states_u[idx]));
+
+	if (d_membrane_potentials_v[idx] >= thresholds_for_action_potentials[idx]){
+		d_membrane_potentials_v[idx] = resting_potentials[idx];
+		last_spike_time_of_each_neuron[idx] = current_time_in_seconds,
+	}
 
         idx += blockDim.x * gridDim.x;
       }

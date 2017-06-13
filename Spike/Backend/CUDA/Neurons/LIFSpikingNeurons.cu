@@ -36,7 +36,7 @@ namespace Backend {
       SpikingNeurons::reset_state();
     }
 
-    void LIFSpikingNeurons::update_membrane_potentials(float timestep, float current_time_in_seconds) {
+    void LIFSpikingNeurons::state_update(float current_time_in_seconds, float timestep) {
       lif_update_membrane_potentials<<<number_of_neuron_blocks_per_grid, threads_per_block>>>
         (membrane_potentials_v,
          last_spike_time_of_each_neuron,
