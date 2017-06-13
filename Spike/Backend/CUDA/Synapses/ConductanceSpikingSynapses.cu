@@ -119,20 +119,20 @@ namespace Backend {
         dynamic_cast<::Backend::CUDA::SpikingNeurons*>(neurons->backend());
       assert(neurons_backend);
 
-      conductance_calculate_postsynaptic_current_injection_kernel<<<neurons_backend->number_of_neuron_blocks_per_grid, threads_per_block>>>(
-        decay_term_values,
-        reversal_values,
-        num_decay_terms,
-        synapse_decay_id,
-        neuron_wise_conductance_trace,
-        neurons_backend->current_injections,
-        num_active_synapses,
-        active_synapse_indices,
-        neurons_backend->membrane_potentials_v, 
-        timestep,
-        neurons_backend->frontend()->total_number_of_neurons);
+     // conductance_calculate_postsynaptic_current_injection_kernel<<<neurons_backend->number_of_neuron_blocks_per_grid, threads_per_block>>>(
+     //   decay_term_values,
+     //   reversal_values,
+     //   num_decay_terms,
+     //   synapse_decay_id,
+     //   neuron_wise_conductance_trace,
+     //   neurons_backend->current_injections,
+     //   num_active_synapses,
+     //   active_synapse_indices,
+     //   neurons_backend->membrane_potentials_v, 
+     //   timestep,
+     //   neurons_backend->frontend()->total_number_of_neurons);
 
-      CudaCheckError();
+     // CudaCheckError();
     }
 
     void ConductanceSpikingSynapses::update_synaptic_conductances(float timestep, float current_time_in_seconds) {
@@ -234,6 +234,21 @@ namespace Backend {
 		  biological_conductance_scaling_constants_lambda,
                   timestep);
       }
+
+      conductance_calculate_postsynaptic_current_injection_kernel<<<neurons_backend->number_of_neuron_blocks_per_grid, threads_per_block>>>(
+        decay_term_values,
+        reversal_values,
+        num_decay_terms,
+        synapse_decay_id,
+        neuron_wise_conductance_trace,
+        neurons_backend->current_injections,
+        num_active_synapses,
+        active_synapse_indices,
+        neurons_backend->membrane_potentials_v, 
+        timestep,
+        neurons_backend->frontend()->total_number_of_neurons);
+
+      CudaCheckError();
     }
 
 
