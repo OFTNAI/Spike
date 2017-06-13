@@ -31,7 +31,7 @@ namespace Backend {
       void allocate_device_pointers(); // Not virtual
       void copy_constants_to_device(); // Not virtual
 
-      void update_membrane_potentials(float timestep, float current_time_in_secods) override;
+      void state_update(float current_time_in_seconds, float timestep) override;
     };
 
     __global__ void poisson_update_membrane_potentials_kernel(curandState_t* d_states,

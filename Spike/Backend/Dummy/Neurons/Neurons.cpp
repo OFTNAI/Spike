@@ -8,10 +8,7 @@ namespace Backend {
     }
 
     void Neurons::reset_state() {
-      reset_current_injections();
     }
 
-    void Neurons::reset_current_injections() {
-    }
   } // namespace Dummy
 } // namespace Backend

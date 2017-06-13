@@ -27,7 +27,7 @@ namespace Backend {
       void allocate_device_pointers(); // Not virtual
       void copy_rates_to_device() override;
 
-      void update_membrane_potentials(float timestep, float current_time_in_seconds) override;
+      void state_update(float current_time_in_seconds, float timestep) override;
     };
   }
 }

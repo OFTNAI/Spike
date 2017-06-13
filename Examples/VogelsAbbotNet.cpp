@@ -246,12 +246,12 @@ int main (int argc, char *argv[]){
 	simoptions->run_simulation_general_options->presentation_time_per_stimulus_per_epoch = 10.0f;
 	// simoptions->run_simulation_general_options->apply_plasticity_to_relevant_synapses = true;
 
-	//simoptions->recording_electrodes_options->count_neuron_spikes_recording_electrodes_bool = true;
-	//simoptions->recording_electrodes_options->count_input_neuron_spikes_recording_electrodes_bool = true;
+	simoptions->recording_electrodes_options->count_neuron_spikes_recording_electrodes_bool = true;
+	simoptions->recording_electrodes_options->count_input_neuron_spikes_recording_electrodes_bool = true;
 
-	//simoptions->recording_electrodes_options->collect_neuron_spikes_recording_electrodes_bool = true;
+	simoptions->recording_electrodes_options->collect_neuron_spikes_recording_electrodes_bool = true;
 	//simoptions->recording_electrodes_options->collect_neuron_spikes_optional_parameters->human_readable_storage = true;
-	//simoptions->recording_electrodes_options->collect_input_neuron_spikes_recording_electrodes_bool = true;
+	simoptions->recording_electrodes_options->collect_input_neuron_spikes_recording_electrodes_bool = true;
 	//simoptions->recording_electrodes_options->collect_input_neuron_spikes_optional_parameters->human_readable_storage = true;
 
 	//simoptions->recording_electrodes_options->network_state_archive_recording_electrodes_bool = true;

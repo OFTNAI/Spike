@@ -11,6 +11,7 @@ namespace Backend {
       void prepare() override;
       void reset_state() override;
 
+      void copy_weights_to_host() override;
       void state_update
       (::SpikingNeurons * neurons, ::SpikingNeurons * input_neurons,
        float current_time_in_seconds, float timestep) final;

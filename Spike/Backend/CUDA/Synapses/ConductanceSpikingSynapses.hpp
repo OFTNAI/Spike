@@ -51,9 +51,9 @@ namespace Backend {
       void calculate_postsynaptic_current_injection
         (::SpikingNeurons * neurons,
          float current_time_in_seconds,
-         float timestep) final; // Overrides ::Backend::SpikingSynapses:: ...
+         float timestep) ; // Overrides ::Backend::SpikingSynapses:: ...
 
-      void update_synaptic_conductances(float timestep, float current_time_in_seconds) final;
+      void update_synaptic_conductances(float timestep, float current_time_in_seconds) ;
       
       void state_update(::SpikingNeurons * neurons, ::SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) final;
 

@@ -29,7 +29,7 @@ namespace Backend {
       copy_rates_to_device();
     }
 
-    void ImagePoissonInputSpikingNeurons::update_membrane_potentials(float timestep,float current_time_in_seconds) {
+    void ImagePoissonInputSpikingNeurons::state_update(float current_time_in_seconds, float timestep) {
       poisson_update_membrane_potentials_kernel<<<random_state_manager_backend->block_dimensions, random_state_manager_backend->threads_per_block>>>
         (random_state_manager_backend->states,
          gabor_input_rates,

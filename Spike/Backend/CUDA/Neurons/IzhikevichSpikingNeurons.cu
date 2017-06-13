@@ -37,8 +37,21 @@ namespace Backend {
       CudaSafeCall(cudaMemset(states_u, 0.0f, sizeof(float)*frontend()->total_number_of_neurons));
     }
 
-    void IzhikevichSpikingNeurons::check_for_neuron_spikes(float current_time_in_seconds, float timestep) {
-	SpikingNeurons::check_for_neuron_spikes(current_time_in_seconds, timestep);
+    void IzhikevichSpikingNeurons::state_update(float current_time_in_seconds, float timestep) {
+      izhikevich_update_membrane_potentials_kernel<<<number_of_neuron_blocks_per_grid, threads_per_block>>>
+        (membrane_potentials_v,
+         states_u,
+         param_a,
+         param_b,
+         current_injections,
+	 thresholds_for_action_potential_spikes,
+	 last_spike_time_of_each_neuron,
+	 resting_potentials,
+         timestep,
+	 current_time_in_seconds,
+         frontend()->total_number_of_neurons);
+
+      CudaCheckError();
 
 	reset_states_u_after_spikes_kernel<<<number_of_neuron_blocks_per_grid, threads_per_block>>>
           (states_u,
@@ -47,24 +60,6 @@ namespace Backend {
            current_time_in_seconds,
            frontend()->total_number_of_neurons);
 	CudaCheckError();
-    }
-
-    void IzhikevichSpikingNeurons::update_membrane_potentials(float timestep, float current_time_in_seconds) {
-
-      izhikevich_update_membrane_potentials_kernel<<<number_of_neuron_blocks_per_grid, threads_per_block>>>
-        (membrane_potentials_v,
-         states_u,
-         param_a,
-         param_b,
-         current_injections,
-	 thresholds_for_action_potentials,
-	 last_spike_time_of_each_neuron,
-	 resting_potentials,
-         timestep,
-	 current_time_in_seconds,
-         frontend()->total_number_of_neurons);
-
-      CudaCheckError();
     }
 
     __global__ void reset_states_u_after_spikes_kernel(float *d_states_u,
@@ -116,7 +111,7 @@ namespace Backend {
 
 	if (d_membrane_potentials_v[idx] >= thresholds_for_action_potentials[idx]){
 		d_membrane_potentials_v[idx] = resting_potentials[idx];
-		last_spike_time_of_each_neuron[idx] = current_time_in_seconds,
+		last_spike_time_of_each_neuron[idx] = current_time_in_seconds;
 	}
 
         idx += blockDim.x * gridDim.x;

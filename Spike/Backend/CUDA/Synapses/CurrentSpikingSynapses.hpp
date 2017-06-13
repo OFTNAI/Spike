@@ -37,5 +37,6 @@ namespace Backend {
      float* d_neurons_current_injections,
      float current_time_in_seconds,
      size_t total_number_of_synapses);
+  }
 }
 

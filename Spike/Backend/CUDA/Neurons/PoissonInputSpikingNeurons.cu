@@ -37,7 +37,7 @@ namespace Backend {
       assert(random_state_manager_backend);
     }
 
-    void PoissonInputSpikingNeurons::update_membrane_potentials(float timestep, float current_time_in_seconds) {
+    void PoissonInputSpikingNeurons::state_update(float current_time_in_seconds, float timestep) {
       poisson_update_membrane_potentials_kernel<<<random_state_manager_backend->block_dimensions, random_state_manager_backend->threads_per_block>>>
         (random_state_manager_backend->states,
          rates,

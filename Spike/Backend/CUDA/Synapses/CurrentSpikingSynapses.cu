@@ -16,8 +16,8 @@ namespace Backend {
     void CurrentSpikingSynapses::state_update(::SpikingNeurons * neurons, ::SpikingNeurons* input_neurons, float current_time_in_seconds, float timestep) {
       ::Backend::CUDA::SpikingNeurons* neurons_backend
           = dynamic_cast<::Backend::CUDA::SpikingNeurons*>(neurons->backend());
-      current_calculate_postsynaptic_current_injection_kernel<<<number_of_synapse_blocks_per_grid, threads_per_block>>>
-        (synaptic_efficacies_or_weights,
+      current_calculate_postsynaptic_current_injection_kernel<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(
+         synaptic_efficacies_or_weights,
          time_of_last_spike_to_reach_synapse,
          postsynaptic_neuron_indices,
          neurons_backend->current_injections,
