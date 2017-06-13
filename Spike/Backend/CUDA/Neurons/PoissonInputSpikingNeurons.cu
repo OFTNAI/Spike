@@ -1,5 +1,6 @@
 // -*- mode: c++ -*-
 #include "Spike/Backend/CUDA/Neurons/PoissonInputSpikingNeurons.hpp"
+#include "SpikingNeurons.hpp"
 
 SPIKE_EXPORT_BACKEND_TYPE(CUDA, PoissonInputSpikingNeurons);
 
@@ -43,6 +44,9 @@ namespace Backend {
          membrane_potentials_v,
          timestep,
          thresholds_for_action_potential_spikes,
+	 resting_potentials,
+	 last_spike_time_of_each_neuron,
+	 current_time_in_seconds,
          frontend()->total_number_of_neurons,
          frontend()->current_stimulus_index);
 
@@ -54,6 +58,9 @@ namespace Backend {
                                                               float *d_membrane_potentials_v,
                                                               float timestep,
                                                               float * d_thresholds_for_action_potential_spikes,
+							      float* d_resting_potentials,
+							      float* d_last_spike_time_of_each_neuron,
+							      float current_time_in_seconds,
                                                               size_t total_number_of_input_neurons,
                                                               int current_stimulus_index) {
 
@@ -76,6 +83,10 @@ namespace Backend {
           if (random_float < (rate * timestep)) {
             // Puts membrane potential above default spiking threshold
             d_membrane_potentials_v[idx] = d_thresholds_for_action_potential_spikes[idx] + 0.02;
+	    if (d_membrane_potentials_v[idx] >= d_thresholds_for_action_potential_spikes[idx]){
+		d_last_spike_time_of_each_neuron[idx] = current_time_in_seconds;
+		d_membrane_potentials_v[idx] = d_resting_potentials[idx];
+	    } 
           } 
         }
 

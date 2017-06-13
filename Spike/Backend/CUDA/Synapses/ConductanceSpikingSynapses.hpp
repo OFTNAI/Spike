@@ -107,12 +107,18 @@ namespace Backend {
     __global__ void conductance_move_spikes_towards_synapses_kernel(
       int* d_spikes_travelling_to_synapse,
       float current_time_in_seconds,
-      int* d_num_active_synapses,
-      int* d_active_synapses,
+      int* num_active_synapses,
+      int* active_synapse_indices,
       int* num_after_deactivation,
       int* synapse_switches,
       bool* reset_deactivation,
       float* d_time_of_last_spike_to_reach_synapse,
+      int* postsynaptic_neuron_indices,
+      float* neuron_wise_conductance_trace,
+      int* synapse_decay_id,
+      int total_number_of_neurons,
+      float* d_synaptic_efficacies_or_weights,
+      float* d_biological_conductance_scaling_constants_lambda,
       float timestep);
 
     __global__ void conductance_check_bitarray_for_presynaptic_neuron_spikes(

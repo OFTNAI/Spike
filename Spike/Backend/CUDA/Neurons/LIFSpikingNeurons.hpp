@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Spike/Neurons/LIFSpikingNeurons.hpp"
+#include "Spike/Neurons/SpikingNeurons.hpp"
 #include "Spike/Backend/CUDA/CUDABackend.hpp"
 #include "SpikingNeurons.hpp"
 
@@ -35,6 +36,7 @@ namespace Backend {
                                                    float * d_membrane_time_constants_tau_m,
                                                    float * d_resting_potentials,
                                                    float* d_current_injections,
+						   float* d_thresholds_for_action_potential_spikes,
                                                    float background_current,
                                                    float timestep,
                                                    float current_time_in_seconds,

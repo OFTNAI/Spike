@@ -44,6 +44,7 @@ namespace Backend {
          membrane_time_constants_tau_m,
          resting_potentials,
          current_injections,
+	 thresholds_for_action_potential_spikes,
          frontend()->background_current,
          timestep,
          current_time_in_seconds,
@@ -59,6 +60,7 @@ namespace Backend {
                                                    float * d_membrane_time_constants_tau_m,
                                                    float * d_resting_potentials,
                                                    float* d_current_injections,
+						   float* d_threshold_for_action_potential_spikes,
                                                    float background_current,
                                                    float timestep,
                                                    float current_time_in_seconds,
@@ -77,6 +79,12 @@ namespace Backend {
 	
           float new_membrane_potential = equation_constant * (resting_potential_V0 + temp_membrane_resistance_R * current_injection_Ii) + (1 - equation_constant) * membrane_potential_Vi + equation_constant * background_current;
           d_membrane_potentials_v[idx] = new_membrane_potential;
+	  
+	  // Finally check for a spike
+	  if (new_membrane_potential >= d_threshold_for_action_potential_spikes[idx]){
+	  	d_last_spike_time_of_each_neuron[idx] = current_time_in_seconds;
+		d_membrane_potentials_v[idx] = d_resting_potentials[idx];
+	  }
         }
 
         idx += blockDim.x * gridDim.x;

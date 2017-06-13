@@ -36,6 +36,9 @@ namespace Backend {
          membrane_potentials_v,
          timestep,
          thresholds_for_action_potential_spikes,
+	 resting_potentials,
+	 last_spike_time_of_each_neuron,
+	 current_time_in_seconds,
          frontend()->total_number_of_neurons,
          frontend()->current_stimulus_index);
 

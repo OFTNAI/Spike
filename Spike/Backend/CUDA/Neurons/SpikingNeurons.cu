@@ -68,53 +68,46 @@ namespace Backend {
     }
 
     void SpikingNeurons::check_for_neuron_spikes(float current_time_in_seconds, float timestep) {
-      if (frontend()->high_fidelity_spike_flag){
-        high_fidelity_check_for_neuron_spikes_kernel<<<number_of_neuron_blocks_per_grid, threads_per_block>>>
-          (membrane_potentials_v,
-           thresholds_for_action_potential_spikes,
-           resting_potentials,
-           last_spike_time_of_each_neuron,
-           bitarray_of_neuron_spikes,
-           frontend()->bitarray_length,
-           frontend()->bitarray_maximum_axonal_delay_in_timesteps,
-           current_time_in_seconds,
-           timestep,
-           frontend()->total_number_of_neurons);
-      } else {
-      check_for_neuron_spikes_kernel<<<number_of_neuron_blocks_per_grid, threads_per_block>>>
-        (membrane_potentials_v,
-         thresholds_for_action_potential_spikes,
-         resting_potentials,
-         last_spike_time_of_each_neuron,
-         current_time_in_seconds,
-         frontend()->total_number_of_neurons);
+      //if (frontend()->high_fidelity_spike_flag){
+      //  high_fidelity_check_for_neuron_spikes_kernel<<<number_of_neuron_blocks_per_grid, threads_per_block>>>
+      //    (membrane_potentials_v,
+      //     thresholds_for_action_potential_spikes,
+      //     resting_potentials,
+      //     last_spike_time_of_each_neuron,
+      //     bitarray_of_neuron_spikes,
+      //     frontend()->bitarray_length,
+      //     frontend()->bitarray_maximum_axonal_delay_in_timesteps,
+      //     current_time_in_seconds,
+      //     timestep,
+      //     frontend()->total_number_of_neurons);
+      //} else {
+      //check_for_neuron_spikes_kernel<<<number_of_neuron_blocks_per_grid, threads_per_block>>>
+      //  (membrane_potentials_v,
+      //   thresholds_for_action_potential_spikes,
+      //   resting_potentials,
+      //   last_spike_time_of_each_neuron,
+      //   current_time_in_seconds,
+      //   frontend()->total_number_of_neurons);
   
-      CudaCheckError();
-      }
+      //CudaCheckError();
+      //}
     }
 
-    __global__ void check_for_neuron_spikes_kernel(float *membrane_potentials_v,
-                                                   float *thresholds_for_action_potential_spikes,
-                                                   float *resting_potentials,
-                                                   float* last_spike_time_of_each_neuron,
-                                                   float current_time_in_seconds,
-                                                   size_t total_number_of_neurons) {
-      // Get thread IDs
-      int idx = threadIdx.x + blockIdx.x * blockDim.x;
-      while (idx < total_number_of_neurons) {
-        if (membrane_potentials_v[idx] >= thresholds_for_action_potential_spikes[idx]) {
+    __device__ void check_for_neuron_spikes_kernel(float& membrane_potentials_v,
+                                                   float thresholds_for_action_potential_spikes,
+                                                   float resting_potentials,
+                                                   float& last_spike_time_of_each_neuron,
+                                                   float current_time_in_seconds) {
+      if (membrane_potentials_v >= thresholds_for_action_potential_spikes) {
 
-          // Set current time as last spike time of neuron
-          last_spike_time_of_each_neuron[idx] = current_time_in_seconds;
+        // Set current time as last spike time of neuron
+        last_spike_time_of_each_neuron = current_time_in_seconds;
 
-          // Reset membrane potential
-          membrane_potentials_v[idx] = resting_potentials[idx];
+        // Reset membrane potential
+        membrane_potentials_v = resting_potentials;
 
-        }
-
-        idx += blockDim.x * gridDim.x;
       }
-      __syncthreads();
+
     }
 
     __global__ void high_fidelity_check_for_neuron_spikes_kernel(float *membrane_potentials_v,

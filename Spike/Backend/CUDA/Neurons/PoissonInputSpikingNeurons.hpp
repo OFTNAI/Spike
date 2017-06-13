@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Spike/Neurons/PoissonInputSpikingNeurons.hpp"
-
 #include "InputSpikingNeurons.hpp"
 
 #include "Spike/Backend/CUDA/CUDABackend.hpp"
@@ -40,6 +39,9 @@ namespace Backend {
                                                               float *d_membrane_potentials_v,
                                                               float timestep,
                                                               float * d_thresholds_for_action_potential_spikes,
+							      float* d_resting_potentials,
+							      float* d_last_spike_time_of_each_neuron,
+							      float current_time_in_secods,
                                                               size_t total_number_of_input_neurons,
                                                               int current_stimulus_index);
   }
