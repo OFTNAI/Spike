@@ -105,6 +105,7 @@ public:
   int temp_number_of_synapses_in_last_group = 0;    /**< Tracks the number of synapses in the last added group. */
   int largest_synapse_group_size = 0;               /**< Tracks the size of the largest synaptic group. */
   bool print_synapse_group_details = false;         /**< A flag used to indicate whether group details should be printed */
+  int maximum_number_of_afferent_synapses = 0;
   std::vector<Plasticity*> plasticity_rule_vec;     /**< A vector of pointers to the plasticity rules to be used in the simulation */
   std::vector<int> plasticity_synapse_number_per_rule;  /**< A vector of the number of synapse ids to be associated with each plasticity rule */
   

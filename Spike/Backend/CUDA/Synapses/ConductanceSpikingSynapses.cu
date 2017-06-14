@@ -8,15 +8,11 @@ namespace Backend {
     // ConductanceSpikingSynapses Destructor
     ConductanceSpikingSynapses::~ConductanceSpikingSynapses() {
       CudaSafeCall(cudaFree(biological_conductance_scaling_constants_lambda));
-      CudaSafeCall(cudaFree(num_active_synapses));
-      CudaSafeCall(cudaFreeHost(h_num_active_synapses));
-      CudaSafeCall(cudaFreeHost(reset_deactivation));
-      CudaSafeCall(cudaFree(active_synapse_indices));
-      CudaSafeCall(cudaFree(num_after_deactivation));
-      CudaSafeCall(cudaFree(synapse_switches));
       CudaSafeCall(cudaFree(synapse_decay_id));
       CudaSafeCall(cudaFree(neuron_wise_conductance_trace));
       CudaSafeCall(cudaFree(decay_term_values));
+      CudaSafeCall(cudaFree(circular_spikenum_buffer));
+      CudaSafeCall(cudaFree(spikeid_buffer));
       free(h_decay_term_values);
       free(h_synapse_decay_id);
       free(h_neuron_wise_conductance_trace);
@@ -63,31 +59,29 @@ namespace Backend {
 
     void ConductanceSpikingSynapses::reset_state() {
       SpikingSynapses::reset_state();
-      CudaSafeCall(cudaMemset(num_active_synapses, 0, sizeof(int)));
-      CudaSafeCall(cudaMemset(num_after_deactivation, 0, sizeof(int)));
       CudaSafeCall(cudaMemcpy(
         neuron_wise_conductance_trace,
         h_neuron_wise_conductance_trace,
         sizeof(float)*conductance_trace_length, cudaMemcpyHostToDevice));
-      reset_deactivation[0] = false;
+      CudaSafeCall(cudaMemset(
+	circular_spikenum_buffer,
+	0, sizeof(int)*(frontend()->maximum_axonal_delay_in_timesteps + 1)));
     }
 
 
     void ConductanceSpikingSynapses::allocate_device_pointers() {
       CudaSafeCall(cudaMalloc((void **)&biological_conductance_scaling_constants_lambda, sizeof(float)*frontend()->total_number_of_synapses));
       CudaSafeCall(cudaMalloc((void **)&active_synapse_indices, sizeof(int)*frontend()->total_number_of_synapses));
-      CudaSafeCall(cudaMalloc((void **)&num_active_synapses, sizeof(int)));
-      CudaSafeCall(cudaMallocHost((void **)&h_num_active_synapses, sizeof(int)));
-      CudaSafeCall(cudaMallocHost((void **)&reset_deactivation, sizeof(bool)));
-      CudaSafeCall(cudaMalloc((void **)&num_after_deactivation, sizeof(int)));
-      CudaSafeCall(cudaMalloc((void **)&synapse_switches, sizeof(int)*frontend()->total_number_of_synapses));
       CudaSafeCall(cudaMalloc((void **)&synapse_decay_id, sizeof(int)*frontend()->total_number_of_synapses));
       CudaSafeCall(cudaMalloc((void **)&neuron_wise_conductance_trace, sizeof(float)*conductance_trace_length));
       CudaSafeCall(cudaMalloc((void **)&decay_term_values, sizeof(float)*num_decay_terms));
       CudaSafeCall(cudaMalloc((void **)&reversal_values, sizeof(float)*num_decay_terms));
+      CudaSafeCall(cudaMalloc((void **)&circular_spikenum_buffer, sizeof(int)*(frontend()->maximum_axonal_delay_in_timesteps + 1)));
+      CudaSafeCall(cudaMalloc((void **)&spikeid_buffer, sizeof(int)*(frontend()->maximum_axonal_delay_in_timesteps * frontend()->maximum_number_of_afferent_synapses)));
     }
 
     void ConductanceSpikingSynapses::copy_constants_and_initial_efficacies_to_device() {
+      buffersize = (frontend()->maximum_axonal_delay_in_timesteps + 1);
       CudaSafeCall(cudaMemcpy(biological_conductance_scaling_constants_lambda,
         frontend()->biological_conductance_scaling_constants_lambda,
         sizeof(float)*frontend()->total_number_of_synapses, cudaMemcpyHostToDevice));
@@ -107,9 +101,9 @@ namespace Backend {
         reversal_values,
         h_reversal_values,
         sizeof(float)*num_decay_terms, cudaMemcpyHostToDevice));
-      CudaSafeCall(cudaMemset(num_active_synapses, 0, sizeof(int)));
-      CudaSafeCall(cudaMemset(num_after_deactivation, 0, sizeof(int)));
-      reset_deactivation[0] = false;
+      CudaSafeCall(cudaMemset(
+	circular_spikenum_buffer,
+	0, sizeof(int)*buffersize));
 
     }
 
@@ -135,7 +129,13 @@ namespace Backend {
       // - Add any current where necessary (atomically)
       // - Deliver current to destination
 
+      // First, get the current location in our circular buffer
+      int bufferloc = (int)(round(current_time_in_seconds / timestep)) % buffersize;
+      
         get_active_synapses_kernel<<<neurons_backend->number_of_neuron_blocks_per_grid, threads_per_block>>>(
+	        postsynaptic_neuron_indices,
+		biological_conductance_scaling_constants_lambda,
+		synaptic_efficacies_or_weights,
                 neurons_backend->per_neuron_efferent_synapse_count,
                 neurons_backend->per_neuron_efferent_synapse_total,
                 neurons_backend->per_neuron_efferent_synapse_indices,
@@ -144,14 +144,14 @@ namespace Backend {
                 input_neurons_backend->per_neuron_efferent_synapse_indices,
                 delays,
                 spikes_travelling_to_synapse,
+		time_of_last_spike_to_reach_synapse,
                 neurons_backend->last_spike_time_of_each_neuron,
                 input_neurons_backend->last_spike_time_of_each_neuron,
                 current_time_in_seconds,
-                num_active_synapses,
-                active_synapse_indices,
-                num_after_deactivation,
-                synapse_switches,
-		reset_deactivation,
+		circular_spikenum_buffer,
+		spikeid_buffer,
+		bufferloc,
+		buffersize,
                 timestep,
 		input_neurons_backend->frontend()->total_number_of_neurons,
                 (neurons_backend->frontend()->total_number_of_neurons + input_neurons_backend->frontend()->total_number_of_neurons),
@@ -163,74 +163,15 @@ namespace Backend {
      neurons_backend->current_injections,
      neurons_backend->membrane_potentials_v);
         CudaCheckError();
-      
-      // Setting up the custom block size for active synapses only:
-      // Carry out the update every 10 timesteps. This timescale affects speed of the kernels not which syns
-      if (fmod(current_time_in_seconds, 100.0*timestep) < timestep){
-        // Copying to a pinned memory location (h_num_active_synapses) is much faster
-        CudaSafeCall(cudaMemcpy(h_num_active_synapses, num_active_synapses, sizeof(int), cudaMemcpyDeviceToHost));
-        active_syn_blocks_per_grid = dim3((h_num_active_synapses[0] + threads_per_block.x) /  threads_per_block.x);
-        // Ensure we do not exceed the maximum number of efficient blocks
-        if (active_syn_blocks_per_grid.x > number_of_synapse_blocks_per_grid.x)
-          active_syn_blocks_per_grid = number_of_synapse_blocks_per_grid;
-      }
-
-      // Option for high fidelity. Ensures that a synapse can support multiple spikes
-      if (neurons_backend->frontend()->high_fidelity_spike_flag){
-        conductance_check_bitarray_for_presynaptic_neuron_spikes<<<active_syn_blocks_per_grid, threads_per_block>>>(
-                  presynaptic_neuron_indices,
-                  delays,
-                  neurons_backend->bitarray_of_neuron_spikes,
-                  input_neurons_backend->bitarray_of_neuron_spikes,
-                  neurons_backend->frontend()->bitarray_length,
-                  neurons_backend->frontend()->bitarray_maximum_axonal_delay_in_timesteps,
-                  current_time_in_seconds,
-                  timestep,
-                  num_active_synapses,
-                  active_synapse_indices,
-                  time_of_last_spike_to_reach_synapse);
-        CudaCheckError();
-      } else {
-        //CudaSafeCall(cudaMemcpy(h_num_active_synapses, num_after_deactivation, sizeof(int), cudaMemcpyDeviceToHost));
-        if (reset_deactivation[0])
-	 CudaSafeCall(cudaMemset(num_after_deactivation, 0, sizeof(int)));
-        conductance_move_spikes_towards_synapses_kernel<<<active_syn_blocks_per_grid, threads_per_block>>>(
-                  spikes_travelling_to_synapse,
-                  current_time_in_seconds,
-                  num_active_synapses,
-                  active_synapse_indices,
-                  num_after_deactivation,
-                  synapse_switches,
-		  reset_deactivation,
-                  time_of_last_spike_to_reach_synapse,
-		  postsynaptic_neuron_indices,
-		  neuron_wise_conductance_trace,
-		  synapse_decay_id,
-		  neurons_backend->frontend()->total_number_of_neurons,
-		  synaptic_efficacies_or_weights,
-		  biological_conductance_scaling_constants_lambda,
-                  timestep);
-      }
-
-     // conductance_calculate_postsynaptic_current_injection_kernel<<<neurons_backend->number_of_neuron_blocks_per_grid, threads_per_block>>>(
-     //   decay_term_values,
-     //   reversal_values,
-     //   num_decay_terms,
-     //   synapse_decay_id,
-     //   neuron_wise_conductance_trace,
-     //   neurons_backend->current_injections,
-     //   num_active_synapses,
-     //   active_synapse_indices,
-     //   neurons_backend->membrane_potentials_v, 
-     //   timestep,
-     //   neurons_backend->frontend()->total_number_of_neurons);
-
-     // CudaCheckError();
+     CudaSafeCall(cudaMemset(&circular_spikenum_buffer[bufferloc], 0, sizeof(int)));
     }
 
 
     /* KERNELS BELOW */
     __global__ void get_active_synapses_kernel(
+		int* postsynaptic_neuron_indices,
+		float* d_biological_conductance_scaling_constants_lambda,
+		float* d_synaptic_efficacies_or_weights,
 		int* d_per_neuron_efferent_synapse_count,
         	int* d_per_neuron_efferent_synapse_total,
                 int* d_per_neuron_efferent_synapse_indices,
@@ -239,14 +180,14 @@ namespace Backend {
                 int* d_per_input_neuron_efferent_synapse_indices,
                 int* d_delays,
                 int* d_spikes_travelling_to_synapse,
+		float* d_time_of_last_spike_to_reach_synapse,
                 float* d_last_spike_time_of_each_neuron,
                 float* d_last_spike_time_of_each_input_neuron,
                 float current_time_in_seconds,
-                int* d_num_active_synapses,
-                int* d_active_synapses,
-                int* num_after_deactivation,
-                int* synapse_switches,
-		bool* reset_deactivation,
+		int* circular_spikenum_buffer,
+		int* spikeid_buffer,
+		int bufferloc,
+		int buffersize,
                 float timestep,
 		int num_input_neurons,
                 size_t total_number_of_neurons,
@@ -290,25 +231,44 @@ namespace Backend {
           // For each of this neuron's efferent synapses
           for (int i = 0; i < synapse_count; i++){
             int synapse_id = presynaptic_is_input ? d_per_input_neuron_efferent_synapse_indices[d_per_input_neuron_efferent_synapse_total[corr_idx] - i - 1] : d_per_neuron_efferent_synapse_indices[d_per_neuron_efferent_synapse_total[corr_idx] - i - 1];
-            // If this synapse is not active, make it active
-            if (d_spikes_travelling_to_synapse[synapse_id] == 0) {
-              int pos = atomicAdd(&num_after_deactivation[0], -1);
-              pos -= 1;
-              if (pos >= 0){
-                d_active_synapses[synapse_switches[pos]] = synapse_id;
-                d_spikes_travelling_to_synapse[synapse_id] = d_delays[synapse_id] + 1;
-              } else {
-		reset_deactivation[0] = true;
-                pos = atomicAdd(&d_num_active_synapses[0], 1);
-                d_active_synapses[pos] = synapse_id;  
-                d_spikes_travelling_to_synapse[synapse_id] = d_delays[synapse_id] + 1;
-              }
-            }
+	    int targetloc = (bufferloc + d_delays[synapse_id]) % buffersize;
+	    int pos = atomicAdd(&circular_spikenum_buffer[targetloc], 1);
+	    spikeid_buffer[buffersize*targetloc + pos] = synapse_id;
+           // If this synapse is not active, make it active
+           // if (d_spikes_travelling_to_synapse[synapse_id] == 0) {
+           //   int pos = atomicAdd(&num_after_deactivation[0], -1);
+           //   pos -= 1;
+           //   if (pos >= 0){
+           //     d_active_synapses[synapse_switches[pos]] = synapse_id;
+           //     d_spikes_travelling_to_synapse[synapse_id] = d_delays[synapse_id] + 1;
+           //   } else {
+	   //     reset_deactivation[0] = true;
+           //     pos = atomicAdd(&d_num_active_synapses[0], 1);
+           //     d_active_synapses[pos] = synapse_id;  
+           //     d_spikes_travelling_to_synapse[synapse_id] = d_delays[synapse_id] + 1;
+           //   }
+           // }
           }
         }
-
         __syncthreads();
         indx += blockDim.x * gridDim.x;
+      }
+
+      indx = threadIdx.x + blockIdx.x * blockDim.x;
+      while (indx < circular_spikenum_buffer[bufferloc]){
+	//if (indx == 0){
+	//	int last_address = bufferloc - 1;
+	//	if (last_address < 0)
+	//		last_address = buffersize - 1;
+	//	circular_spikenum_buffer[last_address] = 0;
+	//}
+        int synapse_id = spikeid_buffer[buffersize*bufferloc + indx];
+	d_time_of_last_spike_to_reach_synapse[synapse_id] = current_time_in_seconds;
+        int postsynaptic_neuron_id = postsynaptic_neuron_indices[synapse_id];
+	int trace_id = synapse_decay_values[synapse_id];
+	float synaptic_efficacy = d_biological_conductance_scaling_constants_lambda[synapse_id] * d_synaptic_efficacies_or_weights[synapse_id];
+	atomicAdd(&neuron_wise_conductance_traces[total_number_of_neurons*trace_id + postsynaptic_neuron_id], synaptic_efficacy);
+	indx += blockDim.x * gridDim.x;
       }
     }
 

@@ -42,6 +42,11 @@ namespace Backend {
       int* synapse_decay_id = nullptr;
       int* h_synapse_decay_id = nullptr;
 
+      // Variables for circular buffer
+      int buffersize = 0;
+      int* circular_spikenum_buffer = nullptr;
+      int* spikeid_buffer = nullptr;
+
       void prepare() override;
       void reset_state() override;
 
@@ -53,6 +58,9 @@ namespace Backend {
     };
 
     __global__ void get_active_synapses_kernel(
+		int* d_postsynaptic_neuron_indices,
+		float* d_biological_conductance_scaling_constants_lambda,
+		float* d_synaptic_efficacies_or_weights,
 		int* d_per_neuron_efferent_synapse_count,
         	int* d_per_neuron_efferent_synapse_total,
                 int* d_per_neuron_efferent_synapse_indices,
@@ -61,14 +69,14 @@ namespace Backend {
                 int* d_per_input_neuron_efferent_synapse_indices,
                 int* d_delays,
                 int* d_spikes_travelling_to_synapse,
+		float* d_time_of_last_spike_to_reach_synapse,
                 float* d_last_spike_time_of_each_neuron,
                 float* d_last_spike_time_of_each_input_neuron,
                 float current_time_in_seconds,
-                int* d_num_active_synapses,
-                int* d_active_synapses,
-                int* num_after_deactivation,
-                int* synapse_switches,
-		bool* reset_deactivation,
+		int* circular_spikenum_buffer,
+		int* spikeid_buffer,
+		int bufferloc,
+		int buffersize,
                 float timestep,
 		int number_of_input_neurons,
                 size_t total_number_of_neurons, 

@@ -252,6 +252,8 @@ void Synapses::AddGroup(int presynaptic_group_id,
           // printf("postsynaptic_neuron_indices[i]: %d\n", postsynaptic_neuron_indices[i]);
           synapse_postsynaptic_neuron_count_index[postsynaptic_neuron_indices[i]] = neurons->per_neuron_afferent_synapse_count[postsynaptic_neuron_indices[i]];
           neurons->per_neuron_afferent_synapse_count[postsynaptic_neuron_indices[i]] ++;
+	  if (neurons->per_neuron_afferent_synapse_count[postsynaptic_neuron_indices[i]] > maximum_number_of_afferent_synapses)
+		  maximum_number_of_afferent_synapses = neurons->per_neuron_afferent_synapse_count[postsynaptic_neuron_indices[i]];
 
 	  int presynaptic_id = CORRECTED_PRESYNAPTIC_ID(presynaptic_neuron_indices[i], presynaptic_group_is_input);
 	  if (presynaptic_group_is_input)
