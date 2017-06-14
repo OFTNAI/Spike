@@ -82,11 +82,8 @@ namespace Backend {
           // if the randomnumber is less than the rate
           if (random_float < (rate * timestep)) {
             // Puts membrane potential above default spiking threshold
-            d_membrane_potentials_v[idx] = d_thresholds_for_action_potential_spikes[idx] + 0.02;
-	    if (d_membrane_potentials_v[idx] >= d_thresholds_for_action_potential_spikes[idx]){
-		d_last_spike_time_of_each_neuron[idx] = current_time_in_seconds;
-		d_membrane_potentials_v[idx] = d_resting_potentials[idx];
-	    } 
+	    d_last_spike_time_of_each_neuron[idx] = current_time_in_seconds;
+	    d_membrane_potentials_v[idx] = d_resting_potentials[idx];
           } 
         }
 
