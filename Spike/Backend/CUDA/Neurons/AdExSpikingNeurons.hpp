@@ -34,15 +34,6 @@ namespace Backend {
       void state_update(float current_time_in_seconds, float timestep) override;
     };
 
-    __global__ void high_fidelity_spike_handle
-    (float* d_last_spike_time_of_each_neuron,
-     unsigned char* d_bitarray_of_neuron_spikes,
-     int bitarray_length,
-     int bitarray_maximum_axonal_delay_in_timesteps,
-     float current_time_in_seconds,
-     float timestep,
-     size_t total_number_of_neurons);
-
     __global__ void AdEx_update_membrane_potentials
     (float *d_membrane_potentials_v,
      float * d_adaptation_values_w,

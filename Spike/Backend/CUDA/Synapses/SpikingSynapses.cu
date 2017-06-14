@@ -69,20 +69,6 @@ namespace Backend {
         dynamic_cast<::Backend::CUDA::SpikingNeurons*>(input_neurons->backend());
       assert(input_neurons_backend);
 
-      if (neurons->high_fidelity_spike_flag){
-        check_bitarray_for_presynaptic_neuron_spikes<<<number_of_synapse_blocks_per_grid, threads_per_block>>>
-          (presynaptic_neuron_indices,
-           delays,
-           neurons_backend->bitarray_of_neuron_spikes,
-           input_neurons_backend->bitarray_of_neuron_spikes,
-           neurons->bitarray_length,
-           neurons->bitarray_maximum_axonal_delay_in_timesteps,
-           current_time_in_seconds,
-           timestep,
-           frontend()->total_number_of_synapses,
-           time_of_last_spike_to_reach_synapse);
-        CudaCheckError();
-      } else {
         move_spikes_towards_synapses_kernel<<<number_of_synapse_blocks_per_grid, threads_per_block>>>
           (presynaptic_neuron_indices,
            delays,
@@ -93,7 +79,6 @@ namespace Backend {
            frontend()->total_number_of_synapses,
            time_of_last_spike_to_reach_synapse);
         CudaCheckError();
-      }
     }
 
     __global__ void move_spikes_towards_synapses_kernel(int* d_presynaptic_neuron_indices,
@@ -133,53 +118,5 @@ namespace Backend {
       }
     }
 
-    __global__ void check_bitarray_for_presynaptic_neuron_spikes(int* d_presynaptic_neuron_indices,
-                                                                 int* d_delays,
-                                                                 unsigned char* d_bitarray_of_neuron_spikes,
-                                                                 unsigned char* d_input_neuron_bitarray_of_neuron_spikes,
-                                                                 int bitarray_length,
-                                                                 int bitarray_maximum_axonal_delay_in_timesteps,
-                                                                 float current_time_in_seconds,
-                                                                 float timestep,
-                                                                 size_t total_number_of_synapses,
-                                                                 float* d_time_of_last_spike_to_reach_synapse){
-	
-      int idx = threadIdx.x + blockIdx.x * blockDim.x;
-      while (idx < total_number_of_synapses) {
-
-        int presynaptic_neuron_index = d_presynaptic_neuron_indices[idx];
-        bool presynaptic_is_input = PRESYNAPTIC_IS_INPUT(presynaptic_neuron_index);
-        int delay = d_delays[idx];
-
-        // Get offset depending upon the current timestep
-        int offset_index = ((int)(round(current_time_in_seconds / timestep)) % bitarray_maximum_axonal_delay_in_timesteps) - delay;
-        offset_index = (offset_index < 0) ? (offset_index + bitarray_maximum_axonal_delay_in_timesteps) : offset_index;
-        int offset_byte = offset_index / 8;
-        int offset_bit_pos = offset_index - (8 * offset_byte);
-
-        // Get the correct neuron index
-        int neuron_index = CORRECTED_PRESYNAPTIC_ID(presynaptic_neuron_index, presynaptic_is_input);
-		
-        // Check the spike
-        int neuron_id_spike_store_start = neuron_index * bitarray_length;
-        int check = 0;
-        if (presynaptic_is_input){
-          unsigned char byte = d_input_neuron_bitarray_of_neuron_spikes[neuron_id_spike_store_start + offset_byte];
-          check = ((byte >> offset_bit_pos) & 1);
-          if (check == 1){
-            d_time_of_last_spike_to_reach_synapse[idx] = current_time_in_seconds;
-          }
-        } else {
-          unsigned char byte = d_bitarray_of_neuron_spikes[neuron_id_spike_store_start + offset_byte];
-          check = ((byte >> offset_bit_pos) & 1);
-          if (check == 1){
-            d_time_of_last_spike_to_reach_synapse[idx] = current_time_in_seconds;
-          }
-        }
-
-        idx += blockDim.x * gridDim.x;
-      }
-      __syncthreads();
-    }
   }
 }

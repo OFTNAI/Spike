@@ -65,7 +65,7 @@ namespace Backend {
         sizeof(float)*conductance_trace_length, cudaMemcpyHostToDevice));
       CudaSafeCall(cudaMemset(
 	circular_spikenum_buffer,
-	0, sizeof(int)*(frontend()->maximum_axonal_delay_in_timesteps + 1)));
+	0, sizeof(int)*(frontend()->maximum_axonal_delay_in_timesteps + 2)));
     }
 
 
@@ -123,16 +123,10 @@ namespace Backend {
         dynamic_cast<::Backend::CUDA::SpikingNeurons*>(input_neurons->backend());
       assert(input_neurons_backend);
 
-      // Steps for the synapses to cary out:
-      // - Get the active synapses
-      // - Update the delay sets based upon these
-      // - Add any current where necessary (atomically)
-      // - Deliver current to destination
-
       // First, get the current location in our circular buffer
       int bufferloc = (int)(round(current_time_in_seconds / timestep)) % buffersize;
       
-        get_active_synapses_kernel<<<neurons_backend->number_of_neuron_blocks_per_grid, threads_per_block>>>(
+        update_conductance_synapses_kernel<<<neurons_backend->number_of_neuron_blocks_per_grid, threads_per_block>>>(
 	        postsynaptic_neuron_indices,
 		biological_conductance_scaling_constants_lambda,
 		synaptic_efficacies_or_weights,
@@ -163,12 +157,11 @@ namespace Backend {
      neurons_backend->current_injections,
      neurons_backend->membrane_potentials_v);
         CudaCheckError();
-     CudaSafeCall(cudaMemset(&circular_spikenum_buffer[bufferloc], 0, sizeof(int)));
     }
 
 
     /* KERNELS BELOW */
-    __global__ void get_active_synapses_kernel(
+    __global__ void update_conductance_synapses_kernel(
 		int* postsynaptic_neuron_indices,
 		float* d_biological_conductance_scaling_constants_lambda,
 		float* d_synaptic_efficacies_or_weights,
@@ -199,28 +192,12 @@ namespace Backend {
                   float* d_neurons_current_injections,
                   float * d_membrane_potentials_v){
 
+      // Kernel to find activated neurons and to include synapse to list
       int indx = threadIdx.x + blockIdx.x * blockDim.x;
-      while (indx < (total_number_of_neurons - num_input_neurons)){
-	int idx = indx;
-
-        float membrane_potential_v = d_membrane_potentials_v[idx];
-
-        for (int decay_id = 0; decay_id < num_decay_terms; decay_id++){
-	  if (decay_id == 0)
-		  d_neurons_current_injections[idx] = 0.0f;
-          float synaptic_conductance_g = neuron_wise_conductance_traces[idx + decay_id*total_number_of_neurons];
-          // First decay the conductance values as required
-          synaptic_conductance_g *= expf(- timestep / decay_term_values[decay_id]);
-          neuron_wise_conductance_traces[idx + decay_id*total_number_of_neurons] = synaptic_conductance_g;
-          d_neurons_current_injections[idx] += synaptic_conductance_g * (reversal_values[decay_id] - membrane_potential_v);
-        }
-	indx += blockDim.x * gridDim.x;
-      }
-
-
-      indx = threadIdx.x + blockIdx.x * blockDim.x;
-      while (indx < total_number_of_neurons) {
+      while (indx < total_number_of_neurons){
    	int idx = indx - (num_input_neurons); 
+
+	// For all neurons, check if spikes have occurred
         bool presynaptic_is_input = PRESYNAPTIC_IS_INPUT(idx);
 	bool corr_idx = CORRECTED_PRESYNAPTIC_ID(idx, presynaptic_is_input);
         float effecttime = presynaptic_is_input ? d_last_spike_time_of_each_input_neuron[corr_idx] : d_last_spike_time_of_each_neuron[corr_idx];
@@ -234,34 +211,41 @@ namespace Backend {
 	    int targetloc = (bufferloc + d_delays[synapse_id]) % buffersize;
 	    int pos = atomicAdd(&circular_spikenum_buffer[targetloc], 1);
 	    spikeid_buffer[buffersize*targetloc + pos] = synapse_id;
-           // If this synapse is not active, make it active
-           // if (d_spikes_travelling_to_synapse[synapse_id] == 0) {
-           //   int pos = atomicAdd(&num_after_deactivation[0], -1);
-           //   pos -= 1;
-           //   if (pos >= 0){
-           //     d_active_synapses[synapse_switches[pos]] = synapse_id;
-           //     d_spikes_travelling_to_synapse[synapse_id] = d_delays[synapse_id] + 1;
-           //   } else {
-	   //     reset_deactivation[0] = true;
-           //     pos = atomicAdd(&d_num_active_synapses[0], 1);
-           //     d_active_synapses[pos] = synapse_id;  
-           //     d_spikes_travelling_to_synapse[synapse_id] = d_delays[synapse_id] + 1;
-           //   }
-           // }
           }
         }
         __syncthreads();
         indx += blockDim.x * gridDim.x;
       }
 
+      // Kernel to decay conductance values and use new values to update current injections
+      indx = threadIdx.x + blockIdx.x * blockDim.x;
+      while (indx < (total_number_of_neurons - num_input_neurons)){
+	int idx = indx;
+	// For all non-input neurons, update the current injection
+	float membrane_potential_v = d_membrane_potentials_v[idx];
+
+	for (int decay_id = 0; decay_id < num_decay_terms; decay_id++){
+	  if (decay_id == 0)
+		  d_neurons_current_injections[idx] = 0.0f;
+	  float synaptic_conductance_g = neuron_wise_conductance_traces[idx + decay_id*total_number_of_neurons];
+	  // First decay the conductance values as required
+	  synaptic_conductance_g *= expf(- timestep / decay_term_values[decay_id]);
+	  neuron_wise_conductance_traces[idx + decay_id*total_number_of_neurons] = synaptic_conductance_g;
+	  d_neurons_current_injections[idx] += synaptic_conductance_g * (reversal_values[decay_id] - membrane_potential_v);
+	}
+	indx += blockDim.x * gridDim.x;
+      }
+
+      
+      // Kernel to create impact from awaiting synapses
       indx = threadIdx.x + blockIdx.x * blockDim.x;
       while (indx < circular_spikenum_buffer[bufferloc]){
-	//if (indx == 0){
-	//	int last_address = bufferloc - 1;
-	//	if (last_address < 0)
-	//		last_address = buffersize - 1;
-	//	circular_spikenum_buffer[last_address] = 0;
-	//}
+	if (indx == 0){
+		int last_address = bufferloc - 1;
+		if (last_address < 0)
+			last_address = buffersize - 1;
+		circular_spikenum_buffer[last_address] = 0;
+	}
         int synapse_id = spikeid_buffer[buffersize*bufferloc + indx];
 	d_time_of_last_spike_to_reach_synapse[synapse_id] = current_time_in_seconds;
         int postsynaptic_neuron_id = postsynaptic_neuron_indices[synapse_id];
@@ -270,178 +254,6 @@ namespace Backend {
 	atomicAdd(&neuron_wise_conductance_traces[total_number_of_neurons*trace_id + postsynaptic_neuron_id], synaptic_efficacy);
 	indx += blockDim.x * gridDim.x;
       }
-    }
-
-    __global__ void conductance_calculate_postsynaptic_current_injection_kernel(
-                  float* decay_term_values,
-                  float* reversal_values,
-                  int num_decay_terms,
-                  int* synapse_decay_values,
-                  float* neuron_wise_conductance_traces,
-                  float* d_neurons_current_injections,
-                  int* d_num_active_synapses,
-                  int* d_active_synapses,
-                  float * d_membrane_potentials_v,
-                  float timestep,
-                  size_t total_number_of_neurons){
-
-      int idx = threadIdx.x + blockIdx.x * blockDim.x;
-      while (idx < total_number_of_neurons) {
-
-        float membrane_potential_v = d_membrane_potentials_v[idx];
-
-        for (int decay_id = 0; decay_id < num_decay_terms; decay_id++){
-	  if (decay_id == 0)
-		  d_neurons_current_injections[idx] = 0.0f;
-          float synaptic_conductance_g = neuron_wise_conductance_traces[idx + decay_id*total_number_of_neurons];
-          // First decay the conductance values as required
-          synaptic_conductance_g *= expf(- timestep / decay_term_values[decay_id]);
-          neuron_wise_conductance_traces[idx + decay_id*total_number_of_neurons] = synaptic_conductance_g;
-          d_neurons_current_injections[idx] += synaptic_conductance_g * (reversal_values[decay_id] - membrane_potential_v);
-        }
-
-        idx += blockDim.x * gridDim.x;
-
-      }
-    }
-
-    __global__ void conductance_move_spikes_towards_synapses_kernel(
-                    int* d_spikes_travelling_to_synapse,
-                    float current_time_in_seconds,
-                    int* d_num_active_synapses,
-                    int* d_active_synapses,
-                    int* num_after_deactivation,
-                    int* synapse_switches,
-		    bool* reset_deactivation,
-                    float* d_time_of_last_spike_to_reach_synapse,
-                                int* postsynaptic_neuron_indices,
-                                float * neuron_wise_conductance_trace,
-                                int * synaptic_decay_id,
-                                int total_number_of_neurons,
-                                float * d_synaptic_efficacies_or_weights,
-                                float * d_biological_conductance_scaling_constants_lambda,
-                    float timestep){
-
-      int indx = threadIdx.x + blockIdx.x * blockDim.x;
-      while (indx < d_num_active_synapses[0]) {
-        int idx = d_active_synapses[indx];
-        if (idx < 0){
-          indx += blockDim.x * gridDim.x;
-          continue;
-        }
-        int timesteps_until_spike_reaches_synapse = d_spikes_travelling_to_synapse[idx];
-
-        // If the spike is anything but zero (reset value) decrement it
-        if (timesteps_until_spike_reaches_synapse != 0) 
-          timesteps_until_spike_reaches_synapse -= 1;
-        // If the spike is about to reach the synapse, set the spike time to next timestep
-        if (timesteps_until_spike_reaches_synapse == 1){
-            d_time_of_last_spike_to_reach_synapse[idx] = current_time_in_seconds;
-            int postsynaptic_neuron_id = postsynaptic_neuron_indices[idx];
-	    int trace_id = synaptic_decay_id[idx];
-	    float synaptic_efficacy = d_biological_conductance_scaling_constants_lambda[idx] * d_synaptic_efficacies_or_weights[idx];
-	    atomicAdd(&neuron_wise_conductance_trace[total_number_of_neurons*trace_id + postsynaptic_neuron_id], synaptic_efficacy);
-
-        }
-        // Given a spike injection window, check if the synapse is within it. If not, remove the synapse from active
-        if (timesteps_until_spike_reaches_synapse == 0){
-          int pos = atomicAdd(&num_after_deactivation[0], 1);
-          synapse_switches[pos] = indx;
-          d_active_synapses[indx] = -1;
-	  reset_deactivation[0] = false;
-        }
-
-        d_spikes_travelling_to_synapse[idx] = timesteps_until_spike_reaches_synapse;
-
-        indx += blockDim.x * gridDim.x;
-      }
-      __syncthreads();
-    }
-
-    __global__ void conductance_check_bitarray_for_presynaptic_neuron_spikes(int* d_presynaptic_neuron_indices,
-                    int* d_delays,
-                    unsigned char* d_bitarray_of_neuron_spikes,
-                    unsigned char* d_input_neuron_bitarray_of_neuron_spikes,
-                    int bitarray_length,
-                    int bitarray_maximum_axonal_delay_in_timesteps,
-                    float current_time_in_seconds,
-                    float timestep,
-                    int * d_num_active_synapses,
-                    int * d_active_synapses,
-                    float* d_time_of_last_spike_to_reach_synapse){
-
-      int indx = threadIdx.x + blockIdx.x * blockDim.x;
-      while (indx < d_num_active_synapses[0]) {
-        int idx = d_active_synapses[indx];
-
-        int presynaptic_neuron_index = d_presynaptic_neuron_indices[idx];
-        bool presynaptic_is_input = PRESYNAPTIC_IS_INPUT(presynaptic_neuron_index);
-        int delay = d_delays[idx];
-
-        // Get offset depending upon the current timestep
-        int offset_index = ((int)(round(current_time_in_seconds / timestep)) % bitarray_maximum_axonal_delay_in_timesteps) - delay;
-        offset_index = (offset_index < 0) ? (offset_index + bitarray_maximum_axonal_delay_in_timesteps) : offset_index;
-        int offset_byte = offset_index / 8;
-        int offset_bit_pos = offset_index - (8 * offset_byte);
-
-        // Get the correct neuron index
-        int neuron_index = CORRECTED_PRESYNAPTIC_ID(presynaptic_neuron_index, presynaptic_is_input);
-
-        // Check the spike
-        int neuron_id_spike_store_start = neuron_index * bitarray_length;
-        int check = 0;
-        if (presynaptic_is_input){
-          unsigned char byte = d_input_neuron_bitarray_of_neuron_spikes[neuron_id_spike_store_start + offset_byte];
-          check = ((byte >> offset_bit_pos) & 1);
-          if (check == 1){
-            d_time_of_last_spike_to_reach_synapse[idx] = current_time_in_seconds;
-          }
-        } else {
-          unsigned char byte = d_bitarray_of_neuron_spikes[neuron_id_spike_store_start + offset_byte];
-          check = ((byte >> offset_bit_pos) & 1);
-          if (check == 1){
-            d_time_of_last_spike_to_reach_synapse[idx] = current_time_in_seconds;
-          }
-        }
-
-        indx += blockDim.x * gridDim.x;
-      }
-      __syncthreads();
-    }
-
-
-    /* Kernel No Longer Used */
-    __global__ void conductance_update_synaptic_conductances_kernel(
-                                int* postsynaptic_neuron_indices,
-                                float * neuron_wise_conductance_trace,
-                                int * synaptic_decay_id,
-                                int total_number_of_neurons,
-                                float * d_synaptic_efficacies_or_weights,
-                                float * d_time_of_last_spike_to_reach_synapse,
-                                float * d_biological_conductance_scaling_constants_lambda,
-                                int* d_num_active_synapses,
-                                int* d_active_synapses,
-                                float current_time_in_seconds) {
-
-      int indx = threadIdx.x + blockIdx.x * blockDim.x;
-      while (indx < d_num_active_synapses[0]) {
-        int idx = d_active_synapses[indx];
-        if (idx < 0){
-          indx += blockDim.x * gridDim.x;
-          continue;
-        }
-
-        if (d_time_of_last_spike_to_reach_synapse[idx] == current_time_in_seconds) {
-          int postsynaptic_neuron_id = postsynaptic_neuron_indices[idx];
-          int trace_id = synaptic_decay_id[idx];
-          float synaptic_efficacy = d_biological_conductance_scaling_constants_lambda[idx] * d_synaptic_efficacies_or_weights[idx];
-          atomicAdd(&neuron_wise_conductance_trace[total_number_of_neurons*trace_id + postsynaptic_neuron_id], synaptic_efficacy);
-        }
-
-        indx += blockDim.x * gridDim.x;
-      }
-      __syncthreads();
-
     }
 
   }

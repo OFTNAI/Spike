@@ -3,37 +3,19 @@
 
 // SpikingNeurons Constructor
 SpikingNeurons::SpikingNeurons() {
-	// Variables
-	bitarray_length = 0;
-	bitarray_maximum_axonal_delay_in_timesteps = 0;
-	high_fidelity_spike_flag = false;
 
 	// Host Pointers
 	after_spike_reset_membrane_potentials_c = nullptr;
 	thresholds_for_action_potential_spikes = nullptr;
-	bitarray_of_neuron_spikes = nullptr;
 }
 
 // SpikingNeurons Destructor
 SpikingNeurons::~SpikingNeurons() {
 	free(after_spike_reset_membrane_potentials_c);
 	free(thresholds_for_action_potential_spikes);
-	free(bitarray_of_neuron_spikes);
 }
 
 void SpikingNeurons::prepare_backend_early() {
-  // Choosing Spike Mechanism
-  high_fidelity_spike_flag = backend()->context->params.high_fidelity_spike_storage;
-  bitarray_maximum_axonal_delay_in_timesteps = backend()->context->params.maximum_axonal_delay_in_timesteps;
-
-  if (high_fidelity_spike_flag){
-    // Create bit array of correct length
-    bitarray_length = (bitarray_maximum_axonal_delay_in_timesteps / 8) + 1; // each char is 8 bit long.
-    bitarray_of_neuron_spikes = (unsigned char *)malloc(sizeof(unsigned char)*bitarray_length*total_number_of_neurons);
-    for (int i = 0; i < bitarray_length*total_number_of_neurons; i++){
-      bitarray_of_neuron_spikes[i] = (unsigned char)0;
-    }
-  }
 }
 
 int SpikingNeurons::AddGroup(neuron_parameters_struct * group_params){

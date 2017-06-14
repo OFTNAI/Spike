@@ -422,7 +422,6 @@ void FourLayerVisionSpikingModel::set_LBL_values_for_pointer_from_layer_to_layer
 void FourLayerVisionSpikingModel::setup_full_standard_model_using_optimal_parameters() {
 
         SetTimestep(0.00002);
-	high_fidelity_spike_storage = true;
 
 	number_of_non_input_layers_to_simulate = 1;
 
