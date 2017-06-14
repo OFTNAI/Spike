@@ -154,7 +154,14 @@ namespace Backend {
 		reset_deactivation,
                 timestep,
 		input_neurons_backend->frontend()->total_number_of_neurons,
-                (neurons_backend->frontend()->total_number_of_neurons + input_neurons_backend->frontend()->total_number_of_neurons));
+                (neurons_backend->frontend()->total_number_of_neurons + input_neurons_backend->frontend()->total_number_of_neurons),
+     decay_term_values,
+     reversal_values,
+     num_decay_terms,
+     synapse_decay_id,
+     neuron_wise_conductance_trace,
+     neurons_backend->current_injections,
+     neurons_backend->membrane_potentials_v);
         CudaCheckError();
       
       // Setting up the custom block size for active synapses only:
@@ -205,20 +212,20 @@ namespace Backend {
                   timestep);
       }
 
-      conductance_calculate_postsynaptic_current_injection_kernel<<<neurons_backend->number_of_neuron_blocks_per_grid, threads_per_block>>>(
-        decay_term_values,
-        reversal_values,
-        num_decay_terms,
-        synapse_decay_id,
-        neuron_wise_conductance_trace,
-        neurons_backend->current_injections,
-        num_active_synapses,
-        active_synapse_indices,
-        neurons_backend->membrane_potentials_v, 
-        timestep,
-        neurons_backend->frontend()->total_number_of_neurons);
+     // conductance_calculate_postsynaptic_current_injection_kernel<<<neurons_backend->number_of_neuron_blocks_per_grid, threads_per_block>>>(
+     //   decay_term_values,
+     //   reversal_values,
+     //   num_decay_terms,
+     //   synapse_decay_id,
+     //   neuron_wise_conductance_trace,
+     //   neurons_backend->current_injections,
+     //   num_active_synapses,
+     //   active_synapse_indices,
+     //   neurons_backend->membrane_potentials_v, 
+     //   timestep,
+     //   neurons_backend->frontend()->total_number_of_neurons);
 
-      CudaCheckError();
+     // CudaCheckError();
     }
 
 
@@ -242,9 +249,35 @@ namespace Backend {
 		bool* reset_deactivation,
                 float timestep,
 		int num_input_neurons,
-                size_t total_number_of_neurons) {
+                size_t total_number_of_neurons,
+                  float* decay_term_values,
+                  float* reversal_values,
+                  int num_decay_terms,
+                  int* synapse_decay_values,
+                  float* neuron_wise_conductance_traces,
+                  float* d_neurons_current_injections,
+                  float * d_membrane_potentials_v){
 
       int indx = threadIdx.x + blockIdx.x * blockDim.x;
+      while (indx < (total_number_of_neurons - num_input_neurons)){
+	int idx = indx;
+
+        float membrane_potential_v = d_membrane_potentials_v[idx];
+
+        for (int decay_id = 0; decay_id < num_decay_terms; decay_id++){
+	  if (decay_id == 0)
+		  d_neurons_current_injections[idx] = 0.0f;
+          float synaptic_conductance_g = neuron_wise_conductance_traces[idx + decay_id*total_number_of_neurons];
+          // First decay the conductance values as required
+          synaptic_conductance_g *= expf(- timestep / decay_term_values[decay_id]);
+          neuron_wise_conductance_traces[idx + decay_id*total_number_of_neurons] = synaptic_conductance_g;
+          d_neurons_current_injections[idx] += synaptic_conductance_g * (reversal_values[decay_id] - membrane_potential_v);
+        }
+	indx += blockDim.x * gridDim.x;
+      }
+
+
+      indx = threadIdx.x + blockIdx.x * blockDim.x;
       while (indx < total_number_of_neurons) {
    	int idx = indx - (num_input_neurons); 
         bool presynaptic_is_input = PRESYNAPTIC_IS_INPUT(idx);

@@ -71,7 +71,14 @@ namespace Backend {
 		bool* reset_deactivation,
                 float timestep,
 		int number_of_input_neurons,
-                size_t total_number_of_neurons); 
+                size_t total_number_of_neurons, 
+      float* decay_term_values,
+      float* reversal_values,
+      int num_decay_terms,
+      int* synapse_decay_values,
+      float* neuron_wise_conductance_traces,
+      float* d_neurons_current_injections,
+      float * d_membrane_potentials_v);
 
     __global__ void conductance_calculate_postsynaptic_current_injection_kernel(
       float* decay_term_values,
