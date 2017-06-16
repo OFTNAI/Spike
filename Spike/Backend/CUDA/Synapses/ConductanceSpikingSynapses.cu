@@ -20,6 +20,7 @@ namespace Backend {
 
     void ConductanceSpikingSynapses::prepare() {
       SpikingSynapses::prepare();
+      buffersize = (frontend()->maximum_axonal_delay_in_timesteps + 2);
 
       // Set up tau and reversal potential values and ids (Host-Side)
       h_synapse_decay_id = (int*)realloc(h_synapse_decay_id, frontend()->total_number_of_synapses*sizeof(int));
@@ -65,7 +66,7 @@ namespace Backend {
         sizeof(float)*conductance_trace_length, cudaMemcpyHostToDevice));
       CudaSafeCall(cudaMemset(
 	circular_spikenum_buffer,
-	0, sizeof(int)*(frontend()->maximum_axonal_delay_in_timesteps + 2)));
+	0, sizeof(int)*(buffersize)));
     }
 
 
@@ -76,12 +77,11 @@ namespace Backend {
       CudaSafeCall(cudaMalloc((void **)&neuron_wise_conductance_trace, sizeof(float)*conductance_trace_length));
       CudaSafeCall(cudaMalloc((void **)&decay_term_values, sizeof(float)*num_decay_terms));
       CudaSafeCall(cudaMalloc((void **)&reversal_values, sizeof(float)*num_decay_terms));
-      CudaSafeCall(cudaMalloc((void **)&circular_spikenum_buffer, sizeof(int)*(frontend()->maximum_axonal_delay_in_timesteps + 1)));
+      CudaSafeCall(cudaMalloc((void **)&circular_spikenum_buffer, sizeof(int)*(buffersize)));
       CudaSafeCall(cudaMalloc((void **)&spikeid_buffer, sizeof(int)*(frontend()->maximum_axonal_delay_in_timesteps * frontend()->maximum_number_of_afferent_synapses)));
     }
 
     void ConductanceSpikingSynapses::copy_constants_and_initial_efficacies_to_device() {
-      buffersize = (frontend()->maximum_axonal_delay_in_timesteps + 1);
       CudaSafeCall(cudaMemcpy(biological_conductance_scaling_constants_lambda,
         frontend()->biological_conductance_scaling_constants_lambda,
         sizeof(float)*frontend()->total_number_of_synapses, cudaMemcpyHostToDevice));
