@@ -96,8 +96,9 @@ namespace Backend {
            frontend()->neurs->total_number_of_neurons);
         CudaCheckError();
       } else {
-        vanrossum_pretrace_and_ltd<<<synapses_backend->number_of_synapse_blocks_per_grid, synapses_backend->threads_per_block>>>
+        vanrossum_trace_and_plasticity<<<synapses_backend->number_of_synapse_blocks_per_grid, synapses_backend->threads_per_block>>>
           (synapses_backend->postsynaptic_neuron_indices,
+	   neurons_backend->last_spike_time_of_each_neuron,
            synapses_backend->time_of_last_spike_to_reach_synapse,
            synapses_backend->synaptic_efficacies_or_weights,
            stdp_pre_memory_trace,
@@ -108,24 +109,14 @@ namespace Backend {
            plastic_synapse_indices,
            total_number_of_plastic_synapses);
         
-        vanrossum_posttrace_and_ltp<<<synapses_backend->number_of_synapse_blocks_per_grid, synapses_backend->threads_per_block>>>
-          (synapses_backend->postsynaptic_neuron_indices,
-           neurons_backend->last_spike_time_of_each_neuron,
-           synapses_backend->synaptic_efficacies_or_weights,
-           stdp_pre_memory_trace,
-           stdp_post_memory_trace,
-           *(frontend()->stdp_params),
-           frontend()->stdp_params->timestep,
-           current_time_in_seconds,
-           plastic_synapse_indices,
-           total_number_of_plastic_synapses);
       }
       }
     }
 
     // ALL SPIKE IMPLEMENTATION
-    __global__ void vanrossum_pretrace_and_ltd
+    __global__ void vanrossum_trace_and_plasticity
           (int* d_postsyns,
+           float* d_last_spike_time_of_each_neuron,
            float* d_time_of_last_spike_to_reach_synapse,
            float* d_synaptic_efficacies_or_weights,
            float* stdp_pre_memory_trace,
@@ -143,13 +134,21 @@ namespace Backend {
 	int idx = d_plastic_synapse_indices[indx];
         // First decay the memory trace (USING INDX FOR TRACE HERE AND BELOW)
         stdp_pre_memory_trace[indx] *= expf(- timestep / stdp_vars.tau_plus);
+        stdp_post_memory_trace[indx] *= expf( - timestep / stdp_vars.tau_minus);
+        int postid = d_postsyns[idx];
 
-        // First update the memory trace for every pre and post neuron
+	// Carry out LTP
+        if (d_last_spike_time_of_each_neuron[postid] == current_time_in_seconds){
+          stdp_post_memory_trace[indx] += stdp_vars.a_minus;
+          // If output neuron just fired, do LTP
+          d_synaptic_efficacies_or_weights[idx] += stdp_pre_memory_trace[indx];
+        }
+
+        // Carry out LTD
         if (d_time_of_last_spike_to_reach_synapse[idx] == current_time_in_seconds){
           // Update the presynaptic memory trace
           stdp_pre_memory_trace[indx] += stdp_vars.a_plus;
           // Carry out the necessary LTD
-          int postid = d_postsyns[idx];
 	  float old_synaptic_weight = d_synaptic_efficacies_or_weights[idx];
           d_synaptic_efficacies_or_weights[idx] -= old_synaptic_weight * stdp_post_memory_trace[postid];
         }	
@@ -158,36 +157,6 @@ namespace Backend {
 
     }
     
-    __global__ void vanrossum_posttrace_and_ltp
-    (int* d_postsyns,
-     float* d_last_spike_time_of_each_neuron,
-     float* d_synaptic_efficacies_or_weights,
-     float* stdp_pre_memory_trace,
-     float* stdp_post_memory_trace,
-     struct vanrossum_stdp_plasticity_parameters_struct stdp_vars,
-     float timestep,
-     float current_time_in_seconds,
-     int* d_plastic_synapse_indices,
-     size_t total_number_of_plastic_synapses){
-      // Global Index
-      int indx = threadIdx.x + blockIdx.x * blockDim.x;
-
-      // Running though all neurons
-      while (indx < total_number_of_plastic_synapses) {
-	int idx = d_plastic_synapse_indices[indx];
-
-        int postid = d_postsyns[idx];
-        stdp_post_memory_trace[indx] *= expf( - timestep / stdp_vars.tau_minus);
-        if (d_last_spike_time_of_each_neuron[postid] == current_time_in_seconds){
-          stdp_post_memory_trace[indx] += stdp_vars.a_minus;
-          // If output neuron just fired, do LTP
-          d_synaptic_efficacies_or_weights[idx] += stdp_pre_memory_trace[indx];
-        }
-
-	// Now if 
-        indx += blockDim.x * gridDim.x;
-      }
-    }
 
 
     // NEAREST SPIKE IMPLEMENTATION

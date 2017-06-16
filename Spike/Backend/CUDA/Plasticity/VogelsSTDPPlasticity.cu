@@ -20,7 +20,10 @@ namespace Backend {
 
     void VogelsSTDPPlasticity::prepare() {
       STDPPlasticity::prepare();
-
+      // Setting the kernel size appropriately
+      plastic_synapse_blocks_per_grid.x = (total_number_of_plastic_synapses + neurons_backend->threads_per_block.x) / neurons_backend->threads_per_block.x;
+      if (plastic_synapse_blocks_per_grid.x > synapses_backend->number_of_synapse_blocks_per_grid.x)
+	      plastic_synapse_blocks_per_grid.x = synapses_backend->number_of_synapse_blocks_per_grid.x;
       allocate_device_pointers();
     }
 
@@ -34,16 +37,16 @@ namespace Backend {
     void VogelsSTDPPlasticity::apply_stdp_to_synapse_weights(float current_time_in_seconds, float timestep) {
 
     // Vogels update rule requires a neuron wise memory trace. This must be updated upon neuron firing.
-    vogels_update_memory_trace<<<neurons_backend->number_of_neuron_blocks_per_grid, neurons_backend->threads_per_block>>>
-      (neurons_backend->last_spike_time_of_each_neuron,
-       current_time_in_seconds,
-       timestep,
-       vogels_memory_trace,
-       *(frontend()->stdp_params),
-       frontend()->neurs->total_number_of_neurons);
-    CudaCheckError();
+    //vogels_update_memory_trace<<<neurons_backend->number_of_neuron_blocks_per_grid, neurons_backend->threads_per_block>>>
+    //  (neurons_backend->last_spike_time_of_each_neuron,
+    //   current_time_in_seconds,
+    //   timestep,
+    //   vogels_memory_trace,
+    //   *(frontend()->stdp_params),
+    //   frontend()->neurs->total_number_of_neurons);
+    //CudaCheckError();
 
-    vogels_apply_stdp_to_synapse_weights_kernel<<<neurons_backend->number_of_neuron_blocks_per_grid, neurons_backend->threads_per_block>>>
+    vogels_apply_stdp_to_synapse_weights_kernel<<<plastic_synapse_blocks_per_grid, neurons_backend->threads_per_block>>>
       (synapses_backend->presynaptic_neuron_indices,
        synapses_backend->postsynaptic_neuron_indices,
        neurons_backend->last_spike_time_of_each_neuron,
@@ -53,6 +56,7 @@ namespace Backend {
        current_time_in_seconds,
        timestep,
        plastic_synapse_indices,
+       neurons_backend->frontend()->total_number_of_neurons,
        total_number_of_plastic_synapses);
     CudaCheckError();
     }
@@ -68,10 +72,30 @@ namespace Backend {
      float currtime,
      float timestep,
      int* d_plastic_synapse_indices,
+     int total_number_of_neurons,
      size_t total_number_of_plastic_synapses){
       // Global Index
       int indx = threadIdx.x + blockIdx.x * blockDim.x;
 
+      // Running through all neurons:
+      while (indx < total_number_of_neurons){
+
+        // Decay all neuron memory traces
+        vogels_memory_trace[indx] += (- vogels_memory_trace[indx] / stdp_vars.tau_istdp)*timestep;
+
+        // If the neuron has fired, update its memory trace
+        if (d_last_spike_time_of_each_neuron[indx] == currtime){
+          vogels_memory_trace[indx] += 1.0f;
+        }
+
+        // Increment index
+        indx += blockDim.x * gridDim.x;
+      }
+
+      // Ideally all threads would be synchronised here.
+      __syncthreads();
+      
+      indx = threadIdx.x + blockIdx.x * blockDim.x;
       // Running though all stdp synapses
       while (indx < total_number_of_plastic_synapses){
         // Getting an index for the correct synapse

@@ -23,6 +23,8 @@ namespace Backend {
       SPIKE_MAKE_BACKEND_CONSTRUCTOR(VogelsSTDPPlasticity);
       using ::Backend::VogelsSTDPPlasticity::frontend;
 
+      dim3 plastic_synapse_blocks_per_grid = dim3(1);
+
       void prepare() override;
       void reset_state() override;
 
@@ -41,6 +43,7 @@ namespace Backend {
      float currtime,
      float timestep,
      int* d_plastic_synapse_indices,
+     int total_number_of_neurons,
      size_t total_number_of_plastic_synapses);
 
     __global__ void vogels_update_memory_trace
