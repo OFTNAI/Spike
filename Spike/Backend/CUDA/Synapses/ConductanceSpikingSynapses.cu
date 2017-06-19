@@ -248,7 +248,7 @@ namespace Backend {
       while (indx < total_number_of_neurons) {
    	int idx = indx - (num_input_neurons); 
         bool presynaptic_is_input = PRESYNAPTIC_IS_INPUT(idx);
-	bool corr_idx = CORRECTED_PRESYNAPTIC_ID(idx, presynaptic_is_input);
+	int corr_idx = CORRECTED_PRESYNAPTIC_ID(idx, presynaptic_is_input);
         float effecttime = presynaptic_is_input ? d_last_spike_time_of_each_input_neuron[corr_idx] : d_last_spike_time_of_each_neuron[corr_idx];
 
         // Check if spike occurred within the last timestep    
