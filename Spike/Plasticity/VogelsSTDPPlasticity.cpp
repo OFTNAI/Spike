@@ -13,17 +13,9 @@ VogelsSTDPPlasticity::VogelsSTDPPlasticity(SpikingSynapses* synapses, SpikingNeu
 }
 
 VogelsSTDPPlasticity::~VogelsSTDPPlasticity() {
-  free(vogels_memory_trace);
 }
 
 void VogelsSTDPPlasticity::prepare_backend_late() {
-  // Allocate memory for the vogels trace
-  vogels_memory_trace = (float*)malloc(sizeof(float)*neurs->total_number_of_neurons);
-
-  // Initialize trace
-  for (int i=0; i < neurs->total_number_of_neurons; i++){
-    vogels_memory_trace[i] = 0.0f;
-  }
 }
 
 // Run the STDP

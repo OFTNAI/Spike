@@ -17,7 +17,9 @@ namespace Backend {
     class VogelsSTDPPlasticity : public virtual ::Backend::CUDA::STDPPlasticity,
                            public virtual ::Backend::VogelsSTDPPlasticity {
     public:
-      float* vogels_memory_trace = nullptr;
+      float* vogels_memory_trace_reset = nullptr; 
+      float* vogels_pre_memory_trace = nullptr;
+      float* vogels_post_memory_trace = nullptr;
 
       ~VogelsSTDPPlasticity() override;
       SPIKE_MAKE_BACKEND_CONSTRUCTOR(VogelsSTDPPlasticity);
@@ -36,19 +38,13 @@ namespace Backend {
      int* d_postsyns,
      float* d_last_spike_time_of_each_neuron,
      float* d_synaptic_efficacies_or_weights,
-     float* vogels_memory_trace,
+     float* vogels_pre_memory_trace,
+     float* vogels_post_memory_trace,
      struct vogels_stdp_plasticity_parameters_struct stdp_vars,
      float currtime,
      float timestep,
      int* d_plastic_synapse_indices,
      size_t total_number_of_plastic_synapses);
 
-    __global__ void vogels_update_memory_trace
-    (float* d_last_spike_time_of_each_neuron,
-     float currtime,
-     float timestep,
-     float* vogels_memory_trace,
-     struct vogels_stdp_plasticity_parameters_struct stdp_vars,
-     size_t total_number_of_neurons);
   }
 }

@@ -56,8 +56,6 @@ public:
 
   struct vogels_stdp_plasticity_parameters_struct* stdp_params;
 
-  float* vogels_memory_trace = nullptr;
-
   void init_backend(Context* ctx = _global_ctx) override;
   void prepare_backend_late() override;
 
