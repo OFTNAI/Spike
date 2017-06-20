@@ -44,15 +44,5 @@ namespace Backend {
                                                         size_t total_number_of_synapses,
                                                         float* d_time_of_last_spike_to_reach_synapse);
 
-    __global__ void check_bitarray_for_presynaptic_neuron_spikes(int* d_presynaptic_neuron_indices,
-                                                                 int* d_delays,
-                                                                 unsigned char* d_bitarray_of_neuron_spikes,
-                                                                 unsigned char* d_input_neuruon_bitarray_of_neuron_spikes,
-                                                                 int bitarray_length,
-                                                                 int bitarray_maximum_axonal_delay_in_timesteps,
-                                                                 float current_time_in_seconds,
-                                                                 float timestep,
-                                                                 size_t total_number_of_synapses,
-                                                                 float* d_time_of_last_spike_to_reach_synapse);
   }
 }

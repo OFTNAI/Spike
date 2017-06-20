@@ -103,7 +103,6 @@ void SpikingModel::init_backend() {
   TimerWithMessages* timer = new TimerWithMessages("Setting Up Network...\n");
   #endif
 
-  context->params.high_fidelity_spike_storage = high_fidelity_spike_storage;
   context->params.threads_per_block_neurons = 512;
   context->params.threads_per_block_synapses = 512;
 

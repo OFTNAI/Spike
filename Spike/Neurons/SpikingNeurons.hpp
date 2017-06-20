@@ -34,11 +34,6 @@ public:
   SPIKE_ADD_BACKEND_GETSET(SpikingNeurons, Neurons);
   void prepare_backend_early() override;
   
-  // Variables
-  int bitarray_length;
-  int bitarray_maximum_axonal_delay_in_timesteps;
-  bool high_fidelity_spike_flag;
-	
   // Host Pointers
   float* after_spike_reset_membrane_potentials_c = nullptr;
   float* thresholds_for_action_potential_spikes = nullptr;

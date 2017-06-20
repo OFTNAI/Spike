@@ -80,18 +80,6 @@ namespace Backend {
       float timestep,
       size_t total_number_of_neurons);
 
-    __global__ void conductance_update_synaptic_conductances_kernel(
-      int* postsynaptic_neuron_indices,
-      float * neuron_wise_conductance_trace,
-      int * synaptic_decay_id,
-      int total_number_of_neurons,
-      float * d_synaptic_efficacies_or_weights,
-      float * d_time_of_last_spike_to_reach_synapse,
-      float * d_biological_conductance_scaling_constants_lambda,
-      int* d_num_active_synapses,
-      int* d_active_synapses,
-      float current_time_in_seconds);
-
     __global__ void conductance_move_spikes_towards_synapses_kernel(
       int* d_spikes_travelling_to_synapse,
       float current_time_in_seconds,
@@ -108,18 +96,5 @@ namespace Backend {
       float* d_synaptic_efficacies_or_weights,
       float* d_biological_conductance_scaling_constants_lambda,
       float timestep);
-
-    __global__ void conductance_check_bitarray_for_presynaptic_neuron_spikes(
-      int* d_presynaptic_neuron_indices,
-      int* d_delays,
-      unsigned char* d_bitarray_of_neuron_spikes,
-      unsigned char* d_input_neuruon_bitarray_of_neuron_spikes,
-      int bitarray_length,
-      int bitarray_maximum_axonal_delay_in_timesteps,
-      float current_time_in_seconds,
-      float timestep,
-      int* d_num_active_synapses,
-      int* d_active_synapses,
-      float* d_time_of_last_spike_to_reach_synapse);
   }
 }

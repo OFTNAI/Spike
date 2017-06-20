@@ -24,7 +24,6 @@ int main (int argc, char *argv[]){
 
 	// Create an instance of the Model
 	SpikingModel* ExampleModel = new SpikingModel();
-	// ExampleModel->high_fidelity_spike_storage = true;
 		
 
 	// Set up the simulator with a timestep at which the neuron, synapse and STDP properties will be calculated 

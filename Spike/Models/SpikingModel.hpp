@@ -43,8 +43,6 @@ public:
   float timestep;
   void SetTimestep(float timestep_parameter);
 
-  bool high_fidelity_spike_storage = false;
-
   SpikingNeurons * spiking_neurons;
   SpikingSynapses * spiking_synapses;
   InputSpikingNeurons * input_spiking_neurons;

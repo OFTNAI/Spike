@@ -236,7 +236,6 @@ int main (int argc, char *argv[]){
 	/*
 		COMPLETE NETWORK SETUP
 	*/
-	BenchModel->high_fidelity_spike_storage = false;
 	BenchModel->finalise_model();
 	// BenchModel->copy_model_to_device();
 
