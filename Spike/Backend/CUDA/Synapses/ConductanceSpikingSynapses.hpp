@@ -22,13 +22,9 @@ namespace Backend {
       float * biological_conductance_scaling_constants_lambda = nullptr;
 
       // Variables used to determine active/inactive synapses
-      int * num_active_synapses = nullptr;
-      int * h_num_active_synapses = nullptr;
-      int * active_synapse_indices = nullptr;
-      int * num_after_deactivation = nullptr;
-      int * synapse_switches = nullptr;
-      bool * reset_deactivation = nullptr;
-      dim3 active_syn_blocks_per_grid = dim3(1);
+      int* circular_spikenum_buffer = nullptr;
+      int* spikeid_buffer = nullptr;
+      int buffersize = 0;
 
       // Variables used for memory-trace based synaptic input
       int num_decay_terms = 0;
@@ -64,11 +60,11 @@ namespace Backend {
                 float* d_last_spike_time_of_each_neuron,
                 float* d_last_spike_time_of_each_input_neuron,
                 float current_time_in_seconds,
-                int* d_num_active_synapses,
-                int* d_active_synapses,
-                int* num_after_deactivation,
-                int* synapse_switches,
-		bool* reset_deactivation,
+		int* circular_spikenum_buffer,
+		int* spikeid_buffer,
+		int bufferloc,
+		int buffersize,
+		int total_number_of_synapses,
                 float timestep,
 		int number_of_input_neurons,
                 size_t total_number_of_neurons); 
@@ -80,8 +76,6 @@ namespace Backend {
       int* synapse_decay_values,
       float* neuron_wise_conductance_traces,
       float* d_neurons_current_injections,
-      int* d_num_active_synapses,
-      int* d_active_synapses,
       float * d_membrane_potentials_v,
       float timestep,
       size_t total_number_of_neurons);
@@ -101,11 +95,11 @@ namespace Backend {
     __global__ void conductance_move_spikes_towards_synapses_kernel(
       int* d_spikes_travelling_to_synapse,
       float current_time_in_seconds,
-      int* num_active_synapses,
-      int* active_synapse_indices,
-      int* num_after_deactivation,
-      int* synapse_switches,
-      bool* reset_deactivation,
+      int* circular_spikenum_buffer,
+      int* spikeid_buffer,
+      int bufferloc,
+      int buffersize,
+      int total_number_of_synapses,
       float* d_time_of_last_spike_to_reach_synapse,
       int* postsynaptic_neuron_indices,
       float* neuron_wise_conductance_trace,
