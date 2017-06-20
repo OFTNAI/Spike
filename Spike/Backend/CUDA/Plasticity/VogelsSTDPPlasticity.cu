@@ -15,11 +15,11 @@ namespace Backend {
 
       CudaSafeCall(cudaMemcpy((void*)vogels_pre_memory_trace,
                               (void*)vogels_memory_trace_reset,
-                              sizeof(float)*frontend()->neurs->total_number_of_neurons,
+                              sizeof(float)*total_number_of_plastic_synapses,
                               cudaMemcpyHostToDevice));
       CudaSafeCall(cudaMemcpy((void*)vogels_post_memory_trace,
                               (void*)vogels_memory_trace_reset,
-                              sizeof(float)*frontend()->neurs->total_number_of_neurons,
+                              sizeof(float)*total_number_of_plastic_synapses,
                               cudaMemcpyHostToDevice));
     }
 
@@ -79,8 +79,8 @@ namespace Backend {
       // Running though all stdp synapses
       while (indx < total_number_of_plastic_synapses){
 	// First decaying the memory traces
-	vogels_pre_memory_trace[indx] *= expf(-timestep / stdp_vars.tau_istdp);
-	vogels_post_memory_trace[indx] *= expf(-timestep / stdp_vars.tau_istdp);
+	vogels_pre_memory_trace[indx] += - vogels_pre_memory_trace[indx]*(timestep / stdp_vars.tau_istdp);
+	vogels_post_memory_trace[indx] += - vogels_post_memory_trace[indx]*(timestep / stdp_vars.tau_istdp);
         // Getting an index for the correct synapse
         int idx = d_plastic_synapse_indices[indx];
 
@@ -89,10 +89,14 @@ namespace Backend {
         int post_neuron_id = d_postsyns[idx];
 
         // Check whether the pre-synaptic neuron has fired now
-        if (d_last_spike_time_of_each_neuron[pre_neuron_id] == currtime){
+        if (d_last_spike_time_of_each_neuron[post_neuron_id] == currtime)
           vogels_post_memory_trace[indx] += 1.0f;
+        if (d_last_spike_time_of_each_neuron[pre_neuron_id] == currtime)
+          vogels_pre_memory_trace[indx] += 1.0f;
+
+        if (d_last_spike_time_of_each_neuron[pre_neuron_id] == currtime){
           float new_syn_weight = d_synaptic_efficacies_or_weights[idx];
-          new_syn_weight += stdp_vars.learningrate*(vogels_pre_memory_trace[indx]);
+          new_syn_weight += stdp_vars.learningrate*(vogels_post_memory_trace[indx]);
           // Alpha must be calculated as 2 * targetrate * tau_istdp
           new_syn_weight += - stdp_vars.learningrate*(2.0*stdp_vars.targetrate*stdp_vars.tau_istdp);
           d_synaptic_efficacies_or_weights[idx] = new_syn_weight;
@@ -100,7 +104,6 @@ namespace Backend {
 
         // Check whether the post-synaptic neuron has fired now
         if (d_last_spike_time_of_each_neuron[post_neuron_id] == currtime){
-          vogels_pre_memory_trace[indx] += 1.0f;
           float new_syn_weight = d_synaptic_efficacies_or_weights[idx];
           new_syn_weight += stdp_vars.learningrate*(vogels_pre_memory_trace[indx]);
           d_synaptic_efficacies_or_weights[idx] = new_syn_weight;
