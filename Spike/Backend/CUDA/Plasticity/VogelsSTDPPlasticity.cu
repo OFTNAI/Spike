@@ -38,8 +38,8 @@ namespace Backend {
       // The following doesn't do anything in original code...
       // ::Backend::CUDA::STDPPlasticity::allocate_device_pointers();
 
-      CudaSafeCall(cudaMalloc((void **)&vogels_pre_memory_trace, sizeof(int)*frontend()->neurs->total_number_of_neurons));
-      CudaSafeCall(cudaMalloc((void **)&vogels_post_memory_trace, sizeof(int)*frontend()->neurs->total_number_of_neurons));
+      CudaSafeCall(cudaMalloc((void **)&vogels_pre_memory_trace, sizeof(int)*total_number_of_plastic_synapses));
+      CudaSafeCall(cudaMalloc((void **)&vogels_post_memory_trace, sizeof(int)*total_number_of_plastic_synapses));
     }
 
     void VogelsSTDPPlasticity::apply_stdp_to_synapse_weights(float current_time_in_seconds, float timestep) {
