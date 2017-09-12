@@ -15,6 +15,9 @@ namespace Backend {
 
 class CurrentSpikingSynapses : public SpikingSynapses {
 public:
+  CurrentSpikingSynapses() : SpikingSynapses() {};
+  CurrentSpikingSynapses(int seedval) : SpikingSynapses(seedval) {};
+
   SPIKE_ADD_BACKEND_GETSET(CurrentSpikingSynapses, SpikingSynapses);
   void init_backend(Context* ctx = _global_ctx) override;
   

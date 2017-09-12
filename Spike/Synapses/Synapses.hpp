@@ -94,6 +94,7 @@ class Synapses : public virtual SpikeBase {
 public:
   // Constructor/Destructor
   Synapses();
+  Synapses(int seedval);
   ~Synapses() override;
 
   SPIKE_ADD_BACKEND_GETSET(Synapses, SpikeBase);

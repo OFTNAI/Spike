@@ -23,6 +23,8 @@ struct spiking_synapse_parameters_struct : synapse_parameters_struct {
 
 class SpikingSynapses : public Synapses {
 public:
+  SpikingSynapses() : Synapses() {};
+  SpikingSynapses(int seedval) : Synapses(seedval) {};
   ~SpikingSynapses() override;
 
   SPIKE_ADD_BACKEND_GETSET(SpikingSynapses, Synapses);

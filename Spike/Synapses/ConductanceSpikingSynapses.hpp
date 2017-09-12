@@ -24,6 +24,8 @@ namespace Backend {
 class ConductanceSpikingSynapses : public SpikingSynapses {
 
 public:
+  ConductanceSpikingSynapses() : SpikingSynapses() {};
+  ConductanceSpikingSynapses(int seedval) : SpikingSynapses(seedval) {};
   ~ConductanceSpikingSynapses() override;
 
   SPIKE_ADD_BACKEND_GETSET(ConductanceSpikingSynapses, SpikingSynapses);

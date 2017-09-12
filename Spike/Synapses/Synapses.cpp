@@ -18,6 +18,13 @@ Synapses::Synapses() {
   random_state_manager = new RandomStateManager();
 }
 
+// Synapses Constructor
+Synapses::Synapses(int seedval) {
+  srand(seedval);	// Seeding the random numbers
+
+  random_state_manager = new RandomStateManager();
+}
+
 void Synapses::prepare_backend_early() {
   random_state_manager->init_backend(backend()->context);
 }
