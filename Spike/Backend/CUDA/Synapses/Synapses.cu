@@ -149,7 +149,6 @@ namespace Backend {
       while (idx < floor((float)total_number_of_new_synapses/max_number_of_connections_per_pair)) {
 
         int postsynaptic_neuron_id = (idx*max_number_of_connections_per_pair) / number_of_new_synapses_per_postsynaptic_neuron;
-        d_postsynaptic_neuron_indices[idx] = poststart + postsynaptic_neuron_id;
 
         int postsynaptic_x = postsynaptic_neuron_id % post_width; 
         int postsynaptic_y = floor((float)(postsynaptic_neuron_id) / post_width);

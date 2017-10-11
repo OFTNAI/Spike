@@ -164,7 +164,8 @@ void Simulator::RunSimulation() {
 		int* stimuli_presentation_order = setup_stimuli_presentation_order();
 		for (int stimulus_index = 0; stimulus_index < spiking_model->input_spiking_neurons->total_number_of_input_stimuli; stimulus_index++) {
 
-			if (simulator_options->stimuli_presentation_options->reset_current_time_between_each_stimulus) current_time_in_seconds = 0.0f; // For GeneratorInputSpikingNeurons?
+			if (simulator_options->stimuli_presentation_options->reset_current_time_between_each_stimulus) current_time_in_seconds = 0.0f;
+			if (simulator_options->stimuli_presentation_options->reset_model_state_between_each_stimulus) spiking_model->reset_state();
 
 			perform_pre_stimulus_presentation_instructions(stimuli_presentation_order[stimulus_index]);
 

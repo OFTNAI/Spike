@@ -50,6 +50,7 @@ struct Simulator_Run_Simulation_General_Options {
 												reset_current_time_between_each_epoch(false),
 												delete_spike_analyser_on_simulator_destruction(true),
 												specific_epoch_to_pass_to_spike_analyser(0),
+												reset_model_state_between_each_stimulus(false)
 												reset_model_state_between_epochs(true)
 												{}
 
