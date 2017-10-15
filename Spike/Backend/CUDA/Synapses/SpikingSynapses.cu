@@ -29,6 +29,7 @@ namespace Backend {
                               last_spike_to_reach_synapse,
                               frontend()->total_number_of_synapses*sizeof(float),
                               cudaMemcpyHostToDevice));
+      free(last_spike_to_reach_synapse);
     }
 
     void SpikingSynapses::copy_weights_to_host() {

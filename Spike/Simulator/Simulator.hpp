@@ -46,11 +46,9 @@ struct Simulator_Run_Simulation_General_Options {
 												number_of_epochs(1), 
 												apply_plasticity_to_relevant_synapses(false),
 												stimulus_presentation_order_seed(1),
-												reset_current_time_between_each_stimulus(false),
 												reset_current_time_between_each_epoch(false),
 												delete_spike_analyser_on_simulator_destruction(true),
 												specific_epoch_to_pass_to_spike_analyser(0),
-												reset_model_state_between_each_stimulus(false)
 												reset_model_state_between_epochs(true)
 												{}
 
@@ -59,7 +57,6 @@ struct Simulator_Run_Simulation_General_Options {
 	int number_of_epochs;
 	bool apply_plasticity_to_relevant_synapses;
 	int stimulus_presentation_order_seed;
-	bool reset_current_time_between_each_stimulus;
 	bool reset_current_time_between_each_epoch;
 	bool delete_spike_analyser_on_simulator_destruction;
 	int specific_epoch_to_pass_to_spike_analyser;
@@ -109,13 +106,15 @@ struct Stimuli_Presentation_Struct {
 	Stimuli_Presentation_Struct(): presentation_format(PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_STIMULI), 
 								object_order(OBJECT_ORDER_ORIGINAL), 
 								transform_order(TRANSFORM_ORDER_ORIGINAL), 
-								reset_current_time_between_each_stimulus(false) 
+								reset_current_time_between_each_stimulus(false), 
+								reset_model_state_between_each_stimulus(false)
 								{}
 
 	PRESENTATION_FORMAT presentation_format;
 	OBJECT_ORDER object_order;
 	TRANSFORM_ORDER transform_order;
 	bool reset_current_time_between_each_stimulus;
+	bool reset_model_state_between_each_stimulus;
 
 };
 

@@ -58,13 +58,16 @@ void ImagePoissonInputSpikingNeurons::set_up_rates(const char * fileList, const 
   printf("--- Setting up Input Neuron Rates from Gabor files...\n");
   #endif
 
-  //reset (added by aki)
+  // Reset (added by aki)
   total_number_of_objects = 0;
   total_number_of_transformations_per_object = 0;
   inputNames.clear();
   filterPhases->clear();
   filterWavelengths->clear();
   filterOrientations->clear();
+  // Reset should also be done for gabor filtered images
+  if (gabor_input_rates)
+	  free(gabor_input_rates);
 	
   load_image_names_from_file_list(fileList, inputDirectory);
   load_gabor_filter_parameters(filterParameters, inputDirectory);
