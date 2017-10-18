@@ -9,5 +9,6 @@ add_library (SpikeDummyNeurons STATIC
   InputSpikingNeurons.cpp
   GeneratorInputSpikingNeurons.cpp
   PoissonInputSpikingNeurons.cpp
+  GeneralPoissonInputSpikingNeurons.cpp
   ImagePoissonInputSpikingNeurons.cpp
   )

@@ -4,6 +4,7 @@ CUDA_ADD_LIBRARY (SpikeCUDANeurons
   InputSpikingNeurons.cu
   GeneratorInputSpikingNeurons.cu
   PoissonInputSpikingNeurons.cu
+  GeneralPoissonInputSpikingNeurons.cu
   ImagePoissonInputSpikingNeurons.cu
   AdExSpikingNeurons.cu
   LIFSpikingNeurons.cu

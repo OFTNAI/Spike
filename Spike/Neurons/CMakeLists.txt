@@ -4,6 +4,7 @@ add_library (Neurons OBJECT
   InputSpikingNeurons.cpp
   GeneratorInputSpikingNeurons.cpp
   PoissonInputSpikingNeurons.cpp
+  GeneralPoissonInputSpikingNeurons.cpp
   ImagePoissonInputSpikingNeurons.cpp
   LIFSpikingNeurons.cpp
   AdExSpikingNeurons.cpp

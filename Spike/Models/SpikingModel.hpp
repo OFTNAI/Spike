@@ -19,6 +19,7 @@
 #include "../Neurons/LIFSpikingNeurons.hpp"
 #include "../Neurons/AdExSpikingNeurons.hpp"
 #include "../Neurons/ImagePoissonInputSpikingNeurons.hpp"
+#include "../Neurons/GeneralPoissonInputSpikingNeurons.hpp"
 #include "../Neurons/GeneratorInputSpikingNeurons.hpp"
 #include "../SpikeAnalyser/SpikeAnalyser.hpp"
 #include "../Helpers/TimerWithMessages.hpp"
