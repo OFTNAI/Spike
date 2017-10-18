@@ -6,7 +6,7 @@ SPIKE_EXPORT_BACKEND_TYPE(CUDA, GeneralPoissonInputSpikingNeurons);
 namespace Backend {
   namespace CUDA {
     GeneralPoissonInputSpikingNeurons::~GeneralPoissonInputSpikingNeurons() {
-      CudaSafeCall(cudaFree(stimulus_rates));
+      CudaSafeCall(cudaFree(stimuli_rates));
     }
 
     void GeneralPoissonInputSpikingNeurons::allocate_device_pointers() {

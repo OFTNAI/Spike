@@ -35,17 +35,12 @@ void GeneralPoissonInputSpikingNeurons::add_stimulus(float* rates, int num_rates
 	// If correct, allocate some memory save these values
 	stimuli_rates = (float*)realloc(stimuli_rates, sizeof(float)*(total_number_of_rates + num_rates));
 	for (int index = 0; index < num_rates; index++){
-		stimulus_rates[total_number_of_rates + index] = rates[index];
+		stimuli_rates[total_number_of_rates + index] = rates[index];
 	}
 
 	// After storing the stimulus, correct the number of input stimuli
 	total_number_of_rates += num_rates;
 	++total_number_of_input_stimuli;
-}
-
-int GeneralPoissonInputSpikingNeurons::AddGroup(neuron_parameters_struct * group_params){
-  int new_group_id = PoissonInputSpikingNeurons::AddGroup(group_params);
-  return new_group_id;
 }
 
 

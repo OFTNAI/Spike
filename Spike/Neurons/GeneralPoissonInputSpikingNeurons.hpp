@@ -10,9 +10,7 @@
 
 // using namespace std;
 
-struct general_poisson_input_spiking_neuron_parameters_struct : poisson_input_spiking_neuron_parameters_struct {
-	general_poisson_input_spiking_neuron_parameters_struct(): { poisson_input_spiking_neuron_parameters_struct(); }
-	
+struct general_poisson_input_spiking_neuron_parameters_struct : poisson_input_spiking_neuron_parameters_struct {	
 };
 
 class GeneralPoissonInputSpikingNeurons; // forward definition
