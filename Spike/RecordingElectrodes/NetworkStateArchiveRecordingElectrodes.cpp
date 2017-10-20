@@ -51,44 +51,54 @@ void NetworkStateArchiveRecordingElectrodes::write_network_state_to_file() {
 	
 	if (network_state_archive_optional_parameters->human_readable_storage){
 		// Creating and Opening all the files
-		ofstream synapsepre, synapsepost, weightfile, delayfile;
+		if (!network_state_archive_optional_parameters->output_weights_only){
+			ofstream synapsepre, synapsepost, delayfile;
+			delayfile.open(full_directory_name_for_simulation_data_files + prefix_string + "_NetworkDelays.txt", ios::out | ios::binary);
+			synapsepre.open(full_directory_name_for_simulation_data_files + prefix_string + "_NetworkPre.txt", ios::out | ios::binary);
+			synapsepost.open(full_directory_name_for_simulation_data_files + prefix_string + "_NetworkPost.txt", ios::out | ios::binary);
+			for (int i=0; i < synapses->total_number_of_synapses; i++){
+				delayfile << to_string(synapses->delays[i]) << endl;
+				synapsepre << to_string(synapses->presynaptic_neuron_indices[i]) << endl;
+				synapsepost << to_string(synapses->postsynaptic_neuron_indices[i]) << endl;
+			}
+			delayfile.close();
+			synapsepre.close();
+			synapsepost.close();
+		}
+
+		ofstream weightfile;
 		weightfile.open(full_directory_name_for_simulation_data_files + prefix_string + "_NetworkWeights.txt", ios::out | ios::binary);
-		delayfile.open(full_directory_name_for_simulation_data_files + prefix_string + "_NetworkDelays.txt", ios::out | ios::binary);
-		synapsepre.open(full_directory_name_for_simulation_data_files + prefix_string + "_NetworkPre.txt", ios::out | ios::binary);
-		synapsepost.open(full_directory_name_for_simulation_data_files + prefix_string + "_NetworkPost.txt", ios::out | ios::binary);
 		
 		// Writing the data
 		for (int i=0; i < synapses->total_number_of_synapses; i++){
 			weightfile << to_string(synapses->synaptic_efficacies_or_weights[i]) << endl;
-			delayfile << to_string(synapses->delays[i]) << endl;
-			synapsepre << to_string(synapses->presynaptic_neuron_indices[i]) << endl;
-			synapsepost << to_string(synapses->postsynaptic_neuron_indices[i]) << endl;
 		}
 
 		// Close files
 		weightfile.close();
-		delayfile.close();
-		synapsepre.close();
-		synapsepost.close();
 	} else {
-		// Creating and Opening all the files
-		ofstream synapsepre, synapsepost, weightfile, delayfile;
-		weightfile.open(full_directory_name_for_simulation_data_files + prefix_string + "_NetworkWeights.bin", ios::out | ios::binary);
-		delayfile.open(full_directory_name_for_simulation_data_files + prefix_string + "_NetworkDelays.bin", ios::out | ios::binary);
-		synapsepre.open(full_directory_name_for_simulation_data_files + prefix_string + "_NetworkPre.bin", ios::out | ios::binary);
-		synapsepost.open(full_directory_name_for_simulation_data_files + prefix_string + "_NetworkPost.bin", ios::out | ios::binary);
-		
-		// Writing the data
-		weightfile.write((char *)synapses->synaptic_efficacies_or_weights, synapses->total_number_of_synapses*sizeof(float));
-		delayfile.write((char *)synapses->delays, synapses->total_number_of_synapses*sizeof(int));
-		synapsepre.write((char *)synapses->presynaptic_neuron_indices, synapses->total_number_of_synapses*sizeof(int));
-		synapsepost.write((char *)synapses->postsynaptic_neuron_indices, synapses->total_number_of_synapses*sizeof(int));
+		if (!network_state_archive_optional_parameters->output_weights_only){
+			// Creating and Opening all the files
+			ofstream synapsepre, synapsepost, delayfile;
+			delayfile.open(full_directory_name_for_simulation_data_files + prefix_string + "_NetworkDelays.bin", ios::out | ios::binary);
+			synapsepre.open(full_directory_name_for_simulation_data_files + prefix_string + "_NetworkPre.bin", ios::out | ios::binary);
+			synapsepost.open(full_directory_name_for_simulation_data_files + prefix_string + "_NetworkPost.bin", ios::out | ios::binary);
+			
+			// Writing the data
+			delayfile.write((char *)synapses->delays, synapses->total_number_of_synapses*sizeof(int));
+			synapsepre.write((char *)synapses->presynaptic_neuron_indices, synapses->total_number_of_synapses*sizeof(int));
+			synapsepost.write((char *)synapses->postsynaptic_neuron_indices, synapses->total_number_of_synapses*sizeof(int));
 
-		// Close files
+			// Close files
+			delayfile.close();
+			synapsepre.close();
+			synapsepost.close();
+		}
+	
+		ofstream weightfile;
+		weightfile.open(full_directory_name_for_simulation_data_files + prefix_string + "_NetworkWeights.bin", ios::out | ios::binary);
+		weightfile.write((char *)synapses->synaptic_efficacies_or_weights, synapses->total_number_of_synapses*sizeof(float));
 		weightfile.close();
-		delayfile.close();
-		synapsepre.close();
-		synapsepost.close();
 	}
 
 	#ifndef QUIETSTART

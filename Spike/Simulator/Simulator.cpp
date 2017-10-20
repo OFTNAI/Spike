@@ -166,6 +166,8 @@ void Simulator::RunSimulation() {
 
 			if (simulator_options->stimuli_presentation_options->reset_current_time_between_each_stimulus) current_time_in_seconds = 0.0f;
 			if (simulator_options->stimuli_presentation_options->reset_model_state_between_each_stimulus) spiking_model->reset_state();
+			
+			float current_time_at_stimulus_beginning = current_time_in_seconds;
 
 			perform_pre_stimulus_presentation_instructions(stimuli_presentation_order[stimulus_index]);
 
@@ -176,7 +178,7 @@ void Simulator::RunSimulation() {
 
 				perform_per_timestep_recording_electrode_instructions(current_time_in_seconds, timestep_index, number_of_timesteps_per_stimulus_per_epoch, epoch_number);
 
-				current_time_in_seconds += float(spiking_model->timestep);
+				current_time_in_seconds = current_time_at_stimulus_beginning + (timestep_index + 1)*float(spiking_model->timestep);
 
                                 #ifdef VERBOSE_SIMULATION
                                 printf("\r%f\t", current_time_in_seconds);

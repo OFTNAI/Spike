@@ -15,9 +15,10 @@ namespace Backend {
 
 struct Network_State_Archive_Optional_Parameters {
 
-	Network_State_Archive_Optional_Parameters(): human_readable_storage(false) {}
+	Network_State_Archive_Optional_Parameters(): human_readable_storage(false), output_weights_only(false) }
 
 		bool human_readable_storage;
+		bool output_weights_only;
 	
 };
 
