@@ -26,6 +26,11 @@ void GeneralPoissonInputSpikingNeurons::state_update
   backend()->state_update(current_time_in_seconds, timestep);
 }
 
+void GeneralPoissonInputSpikingNeurons::reset_stimuli(){
+	free(stimuli_rates);
+	stimuli_rates = nullptr;
+}
+
 void GeneralPoissonInputSpikingNeurons::add_stimulus(float* rates, int num_rates){
 	// Check if the size of the rates is correct
 	if (num_rates != total_number_of_neurons){

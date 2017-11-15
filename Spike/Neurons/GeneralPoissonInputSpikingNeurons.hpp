@@ -32,8 +32,8 @@ public:
   SPIKE_ADD_BACKEND_GETSET(GeneralPoissonInputSpikingNeurons, PoissonInputSpikingNeurons);
   void init_backend(Context* ctx = _global_ctx) override;
  
-  
   void state_update(float current_time_in_seconds, float timestep) override;
+  void reset_stimuli();  
   void add_stimulus(float* rates, int num_rates);
   void copy_rates_to_device();
 
