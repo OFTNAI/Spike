@@ -150,13 +150,12 @@ void Simulator::RunSimulation() {
 
 	
 	reset_all_recording_electrodes();
-	float current_time_in_seconds;
 
 	for (int epoch_number = 0; epoch_number < simulator_options->run_simulation_general_options->number_of_epochs; epoch_number++) {
 
 
-		if (epoch_number == 0 || simulator_options->run_simulation_general_options->reset_model_state_between_epochs) spiking_model->reset_state();
-		if (epoch_number == 0 || simulator_options->run_simulation_general_options->reset_current_time_between_each_epoch) current_time_in_seconds = 0.0f;
+		if ((epoch_number == 0 || simulator_options->run_simulation_general_options->reset_model_state_between_epochs) && !(simulator_options->run_simulation_general_options->no_initial_model_reset)) spiking_model->reset_state();
+		if ((epoch_number == 0 || simulator_options->run_simulation_general_options->reset_current_time_between_each_epoch) && !(simulator_options->run_simulation_general_options->no_initial_model_reset)) current_time_in_seconds = 0.0f;
 
 		TimerWithMessages * epoch_timer = new TimerWithMessages();
 		printf("Starting Epoch: %d\n", epoch_number);
@@ -184,8 +183,9 @@ void Simulator::RunSimulation() {
                                 printf("\r%f\t", current_time_in_seconds);
                                 #endif
 
-            }
+            		}
 
+			current_time_in_seconds = current_time_at_stimulus_beginning + simulator_options->run_simulation_general_options->presentation_time_per_stimulus_per_epoch;
 			perform_post_stimulus_presentation_instructions(epoch_number);
 			
 		}

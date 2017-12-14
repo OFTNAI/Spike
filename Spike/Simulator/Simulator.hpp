@@ -49,7 +49,8 @@ struct Simulator_Run_Simulation_General_Options {
 												reset_current_time_between_each_epoch(false),
 												delete_spike_analyser_on_simulator_destruction(true),
 												specific_epoch_to_pass_to_spike_analyser(0),
-												reset_model_state_between_epochs(true)
+												reset_model_state_between_epochs(true),
+												no_initial_model_reset(false)
 												{}
 
 
@@ -61,6 +62,7 @@ struct Simulator_Run_Simulation_General_Options {
 	bool delete_spike_analyser_on_simulator_destruction;
 	int specific_epoch_to_pass_to_spike_analyser;
 	bool reset_model_state_between_epochs;
+	bool no_initial_model_reset;
 
 };
 
@@ -145,6 +147,7 @@ public:
         Context* context = nullptr;
 	std::string full_directory_name_for_simulation_data_files;
 	int simulations_run_count;
+	float current_time_in_seconds = 0.0f;
 
 	// Host Pointers
 	SpikingModel * spiking_model = nullptr;
