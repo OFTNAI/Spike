@@ -27,6 +27,8 @@ void GeneralPoissonInputSpikingNeurons::state_update
 }
 
 void GeneralPoissonInputSpikingNeurons::reset_stimuli(){
+	total_number_of_rates = 0;
+	total_number_of_input_stimuli = 0;
 	free(stimuli_rates);
 	stimuli_rates = nullptr;
 }
