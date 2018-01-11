@@ -49,6 +49,7 @@ namespace Backend {
       (synapses_backend->presynaptic_neuron_indices,
        synapses_backend->postsynaptic_neuron_indices,
        neurons_backend->last_spike_time_of_each_neuron,
+       synapses_backend->time_of_last_spike_to_reach_synapse,
        synapses_backend->synaptic_efficacies_or_weights,
        vogels_pre_memory_trace,
        vogels_post_memory_trace,
@@ -65,6 +66,7 @@ namespace Backend {
     (int* d_presyns,
      int* d_postsyns,
      float* d_last_spike_time_of_each_neuron,
+     float* d_time_of_last_spike_to_reach_synapse,
      float* d_synaptic_efficacies_or_weights,
      float* vogels_pre_memory_trace,
      float* vogels_post_memory_trace,
@@ -91,10 +93,10 @@ namespace Backend {
         // Check whether the pre-synaptic neuron has fired now
         if (d_last_spike_time_of_each_neuron[post_neuron_id] == currtime)
           vogels_post_memory_trace[indx] += 1.0f;
-        if (d_last_spike_time_of_each_neuron[pre_neuron_id] == currtime)
+        if (d_time_of_last_spike_to_reach_synapse[idx] == currtime)
           vogels_pre_memory_trace[indx] += 1.0f;
 
-        if (d_last_spike_time_of_each_neuron[pre_neuron_id] == currtime){
+        if (d_time_of_last_spike_to_reach_synapse[idx] == currtime){
           float new_syn_weight = d_synaptic_efficacies_or_weights[idx];
           new_syn_weight += stdp_vars.learningrate*(vogels_post_memory_trace[indx]);
           // Alpha must be calculated as 2 * targetrate * tau_istdp
