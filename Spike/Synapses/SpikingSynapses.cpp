@@ -68,8 +68,10 @@ void SpikingSynapses::AddGroup(int presynaptic_group_id,
 		
 
 		// Setup Delays
-		float random_delay = delay_range_in_timesteps[0] + (delay_range_in_timesteps[1] - delay_range_in_timesteps[0]) * ((float)rand() / (RAND_MAX));
-		delays[i] = round(random_delay);
+		float delayval = delay_range_in_timesteps[0];
+		if (delay_range_in_timesteps[0] != delay_range_in_timesteps[1])
+			delayval = delay_range_in_timesteps[0] + (delay_range_in_timesteps[1] - delay_range_in_timesteps[0]) * ((float)rand() / (RAND_MAX));
+		delays[i] = round(delayval);
 
 	}
 

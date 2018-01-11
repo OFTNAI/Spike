@@ -245,7 +245,9 @@ void Synapses::AddGroup(int presynaptic_group_id,
           float weight_range_bottom = synapse_params->weight_range_bottom;
           float weight_range_top = synapse_params->weight_range_top;
 
-          float weight = weight_range_bottom + (weight_range_top - weight_range_bottom)*((float)rand() / (RAND_MAX));
+          float weight = weight_range_bottom;
+          if (weight_range_top != weight_range_bottom)
+		  weight = weight_range_bottom + (weight_range_top - weight_range_bottom)*((float)rand() / (RAND_MAX));
           synaptic_efficacies_or_weights[i] = weight;
 
           original_synapse_indices[i] = i;
