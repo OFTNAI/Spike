@@ -62,6 +62,11 @@ void SpikingSynapses::AddGroup(int presynaptic_group_id,
 	} else if (delay_range_in_timesteps[1] > maximum_axonal_delay_in_timesteps){
 		maximum_axonal_delay_in_timesteps = delay_range_in_timesteps[1];
 	}
+	if (delay_range_in_timesteps[0] < minimum_axonal_delay_in_timesteps){
+		minimum_axonal_delay_in_timesteps = delay_range_in_timesteps[0];
+	} else if (delay_range_in_timesteps[1] < minimum_axonal_delay_in_timesteps){
+		minimum_axonal_delay_in_timesteps = delay_range_in_timesteps[1];
+	}
 
 
 	for (int i = (total_number_of_synapses - temp_number_of_synapses_in_last_group); i < total_number_of_synapses; i++){

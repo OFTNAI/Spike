@@ -90,6 +90,7 @@ void SpikingModel::AddPlasticityRule(Plasticity * plasticity_rule){
 
 
 void SpikingModel::finalise_model() {
+  timestep_grouping = spiking_synapses->minimum_axonal_delay_in_timesteps;
   init_backend();
 }
   

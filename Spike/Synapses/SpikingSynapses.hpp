@@ -34,6 +34,7 @@ public:
   int* delays = nullptr;
 
   // For spike array stuff
+  int minimum_axonal_delay_in_timesteps = 0;
   int maximum_axonal_delay_in_timesteps = 0;
 
   // Synapse Functions

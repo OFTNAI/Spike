@@ -42,6 +42,7 @@ public:
   Context* context = nullptr; // Call init_backend to set this up!
 
   float timestep;
+  int timestep_grouping = 1;
   void SetTimestep(float timestep_parameter);
 
   SpikingNeurons * spiking_neurons;
