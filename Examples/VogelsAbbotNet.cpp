@@ -71,8 +71,8 @@ int main (int argc, char *argv[]){
 	EXC_NEURON_PARAMS->threshold_for_action_potential_spike = -50.0f*pow(10.0, -3); // -53mV threshold
 	INH_NEURON_PARAMS->threshold_for_action_potential_spike = -50.0f*pow(10.0, -3); // -53mV threshold
 
-	EXC_NEURON_PARAMS->background_current = 200.0f*pow(10.0, -12); //
-	INH_NEURON_PARAMS->background_current = 200.0f*pow(10.0, -12); //
+	EXC_NEURON_PARAMS->background_current = 4.0f*pow(10.0, -2); //
+	INH_NEURON_PARAMS->background_current = 4.0f*pow(10.0, -2); //
 
 
 	/*
@@ -195,9 +195,9 @@ int main (int argc, char *argv[]){
 	INPUT_SYN_PARAMS->delay_range[0] = 0.0008;
 	INPUT_SYN_PARAMS->delay_range[1] = 0.0008;
 	// Setting Reversal Potentials for specific synapses (according to evans paper)
-	EXC_OUT_SYN_PARAMS->reversal_potential_Vhat = 0.0f;
-	INH_OUT_SYN_PARAMS->reversal_potential_Vhat = -80.0f;
-	INPUT_SYN_PARAMS->reversal_potential_Vhat = 0.0f;
+	EXC_OUT_SYN_PARAMS->reversal_potential_Vhat = 0.0f*pow(10.0, -3);
+	INH_OUT_SYN_PARAMS->reversal_potential_Vhat = -80.0f*pow(10.0, -3);
+	INPUT_SYN_PARAMS->reversal_potential_Vhat = 0.0f*pow(10.0, -3);
 	// Set Weight Range?
 	EXC_OUT_SYN_PARAMS->weight_range_bottom = 0.4f;
 	EXC_OUT_SYN_PARAMS->weight_range_top = 0.4f;
