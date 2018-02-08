@@ -44,6 +44,7 @@ namespace Backend {
          membrane_time_constants_tau_m,
          resting_potentials,
          current_injections,
+	 total_current_conductance,
 	 thresholds_for_action_potential_spikes,
          frontend()->background_current,
          timestep,
@@ -61,6 +62,7 @@ namespace Backend {
                                                    float * d_membrane_time_constants_tau_m,
                                                    float * d_resting_potentials,
                                                    float* d_current_injections,
+                                                   float* d_total_current_conductance,
 						   float* d_threshold_for_action_potential_spikes,
                                                    float background_current,
                                                    float timestep,
@@ -78,10 +80,12 @@ namespace Backend {
           float resting_potential_V0 = d_resting_potentials[idx];
           float temp_membrane_resistance_R = d_membrane_resistances_R[idx];
           float current_injection_Ii = d_current_injections[idx*timestep_grouping];
+          float total_current_conductance = d_total_current_conductance[idx*timestep_grouping];
 
   	  for (int g=0; g < timestep_grouping; g++){	  
             current_injection_Ii = d_current_injections[idx*timestep_grouping + g];
-            float new_membrane_potential = equation_constant * (resting_potential_V0 + temp_membrane_resistance_R * current_injection_Ii) + (1 - equation_constant) * membrane_potential_Vi + equation_constant * background_current;
+            total_current_conductance = d_total_current_conductance[idx*timestep_grouping + g];
+            float new_membrane_potential = equation_constant * (resting_potential_V0 + temp_membrane_resistance_R * (current_injection_Ii - total_current_conductance*membrane_potential_Vi)) + (1 - equation_constant) * membrane_potential_Vi + equation_constant * background_current;
 	  
 	    // Finally check for a spike
 	    if (new_membrane_potential >= d_threshold_for_action_potential_spikes[idx]){

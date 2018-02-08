@@ -70,18 +70,6 @@ namespace Backend {
 		int number_of_input_neurons,
                 size_t total_number_of_neurons); 
 
-    __global__ void conductance_calculate_postsynaptic_current_injection_kernel(
-      float* decay_term_values,
-      float* reversal_values,
-      int num_decay_terms,
-      int* synapse_decay_values,
-      float* neuron_wise_conductance_traces,
-      float* d_neurons_current_injections,
-      float * d_membrane_potentials_v,
-      float timestep,
-      int timestep_grouping,
-      size_t total_number_of_neurons);
-
     __global__ void conductance_move_spikes_towards_synapses_kernel(
       int* d_spikes_travelling_to_synapse,
       float current_time_in_seconds,
@@ -99,5 +87,17 @@ namespace Backend {
       float* d_biological_conductance_scaling_constants_lambda,
       float timestep,
       int timestep_grouping);
+
+    __global__ void conductance_calculate_postsynaptic_current_injection_kernel(
+      float* decay_term_values,
+      float* reversal_values,
+      int num_decay_terms,
+      int* synapse_decay_values,
+      float* neuron_wise_conductance_traces,
+      float* d_neurons_current_injections,
+      float* d_total_current_conductance,
+      float timestep,
+      int timestep_grouping,
+      size_t total_number_of_neurons);
   }
 }

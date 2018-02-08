@@ -18,6 +18,7 @@ namespace Backend {
       void reset_state() override;
 
       float* current_injections = nullptr;				/**< Device array for the storage of current to be injected into each neuron on each timestep. */
+      float* total_current_conductance = nullptr;				/**< Device array for the total current conductance to be accounted for. */
       
       // Device Pointers
       float* last_spike_time_of_each_neuron;
