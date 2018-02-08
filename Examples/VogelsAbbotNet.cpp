@@ -16,6 +16,10 @@
 
 #include "Spike/Models/SpikingModel.hpp"
 #include "Spike/Simulator/Simulator.hpp"
+#include "Spike/Neurons/LIFSpikingNeurons.hpp"
+#include "Spike/Neurons/PoissonInputSpikingNeurons.hpp"
+#include "Spike/Synapses/ConductanceSpikingSynapses.hpp"
+
 #ifdef SPIKE_WITH_CUDA
 #endif
 #include <cuda_profiler_api.h>

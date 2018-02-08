@@ -3,6 +3,13 @@
 
 #include "SpikingModel.hpp"
 
+#include "Spike/Neurons/LIFSpikingNeurons.hpp"
+#include "Spike/Neurons/ImagePoissonInputSpikingNeurons.hpp"
+#include "Spike/Synapses/ConductanceSpikingSynapses.hpp"
+#include "Spike/Plasticity/EvansSTDPPlasticity.hpp"
+
+
+
 
 class FourLayerVisionSpikingModel : public SpikingModel {
 
