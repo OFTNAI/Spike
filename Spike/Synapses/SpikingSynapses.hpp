@@ -33,6 +33,7 @@ public:
 
   // Host Pointers
   int* delays = nullptr;
+  SpikingModel* model = nullptr;
 
   // For spike array stuff
   int minimum_axonal_delay_in_timesteps = 0;

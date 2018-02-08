@@ -17,6 +17,7 @@ class STDPPlasticity; // forward definition
 #include "Spike/Plasticity/Plasticity.hpp"
 #include "Spike/Synapses/SpikingSynapses.hpp"
 #include "Spike/Neurons/SpikingNeurons.hpp"
+#include "Spike/Models/SpikingModel.hpp"
 
 // stdlib allows random numbers
 #include <stdlib.h>
@@ -51,6 +52,7 @@ public:
 
   SpikingSynapses* syns = nullptr;
   SpikingNeurons* neurs = nullptr;
+  SpikingModel* model = nullptr;
 
   virtual void state_update(float current_time_in_seconds, float timestep) override = 0;
 

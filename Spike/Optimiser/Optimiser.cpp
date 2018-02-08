@@ -106,7 +106,7 @@ void Optimiser::RunOptimisation(int start_optimisation_stage_index, bool test_la
 
 				if (iteration_count_for_optimisation_stage > 0) {
 					int total_wrong_count = 0;
-					for (int stimulus_index = 0; stimulus_index < four_layer_vision_spiking_model->input_spiking_neurons->total_number_of_input_stimuli; stimulus_index++) {
+					for (int stimulus_index = 0; stimulus_index < dynamic_cast<InputSpikingNeurons*>(four_layer_vision_spiking_model->input_spiking_neurons)->total_number_of_input_stimuli; stimulus_index++) {
 						for (int neuron_index = 0; neuron_index < 4096; neuron_index++) {
 							if (new_spike_analyser->per_stimulus_per_neuron_spike_counts[stimulus_index][neuron_index] != spike_analyser_from_last_optimisation_stage->per_stimulus_per_neuron_spike_counts[stimulus_index][neuron_index]) {
 							// if (spike_analyser_from_last_optimisation_stage->per_stimulus_per_neuron_spike_counts[stimulus_index][neuron_index]) {

@@ -5,6 +5,7 @@
 
 class SpikingNeurons; // Forward Definition
 
+#include "Spike/Models/SpikingModel.hpp"
 #include "Neurons.hpp"
 
 
@@ -40,6 +41,7 @@ public:
   float* after_spike_reset_membrane_potentials_c = nullptr;
   float* thresholds_for_action_potential_spikes = nullptr;
   unsigned char* bitarray_of_neuron_spikes = nullptr;
+  SpikingModel* model = nullptr;
 
   // Functions
   int AddGroup(neuron_parameters_struct * group_params) override;

@@ -81,7 +81,7 @@ void SpikingModel::AddSynapseGroupsForNeuronGroupAndEachInputGroup(int postsynap
 }
 
 
-void SpikingModel::AddPlasticityRule(Plasticity * plasticity_rule){
+void SpikingModel::AddPlasticityRule(STDPPlasticity * plasticity_rule){
 	// Adds the new STDP rule to the vector of STDP Rule
 	plasticity_rule_vec.push_back(plasticity_rule);
 	// Returns an ID corresponding to this STDP Rule
@@ -91,6 +91,13 @@ void SpikingModel::AddPlasticityRule(Plasticity * plasticity_rule){
 
 void SpikingModel::finalise_model() {
   timestep_grouping = spiking_synapses->minimum_axonal_delay_in_timesteps;
+  if (spiking_synapses) spiking_synapses->model = this;
+  if (spiking_neurons) spiking_neurons->model = this;
+  if (input_spiking_neurons) input_spiking_neurons->model = this;
+  for (int plasticity_id = 0; plasticity_id < plasticity_rule_vec.size(); plasticity_id++){
+	plasticity_rule_vec[plasticity_id]->model = this;
+  }
+  
   init_backend();
 }
   

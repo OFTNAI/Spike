@@ -5,5 +5,5 @@ add_library (Plasticity OBJECT
   MasquelierSTDPPlasticity.cpp
   vanRossumSTDPPlasticity.cpp
   VogelsSTDPPlasticity.cpp
-  WeightNormSpikingPlasticity.cpp
+  WeightNormSTDPPlasticity.cpp
   )

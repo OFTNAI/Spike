@@ -42,7 +42,7 @@ Simulator::Simulator(SpikingModel * spiking_model_param, Simulator_Options * sim
 	}
 
 	if (simulator_options->recording_electrodes_options->count_input_neuron_spikes_recording_electrodes_bool) {
-		count_input_neuron_spikes_recording_electrodes = new CountNeuronSpikesRecordingElectrodes(spiking_model->input_spiking_neurons, spiking_model->spiking_synapses, full_directory_name_for_simulation_data_files, "Input_Neurons");
+		count_input_neuron_spikes_recording_electrodes = new CountNeuronSpikesRecordingElectrodes(dynamic_cast<InputSpikingNeurons*>(spiking_model->input_spiking_neurons), spiking_model->spiking_synapses, full_directory_name_for_simulation_data_files, "Input_Neurons");
                 count_input_neuron_spikes_recording_electrodes->init_backend(context);
 		count_input_neuron_spikes_recording_electrodes->initialise_count_neuron_spikes_recording_electrodes();
 	} else {
@@ -58,7 +58,7 @@ Simulator::Simulator(SpikingModel * spiking_model_param, Simulator_Options * sim
 	}
 
 	if (simulator_options->recording_electrodes_options->collect_input_neuron_spikes_recording_electrodes_bool) {
-		collect_input_neuron_spikes_recording_electrodes = new CollectNeuronSpikesRecordingElectrodes(spiking_model->input_spiking_neurons, spiking_model->spiking_synapses, full_directory_name_for_simulation_data_files, "Input_Neurons");
+		collect_input_neuron_spikes_recording_electrodes = new CollectNeuronSpikesRecordingElectrodes(dynamic_cast<InputSpikingNeurons*>(spiking_model->input_spiking_neurons), spiking_model->spiking_synapses, full_directory_name_for_simulation_data_files, "Input_Neurons");
 		collect_input_neuron_spikes_recording_electrodes->initialise_collect_neuron_spikes_recording_electrodes(simulator_options->recording_electrodes_options->collect_input_neuron_spikes_optional_parameters);
 		collect_input_neuron_spikes_recording_electrodes->init_backend(context);
 	} else {
@@ -76,7 +76,7 @@ Simulator::Simulator(SpikingModel * spiking_model_param, Simulator_Options * sim
         if (count_neuron_spikes_recording_electrodes) {
           spike_analyser = new SpikeAnalyser
             (spiking_model->spiking_neurons,
-             spiking_model->input_spiking_neurons,
+             dynamic_cast<InputSpikingNeurons*>(spiking_model->input_spiking_neurons),
              count_neuron_spikes_recording_electrodes);
           spike_analyser->init_backend(spiking_model->spiking_neurons->backend()->context);
         }
@@ -161,7 +161,7 @@ void Simulator::RunSimulation() {
 		printf("Starting Epoch: %d\n", epoch_number);
 
 		int* stimuli_presentation_order = setup_stimuli_presentation_order();
-		for (int stimulus_index = 0; stimulus_index < spiking_model->input_spiking_neurons->total_number_of_input_stimuli; stimulus_index++) {
+		for (int stimulus_index = 0; stimulus_index < dynamic_cast<InputSpikingNeurons*>(spiking_model->input_spiking_neurons)->total_number_of_input_stimuli; stimulus_index++) {
 
 			if (simulator_options->stimuli_presentation_options->reset_current_time_between_each_stimulus) current_time_in_seconds = 0.0f;
 			if (simulator_options->stimuli_presentation_options->reset_model_state_between_each_stimulus) spiking_model->reset_state();
@@ -210,9 +210,9 @@ void Simulator::RunSimulation() {
 
 int* Simulator::setup_stimuli_presentation_order() {
 
-	int total_number_of_input_stimuli = spiking_model->input_spiking_neurons->total_number_of_input_stimuli;
-	int total_number_of_objects = spiking_model->input_spiking_neurons->total_number_of_objects;
-	int total_number_of_transformations_per_object = spiking_model->input_spiking_neurons->total_number_of_transformations_per_object;
+	int total_number_of_input_stimuli = dynamic_cast<InputSpikingNeurons*>(spiking_model->input_spiking_neurons)->total_number_of_input_stimuli;
+	int total_number_of_objects = dynamic_cast<InputSpikingNeurons*>(spiking_model->input_spiking_neurons)->total_number_of_objects;
+	int total_number_of_transformations_per_object = dynamic_cast<InputSpikingNeurons*>(spiking_model->input_spiking_neurons)->total_number_of_transformations_per_object;
 	
 	int* stimuli_presentation_order = (int*)malloc(total_number_of_input_stimuli*sizeof(int));
 
@@ -332,7 +332,7 @@ void Simulator::perform_pre_stimulus_presentation_instructions(int stimulus_inde
 	printf("Stimulus Index: %d\n", stimulus_index);
 	// printf("simulator_options->stimuli_presentation_options->presentation_format: %d\n", simulator_options->stimuli_presentation_options->presentation_format);
 
-	spiking_model->input_spiking_neurons->current_stimulus_index = stimulus_index;
+	dynamic_cast<InputSpikingNeurons*>(spiking_model->input_spiking_neurons)->current_stimulus_index = stimulus_index;
 	
 	switch (simulator_options->stimuli_presentation_options->presentation_format) {
 		case PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_STIMULI: case PRESENTATION_FORMAT_RANDOM_RESET_BETWEEN_EACH_STIMULUS:
@@ -343,7 +343,7 @@ void Simulator::perform_pre_stimulus_presentation_instructions(int stimulus_inde
 		}
 		case PRESENTATION_FORMAT_OBJECT_BY_OBJECT_RESET_BETWEEN_OBJECTS:
 		{
-			bool stimulus_is_new_object = spiking_model->input_spiking_neurons->stimulus_is_new_object_for_object_by_object_presentation(stimulus_index);
+			bool stimulus_is_new_object = dynamic_cast<InputSpikingNeurons*>(spiking_model->input_spiking_neurons)->stimulus_is_new_object_for_object_by_object_presentation(stimulus_index);
 			// (stimulus_is_new_object) ? printf("Stimulus is new object\n") : printf("Stimulus is not new object\n");
 
 			if (stimulus_is_new_object) {
@@ -367,7 +367,7 @@ void Simulator::perform_post_stimulus_presentation_instructions(int epoch_number
 	if (simulator_options->recording_electrodes_options->count_neuron_spikes_recording_electrodes_bool && spike_analyser && simulator_options->run_simulation_general_options->specific_epoch_to_pass_to_spike_analyser == epoch_number) {
 		// if (simulator_options->recording_electrodes_options->count_neuron_spikes_recording_electrodes_bool && spike_analyser) {
 
-          spike_analyser->store_spike_counts_for_stimulus_index(spiking_model->input_spiking_neurons->current_stimulus_index);
+          spike_analyser->store_spike_counts_for_stimulus_index(dynamic_cast<InputSpikingNeurons*>(spiking_model->input_spiking_neurons)->current_stimulus_index);
           count_neuron_spikes_recording_electrodes->reset_state();
 
 	}

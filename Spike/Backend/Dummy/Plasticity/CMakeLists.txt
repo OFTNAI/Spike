@@ -5,5 +5,5 @@ add_library(SpikeDummyPlasticity STATIC
   MasquelierSTDPPlasticity.cpp
   vanRossumSTDPPlasticity.cpp
   VogelsSTDPPlasticity.cpp
-  WeightNormSpikingPlasticity.cpp
+  WeightNormSTDPPlasticity.cpp
   )
