@@ -21,7 +21,7 @@ namespace Backend {
     void ConductanceSpikingSynapses::prepare() {
       SpikingSynapses::prepare();
       // Extra buffer size for current time and extra to reset before last
-      buffersize = frontend()->maximum_axonal_delay_in_timesteps + 2;
+      buffersize = frontend()->maximum_axonal_delay_in_timesteps + frontend()->model->timestep_grouping;
 
       // Set up tau and reversal potential values and ids (Host-Side)
       h_synapse_decay_id = (int*)realloc(h_synapse_decay_id, frontend()->total_number_of_synapses*sizeof(int));
@@ -212,8 +212,10 @@ namespace Backend {
       int indx = threadIdx.x + blockIdx.x * blockDim.x;
       while (indx < total_number_of_neurons) {
 	if (indx == 0){
-	  int previd = ((bufferloc - 1) < 0) ? (buffersize - 1): (bufferloc - 1);
-	  circular_spikenum_buffer[previd] = 0;
+	  for (int g=0; g < timestep_grouping; g++){
+	    int previd = ((bufferloc - 1 - g) < 0) ? (buffersize - 1 - g): (bufferloc - 1 - g);
+	    circular_spikenum_buffer[previd] = 0;
+	  }
 	}
 		
    	int idx = indx - (num_input_neurons); 
@@ -224,7 +226,7 @@ namespace Backend {
 
         // Check if spike occurred within the last timestep    
 	for (int g=0; g < timestep_grouping; g++){
-          if (fabs(effecttime - (current_time_in_seconds + g*timestep)) < 0.5*timestep){
+          if (fabs((effecttime + g*timestep) - current_time_in_seconds) < (0.5*timestep)){
             // For each of this neuron's efferent synapses
             for (int i = 0; i < synapse_count; i++){
               int synapse_id = presynaptic_is_input ? d_per_input_neuron_efferent_synapse_indices[d_per_input_neuron_efferent_synapse_total[corr_idx] - i - 1] : d_per_neuron_efferent_synapse_indices[d_per_neuron_efferent_synapse_total[corr_idx] - i - 1];
@@ -296,11 +298,12 @@ namespace Backend {
       int indx = threadIdx.x + blockIdx.x * blockDim.x;
 
       for (int g=0; g < timestep_grouping; g++){
-        while (indx < circular_spikenum_buffer[bufferloc + g]) {
-         int idx = spikeid_buffer[bufferloc*total_number_of_synapses + indx];
+	int tmpbufferloc = (bufferloc + g) % buffersize;
+        while (indx < circular_spikenum_buffer[tmpbufferloc]) {
+         int idx = spikeid_buffer[tmpbufferloc*total_number_of_synapses + indx];
        
          // Update Synapses
-         d_time_of_last_spike_to_reach_synapse[idx] = current_time_in_seconds;
+         d_time_of_last_spike_to_reach_synapse[idx] = current_time_in_seconds + g*timestep;
          int postsynaptic_neuron_id = postsynaptic_neuron_indices[idx];
          int trace_id = synaptic_decay_id[idx];
          float synaptic_efficacy = d_biological_conductance_scaling_constants_lambda[idx] * d_synaptic_efficacies_or_weights[idx];
