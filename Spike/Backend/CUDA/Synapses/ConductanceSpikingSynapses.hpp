@@ -66,6 +66,7 @@ namespace Backend {
 		int buffersize,
 		int total_number_of_synapses,
                 float timestep,
+		int timestep_grouping,
 		int number_of_input_neurons,
                 size_t total_number_of_neurons); 
 
@@ -78,6 +79,7 @@ namespace Backend {
       float* d_neurons_current_injections,
       float * d_membrane_potentials_v,
       float timestep,
+      int timestep_grouping,
       size_t total_number_of_neurons);
 
     __global__ void conductance_move_spikes_towards_synapses_kernel(
@@ -95,6 +97,7 @@ namespace Backend {
       int total_number_of_neurons,
       float* d_synaptic_efficacies_or_weights,
       float* d_biological_conductance_scaling_constants_lambda,
-      float timestep);
+      float timestep,
+      int timestep_grouping);
   }
 }

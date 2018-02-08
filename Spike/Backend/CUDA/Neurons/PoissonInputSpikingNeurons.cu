@@ -43,6 +43,7 @@ namespace Backend {
          rates,
          membrane_potentials_v,
          timestep,
+	 frontend()->model->timestep_grouping,
          thresholds_for_action_potential_spikes,
 	 resting_potentials,
 	 last_spike_time_of_each_neuron,
@@ -57,6 +58,7 @@ namespace Backend {
                                                               float *d_rates,
                                                               float *d_membrane_potentials_v,
                                                               float timestep,
+							      int timestep_grouping,
                                                               float * d_thresholds_for_action_potential_spikes,
 							      float* d_resting_potentials,
 							      float* d_last_spike_time_of_each_neuron,
@@ -74,16 +76,18 @@ namespace Backend {
         float rate = d_rates[rate_index];
 
         if (rate > 0.1) {
-          // Creates random float between 0 and 1 from uniform distribution
-          // d_states effectively provides a different seed for each thread
-          // curand_uniform produces different float every time you call it
-          float random_float = curand_uniform(&d_states[t_idx]);
+	  for (int g=0; g < timestep_grouping; g++){
+            // Creates random float between 0 and 1 from uniform distribution
+            // d_states effectively provides a different seed for each thread
+            // curand_uniform produces different float every time you call it
+            float random_float = curand_uniform(&d_states[t_idx]);
 			
-          // if the randomnumber is less than the rate
-          if (random_float < (rate * timestep)) {
-            // Puts membrane potential above default spiking threshold
-		d_last_spike_time_of_each_neuron[idx] = current_time_in_seconds;
-          } 
+            // if the randomnumber is less than the rate
+            if (random_float < (rate * timestep)) {
+              // Puts membrane potential above default spiking threshold
+              d_last_spike_time_of_each_neuron[idx] = current_time_in_seconds + (g*timestep);
+            } 
+	  }
         }
 
         idx += blockDim.x * gridDim.x;

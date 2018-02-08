@@ -38,6 +38,7 @@ namespace Backend {
                                                               float *d_rates,
                                                               float *d_membrane_potentials_v,
                                                               float timestep,
+							      int timestep_grouping,
                                                               float * d_thresholds_for_action_potential_spikes,
 							      float* d_resting_potentials,
 							      float* d_last_spike_time_of_each_neuron,

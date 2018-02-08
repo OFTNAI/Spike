@@ -77,6 +77,8 @@ namespace Backend {
            neurons_backend->last_spike_time_of_each_neuron,
            input_neurons_backend->last_spike_time_of_each_neuron,
            current_time_in_seconds,
+	   timestep,
+	   frontend()->model->timestep_grouping,
            frontend()->total_number_of_synapses,
            time_of_last_spike_to_reach_synapse);
         CudaCheckError();
@@ -88,33 +90,37 @@ namespace Backend {
                                                         float* d_last_spike_time_of_each_neuron,
                                                         float* d_input_neurons_last_spike_time,
                                                         float current_time_in_seconds,
+							float timestep,
+							int timestep_grouping,
                                                         size_t total_number_of_synapses,
                                                         float* d_time_of_last_spike_to_reach_synapse){
 
       int idx = threadIdx.x + blockIdx.x * blockDim.x;
       while (idx < total_number_of_synapses) {
         int timesteps_until_spike_reaches_synapse = d_spikes_travelling_to_synapse[idx];
-        timesteps_until_spike_reaches_synapse -= 1;
 
-        if (timesteps_until_spike_reaches_synapse == 0) {
-          d_time_of_last_spike_to_reach_synapse[idx] = current_time_in_seconds;
-        }
+	for (int g=0; g < timestep_grouping; g++){
+          timesteps_until_spike_reaches_synapse -= 1;
 
-        if (timesteps_until_spike_reaches_synapse < 0) {
-
-          // Get presynaptic neurons last spike time
-          int presynaptic_neuron_index = d_presynaptic_neuron_indices[idx];
-          bool presynaptic_is_input = PRESYNAPTIC_IS_INPUT(presynaptic_neuron_index);
-          float presynaptic_neurons_last_spike_time = presynaptic_is_input ? d_input_neurons_last_spike_time[CORRECTED_PRESYNAPTIC_ID(presynaptic_neuron_index, presynaptic_is_input)] : d_last_spike_time_of_each_neuron[presynaptic_neuron_index];
-
-          if (presynaptic_neurons_last_spike_time == current_time_in_seconds){
-            timesteps_until_spike_reaches_synapse = d_delays[idx];
+          if (timesteps_until_spike_reaches_synapse == 0) {
+            d_time_of_last_spike_to_reach_synapse[idx] = current_time_in_seconds + g*timestep;
           }
-        } 
 
-      	__syncthreads();
+          if (timesteps_until_spike_reaches_synapse < 0) {
+
+            // Get presynaptic neurons last spike time
+            int presynaptic_neuron_index = d_presynaptic_neuron_indices[idx];
+            bool presynaptic_is_input = PRESYNAPTIC_IS_INPUT(presynaptic_neuron_index);
+            float presynaptic_neurons_last_spike_time = presynaptic_is_input ? d_input_neurons_last_spike_time[CORRECTED_PRESYNAPTIC_ID(presynaptic_neuron_index, presynaptic_is_input)] : d_last_spike_time_of_each_neuron[presynaptic_neuron_index];
+
+            if (presynaptic_neurons_last_spike_time == current_time_in_seconds - (g + 1)*timestep){
+              timesteps_until_spike_reaches_synapse = d_delays[idx] - (g + 1);
+            }
+          } 
+	}
+
+      	//__syncthreads();
         d_spikes_travelling_to_synapse[idx] = timesteps_until_spike_reaches_synapse;
-
         idx += blockDim.x * gridDim.x;
       }
     }

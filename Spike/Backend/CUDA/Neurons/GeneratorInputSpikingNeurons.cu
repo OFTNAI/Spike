@@ -43,6 +43,7 @@ namespace Backend {
            last_spike_time_of_each_neuron,
            current_time_in_seconds,
            timestep,
+	   frontend()->model->timestep_grouping,
            num_spikes_in_current_stimulus);
 
         CudaCheckError();
@@ -55,14 +56,17 @@ namespace Backend {
                                                       float* d_last_spike_time_of_each_neuron,
                                                       float current_time_in_seconds,
                                                       float timestep,
+						      int timestep_grouping,
                                                       size_t number_of_spikes_in_stimulus){
 
       // // Get thread IDs
       int idx = threadIdx.x + blockIdx.x * blockDim.x;
       while (idx < number_of_spikes_in_stimulus) {
-        if (fabs(current_time_in_seconds - d_spike_times_for_stimulus[idx]) < 0.5 * timestep) {
-          d_last_spike_time_of_each_neuron[d_neuron_ids_for_stimulus[idx]] = current_time_in_seconds;
-        }
+	for (int g=0; g < timestep_grouping; g++){
+          if (fabs((current_time_in_seconds + g*timestep) - d_spike_times_for_stimulus[idx]) < 0.5 * timestep) {
+            d_last_spike_time_of_each_neuron[d_neuron_ids_for_stimulus[idx]] = current_time_in_seconds + (g*timestep);
+          }
+	}
 
         idx += blockDim.x * gridDim.x;
       }

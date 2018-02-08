@@ -16,7 +16,7 @@ namespace Backend {
 
       // Device Pointers
       int * per_neuron_afferent_synapse_count = nullptr;	/**< A (device-side) count of the number of afferent synapses for each neuron */
-      float* current_injections = nullptr;				/**< Device array for the storage of current to be injected into each neuron on each timestep. */
+      
       int * h_per_neuron_efferent_synapse_total = nullptr;
       int * per_neuron_efferent_synapse_total = nullptr;
       int * per_neuron_efferent_synapse_count = nullptr;
@@ -37,7 +37,6 @@ namespace Backend {
        */
       void set_threads_per_block_and_blocks_per_grid(int threads); // Not virtual
 
-      void reset_current_injections() ;
     };
   } // namespace CUDA
 } // namespace Backend

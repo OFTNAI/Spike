@@ -36,7 +36,7 @@ public:
   SpikingModel* model = nullptr;
 
   // For spike array stuff
-  int minimum_axonal_delay_in_timesteps = 0;
+  int minimum_axonal_delay_in_timesteps = pow(10, 6);
   int maximum_axonal_delay_in_timesteps = 0;
 
   // Synapse Functions

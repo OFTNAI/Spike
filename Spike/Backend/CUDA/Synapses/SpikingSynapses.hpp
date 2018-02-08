@@ -41,6 +41,8 @@ namespace Backend {
                                                         float* d_neurons_last_spike_time,
                                                         float* d_input_neurons_last_spike_time,
                                                         float currtime,
+							float timestep,
+							int timestep_grouping,
                                                         size_t total_number_of_synapses,
                                                         float* d_time_of_last_spike_to_reach_synapse);
 

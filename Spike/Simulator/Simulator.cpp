@@ -35,6 +35,7 @@ Simulator::Simulator(SpikingModel * spiking_model_param, Simulator_Options * sim
 
 	if (simulator_options->recording_electrodes_options->count_neuron_spikes_recording_electrodes_bool) {
 		count_neuron_spikes_recording_electrodes = new CountNeuronSpikesRecordingElectrodes(spiking_model->spiking_neurons, spiking_model->spiking_synapses, full_directory_name_for_simulation_data_files, "Neurons");
+		count_neuron_spikes_recording_electrodes->timerange = spiking_model->timestep_grouping*spiking_model->timestep;
                 count_neuron_spikes_recording_electrodes->init_backend(context);
 		count_neuron_spikes_recording_electrodes->initialise_count_neuron_spikes_recording_electrodes();
 	} else {
@@ -43,6 +44,7 @@ Simulator::Simulator(SpikingModel * spiking_model_param, Simulator_Options * sim
 
 	if (simulator_options->recording_electrodes_options->count_input_neuron_spikes_recording_electrodes_bool) {
 		count_input_neuron_spikes_recording_electrodes = new CountNeuronSpikesRecordingElectrodes(dynamic_cast<InputSpikingNeurons*>(spiking_model->input_spiking_neurons), spiking_model->spiking_synapses, full_directory_name_for_simulation_data_files, "Input_Neurons");
+		count_input_neuron_spikes_recording_electrodes->timerange = spiking_model->timestep_grouping*spiking_model->timestep;
                 count_input_neuron_spikes_recording_electrodes->init_backend(context);
 		count_input_neuron_spikes_recording_electrodes->initialise_count_neuron_spikes_recording_electrodes();
 	} else {
@@ -51,6 +53,7 @@ Simulator::Simulator(SpikingModel * spiking_model_param, Simulator_Options * sim
 
 	if (simulator_options->recording_electrodes_options->collect_neuron_spikes_recording_electrodes_bool) {
 		collect_neuron_spikes_recording_electrodes = new CollectNeuronSpikesRecordingElectrodes(spiking_model->spiking_neurons, spiking_model->spiking_synapses, full_directory_name_for_simulation_data_files, "Neurons");
+		collect_neuron_spikes_recording_electrodes->timerange = spiking_model->timestep_grouping*spiking_model->timestep;
 		collect_neuron_spikes_recording_electrodes->initialise_collect_neuron_spikes_recording_electrodes(simulator_options->recording_electrodes_options->collect_neuron_spikes_optional_parameters);
 		collect_neuron_spikes_recording_electrodes->init_backend(context);
 	} else {
@@ -59,6 +62,7 @@ Simulator::Simulator(SpikingModel * spiking_model_param, Simulator_Options * sim
 
 	if (simulator_options->recording_electrodes_options->collect_input_neuron_spikes_recording_electrodes_bool) {
 		collect_input_neuron_spikes_recording_electrodes = new CollectNeuronSpikesRecordingElectrodes(dynamic_cast<InputSpikingNeurons*>(spiking_model->input_spiking_neurons), spiking_model->spiking_synapses, full_directory_name_for_simulation_data_files, "Input_Neurons");
+		collect_input_neuron_spikes_recording_electrodes->timerange = spiking_model->timestep_grouping*spiking_model->timestep;
 		collect_input_neuron_spikes_recording_electrodes->initialise_collect_neuron_spikes_recording_electrodes(simulator_options->recording_electrodes_options->collect_input_neuron_spikes_optional_parameters);
 		collect_input_neuron_spikes_recording_electrodes->init_backend(context);
 	} else {
@@ -172,12 +176,12 @@ void Simulator::RunSimulation() {
 
 			int number_of_timesteps_per_stimulus_per_epoch = simulator_options->run_simulation_general_options->presentation_time_per_stimulus_per_epoch / spiking_model->timestep;
 
-			for (int timestep_index = 0; timestep_index < number_of_timesteps_per_stimulus_per_epoch; timestep_index++){
+			for (int timestep_index = 0; timestep_index < (number_of_timesteps_per_stimulus_per_epoch / spiking_model->timestep_grouping); timestep_index++){
 				spiking_model->perform_per_timestep_model_instructions(current_time_in_seconds, simulator_options->run_simulation_general_options->apply_plasticity_to_relevant_synapses);
 
 				perform_per_timestep_recording_electrode_instructions(current_time_in_seconds, timestep_index, number_of_timesteps_per_stimulus_per_epoch, epoch_number);
 
-				current_time_in_seconds = current_time_at_stimulus_beginning + (timestep_index + 1)*float(spiking_model->timestep);
+				current_time_in_seconds = current_time_at_stimulus_beginning + (timestep_index + 1)*spiking_model->timestep_grouping*float(spiking_model->timestep);
 
                                 #ifdef VERBOSE_SIMULATION
                                 printf("\r%f\t", current_time_in_seconds);

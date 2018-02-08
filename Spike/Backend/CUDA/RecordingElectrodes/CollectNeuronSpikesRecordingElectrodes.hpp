@@ -37,6 +37,7 @@ namespace Backend {
      int* d_neuron_ids_of_stored_spikes_on_device,
      float* d_time_in_seconds_of_stored_spikes_on_device,
      float current_time_in_seconds,
+     float timerange,
      size_t total_number_of_neurons);
   }
 }

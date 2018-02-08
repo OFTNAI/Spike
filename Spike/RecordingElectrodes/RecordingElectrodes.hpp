@@ -13,6 +13,7 @@ using namespace std;
 
 #include "Spike/Neurons/SpikingNeurons.hpp"
 #include "Spike/Synapses/SpikingSynapses.hpp"
+#include "Spike/Models/SpikingModel.hpp"
 
 class RecordingElectrodes; // forward definition
 
@@ -42,6 +43,7 @@ public:
   // Host Pointers
   SpikingNeurons * neurons = nullptr;
   SpikingSynapses * synapses = nullptr;
+  float timerange;
 
 private:
   std::shared_ptr<::Backend::RecordingElectrodes> _backend;

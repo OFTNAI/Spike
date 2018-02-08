@@ -32,6 +32,7 @@ namespace Backend {
         (neurons_backend->last_spike_time_of_each_neuron,
          per_neuron_spike_counts,
          current_time_in_seconds,
+	 frontend()->timerange,
          frontend()->neurons->total_number_of_neurons);
 	CudaCheckError();
     }
@@ -40,12 +41,13 @@ namespace Backend {
     (float* d_last_spike_time_of_each_neuron,
      int* d_per_neuron_spike_counts,
      float current_time_in_seconds,
+     float timerange,
      size_t total_number_of_neurons) {
 
       int idx = threadIdx.x + blockIdx.x * blockDim.x;
       while (idx < total_number_of_neurons) {
 
-        if (d_last_spike_time_of_each_neuron[idx] == current_time_in_seconds) {
+        if (d_last_spike_time_of_each_neuron[idx] > (current_time_in_seconds - timerange)) {
           atomicAdd(&d_per_neuron_spike_counts[idx], 1);
         }
 

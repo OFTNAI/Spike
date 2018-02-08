@@ -17,6 +17,8 @@ namespace Backend {
       void prepare() override;
       void reset_state() override;
 
+      float* current_injections = nullptr;				/**< Device array for the storage of current to be injected into each neuron on each timestep. */
+      
       // Device Pointers
       float* last_spike_time_of_each_neuron;
       float* membrane_potentials_v;
@@ -34,6 +36,8 @@ namespace Backend {
       void copy_constants_to_device(); // Not virtual
 
       void state_update(float current_time_in_seconds, float timestep) override;
+      
+      void reset_current_injections() ;
     };
 
   } // namespace CUDA

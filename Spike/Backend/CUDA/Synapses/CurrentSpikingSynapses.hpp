@@ -35,6 +35,8 @@ namespace Backend {
      float* d_time_of_last_spike_to_reach_synapse,
      int* d_postsynaptic_neuron_indices,
      float* d_neurons_current_injections,
+     float timestep,
+     int timestep_grouping,
      float current_time_in_seconds,
      size_t total_number_of_synapses);
   }

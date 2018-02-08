@@ -47,6 +47,7 @@ namespace Backend {
 	 thresholds_for_action_potential_spikes,
          frontend()->background_current,
          timestep,
+	 frontend()->model->timestep_grouping,
          current_time_in_seconds,
          frontend()->refractory_period_in_seconds,
          frontend()->total_number_of_neurons);
@@ -63,6 +64,7 @@ namespace Backend {
 						   float* d_threshold_for_action_potential_spikes,
                                                    float background_current,
                                                    float timestep,
+						   int timestep_grouping,
                                                    float current_time_in_seconds,
                                                    float refractory_period_in_seconds,
                                                    size_t total_number_of_neurons) {
@@ -73,19 +75,24 @@ namespace Backend {
         if ((current_time_in_seconds - d_last_spike_time_of_each_neuron[idx]) >= refractory_period_in_seconds){
           float equation_constant = timestep / d_membrane_time_constants_tau_m[idx];
           float membrane_potential_Vi = d_membrane_potentials_v[idx];
-          float current_injection_Ii = d_current_injections[idx];
           float resting_potential_V0 = d_resting_potentials[idx];
           float temp_membrane_resistance_R = d_membrane_resistances_R[idx];
-	
-          float new_membrane_potential = equation_constant * (resting_potential_V0 + temp_membrane_resistance_R * current_injection_Ii) + (1 - equation_constant) * membrane_potential_Vi + equation_constant * background_current;
+          float current_injection_Ii = d_current_injections[idx*timestep_grouping];
+
+  	  for (int g=0; g < timestep_grouping; g++){	  
+            current_injection_Ii = d_current_injections[idx*timestep_grouping + g];
+            float new_membrane_potential = equation_constant * (resting_potential_V0 + temp_membrane_resistance_R * current_injection_Ii) + (1 - equation_constant) * membrane_potential_Vi + equation_constant * background_current;
 	  
-	  // Finally check for a spike
-	  if (new_membrane_potential >= d_threshold_for_action_potential_spikes[idx]){
-	  	d_last_spike_time_of_each_neuron[idx] = current_time_in_seconds;
-		new_membrane_potential = d_resting_potentials[idx];
+	    // Finally check for a spike
+	    if (new_membrane_potential >= d_threshold_for_action_potential_spikes[idx]){
+	  	  d_last_spike_time_of_each_neuron[idx] = current_time_in_seconds + (g*timestep);
+		  new_membrane_potential = d_resting_potentials[idx];
+	    }
+
+	    membrane_potential_Vi = new_membrane_potential;
 	  }
           
-	  d_membrane_potentials_v[idx] = new_membrane_potential;
+	  d_membrane_potentials_v[idx] = membrane_potential_Vi;
         }
 
         idx += blockDim.x * gridDim.x;

@@ -38,6 +38,7 @@ namespace Backend {
 						   float* d_thresholds_for_action_potential_spikes,
                                                    float background_current,
                                                    float timestep,
+						   int timestep_grouping,
                                                    float current_time_in_seconds,
                                                    float refactory_period_in_seconds,
                                                    size_t total_number_of_neurons);

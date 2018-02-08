@@ -241,6 +241,7 @@ int main (int argc, char *argv[]){
 		COMPLETE NETWORK SETUP
 	*/
 	BenchModel->finalise_model();
+	printf("%d <<<< TIMESTEP GROUPING\n", BenchModel->timestep_grouping);
 	// BenchModel->copy_model_to_device();
 
 

@@ -7,7 +7,6 @@ namespace Backend {
   namespace CUDA {
     Neurons::~Neurons() {
       CudaSafeCall(cudaFree(per_neuron_afferent_synapse_count));
-      CudaSafeCall(cudaFree(current_injections));
       CudaSafeCall(cudaFree(per_neuron_efferent_synapse_count));
       CudaSafeCall(cudaFree(per_neuron_efferent_synapse_total));
       CudaSafeCall(cudaFree(per_neuron_efferent_synapse_indices));
@@ -22,7 +21,6 @@ namespace Backend {
 	else
 	  h_per_neuron_efferent_synapse_total[i] = h_per_neuron_efferent_synapse_total[i-1] + frontend()->per_neuron_efferent_synapse_count[i];
       }
-      CudaSafeCall(cudaMalloc((void **)&current_injections, sizeof(float)*frontend()->total_number_of_neurons));
       CudaSafeCall(cudaMalloc((void **)&per_neuron_afferent_synapse_count, sizeof(int)*frontend()->total_number_of_neurons));
       CudaSafeCall(cudaMalloc((void **)&per_neuron_efferent_synapse_total, sizeof(int)*frontend()->total_number_of_neurons));
       CudaSafeCall(cudaMalloc((void **)&per_neuron_efferent_synapse_count, sizeof(int)*frontend()->total_number_of_neurons));
@@ -60,12 +58,7 @@ namespace Backend {
       copy_constants_to_device();
     }
 
-    void Neurons::reset_current_injections() {
-      CudaSafeCall(cudaMemset(current_injections, 0.0f, frontend()->total_number_of_neurons*sizeof(float)));
-    }
-
     void Neurons::reset_state() {
-      reset_current_injections();
     }  
   } // ::Backend::CUDA
 } // ::Backend

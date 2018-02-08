@@ -21,6 +21,8 @@ namespace Backend {
          time_of_last_spike_to_reach_synapse,
          postsynaptic_neuron_indices,
          neurons_backend->current_injections,
+	 timestep,
+	 frontend()->model->timestep_grouping,
          current_time_in_seconds,
          frontend()->total_number_of_synapses);
 
@@ -32,17 +34,21 @@ namespace Backend {
      float* d_time_of_last_spike_to_reach_synapse,
      int* d_postsynaptic_neuron_indices,
      float* d_neurons_current_injections,
+     float timestep,
+     int timestep_grouping,
      float current_time_in_seconds,
      size_t total_number_of_synapses){
 
       int idx = threadIdx.x + blockIdx.x * blockDim.x;
       if (idx < total_number_of_synapses) {
+	
+	for (int g=0; g < timestep_grouping; g++){
+          if (fabs(d_time_of_last_spike_to_reach_synapse[idx] - (current_time_in_seconds + g*(timestep))) < (0.5*timestep)) {
 
-        if (d_time_of_last_spike_to_reach_synapse[idx] == current_time_in_seconds) {
+            atomicAdd(&d_neurons_current_injections[d_postsynaptic_neuron_indices[idx]*timestep_grouping + g], d_synaptic_efficacies_or_weights[idx]);
 
-          atomicAdd(&d_neurons_current_injections[d_postsynaptic_neuron_indices[idx]], d_synaptic_efficacies_or_weights[idx]);
-
-        }
+          }
+	}
         idx += blockDim.x * gridDim.x;
       }
       __syncthreads();

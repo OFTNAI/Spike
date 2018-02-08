@@ -35,6 +35,7 @@ namespace Backend {
          gabor_input_rates,
          membrane_potentials_v,
          timestep,
+	 frontend()->model->timestep_grouping,
          thresholds_for_action_potential_spikes,
 	 resting_potentials,
 	 last_spike_time_of_each_neuron,
