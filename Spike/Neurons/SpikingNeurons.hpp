@@ -3,6 +3,8 @@
 
 #include <cstdio>
 
+class SpikingNeurons; // Forward Definition
+
 #include "Neurons.hpp"
 
 

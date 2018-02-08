@@ -4,6 +4,7 @@
 class SpikingSynapses; // forward definition
 
 #include "Synapses.hpp"
+#include "Spike/Models/SpikingModel.hpp"
 #include "Spike/Neurons/SpikingNeurons.hpp"
 #include <vector>
 

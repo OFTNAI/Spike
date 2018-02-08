@@ -113,7 +113,7 @@ namespace Backend {
      float current_time_in_seconds, float timestep) {
      
       // Calculate buffer location
-      int bufferloc = (int)(round(current_time_in_seconds / timestep)) % buffersize;
+      int bufferloc = (int)(std::round(current_time_in_seconds / timestep)) % buffersize;
 
       // Setting up access to neuron backends
       ::Backend::CUDA::SpikingNeurons* neurons_backend =
