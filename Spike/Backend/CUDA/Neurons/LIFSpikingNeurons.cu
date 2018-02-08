@@ -86,7 +86,8 @@ namespace Backend {
 	    // Finally check for a spike
 	    if (new_membrane_potential >= d_threshold_for_action_potential_spikes[idx]){
 	  	  d_last_spike_time_of_each_neuron[idx] = current_time_in_seconds + (g*timestep);
-		  new_membrane_potential = d_resting_potentials[idx];
+		  membrane_potential_Vi = d_resting_potentials[idx];
+		  break;
 	    }
 
 	    membrane_potential_Vi = new_membrane_potential;
