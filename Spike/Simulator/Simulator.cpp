@@ -313,14 +313,14 @@ void Simulator::perform_per_timestep_recording_electrode_instructions(float curr
 
 		if (simulator_options->recording_electrodes_options->collect_neuron_spikes_recording_electrodes_bool){
 
-			collect_neuron_spikes_recording_electrodes->collect_spikes_for_timestep(current_time_in_seconds);
+			collect_neuron_spikes_recording_electrodes->collect_spikes_for_timestep(current_time_in_seconds, spiking_model->timestep);
 			collect_neuron_spikes_recording_electrodes->copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(current_time_in_seconds, timestep_index, number_of_timesteps_per_stimulus_per_epoch );
 		
 		}
 
 		if (simulator_options->recording_electrodes_options->collect_input_neuron_spikes_recording_electrodes_bool) {
 			
-			collect_input_neuron_spikes_recording_electrodes->collect_spikes_for_timestep(current_time_in_seconds);
+			collect_input_neuron_spikes_recording_electrodes->collect_spikes_for_timestep(current_time_in_seconds, spiking_model->timestep);
 			collect_input_neuron_spikes_recording_electrodes->copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(current_time_in_seconds, timestep_index, number_of_timesteps_per_stimulus_per_epoch );
 
 		}

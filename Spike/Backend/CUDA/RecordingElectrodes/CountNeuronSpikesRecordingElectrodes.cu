@@ -49,7 +49,7 @@ namespace Backend {
 
         if ((d_last_spike_time_of_each_neuron[idx] - current_time_in_seconds) > 0.001) {
           printf("Spiketime: %f, Current Time %f\n", d_last_spike_time_of_each_neuron[idx], current_time_in_seconds);
-          //atomicAdd(&d_per_neuron_spike_counts[idx], 1);
+          atomicAdd(&d_per_neuron_spike_counts[idx], 1);
         }
 
         // if (idx == 1000) printf("d_per_neuron_spike_counts[idx]: %d\n", d_per_neuron_spike_counts[idx]);

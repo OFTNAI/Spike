@@ -13,7 +13,7 @@ namespace Backend {
 
     virtual void copy_spikes_to_front() = 0;
     virtual void copy_spike_counts_to_front() = 0;
-    virtual void collect_spikes_for_timestep(float current_time_in_seconds) = 0;
+    virtual void collect_spikes_for_timestep(float current_time_in_seconds, float timestep) = 0;
   };
 }
 
@@ -56,7 +56,7 @@ public:
   void initialise_collect_neuron_spikes_recording_electrodes(Collect_Neuron_Spikes_Optional_Parameters * collect_neuron_spikes_optional_parameters_param);
   void allocate_pointers_for_spike_store();
 
-  void collect_spikes_for_timestep(float current_time_in_seconds);
+  void collect_spikes_for_timestep(float current_time_in_seconds, float timestep);
   void copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(float current_time_in_seconds, int timestep_index, int number_of_timesteps_per_epoch);
   void write_spikes_to_file(int epoch_number, bool isTrained);
 

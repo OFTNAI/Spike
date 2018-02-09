@@ -45,7 +45,7 @@ namespace Backend {
     }
 
     void CollectNeuronSpikesRecordingElectrodes::collect_spikes_for_timestep
-    (float current_time_in_seconds) {
+    (float current_time_in_seconds, float timestep) {
       collect_spikes_for_timestep_kernel<<<neurons_backend->number_of_neuron_blocks_per_grid, neurons_backend->threads_per_block>>>
         (neurons_backend->last_spike_time_of_each_neuron,
          total_number_of_spikes_stored_on_device,
@@ -53,6 +53,7 @@ namespace Backend {
          time_in_seconds_of_stored_spikes_on_device,
          current_time_in_seconds,
 	 frontend()->timerange,
+	 timestep,
          neurons_frontend->total_number_of_neurons);
 
       CudaCheckError();
@@ -67,13 +68,14 @@ namespace Backend {
      float* d_time_in_seconds_of_stored_spikes_on_device,
      float current_time_in_seconds,
      float timerange,
+     float timestep,
      size_t total_number_of_neurons){
 
       int idx = threadIdx.x + blockIdx.x * blockDim.x;
       while (idx < total_number_of_neurons) {
 
         // If a neuron has fired
-        if (d_last_spike_time_of_each_neuron[idx] > (current_time_in_seconds - timerange)) {
+        if (d_last_spike_time_of_each_neuron[idx] >= (current_time_in_seconds - timerange - 0.5*timestep)) {
           // Increase the number of spikes stored
           // NOTE: atomicAdd return value is actually original (atomic) value BEFORE incrementation!
           //		- So first value is actually 0 not 1!!!

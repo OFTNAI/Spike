@@ -34,6 +34,7 @@ namespace Backend {
       float* h_reversal_values = nullptr;
       int conductance_trace_length = 0;
       float* neuron_wise_conductance_trace = nullptr;
+      float* neuron_wise_conductance_update = nullptr;
       float* h_neuron_wise_conductance_trace = nullptr;
       int* synapse_decay_id = nullptr;
       int* h_synapse_decay_id = nullptr;
@@ -80,7 +81,7 @@ namespace Backend {
       int total_number_of_synapses,
       float* d_time_of_last_spike_to_reach_synapse,
       int* postsynaptic_neuron_indices,
-      float* neuron_wise_conductance_trace,
+      float* neuron_wise_conductance_update,
       int* synapse_decay_id,
       int total_number_of_neurons,
       float* d_synaptic_efficacies_or_weights,
@@ -94,6 +95,7 @@ namespace Backend {
       int num_decay_terms,
       int* synapse_decay_values,
       float* neuron_wise_conductance_traces,
+      float* neuron_wise_conductance_update,
       float* d_neurons_current_injections,
       float* d_total_current_conductance,
       float timestep,

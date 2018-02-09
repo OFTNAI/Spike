@@ -19,7 +19,7 @@ namespace Backend {
     }
 
     void CollectNeuronSpikesRecordingElectrodes::collect_spikes_for_timestep
-    (float current_time_in_seconds) {
+    (float current_time_in_seconds, float timestep) {
     }
   }
 }

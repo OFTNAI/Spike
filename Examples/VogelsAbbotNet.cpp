@@ -192,12 +192,13 @@ int main (int argc, char *argv[]){
 	conductance_spiking_synapse_parameters_struct * INH_OUT_SYN_PARAMS = new conductance_spiking_synapse_parameters_struct();
 	conductance_spiking_synapse_parameters_struct * INPUT_SYN_PARAMS = new conductance_spiking_synapse_parameters_struct();
 	// Setting delays
-	EXC_OUT_SYN_PARAMS->delay_range[0] = timestep; //0.0008; // 0.8ms
-	EXC_OUT_SYN_PARAMS->delay_range[1] = timestep; //0.0008;
-	INH_OUT_SYN_PARAMS->delay_range[0] = timestep; //0.0008;
-	INH_OUT_SYN_PARAMS->delay_range[1] = timestep; //0.0008;
-	INPUT_SYN_PARAMS->delay_range[0] = timestep; //0.0008;
-	INPUT_SYN_PARAMS->delay_range[1] = timestep; //0.0008;
+	float delayval = 2*timestep;
+	EXC_OUT_SYN_PARAMS->delay_range[0] = delayval; // 0.8ms
+	EXC_OUT_SYN_PARAMS->delay_range[1] = delayval;
+	INH_OUT_SYN_PARAMS->delay_range[0] = delayval;
+	INH_OUT_SYN_PARAMS->delay_range[1] = delayval;
+	INPUT_SYN_PARAMS->delay_range[0] = delayval;
+	INPUT_SYN_PARAMS->delay_range[1] = delayval;
 	// Setting Reversal Potentials for specific synapses (according to evans paper)
 	EXC_OUT_SYN_PARAMS->reversal_potential_Vhat = 0.0f*pow(10.0, -3);
 	INH_OUT_SYN_PARAMS->reversal_potential_Vhat = -80.0f*pow(10.0, -3);
@@ -250,8 +251,8 @@ int main (int argc, char *argv[]){
 	simoptions->run_simulation_general_options->presentation_time_per_stimulus_per_epoch = 10.0f;
 	// simoptions->run_simulation_general_options->apply_plasticity_to_relevant_synapses = true;
 
-	simoptions->recording_electrodes_options->count_neuron_spikes_recording_electrodes_bool = true;
-	simoptions->recording_electrodes_options->count_input_neuron_spikes_recording_electrodes_bool = true;
+	//simoptions->recording_electrodes_options->count_neuron_spikes_recording_electrodes_bool = true;
+	//simoptions->recording_electrodes_options->count_input_neuron_spikes_recording_electrodes_bool = true;
 
 	simoptions->recording_electrodes_options->collect_neuron_spikes_recording_electrodes_bool = true;
 	//simoptions->recording_electrodes_options->collect_neuron_spikes_optional_parameters->human_readable_storage = true;

@@ -178,8 +178,8 @@ void CollectNeuronSpikesRecordingElectrodes::write_spikes_to_file(int epoch_numb
 }
 
 
-void CollectNeuronSpikesRecordingElectrodes::collect_spikes_for_timestep(float current_time_in_seconds) {
-  backend()->collect_spikes_for_timestep(current_time_in_seconds);
+void CollectNeuronSpikesRecordingElectrodes::collect_spikes_for_timestep(float current_time_in_seconds, float timestep) {
+  backend()->collect_spikes_for_timestep(current_time_in_seconds, timestep);
 }
 
 SPIKE_MAKE_INIT_BACKEND(CollectNeuronSpikesRecordingElectrodes);
