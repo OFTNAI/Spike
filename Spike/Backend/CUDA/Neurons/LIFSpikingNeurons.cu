@@ -75,11 +75,11 @@ namespace Backend {
       while (idx < total_number_of_neurons) {
 
           float equation_constant = timestep / d_membrane_time_constants_tau_m[idx];
-          float membrane_potential_Vi = d_membrane_potentials_v[idx];
           float resting_potential_V0 = d_resting_potentials[idx];
           float temp_membrane_resistance_R = d_membrane_resistances_R[idx];
           float current_injection_Ii = d_current_injections[idx*timestep_grouping];
           float total_current_conductance = d_total_current_conductance[idx*timestep_grouping];
+          float membrane_potential_Vi = d_membrane_potentials_v[idx];
 
   	  for (int g=0; g < timestep_grouping; g++){	  
             if (((current_time_in_seconds + g*timestep) - d_last_spike_time_of_each_neuron[idx]) >= refractory_period_in_seconds){
@@ -94,7 +94,7 @@ namespace Backend {
 		  break;
 	      }
 
-	      membrane_potential_Vi = new_membrane_potential;
+              membrane_potential_Vi = new_membrane_potential;
 	    }
 	  }
           

@@ -39,6 +39,7 @@ int main (int argc, char *argv[]){
 	SpikingModel * BenchModel = new SpikingModel();
 	float timestep = 0.0001f; // 50us for now
 	BenchModel->SetTimestep(timestep);
+	float delayval = 1*timestep;
 
 	// Create neuron, synapse and stdp types for this model
 	LIFSpikingNeurons * lif_spiking_neurons = new LIFSpikingNeurons();
@@ -192,7 +193,6 @@ int main (int argc, char *argv[]){
 	conductance_spiking_synapse_parameters_struct * INH_OUT_SYN_PARAMS = new conductance_spiking_synapse_parameters_struct();
 	conductance_spiking_synapse_parameters_struct * INPUT_SYN_PARAMS = new conductance_spiking_synapse_parameters_struct();
 	// Setting delays
-	float delayval = 2*timestep;
 	EXC_OUT_SYN_PARAMS->delay_range[0] = delayval; // 0.8ms
 	EXC_OUT_SYN_PARAMS->delay_range[1] = delayval;
 	INH_OUT_SYN_PARAMS->delay_range[0] = delayval;
@@ -255,7 +255,7 @@ int main (int argc, char *argv[]){
 	//simoptions->recording_electrodes_options->count_input_neuron_spikes_recording_electrodes_bool = true;
 
 	simoptions->recording_electrodes_options->collect_neuron_spikes_recording_electrodes_bool = true;
-	//simoptions->recording_electrodes_options->collect_neuron_spikes_optional_parameters->human_readable_storage = true;
+	simoptions->recording_electrodes_options->collect_neuron_spikes_optional_parameters->human_readable_storage = true;
 	simoptions->recording_electrodes_options->collect_input_neuron_spikes_recording_electrodes_bool = true;
 	//simoptions->recording_electrodes_options->collect_input_neuron_spikes_optional_parameters->human_readable_storage = true;
 
@@ -264,7 +264,7 @@ int main (int argc, char *argv[]){
 
 	//simoptions->file_storage_options->write_initial_synaptic_weights_to_file_bool = true;
 	
-	//simoptions->file_storage_options->save_recorded_neuron_spikes_to_file = true;
+	simoptions->file_storage_options->save_recorded_neuron_spikes_to_file = true;
 	//simoptions->file_storage_options->save_recorded_input_neuron_spikes_to_file = true;
 	//simoptions->file_storage_options->human_readable_storage = true;
 
