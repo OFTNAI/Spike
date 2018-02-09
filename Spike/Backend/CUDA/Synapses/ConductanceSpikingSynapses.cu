@@ -236,20 +236,23 @@ namespace Backend {
         int synapse_count = presynaptic_is_input ? d_per_input_neuron_efferent_synapse_count[corr_idx] : d_per_neuron_efferent_synapse_count[corr_idx];
 
         // Check if spike occurred within coming timestep group
-	for (int g=0; g < timestep_grouping; g++){
-          if (fabs(effecttime - (current_time_in_seconds + g*timestep)) < (0.5*timestep)){
+	//for (int g=0; g < timestep_grouping; g++){
+          //if (fabs(effecttime - (current_time_in_seconds + g*timestep)) < (0.5*timestep)){
+          int groupindex = (int)lroundf((effecttime - current_time_in_seconds) / timestep);
+          //if (fabs(effecttime - (current_time_in_seconds + g*timestep)) < (0.5*timestep)){
+          if (groupindex >= 0){
             // For each of this neuron's efferent synapses
             for (int i = 0; i < synapse_count; i++){
               int synapse_id = presynaptic_is_input ? d_per_input_neuron_efferent_synapse_indices[d_per_input_neuron_efferent_synapse_total[corr_idx] - i - 1] : d_per_neuron_efferent_synapse_indices[d_per_neuron_efferent_synapse_total[corr_idx] - i - 1];
               // If this synapse is not active, make it active
-	      int targetloc = (bufferloc + d_delays[synapse_id] + g) % buffersize;
+	      int targetloc = (bufferloc + d_delays[synapse_id] + groupindex) % buffersize;
 	      int pos = atomicAdd(&circular_spikenum_buffer[targetloc], 1);
 	      spikeid_buffer[targetloc*total_number_of_synapses + pos] = synapse_id;
             }
 	    // If we found a spike, there is no chance this neuron spikes again:
-	    break;
+	    //break;
           }
-	}
+	//}
 
         __syncthreads();
         indx += blockDim.x * gridDim.x;
@@ -310,10 +313,8 @@ namespace Backend {
 
       int idx = threadIdx.x + blockIdx.x * blockDim.x;
       while (idx < total_number_of_neurons) {
-
-	for (int g=0; g < timestep_grouping; g++){
-
-          for (int decay_id = 0; decay_id < num_decay_terms; decay_id++){
+        for (int decay_id = 0; decay_id < num_decay_terms; decay_id++){
+	  for (int g=0; g < timestep_grouping; g++){
 	    if (decay_id == 0){
 	      d_neurons_current_injections[idx*timestep_grouping + g] = 0.0f;
 	      d_total_current_conductance[idx*timestep_grouping + g] = 0.0f;
@@ -328,8 +329,8 @@ namespace Backend {
 	    neuron_wise_conductance_update[total_number_of_neurons*timestep_grouping*decay_id + idx*timestep_grouping + g] = 0.0f;
             d_neurons_current_injections[idx*timestep_grouping + g] += synaptic_conductance_g * reversal_values[decay_id];
             d_total_current_conductance[idx*timestep_grouping + g] += synaptic_conductance_g;
-            }
-  	  }
+          }
+  	}
 
         idx += blockDim.x * gridDim.x;
       }
