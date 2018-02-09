@@ -300,9 +300,10 @@ namespace Backend {
 	for (int g=0; g < timestep_grouping; g++){
 
           for (int decay_id = 0; decay_id < num_decay_terms; decay_id++){
-	    if (decay_id == 0)
+	    if (decay_id == 0){
 	      d_neurons_current_injections[idx*timestep_grouping + g] = 0.0f;
 	      d_total_current_conductance[idx*timestep_grouping + g] = 0.0f;
+	    }
 	    // Set the first conductance trace based upon the final trace from last time
 	    int group_corrected_index = ((g - 1) < 0) ? (timestep_grouping - 1): (g - 1);
             float synaptic_conductance_g = neuron_wise_conductance_traces[idx + decay_id*total_number_of_neurons + group_corrected_index];

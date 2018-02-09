@@ -74,7 +74,6 @@ namespace Backend {
       int idx = threadIdx.x + blockIdx.x * blockDim.x;
       while (idx < total_number_of_neurons) {
 
-        if ((current_time_in_seconds - d_last_spike_time_of_each_neuron[idx]) >= refractory_period_in_seconds){
           float equation_constant = timestep / d_membrane_time_constants_tau_m[idx];
           float membrane_potential_Vi = d_membrane_potentials_v[idx];
           float resting_potential_V0 = d_resting_potentials[idx];
@@ -83,28 +82,28 @@ namespace Backend {
           float total_current_conductance = d_total_current_conductance[idx*timestep_grouping];
 
   	  for (int g=0; g < timestep_grouping; g++){	  
-            current_injection_Ii = d_current_injections[idx*timestep_grouping + g];
-            total_current_conductance = d_total_current_conductance[idx*timestep_grouping + g];
-            float new_membrane_potential = equation_constant * (resting_potential_V0 + temp_membrane_resistance_R * (current_injection_Ii - total_current_conductance*membrane_potential_Vi)) + (1 - equation_constant) * membrane_potential_Vi + equation_constant * background_current;
+            if (((current_time_in_seconds + g*timestep) - d_last_spike_time_of_each_neuron[idx]) >= refractory_period_in_seconds){
+              current_injection_Ii = d_current_injections[idx*timestep_grouping + g];
+              total_current_conductance = d_total_current_conductance[idx*timestep_grouping + g];
+              float new_membrane_potential = equation_constant * (resting_potential_V0 + temp_membrane_resistance_R * (current_injection_Ii - total_current_conductance*membrane_potential_Vi)) + (1 - equation_constant) * membrane_potential_Vi + equation_constant * background_current;
 	  
-	    // Finally check for a spike
-	    if (new_membrane_potential >= d_threshold_for_action_potential_spikes[idx]){
+	      // Finally check for a spike
+	      if (new_membrane_potential >= d_threshold_for_action_potential_spikes[idx]){
 	  	  d_last_spike_time_of_each_neuron[idx] = current_time_in_seconds + (g*timestep);
 		  membrane_potential_Vi = d_resting_potentials[idx];
 		  break;
-	    }
+	      }
 
-	    membrane_potential_Vi = new_membrane_potential;
+	      membrane_potential_Vi = new_membrane_potential;
+	    }
 	  }
           
 	  d_membrane_potentials_v[idx] = membrane_potential_Vi;
+	  
+          idx += blockDim.x * gridDim.x;
         }
+     } 
 
-        idx += blockDim.x * gridDim.x;
-
-      }
-      __syncthreads();
-    }
 
   } // namespace CUDA
 } // namespace Backend

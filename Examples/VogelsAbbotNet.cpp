@@ -192,12 +192,12 @@ int main (int argc, char *argv[]){
 	conductance_spiking_synapse_parameters_struct * INH_OUT_SYN_PARAMS = new conductance_spiking_synapse_parameters_struct();
 	conductance_spiking_synapse_parameters_struct * INPUT_SYN_PARAMS = new conductance_spiking_synapse_parameters_struct();
 	// Setting delays
-	EXC_OUT_SYN_PARAMS->delay_range[0] = 0.0008; // 0.8ms
-	EXC_OUT_SYN_PARAMS->delay_range[1] = 0.0008;
-	INH_OUT_SYN_PARAMS->delay_range[0] = 0.0008;
-	INH_OUT_SYN_PARAMS->delay_range[1] = 0.0008;
-	INPUT_SYN_PARAMS->delay_range[0] = 0.0008;
-	INPUT_SYN_PARAMS->delay_range[1] = 0.0008;
+	EXC_OUT_SYN_PARAMS->delay_range[0] = timestep; //0.0008; // 0.8ms
+	EXC_OUT_SYN_PARAMS->delay_range[1] = timestep; //0.0008;
+	INH_OUT_SYN_PARAMS->delay_range[0] = timestep; //0.0008;
+	INH_OUT_SYN_PARAMS->delay_range[1] = timestep; //0.0008;
+	INPUT_SYN_PARAMS->delay_range[0] = timestep; //0.0008;
+	INPUT_SYN_PARAMS->delay_range[1] = timestep; //0.0008;
 	// Setting Reversal Potentials for specific synapses (according to evans paper)
 	EXC_OUT_SYN_PARAMS->reversal_potential_Vhat = 0.0f*pow(10.0, -3);
 	INH_OUT_SYN_PARAMS->reversal_potential_Vhat = -80.0f*pow(10.0, -3);

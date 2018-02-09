@@ -179,9 +179,8 @@ void Simulator::RunSimulation() {
 			for (int timestep_index = 0; timestep_index < (number_of_timesteps_per_stimulus_per_epoch / spiking_model->timestep_grouping); timestep_index++){
 				spiking_model->perform_per_timestep_model_instructions(current_time_in_seconds, simulator_options->run_simulation_general_options->apply_plasticity_to_relevant_synapses);
 
-				perform_per_timestep_recording_electrode_instructions(current_time_in_seconds, timestep_index, number_of_timesteps_per_stimulus_per_epoch, epoch_number);
-
 				current_time_in_seconds = current_time_at_stimulus_beginning + (timestep_index + 1)*spiking_model->timestep_grouping*float(spiking_model->timestep);
+				perform_per_timestep_recording_electrode_instructions(current_time_in_seconds, timestep_index, number_of_timesteps_per_stimulus_per_epoch, epoch_number);
 
                                 #ifdef VERBOSE_SIMULATION
                                 printf("\r%f\t", current_time_in_seconds);
