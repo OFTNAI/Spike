@@ -52,7 +52,6 @@ namespace Backend {
          neuron_ids_of_stored_spikes_on_device,
          time_in_seconds_of_stored_spikes_on_device,
          current_time_in_seconds,
-	 frontend()->timerange,
 	 timestep,
          neurons_frontend->total_number_of_neurons);
 
@@ -67,7 +66,6 @@ namespace Backend {
      int* d_neuron_ids_of_stored_spikes_on_device,
      float* d_time_in_seconds_of_stored_spikes_on_device,
      float current_time_in_seconds,
-     float timerange,
      float timestep,
      size_t total_number_of_neurons){
 
@@ -75,7 +73,8 @@ namespace Backend {
       while (idx < total_number_of_neurons) {
 
         // If a neuron has fired
-        if (d_last_spike_time_of_each_neuron[idx] >= (current_time_in_seconds - timerange - 0.5*timestep)) {
+	
+        if (d_last_spike_time_of_each_neuron[idx] >= (current_time_in_seconds - 0.5f*timestep)) {
           // Increase the number of spikes stored
           // NOTE: atomicAdd return value is actually original (atomic) value BEFORE incrementation!
           //		- So first value is actually 0 not 1!!!
