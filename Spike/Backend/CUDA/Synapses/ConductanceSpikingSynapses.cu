@@ -237,7 +237,6 @@ namespace Backend {
         bool presynaptic_is_input = PRESYNAPTIC_IS_INPUT(idx);
 	int corr_idx = CORRECTED_PRESYNAPTIC_ID(idx, presynaptic_is_input);
         float effecttime = presynaptic_is_input ? d_last_spike_time_of_each_input_neuron[corr_idx] : d_last_spike_time_of_each_neuron[corr_idx];
-        int synapse_count = presynaptic_is_input ? d_per_input_neuron_efferent_synapse_count[corr_idx] : d_per_neuron_efferent_synapse_count[corr_idx];
 
         // Check if spike occurred within coming timestep group
 	//for (int g=0; g < timestep_grouping; g++){
@@ -245,6 +244,7 @@ namespace Backend {
           int groupindex = (int)lroundf((effecttime - current_time_in_seconds) / timestep);
           //if (fabs(effecttime - (current_time_in_seconds + g*timestep)) < (0.5*timestep)){
           if (groupindex >= 0){
+            int synapse_count = presynaptic_is_input ? d_per_input_neuron_efferent_synapse_count[corr_idx] : d_per_neuron_efferent_synapse_count[corr_idx];
             // For each of this neuron's efferent synapses
             for (int i = 0; i < synapse_count; i++){
               int synapse_id = presynaptic_is_input ? d_per_input_neuron_efferent_synapse_indices[d_per_input_neuron_efferent_synapse_total[corr_idx] - i - 1] : d_per_neuron_efferent_synapse_indices[d_per_neuron_efferent_synapse_total[corr_idx] - i - 1];
