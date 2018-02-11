@@ -314,14 +314,15 @@ namespace Backend {
       int idx = threadIdx.x + blockIdx.x * blockDim.x;
       while (idx < total_number_of_neurons) {
         for (int decay_id = 0; decay_id < num_decay_terms; decay_id++){
+          float synaptic_conductance_g = neuron_wise_conductance_traces[total_number_of_neurons*timestep_grouping*decay_id + (idx + 1)*timestep_grouping - 1];
 	  for (int g=0; g < timestep_grouping; g++){
 	    if (decay_id == 0){
 	      d_neurons_current_injections[idx*timestep_grouping + g] = 0.0f;
 	      d_total_current_conductance[idx*timestep_grouping + g] = 0.0f;
 	    }
 	    // Set the first conductance trace based upon the final trace from last time
-	    int group_corrected_index = ((g - 1) < 0) ? (timestep_grouping - 1): (g - 1);
-            float synaptic_conductance_g = neuron_wise_conductance_traces[total_number_of_neurons*timestep_grouping*decay_id + idx*timestep_grouping + group_corrected_index];
+	    //int group_corrected_index = ((g - 1) < 0) ? (timestep_grouping - 1): (g - 1);
+            //float synaptic_conductance_g = neuron_wise_conductance_traces[total_number_of_neurons*timestep_grouping*decay_id + idx*timestep_grouping + group_corrected_index];
             // First decay the conductance values as required
             synaptic_conductance_g *= expf(- timestep / decay_term_values[decay_id]);
 	    synaptic_conductance_g += neuron_wise_conductance_update[total_number_of_neurons*timestep_grouping*decay_id + idx*timestep_grouping + g];
