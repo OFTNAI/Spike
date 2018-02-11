@@ -50,10 +50,14 @@ namespace Backend {
         h_synapse_decay_id[syn_id] = id;
       }
       // Set up per neuron conductances
-      conductance_trace_length = frontend()->neuron_pop_size*num_decay_terms*frontend()->model->timestep_grouping;
+      conductance_update_length = frontend()->neuron_pop_size*num_decay_terms*frontend()->model->timestep_grouping;
+      conductance_trace_length = frontend()->neuron_pop_size*num_decay_terms;
       h_neuron_wise_conductance_trace = (float*)realloc(h_neuron_wise_conductance_trace, conductance_trace_length*sizeof(float));
       for (int id = 0; id < conductance_trace_length; id++)
         h_neuron_wise_conductance_trace[id] = 0.0f;
+      h_neuron_wise_conductance_update = (float*)realloc(h_neuron_wise_conductance_update, conductance_update_length*sizeof(float));
+      for (int id = 0; id < conductance_update_length; id++)
+        h_neuron_wise_conductance_update[id] = 0.0f;
 
       // Carry out remaining device actions
       allocate_device_pointers();
@@ -68,8 +72,8 @@ namespace Backend {
         sizeof(float)*conductance_trace_length, cudaMemcpyHostToDevice));
       CudaSafeCall(cudaMemcpy(
         neuron_wise_conductance_update,
-        h_neuron_wise_conductance_trace,
-        sizeof(float)*conductance_trace_length, cudaMemcpyHostToDevice));
+        h_neuron_wise_conductance_update,
+        sizeof(float)*conductance_update_length, cudaMemcpyHostToDevice));
       CudaSafeCall(cudaMemset(circular_spikenum_buffer, 0, sizeof(int)*buffersize));
 
     }
@@ -79,7 +83,7 @@ namespace Backend {
       CudaSafeCall(cudaMalloc((void **)&biological_conductance_scaling_constants_lambda, sizeof(float)*frontend()->total_number_of_synapses));
       CudaSafeCall(cudaMalloc((void **)&synapse_decay_id, sizeof(int)*frontend()->total_number_of_synapses));
       CudaSafeCall(cudaMalloc((void **)&neuron_wise_conductance_trace, sizeof(float)*conductance_trace_length));
-      CudaSafeCall(cudaMalloc((void **)&neuron_wise_conductance_update, sizeof(float)*conductance_trace_length));
+      CudaSafeCall(cudaMalloc((void **)&neuron_wise_conductance_update, sizeof(float)*conductance_update_length));
       CudaSafeCall(cudaMalloc((void **)&decay_term_values, sizeof(float)*num_decay_terms));
       CudaSafeCall(cudaMalloc((void **)&reversal_values, sizeof(float)*num_decay_terms));
       CudaSafeCall(cudaMalloc((void **)&circular_spikenum_buffer, sizeof(int)*buffersize));
@@ -100,8 +104,8 @@ namespace Backend {
         sizeof(float)*conductance_trace_length, cudaMemcpyHostToDevice));
       CudaSafeCall(cudaMemcpy(
         neuron_wise_conductance_update,
-        h_neuron_wise_conductance_trace,
-        sizeof(float)*conductance_trace_length, cudaMemcpyHostToDevice));
+        h_neuron_wise_conductance_update,
+        sizeof(float)*conductance_update_length, cudaMemcpyHostToDevice));
       CudaSafeCall(cudaMemcpy(
         decay_term_values,
         h_decay_term_values,
@@ -316,7 +320,7 @@ namespace Backend {
         for (int decay_id = 0; decay_id < num_decay_terms; decay_id++){
           float decay_term_value = decay_term_values[decay_id];
 	  float reversal_value = reversal_values[decay_id];
-          float synaptic_conductance_g = neuron_wise_conductance_traces[total_number_of_neurons*timestep_grouping*decay_id + (idx + 1)*timestep_grouping - 1];
+          float synaptic_conductance_g = neuron_wise_conductance_traces[total_number_of_neurons*decay_id + idx];
 	  for (int g=0; g < timestep_grouping; g++){
 	    if (decay_id == 0){
 	      d_neurons_current_injections[idx*timestep_grouping + g] = 0.0f;
@@ -329,10 +333,11 @@ namespace Backend {
             synaptic_conductance_g *= expf(- timestep / decay_term_value);
 	    synaptic_conductance_g += neuron_wise_conductance_update[total_number_of_neurons*timestep_grouping*decay_id + idx*timestep_grouping + g];
 	    neuron_wise_conductance_update[total_number_of_neurons*timestep_grouping*decay_id + idx*timestep_grouping + g] = 0.0f;
-            neuron_wise_conductance_traces[total_number_of_neurons*timestep_grouping*decay_id + idx*timestep_grouping + g] = synaptic_conductance_g;
+            //neuron_wise_conductance_traces[total_number_of_neurons*timestep_grouping*decay_id + idx] = synaptic_conductance_g;
             d_neurons_current_injections[idx*timestep_grouping + g] += synaptic_conductance_g * reversal_value;
             d_total_current_conductance[idx*timestep_grouping + g] += synaptic_conductance_g;
           }
+          neuron_wise_conductance_traces[total_number_of_neurons*decay_id + idx] = synaptic_conductance_g;
   	}
 
         idx += blockDim.x * gridDim.x;

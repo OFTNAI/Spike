@@ -33,9 +33,11 @@ namespace Backend {
       float* reversal_values = nullptr;
       float* h_reversal_values = nullptr;
       int conductance_trace_length = 0;
+      int conductance_update_length = 0;
       float* neuron_wise_conductance_trace = nullptr;
       float* neuron_wise_conductance_update = nullptr;
       float* h_neuron_wise_conductance_trace = nullptr;
+      float* h_neuron_wise_conductance_update = nullptr;
       int* synapse_decay_id = nullptr;
       int* h_synapse_decay_id = nullptr;
 
