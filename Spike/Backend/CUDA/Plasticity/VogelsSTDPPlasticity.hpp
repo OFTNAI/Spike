@@ -44,6 +44,7 @@ namespace Backend {
      struct vogels_stdp_plasticity_parameters_struct stdp_vars,
      float currtime,
      float timestep,
+     int timestep_grouping,
      int* d_plastic_synapse_indices,
      size_t total_number_of_plastic_synapses);
 

@@ -197,7 +197,6 @@ namespace Backend {
 	frontend()->model->timestep_grouping,
         neurons_backend->frontend()->total_number_of_neurons);
 
-      CudaCheckError();
     }
 
 
@@ -329,18 +328,16 @@ namespace Backend {
 	  float reversal_value = reversal_values[decay_id];
           float synaptic_conductance_g = neuron_wise_conductance_traces[total_number_of_neurons*decay_id + idx];
 	  for (int g=0; g < timestep_grouping; g++){
-	    // Set the first conductance trace based upon the final trace from last time
-	    //int group_corrected_index = ((g - 1) < 0) ? (timestep_grouping - 1): (g - 1);
-            //float synaptic_conductance_g = neuron_wise_conductance_traces[total_number_of_neurons*timestep_grouping*decay_id + idx*timestep_grouping + group_corrected_index];
-            // First decay the conductance values as required
-            //synaptic_conductance_g *= expf(- timestep / decay_term_value);
+            // Update the synaptic conductance
 	    synaptic_conductance_g *= decay_factor;
 	    synaptic_conductance_g += neuron_wise_conductance_update[total_number_of_neurons*timestep_grouping*decay_id + idx*timestep_grouping + g];
+	    // Reset the conductance update
 	    neuron_wise_conductance_update[total_number_of_neurons*timestep_grouping*decay_id + idx*timestep_grouping + g] = 0.0f;
-            //neuron_wise_conductance_traces[total_number_of_neurons*timestep_grouping*decay_id + idx] = synaptic_conductance_g;
+	    // Set the currents and conductances -> Can we aggregate these?
             d_neurons_current_injections[idx*timestep_grouping + g] += synaptic_conductance_g * reversal_value;
             d_total_current_conductance[idx*timestep_grouping + g] += synaptic_conductance_g;
           }
+	  // Set the conductance ready for the next timestep group
           neuron_wise_conductance_traces[total_number_of_neurons*decay_id + idx] = synaptic_conductance_g;
   	}
 
