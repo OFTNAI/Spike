@@ -13,7 +13,7 @@ namespace Backend {
       void prepare() override;
       void reset_state() override;
 
-      void apply_stdp_to_synapse_weights(float current_time_in_seconds) override;
+      void apply_stdp_to_synapse_weights(float current_time_in_seconds, float timestep) override;
     };
   }
 }

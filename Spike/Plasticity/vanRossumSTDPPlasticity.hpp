@@ -32,22 +32,19 @@ namespace Backend {
   public:
     SPIKE_ADD_BACKEND_FACTORY(vanRossumSTDPPlasticity);
 
-    virtual void apply_stdp_to_synapse_weights(float current_time_in_seconds) = 0;
+    virtual void apply_stdp_to_synapse_weights(float current_time_in_seconds, float timestep) = 0;
   };
 }
 
 // STDP Parameters
 struct vanrossum_stdp_plasticity_parameters_struct : stdp_plasticity_parameters_struct {
-  vanrossum_stdp_plasticity_parameters_struct() : a_minus(0.003), a_plus(7.0f*pow(10.0, -12)), tau_minus(0.02f), tau_plus(0.02f), weight_dependency_factor(1.0f), allspikes(true), timestep(0.0f) { } // default Constructor
+  vanrossum_stdp_plasticity_parameters_struct() : a_minus(0.003), a_plus(7.0f*pow(10.0, -12)), tau_minus(0.02f), tau_plus(0.02f), weight_dependency_factor(1.0f) { } // default Constructor
   // STDPPlasticity Parameters
   float a_minus;
   float a_plus;
   float tau_minus;
   float tau_plus;
   float weight_dependency_factor;
-  // All-To-All vs Nearest
-  bool allspikes;
-  float timestep;
 };
 
 
@@ -74,7 +71,7 @@ public:
   void state_update(float current_time_in_seconds, float timestep) override;
 
   // LTP & LTD for this model
-  void apply_stdp_to_synapse_weights(float current_time_in_seconds);
+  void apply_stdp_to_synapse_weights(float current_time_in_seconds, float timestep);
 
 private:
   std::shared_ptr<::Backend::vanRossumSTDPPlasticity> _backend;
