@@ -85,8 +85,7 @@ namespace Backend {
         // Getting an index for the correct synapse
         int idx = d_plastic_synapse_indices[indx];
         
-	// Find the pre and post synaptic neuron ids:
-        int pre_neuron_id = d_presyns[idx];
+	// Find the post synaptic neuron ids:
         int post_neuron_id = d_postsyns[idx];
 
 	float vogels_pre_memory_trace_val = vogels_pre_memory_trace[indx];
@@ -94,8 +93,8 @@ namespace Backend {
 
 	for (int g=0; g < timestep_grouping; g++){
 	  // First decaying the memory traces
-	  vogels_pre_memory_trace_val -= vogels_pre_memory_trace*(timestep / stdp_vars.tau_istdp);
-	  vogels_post_memory_trace_val -= vogels_post_memory_trace*(timestep / stdp_vars.tau_istdp);
+	  vogels_pre_memory_trace_val += - vogels_pre_memory_trace_val*(timestep / stdp_vars.tau_istdp);
+	  vogels_post_memory_trace_val += - vogels_post_memory_trace_val*(timestep / stdp_vars.tau_istdp);
 
           // Check whether the pre-synaptic neuron has fired now
           if (d_last_spike_time_of_each_neuron[post_neuron_id] == (currtime + g*timestep))
