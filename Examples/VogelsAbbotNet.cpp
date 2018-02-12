@@ -19,6 +19,7 @@
 #include "Spike/Neurons/LIFSpikingNeurons.hpp"
 #include "Spike/Neurons/PoissonInputSpikingNeurons.hpp"
 #include "Spike/Synapses/ConductanceSpikingSynapses.hpp"
+#include "Spike/Plasticity/VogelsSTDPPlasticity.hpp"
 
 #ifdef SPIKE_WITH_CUDA
 #endif
@@ -39,7 +40,7 @@ int main (int argc, char *argv[]){
 	SpikingModel * BenchModel = new SpikingModel();
 	float timestep = 0.0001f; // 50us for now
 	BenchModel->SetTimestep(timestep);
-	float delayval = 1*timestep;
+	float delayval = 20*timestep;
 
 	// Create neuron, synapse and stdp types for this model
 	LIFSpikingNeurons * lif_spiking_neurons = new LIFSpikingNeurons();
@@ -47,14 +48,16 @@ int main (int argc, char *argv[]){
 	// GeneratorInputSpikingNeurons * generator_input_spiking_neurons = new GeneratorInputSpikingNeurons();
 	ConductanceSpikingSynapses * conductance_spiking_synapses = new ConductanceSpikingSynapses();
 	// Set STDP
-	// vogels_stdp_plasticity_parameters_struct * STDP_PARAMS = new vogels_stdp_plasticity_parameters_struct();
-	// VogelsSTDPPlasticity * vogels_stdp = new VogelsSTDPPlasticity((SpikingSynapses *) conductance_spiking_synapses, (SpikingNeurons *) lif_spiking_neurons, (SpikingNeurons *) generator_input_spiking_neurons, (stdp_plasticity_parameters_struct *) STDP_PARAMS);
+	vogels_stdp_plasticity_parameters_struct * STDP_PARAMS = new vogels_stdp_plasticity_parameters_struct();
+	STDP_PARAMS->learningrate = 0.1f;
+	STDP_PARAMS->targetrate = 10.0f;
+	VogelsSTDPPlasticity * vogels_stdp = new VogelsSTDPPlasticity((SpikingSynapses *) conductance_spiking_synapses, (SpikingNeurons *) lif_spiking_neurons, (SpikingNeurons *) poisson_input_spiking_neurons, (stdp_plasticity_parameters_struct *) STDP_PARAMS);
 
 	// Add my populations to the SpikingModel
 	BenchModel->spiking_neurons = lif_spiking_neurons;
 	BenchModel->input_spiking_neurons = poisson_input_spiking_neurons;
 	BenchModel->spiking_synapses = conductance_spiking_synapses;
-	// BenchModel->AddPlasticityRule(vogels_stdp);
+	BenchModel->AddPlasticityRule(vogels_stdp);
 
 	// Set up Neuron Parameters
 	// AdEx
@@ -76,8 +79,8 @@ int main (int argc, char *argv[]){
 	EXC_NEURON_PARAMS->threshold_for_action_potential_spike = -50.0f*pow(10.0, -3); // -53mV threshold
 	INH_NEURON_PARAMS->threshold_for_action_potential_spike = -50.0f*pow(10.0, -3); // -53mV threshold
 
-	EXC_NEURON_PARAMS->background_current = 4.0f*pow(10.0, -2); //
-	INH_NEURON_PARAMS->background_current = 4.0f*pow(10.0, -2); //
+	EXC_NEURON_PARAMS->background_current = 2.0f*pow(10.0, -2); //
+	INH_NEURON_PARAMS->background_current = 2.0f*pow(10.0, -2); //
 
 
 	/*
@@ -225,11 +228,12 @@ int main (int argc, char *argv[]){
 	INH_OUT_SYN_PARAMS->connectivity_type = CONNECTIVITY_TYPE_RANDOM;
 	INPUT_SYN_PARAMS->connectivity_type = CONNECTIVITY_TYPE_RANDOM;
 	EXC_OUT_SYN_PARAMS->plasticity_vec.push_back(nullptr);
-	INH_OUT_SYN_PARAMS->plasticity_vec.push_back(nullptr);
+	INH_OUT_SYN_PARAMS->plasticity_vec.push_back(vogels_stdp);//(nullptr);//(vogels_stdp);
 	INPUT_SYN_PARAMS->plasticity_vec.push_back(nullptr);
 	EXC_OUT_SYN_PARAMS->random_connectivity_probability = 0.02; // 2%
 	INH_OUT_SYN_PARAMS->random_connectivity_probability = 0.02; // 2%
 	INPUT_SYN_PARAMS->random_connectivity_probability = 0.01; // 1%
+
 	// Connect all of the populations
 	BenchModel->AddSynapseGroup(EXCITATORY_NEURONS[0], EXCITATORY_NEURONS[0], EXC_OUT_SYN_PARAMS);
 	BenchModel->AddSynapseGroup(EXCITATORY_NEURONS[0], INHIBITORY_NEURONS[0], EXC_OUT_SYN_PARAMS);
@@ -248,8 +252,8 @@ int main (int argc, char *argv[]){
 
 	// Create the simulator options
 	Simulator_Options* simoptions = new Simulator_Options();
-	simoptions->run_simulation_general_options->presentation_time_per_stimulus_per_epoch = 10.0f;
-	// simoptions->run_simulation_general_options->apply_plasticity_to_relevant_synapses = true;
+	simoptions->run_simulation_general_options->presentation_time_per_stimulus_per_epoch = 60.0f;
+	simoptions->run_simulation_general_options->apply_plasticity_to_relevant_synapses = true;
 
 	//simoptions->recording_electrodes_options->count_neuron_spikes_recording_electrodes_bool = true;
 	//simoptions->recording_electrodes_options->count_input_neuron_spikes_recording_electrodes_bool = true;
@@ -264,7 +268,7 @@ int main (int argc, char *argv[]){
 
 	//simoptions->file_storage_options->write_initial_synaptic_weights_to_file_bool = true;
 	
-	simoptions->file_storage_options->save_recorded_neuron_spikes_to_file = true;
+	//simoptions->file_storage_options->save_recorded_neuron_spikes_to_file = true;
 	//simoptions->file_storage_options->save_recorded_input_neuron_spikes_to_file = true;
 	//simoptions->file_storage_options->human_readable_storage = true;
 
