@@ -36,11 +36,12 @@ namespace Backend {
 
 // STDP Parameters
 struct vogels_stdp_plasticity_parameters_struct : stdp_plasticity_parameters_struct {
-  vogels_stdp_plasticity_parameters_struct() : tau_istdp(0.02f), learningrate(0.0004f), targetrate(10.0f) { } // default Constructor
+  vogels_stdp_plasticity_parameters_struct() : tau_istdp(0.02f), learningrate(0.0004f), targetrate(10.0f), momentumrate{0.0f} { } // default Constructor
   // STDP Parameters
   float tau_istdp;
   float learningrate;
   float targetrate;
+  float momentumrate;
   // Alpha must be calculated as 2 * targetrate * tau_istdp
 };
 

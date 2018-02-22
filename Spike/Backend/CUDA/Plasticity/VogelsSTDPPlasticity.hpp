@@ -20,6 +20,7 @@ namespace Backend {
       float* vogels_memory_trace_reset = nullptr; 
       float* vogels_pre_memory_trace = nullptr;
       float* vogels_post_memory_trace = nullptr;
+      float* vogels_prevupdate= nullptr;
 
       ~VogelsSTDPPlasticity() override;
       SPIKE_MAKE_BACKEND_CONSTRUCTOR(VogelsSTDPPlasticity);
@@ -41,6 +42,7 @@ namespace Backend {
      float* d_synaptic_efficacies_or_weights,
      float* vogels_pre_memory_trace,
      float* vogels_post_memory_trace,
+     float* vogels_prevupdate,
      struct vogels_stdp_plasticity_parameters_struct stdp_vars,
      float currtime,
      float timestep,
