@@ -103,13 +103,13 @@ namespace Backend {
 
 	for (int g=0; g < timestep_grouping; g++){
 	  // First decaying the memory traces
-	  vogels_pre_memory_trace_val += - vogels_pre_memory_trace_val*(timestep / stdp_vars.tau_istdp);
-	  vogels_post_memory_trace_val += - vogels_post_memory_trace_val*(timestep / stdp_vars.tau_istdp);
+	  vogels_pre_memory_trace_val *= expf(- timestep / stdp_vars.tau_istdp);
+	  vogels_post_memory_trace_val *= expf( - timestep / stdp_vars.tau_istdp);
 
           // Check whether the pre-synaptic neuron has fired now
-          if (d_last_spike_time_of_each_neuron[post_neuron_id] == (currtime + g*timestep))
+          if (fabs(d_last_spike_time_of_each_neuron[post_neuron_id] - (currtime + g*timestep)) < 0.5f*timestep)
             vogels_post_memory_trace_val += 1.0f;
-          if (d_time_of_last_spike_to_reach_synapse[idx] == (currtime + g*timestep))
+          if (fabs(d_time_of_last_spike_to_reach_synapse[idx] - (currtime + g*timestep)) < 0.5f*timestep)
             vogels_pre_memory_trace_val += 1.0f;
 
           if (d_time_of_last_spike_to_reach_synapse[idx] == (currtime + g*timestep)){

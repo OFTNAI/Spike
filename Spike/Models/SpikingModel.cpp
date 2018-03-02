@@ -159,13 +159,13 @@ void SpikingModel::perform_per_timestep_model_instructions(float current_time_in
 
 	spiking_neurons->state_update(current_time_in_seconds, timestep);
 	input_spiking_neurons->state_update(current_time_in_seconds, timestep);
-
-	spiking_synapses->state_update(spiking_neurons, input_spiking_neurons, current_time_in_seconds, timestep);
-
+	
 	if (apply_plasticity_to_relevant_synapses){
 		for (int plasticity_id = 0; plasticity_id < plasticity_rule_vec.size(); plasticity_id++)
 			plasticity_rule_vec[plasticity_id]->state_update(current_time_in_seconds, timestep); // spiking_neurons, 
 	}
+
+	spiking_synapses->state_update(spiking_neurons, input_spiking_neurons, current_time_in_seconds, timestep);
 }
 
 
