@@ -97,6 +97,8 @@ namespace Backend {
           if (fabs((d_time_of_last_spike_to_reach_synapse[idx] + g*timestep) - current_time_in_seconds) < 0.5f*timestep){
             // Update the presynaptic memory trace
             stdp_pre_memory_trace_val += stdp_vars.a_plus;
+            if (stdp_vars.nearest_spike)
+		    stdp_pre_memory_trace_val = stdp_vars.a_plus;
             // Carry out the necessary LTD
 	    float old_synaptic_weight = d_synaptic_efficacies_or_weights[idx];
             d_synaptic_efficacies_or_weights[idx] -= old_synaptic_weight * stdp_post_memory_trace_val;
@@ -104,6 +106,8 @@ namespace Backend {
           // Dealing with LTP
 	  if (fabs((d_last_spike_time_of_each_neuron[postid] + g*timestep) - current_time_in_seconds) < 0.5f*timestep){
             stdp_post_memory_trace_val += stdp_vars.a_minus;
+            if (stdp_vars.nearest_spike)
+		    stdp_post_memory_trace_val = stdp_vars.a_minus;
             // If output neuron just fired, do LTP
             d_synaptic_efficacies_or_weights[idx] += stdp_pre_memory_trace_val;
           }

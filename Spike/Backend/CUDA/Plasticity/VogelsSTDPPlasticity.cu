@@ -107,12 +107,7 @@ namespace Backend {
 	  vogels_post_memory_trace_val *= expf( - timestep / stdp_vars.tau_istdp);
 
           // Check whether the pre-synaptic neuron has fired now
-          if (fabs(d_last_spike_time_of_each_neuron[post_neuron_id] - (currtime + g*timestep)) < 0.5f*timestep)
-            vogels_post_memory_trace_val += 1.0f;
-          if (fabs(d_time_of_last_spike_to_reach_synapse[idx] - (currtime + g*timestep)) < 0.5f*timestep)
-            vogels_pre_memory_trace_val += 1.0f;
-
-          if (d_time_of_last_spike_to_reach_synapse[idx] == (currtime + g*timestep)){
+          if (fabs(d_time_of_last_spike_to_reach_synapse[idx] - (currtime + g*timestep)) < 0.5f*timestep){
             weightupdate += stdp_vars.learningrate*(vogels_post_memory_trace_val);
             // Alpha must be calculated as 2 * targetrate * tau_istdp
             weightupdate += - stdp_vars.learningrate*(2.0*stdp_vars.targetrate*stdp_vars.tau_istdp);
@@ -123,12 +118,18 @@ namespace Backend {
           }
 
           // Check whether the post-synaptic neuron has fired now
-          if (d_last_spike_time_of_each_neuron[post_neuron_id] == (currtime + g*timestep)){
+          if (fabs(d_last_spike_time_of_each_neuron[post_neuron_id] - (currtime + g*timestep)) < 0.5f*timestep){
             weightupdate += stdp_vars.learningrate*(vogels_pre_memory_trace_val);
 	    updated=true;
             //d_synaptic_efficacies_or_weights[idx] = new_syn_weight;
           }
 	 
+	  // If necessary, update the trace values:
+          if (fabs(d_last_spike_time_of_each_neuron[post_neuron_id] - (currtime + g*timestep)) < 0.5f*timestep)
+            vogels_post_memory_trace_val += 1.0f;
+          if (fabs(d_time_of_last_spike_to_reach_synapse[idx] - (currtime + g*timestep)) < 0.5f*timestep)
+            vogels_pre_memory_trace_val += 1.0f;
+
 	  if (updated){ 
 	  	new_syn_weight += weightupdate;
 	  	weightupdate *= stdp_vars.momentumrate;
