@@ -5,7 +5,7 @@ A GPGPU based Spiking Neural Network (SNN) designed to provide users flexibility
 
 # Requirements
   - Windows 8 (or greater), OS X 10.10.5 (or greater), (Soon to be tested on Linux)
-  - NVIDIA GPU capable of CUDA code exectution
+  - NVIDIA GPU capable of CUDA code execution
   - NVIDIA CUDA Toolkit >= v7.5
   - Catch.hpp v1.5.6 (https://github.com/philsquared/Catch/tree/master/single_include)
 

@@ -1,0 +1,454 @@
+* For a mergeable state
+** DONE Add CMake build scripts
+CLOSED: [2016-11-11 Fri 14:00]
+:LOGBOOK:
+- State "DONE"       from              [2016-11-11 Fri 14:00]
+:END:
+** DONE Refactor extant CUDA code into a backend
+CLOSED: [2016-12-11 Sun 18:20]
+:LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2016-12-11 Sun 18:20]
+- State "PROGRESS"   from "TODO"       [2016-11-11 Fri 14:00]
+:END:
+*** DONE Backend/CUDA/Synapses: copy Backend/Dummy/Synapses common classes
+CLOSED: [2016-11-24 Thu 14:05]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2016-11-24 Thu 14:05]
+:END:
+*** DONE Update CMake scripts to build CUDA code
+CLOSED: [2016-12-11 Sun 00:50]
+:LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2016-12-11 Sun 00:50]
+- State "PROGRESS"   from "TODO"       [2016-11-30 Wed 15:40]
+:END:
+*** CANCELLED Look for MISSING KERNELS ?!
+CLOSED: [2016-12-11 Sun 18:20]
+:LOGBOOK:
+- State "CANCELLED"  from "TODO"       [2016-12-11 Sun 18:20] \\
+  Don't need to do this, it seems: no missing kernels apparent.
+:END:
++ check Backend/CUDA header files (esp Synapses/)
+*** DONE Remove `d_' from pointer names in CUDA backend classes ...
+CLOSED: [2016-12-11 Sun 00:50]
+:LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2016-12-11 Sun 00:50]
+- State "PROGRESS"   from "TODO"       [2016-12-06 Tue 16:10]
+:END:
+*** Questions / thoughts
+**** What is a "backend"?
++ A set of classes / functions that performs the computations represented in the front end.
++ Specialises the computations for efficiency
+  - but the front end is agnostic about these specialisations
+  - consequently, there is a common API
++ Each backend can therefore be thought of as a 'sublibrary'
++ Front end only exposes the structure of the computations, not their implementation
+  - but what divides 'structure' from 'implementation'?
+    * this is the old 'structure'/'content' problem!...
++ Back end represents the state of the computation, as required by the associated device
+**** What is the dispatch mechanism?
++ Each Model is associated with a context, and the context determines the backend
++ The context is associated with a device manager
+** DONE Make frontend classes backend-agnostic
+CLOSED: [2016-12-14 Wed 18:35]
+:LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2016-12-14 Wed 18:35]
+- State "PROGRESS"   from "TODO"       [2016-11-20 Sun 12:10]
+:END:
+*** DONE Virtual functions in SpikeBackendBase should 'travel up' the hierarchy, calling leaf methods where appropriate. Leaf methods should themselves not be virtual, and not travel up the hierarchy, unless for a very good reason..
+CLOSED: [2016-12-14 Wed 17:45]
+:LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2016-12-14 Wed 17:45]
+- State "PROGRESS"   from "DONE"       [2016-12-14 Wed 17:15] \\
+  (Found a bug in reset_state: travels up the hierarchy multiple times!)
+- State "DONE"       from "PROGRESS"   [2016-12-14 Wed 16:20]
+- State "PROGRESS"   from "TODO"       [2016-12-13 Tue 11:50]
+:END:
+**** DONE Ensure that reset_state doesn't call all the backends twice
+CLOSED: [2016-12-14 Wed 17:45]
+:LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2016-12-14 Wed 17:45]
+- State "PROGRESS"   from "TODO"       [2016-12-14 Wed 17:25]
+:END:
+*** DONE Put RandomStateManager into Backend/*/Helpers
+CLOSED: [2016-12-14 Wed 17:55]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2016-12-14 Wed 17:55]
+:END:
+*** DONE Make sure backends are actually prepared !!
+CLOSED: [2016-12-14 Wed 16:20]
+:LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2016-12-14 Wed 16:20]
+- State "PROGRESS"   from "TODO"       [2016-12-11 Sun 18:20]
+:END:
++ this means, for example, calling allocate_device_pointers from prepare in all relevant cases
+  - CHECK THIS!!
+*** DONE Distinguish SpikingModel::init_backend from SpikingModel::prepare_backend
+CLOSED: [2016-12-14 Wed 16:40]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2016-12-14 Wed 16:40]
+:END:
+*** DONE Fix all TODO comments in frontend code
+CLOSED: [2016-12-14 Wed 18:35]
+:LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2016-12-14 Wed 18:35]
+- State "PROGRESS"   from "TODO"       [2016-12-11 Sun 00:50]
+:END:
+*** DONE Fix dynamic_casts -- often return NULL when not casting to most derived backend type...
+CLOSED: [2016-12-12 Mon 23:45]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2016-12-12 Mon 23:45]
+:END:
+*** DONE Call prepare_backend when making changes that require ensuring consistency between front and back ends
+CLOSED: [2016-12-14 Wed 16:45]
+:LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2016-12-14 Wed 16:45] \\
+  Done for now but need to keep on top of this!
+  How to make sure consistency is maintained?
+- State "PROGRESS"   from "TODO"       [2016-12-11 Sun 00:50]
+:END:
++ NB: this is not the most elegant solution
+*** CANCELLED Check all calls to `frontend()' to ensure elegance
+CLOSED: [2016-12-14 Wed 17:00]
+:LOGBOOK:
+- State "CANCELLED"  from "TODO"       [2016-12-14 Wed 17:00] \\
+  Not sure what this means any more
+:END:
+*** DONE Check all [CUDA] memcpy calls for correct frontend() usage
+CLOSED: [2016-12-14 Wed 16:45]
+:LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2016-12-14 Wed 16:45]
+- State "PROGRESS"   from "TODO"       [2016-12-10 Sat 17:45]
+:END:
+*** DONE Ensure dynamic dispatch is used as sparingly as possible
+CLOSED: [2016-12-14 Wed 16:45]
+:LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2016-12-14 Wed 16:45]
+- State "PROGRESS"   from "TODO"       [2016-12-11 Sun 00:50]
+:END:
++ don't want RTTI and performance penality!
+*** DONE Add `override' specifier to derived versions of virtual functions
+CLOSED: [2016-12-14 Wed 17:50]
+:LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2016-12-14 Wed 17:50]
+- State "PROGRESS"   from "TODO"       [2016-12-09 Fri 12:10]
+:END:
+**** DONE remove `virtual' keyword where unnecessary
+CLOSED: [2016-12-14 Wed 17:50]
+:LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2016-12-14 Wed 17:50]
+- State "PROGRESS"   from "TODO"       [2016-12-09 Fri 12:10]
+:END:
+**** DONE remove duplicate definitions of virtual functions
+CLOSED: [2016-12-14 Wed 17:50]
+:LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2016-12-14 Wed 17:50]
+- State "PROGRESS"   from "TODO"       [2016-12-09 Fri 12:10]
+:END:
+*** CANCELLED Replace repeated calls to ``getters'' (eg frontend()->something) with local variables
+CLOSED: [2016-12-14 Wed 16:20]
+:LOGBOOK:
+- State "CANCELLED"  from "TODO"       [2016-12-14 Wed 16:20] \\
+  Seems like excessive work right now
+:END:
+*** DONE Make all frontend classes derive from a shared root, with basic elements such as void* _backend and empty prepare_backend_extra
+CLOSED: [2016-11-24 Thu 13:40]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2016-11-24 Thu 13:40]
+:END:
+*** DONE Add frontend member pointer to backend classes; and add it to `prepare' call
+CLOSED: [2016-11-24 Thu 15:55]
+:LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2016-11-24 Thu 15:55]
+- State "PROGRESS"   from "TODO"       [2016-11-24 Thu 14:20]
+:END:
+*** DONE RecordingElectrodes: integrate prepare/reset functions, and backend
+CLOSED: [2016-12-14 Wed 16:20]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2016-12-14 Wed 16:20]
+:END:
+*** DONE STDP: check that the correct neurons/input_neurons distinction is made for all kernel calls and memory transfers
+CLOSED: [2016-12-14 Wed 17:00]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2016-12-14 Wed 17:00]
+:END:
+*** DONE Synapses: check Neurons for how to implement common functions
+CLOSED: [2016-12-14 Wed 16:20]
+:LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2016-12-14 Wed 16:20]
+- State "PROGRESS"   from "TODO"       [2016-11-21 Mon 17:25]
+:END:
++ eg prepare and reset
+*** DONE Neurons: Add NeuronsCommon class with virtual inheritance
+CLOSED: [2016-11-24 Thu 13:55]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2016-11-24 Thu 13:55]
+:END:
+*** DONE Think about how to make calls to backend hierarchy irrepetitious (cf, reset_state call).
+CLOSED: [2016-12-14 Wed 16:20]
+:LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2016-12-14 Wed 16:20]
+- State "PROGRESS"   from "TODO"       [2016-11-24 Thu 14:10]
+:END:
++ Should backend->reset_state be a virtual method? If so, it always calls the most derived!
+*** DONE [FourLayerVision]SpikingModel: Split backend-specific stuff out into separate function
+CLOSED: [2016-12-14 Wed 16:45]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2016-12-14 Wed 16:45]
+:END:
+*** DONE Option to call prepare_backend implicitly using the global context
+CLOSED: [2016-12-14 Wed 16:20]
+:LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2016-12-14 Wed 16:20]
+- State "PROGRESS"   from "TODO"       [2016-12-11 Sun 00:50]
+:END:
++ If prepare_backend hasn't been called before backend is needed, then we should not just crash.
++ Instead, we should have a compile-time option to call prepare_backend implicitly using the global context.
+  + This would mean that adding prepare_backend calls to legacy code should not be needed.
++ On the other hand, it is likely to end up necessary, in a number of places, to add code to prepare_backend_extra() in order to set the device up correctly.
++ prepare_backend calls will then replace current backend-specific preparatory calls.
+*** DONE Connect up front and back ends
+CLOSED: [2016-12-14 Wed 16:20]
+:LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2016-12-14 Wed 16:20]
+- State "PROGRESS"   from "TODO"       [2016-11-30 Wed 15:40]
+:END:
++ eg update_membrane_potentials, memory synchrony, etc etc
++ what should the API look like?
+*** CANCELLED Always check pointers before freeing!
+CLOSED: [2016-12-14 Wed 18:15]
+:LOGBOOK:
+- State "CANCELLED"  from "TODO"       [2016-12-14 Wed 18:15] \\
+  Unnecessary, because free checks if the ptr is NULL already
+:END:
+*** DONE Add macro for getting correct cast of backend pointer
+CLOSED: [2016-11-24 Thu 14:10]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2016-11-24 Thu 14:10]
+:END:
+*** DONE Remove debugging printfs
+CLOSED: [2016-12-14 Wed 18:40]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2016-12-14 Wed 18:40]
+:END:
+** DONE Check that RandomStateManager should indeed be set up at each stimulus presentation (around Simulator.cpp:156-159)
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2016-12-15 Thu 14:10] \\
+  Answer was "no" (now commented out)
+:END:
+** DONE Merge upstream changes since fork
+CLOSED: [2016-12-20 Tue 22:15]
+:LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2016-12-20 Tue 22:15]
+- State "PROGRESS"   from "TODO"       [2016-12-14 Wed 19:50]
+:END:
+*** DONE Integrate changes to tests (simple patch, then fix later)
+CLOSED: [2016-12-20 Tue 21:55]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2016-12-20 Tue 21:55]
+:END:
+*** DONE Integrate new Optimiser code
+CLOSED: [2016-12-18 Sun 21:55]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2016-12-18 Sun 21:55]
+:END:
+*** DONE Check merge diff
+CLOSED: [2016-12-20 Tue 22:10]
+:LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2016-12-20 Tue 22:10]
+- State "PROGRESS"   from "TODO"       [2016-12-18 Sun 21:55]
+:END:
+*** DONE Mark complete merge in git using `ours' strategy
+CLOSED: [2016-12-20 Tue 22:15]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2016-12-20 Tue 22:15]
+:END:
+** PROGRESS Check that all calls to reset_state are correct.
+:LOGBOOK:
+- State "PROGRESS"   from "TODO"       [2016-12-15 Thu 18:15]
+:END:
++ It seems that occasionally too much state is reset -- be more specific where necessary
++ At the same time, calling `reset' seems very inelegant ...
+*** TODO Consequently, perhaps it would be better to minimize the number of reset calls ...
+** CANCELLED Fix all current Experiments to match changes
+CLOSED: [2016-12-18 Sun 21:55]
+:LOGBOOK:
+- State "CANCELLED"  from "TODO"       [2016-12-18 Sun 21:55] \\
+  Experiments removed from upstream, so this is obsolete now.
+  
+  Probably needs discussing with team.
+:END:
+*** CANCELLED Perhaps call 'Experiments' 'Examples'?
+CLOSED: [2016-12-18 Sun 21:55]
+:LOGBOOK:
+- State "CANCELLED"  from "TODO"       [2016-12-18 Sun 21:55] \\
+  Unnecessary because of rethink
+:END:
+** DONE Fix bugs exposed by TSCSOptimiseFourLayerVisionSpikingModelFiringRates
+CLOSED: [2016-12-22 Thu 14:40]
+:LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2016-12-22 Thu 14:40]
+- State "PROGRESS"   from "TODO"       [2016-12-20 Tue 22:15]
+:END:
+*** DONE Segfault on freeing ConductanceSpikingSynapses after 1st epoch
+CLOSED: [2016-12-20 Tue 21:35]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2016-12-20 Tue 21:35]
+:END:
+*** DONE Check [correctness of] reinitialisation of RandomStatesManager at Synapse prepare_backend
+CLOSED: [2016-12-20 Tue 21:35]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2016-12-20 Tue 21:35] \\
+  Good enough for now!
+:END:
+*** DONE Investigate and fix memory leak...
+CLOSED: [2016-12-22 Thu 14:35]
+:LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2016-12-22 Thu 14:35] \\
+  Fixed the destructor-based leak with commit be3756c
+- State "PROGRESS"   from "TODO"       [2016-12-21 Wed 11:15]
+:END:
+*** DONE No spikes !!!
+CLOSED: [2016-12-21 Wed 11:15]
+:LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2016-12-21 Wed 11:15]
+- State "PROGRESS"   from "TODO"       [2016-12-21 Wed 10:25]
+:END:
+** DONE Check cudaMemcpy calls for correctness again ...
+CLOSED: [2016-12-21 Wed 11:10]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2016-12-21 Wed 11:10]
+:END:
+** DONE Check Context params
+CLOSED: [2017-01-13 Fri 15:35]
+:LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2017-01-13 Fri 15:35]
+- State "PROGRESS"   from "TODO"       [2016-12-21 Wed 11:00]
+:END:
++ maximum_axonal_delay_in_timestep is a bit hacky
+** PROGRESS Get tests working again
+:LOGBOOK:
+- State "PROGRESS"   from "TODO"       [2016-12-22 Thu 18:50]
+:END:
+http://stackoverflow.com/questions/34896891/catch-lib-unit-testing-and-ctest-cmake-integration
+** TODO Integrate Nas' documentation work
+*** PROGRESS Describe backend work in the docs
+:LOGBOOK:
+- State "PROGRESS"   from "TODO"       [2017-01-14 Sat 17:40]
+:END:
+**** TODO Make clear that _backend destructors (amongst other things) should be marked override
+**** TODO Why are some things (eg SPIKE_EXPORT_BACKENDs) commented out in some places?
+(cf SPIKE_MAKE_STUB_INIT_BACKEND ...)
+** DONE Example repository and build scripts with submodule structure
+CLOSED: [2016-12-20 Tue 21:40]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2016-12-20 Tue 21:40]
+:END:
+** CANCELLED Integrate Plotter
+CLOSED: [2016-12-22 Thu 18:55]
+:LOGBOOK:
+- State "CANCELLED"  from "PROGRESS"   [2016-12-22 Thu 18:55] \\
+  C++11 problems suggest abandoning MathGL
+- State "PROGRESS"   from "TODO"       [2016-12-21 Wed 11:20]
+:END:
++ mgl seems to have problems with C++11 ...
+** DONE Write destructors for AdExSpikingNeurons and SpikeAnalyser
+CLOSED: [2016-12-22 Thu 14:25]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2016-12-22 Thu 14:25]
+:END:
+** DONE Make SPIKE_MAKE_INIT_BACKEND more general (fewer ifdefs for sustainability...)
+CLOSED: [2017-01-13 Fri 15:35]
+:LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2017-01-13 Fri 15:35]
+- State "PROGRESS"   from "TODO"       [2017-01-12 Thu 22:50]
+:END:
+*** DONE Remove SPIKE_WITH_CUDA from library code
+CLOSED: [2017-01-13 Fri 15:25]
+:LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2017-01-13 Fri 15:25]
+- State "PROGRESS"   from "TODO"       [2017-01-13 Fri 11:30]
+:END:
+**** DONE This means making Memory and Optimiser code backend-agnostic
+CLOSED: [2017-01-13 Fri 11:30]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2017-01-13 Fri 11:30]
+:END:
+*** CANCELLED Sort out Context, Device, Name mess
+CLOSED: [2017-01-13 Fri 15:35]
+:LOGBOOK:
+- State "CANCELLED"  from "PROGRESS"   [2017-01-13 Fri 15:35] \\
+  Postponed; purpose is suited fine with a simple string right now.
+- State "PROGRESS"   from "TODO"       [2017-01-13 Fri 15:15]
+:END:
+*** DONE Fix tests
+CLOSED: [2017-01-13 Fri 15:15]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2017-01-13 Fri 15:15]
+:END:
+** DONE Remove push_ / pull_ functions
+CLOSED: [2017-01-14 Sat 17:10]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2017-01-14 Sat 17:10]
+:END:
++ replace them with more expressive -- more specific -- alternatives
+** TODO Ensure successful builds with static as well as shared Spike library
+** TODO Write new build instructions
+* Style / interface design
+** TODO Unify coding style (discuss this)
+** PROGRESS Check for unused member pointers
+** TODO Flesh out push_data_front and pull_data_back for data synchrony
+** TODO Add code to reset_state for front-end reset where appropriate
+** TODO RNG should get its config from context params
+** TODO RNG should be managed globally (ie, static)
+** PROGRESS Make it easier to choose backend (ie, set up context)
+:LOGBOOK:
+- State "PROGRESS"   from "TODO"       [2017-01-12 Thu 22:50]
+:END:
+* Project organisation
+** PROGRESS Move tests to CTest ?
+:LOGBOOK:
+- State "PROGRESS"   from "TODO"       [2016-12-21 Wed 11:15]
+- State "PROGRESS"   from "TODO"       [2016-12-14 Wed 18:15]
+:END:
+** TODO Put external dependencies (eg mgl) into git submodules
+* Next stages
+** DONE Allow partial backends
+CLOSED: [2017-01-12 Thu 22:50]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2017-01-12 Thu 22:50]
+:END:
++ Currently, a backend must implement (at least stubs for) all frontend classes.
+  - In fact, the CUDA backend assumes that it is used uniquely (no backend mixing).
++ Ultimately, we might want some code to run on one backend, and other code on another.
++ This will require work to ensure data synchronisation
+  - as well as restructuring to allow incomplete backends to be declared and instantiated
++ The upside will be that this will facilitate hybrid models
+** DONE To improve compile times, stop having each backend depend on the headers of all the others
+CLOSED: [2017-01-12 Thu 22:50]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2017-01-12 Thu 22:50]
+:END:
+** TODO Generalize Context for more flexible backend-specific options
+** TODO Write SYCL backend.
+** TODO Write plain C++ backend. (Use ViennaCL for linalg acceleration?)
+** DONE Support for backend fall-back
+CLOSED: [2017-01-13 Fri 11:50]
+:LOGBOOK:
+- State "DONE"       from "PROGRESS"   [2017-01-13 Fri 11:50]
+- State "PROGRESS"   from "TODO"       [2017-01-13 Fri 11:45]
+:END:
+** TODO Make backend fall-back flexible (select fall-back at runtime)
+** TODO Write rate-coded neuron/synapse/model classes.
+
+Something like this:
+
++ RateNeurons contains vectors of activation / rate
++ RateSynapses contains (sparse?) connection matrices
++ RatePlasticity contains rules to update the synapse strengths
++ RateModel contains vectors of
+  - constituent RateNeurons
+  - pairs of RateSynapses and associated RatePlasticity
+    - defines the connectivity
+
+----
+** TODO Add runtime backend loader
