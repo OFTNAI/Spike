@@ -40,6 +40,11 @@ namespace Backend {
       float* h_neuron_wise_conductance_update = nullptr;
       int* synapse_decay_id = nullptr;
       int* h_synapse_decay_id = nullptr;
+      int* group_indices = nullptr;
+      int* num_active_synapses = nullptr;
+      int* active_synapse_counts = nullptr;
+      int* presynaptic_neuron_indices = nullptr;
+      int h_num_active_synapses = 0;
 
       void prepare() override;
       void reset_state() override;
@@ -58,20 +63,36 @@ namespace Backend {
 		int* d_per_input_neuron_efferent_synapse_count,
         	int* d_per_input_neuron_efferent_synapse_total,
                 int* d_per_input_neuron_efferent_synapse_indices,
-                int* d_delays,
+		int* d_delays,
                 int* d_spikes_travelling_to_synapse,
                 float* d_last_spike_time_of_each_neuron,
                 float* d_last_spike_time_of_each_input_neuron,
                 float current_time_in_seconds,
+                float timestep,
+		int timestep_grouping,
+		int num_input_neurons,
+		int* group_indices,
+		int* num_active_synapses,
+		int* active_synapse_counts,
+		int* presynaptic_neuron_indices,
+                size_t total_number_of_neurons);
+    
+    __global__ void activate_synapses
+		(int* d_per_neuron_efferent_synapse_total,
+                int* d_per_neuron_efferent_synapse_indices,
+        	int* d_per_input_neuron_efferent_synapse_total,
+                int* d_per_input_neuron_efferent_synapse_indices,
 		int* circular_spikenum_buffer,
 		int* spikeid_buffer,
 		int bufferloc,
 		int buffersize,
+                int* d_delays,
 		int total_number_of_synapses,
-                float timestep,
+		int* group_indices,
 		int timestep_grouping,
-		int number_of_input_neurons,
-                size_t total_number_of_neurons); 
+		int* presynaptic_neuron_indices,
+		int* active_synapse_counts,
+		int* num_active_synapses);
 
     __global__ void conductance_move_spikes_towards_synapses_kernel(
       int* d_spikes_travelling_to_synapse,

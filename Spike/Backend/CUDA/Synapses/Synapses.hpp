@@ -24,6 +24,7 @@ namespace Backend {
       int * synapse_postsynaptic_neuron_count_index = nullptr;
       float* synaptic_efficacies_or_weights = nullptr;
       float* temp_synaptic_efficacies_or_weights = nullptr;
+      int max_num_blocks_per_grid = 0;
       
       // CUDA Specific
       ::Backend::CUDA::RandomStateManager* random_state_manager_backend = nullptr;

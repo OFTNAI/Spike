@@ -66,7 +66,7 @@ namespace Backend {
       int deviceID;
       cudaGetDevice(&deviceID);
       cudaGetDeviceProperties(&deviceProp, deviceID);
-      int max_num_blocks_per_grid = deviceProp.multiProcessorCount*(deviceProp.maxThreadsPerMultiProcessor / threads);
+      max_num_blocks_per_grid = deviceProp.multiProcessorCount*(deviceProp.maxThreadsPerMultiProcessor / threads);
       int theoretical_number = (frontend()->total_number_of_synapses + threads) / threads;
       if (theoretical_number < max_num_blocks_per_grid)
 	number_of_synapse_blocks_per_grid = dim3(theoretical_number);
