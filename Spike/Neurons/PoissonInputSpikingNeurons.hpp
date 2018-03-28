@@ -30,6 +30,7 @@ public:
   
   float rate = 0;
   float * rates = nullptr;
+  int backend_seed = 1;
   RandomStateManager * random_state_manager = nullptr;
 
   void prepare_backend_early() override;

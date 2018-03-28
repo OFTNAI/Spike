@@ -37,6 +37,7 @@ void PoissonInputSpikingNeurons::init_random_state(bool force) {
   assert(backend() && "Backend needs to have been prepared before calling this!");
   if (force || !random_state_manager) {
     random_state_manager = new RandomStateManager();
+    random_state_manager->seed = backend_seed;
     random_state_manager->init_backend(backend()->context);
   }
 }

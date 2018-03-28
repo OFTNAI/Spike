@@ -26,6 +26,7 @@ class RandomStateManager : public virtual SpikeBase {
 public:
   ~RandomStateManager() override = default;
   SPIKE_ADD_BACKEND_GETSET(RandomStateManager, SpikeBase);
+  int seed = 1;
   void init_backend(Context* ctx = _global_ctx) override;
   void reset_state() override;
 private:

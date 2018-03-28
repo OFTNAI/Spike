@@ -33,7 +33,7 @@ namespace Backend {
     }
 
     void RandomStateManager::prepare() {
-      setup_random_states();
+      setup_random_states(128, 64, frontend()->seed);
     }
 
     __global__ void generate_random_states_kernel(unsigned int seed, curandState_t* d_states, size_t total_number) {
