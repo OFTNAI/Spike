@@ -163,16 +163,24 @@ void Simulator::RunSimulation() {
 
 		TimerWithMessages * epoch_timer = new TimerWithMessages();
 		printf("Starting Epoch: %d\n", epoch_number);
+		int num_stimuli = dynamic_cast<InputSpikingNeurons*>(spiking_model->input_spiking_neurons)->total_number_of_input_stimuli;
+		bool pseudo_stimulus = false;
+		if (num_stimuli == 0){
+			printf("Simulating with a no input stimulation.\n");
+			pseudo_stimulus = true;
+			num_stimuli++;
+		}
 
 		int* stimuli_presentation_order = setup_stimuli_presentation_order();
-		for (int stimulus_index = 0; stimulus_index < dynamic_cast<InputSpikingNeurons*>(spiking_model->input_spiking_neurons)->total_number_of_input_stimuli; stimulus_index++) {
+		for (int stimulus_index = 0; stimulus_index < num_stimuli; stimulus_index++) {
 
 			if (simulator_options->stimuli_presentation_options->reset_current_time_between_each_stimulus) current_time_in_seconds = 0.0f;
 			if (simulator_options->stimuli_presentation_options->reset_model_state_between_each_stimulus) spiking_model->reset_state();
 			
 			float current_time_at_stimulus_beginning = current_time_in_seconds;
 
-			perform_pre_stimulus_presentation_instructions(stimuli_presentation_order[stimulus_index]);
+			if (!pseudo_stimulus)
+				perform_pre_stimulus_presentation_instructions(stimuli_presentation_order[stimulus_index]);
 
 			int number_of_timesteps_per_stimulus_per_epoch = simulator_options->run_simulation_general_options->presentation_time_per_stimulus_per_epoch / spiking_model->timestep;
 			int corrected_number_of_timesteps_per_stimulus_per_epoch = (number_of_timesteps_per_stimulus_per_epoch / spiking_model->timestep_grouping);
@@ -185,7 +193,6 @@ void Simulator::RunSimulation() {
                                 #ifdef VERBOSE_SIMULATION
                                 printf("\r%f\t", current_time_in_seconds);
                                 #endif
-
             		}
 
 			current_time_in_seconds = current_time_at_stimulus_beginning + simulator_options->run_simulation_general_options->presentation_time_per_stimulus_per_epoch;
