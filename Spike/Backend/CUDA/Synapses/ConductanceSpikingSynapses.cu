@@ -16,6 +16,7 @@ namespace Backend {
       CudaSafeCall(cudaFree(spikeid_buffer));
       CudaSafeCall(cudaFree(group_indices));
       CudaSafeCall(cudaFree(num_active_synapses));
+      CudaSafeCall(cudaFree(num_activated_neurons));
       CudaSafeCall(cudaFree(active_synapse_counts));
       CudaSafeCall(cudaFree(presynaptic_neuron_indices));
       free(h_decay_term_values);
@@ -80,6 +81,7 @@ namespace Backend {
         sizeof(float)*conductance_update_length, cudaMemcpyHostToDevice));
       CudaSafeCall(cudaMemset(circular_spikenum_buffer, 0, sizeof(int)*buffersize));
       CudaSafeCall(cudaMemset(num_active_synapses, 0, sizeof(int)));
+      CudaSafeCall(cudaMemset(num_activated_neurons, 0, sizeof(int)));
 
     }
 
@@ -95,6 +97,7 @@ namespace Backend {
       CudaSafeCall(cudaMalloc((void **)&spikeid_buffer, sizeof(int)*(buffersize * frontend()->total_number_of_synapses)));
       CudaSafeCall(cudaMalloc((void **)&group_indices, sizeof(int)*(frontend()->total_number_of_synapses)));
       CudaSafeCall(cudaMalloc((void **)&num_active_synapses, sizeof(int)));
+      CudaSafeCall(cudaMalloc((void **)&num_activated_neurons, sizeof(int)));
       CudaSafeCall(cudaMalloc((void **)&active_synapse_counts, sizeof(int)*(frontend()->total_number_of_synapses)));
       CudaSafeCall(cudaMalloc((void **)&presynaptic_neuron_indices, sizeof(int)*(frontend()->total_number_of_synapses)));
     }
@@ -168,6 +171,7 @@ namespace Backend {
 		input_neurons_backend->frontend()->total_number_of_neurons,
 		group_indices,
 		num_active_synapses,
+		num_activated_neurons,
 		active_synapse_counts,
 		presynaptic_neuron_indices,
                 (neurons_backend->frontend()->total_number_of_neurons + input_neurons_backend->frontend()->total_number_of_neurons));
@@ -198,6 +202,7 @@ namespace Backend {
 		num_active_synapses);
       CudaCheckError();
       CudaSafeCall(cudaMemset(num_active_synapses, 0, sizeof(int)));
+      CudaSafeCall(cudaMemset(num_activated_neurons, 0, sizeof(int)));
       
       conductance_move_spikes_towards_synapses_kernel<<<neurons_backend->number_of_neuron_blocks_per_grid, threads_per_block>>>(
                   spikes_travelling_to_synapse,
@@ -252,6 +257,7 @@ namespace Backend {
 		int num_input_neurons,
 		int* group_indices,
 		int* num_active_synapses,
+		int* num_activated_neurons,
 		int* active_synapse_counts,
 		int* presynaptic_neuron_indices,
                 size_t total_number_of_neurons) {
@@ -271,7 +277,8 @@ namespace Backend {
           //if (fabs(effecttime - (current_time_in_seconds + g*timestep)) < (0.5*timestep)){
           if (groupindex >= 0){
             int synapse_count = presynaptic_is_input ? d_per_input_neuron_efferent_synapse_count[corr_idx] : d_per_neuron_efferent_synapse_count[corr_idx];
-            int pos = atomicAdd(&num_active_synapses[0], synapse_count);
+            int pos = atomicAdd(&num_activated_neurons[0], 1);
+	    atomicAdd(&num_active_synapses[0], synapse_count);
 	    active_synapse_counts[pos] = synapse_count;
 	    presynaptic_neuron_indices[pos] = idx;
 	    group_indices[pos] = groupindex;

@@ -42,6 +42,7 @@ namespace Backend {
       int* h_synapse_decay_id = nullptr;
       int* group_indices = nullptr;
       int* num_active_synapses = nullptr;
+      int* num_activated_neurons = nullptr;
       int* active_synapse_counts = nullptr;
       int* presynaptic_neuron_indices = nullptr;
       int h_num_active_synapses = 0;
@@ -73,6 +74,7 @@ namespace Backend {
 		int num_input_neurons,
 		int* group_indices,
 		int* num_active_synapses,
+		int* num_activated_neurons,
 		int* active_synapse_counts,
 		int* presynaptic_neuron_indices,
                 size_t total_number_of_neurons);
