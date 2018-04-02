@@ -337,7 +337,7 @@ namespace Backend {
 	int synapse_count = active_synapse_counts[pos];
 
 
-	while(idx > synapse_count){
+	while(idx >= synapse_count){
 	  idx -= synapse_count;
 	  synapse_count = active_synapse_counts[++pos];
 	}
