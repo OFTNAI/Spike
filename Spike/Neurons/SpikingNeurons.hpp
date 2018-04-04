@@ -4,6 +4,7 @@
 #include <cstdio>
 
 class SpikingNeurons; // Forward Definition
+struct spiking_neuron_parameters_struct;
 
 #include "Spike/Models/SpikingModel.hpp"
 #include "Neurons.hpp"

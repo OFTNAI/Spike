@@ -67,9 +67,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 	}
 
 	int* start_neuron_indices_for_neuron_groups = neurons->start_neuron_indices_for_each_group;
-	int* start_neuron_indices_for_input_neuron_groups = input_neurons->start_neuron_indices_for_each_group;
 	int* last_neuron_indices_for_neuron_groups = neurons->last_neuron_indices_for_each_group;
-	int* last_neuron_indices_for_input_neuron_groups = input_neurons->last_neuron_indices_for_each_group;
 
 	int * presynaptic_group_shape;
 	int * postsynaptic_group_shape;
@@ -83,6 +81,8 @@ void Synapses::AddGroup(int presynaptic_group_id,
 	bool presynaptic_group_is_input = PRESYNAPTIC_IS_INPUT(presynaptic_group_id);
 
 	if (presynaptic_group_is_input) {
+          int* start_neuron_indices_for_input_neuron_groups = input_neurons->start_neuron_indices_for_each_group;
+	  int* last_neuron_indices_for_input_neuron_groups = input_neurons->last_neuron_indices_for_each_group;
 
           // if (stdp_on == true) print_message_and_exit("Plasticity between input neurons and model neurons is not currently supported.");
 

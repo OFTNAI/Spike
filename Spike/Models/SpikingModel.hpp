@@ -10,6 +10,7 @@ class SpikingModel; // Forward Declaration
 #include "../Plasticity/STDPPlasticity.hpp"
 #include "../Neurons/Neurons.hpp"
 #include "../Neurons/SpikingNeurons.hpp"
+// #include "../Neurons/InputSpikingNeurons.hpp"
 #include "../Helpers/TimerWithMessages.hpp"
 #include "../Helpers/RandomStateManager.hpp"
 // #include "../Helpers/TerminalHelpers.hpp"
@@ -33,9 +34,9 @@ public:
   int timestep_grouping = 1;
   void SetTimestep(float timestep_parameter);
 
-  SpikingNeurons * spiking_neurons;
-  SpikingSynapses * spiking_synapses;
-  SpikingNeurons * input_spiking_neurons;
+  SpikingNeurons * spiking_neurons = nullptr;
+  SpikingSynapses * spiking_synapses = nullptr;
+  SpikingNeurons * input_spiking_neurons = nullptr;
   vector<STDPPlasticity*> plasticity_rule_vec; 
 
   int AddNeuronGroup(neuron_parameters_struct * group_params);

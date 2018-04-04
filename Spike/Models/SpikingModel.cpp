@@ -1,5 +1,6 @@
 #include "SpikingModel.hpp"
 
+#include "../Neurons/InputSpikingNeurons.hpp"
 #include "Spike/Helpers/TerminalHelpers.hpp"
 #include "Spike/Backend/Context.hpp"
 
@@ -91,9 +92,13 @@ void SpikingModel::AddPlasticityRule(STDPPlasticity * plasticity_rule){
 
 void SpikingModel::finalise_model() {
   timestep_grouping = spiking_synapses->minimum_axonal_delay_in_timesteps;
-  if (spiking_synapses) spiking_synapses->model = this;
-  if (spiking_neurons) spiking_neurons->model = this;
-  if (input_spiking_neurons) input_spiking_neurons->model = this;
+  if (!spiking_synapses) spiking_synapses = new SpikingSynapses();
+  if (!spiking_neurons) spiking_neurons = new SpikingNeurons();
+  if (!input_spiking_neurons) input_spiking_neurons = new InputSpikingNeurons();
+
+  spiking_synapses->model = this;
+  spiking_neurons->model = this;
+  input_spiking_neurons->model = this;
   for (int plasticity_id = 0; plasticity_id < plasticity_rule_vec.size(); plasticity_id++){
 	plasticity_rule_vec[plasticity_id]->model = this;
   }
@@ -156,8 +161,9 @@ void SpikingModel::reset_state() {
 
 
 void SpikingModel::perform_per_timestep_model_instructions(float current_time_in_seconds, bool apply_plasticity_to_relevant_synapses){
-
-	spiking_neurons->state_update(current_time_in_seconds, timestep);
+	if (spiking_neurons->total_number_of_neurons > 0)
+		spiking_neurons->state_update(current_time_in_seconds, timestep);
+	if (input_spiking_neurons->total_number_of_neurons > 0)
 	input_spiking_neurons->state_update(current_time_in_seconds, timestep);
 	
 	if (apply_plasticity_to_relevant_synapses){
@@ -165,7 +171,8 @@ void SpikingModel::perform_per_timestep_model_instructions(float current_time_in
 			plasticity_rule_vec[plasticity_id]->state_update(current_time_in_seconds, timestep); // spiking_neurons, 
 	}
 
-	spiking_synapses->state_update(spiking_neurons, input_spiking_neurons, current_time_in_seconds, timestep);
+	if (spiking_synapses->total_number_of_synapses > 0)
+		spiking_synapses->state_update(spiking_neurons, input_spiking_neurons, current_time_in_seconds, timestep);
 }
 
 
