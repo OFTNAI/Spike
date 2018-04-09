@@ -218,14 +218,21 @@ void Synapses::AddGroup(int presynaptic_group_id,
 
             break;
           }
-        case CONNECTIVITY_TYPE_SINGLE:
+        case CONNECTIVITY_TYPE_PAIRWISE:
           {
+	    // Check that the number of pre and post syns are equivalent
+	    if (synapse_params->pairwise_connect_presynaptic.size() != synapse_params->pairwise_connect_postsynaptic.size()){
+		    std::cerr << "Synapse pre and post vectors are not the same length!" << std::endl;
+		    exit(1);
+	    }
             // If we desire a single connection
-            Synapses::increment_number_of_synapses(1);
+            Synapses::increment_number_of_synapses(synapse_params->pairwise_connect_presynaptic.size());
 
-            // // Setup Synapses
-            presynaptic_neuron_indices[original_number_of_synapses] = CORRECTED_PRESYNAPTIC_ID(prestart + int(synapse_params->pairwise_connect_presynaptic), presynaptic_group_is_input);
-            postsynaptic_neuron_indices[original_number_of_synapses] = poststart + int(synapse_params->pairwise_connect_postsynaptic);
+            // Setup Synapses
+	    for (int i=0; i < synapse_params->pairwise_connect_presynaptic.size(); i++){
+            	presynaptic_neuron_indices[original_number_of_synapses + i] = CORRECTED_PRESYNAPTIC_ID(prestart + int(synapse_params->pairwise_connect_presynaptic[i]), presynaptic_group_is_input);
+            	postsynaptic_neuron_indices[original_number_of_synapses + i] = poststart + int(synapse_params->pairwise_connect_postsynaptic[i]);
+	    }
 
             break;
           }

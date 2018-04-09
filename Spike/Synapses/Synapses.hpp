@@ -63,7 +63,7 @@ enum CONNECTIVITY_TYPE
   CONNECTIVITY_TYPE_ONE_TO_ONE,
   CONNECTIVITY_TYPE_RANDOM,
   CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE,
-  CONNECTIVITY_TYPE_SINGLE
+  CONNECTIVITY_TYPE_PAIRWISE
 };
 
 /*!
@@ -74,8 +74,8 @@ enum CONNECTIVITY_TYPE
 */
 struct synapse_parameters_struct {
   int max_number_of_connections_per_pair = 1;
-  int pairwise_connect_presynaptic;
-  int pairwise_connect_postsynaptic;
+  std::vector<int> pairwise_connect_presynaptic;
+  std::vector<int> pairwise_connect_postsynaptic;
   int gaussian_synapses_per_postsynaptic_neuron = 10;
   float gaussian_synapses_standard_deviation = 10.0;
   float weight_range_bottom = 0.0;
