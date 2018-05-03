@@ -12,6 +12,9 @@
 
 namespace Backend {
   namespace CUDA {
+    struct synapses_data_struct{
+    };
+
     class Synapses : public virtual ::Backend::Synapses {
     public:
       ~Synapses() override;

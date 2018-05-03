@@ -28,7 +28,7 @@ namespace Backend {
 
       CudaCheckError();
     }
-
+    
     __global__ void current_calculate_postsynaptic_current_injection_kernel
     (float* d_synaptic_efficacies_or_weights,
      float* d_time_of_last_spike_to_reach_synapse,

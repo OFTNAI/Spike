@@ -28,6 +28,16 @@ namespace Backend {
        ::SpikingNeurons* input_neurons,
        float current_time_in_seconds,
        float timestep) final; // Overrides ::Backend::SpikingSynapses:: ...
+      
+      __device__ void calculate_postsynaptic_current_injection_kernel(
+        synapses_data_struct* synaptic_data,
+	neurons_data_struct* neuron_data,
+        int num_syn_labels,
+        float* neuron_wise_input_update,
+        float timestep,
+        int timestep_grouping,
+        size_t total_number_of_neurons) {
+      };
     };
 
     __global__ void current_calculate_postsynaptic_current_injection_kernel

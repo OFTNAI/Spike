@@ -10,6 +10,11 @@
 
 namespace Backend {
   namespace CUDA {
+    struct conductance_spiking_synapses_data_struct: spiking_synapses_data_struct {
+	float* decay_terms_tau_g;
+	float* reversal_potentials_Vhat;
+	float* neuron_wise_conductance_trace;
+    };
     class ConductanceSpikingSynapses : public virtual ::Backend::CUDA::SpikingSynapses,
                                        public virtual ::Backend::ConductanceSpikingSynapses {
     public:
@@ -33,6 +38,15 @@ namespace Backend {
 
       void state_update(::SpikingNeurons * neurons, ::SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) final;
 
+      __device__ virtual void current_injection_kernel(
+        synapses_data_struct* synaptic_data,
+	neurons_data_struct* neuron_data,
+        int num_syn_labels,
+        float* neuron_wise_input_update,
+        float timestep,
+        int timestep_grouping,
+        size_t total_number_of_neurons){
+      };
     };
 
     __global__ void conductance_calculate_postsynaptic_current_injection_kernel(

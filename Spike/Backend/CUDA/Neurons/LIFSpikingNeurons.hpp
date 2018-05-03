@@ -10,6 +10,12 @@
 
 namespace Backend {
   namespace CUDA {
+    struct lif_spiking_neurons_data_struct: spiking_neurons_data_struct {
+	float membrane_time_constants_tau_m;
+	float membrane_resistances_R;
+
+    };
+
     class LIFSpikingNeurons : public virtual ::Backend::CUDA::SpikingNeurons,
                               public virtual ::Backend::LIFSpikingNeurons {
     public:

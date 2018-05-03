@@ -7,6 +7,9 @@
 
 namespace Backend {
   namespace CUDA {
+    struct neurons_data_struct {
+    };
+
     class Neurons : public virtual ::Backend::Neurons {
     public:
       ~Neurons() override;

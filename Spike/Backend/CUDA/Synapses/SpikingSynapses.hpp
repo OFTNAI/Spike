@@ -13,6 +13,12 @@
 
 namespace Backend {
   namespace CUDA {
+    struct spiking_synapses_data_struct: synapses_data_struct {
+	float* neuron_wise_input_update;
+	int num_syn_labels;
+	int timestep;
+	int timestep_grouping;
+    };
     class SpikingSynapses : public virtual ::Backend::CUDA::Synapses,
                             public virtual ::Backend::SpikingSynapses {
     public:
@@ -50,6 +56,16 @@ namespace Backend {
       void copy_weights_to_host() override;
 
       void state_update(::SpikingNeurons * neurons, ::SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) override;
+
+      __device__ virtual void current_injection_kernel(
+        synapses_data_struct* synaptic_data,
+	neurons_data_struct* neuron_data,
+        int num_syn_labels,
+        float* neuron_wise_input_update,
+        float timestep,
+        int timestep_grouping,
+        size_t total_number_of_neurons){
+      };
     };
 
     __global__ void get_active_synapses_kernel(

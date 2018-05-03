@@ -189,6 +189,7 @@ namespace Backend {
 		  frontend()->model->timestep_grouping);
       CudaCheckError();
     }
+      
     
     __global__ void get_active_synapses_kernel(
 		int* d_per_neuron_efferent_synapse_count,
