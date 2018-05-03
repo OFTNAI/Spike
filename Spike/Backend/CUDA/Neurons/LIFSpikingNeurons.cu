@@ -30,6 +30,11 @@ namespace Backend {
       SpikingNeurons::prepare();
       allocate_device_pointers();
       copy_constants_to_device();
+
+      neuron_data = new lif_spiking_neurons_data_struct();
+      (spiking_neurons_data_struct)*neuron_data = *(static_cast<LIFSpikingNeurons*>(this)->SpikingNeurons::neuron_data);
+      neuron_data->membrane_time_constants_tau_m = membrane_time_constants_tau_m;
+      neuron_data->membrane_resistances_R = membrane_resistances_R;
     }
 
     void LIFSpikingNeurons::reset_state() {

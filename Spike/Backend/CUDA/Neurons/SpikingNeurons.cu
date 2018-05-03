@@ -34,6 +34,15 @@ namespace Backend {
       Neurons::prepare();
       allocate_device_pointers();
       copy_constants_to_device();
+
+      neuron_data = new spiking_neurons_data_struct();
+      (neurons_data_struct)*neuron_data = *(static_cast<SpikingNeurons*>(this)->Neurons::neuron_data);
+      neuron_data->last_spike_time_of_each_neuron = last_spike_time_of_each_neuron;
+      neuron_data->membrane_potentials_v = membrane_potentials_v;
+      neuron_data->thresholds_for_action_potential_spikes = thresholds_for_action_potential_spikes;
+      neuron_data->resting_potentials = resting_potentials;
+      neuron_data->current_injections = current_injections;
+      neuron_data->total_current_conductance = total_current_conductance;
     }
 
     void SpikingNeurons::reset_state() {

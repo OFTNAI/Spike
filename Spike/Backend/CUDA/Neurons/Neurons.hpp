@@ -8,6 +8,7 @@
 namespace Backend {
   namespace CUDA {
     struct neurons_data_struct {
+	    int total_number_of_neurons;
     };
 
     class Neurons : public virtual ::Backend::Neurons {
@@ -27,6 +28,7 @@ namespace Backend {
 
       dim3 number_of_neuron_blocks_per_grid;		/**< CUDA Device number of blocks */
       dim3 threads_per_block;						/**< CUDA Device number of threads */
+      neurons_data_struct* neuron_data;
 
       void allocate_device_pointers(); // Not virtual
 	

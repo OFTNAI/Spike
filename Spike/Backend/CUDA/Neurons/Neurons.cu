@@ -56,6 +56,9 @@ namespace Backend {
       set_threads_per_block_and_blocks_per_grid(context->params.threads_per_block_neurons);
       allocate_device_pointers();
       copy_constants_to_device();
+
+      neuron_data = new neurons_data_struct;
+      neuron_data->total_number_of_neurons = frontend()->total_number_of_neurons;
     }
 
     void Neurons::reset_state() {

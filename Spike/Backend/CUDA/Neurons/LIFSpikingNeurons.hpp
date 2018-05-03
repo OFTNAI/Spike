@@ -11,8 +11,8 @@
 namespace Backend {
   namespace CUDA {
     struct lif_spiking_neurons_data_struct: spiking_neurons_data_struct {
-	float membrane_time_constants_tau_m;
-	float membrane_resistances_R;
+	float* membrane_time_constants_tau_m;
+	float* membrane_resistances_R;
 
     };
 
@@ -25,6 +25,8 @@ namespace Backend {
       ~LIFSpikingNeurons() override;
       SPIKE_MAKE_BACKEND_CONSTRUCTOR(LIFSpikingNeurons);
       using ::Backend::LIFSpikingNeurons::frontend;
+
+      lif_spiking_neurons_data_struct* neuron_data;
 
       void prepare() override;
       void reset_state() override;

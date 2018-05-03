@@ -90,6 +90,45 @@ namespace Backend {
 
 
     /* KERNELS BELOW */
+    /*
+    __device__ void ConductanceSpikingSynapses::current_injection_kernel(
+        spiking_synapses_data_struct* synaptic_data,
+	neurons_data_struct* neuron_data,
+        float timestep,
+        int timestep_grouping,
+	int idx,
+	int g){
+      
+	int total_number_of_neurons =  neuron_data->total_number_of_neurons;
+	// If we are on the first timestep group, reset the current and conductance values 
+        if (g == 0){
+            for (int g_prime = 0; g_prime < timestep_grouping; g_prime++){
+	        neuron_data->current_injections[idx + g_prime*total_number_of_neurons] = 0.0f;
+		synaptic_data->neuron_wise_conductance[idx + g_prime*total_number_of_neurons] = 0.0f;
+	    }
+	} 
+
+	// Update current injection and conductance	
+        for (int syn_label = 0; syn_label < synaptic_data->num_syn_labels; syn_label++){
+          float decay_term_value = synaptic_data->decay_term_values[syn_label];
+	  float decay_factor = expf(- timestep / decay_term_value);
+	  float reversal_value = synaptic_data->reversal_values[syn_label];
+          float synaptic_conductance_g = synaptic_data->neuron_wise_conductance_traces[total_number_of_neurons*syn_label + idx];
+          // Update the synaptic conductance
+	  synaptic_conductance_g *= decay_factor;
+	  synaptic_conductance_g += synaptic_data->neuron_wise_input_update[total_number_of_neurons*timestep_grouping*syn_label + g*total_number_of_neurons + idx];
+	  // Reset the conductance update
+	  synaptic_data->neuron_wise_input_update[total_number_of_neurons*timestep_grouping*syn_label + g*total_number_of_neurons + idx] = 0.0f;
+	  // Set the currents and conductances -> Can we aggregate these?
+          neuron_data->current_injections[idx + g*total_number_of_neurons] += synaptic_conductance_g * reversal_value;
+          neuron_data->total_current_conductance[idx + g*total_number_of_neurons] += synaptic_conductance_g;
+
+
+	}
+
+    }
+    */
+
     __global__ void conductance_calculate_postsynaptic_current_injection_kernel(
                   float* decay_term_values,
 		  float* reversal_values,
@@ -128,6 +167,17 @@ namespace Backend {
 	  // Set the conductance ready for the next timestep group
           neuron_wise_conductance_traces[total_number_of_neurons*syn_label + idx] = synaptic_conductance_g;
   	}
+	/*
+	for (int g=0; g < timestep_grouping; g++){
+	  syn_instance->current_injection_kernel(
+			synaptic_data,
+			neuron_data,
+			timestep,
+			timestep_grouping,
+			idx,
+			g);	
+	}
+	*/
 
         idx += blockDim.x * gridDim.x;
       }
