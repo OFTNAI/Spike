@@ -18,7 +18,8 @@ namespace Backend {
 }
 
 struct spiking_synapse_parameters_struct : synapse_parameters_struct {
-//  spiking_synapse_parameters_struct(): plasticity_ptr(nullptr) { synapse_parameters_struct(); }
+	spiking_synapse_parameters_struct(): biological_conductance_scaling_constant_lambda(1.0) { synapse_parameters_struct(); }
+  float biological_conductance_scaling_constant_lambda;
   float delay_range[2];
 };
 
@@ -33,11 +34,17 @@ public:
 
   // Host Pointers
   int* delays = nullptr;
+  float * biological_conductance_scaling_constants_lambda = nullptr;
   SpikingModel* model = nullptr;
 
   // For spike array stuff
   int minimum_axonal_delay_in_timesteps = pow(10, 6);
   int maximum_axonal_delay_in_timesteps = 0;
+  int neuron_pop_size = 0; // parameter for efficient conductance trace
+
+  // In order to group synapses, give them a distinction
+  int num_syn_labels = 1;
+  int* syn_labels = nullptr;
 
   // Synapse Functions
   void AddGroup(int presynaptic_group_id, 

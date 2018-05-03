@@ -5,9 +5,8 @@
 #include "Spike/Neurons/SpikingNeurons.hpp"
 
 struct conductance_spiking_synapse_parameters_struct : spiking_synapse_parameters_struct {
-	conductance_spiking_synapse_parameters_struct(): biological_conductance_scaling_constant_lambda(1.0), reversal_potential_Vhat(0.0f), decay_term_tau_g(0.001f) { spiking_synapse_parameters_struct(); }
+	conductance_spiking_synapse_parameters_struct(): reversal_potential_Vhat(0.0f), decay_term_tau_g(0.001f) { spiking_synapse_parameters_struct(); }
 
-	float biological_conductance_scaling_constant_lambda;
 	float reversal_potential_Vhat;
 	float decay_term_tau_g;
 };
@@ -32,10 +31,8 @@ public:
   void init_backend(Context* ctx = _global_ctx) override;
 
   float * synaptic_conductances_g = nullptr;
-  float * biological_conductance_scaling_constants_lambda = nullptr;
-  float * reversal_potentials_Vhat = nullptr;
-  float * decay_terms_tau_g = nullptr;
-  int neuron_pop_size = 0; // parameter for efficient conductance trace
+  vector<float> reversal_potentials_Vhat;
+  vector<float> decay_terms_tau_g;
 
   // Synapse Functions
   void AddGroup(int presynaptic_group_id, 

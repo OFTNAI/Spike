@@ -6,6 +6,7 @@ SpikingSynapses::~SpikingSynapses() {
   std::cout << "SpikingSynapses::~SpikingSynapses\n";
 #endif
   free(delays);
+  free(biological_conductance_scaling_constants_lambda);
 
 }
 
@@ -70,20 +71,23 @@ void SpikingSynapses::AddGroup(int presynaptic_group_id,
 
 
 	for (int i = (total_number_of_synapses - temp_number_of_synapses_in_last_group); i < total_number_of_synapses; i++){
-		
-
 		// Setup Delays
 		float delayval = delay_range_in_timesteps[0];
 		if (delay_range_in_timesteps[0] != delay_range_in_timesteps[1])
 			delayval = delay_range_in_timesteps[0] + (delay_range_in_timesteps[1] - delay_range_in_timesteps[0]) * ((float)rand() / (RAND_MAX));
 		delays[i] = round(delayval);
-
+    		biological_conductance_scaling_constants_lambda[i] = spiking_synapse_group_params->biological_conductance_scaling_constant_lambda;
+		syn_labels[i] = 0; // Conductance or other systems can now use this if they wish
 	}
+    	if (neurons->total_number_of_neurons > neuron_pop_size)
+      		neuron_pop_size = neurons->total_number_of_neurons; 
 
 }
 
 void SpikingSynapses::increment_number_of_synapses(int increment) {
   delays = (int*)realloc(delays, total_number_of_synapses * sizeof(int));
+  biological_conductance_scaling_constants_lambda = (float*)realloc(biological_conductance_scaling_constants_lambda, total_number_of_synapses * sizeof(float));
+  syn_labels = (int*)realloc(syn_labels, total_number_of_synapses * sizeof(int));
 }
 
 
@@ -92,13 +96,19 @@ void SpikingSynapses::shuffle_synapses() {
 	Synapses::shuffle_synapses();
 
 	int * temp_delays = (int *)malloc(total_number_of_synapses*sizeof(int));
+  	float * temp_biological_conductance_scaling_constants_lambda = (float *)malloc(total_number_of_synapses*sizeof(float));
+  	int * temp_syn_labels = (int *)malloc(total_number_of_synapses*sizeof(int));
 	for(int i = 0; i < total_number_of_synapses; i++) {
 
 		temp_delays[i] = delays[original_synapse_indices[i]];
+    		temp_biological_conductance_scaling_constants_lambda[i] = biological_conductance_scaling_constants_lambda[original_synapse_indices[i]];
+    		temp_syn_labels[i] = syn_labels[original_synapse_indices[i]];
 
 	}
 
 	delays = temp_delays;
+  	biological_conductance_scaling_constants_lambda = temp_biological_conductance_scaling_constants_lambda;
+	syn_labels = temp_syn_labels;
 
 }
 
