@@ -59,18 +59,11 @@ namespace Backend {
 
     __global__ void get_active_synapses_kernel(
 		int* d_per_neuron_efferent_synapse_count,
-        	int* d_per_neuron_efferent_synapse_total,
-                int* d_per_neuron_efferent_synapse_indices,
 		int* d_per_input_neuron_efferent_synapse_count,
-        	int* d_per_input_neuron_efferent_synapse_total,
-                int* d_per_input_neuron_efferent_synapse_indices,
-		int* d_delays,
-                int* d_spikes_travelling_to_synapse,
                 float* d_last_spike_time_of_each_neuron,
                 float* d_last_spike_time_of_each_input_neuron,
                 float current_time_in_seconds,
                 float timestep,
-		int timestep_grouping,
 		int num_input_neurons,
 		int* group_indices,
 		int* num_active_synapses,
@@ -97,7 +90,6 @@ namespace Backend {
 		int* num_active_synapses);
 
     __global__ void conductance_move_spikes_towards_synapses_kernel(
-      int* d_spikes_travelling_to_synapse,
       float current_time_in_seconds,
       int* circular_spikenum_buffer,
       int* spikeid_buffer,
