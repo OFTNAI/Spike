@@ -13,6 +13,7 @@ namespace Backend {
       CudaSafeCall(cudaFree(synaptic_efficacies_or_weights));
       CudaSafeCall(cudaFree(temp_synaptic_efficacies_or_weights));
       CudaSafeCall(cudaFree(synapse_postsynaptic_neuron_count_index));
+      CudaSafeCall(cudaFree(d_synaptic_data));
 #ifdef CRAZY_DEBUG
       std::cout << "\n!!!!!!!!!!!!!!!!!!!!---AAAAAA---!!!!!!!!!!!!!!!!!!!\n";
 #endif
@@ -37,6 +38,8 @@ namespace Backend {
                               sizeof(float)*frontend()->total_number_of_synapses));
       CudaSafeCall(cudaMalloc((void **)&synapse_postsynaptic_neuron_count_index,
                               sizeof(float)*frontend()->total_number_of_synapses));
+      CudaSafeCall(cudaMalloc((void **)&d_synaptic_data,
+                              sizeof(synapses_data_struct)));
     }
 
 
@@ -83,6 +86,13 @@ namespace Backend {
       random_state_manager_backend
         = dynamic_cast<::Backend::CUDA::RandomStateManager*>
         (frontend()->random_state_manager->backend());
+
+      synaptic_data = new synapses_data_struct();
+      CudaSafeCall(cudaMemcpy(d_synaptic_data,
+                              synaptic_data,
+                              sizeof(synapses_data_struct),
+                              cudaMemcpyHostToDevice));
+
     }
 
     void Synapses::set_neuron_indices_by_sampling_from_normal_distribution

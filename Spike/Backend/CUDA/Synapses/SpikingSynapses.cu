@@ -19,6 +19,7 @@ namespace Backend {
       CudaSafeCall(cudaFree(active_synapse_counts));
       CudaSafeCall(cudaFree(presynaptic_neuron_indices));
       CudaSafeCall(cudaFree(neuron_wise_input_update));
+      CudaSafeCall(cudaFree(d_synaptic_data));
 #ifdef CRAZY_DEBUG
       std::cout << "\n!!!!!!!!!!!!!!!!!!!!---BBBBBB---!!!!!!!!!!!!!!!!!!!\n";
 #endif
@@ -71,6 +72,16 @@ namespace Backend {
       
       allocate_device_pointers();
       copy_constants_and_initial_efficacies_to_device();
+
+      synaptic_data = new spiking_synapses_data_struct();
+      memcpy(synaptic_data, (static_cast<SpikingSynapses*>(this)->SpikingSynapses::synaptic_data), sizeof(synapses_data_struct));
+      synaptic_data->neuron_wise_input_update = neuron_wise_input_update;
+      synaptic_data->num_syn_labels = frontend()->num_syn_labels;
+      CudaSafeCall(cudaMemcpy(d_synaptic_data,
+                              synaptic_data,
+                              sizeof(spiking_synapses_data_struct),
+                              cudaMemcpyHostToDevice));
+	       
     }
 
     void SpikingSynapses::allocate_device_pointers() {
@@ -88,6 +99,7 @@ namespace Backend {
       CudaSafeCall(cudaMalloc((void **)&active_synapse_counts, sizeof(int)*(frontend()->total_number_of_synapses)));
       CudaSafeCall(cudaMalloc((void **)&presynaptic_neuron_indices, sizeof(int)*(frontend()->total_number_of_synapses)));
       CudaSafeCall(cudaMalloc((void **)&neuron_wise_input_update, sizeof(float)*neuron_wise_input_length));
+      CudaSafeCall(cudaMalloc((void **)&d_synaptic_data, sizeof(spiking_synapses_data_struct)));
     }
 
     void SpikingSynapses::copy_constants_and_initial_efficacies_to_device() {

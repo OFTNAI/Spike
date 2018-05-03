@@ -10,6 +10,13 @@
 
 namespace Backend {
   namespace CUDA {
+      typedef float (*pfunc)(
+        spiking_synapses_data_struct* in_synaptic_data,
+	spiking_neurons_data_struct* neuron_data,
+        float timestep,
+        int timestep_grouping,
+	int idx,
+	int g);
     struct conductance_spiking_synapses_data_struct: spiking_synapses_data_struct {
 	float* decay_terms_tau_g;
 	float* reversal_potentials_Vhat;
@@ -30,6 +37,9 @@ namespace Backend {
       float* d_decay_terms_tau_g = nullptr;
       float* d_reversal_potentials_Vhat = nullptr;
 
+      conductance_spiking_synapses_data_struct* synaptic_data;
+      conductance_spiking_synapses_data_struct* d_synaptic_data;
+
       void prepare() override;
       void reset_state() override;
 
@@ -38,18 +48,20 @@ namespace Backend {
 
       void state_update(::SpikingNeurons * neurons, ::SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) final;
 
-      __device__ virtual void current_injection_kernel(
-        synapses_data_struct* synaptic_data,
-	neurons_data_struct* neuron_data,
-        int num_syn_labels,
-        float* neuron_wise_input_update,
-        float timestep,
-        int timestep_grouping,
-        size_t total_number_of_neurons){
-      };
     };
 
-    __global__ void conductance_calculate_postsynaptic_current_injection_kernel(
+      __device__ float current_injection_kernel(
+        spiking_synapses_data_struct* synaptic_data,
+	spiking_neurons_data_struct* neuron_data,
+        float timestep,
+        int timestep_grouping,
+	int idx,
+	int g);
+      
+      __global__ void conductance_calculate_postsynaptic_current_injection_kernel(
+		      pfunc host_pointer,
+        spiking_synapses_data_struct* synaptic_data,
+	spiking_neurons_data_struct* neuron_data,
       float* decay_term_values,
       float* reversal_values,
       int num_decay_terms,

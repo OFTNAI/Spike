@@ -13,6 +13,7 @@ namespace Backend {
     void LIFSpikingNeurons::allocate_device_pointers() {
       CudaSafeCall(cudaMalloc((void **)&membrane_time_constants_tau_m, sizeof(float)*frontend()->total_number_of_neurons));
       CudaSafeCall(cudaMalloc((void **)&membrane_resistances_R, sizeof(float)*frontend()->total_number_of_neurons));
+      CudaSafeCall(cudaMalloc((void **)&d_neuron_data, sizeof(lif_spiking_neurons_data_struct)));
     }
 
     void LIFSpikingNeurons::copy_constants_to_device() {
@@ -32,9 +33,14 @@ namespace Backend {
       copy_constants_to_device();
 
       neuron_data = new lif_spiking_neurons_data_struct();
-      (spiking_neurons_data_struct)*neuron_data = *(static_cast<LIFSpikingNeurons*>(this)->SpikingNeurons::neuron_data);
+      memcpy(neuron_data, (static_cast<LIFSpikingNeurons*>(this)->SpikingNeurons::neuron_data), sizeof(spiking_neurons_data_struct));
       neuron_data->membrane_time_constants_tau_m = membrane_time_constants_tau_m;
       neuron_data->membrane_resistances_R = membrane_resistances_R;
+      neuron_data->total_number_of_neurons = frontend()->total_number_of_neurons;
+      CudaSafeCall(cudaMemcpy(d_neuron_data,
+                              neuron_data,
+                              sizeof(lif_spiking_neurons_data_struct),
+                              cudaMemcpyHostToDevice));
     }
 
     void LIFSpikingNeurons::reset_state() {

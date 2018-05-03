@@ -36,6 +36,7 @@ namespace Backend {
       float* resting_potentials;
 
       spiking_neurons_data_struct* neuron_data;
+      spiking_neurons_data_struct* d_neuron_data;
 
       /**  
        *  Exclusively for the allocation of device memory. This class requires allocation of d_current_injections only.

@@ -33,6 +33,8 @@ namespace Backend {
       ::Backend::CUDA::RandomStateManager* random_state_manager_backend = nullptr;
       dim3 number_of_synapse_blocks_per_grid;
       dim3 threads_per_block;
+      synapses_data_struct* synaptic_data;
+      synapses_data_struct* d_synaptic_data;
 
       void prepare() override;
       void reset_state() override;

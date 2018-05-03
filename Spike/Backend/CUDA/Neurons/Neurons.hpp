@@ -29,6 +29,7 @@ namespace Backend {
       dim3 number_of_neuron_blocks_per_grid;		/**< CUDA Device number of blocks */
       dim3 threads_per_block;						/**< CUDA Device number of threads */
       neurons_data_struct* neuron_data;
+      neurons_data_struct* d_neuron_data;
 
       void allocate_device_pointers(); // Not virtual
 	

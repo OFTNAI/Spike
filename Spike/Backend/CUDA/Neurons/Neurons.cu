@@ -10,6 +10,7 @@ namespace Backend {
       CudaSafeCall(cudaFree(per_neuron_efferent_synapse_count));
       CudaSafeCall(cudaFree(per_neuron_efferent_synapse_total));
       CudaSafeCall(cudaFree(per_neuron_efferent_synapse_indices));
+      CudaSafeCall(cudaFree(d_neuron_data));
       free(h_per_neuron_efferent_synapse_total);
     }
 
@@ -25,6 +26,7 @@ namespace Backend {
       CudaSafeCall(cudaMalloc((void **)&per_neuron_efferent_synapse_total, sizeof(int)*frontend()->total_number_of_neurons));
       CudaSafeCall(cudaMalloc((void **)&per_neuron_efferent_synapse_count, sizeof(int)*frontend()->total_number_of_neurons));
       CudaSafeCall(cudaMalloc((void **)&per_neuron_efferent_synapse_indices, sizeof(int)*(h_per_neuron_efferent_synapse_total[frontend()->total_number_of_neurons - 1])));
+      CudaSafeCall(cudaMalloc((void **)&d_neuron_data, sizeof(neurons_data_struct)));
     }
 
     void Neurons::copy_constants_to_device() {
@@ -57,8 +59,13 @@ namespace Backend {
       allocate_device_pointers();
       copy_constants_to_device();
 
-      neuron_data = new neurons_data_struct;
+      neuron_data = new neurons_data_struct();
       neuron_data->total_number_of_neurons = frontend()->total_number_of_neurons;
+      CudaSafeCall(cudaMemcpy(
+		d_neuron_data,
+		neuron_data,
+		sizeof(neurons_data_struct), cudaMemcpyHostToDevice));
+
     }
 
     void Neurons::reset_state() {
