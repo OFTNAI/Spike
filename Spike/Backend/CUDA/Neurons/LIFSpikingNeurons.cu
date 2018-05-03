@@ -83,8 +83,8 @@ namespace Backend {
 
   	  for (int g=0; g < timestep_grouping; g++){	  
             if (((current_time_in_seconds + g*timestep) - d_last_spike_time_of_each_neuron[idx]) >= refractory_period_in_seconds){
-              current_injection_Ii = d_current_injections[idx*timestep_grouping + g];
-              total_current_conductance = d_total_current_conductance[idx*timestep_grouping + g];
+              current_injection_Ii = d_current_injections[g*total_number_of_neurons + idx];
+              total_current_conductance = d_total_current_conductance[g*total_number_of_neurons + idx];
               float new_membrane_potential = equation_constant * (resting_potential_V0 + temp_membrane_resistance_R * (current_injection_Ii - total_current_conductance*membrane_potential_Vi)) + (1 - equation_constant) * membrane_potential_Vi + equation_constant * background_current;
 	  
 	      // Finally check for a spike

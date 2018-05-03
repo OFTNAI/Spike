@@ -386,7 +386,7 @@ namespace Backend {
          int postsynaptic_neuron_id = postsynaptic_neuron_indices[idx];
          int trace_id = synaptic_decay_id[idx];
          float synaptic_efficacy = d_biological_conductance_scaling_constants_lambda[idx] * d_synaptic_efficacies_or_weights[idx];
-         atomicAdd(&neuron_wise_conductance_update[total_number_of_neurons*timestep_grouping*trace_id + postsynaptic_neuron_id*timestep_grouping + g], synaptic_efficacy);
+         atomicAdd(&neuron_wise_conductance_update[total_number_of_neurons*timestep_grouping*trace_id + postsynaptic_neuron_id + g*total_number_of_neurons], synaptic_efficacy);
 
           indx += blockDim.x * gridDim.x;
         }
@@ -412,8 +412,8 @@ namespace Backend {
       while (idx < total_number_of_neurons) {
 	// First, resetting the current injection values
 	for (int g=0; g < timestep_grouping; g++){
-	  d_neurons_current_injections[idx*timestep_grouping + g] = 0.0f;
-	  d_total_current_conductance[idx*timestep_grouping + g] = 0.0f;
+	  d_neurons_current_injections[idx + g*total_number_of_neurons] = 0.0f;
+	  d_total_current_conductance[idx + g*total_number_of_neurons] = 0.0f;
 	}
 	// Updating current and conductance values
         for (int decay_id = 0; decay_id < num_decay_terms; decay_id++){
@@ -424,12 +424,12 @@ namespace Backend {
 	  for (int g=0; g < timestep_grouping; g++){
             // Update the synaptic conductance
 	    synaptic_conductance_g *= decay_factor;
-	    synaptic_conductance_g += neuron_wise_conductance_update[total_number_of_neurons*timestep_grouping*decay_id + idx*timestep_grouping + g];
+	    synaptic_conductance_g += neuron_wise_conductance_update[total_number_of_neurons*timestep_grouping*decay_id + g*total_number_of_neurons + idx];
 	    // Reset the conductance update
-	    neuron_wise_conductance_update[total_number_of_neurons*timestep_grouping*decay_id + idx*timestep_grouping + g] = 0.0f;
+	    neuron_wise_conductance_update[total_number_of_neurons*timestep_grouping*decay_id + g*total_number_of_neurons + idx] = 0.0f;
 	    // Set the currents and conductances -> Can we aggregate these?
-            d_neurons_current_injections[idx*timestep_grouping + g] += synaptic_conductance_g * reversal_value;
-            d_total_current_conductance[idx*timestep_grouping + g] += synaptic_conductance_g;
+            d_neurons_current_injections[idx + g*total_number_of_neurons] += synaptic_conductance_g * reversal_value;
+            d_total_current_conductance[idx + g*total_number_of_neurons] += synaptic_conductance_g;
           }
 	  // Set the conductance ready for the next timestep group
           neuron_wise_conductance_traces[total_number_of_neurons*decay_id + idx] = synaptic_conductance_g;
