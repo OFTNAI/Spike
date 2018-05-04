@@ -67,6 +67,10 @@ namespace Backend {
         d_reversal_potentials_Vhat,
         &(frontend()->reversal_potentials_Vhat[0]),
         sizeof(float)*frontend()->num_syn_labels, cudaMemcpyHostToDevice));
+      CudaSafeCall(cudaMemcpyFromSymbol(
+            &host_kernel,
+            device_kernel,
+            sizeof(injection_kernel)));
     }
 
 
@@ -87,11 +91,11 @@ namespace Backend {
 
 
       //__constant__ pfunc dev_func_ptr = current_injection_kernel;
-      pfunc host_pointer;
+      // pfunc host_pointer;
       //CudaSafeCall(cudaMemcpyFromSymbol(&host_pointer, "current_injection_kernel", sizeof(pfunc)));
 
       conductance_calculate_postsynaptic_current_injection_kernel<<<neurons_backend->number_of_neuron_blocks_per_grid, threads_per_block>>>(
-        host_pointer,
+        host_kernel,
 	d_synaptic_data,
 	neurons_backend->d_neuron_data,
         d_decay_terms_tau_g,
@@ -155,7 +159,7 @@ namespace Backend {
     }
 
     __global__ void conductance_calculate_postsynaptic_current_injection_kernel(
-	pfunc host_pointer,
+	injection_kernel host_kernel,
         spiking_synapses_data_struct* synaptic_data,
 	spiking_neurons_data_struct* neuron_data,
                   float* decay_term_values,
@@ -199,7 +203,7 @@ namespace Backend {
   	}
 	*/
 	for (int syn_label=0; syn_label < num_syn_labels; syn_label++){
-	  current_injection_kernel(synaptic_data,
+	  host_kernel(synaptic_data,
 			neuron_data,
 			timestep,
 			timestep_grouping,
