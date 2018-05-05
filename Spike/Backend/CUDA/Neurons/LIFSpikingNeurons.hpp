@@ -4,6 +4,7 @@
 #include "Spike/Neurons/SpikingNeurons.hpp"
 #include "Spike/Backend/CUDA/CUDABackend.hpp"
 #include "SpikingNeurons.hpp"
+#include "Spike/Backend/CUDA/Synapses/ConductanceSpikingSynapses.hpp"
 
 #include <cuda.h>
 #include <vector_types.h>
@@ -38,7 +39,11 @@ namespace Backend {
       void state_update(float current_time_in_seconds, float timestep) override;
     };
 
-    __global__ void lif_update_membrane_potentials(float *d_membrane_potentials_v,
+    __global__ void lif_update_membrane_potentials(
+        spiking_synapses_data_struct* in_synaptic_data,
+	spiking_neurons_data_struct* neuron_data,
+  float *d_membrane_potentials_v,
+
                                                    float * d_last_spike_time_of_each_neuron,
                                                    float * d_membrane_resistances_R,
                                                    float * d_membrane_time_constants_tau_m,

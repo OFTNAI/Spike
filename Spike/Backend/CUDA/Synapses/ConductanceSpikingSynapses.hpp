@@ -51,7 +51,6 @@ namespace Backend {
       void state_update(::SpikingNeurons * neurons, ::SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) final;
 
     };
-
     __device__ float current_injection_kernel(
         spiking_synapses_data_struct* synaptic_data,
 	      spiking_neurons_data_struct* neuron_data,
@@ -60,7 +59,6 @@ namespace Backend {
 	      int idx,
 	      int g);
 
-    __device__ injection_kernel device_kernel = current_injection_kernel;
       
       __global__ void conductance_calculate_postsynaptic_current_injection_kernel(
 		      injection_kernel host_pointer,
