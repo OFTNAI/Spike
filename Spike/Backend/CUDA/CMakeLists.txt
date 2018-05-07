@@ -11,16 +11,6 @@ add_subdirectory(SpikeAnalyser)
 add_subdirectory(Plasticity)
 add_subdirectory(Synapses)
 
-#[[
-CUDA_ADD_LIBRARY (SpikeCUDA
-  ${CUDAHelpers}
-  ${CUDANeurons}
-  ${CUDARecordingElectrodes}
-  ${CUDASpikeAnalyser}
-  ${CUDAPlasticity}
-  ${CUDASynapses}
-  STATIC)
-]]
 
 set (CUDAFiles
   ${CUDAHelpers}
@@ -36,15 +26,15 @@ function(cat IN_FILE OUT_FILE)
 endfunction()
 
 # Prepare a temporary file to "cat" to:
-file(WRITE allcuda.cu.in "")
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/allcuda.cu.in "")
 
 # Call the "cat" function for each input file
 foreach(CUDAFILE ${CUDAFiles})
-  cat(${CUDAFILE} allcuda.cu.in)
+  cat(${CUDAFILE} ${CMAKE_CURRENT_BINARY_DIR}/allcuda.cu.in)
 endforeach()
 
 # Copy the temporary file to the final location
-configure_file(allcuda.cu.in allcuda.cu COPYONLY)
+configure_file(${CMAKE_CURRENT_BINARY_DIR}/allcuda.cu.in allcuda.cu COPYONLY)
 
 CUDA_ADD_LIBRARY (SpikeCUDA
   ${CMAKE_CURRENT_BINARY_DIR}/allcuda.cu

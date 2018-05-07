@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Spike/Synapses/ConductanceSpikingSynapses.hpp"
+#include "Spike/Synapses/VoltageSpikingSynapses.hpp"
 #include "SpikingSynapses.hpp"
 #include "Spike/Backend/CUDA/CUDABackend.hpp"
 #include <cuda.h>
@@ -10,25 +10,15 @@
 
 namespace Backend {
   namespace CUDA {
-    struct conductance_spiking_synapses_data_struct: spiking_synapses_data_struct {
-	    float* decay_terms_tau_g;
-	    float* reversal_potentials_Vhat;
-	    float* neuron_wise_conductance_trace;
+    struct voltage_spiking_synapses_data_struct: spiking_synapses_data_struct {
     };
-    class ConductanceSpikingSynapses : public virtual ::Backend::CUDA::SpikingSynapses,
-                                       public virtual ::Backend::ConductanceSpikingSynapses {
+    class VoltageSpikingSynapses : public virtual ::Backend::CUDA::SpikingSynapses,
+                                       public virtual ::Backend::VoltageSpikingSynapses {
     public:
 
-      ~ConductanceSpikingSynapses() override;
-      SPIKE_MAKE_BACKEND_CONSTRUCTOR(ConductanceSpikingSynapses);
-      using ::Backend::ConductanceSpikingSynapses::frontend;
-
-      // Variables used for memory-trace based synaptic input
-      int conductance_trace_length = 0;
-      float* neuron_wise_conductance_trace = nullptr;
-      float* h_neuron_wise_conductance_trace = nullptr;
-      float* d_decay_terms_tau_g = nullptr;
-      float* d_reversal_potentials_Vhat = nullptr;
+      ~VoltageSpikingSynapses() override;
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(VoltageSpikingSynapses);
+      using ::Backend::VoltageSpikingSynapses::frontend;
 
       conductance_spiking_synapses_data_struct* synaptic_data;
       conductance_spiking_synapses_data_struct* d_synaptic_data;
@@ -42,7 +32,7 @@ namespace Backend {
       void state_update(::SpikingNeurons * neurons, ::SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) final;
 
     };
-    __device__ float conductance_spiking_current_injection_kernel(
+    __device__ float voltage_spiking_current_injection_kernel(
         spiking_synapses_data_struct* synaptic_data,
 	      spiking_neurons_data_struct* neuron_data,
         float multiplication_to_volts,

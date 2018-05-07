@@ -339,6 +339,7 @@ namespace Backend {
 	spiking_neurons_data_struct* neuron_data,
   float current_membrane_voltage,
   float timestep,
+  float multiplication_to_volts,
   int timestep_grouping,
   int idx,
   int g){

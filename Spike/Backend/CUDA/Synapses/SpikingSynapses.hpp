@@ -20,6 +20,7 @@ namespace Backend {
     typedef float (*injection_kernel)(
         spiking_synapses_data_struct* synaptic_data,
         spiking_neurons_data_struct* neuron_data,
+        float multiplication_to_volts,
         float membrane_voltage,
         float timestep,
         int timestep_grouping,
@@ -72,6 +73,7 @@ namespace Backend {
       __device__ float spiking_current_injection_kernel(
   spiking_synapses_data_struct* synaptic_data,
 	spiking_neurons_data_struct* neuron_data,
+  float multiplication_to_volts,
   float current_membrane_voltage,
   float timestep,
   int timestep_grouping,
