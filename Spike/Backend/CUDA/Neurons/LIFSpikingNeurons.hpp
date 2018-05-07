@@ -3,7 +3,7 @@
 #include "Spike/Neurons/LIFSpikingNeurons.hpp"
 #include "Spike/Neurons/SpikingNeurons.hpp"
 #include "Spike/Backend/CUDA/CUDABackend.hpp"
-#include "SpikingNeurons.hpp"
+#include "Spike/Backend/CUDA/Neurons/SpikingNeurons.hpp"
 #include "Spike/Backend/CUDA/Synapses/ConductanceSpikingSynapses.hpp"
 
 #include <cuda.h>
@@ -40,22 +40,14 @@ namespace Backend {
     };
 
     __global__ void lif_update_membrane_potentials(
-        spiking_synapses_data_struct* in_synaptic_data,
-	spiking_neurons_data_struct* neuron_data,
-  float *d_membrane_potentials_v,
-
-                                                   float * d_last_spike_time_of_each_neuron,
-                                                   float * d_membrane_resistances_R,
-                                                   float * d_membrane_time_constants_tau_m,
-                                                   float * d_resting_potentials,
-                                                   float* d_current_injections,
-						   float* d_total_current_conductance,
-						   float* d_thresholds_for_action_potential_spikes,
-                                                   float background_current,
-                                                   float timestep,
-						   int timestep_grouping,
-                                                   float current_time_in_seconds,
-                                                   float refactory_period_in_seconds,
-                                                   size_t total_number_of_neurons);
+        injection_kernel current_injection_kernel,
+        spiking_synapses_data_struct* synaptic_data,
+	      spiking_neurons_data_struct* neuron_data,
+        float background_current,
+        float timestep,
+				int timestep_grouping,
+        float current_time_in_seconds,
+        float refactory_period_in_seconds,
+        size_t total_number_of_neurons);
   }
 }

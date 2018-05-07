@@ -5,6 +5,9 @@
 
 namespace Backend {
   namespace CUDA {
+
+    __device__ injection_kernel spiking_device_kernel = spiking_current_injection_kernel;
+
     SpikingSynapses::~SpikingSynapses() {
       CudaSafeCall(cudaFree(delays));
       CudaSafeCall(cudaFree(d_syn_labels));
@@ -100,6 +103,11 @@ namespace Backend {
       CudaSafeCall(cudaMalloc((void **)&presynaptic_neuron_indices, sizeof(int)*(frontend()->total_number_of_synapses)));
       CudaSafeCall(cudaMalloc((void **)&neuron_wise_input_update, sizeof(float)*neuron_wise_input_length));
       CudaSafeCall(cudaMalloc((void **)&d_synaptic_data, sizeof(spiking_synapses_data_struct)));
+      // Setting injection kernel
+      CudaSafeCall(cudaMemcpyFromSymbol(
+            &host_injection_kernel,
+            spiking_device_kernel,
+            sizeof(injection_kernel)));
     }
 
     void SpikingSynapses::copy_constants_and_initial_efficacies_to_device() {
@@ -326,6 +334,16 @@ namespace Backend {
       }
       __syncthreads();
     }
+      __device__ float spiking_current_injection_kernel(
+  spiking_synapses_data_struct* synaptic_data,
+	spiking_neurons_data_struct* neuron_data,
+  float current_membrane_voltage,
+  float timestep,
+  int timestep_grouping,
+  int idx,
+  int g){
+	      return 0.0f;
+      };
 
   }
 }

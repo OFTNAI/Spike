@@ -5,7 +5,8 @@ SPIKE_EXPORT_BACKEND_TYPE(CUDA, ConductanceSpikingSynapses);
 
 namespace Backend {
   namespace CUDA {
-    __device__ injection_kernel device_kernel = current_injection_kernel;
+    __device__ injection_kernel conductance_device_kernel = conductance_spiking_current_injection_kernel;
+
     // ConductanceSpikingSynapses Destructor
     ConductanceSpikingSynapses::~ConductanceSpikingSynapses() {
       CudaSafeCall(cudaFree(neuron_wise_conductance_trace));
@@ -53,6 +54,10 @@ namespace Backend {
       CudaSafeCall(cudaMalloc((void **)&d_decay_terms_tau_g, sizeof(float)*frontend()->num_syn_labels));
       CudaSafeCall(cudaMalloc((void **)&d_reversal_potentials_Vhat, sizeof(float)*frontend()->num_syn_labels));
       CudaSafeCall(cudaMalloc((void **)&d_synaptic_data, sizeof(conductance_spiking_synapses_data_struct)));
+      CudaSafeCall(cudaMemcpyFromSymbol(
+            &host_injection_kernel,
+            conductance_device_kernel,
+            sizeof(injection_kernel)));
     }
 
     void ConductanceSpikingSynapses::copy_constants_and_initial_efficacies_to_device() {
@@ -68,10 +73,6 @@ namespace Backend {
         d_reversal_potentials_Vhat,
         &(frontend()->reversal_potentials_Vhat[0]),
         sizeof(float)*frontend()->num_syn_labels, cudaMemcpyHostToDevice));
-      CudaSafeCall(cudaMemcpyFromSymbol(
-            &host_kernel,
-            device_kernel,
-            sizeof(injection_kernel)));
     }
 
 
@@ -82,146 +83,40 @@ namespace Backend {
      ::SpikingNeurons* input_neurons,
      float current_time_in_seconds, float timestep) {
       SpikingSynapses::state_update(neurons, input_neurons, current_time_in_seconds, timestep);
-      
-      ::Backend::CUDA::SpikingNeurons* neurons_backend =
-        dynamic_cast<::Backend::CUDA::SpikingNeurons*>(neurons->backend());
-      assert(neurons_backend);
-      ::Backend::CUDA::SpikingNeurons* input_neurons_backend =
-        dynamic_cast<::Backend::CUDA::SpikingNeurons*>(input_neurons->backend());
-      assert(input_neurons_backend);
-
-
-      //__constant__ pfunc dev_func_ptr = current_injection_kernel;
-      // pfunc host_pointer;
-      //CudaSafeCall(cudaMemcpyFromSymbol(&host_pointer, "current_injection_kernel", sizeof(pfunc)));
-  /*
-      conductance_calculate_postsynaptic_current_injection_kernel<<<neurons_backend->number_of_neuron_blocks_per_grid, threads_per_block>>>(
-        host_kernel,
-	d_synaptic_data,
-	neurons_backend->d_neuron_data,
-        d_decay_terms_tau_g,
-        d_reversal_potentials_Vhat,
-        frontend()->num_syn_labels,
-        neuron_wise_conductance_trace,
-        neuron_wise_input_update,
-        neurons_backend->current_injections,
-	neurons_backend->total_current_conductance,
-        timestep,
-	frontend()->model->timestep_grouping,
-        neurons_backend->frontend()->total_number_of_neurons);
-      CudaCheckError();
-      */
-
     }
 
 
     /* KERNELS BELOW */
-    
-    __device__ float current_injection_kernel(
+    __device__ float conductance_spiking_current_injection_kernel(
         spiking_synapses_data_struct* in_synaptic_data,
-	spiking_neurons_data_struct* neuron_data,
+	      spiking_neurons_data_struct* neuron_data,
+        float current_membrane_voltage,
         float timestep,
         int timestep_grouping,
-	int idx,
-	int g){
-	
-	conductance_spiking_synapses_data_struct* synaptic_data = (conductance_spiking_synapses_data_struct*) in_synaptic_data;
+	      int idx,
+	      int g){
       
-	int total_number_of_neurons =  neuron_data->total_number_of_neurons;
-	// If we are on the first timestep group, reset the current and conductance values 
-  /*
-	if (g == 0){
-            for (int g_prime = 0; g_prime < timestep_grouping; g_prime++){
-	        neuron_data->current_injections[idx + g_prime*total_number_of_neurons] = 0.0f;
-		synaptic_data->neuron_wise_conductance_trace[idx + g_prime*total_number_of_neurons] = 0.0f;
-	    }
-	} 
-  */
-
-	// Update current injection and conductance	
-//        for (int syn_label = 0; syn_label < synaptic_data->num_syn_labels; syn_label++){
-	  for (int syn_label=0; syn_label < synaptic_data->num_syn_labels; syn_label++){
+      conductance_spiking_synapses_data_struct* synaptic_data = (conductance_spiking_synapses_data_struct*) in_synaptic_data;
+        
+	    int total_number_of_neurons =  neuron_data->total_number_of_neurons;
+      float total_current = 0.0f;
+        for (int syn_label = 0; syn_label < synaptic_data->num_syn_labels; syn_label++){
           float decay_term_value = synaptic_data->decay_terms_tau_g[syn_label];
-	  float decay_factor = expf(- timestep / decay_term_value);
-	  float reversal_value = synaptic_data->reversal_potentials_Vhat[syn_label];
+	        float decay_factor = expf(- timestep / decay_term_value);
+	        float reversal_value = synaptic_data->reversal_potentials_Vhat[syn_label];
           float synaptic_conductance_g = synaptic_data->neuron_wise_conductance_trace[total_number_of_neurons*syn_label + idx];
-	  
           // Update the synaptic conductance
-	  synaptic_conductance_g *= decay_factor;
-	  synaptic_conductance_g += synaptic_data->neuron_wise_input_update[total_number_of_neurons*timestep_grouping*syn_label + g*total_number_of_neurons + idx];
-	  // Reset the conductance update
-	  synaptic_data->neuron_wise_input_update[total_number_of_neurons*timestep_grouping*syn_label + g*total_number_of_neurons + idx] = 0.0f;
-	  // Set the currents and conductances -> Can we aggregate these?
-          neuron_data->current_injections[idx + g*total_number_of_neurons] += synaptic_conductance_g * reversal_value;
-          neuron_data->total_current_conductance[idx + g*total_number_of_neurons] += synaptic_conductance_g;
+	        synaptic_conductance_g *= decay_factor;
+	        synaptic_conductance_g += synaptic_data->neuron_wise_input_update[total_number_of_neurons*timestep_grouping*syn_label + g*total_number_of_neurons + idx];
+	        // Reset the conductance update
+	        synaptic_data->neuron_wise_input_update[total_number_of_neurons*timestep_grouping*syn_label + g*total_number_of_neurons + idx] = 0.0f;
+          total_current += synaptic_conductance_g*(reversal_value - current_membrane_voltage);
           synaptic_data->neuron_wise_conductance_trace[total_number_of_neurons*syn_label + idx] = synaptic_conductance_g;
-	  }
 
-//	}
-	 return 0.0f;
-
+	      }
+	      
+        return total_current;
     }
-    
-
-    __global__ void conductance_calculate_postsynaptic_current_injection_kernel(
-	injection_kernel host_kernel,
-        spiking_synapses_data_struct* synaptic_data,
-	spiking_neurons_data_struct* neuron_data,
-                  float* decay_term_values,
-		  float* reversal_values,
-                  int num_syn_labels,
-                  float* neuron_wise_conductance_traces,
-                  float* neuron_wise_input_update,
-                  float* d_neurons_current_injections,
-		  float* d_total_current_conductance,
-                  float timestep,
-		  int timestep_grouping,
-                  size_t total_number_of_neurons){
-
-      int idx = threadIdx.x + blockIdx.x * blockDim.x;
-      while (idx < total_number_of_neurons) {
-	
-	// First, resetting the current injection values
-	for (int g=0; g < timestep_grouping; g++){
-	  d_neurons_current_injections[idx + g*total_number_of_neurons] = 0.0f;
-	  d_total_current_conductance[idx + g*total_number_of_neurons] = 0.0f;
-	}
-	/*
-	// Updating current and conductance values
-        for (int syn_label = 0; syn_label < num_syn_labels; syn_label++){
-          float decay_term_value = decay_term_values[syn_label];
-	  float decay_factor = expf(- timestep / decay_term_value);
-	  float reversal_value = reversal_values[syn_label];
-          float synaptic_conductance_g = neuron_wise_conductance_traces[total_number_of_neurons*syn_label + idx];
-	  for (int g=0; g < timestep_grouping; g++){
-            // Update the synaptic conductance
-	    synaptic_conductance_g *= decay_factor;
-	    synaptic_conductance_g += neuron_wise_input_update[total_number_of_neurons*timestep_grouping*syn_label + g*total_number_of_neurons + idx];
-	    // Reset the conductance update
-	    neuron_wise_input_update[total_number_of_neurons*timestep_grouping*syn_label + g*total_number_of_neurons + idx] = 0.0f;
-	    // Set the currents and conductances -> Can we aggregate these?
-            d_neurons_current_injections[idx + g*total_number_of_neurons] += synaptic_conductance_g * reversal_value;
-            d_total_current_conductance[idx + g*total_number_of_neurons] += synaptic_conductance_g;
-          }
-	  // Set the conductance ready for the next timestep group
-          neuron_wise_conductance_traces[total_number_of_neurons*syn_label + idx] = synaptic_conductance_g;
-  	}
-	*/
-	for (int g=0; g < timestep_grouping; g++){
-	  host_kernel(synaptic_data,
-			neuron_data,
-			timestep,
-			timestep_grouping,
-			idx,
-			g);	
-	}
-
-        idx += blockDim.x * gridDim.x;
-      }
-    }
-   
-
-
 
   }
 }

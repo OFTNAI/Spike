@@ -17,6 +17,14 @@ namespace Backend {
 	float* neuron_wise_input_update;
 	int num_syn_labels;
     };
+    typedef float (*injection_kernel)(
+        spiking_synapses_data_struct* synaptic_data,
+        spiking_neurons_data_struct* neuron_data,
+        float membrane_voltage,
+        float timestep,
+        int timestep_grouping,
+        int idx,
+        int g);
     class SpikingSynapses : public virtual ::Backend::CUDA::Synapses,
                             public virtual ::Backend::SpikingSynapses {
     public:
@@ -47,6 +55,7 @@ namespace Backend {
 
       spiking_synapses_data_struct* synaptic_data;
       spiking_synapses_data_struct* d_synaptic_data;
+      injection_kernel host_injection_kernel;
 
       void prepare() override;
       void reset_state() override;
@@ -58,16 +67,17 @@ namespace Backend {
 
       void state_update(::SpikingNeurons * neurons, ::SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) override;
 
-      __device__ virtual float current_injection_kernel(
-        spiking_synapses_data_struct* synaptic_data,
-	spiking_neurons_data_struct* neuron_data,
-        float timestep,
-        int timestep_grouping,
-	int idx,
-	int g){
-	      return 0.0f;
-      };
     };
+
+      __device__ float spiking_current_injection_kernel(
+  spiking_synapses_data_struct* synaptic_data,
+	spiking_neurons_data_struct* neuron_data,
+  float current_membrane_voltage,
+  float timestep,
+  int timestep_grouping,
+  int idx,
+  int g);
+
 
     __global__ void get_active_synapses_kernel(
 		int* d_per_neuron_efferent_synapse_count,

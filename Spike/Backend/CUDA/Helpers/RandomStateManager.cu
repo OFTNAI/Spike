@@ -1,5 +1,5 @@
 // -*- mode: c++ -*-
-#include "RandomStateManager.hpp"
+#include "Spike/Backend/CUDA/Helpers/RandomStateManager.hpp"
 #include "Spike/Helpers/TimerWithMessages.hpp"
 #include "Spike/Helpers/TerminalHelpers.hpp"
 

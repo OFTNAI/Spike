@@ -11,6 +11,7 @@ add_subdirectory(SpikeAnalyser)
 add_subdirectory(Plasticity)
 add_subdirectory(Synapses)
 
+#[[
 CUDA_ADD_LIBRARY (SpikeCUDA
   ${CUDAHelpers}
   ${CUDANeurons}
@@ -19,11 +20,11 @@ CUDA_ADD_LIBRARY (SpikeCUDA
   ${CUDAPlasticity}
   ${CUDASynapses}
   STATIC)
+]]
 
-#[[
 set (CUDAFiles
   ${CUDAHelpers}
-  ${CUDASynapes}
+  ${CUDASynapses}
   ${CUDANeurons}
   ${CUDARecordingElectrodes}
   ${CUDASpikeAnalyser}
@@ -45,9 +46,8 @@ endforeach()
 # Copy the temporary file to the final location
 configure_file(allcuda.cu.in allcuda.cu COPYONLY)
 
-#CUDA_ADD_LIBRARY (SpikeCUDA
-#  ${CMAKE_CURRENT_BINARY_DIR}/allcuda.cu
-#  STATIC)
+CUDA_ADD_LIBRARY (SpikeCUDA
+  ${CMAKE_CURRENT_BINARY_DIR}/allcuda.cu
+  STATIC)
 
-]]
 
