@@ -54,12 +54,13 @@ target_link_libraries(Spike PRIVATE ${WHOLE_ARCHIVE_FLAG}
 
 if (BUILD_WITH_CUDA)
   target_link_libraries(Spike PRIVATE ${WHOLE_ARCHIVE_FLAG}
-    SpikeCUDAHelpers
-    SpikeCUDANeurons
-    SpikeCUDARecordingElectrodes
-    SpikeCUDASpikeAnalyser
-    SpikeCUDAPlasticity
-    SpikeCUDASynapses
+    #SpikeCUDAHelpers
+    #SpikeCUDANeurons
+    #SpikeCUDARecordingElectrodes
+    #SpikeCUDASpikeAnalyser
+    #SpikeCUDAPlasticity
+    #SpikeCUDASynapses
+    SpikeCUDA
     ${NO_WHOLE_ARCHIVE_FLAG})
 endif()
 

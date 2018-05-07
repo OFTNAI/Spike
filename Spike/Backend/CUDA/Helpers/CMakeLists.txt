@@ -1,4 +1,4 @@
-CUDA_ADD_LIBRARY(SpikeCUDAHelpers
-  Memory.cu
-  RandomStateManager.cu
-  STATIC)
+set(CUDAHelpers
+  ${CMAKE_CURRENT_SOURCE_DIR}/Memory.cu
+  ${CMAKE_CURRENT_SOURCE_DIR}/RandomStateManager.cu
+  PARENT_SCOPE)
