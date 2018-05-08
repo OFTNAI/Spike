@@ -13,6 +13,8 @@ namespace Backend {
 
     void VoltageSpikingSynapses::prepare() {
       SpikingSynapses::prepare();
+      allocate_device_pointers();
+      copy_constants_and_initial_efficacies_to_device();
     }
 
     void VoltageSpikingSynapses::reset_state() {
@@ -58,7 +60,9 @@ namespace Backend {
       float total_current = 0.0f;
       for (int syn_label = 0; syn_label < synaptic_data->num_syn_labels; syn_label++){
 	      total_current += synaptic_data->neuron_wise_input_update[total_number_of_neurons*timestep_grouping*syn_label + g*total_number_of_neurons + idx];
-	    }
+	      synaptic_data->neuron_wise_input_update[total_number_of_neurons*timestep_grouping*syn_label + g*total_number_of_neurons + idx] = 0.0f;
+      }
+
 
       // This is already in volts, no conversion necessary
       total_current *= (1.0f / timestep);
