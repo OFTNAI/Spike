@@ -271,15 +271,18 @@ namespace Backend {
 	    circular_spikenum_buffer[previd] = 0;
 	  }
 	}
-      while (indx < num_active_synapses[0]) {
-	int idx = indx;
-	int pos = 0;
-	int synapse_count = active_synapse_counts[pos];
 
+  int pos = 0;
+  int idx = indx;
+  while (indx < num_active_synapses[0]) {
+	//int idx = (num_active_synapses[0] / iteration_val)*(indx % iteration_val) + (indx / iteration_val);
+	
+	int synapse_count = active_synapse_counts[pos];
 
 	while(idx >= synapse_count){
 	  idx -= synapse_count;
-	  synapse_count = active_synapse_counts[++pos];
+    pos += 1;
+	  synapse_count = active_synapse_counts[pos];
 	}
 
 	int neuron = presynaptic_neuron_indices[pos];
@@ -292,6 +295,7 @@ namespace Backend {
 	spikeid_buffer[targetloc*total_number_of_synapses + bufloc] = synapse_id;
 
         indx += blockDim.x * gridDim.x;
+        idx += blockDim.x * gridDim.x;
       }
 
     }
