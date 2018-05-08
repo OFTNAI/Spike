@@ -4,6 +4,13 @@
 #include "SpikingSynapses.hpp"
 #include "Spike/Neurons/SpikingNeurons.hpp"
 
+struct current_spiking_synapse_parameters_struct : spiking_synapse_parameters_struct {
+	current_spiking_synapse_parameters_struct(): decay_term_tau(0.001f) { spiking_synapse_parameters_struct(); }
+
+	float decay_term_tau;
+};
+
+
 class CurrentSpikingSynapses; // forward definition
 
 namespace Backend {
@@ -21,6 +28,7 @@ public:
   SPIKE_ADD_BACKEND_GETSET(CurrentSpikingSynapses, SpikingSynapses);
   void init_backend(Context* ctx = _global_ctx) override;
   
+  vector<float> decay_terms_tau;
   void AddGroup(int presynaptic_group_id, 
                 int postsynaptic_group_id, 
                 Neurons * neurons,

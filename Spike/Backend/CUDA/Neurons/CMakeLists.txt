@@ -6,7 +6,5 @@ set (CUDANeurons
   ${CMAKE_CURRENT_SOURCE_DIR}/PoissonInputSpikingNeurons.cu
   ${CMAKE_CURRENT_SOURCE_DIR}/GeneralPoissonInputSpikingNeurons.cu
   ${CMAKE_CURRENT_SOURCE_DIR}/ImagePoissonInputSpikingNeurons.cu
-  ${CMAKE_CURRENT_SOURCE_DIR}/AdExSpikingNeurons.cu
   ${CMAKE_CURRENT_SOURCE_DIR}/LIFSpikingNeurons.cu
-  ${CMAKE_CURRENT_SOURCE_DIR}/IzhikevichSpikingNeurons.cu
   PARENT_SCOPE)

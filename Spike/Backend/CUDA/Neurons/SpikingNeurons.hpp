@@ -14,8 +14,6 @@ namespace Backend {
 	float* membrane_potentials_v;
 	float* thresholds_for_action_potential_spikes;
 	float* resting_potentials;
-	float* current_injections;
-	float* total_current_conductance;
     };
 
     class SpikingNeurons : public virtual ::Backend::CUDA::Neurons,
@@ -26,9 +24,6 @@ namespace Backend {
       void prepare() override;
       void reset_state() override;
 
-      float* current_injections = nullptr;				/**< Device array for the storage of current to be injected into each neuron on each timestep. */
-      float* total_current_conductance = nullptr;				/**< Device array for the total current conductance to be accounted for. */
-      
       // Device Pointers
       float* last_spike_time_of_each_neuron;
       float* membrane_potentials_v;
@@ -50,7 +45,6 @@ namespace Backend {
 
       void state_update(float current_time_in_seconds, float timestep) override;
       
-      void reset_current_injections() ;
     };
 
   } // namespace CUDA

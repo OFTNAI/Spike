@@ -15,6 +15,34 @@ void CurrentSpikingSynapses::AddGroup(int presynaptic_group_id,
                             timestep,
                             synapse_params);
 
+  current_spiking_synapse_parameters_struct * current_spiking_synapse_group_params = (current_spiking_synapse_parameters_struct*)synapse_params;
+  
+  if (decay_terms_tau.size() == 0){
+  // If a group has not yet been initialized, make it of this type
+	decay_terms_tau.push_back(current_spiking_synapse_group_params->decay_term_tau);
+	//num_syn_labels++;
+  } else {
+  // Check if this pair exists, if yes set the syn_labels or create a new syn_label
+	bool isfound = false;
+	int indextoset = 0;
+  	for (int index = 0; index < decay_terms_tau.size(); index++){
+		if (decay_terms_tau[index] == current_spiking_synapse_group_params->decay_term_tau){
+			isfound = true;
+			indextoset = index;
+			break;
+		}
+	}
+	if (!isfound){
+		decay_terms_tau.push_back(current_spiking_synapse_group_params->decay_term_tau);
+		indextoset = num_syn_labels;
+		num_syn_labels++;
+
+	}
+	// Now set the synapse labels
+  	for (int i = (total_number_of_synapses - temp_number_of_synapses_in_last_group); i < total_number_of_synapses; i++) {
+  		syn_labels[i] = indextoset;
+  	}
+  }
 }
 
 

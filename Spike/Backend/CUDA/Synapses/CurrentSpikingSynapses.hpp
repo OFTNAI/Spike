@@ -13,15 +13,30 @@
 
 namespace Backend {
   namespace CUDA {
+    struct current_spiking_synapses_data_struct: spiking_synapses_data_struct {
+	    float* neuron_wise_current_trace;
+      float* decay_terms_tau;
+    };
     class CurrentSpikingSynapses : public virtual ::Backend::CUDA::SpikingSynapses,
                                    public virtual ::Backend::CurrentSpikingSynapses {
     public:
-      ~CurrentSpikingSynapses() override = default;
+      ~CurrentSpikingSynapses();
       SPIKE_MAKE_BACKEND_CONSTRUCTOR(CurrentSpikingSynapses);
       using ::Backend::CurrentSpikingSynapses::frontend;
+      
+      int current_array_length = 0;
+      float* neuron_wise_current_trace = nullptr;
+      float* h_neuron_wise_current_trace = nullptr;
+      float* d_decay_terms_tau = nullptr;
+      
+      current_spiking_synapses_data_struct* synaptic_data;
+      current_spiking_synapses_data_struct* d_synaptic_data;
 
       void prepare() override;
       void reset_state() override;
+
+      void allocate_device_pointers(); // Not virtual
+      void copy_constants_and_initial_efficacies_to_device(); // Not virtual
 
       void state_update
       (::SpikingNeurons * neurons,
@@ -30,16 +45,15 @@ namespace Backend {
        float timestep) final; // Overrides ::Backend::SpikingSynapses:: ...
       
     };
-
-    __global__ void current_calculate_postsynaptic_current_injection_kernel
-    (float* d_synaptic_efficacies_or_weights,
-     float* d_time_of_last_spike_to_reach_synapse,
-     int* d_postsynaptic_neuron_indices,
-     float* d_neurons_current_injections,
-     float timestep,
-     int timestep_grouping,
-     float current_time_in_seconds,
-     size_t total_number_of_synapses);
+    __device__ float current_spiking_current_injection_kernel(
+        spiking_synapses_data_struct* synaptic_data,
+	      spiking_neurons_data_struct* neuron_data,
+        float multiplication_to_volts,
+        float current_membrane_voltage,
+        float timestep,
+        int timestep_grouping,
+	      int idx,
+	      int g);
   }
 }
 

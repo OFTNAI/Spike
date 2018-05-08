@@ -79,6 +79,9 @@ namespace Backend {
     }
 
     void AdExSpikingNeurons::state_update(float current_time_in_seconds, float timestep) {
+      // Getting a handle on the synapses backend
+      ::Backend::CUDA::ConductanceSpikingSynapses* synapses_backend =
+        dynamic_cast<::Backend::CUDA::ConductanceSpikingSynapses*>(frontend()->model->spiking_synapses->backend());
 	AdEx_update_membrane_potentials<<<number_of_neuron_blocks_per_grid, threads_per_block>>>
           (membrane_potentials_v,
            adaptation_values_w,

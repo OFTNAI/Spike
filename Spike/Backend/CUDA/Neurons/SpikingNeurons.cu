@@ -6,8 +6,6 @@
 namespace Backend {
   namespace CUDA {
     SpikingNeurons::~SpikingNeurons() {
-      CudaSafeCall(cudaFree(current_injections));
-      CudaSafeCall(cudaFree(total_current_conductance));
       CudaSafeCall(cudaFree(last_spike_time_of_each_neuron));
       CudaSafeCall(cudaFree(membrane_potentials_v));
       CudaSafeCall(cudaFree(thresholds_for_action_potential_spikes));
@@ -21,9 +19,6 @@ namespace Backend {
       CudaSafeCall(cudaMalloc((void **)&thresholds_for_action_potential_spikes, sizeof(float)*frontend()->total_number_of_neurons));
       CudaSafeCall(cudaMalloc((void **)&resting_potentials, sizeof(float)*frontend()->total_number_of_neurons));
      
-      // Creating timestep grouping based data for current injection values 
-      CudaSafeCall(cudaMalloc((void **)&current_injections, sizeof(float)*(frontend()->total_number_of_neurons*frontend()->model->timestep_grouping)));
-      CudaSafeCall(cudaMalloc((void **)&total_current_conductance, sizeof(float)*(frontend()->total_number_of_neurons*frontend()->model->timestep_grouping)));
       CudaSafeCall(cudaMalloc((void **)&d_neuron_data, sizeof(spiking_neurons_data_struct)));
     }
 
@@ -43,8 +38,6 @@ namespace Backend {
       neuron_data->membrane_potentials_v = membrane_potentials_v;
       neuron_data->thresholds_for_action_potential_spikes = thresholds_for_action_potential_spikes;
       neuron_data->resting_potentials = resting_potentials;
-      neuron_data->current_injections = current_injections;
-      neuron_data->total_current_conductance = total_current_conductance;
       neuron_data->total_number_of_neurons = frontend()->total_number_of_neurons;
       CudaSafeCall(cudaMemcpy(
 		d_neuron_data, 
@@ -73,15 +66,8 @@ namespace Backend {
 
       // Free tmp_last_spike_times
       free (tmp_last_spike_times);
-      reset_current_injections();
     }
     
-    void SpikingNeurons::reset_current_injections() {
-      CudaSafeCall(cudaMemset(current_injections, 0.0f, sizeof(float)*(frontend()->total_number_of_neurons*frontend()->model->timestep_grouping)));
-      CudaSafeCall(cudaMemset(total_current_conductance, 0.0f, sizeof(float)*(frontend()->total_number_of_neurons*frontend()->model->timestep_grouping)));
-    }
-
-
     void SpikingNeurons::state_update(float current_time_in_seconds, float timestep) {
     }
 

@@ -11,6 +11,8 @@ namespace Backend {
     ConductanceSpikingSynapses::~ConductanceSpikingSynapses() {
       CudaSafeCall(cudaFree(neuron_wise_conductance_trace));
       CudaSafeCall(cudaFree(d_synaptic_data));
+      CudaSafeCall(cudaFree(d_decay_terms_tau_g));
+      CudaSafeCall(cudaFree(d_reversal_potentials_Vhat));
       free(h_neuron_wise_conductance_trace);
     }
 

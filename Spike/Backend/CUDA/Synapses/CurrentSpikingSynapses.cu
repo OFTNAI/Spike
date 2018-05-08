@@ -5,53 +5,92 @@ SPIKE_EXPORT_BACKEND_TYPE(CUDA, CurrentSpikingSynapses);
 
 namespace Backend {
   namespace CUDA {
+    __device__ injection_kernel current_device_kernel = current_spiking_current_injection_kernel;
+    
+    CurrentSpikingSynapses::~CurrentSpikingSynapses(){
+      CudaSafeCall(cudaFree(neuron_wise_current_trace));
+      CudaSafeCall(cudaFree(d_decay_terms_tau));
+      free(h_neuron_wise_current_trace);
+    }
     void CurrentSpikingSynapses::prepare() {
       SpikingSynapses::prepare();
+
+      // Carry out remaining device actions
+      allocate_device_pointers();
+      copy_constants_and_initial_efficacies_to_device();
+
+
+      synaptic_data = new current_spiking_synapses_data_struct();
+      memcpy(synaptic_data, (static_cast<CurrentSpikingSynapses*>(this)->SpikingSynapses::synaptic_data), sizeof(spiking_synapses_data_struct));
+      synaptic_data->neuron_wise_current_trace = neuron_wise_current_trace;
+      CudaSafeCall(cudaMemcpy(
+        d_synaptic_data,
+        synaptic_data,
+        sizeof(current_spiking_synapses_data_struct), cudaMemcpyHostToDevice));
+      CudaSafeCall(cudaMemcpyFromSymbol(
+            &host_injection_kernel,
+            current_device_kernel,
+            sizeof(injection_kernel)));
+    }
+    
+    void CurrentSpikingSynapses::allocate_device_pointers() {
+      // Set up per neuron current
+      current_array_length = frontend()->neuron_pop_size*frontend()->num_syn_labels;
+      h_neuron_wise_current_trace = (float*)realloc(h_neuron_wise_current_trace, current_array_length*sizeof(float));
+      for (int id = 0; id < current_array_length; id++)
+        h_neuron_wise_current_trace[id] = 0.0f;
+
+      CudaSafeCall(cudaMalloc((void **)&d_decay_terms_tau, sizeof(float)*frontend()->num_syn_labels));
+    }
+    
+    void CurrentSpikingSynapses::copy_constants_and_initial_efficacies_to_device() {
+      CudaSafeCall(cudaMemcpy(
+        d_decay_terms_tau,
+        &(frontend()->decay_terms_tau[0]),
+        sizeof(float)*frontend()->num_syn_labels, cudaMemcpyHostToDevice));
     }
 
     void CurrentSpikingSynapses::reset_state() {
       SpikingSynapses::reset_state();
+      CudaSafeCall(cudaMemcpy(
+        neuron_wise_current_trace,
+        h_neuron_wise_current_trace,
+        sizeof(float)*current_array_length, cudaMemcpyHostToDevice));
     }
 
     void CurrentSpikingSynapses::state_update(::SpikingNeurons * neurons, ::SpikingNeurons* input_neurons, float current_time_in_seconds, float timestep) {
-      ::Backend::CUDA::SpikingNeurons* neurons_backend
-          = dynamic_cast<::Backend::CUDA::SpikingNeurons*>(neurons->backend());
-      current_calculate_postsynaptic_current_injection_kernel<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(
-         synaptic_efficacies_or_weights,
-         time_of_last_spike_to_reach_synapse,
-         postsynaptic_neuron_indices,
-         neurons_backend->current_injections,
-	 timestep,
-	 frontend()->model->timestep_grouping,
-         current_time_in_seconds,
-         frontend()->total_number_of_synapses);
-
-      CudaCheckError();
     }
     
-    __global__ void current_calculate_postsynaptic_current_injection_kernel
-    (float* d_synaptic_efficacies_or_weights,
-     float* d_time_of_last_spike_to_reach_synapse,
-     int* d_postsynaptic_neuron_indices,
-     float* d_neurons_current_injections,
-     float timestep,
-     int timestep_grouping,
-     float current_time_in_seconds,
-     size_t total_number_of_synapses){
+    /* KERNELS BELOW */
+    __device__ float current_spiking_current_injection_kernel(
+        spiking_synapses_data_struct* in_synaptic_data,
+	      spiking_neurons_data_struct* neuron_data,
+        float multiplication_to_volts,
+        float current_membrane_voltage,
+        float timestep,
+        int timestep_grouping,
+	      int idx,
+	      int g){
+      
+      current_spiking_synapses_data_struct* synaptic_data = (current_spiking_synapses_data_struct*) in_synaptic_data;
+        
+	    int total_number_of_neurons =  neuron_data->total_number_of_neurons;
+      float total_current = 0.0f;
+        for (int syn_label = 0; syn_label < synaptic_data->num_syn_labels; syn_label++){
+          float decay_term_value = synaptic_data->decay_terms_tau[syn_label];
+	        float decay_factor = expf(- timestep / decay_term_value);
+          float synaptic_current = synaptic_data->neuron_wise_current_trace[total_number_of_neurons*syn_label + idx];
+          // Update the synaptic conductance
+	        synaptic_current *= decay_factor;
+	        synaptic_current += synaptic_data->neuron_wise_input_update[total_number_of_neurons*timestep_grouping*syn_label + g*total_number_of_neurons + idx];
+	        // Reset the conductance update
+	        synaptic_data->neuron_wise_input_update[total_number_of_neurons*timestep_grouping*syn_label + g*total_number_of_neurons + idx] = 0.0f;
+          total_current += synaptic_current;
+          synaptic_data->neuron_wise_current_trace[total_number_of_neurons*syn_label + idx] = synaptic_current;
 
-      int idx = threadIdx.x + blockIdx.x * blockDim.x;
-      if (idx < total_number_of_synapses) {
-	
-	for (int g=0; g < timestep_grouping; g++){
-          if (fabs(d_time_of_last_spike_to_reach_synapse[idx] - (current_time_in_seconds + g*(timestep))) < (0.5*timestep)) {
-
-            atomicAdd(&d_neurons_current_injections[d_postsynaptic_neuron_indices[idx]*timestep_grouping + g], d_synaptic_efficacies_or_weights[idx]);
-
-          }
-	}
-        idx += blockDim.x * gridDim.x;
-      }
-      __syncthreads();
+	      }
+	      
+        return total_current*multiplication_to_volts;
     }
 
   }
