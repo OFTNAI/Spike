@@ -30,9 +30,6 @@ namespace Backend {
       float* d_decay_terms_tau_g = nullptr;
       float* d_reversal_potentials_Vhat = nullptr;
 
-      conductance_spiking_synapses_data_struct* synaptic_data;
-      conductance_spiking_synapses_data_struct* d_synaptic_data;
-
       void prepare() override;
       void reset_state() override;
 

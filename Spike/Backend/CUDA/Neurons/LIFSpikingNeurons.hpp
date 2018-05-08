@@ -27,9 +27,6 @@ namespace Backend {
       SPIKE_MAKE_BACKEND_CONSTRUCTOR(LIFSpikingNeurons);
       using ::Backend::LIFSpikingNeurons::frontend;
 
-      lif_spiking_neurons_data_struct* neuron_data;
-      lif_spiking_neurons_data_struct* d_neuron_data;
-
       void prepare() override;
       void reset_state() override;
 

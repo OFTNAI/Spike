@@ -13,6 +13,7 @@ namespace Backend {
     void LIFSpikingNeurons::allocate_device_pointers() {
       CudaSafeCall(cudaMalloc((void **)&membrane_time_constants_tau_m, sizeof(float)*frontend()->total_number_of_neurons));
       CudaSafeCall(cudaMalloc((void **)&membrane_resistances_R, sizeof(float)*frontend()->total_number_of_neurons));
+      CudaSafeCall(cudaFree(d_neuron_data));
       CudaSafeCall(cudaMalloc((void **)&d_neuron_data, sizeof(lif_spiking_neurons_data_struct)));
     }
 
@@ -32,11 +33,14 @@ namespace Backend {
       allocate_device_pointers();
       copy_constants_to_device();
 
+      lif_spiking_neurons_data_struct temp_neuron_data;
+      memcpy(&temp_neuron_data, neuron_data, sizeof(spiking_neurons_data_struct));
+      free(neuron_data);
       neuron_data = new lif_spiking_neurons_data_struct();
-      memcpy(neuron_data, (static_cast<LIFSpikingNeurons*>(this)->SpikingNeurons::neuron_data), sizeof(spiking_neurons_data_struct));
-      neuron_data->membrane_time_constants_tau_m = membrane_time_constants_tau_m;
-      neuron_data->membrane_resistances_R = membrane_resistances_R;
-      neuron_data->total_number_of_neurons = frontend()->total_number_of_neurons;
+      memcpy(neuron_data, &temp_neuron_data, sizeof(spiking_neurons_data_struct));
+      lif_spiking_neurons_data_struct* this_neuron_data = static_cast<lif_spiking_neurons_data_struct*>(neuron_data);
+      this_neuron_data->membrane_time_constants_tau_m = membrane_time_constants_tau_m;
+      this_neuron_data->membrane_resistances_R = membrane_resistances_R;
       CudaSafeCall(cudaMemcpy(d_neuron_data,
                               neuron_data,
                               sizeof(lif_spiking_neurons_data_struct),
@@ -48,8 +52,8 @@ namespace Backend {
     }
 
     void LIFSpikingNeurons::state_update(float current_time_in_seconds, float timestep) {
-      ::Backend::CUDA::ConductanceSpikingSynapses* synapses_backend =
-        dynamic_cast<::Backend::CUDA::ConductanceSpikingSynapses*>(frontend()->model->spiking_synapses->backend());
+      ::Backend::CUDA::SpikingSynapses* synapses_backend =
+        dynamic_cast<::Backend::CUDA::SpikingSynapses*>(frontend()->model->spiking_synapses->backend());
       lif_update_membrane_potentials<<<number_of_neuron_blocks_per_grid, threads_per_block>>>
         (synapses_backend->host_injection_kernel,
          synapses_backend->d_synaptic_data,

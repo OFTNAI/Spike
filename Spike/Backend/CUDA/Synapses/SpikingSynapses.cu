@@ -77,7 +77,6 @@ namespace Backend {
       copy_constants_and_initial_efficacies_to_device();
 
       synaptic_data = new spiking_synapses_data_struct();
-      memcpy(synaptic_data, (static_cast<SpikingSynapses*>(this)->SpikingSynapses::synaptic_data), sizeof(synapses_data_struct));
       synaptic_data->neuron_wise_input_update = neuron_wise_input_update;
       synaptic_data->num_syn_labels = frontend()->num_syn_labels;
       CudaSafeCall(cudaMemcpy(d_synaptic_data,

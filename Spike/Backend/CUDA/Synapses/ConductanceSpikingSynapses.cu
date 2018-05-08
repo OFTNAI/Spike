@@ -29,11 +29,15 @@ namespace Backend {
       allocate_device_pointers();
       copy_constants_and_initial_efficacies_to_device();
 
+      conductance_spiking_synapses_data_struct temp_synaptic_data;
+      memcpy(&temp_synaptic_data, synaptic_data, sizeof(spiking_synapses_data_struct));
+      free(synaptic_data);
       synaptic_data = new conductance_spiking_synapses_data_struct();
-      memcpy(synaptic_data, (static_cast<ConductanceSpikingSynapses*>(this)->SpikingSynapses::synaptic_data), sizeof(spiking_synapses_data_struct));
-      synaptic_data->decay_terms_tau_g = d_decay_terms_tau_g;
-      synaptic_data->reversal_potentials_Vhat = d_reversal_potentials_Vhat;
-      synaptic_data->neuron_wise_conductance_trace = neuron_wise_conductance_trace;
+      memcpy(synaptic_data, &temp_synaptic_data, sizeof(spiking_synapses_data_struct));
+      conductance_spiking_synapses_data_struct* this_synaptic_data = static_cast<conductance_spiking_synapses_data_struct*>(synaptic_data); 
+      this_synaptic_data->decay_terms_tau_g = d_decay_terms_tau_g;
+      this_synaptic_data->reversal_potentials_Vhat = d_reversal_potentials_Vhat;
+      this_synaptic_data->neuron_wise_conductance_trace = neuron_wise_conductance_trace;
       CudaSafeCall(cudaMemcpy(
         d_synaptic_data,
         synaptic_data,
@@ -55,6 +59,7 @@ namespace Backend {
       CudaSafeCall(cudaMalloc((void **)&neuron_wise_conductance_trace, sizeof(float)*conductance_trace_length));
       CudaSafeCall(cudaMalloc((void **)&d_decay_terms_tau_g, sizeof(float)*frontend()->num_syn_labels));
       CudaSafeCall(cudaMalloc((void **)&d_reversal_potentials_Vhat, sizeof(float)*frontend()->num_syn_labels));
+      CudaSafeCall(cudaFree(d_synaptic_data));
       CudaSafeCall(cudaMalloc((void **)&d_synaptic_data, sizeof(conductance_spiking_synapses_data_struct)));
       CudaSafeCall(cudaMemcpyFromSymbol(
             &host_injection_kernel,

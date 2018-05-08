@@ -19,18 +19,17 @@ namespace Backend {
       allocate_device_pointers();
       copy_constants_and_initial_efficacies_to_device();
 
-
+      current_spiking_synapses_data_struct temp_synaptic_data;
+      memcpy(&temp_synaptic_data, synaptic_data, sizeof(spiking_synapses_data_struct));
+      free(synaptic_data);
       synaptic_data = new current_spiking_synapses_data_struct();
-      memcpy(synaptic_data, (static_cast<CurrentSpikingSynapses*>(this)->SpikingSynapses::synaptic_data), sizeof(spiking_synapses_data_struct));
-      synaptic_data->neuron_wise_current_trace = neuron_wise_current_trace;
+      memcpy(synaptic_data, &temp_synaptic_data, sizeof(spiking_synapses_data_struct));
+      current_spiking_synapses_data_struct* this_synaptic_data = static_cast<current_spiking_synapses_data_struct*>(synaptic_data);
+      this_synaptic_data->neuron_wise_current_trace = neuron_wise_current_trace;
       CudaSafeCall(cudaMemcpy(
         d_synaptic_data,
         synaptic_data,
         sizeof(current_spiking_synapses_data_struct), cudaMemcpyHostToDevice));
-      CudaSafeCall(cudaMemcpyFromSymbol(
-            &host_injection_kernel,
-            current_device_kernel,
-            sizeof(injection_kernel)));
     }
     
     void CurrentSpikingSynapses::allocate_device_pointers() {
@@ -41,6 +40,12 @@ namespace Backend {
         h_neuron_wise_current_trace[id] = 0.0f;
 
       CudaSafeCall(cudaMalloc((void **)&d_decay_terms_tau, sizeof(float)*frontend()->num_syn_labels));
+      CudaSafeCall(cudaFree(d_synaptic_data));
+      CudaSafeCall(cudaMalloc((void **)&d_synaptic_data, sizeof(current_spiking_synapses_data_struct)));
+      CudaSafeCall(cudaMemcpyFromSymbol(
+            &host_injection_kernel,
+            current_device_kernel,
+            sizeof(injection_kernel)));
     }
     
     void CurrentSpikingSynapses::copy_constants_and_initial_efficacies_to_device() {

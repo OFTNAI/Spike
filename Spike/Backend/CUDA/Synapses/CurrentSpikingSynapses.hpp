@@ -29,9 +29,6 @@ namespace Backend {
       float* h_neuron_wise_current_trace = nullptr;
       float* d_decay_terms_tau = nullptr;
       
-      current_spiking_synapses_data_struct* synaptic_data;
-      current_spiking_synapses_data_struct* d_synaptic_data;
-
       void prepare() override;
       void reset_state() override;
 
