@@ -65,7 +65,6 @@ namespace Backend {
 
 
       // This is already in volts, no conversion necessary
-      total_current *= (1.0f / timestep);
       return total_current;
     }
 

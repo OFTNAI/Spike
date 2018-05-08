@@ -89,10 +89,10 @@ namespace Backend {
         float membrane_potential_Vi = neuron_data->membrane_potentials_v[idx];
 
     	  for (int g=0; g < timestep_grouping; g++){	  
-            float voltage_input_per_timestep = current_injection_kernel(
+            float voltage_input_for_timestep = current_injection_kernel(
                   synaptic_data,
                   in_neuron_data,
-                  temp_membrane_resistance_R,
+                  temp_membrane_resistance_R*equation_constant,
                   membrane_potential_Vi,
                   timestep,
                   timestep_grouping,
@@ -100,7 +100,7 @@ namespace Backend {
                   g);
             if (((current_time_in_seconds + g*timestep) - neuron_data->last_spike_time_of_each_neuron[idx]) >= refractory_period_in_seconds){
               
-              membrane_potential_Vi = equation_constant * (resting_potential_V0 + voltage_input_per_timestep) + (1 - equation_constant) * membrane_potential_Vi + equation_constant * background_current;
+              membrane_potential_Vi = equation_constant * resting_potential_V0 + (1 - equation_constant) * membrane_potential_Vi + equation_constant * background_current + voltage_input_for_timestep;
               
 	  
 	            // Finally check for a spike
