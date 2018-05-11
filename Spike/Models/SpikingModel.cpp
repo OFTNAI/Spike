@@ -81,6 +81,12 @@ void SpikingModel::AddSynapseGroupsForNeuronGroupAndEachInputGroup(int postsynap
 
 }
 
+void SpikingModel::ActivatePlasticity(bool apply_plasticity_to_relevant_synapses){
+
+    if (apply_plasticity_to_relevant_synapses && (plasticity_rule_vec.size() > 0))
+      plasticity_on = true; 
+}
+
 
 void SpikingModel::AddPlasticityRule(STDPPlasticity * plasticity_rule){
 	// Adds the new STDP rule to the vector of STDP Rule
@@ -129,7 +135,7 @@ void SpikingModel::init_backend() {
   spiking_neurons->init_backend(context);
   input_spiking_neurons->init_backend(context);
   for (int plasticity_id = 0; plasticity_id < plasticity_rule_vec.size(); plasticity_id++){
-	plasticity_rule_vec[plasticity_id]->init_backend(context);
+    plasticity_rule_vec[plasticity_id]->init_backend(context);
   }
 
   #ifndef SILENCE_MODEL_SETUP
@@ -145,7 +151,7 @@ void SpikingModel::prepare_backend() {
   spiking_neurons->prepare_backend();
   input_spiking_neurons->prepare_backend();
   for (int plasticity_id = 0; plasticity_id < plasticity_rule_vec.size(); plasticity_id++){
-	plasticity_rule_vec[plasticity_id]->prepare_backend();
+    plasticity_rule_vec[plasticity_id]->prepare_backend();
   }
 }
 
@@ -160,15 +166,15 @@ void SpikingModel::reset_state() {
 }
 
 
-void SpikingModel::perform_per_timestep_model_instructions(float current_time_in_seconds, bool apply_plasticity_to_relevant_synapses){
+void SpikingModel::perform_per_timestep_model_instructions(float current_time_in_seconds){
 	if (spiking_neurons->total_number_of_neurons > 0)
 		spiking_neurons->state_update(current_time_in_seconds, timestep);
 	if (input_spiking_neurons->total_number_of_neurons > 0)
 	input_spiking_neurons->state_update(current_time_in_seconds, timestep);
 	
-	if (apply_plasticity_to_relevant_synapses){
+	if (plasticity_on){
 		for (int plasticity_id = 0; plasticity_id < plasticity_rule_vec.size(); plasticity_id++)
-			plasticity_rule_vec[plasticity_id]->state_update(current_time_in_seconds, timestep); // spiking_neurons, 
+			plasticity_rule_vec[plasticity_id]->state_update(current_time_in_seconds, timestep);
 	}
 
 	if (spiking_synapses->total_number_of_synapses > 0)

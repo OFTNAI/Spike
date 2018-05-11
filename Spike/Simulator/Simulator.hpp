@@ -44,7 +44,7 @@ struct Simulator_Run_Simulation_General_Options {
 
 	Simulator_Run_Simulation_General_Options(): presentation_time_per_stimulus_per_epoch(0.1), 
 												number_of_epochs(1), 
-												apply_plasticity_to_relevant_synapses(false),
+												apply_plasticity_to_relevant_synapses(true),
 												stimulus_presentation_order_seed(1),
 												reset_current_time_between_each_epoch(false),
 												delete_spike_analyser_on_simulator_destruction(true),

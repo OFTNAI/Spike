@@ -143,7 +143,8 @@ void Simulator::RunSimulation() {
 	// Set seed for stimulus presentation order
 	srand(simulator_options->run_simulation_general_options->stimulus_presentation_order_seed);
 
-
+  // Activate plasticity if required
+  spiking_model->ActivatePlasticity(simulator_options->run_simulation_general_options->apply_plasticity_to_relevant_synapses);
 	
 
 	if (simulator_options->file_storage_options->write_initial_synaptic_weights_to_file_bool) {
@@ -186,7 +187,7 @@ void Simulator::RunSimulation() {
 			int corrected_number_of_timesteps_per_stimulus_per_epoch = (number_of_timesteps_per_stimulus_per_epoch / spiking_model->timestep_grouping);
 
 			for (int timestep_index = 0; timestep_index < corrected_number_of_timesteps_per_stimulus_per_epoch; timestep_index++){
-				spiking_model->perform_per_timestep_model_instructions(current_time_in_seconds, simulator_options->run_simulation_general_options->apply_plasticity_to_relevant_synapses);
+				spiking_model->perform_per_timestep_model_instructions(current_time_in_seconds);
 				perform_per_timestep_recording_electrode_instructions(current_time_in_seconds, timestep_index, corrected_number_of_timesteps_per_stimulus_per_epoch, epoch_number);
 				current_time_in_seconds = current_time_at_stimulus_beginning + (timestep_index + 1)*spiking_model->timestep_grouping*float(spiking_model->timestep);
 

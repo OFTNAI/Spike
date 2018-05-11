@@ -32,6 +32,7 @@ public:
 
   float timestep;
   int timestep_grouping = 1;
+  bool plasticity_on = false;
   void SetTimestep(float timestep_parameter);
 
   SpikingNeurons * spiking_neurons = nullptr;
@@ -46,9 +47,10 @@ public:
   void AddSynapseGroupsForNeuronGroupAndEachInputGroup(int postsynaptic_group_id, synapse_parameters_struct * synapse_params);
 
   void AddPlasticityRule(STDPPlasticity * plasticity_rule);
+  void ActivatePlasticity(bool apply_plasticity_to_relevant_synapses);
 
   void reset_state();
-  void perform_per_timestep_model_instructions(float current_time_in_seconds, bool apply_plasticity_to_relevant_synapses);
+  void perform_per_timestep_model_instructions(float current_time_in_seconds);
 
   virtual void finalise_model();
 

@@ -242,7 +242,6 @@ namespace Backend {
 	    presynaptic_neuron_indices[pos] = idx;
 	    group_indices[pos] = groupindex;
         }
-        __syncthreads();
         indx += blockDim.x * gridDim.x;
       }
     }
@@ -335,7 +334,6 @@ namespace Backend {
         }
         indx = threadIdx.x + blockIdx.x * blockDim.x;
       }
-      __syncthreads();
     }
       __device__ float spiking_current_injection_kernel(
   spiking_synapses_data_struct* synaptic_data,

@@ -37,6 +37,8 @@ namespace Backend {
       int* group_indices = nullptr;
       int* num_active_synapses = nullptr;
       int* num_activated_neurons = nullptr;
+      int* activated_neuron_afferents = nullptr;
+      int* activated_neuron_afferents_count = nullptr;
       int* active_synapse_counts = nullptr;
       int* presynaptic_neuron_indices = nullptr;
       int h_num_active_synapses = 0;
@@ -72,7 +74,7 @@ namespace Backend {
 
       __device__ float spiking_current_injection_kernel(
   spiking_synapses_data_struct* synaptic_data,
-	spiking_neurons_data_struct* neuron_data,
+  spiking_neurons_data_struct* neuron_data,
   float multiplication_to_volts,
   float current_membrane_voltage,
   float timestep,
@@ -82,36 +84,36 @@ namespace Backend {
 
 
     __global__ void get_active_synapses_kernel(
-		int* d_per_neuron_efferent_synapse_count,
-		int* d_per_input_neuron_efferent_synapse_count,
-                float* d_last_spike_time_of_each_neuron,
-                float* d_last_spike_time_of_each_input_neuron,
-                float current_time_in_seconds,
-                float timestep,
-		int num_input_neurons,
-		int* group_indices,
-		int* num_active_synapses,
-		int* num_activated_neurons,
-		int* active_synapse_counts,
-		int* presynaptic_neuron_indices,
-                size_t total_number_of_neurons);
+      int* d_per_neuron_efferent_synapse_count,
+      int* d_per_input_neuron_efferent_synapse_count,
+      float* d_last_spike_time_of_each_neuron,
+      float* d_last_spike_time_of_each_input_neuron,
+      float current_time_in_seconds,
+      float timestep,
+      int num_input_neurons,
+      int* group_indices,
+      int* num_active_synapses,
+      int* num_activated_neurons,
+      int* active_synapse_counts,
+      int* presynaptic_neuron_indices,
+      size_t total_number_of_neurons);
     
-    __global__ void activate_synapses
-		(int* d_per_neuron_efferent_synapse_total,
-                int* d_per_neuron_efferent_synapse_indices,
-        	int* d_per_input_neuron_efferent_synapse_total,
-                int* d_per_input_neuron_efferent_synapse_indices,
-		int* circular_spikenum_buffer,
-		int* spikeid_buffer,
-		int bufferloc,
-		int buffersize,
-                int* d_delays,
-		int total_number_of_synapses,
-		int* group_indices,
-		int timestep_grouping,
-		int* presynaptic_neuron_indices,
-		int* active_synapse_counts,
-		int* num_active_synapses);
+    __global__ void activate_synapses(
+      int* d_per_neuron_efferent_synapse_total,
+      int* d_per_neuron_efferent_synapse_indices,
+      int* d_per_input_neuron_efferent_synapse_total,
+      int* d_per_input_neuron_efferent_synapse_indices,
+      int* circular_spikenum_buffer,
+      int* spikeid_buffer,
+      int bufferloc,
+      int buffersize,
+      int* d_delays,
+      int total_number_of_synapses,
+      int* group_indices,
+      int timestep_grouping,
+      int* presynaptic_neuron_indices,
+      int* active_synapse_counts,
+      int* num_active_synapses);
 
     __global__ void move_spikes_towards_synapses_kernel(
       float current_time_in_seconds,
