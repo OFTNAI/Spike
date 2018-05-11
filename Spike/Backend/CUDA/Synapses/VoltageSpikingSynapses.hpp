@@ -10,8 +10,6 @@
 
 namespace Backend {
   namespace CUDA {
-    struct voltage_spiking_synapses_data_struct: spiking_synapses_data_struct {
-    };
     class VoltageSpikingSynapses : public virtual ::Backend::CUDA::SpikingSynapses,
                                        public virtual ::Backend::VoltageSpikingSynapses {
     public:
@@ -19,9 +17,6 @@ namespace Backend {
       ~VoltageSpikingSynapses() override;
       SPIKE_MAKE_BACKEND_CONSTRUCTOR(VoltageSpikingSynapses);
       using ::Backend::VoltageSpikingSynapses::frontend;
-
-      conductance_spiking_synapses_data_struct* synaptic_data;
-      conductance_spiking_synapses_data_struct* d_synaptic_data;
 
       void prepare() override;
       void reset_state() override;

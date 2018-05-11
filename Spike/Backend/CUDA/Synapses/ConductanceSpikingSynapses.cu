@@ -24,6 +24,7 @@ namespace Backend {
       h_neuron_wise_conductance_trace = (float*)realloc(h_neuron_wise_conductance_trace, conductance_trace_length*sizeof(float));
       for (int id = 0; id < conductance_trace_length; id++)
         h_neuron_wise_conductance_trace[id] = 0.0f;
+      printf("Got this far!\n");
 
       // Carry out remaining device actions
       allocate_device_pointers();

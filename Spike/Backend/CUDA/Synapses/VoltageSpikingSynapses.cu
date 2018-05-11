@@ -54,7 +54,7 @@ namespace Backend {
 	      int idx,
 	      int g){
       
-      voltage_spiking_synapses_data_struct* synaptic_data = (voltage_spiking_synapses_data_struct*) in_synaptic_data;
+      spiking_synapses_data_struct* synaptic_data = (spiking_synapses_data_struct*) in_synaptic_data;
         
 	    int total_number_of_neurons =  neuron_data->total_number_of_neurons;
       float total_current = 0.0f;
