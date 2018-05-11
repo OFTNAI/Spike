@@ -35,21 +35,13 @@ option(BUILD_EXAMPLES
   "Build examples"
   ON)
 
-option(ENABLE_PLOTTING
-  "Enable Plotting module -- requires mgl2"
-  OFF)
-
 option(BUILD_DOXYGEN_DOCS
   "Build the Doxygen-generated API docs"
   OFF)
 
 option(BUILD_TESTING
   "Enable CTest tests"
-  ON)
-
-option(BUILD_SHARED_LIBS
-  "Build shared libSpike (else static)"
-  ON)
+  OFF)
 
 #cmake_dependent_option(ENABLE_DIST "Enable the the distribution tarball target" ON "BUILD_DOXYGEN_DOCS" OFF)
 #mark_as_advanced(BUILD_DOXYGEN_DOCS ENABLE_DIST)
