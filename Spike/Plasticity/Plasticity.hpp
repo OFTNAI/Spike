@@ -53,6 +53,7 @@ public:
   // ID for Plasticity Rules
   int plasticity_rule_id = -1;
 
+  virtual void AddSynapse(int presynaptic_neuron, int postsynaptic_neuron, int synapse_id) = 0;
   virtual void state_update(float current_time_in_seconds, float timestep) = 0;
 
 private:

@@ -39,10 +39,10 @@ static_assert(std::has_virtual_destructor<Backend::WeightNormSTDPPlasticity>::va
 
 // WeightNormSTDPPlasticity Parameters
 struct weightnorm_stdp_plasticity_parameters_struct : stdp_plasticity_parameters_struct {
-	weightnorm_stdp_plasticity_parameters_struct() {}
-	// The normalization can be either done with the initialized total or with a specific target
-	bool settarget = false;
-	float target = 0.0;
+  weightnorm_stdp_plasticity_parameters_struct() {}
+  // The normalization can be either done with the initialized total or with a specific target
+  bool settarget = false;
+  float target = 0.0;
 };
 
 

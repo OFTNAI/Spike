@@ -21,13 +21,10 @@ namespace Backend {
       SPIKE_MAKE_BACKEND_CONSTRUCTOR(WeightNormSTDPPlasticity);
       using ::Backend::WeightNormSTDPPlasticity::frontend;
 
-      int total_number_of_plastic_synapses = 0;
-      int* plastic_synapse_indices = nullptr;
-
       float* sum_squared_afferent_values = nullptr;
       float* afferent_weight_change_updater = nullptr;
 
-      bool* neuron_in_plasticity_set = nullptr;	
+      int* post_neuron_conversion = nullptr;
       float* initial_weights = nullptr;
       float* weight_divisor = nullptr;
 
@@ -47,7 +44,8 @@ namespace Backend {
 	(int* postsyn_neuron,
 	 float* current_weight,
 	 float* initial_weights,
-         float* afferent_weight_change_updater,
+   float* afferent_weight_change_updater,
+   int* post_neuron_conversion,
 	 int* d_plastic_synapse_indices,
 	 size_t total_number_of_plastic_synapses);
 
@@ -57,13 +55,12 @@ namespace Backend {
 	(float* sum_squared_afferent_values,
 	 float* afferent_weight_change_updater,
 	 float* weight_divisor,
-	 bool* neuron_in_plasticity_set,
 	 size_t total_num_neurons);
  
   // Weight updating function
   __global__ void weight_update
 	(int* postsyn_neuron,
-	bool* neuron_in_plasticity_set,
+   int* post_neuron_conversion,
 	float* current_weight,
 	float* weight_divisor,
 	int* d_plastic_synapse_indices,

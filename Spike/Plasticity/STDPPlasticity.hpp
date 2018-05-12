@@ -25,6 +25,7 @@ class STDPPlasticity; // forward definition
 #include <stdio.h>
 // allows maths
 #include <math.h>
+#include <vector>
 
 namespace Backend {
   class STDPPlasticity : public virtual Plasticity {
@@ -45,7 +46,7 @@ struct stdp_plasticity_parameters_struct : plasticity_parameters_struct {
 
 class STDPPlasticity : public Plasticity {
 public:
-  ~STDPPlasticity() override = default;
+  ~STDPPlasticity() override;
 
   SPIKE_ADD_BACKEND_GETSET(STDPPlasticity, SpikeBase);
   void reset_state() override;
@@ -53,7 +54,20 @@ public:
   SpikingSynapses* syns = nullptr;
   SpikingNeurons* neurs = nullptr;
   SpikingModel* model = nullptr;
+  
+  // Storage locations for the neurons and synapses involved in plasticity
+  // Only axonal transmission delays are used
+  // Dealt with by AddSynapse function
+  std::vector<int> plastic_synapses;
+  // Details on post-synaptic neuron synapse relations
+  std::vector<int> post_neuron_set;
+  std::vector<int> post_neuron_conversion;
+  // Details on pre-synaptic neuron synapse relations
+  std::vector<int> pre_neuron_set;
+  std::vector<int> pre_neuron_efferent_count;
+  std::vector<int*> pre_neuron_efferent_ids;
 
+  virtual void AddSynapse(int presynaptic_neuron, int postsynaptic_neuron, int synapse_id);
   virtual void state_update(float current_time_in_seconds, float timestep) override = 0;
 
 private:

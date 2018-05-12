@@ -40,10 +40,6 @@ Synapses::~Synapses() {
   free(original_synapse_indices);
   free(synapse_postsynaptic_neuron_count_index);
 
-  for (int plasticity_id=0; plasticity_id < plasticity_synapse_number_per_rule.size(); plasticity_id++){
-    free(plasticity_synapse_indices_per_rule[plasticity_id]);
-  }
-
   delete random_state_manager;
 }
 
@@ -283,7 +279,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
       Plasticity* plasticity_ptr = synapse_params->plasticity_vec[vecid];
       // Check first for nullptr
       if (plasticity_ptr == nullptr)
-	continue;
+        continue;
 
       plasticity_id = plasticity_ptr->plasticity_rule_id;
       // Store or recall STDP Pointer
@@ -291,24 +287,13 @@ void Synapses::AddGroup(int presynaptic_group_id,
       if (plasticity_id < 0){
         plasticity_id = plasticity_rule_vec.size();
         plasticity_rule_vec.push_back(plasticity_ptr);
-        // Allocate space to store stdp indices
-        plasticity_synapse_indices_per_rule.push_back(nullptr);
-        // plasticity_synapse_indices_per_rule = (int**)realloc(plasticity_synapse_indices_per_rule, plasticity_rule_vec.size() * sizeof(int*));
-        // plasticity_synapse_indices_per_rule[plasticity_id] = nullptr;
-        plasticity_synapse_number_per_rule.push_back(0);
         // Apply ID to STDP class
         plasticity_ptr->plasticity_rule_id = plasticity_id;
       }
 
-
-      // Allocate memory for the new incoming synapses
-      original_num_plasticity_indices = plasticity_synapse_number_per_rule[plasticity_id];
-      plasticity_synapse_number_per_rule[plasticity_id] += temp_number_of_synapses_in_last_group;
-      plasticity_synapse_indices_per_rule[plasticity_id] = (int*)realloc(plasticity_synapse_indices_per_rule[plasticity_id], plasticity_synapse_number_per_rule[plasticity_id] * sizeof(int));
-
       for (int i = (total_number_of_synapses - temp_number_of_synapses_in_last_group); i < total_number_of_synapses; i++){
         //Set STDP on or off for synapse (now using stdp id)
-        plasticity_synapse_indices_per_rule[plasticity_id][original_num_plasticity_indices + (i  - (total_number_of_synapses - temp_number_of_synapses_in_last_group))] = i;
+        plasticity_ptr->AddSynapse(presynaptic_neuron_indices[i], postsynaptic_neuron_indices[i], i);
       }
     }
   }
