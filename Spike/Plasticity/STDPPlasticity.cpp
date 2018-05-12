@@ -10,21 +10,21 @@ void STDPPlasticity::AddSynapse(int presynaptic_neuron_id, int postsynaptic_neur
   // Store the post-synaptic neuron ID if it has not yet already been stored
   bool post_exists = false;
   int post_loc = -1;
-  for (int neuron_id = 0; neuron_id < post_neuron_set.size(); neuron_id++){
-    if (post_neuron_set[neuron_id] == postsynaptic_neuron_id){
+  if (post_neuron_conversion.size() > postsynaptic_neuron_id){
+    if (post_neuron_conversion[postsynaptic_neuron_id] >= 0){
       post_exists = true;
-      post_loc = neuron_id;
-      break;
+      post_loc = post_neuron_conversion[postsynaptic_neuron_id];
     }
   }
   if (!post_exists){
-    while (post_neuron_conversion.size() < postsynaptic_neuron_id)
+    while (post_neuron_conversion.size() <= postsynaptic_neuron_id)
       post_neuron_conversion.push_back(-1);
-    post_neuron_set.push_back(synapse_id);
+    post_neuron_set.push_back(postsynaptic_neuron_id);
     post_loc = post_neuron_set.size() - 1;
     post_neuron_conversion[postsynaptic_neuron_id] = post_loc; 
   }
-
+  
+  /*
   // If the presynaptic_neuron exists, find it and add the synapse to the correct location, otherwise create a location
   // Also add the location in the post_neuron_set of the postsynaptic neuron (to be used later)
   bool pre_exists = false;
@@ -41,12 +41,13 @@ void STDPPlasticity::AddSynapse(int presynaptic_neuron_id, int postsynaptic_neur
   }
   if (!pre_exists){
     int* efferent_list = (int*)malloc(sizeof(int));
-    int* post_loc_list = (int*)malloc(sizeof(int));
-    pre_neuron_set.push_back(synapse_id);
+    pre_neuron_set.push_back(presynaptic_neuron_id);
+    pre_neuron_efferent_count.push_back(1);
     efferent_list[0] = synapse_id;
     pre_neuron_efferent_ids.push_back(efferent_list);
 
   }
+  */
 
 }
 
