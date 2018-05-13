@@ -44,6 +44,8 @@ namespace Backend {
 
     void WeightDependentSTDPPlasticity::apply_stdp_to_synapse_weights(float current_time_in_seconds, float timestep) {
       if (total_number_of_plastic_synapses > 0){ 
+        update_active_plastic_elements(current_time_in_seconds, timestep);
+        /*
         ltp_and_ltd<<<synapses_backend->number_of_synapse_blocks_per_grid, synapses_backend->threads_per_block>>>
           (synapses_backend->postsynaptic_neuron_indices,
            synapses_backend->time_of_last_spike_to_reach_synapse,
@@ -57,6 +59,7 @@ namespace Backend {
            current_time_in_seconds,
            plastic_synapse_indices,
            total_number_of_plastic_synapses);
+          */
         
       }
     }

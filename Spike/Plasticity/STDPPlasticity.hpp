@@ -64,7 +64,9 @@ public:
   std::vector<int> post_neuron_conversion;
   // Details on pre-synaptic neuron synapse relations
   std::vector<int> pre_neuron_set;
-  std::vector<int> pre_neuron_efferent_count;
+  std::vector<int> pre_neuron_conversion;
+  std::vector<int> pre_input_neuron_conversion;
+  std::vector<int> pre_neuron_efferent_counts;
   std::vector<int*> pre_neuron_efferent_ids;
 
   virtual void AddSynapse(int presynaptic_neuron, int postsynaptic_neuron, int synapse_id);
