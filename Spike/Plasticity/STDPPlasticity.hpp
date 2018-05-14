@@ -62,6 +62,8 @@ public:
   // Details on post-synaptic neuron synapse relations
   std::vector<int> post_neuron_set;
   std::vector<int> post_neuron_conversion;
+  std::vector<int> post_neuron_afferent_counts;
+  std::vector<int*> post_neuron_afferent_ids;
   // Details on pre-synaptic neuron synapse relations
   std::vector<int> pre_neuron_set;
   std::vector<int> pre_neuron_conversion;

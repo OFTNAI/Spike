@@ -30,6 +30,12 @@ namespace Backend {
       int total_number_of_plastic_synapses;
       
       int* post_neuron_set = nullptr;
+      int* post_neuron_afferent_totals = nullptr;
+      vector<int> h_post_neuron_afferent_totals;
+      int* post_neuron_afferent_counts = nullptr;
+      int* post_neuron_afferent_ids = nullptr;
+      vector<int> h_post_neuron_afferent_ids;
+      int* post_neuron_conversion = nullptr;
       int* pre_neuron_set = nullptr;
       int* pre_neuron_efferent_totals = nullptr;
       vector<int> h_pre_neuron_efferent_totals;
@@ -38,10 +44,11 @@ namespace Backend {
       vector<int> h_pre_neuron_efferent_ids;
       // Spike Buffer data location
       device_circular_spike_buffer_struct spike_buffer;
-      int* num_activated_neurons = nullptr;
-      int* activated_neuron_ids = nullptr;
-      int* activated_neuron_groupindices = nullptr;
-      int* num_active_synapses = nullptr;
+      int* num_activated_pre_neurons = nullptr;
+      int* activated_pre_neuron_ids = nullptr;
+      int* activated_pre_neuron_groupindices = nullptr;
+
+      int* num_active_efferent_synapses = nullptr;
       int h_num_active_synapses;
       
       void update_active_plastic_elements(float current_time_in_seconds, float timestep);
@@ -57,10 +64,10 @@ namespace Backend {
         int* d_pre_neuron_efferent_counts,
         float* d_last_spike_time_of_each_neuron,
         float* d_last_spike_time_of_each_input_neuron,
-        int* d_num_activated_neurons,
-        int* d_activated_neuron_ids,
-        int* d_activated_neuron_groupindices,
-        int* d_num_active_synapses,
+        int* d_num_activated_pre_neurons,
+        int* d_activated_pre_neuron_ids,
+        int* d_activated_pre_neuron_groupindices,
+        int* d_num_active_efferent_synapses,
         float current_time_in_seconds,
         float timestep,
         size_t total_number_of_pre_neurons);
@@ -71,12 +78,13 @@ namespace Backend {
         int* d_delays,
         int total_number_of_plastic_synapses,
         int timestep_grouping,
+        int* plastic_synapse_indices,
         int* d_pre_neuron_efferent_totals,
         int* d_pre_neuron_efferent_counts,
         int* d_pre_neuron_efferent_ids,
-        int* d_activated_neuron_ids,
-        int* d_activated_neuron_groupindices,
-        int* d_num_active_synapses);
+        int* d_activated_pre_neuron_ids,
+        int* d_activated_pre_neuron_groupindices,
+        int* d_num_active_efferent_synapses);
         
   }
 }
