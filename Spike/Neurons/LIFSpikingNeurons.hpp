@@ -7,8 +7,8 @@
 struct lif_spiking_neuron_parameters_struct : spiking_neuron_parameters_struct {
 	lif_spiking_neuron_parameters_struct() : somatic_capacitance_Cm(0.0f), somatic_leakage_conductance_g0(0.0f), background_current(0.0f)  { spiking_neuron_parameters_struct(); }
 
-	float somatic_capacitance_Cm;
-	float somatic_leakage_conductance_g0;
+  float somatic_capacitance_Cm;
+  float somatic_leakage_conductance_g0;
   float background_current;
 
 };

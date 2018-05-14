@@ -11,9 +11,10 @@ namespace Backend {
   namespace CUDA {
     struct spiking_neurons_data_struct : neurons_data_struct {
         float* last_spike_time_of_each_neuron;
-	float* membrane_potentials_v;
-	float* thresholds_for_action_potential_spikes;
-	float* resting_potentials;
+        float* membrane_potentials_v; 
+        float* thresholds_for_action_potential_spikes;
+        float* resting_potentials_v0;
+        float* after_spike_reset_potentials_vreset;
     };
 
     class SpikingNeurons : public virtual ::Backend::CUDA::Neurons,
@@ -28,7 +29,8 @@ namespace Backend {
       float* last_spike_time_of_each_neuron;
       float* membrane_potentials_v;
       float* thresholds_for_action_potential_spikes;
-      float* resting_potentials;
+      float* resting_potentials_v0;
+      float* after_spike_reset_potentials_vreset;
 
       spiking_neurons_data_struct* neuron_data;
       spiking_neurons_data_struct* d_neuron_data;

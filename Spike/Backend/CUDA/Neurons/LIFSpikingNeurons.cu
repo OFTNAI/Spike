@@ -60,7 +60,7 @@ namespace Backend {
          d_neuron_data,
          frontend()->background_current,
          timestep,
-	       frontend()->model->timestep_grouping,
+         frontend()->model->timestep_grouping,
          current_time_in_seconds,
          frontend()->refractory_period_in_seconds,
          frontend()->total_number_of_neurons);
@@ -71,10 +71,10 @@ namespace Backend {
     __global__ void lif_update_membrane_potentials(
         injection_kernel current_injection_kernel,
         spiking_synapses_data_struct* synaptic_data,
-	      spiking_neurons_data_struct* in_neuron_data,
+        spiking_neurons_data_struct* in_neuron_data,
         float background_current,
         float timestep,
-				int timestep_grouping,
+        int timestep_grouping,
         float current_time_in_seconds,
         float refractory_period_in_seconds,
         size_t total_number_of_neurons) {
@@ -84,11 +84,11 @@ namespace Backend {
 
         lif_spiking_neurons_data_struct* neuron_data = (lif_spiking_neurons_data_struct*) in_neuron_data;
         float equation_constant = timestep / neuron_data->membrane_time_constants_tau_m[idx];
-        float resting_potential_V0 = neuron_data->resting_potentials[idx];
+        float resting_potential_V0 = neuron_data->resting_potentials_v0[idx];
         float temp_membrane_resistance_R = neuron_data->membrane_resistances_R[idx];
         float membrane_potential_Vi = neuron_data->membrane_potentials_v[idx];
 
-    	  for (int g=0; g < timestep_grouping; g++){	  
+        for (int g=0; g < timestep_grouping; g++){    
             float voltage_input_for_timestep = current_injection_kernel(
                   synaptic_data,
                   in_neuron_data,
@@ -102,20 +102,20 @@ namespace Backend {
               
               membrane_potential_Vi = equation_constant * resting_potential_V0 + (1 - equation_constant) * membrane_potential_Vi + equation_constant * background_current + voltage_input_for_timestep;
               
-	  
-	            // Finally check for a spike
-	            if (membrane_potential_Vi >= neuron_data->thresholds_for_action_potential_spikes[idx]){
-	  	          neuron_data->last_spike_time_of_each_neuron[idx] = current_time_in_seconds + (g*timestep);
-		            membrane_potential_Vi = neuron_data->resting_potentials[idx];
+    
+              // Finally check for a spike
+              if (membrane_potential_Vi >= neuron_data->thresholds_for_action_potential_spikes[idx]){
+                neuron_data->last_spike_time_of_each_neuron[idx] = current_time_in_seconds + (g*timestep);
+                membrane_potential_Vi = neuron_data->after_spike_reset_potentials_vreset[idx];
                 //break;
-		            continue;
-	      }
+                continue;
+        }
 
-	    }
-	  }
+      }
+    }
           
-	  neuron_data->membrane_potentials_v[idx] = membrane_potential_Vi;
-	  
+    neuron_data->membrane_potentials_v[idx] = membrane_potential_Vi;
+    
           idx += blockDim.x * gridDim.x;
         }
      } 

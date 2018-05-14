@@ -7,8 +7,8 @@
 struct conductance_spiking_synapse_parameters_struct : spiking_synapse_parameters_struct {
 	conductance_spiking_synapse_parameters_struct(): reversal_potential_Vhat(0.0f), decay_term_tau_g(0.001f) { spiking_synapse_parameters_struct(); }
 
-	float reversal_potential_Vhat;
-	float decay_term_tau_g;
+  float reversal_potential_Vhat;
+  float decay_term_tau_g;
 };
 
 class ConductanceSpikingSynapses; // forward definition

@@ -9,7 +9,8 @@ namespace Backend {
       CudaSafeCall(cudaFree(last_spike_time_of_each_neuron));
       CudaSafeCall(cudaFree(membrane_potentials_v));
       CudaSafeCall(cudaFree(thresholds_for_action_potential_spikes));
-      CudaSafeCall(cudaFree(resting_potentials));
+      CudaSafeCall(cudaFree(resting_potentials_v0));
+      CudaSafeCall(cudaFree(after_spike_reset_potentials_vreset));
       CudaSafeCall(cudaFree(d_neuron_data));
     }
 
@@ -17,14 +18,16 @@ namespace Backend {
       CudaSafeCall(cudaMalloc((void **)&last_spike_time_of_each_neuron, sizeof(float)*frontend()->total_number_of_neurons));
       CudaSafeCall(cudaMalloc((void **)&membrane_potentials_v, sizeof(float)*frontend()->total_number_of_neurons));
       CudaSafeCall(cudaMalloc((void **)&thresholds_for_action_potential_spikes, sizeof(float)*frontend()->total_number_of_neurons));
-      CudaSafeCall(cudaMalloc((void **)&resting_potentials, sizeof(float)*frontend()->total_number_of_neurons));
-     
+      CudaSafeCall(cudaMalloc((void **)&resting_potentials_v0, sizeof(float)*frontend()->total_number_of_neurons));
+      CudaSafeCall(cudaMalloc((void **)&after_spike_reset_potentials_vreset, sizeof(float)*frontend()->total_number_of_neurons));
+
       CudaSafeCall(cudaMalloc((void **)&d_neuron_data, sizeof(spiking_neurons_data_struct)));
     }
 
     void SpikingNeurons::copy_constants_to_device() {
       CudaSafeCall(cudaMemcpy(thresholds_for_action_potential_spikes, frontend()->thresholds_for_action_potential_spikes, sizeof(float)*frontend()->total_number_of_neurons, cudaMemcpyHostToDevice));
-      CudaSafeCall(cudaMemcpy(resting_potentials, frontend()->after_spike_reset_membrane_potentials_c, sizeof(float)*frontend()->total_number_of_neurons, cudaMemcpyHostToDevice));
+      CudaSafeCall(cudaMemcpy(resting_potentials_v0, frontend()->resting_potentials_v0, sizeof(float)*frontend()->total_number_of_neurons, cudaMemcpyHostToDevice));
+      CudaSafeCall(cudaMemcpy(after_spike_reset_potentials_vreset, frontend()->after_spike_reset_potentials_vreset, sizeof(float)*frontend()->total_number_of_neurons, cudaMemcpyHostToDevice));
     }
 
     void SpikingNeurons::prepare() {
@@ -37,8 +40,9 @@ namespace Backend {
       neuron_data->last_spike_time_of_each_neuron = last_spike_time_of_each_neuron;
       neuron_data->membrane_potentials_v = membrane_potentials_v;
       neuron_data->thresholds_for_action_potential_spikes = thresholds_for_action_potential_spikes;
-      neuron_data->resting_potentials = resting_potentials;
+      neuron_data->resting_potentials_v0 = resting_potentials_v0;
       neuron_data->total_number_of_neurons = frontend()->total_number_of_neurons;
+      neuron_data->after_spike_reset_potentials_vreset = after_spike_reset_potentials_vreset;
       CudaSafeCall(cudaMemcpy(
 		d_neuron_data, 
 		neuron_data,
@@ -60,7 +64,7 @@ namespace Backend {
                               frontend()->total_number_of_neurons*sizeof(float),
                               cudaMemcpyHostToDevice));
       CudaSafeCall(cudaMemcpy(membrane_potentials_v,
-                              frontend()->after_spike_reset_membrane_potentials_c,
+                              frontend()->resting_potentials_v0,
                               sizeof(float)*frontend()->total_number_of_neurons,
                               cudaMemcpyHostToDevice));
 

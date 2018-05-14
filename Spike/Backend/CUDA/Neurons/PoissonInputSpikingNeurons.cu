@@ -43,30 +43,30 @@ namespace Backend {
          rates,
          membrane_potentials_v,
          timestep,
-	 frontend()->model->timestep_grouping,
+         frontend()->model->timestep_grouping,
          thresholds_for_action_potential_spikes,
-	 resting_potentials,
-	 last_spike_time_of_each_neuron,
-	 current_time_in_seconds,
+         resting_potentials_v0,
+         last_spike_time_of_each_neuron,
+         current_time_in_seconds,
          frontend()->total_number_of_neurons,
          frontend()->current_stimulus_index);
 
-	CudaCheckError();
+  CudaCheckError();
     }
 
     __global__ void poisson_update_membrane_potentials_kernel(curandState_t* d_states,
-                                                              float *d_rates,
-                                                              float *d_membrane_potentials_v,
-                                                              float timestep,
-							      int timestep_grouping,
-                                                              float * d_thresholds_for_action_potential_spikes,
-							      float* d_resting_potentials,
-							      float* d_last_spike_time_of_each_neuron,
-							      float current_time_in_seconds,
-                                                              size_t total_number_of_input_neurons,
-                                                              int current_stimulus_index) {
+       float *d_rates,
+       float *d_membrane_potentials_v,
+       float timestep,
+       int timestep_grouping,
+       float * d_thresholds_for_action_potential_spikes,
+       float* d_resting_potentials,
+       float* d_last_spike_time_of_each_neuron,
+       float current_time_in_seconds,
+       size_t total_number_of_input_neurons,
+       int current_stimulus_index) {
 
-	 
+   
       int t_idx = threadIdx.x + blockIdx.x * blockDim.x;
       int idx = t_idx;
       while (idx < total_number_of_input_neurons){
@@ -75,19 +75,19 @@ namespace Backend {
 
         float rate = d_rates[rate_index];
 
-        if (rate > 0.1) {
-	  for (int g=0; g < timestep_grouping; g++){
+        if (rate > 0.01) {
+          for (int g=0; g < timestep_grouping; g++){
             // Creates random float between 0 and 1 from uniform distribution
             // d_states effectively provides a different seed for each thread
             // curand_uniform produces different float every time you call it
             float random_float = curand_uniform(&d_states[t_idx]);
-			
+      
             // if the randomnumber is less than the rate
             if (random_float < (rate * timestep)) {
               // Puts membrane potential above default spiking threshold
               d_last_spike_time_of_each_neuron[idx] = current_time_in_seconds + (g*timestep);
             } 
-	  }
+          }
         }
 
         idx += blockDim.x * gridDim.x;

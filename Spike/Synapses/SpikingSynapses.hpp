@@ -18,7 +18,7 @@ namespace Backend {
 }
 
 struct spiking_synapse_parameters_struct : synapse_parameters_struct {
-	spiking_synapse_parameters_struct(): biological_conductance_scaling_constant_lambda(1.0) { synapse_parameters_struct(); }
+  spiking_synapse_parameters_struct(): biological_conductance_scaling_constant_lambda(1.0) { synapse_parameters_struct(); }
   float biological_conductance_scaling_constant_lambda;
   float delay_range[2];
 };
