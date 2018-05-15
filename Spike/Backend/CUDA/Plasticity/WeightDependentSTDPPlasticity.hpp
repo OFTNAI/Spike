@@ -86,6 +86,7 @@ namespace Backend {
         int total_number_of_plastic_synapses,
         int* plastic_synapses,
         float* stdp_pre_memory_trace,
+        float* stdp_pre_memory_trace_update_time,
         float* synaptic_efficacies_or_weights,
         float* weight_update_vals,
         float* weight_update_times,

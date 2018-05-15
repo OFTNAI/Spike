@@ -90,7 +90,7 @@ namespace Backend {
               frontend()->post_neuron_set.size());
           CudaCheckError();
           
-          int bufferloc = (int)(std::round(current_time_in_seconds / timestep)) % spike_buffer.buffer_size;
+          int bufferloc = (int)(std::round(current_time_in_seconds / timestep) + g) % spike_buffer.buffer_size;
           pre_trace_update<<<neurons_backend->number_of_neuron_blocks_per_grid, neurons_backend->threads_per_block>>>(
               *(frontend()->stdp_params),
               spike_buffer,
@@ -101,6 +101,8 @@ namespace Backend {
               (current_time_in_seconds + g*timestep),
               timestep);
           CudaCheckError();
+
+
           on_pre<<<neurons_backend->number_of_neuron_blocks_per_grid, neurons_backend->threads_per_block>>>(
               *(frontend()->stdp_params),
               spike_buffer,
@@ -134,6 +136,7 @@ namespace Backend {
               total_number_of_plastic_synapses,
               plastic_synapse_indices,
               stdp_pre_memory_trace,
+              stdp_pre_memory_trace_update_time,
               synapses_backend->synaptic_efficacies_or_weights,
               weight_update_vals,
               weight_update_times,
@@ -180,7 +183,7 @@ namespace Backend {
       while (indx < num_post_neurons) {
         int idx = post_neuron_set[indx];
         // Decay trace
-        stdp_post_memory_trace[indx] *= expf(-(stdp_vars.tau_plus / timestep));
+        stdp_post_memory_trace[indx] *= expf(-(timestep / stdp_vars.tau_plus));;
         // If there was a spike, add to the trace
         if (abs(d_last_spike_time_of_each_neuron[idx] - current_time_in_seconds) < (0.5f*timestep)){
           float increment = stdp_vars.a_plus;
@@ -205,7 +208,6 @@ namespace Backend {
         float timestep)
     {
       int indx = threadIdx.x + blockIdx.x * blockDim.x;
-
       while (indx < spike_buffer.time_buffer[bufferloc]) {
         int idx = spike_buffer.id_buffer[bufferloc*total_number_of_plastic_synapses + indx];
         // Decay trace
@@ -213,7 +215,7 @@ namespace Backend {
           stdp_pre_memory_trace[idx] = stdp_vars.a_minus;
         } else {
           stdp_pre_memory_trace[idx] *= 
-            expf(-(current_time_in_seconds - stdp_pre_memory_trace_update_time[idx])*(stdp_vars.tau_plus / timestep));
+            expf(-(current_time_in_seconds - stdp_pre_memory_trace_update_time[idx]) / stdp_vars.tau_minus);
           stdp_pre_memory_trace[idx] += stdp_vars.a_minus;
         }
         stdp_pre_memory_trace_update_time[idx] = current_time_in_seconds;
@@ -238,7 +240,6 @@ namespace Backend {
         float timestep)
     {
       int indx = threadIdx.x + blockIdx.x * blockDim.x;
-
       while (indx < spike_buffer.time_buffer[bufferloc]) {
         int syn_index = spike_buffer.id_buffer[bufferloc*total_number_of_plastic_synapses + indx];
         int idx = plastic_synapses[syn_index];
@@ -267,6 +268,7 @@ namespace Backend {
         int total_number_of_plastic_synapses,
         int* plastic_synapse_indices,
         float* stdp_pre_memory_trace,
+        float* stdp_pre_memory_trace_update_time,
         float* synaptic_efficacies_or_weights,
         float* weight_update_vals,
         float* weight_update_times,
@@ -287,11 +289,12 @@ namespace Backend {
         }
 
         // Get the correct plastic synapse and trace
-        int post_neuron_id = activated_post_neuron_ids[pos];
-        int syn_index = post_neuron_afferent_ids[post_neuron_id + idx];
+        int syn_index = post_neuron_afferent_ids[post_neuron_afferent_totals[activated_post_neuron_ids[pos]] + idx];
         float stdp_pre_memory_trace_val = stdp_pre_memory_trace[syn_index];
+        stdp_pre_memory_trace_val *= 
+            expf(-(current_time_in_seconds - stdp_pre_memory_trace_update_time[syn_index]) / stdp_vars.tau_minus);
         int synapse_id = plastic_synapse_indices[syn_index];
-        bool weight_already_updated = (weight_update_vals[syn_index] - current_time_in_seconds) < 0.5*timestep;
+        bool weight_already_updated = fabs(weight_update_vals[syn_index] - current_time_in_seconds) < 0.5*timestep;
  
 
         // Carry out LTD:
