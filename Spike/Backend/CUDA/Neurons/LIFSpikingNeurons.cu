@@ -98,7 +98,7 @@ namespace Backend {
                   timestep_grouping,
                   idx,
                   g);
-            if (((current_time_in_seconds + g*timestep) - neuron_data->last_spike_time_of_each_neuron[idx]) >= refractory_period_in_seconds){
+            if (((current_time_in_seconds + g*timestep) - neuron_data->last_spike_time_of_each_neuron[idx]) > refractory_period_in_seconds){
               
               membrane_potential_Vi = equation_constant * resting_potential_V0 + (1 - equation_constant) * membrane_potential_Vi + equation_constant * background_current + voltage_input_for_timestep;
               

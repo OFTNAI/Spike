@@ -55,23 +55,11 @@ public:
   SpikingNeurons* neurs = nullptr;
   SpikingModel* model = nullptr;
   
-  // Storage locations for the neurons and synapses involved in plasticity
-  // Only axonal transmission delays are used
-  // Dealt with by AddSynapse function
+  // Dealt with by AddSynapseIndices function
   std::vector<int> plastic_synapses;
-  // Details on post-synaptic neuron synapse relations
-  std::vector<int> post_neuron_set;
-  std::vector<int> post_neuron_conversion;
-  std::vector<int> post_neuron_afferent_counts;
-  std::vector<int*> post_neuron_afferent_ids;
-  // Details on pre-synaptic neuron synapse relations
-  std::vector<int> pre_neuron_set;
-  std::vector<int> pre_neuron_conversion;
-  std::vector<int> pre_input_neuron_conversion;
-  std::vector<int> pre_neuron_efferent_counts;
-  std::vector<int*> pre_neuron_efferent_ids;
+  int total_number_of_plastic_synapses = 0;
 
-  virtual void AddSynapse(int presynaptic_neuron, int postsynaptic_neuron, int synapse_id);
+  virtual void AddSynapseIndices(int synapse_id_start, int num_synapses_to_add);
   virtual void state_update(float current_time_in_seconds, float timestep) override = 0;
 
 private:

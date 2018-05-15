@@ -291,9 +291,10 @@ void Synapses::AddGroup(int presynaptic_group_id,
         plasticity_ptr->plasticity_rule_id = plasticity_id;
       }
 
+      plasticity_ptr->AddSynapseIndices((total_number_of_synapses - temp_number_of_synapses_in_last_group), temp_number_of_synapses_in_last_group);
       for (int i = (total_number_of_synapses - temp_number_of_synapses_in_last_group); i < total_number_of_synapses; i++){
         //Set STDP on or off for synapse (now using stdp id)
-        plasticity_ptr->AddSynapse(presynaptic_neuron_indices[i], postsynaptic_neuron_indices[i], i);
+        //plasticity_ptr->AddSynapse(presynaptic_neuron_indices[i], postsynaptic_neuron_indices[i], i);
       }
     }
   }
