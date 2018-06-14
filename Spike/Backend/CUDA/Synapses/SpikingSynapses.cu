@@ -201,6 +201,7 @@ namespace Backend {
 		  postsynaptic_neuron_indices,
 		  neuron_wise_input_update,
 		  d_syn_labels,
+      frontend()->num_syn_labels,
 		  neurons_backend->frontend()->total_number_of_neurons,
 		  synaptic_efficacies_or_weights,
 		  biological_conductance_scaling_constants_lambda,
@@ -310,6 +311,7 @@ namespace Backend {
                     int* postsynaptic_neuron_indices,
                     float * neuron_wise_input_update,
                     int * d_syn_labels,
+                    int num_syn_labels,
                     int total_number_of_neurons,
                     float * d_synaptic_efficacies_or_weights,
                     float * d_biological_conductance_scaling_constants_lambda,
@@ -328,7 +330,8 @@ namespace Backend {
          int postsynaptic_neuron_id = postsynaptic_neuron_indices[idx];
          int syn_label = d_syn_labels[idx];
          float synaptic_efficacy = d_biological_conductance_scaling_constants_lambda[idx] * d_synaptic_efficacies_or_weights[idx];
-         atomicAdd(&neuron_wise_input_update[total_number_of_neurons*timestep_grouping*syn_label + g*total_number_of_neurons + postsynaptic_neuron_id], synaptic_efficacy);
+         atomicAdd(&neuron_wise_input_update[g*total_number_of_neurons*num_syn_labels + syn_label*total_number_of_neurons + postsynaptic_neuron_id], synaptic_efficacy);
+         //atomicAdd(&neuron_wise_input_update[total_number_of_neurons*timestep_grouping*syn_label + g*total_number_of_neurons + postsynaptic_neuron_id], synaptic_efficacy);
 
           indx += blockDim.x * gridDim.x;
         }

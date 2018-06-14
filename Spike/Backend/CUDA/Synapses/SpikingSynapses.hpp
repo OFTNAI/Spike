@@ -126,6 +126,7 @@ namespace Backend {
       int* postsynaptic_neuron_indices,
       float* neuron_wise_input_update,
       int* synapse_decay_id,
+      int num_syn_labels,
       int total_number_of_neurons,
       float* d_synaptic_efficacies_or_weights,
       float* d_biological_conductance_scaling_constants_lambda,
