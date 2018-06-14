@@ -106,11 +106,11 @@ namespace Backend {
           float old_synaptic_weight = d_synaptic_efficacies_or_weights[idx];
           if (fabs(d_time_of_last_spike_to_reach_synapse[idx] - (current_time_in_seconds + g*timestep)) < 0.5f*timestep){
             // Carry out the necessary LTD
-            syn_update_val -= stdp_vars.lambda * stdp_vars.alpha * (old_synaptic_weight / stdp_vars.w_max) * stdp_post_memory_trace_val;
+            syn_update_val -= stdp_vars.lambda * stdp_vars.alpha * old_synaptic_weight * stdp_post_memory_trace_val;
            }
           if (fabs(d_last_spike_time_of_each_neuron[postid] - (current_time_in_seconds + g*timestep)) < 0.5f*timestep){
               // If output neuron just fired, do LTP
-            syn_update_val += stdp_vars.lambda * (1.0 - (old_synaptic_weight / stdp_vars.w_max)) *stdp_pre_memory_trace_val;
+            syn_update_val += stdp_vars.lambda * (stdp_vars.w_max - old_synaptic_weight) *stdp_pre_memory_trace_val;
           }
           float new_synaptic_weight = old_synaptic_weight + syn_update_val;
           if (new_synaptic_weight >= 0.0f)
