@@ -46,21 +46,27 @@ namespace Backend {
     /* KERNELS BELOW */
     __device__ float voltage_spiking_current_injection_kernel(
         spiking_synapses_data_struct* in_synaptic_data,
-	      spiking_neurons_data_struct* neuron_data,
+        spiking_neurons_data_struct* neuron_data,
         float multiplication_to_volts,
         float current_membrane_voltage,
+        float current_time_in_seconds,
         float timestep,
         int timestep_grouping,
-	      int idx,
-	      int g){
+        int idx,
+        int g){
       
       spiking_synapses_data_struct* synaptic_data = (spiking_synapses_data_struct*) in_synaptic_data;
         
-	    int total_number_of_neurons =  neuron_data->total_number_of_neurons;
+      int total_number_of_neurons =  neuron_data->total_number_of_neurons;
       float total_current = 0.0f;
       for (int syn_label = 0; syn_label < synaptic_data->num_syn_labels; syn_label++){
-	      total_current += synaptic_data->neuron_wise_input_update[g*total_number_of_neurons*synaptic_data->num_syn_labels + syn_label*total_number_of_neurons + idx];
-	      synaptic_data->neuron_wise_input_update[g*total_number_of_neurons*synaptic_data->num_syn_labels + syn_label*total_number_of_neurons + idx] = 0.0f;
+        int bufferloc = synaptic_data->neuron_inputs.bufferloc[0];
+        //total_current += synaptic_data->neuron_wise_input_update[g*total_number_of_neurons*synaptic_data->num_syn_labels + syn_label*total_number_of_neurons + idx];
+        
+        total_current += synaptic_data->neuron_inputs.circular_input_buffer[((bufferloc + g) % synaptic_data->neuron_inputs.temporal_buffersize)*synaptic_data->neuron_inputs.input_buffersize + syn_label*total_number_of_neurons + idx];
+        synaptic_data->neuron_inputs.circular_input_buffer[((bufferloc + g) % synaptic_data->neuron_inputs.temporal_buffersize)*synaptic_data->neuron_inputs.input_buffersize + syn_label*total_number_of_neurons + idx] = 0.0f;
+        
+        synaptic_data->neuron_wise_input_update[g*total_number_of_neurons*synaptic_data->num_syn_labels + syn_label*total_number_of_neurons + idx] = 0.0f;
       }
 
 

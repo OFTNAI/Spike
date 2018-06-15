@@ -94,6 +94,7 @@ namespace Backend {
                   in_neuron_data,
                   temp_membrane_resistance_R*equation_constant,
                   membrane_potential_Vi,
+                  current_time_in_seconds,
                   timestep,
                   timestep_grouping,
                   idx,

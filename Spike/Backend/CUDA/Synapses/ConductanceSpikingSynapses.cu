@@ -100,6 +100,7 @@ namespace Backend {
 	      spiking_neurons_data_struct* neuron_data,
         float multiplication_to_volts,
         float current_membrane_voltage,
+        float current_time_in_seconds,
         float timestep,
         int timestep_grouping,
 	      int idx,
@@ -116,9 +117,9 @@ namespace Backend {
           float synaptic_conductance_g = synaptic_data->neuron_wise_conductance_trace[total_number_of_neurons*syn_label + idx];
           // Update the synaptic conductance
 	        synaptic_conductance_g *= decay_factor;
-	        synaptic_conductance_g += synaptic_data->neuron_wise_input_update[total_number_of_neurons*timestep_grouping*syn_label + g*total_number_of_neurons + idx];
+	        synaptic_conductance_g += synaptic_data->neuron_wise_input_update[g*total_number_of_neurons*synaptic_data->num_syn_labels + syn_label*total_number_of_neurons + idx];
 	        // Reset the conductance update
-	        synaptic_data->neuron_wise_input_update[total_number_of_neurons*timestep_grouping*syn_label + g*total_number_of_neurons + idx] = 0.0f;
+	        synaptic_data->neuron_wise_input_update[g*total_number_of_neurons*synaptic_data->num_syn_labels + syn_label*total_number_of_neurons + idx] = 0.0f;
           total_current += synaptic_conductance_g*(reversal_value - current_membrane_voltage);
           synaptic_data->neuron_wise_conductance_trace[total_number_of_neurons*syn_label + idx] = synaptic_conductance_g;
 

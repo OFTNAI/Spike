@@ -44,13 +44,14 @@ namespace Backend {
     };
     __device__ float current_spiking_current_injection_kernel(
         spiking_synapses_data_struct* synaptic_data,
-	      spiking_neurons_data_struct* neuron_data,
+        spiking_neurons_data_struct* neuron_data,
         float multiplication_to_volts,
         float current_membrane_voltage,
+        float current_time_in_seconds,
         float timestep,
         int timestep_grouping,
-	      int idx,
-	      int g);
+        int idx,
+        int g);
   }
 }
 
