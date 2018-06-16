@@ -20,7 +20,6 @@ namespace Backend {
       int temporal_buffersize = 0;
     };
     struct spiking_synapses_data_struct: synapses_data_struct {
-      float* neuron_wise_input_update;
       neuron_inputs_struct neuron_inputs;
       int num_syn_labels;
     };
@@ -39,8 +38,6 @@ namespace Backend {
     public:
       
       // Variables used to determine active/inactive synapses
-      int* circular_spikenum_buffer = nullptr;
-      int* spikeid_buffer = nullptr;
       int buffersize = 0;
       int* group_indices = nullptr;
       int* num_active_synapses = nullptr;
@@ -56,9 +53,6 @@ namespace Backend {
       float* time_of_last_spike_to_reach_synapse = nullptr;
       float * biological_conductance_scaling_constants_lambda = nullptr;
 
-      int neuron_wise_input_length = 0;
-      float* neuron_wise_input_update = nullptr;
-      float* h_neuron_wise_input_update = nullptr;
       int* d_syn_labels = nullptr;
       neuron_inputs_struct neuron_inputs;
 
@@ -113,12 +107,9 @@ namespace Backend {
         int* d_per_neuron_efferent_synapse_indices,
         int* d_per_input_neuron_efferent_synapse_total,
         int* d_per_input_neuron_efferent_synapse_indices,
-        int* circular_spikenum_buffer,
-        int* spikeid_buffer,
         int bufferloc,
         int buffersize,
         neuron_inputs_struct neuron_inputs,
-        int neuron_input_length,
         int* postsynaptic_neuron_indices,
         float* synaptic_efficacies_or_weights,
         float* biological_conductance_scaling_constants_lambda,
@@ -134,24 +125,5 @@ namespace Backend {
         int* presynaptic_neuron_indices,
         int* active_synapse_counts,
         int* num_active_synapses);
-
-    __global__ void move_spikes_towards_synapses_kernel(
-      float current_time_in_seconds,
-      int* circular_spikenum_buffer,
-      int* spikeid_buffer,
-      int bufferloc,
-      int buffersize,
-      int total_number_of_synapses,
-      float* d_time_of_last_spike_to_reach_synapse,
-      int* postsynaptic_neuron_indices,
-      float* neuron_wise_input_update,
-      int* synapse_decay_id,
-      int num_syn_labels,
-      int total_number_of_neurons,
-      float* d_synaptic_efficacies_or_weights,
-      float* d_biological_conductance_scaling_constants_lambda,
-      float timestep,
-      int timestep_grouping);
-
   }
 }

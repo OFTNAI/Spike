@@ -60,13 +60,11 @@ namespace Backend {
       int total_number_of_neurons =  neuron_data->total_number_of_neurons;
       float total_current = 0.0f;
       for (int syn_label = 0; syn_label < synaptic_data->num_syn_labels; syn_label++){
-        int bufferloc = synaptic_data->neuron_inputs.bufferloc[0];
-        //total_current += synaptic_data->neuron_wise_input_update[g*total_number_of_neurons*synaptic_data->num_syn_labels + syn_label*total_number_of_neurons + idx];
+        int bufferloc = ((synaptic_data->neuron_inputs.bufferloc[0] + g) % synaptic_data->neuron_inputs.temporal_buffersize)*synaptic_data->neuron_inputs.input_buffersize;
         
-        total_current += synaptic_data->neuron_inputs.circular_input_buffer[((bufferloc + g) % synaptic_data->neuron_inputs.temporal_buffersize)*synaptic_data->neuron_inputs.input_buffersize + syn_label*total_number_of_neurons + idx];
-        synaptic_data->neuron_inputs.circular_input_buffer[((bufferloc + g) % synaptic_data->neuron_inputs.temporal_buffersize)*synaptic_data->neuron_inputs.input_buffersize + syn_label*total_number_of_neurons + idx] = 0.0f;
+        total_current += synaptic_data->neuron_inputs.circular_input_buffer[bufferloc + syn_label*total_number_of_neurons + idx];
+        synaptic_data->neuron_inputs.circular_input_buffer[bufferloc + syn_label*total_number_of_neurons + idx] = 0.0f;
         
-        synaptic_data->neuron_wise_input_update[g*total_number_of_neurons*synaptic_data->num_syn_labels + syn_label*total_number_of_neurons + idx] = 0.0f;
       }
 
 
