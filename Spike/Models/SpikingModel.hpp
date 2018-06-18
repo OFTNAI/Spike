@@ -6,14 +6,12 @@ class SpikingModel; // Forward Declaration
 
 #include <stdio.h>
 #include "../Backend/Context.hpp"
-#include "Spike/Synapses/SpikingSynapses.hpp"
+#include "../Synapses/SpikingSynapses.hpp"
 #include "../Plasticity/STDPPlasticity.hpp"
 #include "../Neurons/Neurons.hpp"
 #include "../Neurons/SpikingNeurons.hpp"
-// #include "../Neurons/InputSpikingNeurons.hpp"
 #include "../Helpers/TimerWithMessages.hpp"
 #include "../Helpers/RandomStateManager.hpp"
-// #include "../Helpers/TerminalHelpers.hpp"
 #include <string>
 #include <fstream>
 #include <vector>

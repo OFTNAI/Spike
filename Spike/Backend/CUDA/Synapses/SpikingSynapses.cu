@@ -268,7 +268,7 @@ namespace Backend {
         int syn_label = d_syn_labels[synapse_id];
         float weightinput = biological_conductance_scaling_constants_lambda[synapse_id]*synaptic_efficacies_or_weights[synapse_id];
         atomicAdd(&neuron_inputs.circular_input_buffer[targetloc*neuron_inputs.input_buffersize + syn_label*total_number_of_neurons + postneuron], weightinput);
-        //d_time_of_last_spike_to_reach_synapse[synapse_id] = current_time_in_seconds + (timestep_grouping + d_delays[synapse_id] + group_indices[pos])*timestep;
+        d_time_of_last_spike_to_reach_synapse[synapse_id] = current_time_in_seconds + (d_delays[synapse_id] + group_indices[pos])*timestep;
 
         indx += blockDim.x * gridDim.x;
         idx += blockDim.x * gridDim.x;

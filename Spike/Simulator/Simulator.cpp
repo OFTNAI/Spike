@@ -11,8 +11,6 @@
 #include "Spike/Helpers/TerminalHelpers.hpp"
 #include "Spike/Helpers/RandomStateManager.hpp"
 
-#include "Spike/Models/FourLayerVisionSpikingModel.hpp"
-
 using namespace std;
 
 Simulator::Simulator(SpikingModel * spiking_model_param, Simulator_Options * simulator_options_param) {
