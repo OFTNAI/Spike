@@ -1,5 +1,7 @@
 // Define this to turn on error checking
 #define PRINT_MESSAGES
+#ifndef TERMHELP_H
+#define TERMHELP_H
 
 #include <stdio.h>
 #include <iostream>
@@ -38,4 +40,7 @@ inline void check_for_epochs_and_begin_simulation_message(float timestep, int nu
 
 	#endif
 }
+
+
+#endif
 
