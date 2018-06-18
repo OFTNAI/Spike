@@ -22,7 +22,7 @@
 #include "Spike/Plasticity/VogelsSTDPPlasticity.hpp"
 */
 
-#include "Spike.hpp"
+#include "Spike/Spike.hpp"
 
 #include <fstream>
 #include <iostream>

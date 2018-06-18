@@ -10,7 +10,7 @@
 */
 
 
-#include "Spike.hpp"
+#include "Spike/Spike.hpp"
 
 #include <fstream>
 #include <iostream>
