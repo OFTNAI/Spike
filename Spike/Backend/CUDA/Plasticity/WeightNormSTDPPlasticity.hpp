@@ -27,7 +27,7 @@ namespace Backend {
       float* sum_squared_afferent_values = nullptr;
       float* afferent_weight_change_updater = nullptr;
 
-      bool* neuron_in_plasticity_set = nullptr;	
+      bool* neuron_in_plasticity_set = nullptr; 
       float* initial_weights = nullptr;
       float* weight_divisor = nullptr;
 
@@ -44,30 +44,30 @@ namespace Backend {
 
   // CUDA Kernel for calculating synapse changes
   __global__ void weight_change_calculations
-	(int* postsyn_neuron,
-	 float* current_weight,
-	 float* initial_weights,
+  (int* postsyn_neuron,
+   float* current_weight,
+   float* initial_weights,
          float* afferent_weight_change_updater,
-	 int* d_plastic_synapse_indices,
-	 size_t total_number_of_plastic_synapses);
+   int* d_plastic_synapse_indices,
+   size_t total_number_of_plastic_synapses);
 
 
   // CUDA Kernel for determining the weight division
   __global__ void weight_division_calc
-	(float* sum_squared_afferent_values,
-	 float* afferent_weight_change_updater,
-	 float* weight_divisor,
-	 bool* neuron_in_plasticity_set,
-	 size_t total_num_neurons);
+  (float* sum_squared_afferent_values,
+   float* afferent_weight_change_updater,
+   float* weight_divisor,
+   bool* neuron_in_plasticity_set,
+   size_t total_num_neurons);
  
   // Weight updating function
   __global__ void weight_update
-	(int* postsyn_neuron,
-	bool* neuron_in_plasticity_set,
-	float* current_weight,
-	float* weight_divisor,
-	int* d_plastic_synapse_indices,
-	size_t total_number_of_plastic_synapses); 
+  (int* postsyn_neuron,
+   bool* neuron_in_plasticity_set,
+   float* current_weight,
+   float* weight_divisor,
+   int* d_plastic_synapse_indices,
+   size_t total_number_of_plastic_synapses); 
 
   }
 }

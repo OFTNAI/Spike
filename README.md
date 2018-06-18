@@ -16,7 +16,7 @@ Executing the install.sh file in this directory will create a Build folder and c
 
 This simulator is under constant development. We recommend users to regularly update any codebase which they use. This software is regularly tested on Ubuntu 16.04 with NVIDIA GPUs (Geforce GTX 980, Geforce GTX 980ti, Geforce GTX 1080, Geforce GTX 1070++) The software has been tested on CUDA Toolkit 7.5 and above.
 
-This tool should be capable of running on any Linux/Mac OS system with an NVIDIA GPU of Compute Capability >= 5.0. 
+This tool should be capable of running on any Linux/Mac OS system with an NVIDIA GPU of Compute Capability >= 5.2
 
 ## Recent Updates
   - Addition of VogelsAbbott and Brunel Examples

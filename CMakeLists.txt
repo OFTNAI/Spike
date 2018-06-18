@@ -13,7 +13,7 @@ project(Spike)
 # set (CMAKE_CXX_STANDARD_REQUIRED ON)
 set (CMAKE_CXX_FLAGS "-std=c++11 -DVERBOSE=1")
 
-set(VERSION_MAJOR 1)
+set(VERSION_MAJOR 0)
 set(VERSION_MINOR 1)
 set(VERSION_PATCH 0)
 set(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
@@ -35,13 +35,9 @@ option(BUILD_EXAMPLES
   "Build examples"
   ON)
 
-option(BUILD_DOXYGEN_DOCS
-  "Build the Doxygen-generated API docs"
-  OFF)
-
-option(BUILD_TESTING
-  "Enable CTest tests"
-  OFF)
+#option(BUILD_DOXYGEN_DOCS
+#  "Build the Doxygen-generated API docs"
+#  OFF)
 
 #cmake_dependent_option(ENABLE_DIST "Enable the the distribution tarball target" ON "BUILD_DOXYGEN_DOCS" OFF)
 #mark_as_advanced(BUILD_DOXYGEN_DOCS ENABLE_DIST)
@@ -49,9 +45,9 @@ option(BUILD_TESTING
 # Find prerequisites
 ####################
 
-if(BUILD_DOXYGEN_DOCS)
-  find_package(Doxygen REQUIRED)
-endif()
+#if(BUILD_DOXYGEN_DOCS)
+#  find_package(Doxygen REQUIRED)
+#endif()
 
 if(BUILD_WITH_CUDA)
   find_package(CUDA REQUIRED)
@@ -74,12 +70,6 @@ add_subdirectory(Spike)
 
 if(BUILD_EXAMPLES)
   add_subdirectory(Examples)
-endif()
-
-if(BUILD_TESTING)
-  include(CTest)
-  enable_testing()
-  add_subdirectory(Tests)
 endif()
 
 # add_subdirectory(Doc)
