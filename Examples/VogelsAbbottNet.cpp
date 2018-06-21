@@ -1,7 +1,5 @@
 // Vogels Abbot Benchmark Network
 // Author: Nasir Ahmad (Created: 16/09/2016)
-// make FILE='VogelsAbbotNet' EXPERIMENT_DIRECTORY='Experiments'  model -j8
-
 
 /*
   This network has been created to benchmark Spike. It shall follow the network
@@ -13,16 +11,10 @@
 
 */
 
-/*
-#include "Spike/Models/SpikingModel.hpp"
-#include "Spike/Simulator/Simulator.hpp"
-#include "Spike/Neurons/LIFSpikingNeurons.hpp"
-#include "Spike/Neurons/PoissonInputSpikingNeurons.hpp"
-#include "Spike/Synapses/ConductanceSpikingSynapses.hpp"
-#include "Spike/Plasticity/VogelsSTDPPlasticity.hpp"
-*/
-
+// Including the primary Spike header gives access to all models and components
 #include "Spike/Spike.hpp"
+// Utility functions in case you want to load from .mat file
+#include "UtilityFunctions.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -34,51 +26,16 @@
 #include <iomanip>
 #include <vector>
 
-void connect_from_mat(
-    int layer1,
-    int layer2,
-    conductance_spiking_synapse_parameters_struct* SYN_PARAMS, 
-    std::string filename,
-    SpikingModel* Model){
-
-  ifstream weightfile;
-  string line;
-  stringstream ss;
-  std::vector<int> prevec, postvec;
-  int pre, post;
-  float weight;
-  int linecount = 0;
-  weightfile.open(filename.c_str());
-
-  if (weightfile.is_open()){
-    printf("Loading weights from mat file: %s\n", filename.c_str());
-    while (getline(weightfile, line)){
-      if (line.c_str()[0] == '%'){
-        continue;
-      } else {
-        linecount++;
-        if (linecount == 1) continue;
-        //printf("%s\n", line.c_str());
-        ss.clear();
-        ss << line;
-        ss >> pre >> post >> weight;
-        prevec.push_back(pre - 1);
-        postvec.push_back(post - 1);
-        //printf("%d, %d\n", pre, post);
-      }
-    }
-    SYN_PARAMS->pairwise_connect_presynaptic = prevec;
-    SYN_PARAMS->pairwise_connect_postsynaptic = postvec;
-    SYN_PARAMS->connectivity_type = CONNECTIVITY_TYPE_PAIRWISE;
-    Model->AddSynapseGroup(layer1, layer2, SYN_PARAMS);
-  }
-}
 int main (int argc, char *argv[]){
-  // Getting options:
+  /*
+   *    GETTING COMMAND LINE ARGUMENTS
+   */
+  // These are separate from Spike but allow run-time changes to simulations
+  // The defaults are that simulations are for 20s and the delay is 0.8ms
   float simtime = 20.0;
   bool fast = false;
-  int num_timesteps_min_delay = 1;
-  int num_timesteps_max_delay = 1;
+  int num_timesteps_min_delay = 8;
+  int num_timesteps_max_delay = 8;
   const char* const short_opts = "";
   const option long_opts[] = {
     {"simtime", 1, nullptr, 0},
@@ -119,22 +76,30 @@ int main (int argc, char *argv[]){
     }
   };
   
-  // TIMESTEP MUST BE SET BEFORE DATA IS IMPORTED. USED FOR ROUNDING.
-  // The details below shall be used in a SpikingModel
+  /*
+   *    CREATING A SPIKINGMODEL
+   */
+  // The SpikingModel object manages neurons, synapses and plasticity rules
   SpikingModel * BenchModel = new SpikingModel();
-  float timestep = 0.0001f; // 50us for now
+  // Any changes to the timestep should be done before anything else
+  float timestep = 0.0001f; // in seconds
   BenchModel->SetTimestep(timestep);
 
-  // Create neuron, synapse and stdp types for this model
+  /*
+   *    NEURON AND SYNAPSE TYPE CHOICE
+   */
+  // Create neuron, synapse and plasticity components to this model
   LIFSpikingNeurons * lif_spiking_neurons = new LIFSpikingNeurons();
   PoissonInputSpikingNeurons * poisson_input_spiking_neurons = new PoissonInputSpikingNeurons();
   ConductanceSpikingSynapses * conductance_spiking_synapses = new ConductanceSpikingSynapses();
-  // Add my populations to the SpikingModel
+  // Add component choices to the model
   BenchModel->spiking_neurons = lif_spiking_neurons;
   BenchModel->input_spiking_neurons = poisson_input_spiking_neurons;
   BenchModel->spiking_synapses = conductance_spiking_synapses;
 
-  // Set up Neuron Parameters
+  /*
+   *    NEURON PARAMETER SETUP
+   */
   lif_spiking_neuron_parameters_struct * EXC_NEURON_PARAMS = new lif_spiking_neuron_parameters_struct();
   lif_spiking_neuron_parameters_struct * INH_NEURON_PARAMS = new lif_spiking_neuron_parameters_struct();
 
@@ -159,23 +124,9 @@ int main (int argc, char *argv[]){
   EXC_NEURON_PARAMS->background_current = 2.0f*pow(10.0, -2); //
   INH_NEURON_PARAMS->background_current = 2.0f*pow(10.0, -2); //
 
-
   /*
-    Setting up INPUT NEURONS
-  */
-  // Creating an input neuron parameter structure
-  poisson_input_spiking_neuron_parameters_struct* input_neuron_params = new poisson_input_spiking_neuron_parameters_struct();
-  // Setting the dimensions of the input neuron layer
-  input_neuron_params->group_shape[0] = 1;    // x-dimension of the input neuron layer
-  input_neuron_params->group_shape[1] = 20;   // y-dimension of the input neuron layer
-  input_neuron_params->rate = 0.0f; // Hz
-  // Create a group of input neurons. This function returns the ID of the input neuron group
-  //int input_layer_ID = BenchModel->AddInputNeuronGroup(input_neuron_params);
-  //poisson_input_spiking_neurons->set_up_rates();
-  
-  /*
-    Setting up NEURON POPULATION
-  */
+   *    CREATE NEURON POPULATIONS
+   */
   vector<int> EXCITATORY_NEURONS;
   vector<int> INHIBITORY_NEURONS;
   // Creating a single exc and inh population for now
@@ -187,58 +138,46 @@ int main (int argc, char *argv[]){
   INHIBITORY_NEURONS.push_back(BenchModel->AddNeuronGroup(INH_NEURON_PARAMS));
 
   /*
-    Setting up SYNAPSES
-  */
+   *    SYNAPSE PARAMETER SETUP
+   */
   conductance_spiking_synapse_parameters_struct * EXC_OUT_SYN_PARAMS = new conductance_spiking_synapse_parameters_struct();
   conductance_spiking_synapse_parameters_struct * INH_OUT_SYN_PARAMS = new conductance_spiking_synapse_parameters_struct();
-  conductance_spiking_synapse_parameters_struct * INPUT_SYN_PARAMS = new conductance_spiking_synapse_parameters_struct();
   // Setting delays
   EXC_OUT_SYN_PARAMS->delay_range[0] = num_timesteps_min_delay*timestep;
   EXC_OUT_SYN_PARAMS->delay_range[1] = num_timesteps_max_delay*timestep;
   INH_OUT_SYN_PARAMS->delay_range[0] = num_timesteps_min_delay*timestep;
   INH_OUT_SYN_PARAMS->delay_range[1] = num_timesteps_max_delay*timestep;
-  INPUT_SYN_PARAMS->delay_range[0] = num_timesteps_min_delay*timestep;
-  INPUT_SYN_PARAMS->delay_range[1] = num_timesteps_max_delay*timestep;
-  // Setting Reversal Potentials for specific synapses (according to evans paper)
+  // Setting Reversal Potentials for excitatory vs inhibitory synapses
   EXC_OUT_SYN_PARAMS->reversal_potential_Vhat = 0.0f*pow(10.0, -3);
   INH_OUT_SYN_PARAMS->reversal_potential_Vhat = -80.0f*pow(10.0, -3);
-  INPUT_SYN_PARAMS->reversal_potential_Vhat = 0.0f*pow(10.0, -3);
   // Set Weight Range?
   EXC_OUT_SYN_PARAMS->weight_range_bottom = 0.4f;
   EXC_OUT_SYN_PARAMS->weight_range_top = 0.4f;
   INH_OUT_SYN_PARAMS->weight_range_bottom = 5.1f;
   INH_OUT_SYN_PARAMS->weight_range_top = 5.1f;
-  INPUT_SYN_PARAMS->weight_range_bottom = 0.4f;
-  INPUT_SYN_PARAMS->weight_range_top = 0.4f;
   // Set timescales
   EXC_OUT_SYN_PARAMS->decay_term_tau_g = 5.0f*pow(10.0, -3);  // 5ms
   INH_OUT_SYN_PARAMS->decay_term_tau_g = 10.0f*pow(10.0, -3);  // 10ms
-  INPUT_SYN_PARAMS->decay_term_tau_g = 5.0f*pow(10.0, -3);
 
-  // Biological Scaling factors
+  // Biological Scaling factors -> This sets the scale of the weights
   EXC_OUT_SYN_PARAMS->biological_conductance_scaling_constant_lambda = 10.0f*pow(10.0,-9);
   INH_OUT_SYN_PARAMS->biological_conductance_scaling_constant_lambda = 10.0f*pow(10.0,-9);
-  INPUT_SYN_PARAMS->biological_conductance_scaling_constant_lambda = 10.0f*pow(10.0,-9);
 
-  // Creating Synapse Populations
+  // Connect neurons randomly with a 2% probability
   EXC_OUT_SYN_PARAMS->connectivity_type = CONNECTIVITY_TYPE_RANDOM;
   INH_OUT_SYN_PARAMS->connectivity_type = CONNECTIVITY_TYPE_RANDOM;
-  INPUT_SYN_PARAMS->connectivity_type = CONNECTIVITY_TYPE_RANDOM;
   EXC_OUT_SYN_PARAMS->plasticity_vec.push_back(nullptr);
   INH_OUT_SYN_PARAMS->plasticity_vec.push_back(nullptr);
-  INPUT_SYN_PARAMS->plasticity_vec.push_back(nullptr);
   EXC_OUT_SYN_PARAMS->random_connectivity_probability = 0.02; // 2%
   INH_OUT_SYN_PARAMS->random_connectivity_probability = 0.02; // 2%
-  INPUT_SYN_PARAMS->random_connectivity_probability = 0.01; // 1%
 
-  // Connect all of the populations
+  /*
+   *    CREATE SYNAPSES
+   */
   BenchModel->AddSynapseGroup(EXCITATORY_NEURONS[0], EXCITATORY_NEURONS[0], EXC_OUT_SYN_PARAMS);
   BenchModel->AddSynapseGroup(EXCITATORY_NEURONS[0], INHIBITORY_NEURONS[0], EXC_OUT_SYN_PARAMS);
   BenchModel->AddSynapseGroup(INHIBITORY_NEURONS[0], EXCITATORY_NEURONS[0], INH_OUT_SYN_PARAMS);
   BenchModel->AddSynapseGroup(INHIBITORY_NEURONS[0], INHIBITORY_NEURONS[0], INH_OUT_SYN_PARAMS);
-  //BenchModel->AddSynapseGroup(input_layer_ID, EXCITATORY_NEURONS[0], INPUT_SYN_PARAMS);
-  EXC_OUT_SYN_PARAMS->plasticity_vec.push_back(nullptr);
-  INH_OUT_SYN_PARAMS->plasticity_vec.push_back(nullptr);
   
   /*
   // Adding connections based upon matrices given
@@ -265,12 +204,14 @@ int main (int argc, char *argv[]){
     */
 
   /*
-    COMPLETE NETWORK SETUP
-  */
+   *    COMPLETE NETWORK SETUP
+   */
   BenchModel->finalise_model();
 
 
-  // Create the simulator options
+  /*
+   *    CHOOSE SIMULATOR OPTIONS
+   */
   Simulator_Options* simoptions = new Simulator_Options();
   simoptions->run_simulation_general_options->presentation_time_per_stimulus_per_epoch = simtime;
   if (!fast){
@@ -281,8 +222,14 @@ int main (int argc, char *argv[]){
   }
 
 
+  /*
+   *    SETUP THE SIMULATOR
+   */
   Simulator * simulator = new Simulator(BenchModel, simoptions);
   clock_t starttime = clock();
+  /*
+   *    RUN THIS SIMULATION
+   */
   simulator->RunSimulation();
   clock_t totaltime = clock() - starttime;
   if ( fast ){
