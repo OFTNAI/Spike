@@ -5,11 +5,13 @@
 /*
   This network has been created to benchmark Spike
 
-  Publications:
+  Original Publication:
+  Brunel N. Dynamics of sparsely connected networks of excitatory and inhibitory spiking neurons. J Comput Neurosci. 2000;8: 183–208.
 
 */
 
 
+// Include the Spike hpp for access to all model components
 #include "Spike/Spike.hpp"
 
 #include <fstream>
@@ -96,7 +98,9 @@ void connect_from_mat(
 }
 
 int main (int argc, char *argv[]){
-  // Getting options:
+  /* 
+   * Getting Command Line Arguments
+   */
   float simtime = 20.0;
   float sparseness = 0.1;
   bool fast = false;
@@ -130,9 +134,9 @@ int main (int argc, char *argv[]){
     }
   };
   
-  // TIMESTEP MUST BE SET BEFORE DATA IS IMPORTED. USED FOR ROUNDING.
   // The details below shall be used in a SpikingModel
   SpikingModel * BenchModel = new SpikingModel();
+  // Since the timestep is used during model set-up, it should be set first and not changed
   float timestep = 0.0001f; // 50us for now
   BenchModel->SetTimestep(timestep);
   float delayval = 1.5f*powf(10.0, -3.0); // 1.5ms
@@ -140,8 +144,10 @@ int main (int argc, char *argv[]){
   // Create neuron, synapse and stdp types for this model
   LIFSpikingNeurons * lif_spiking_neurons = new LIFSpikingNeurons();
   PoissonInputSpikingNeurons * poisson_input_spiking_neurons = new PoissonInputSpikingNeurons();
+  // The synapses constructor has an optional constructor argument (integer) to use as the seed for random synapses
   VoltageSpikingSynapses * voltage_spiking_synapses = new VoltageSpikingSynapses(42);
 
+  // STDP must be instantiated with the settings
   weightdependent_stdp_plasticity_parameters_struct * WDSTDP_PARAMS = new weightdependent_stdp_plasticity_parameters_struct;
   WDSTDP_PARAMS->a_plus = 1.0;
   WDSTDP_PARAMS->a_minus = 1.0;
@@ -153,14 +159,13 @@ int main (int argc, char *argv[]){
   //WDSTDP_PARAMS->nearest_spike_only = true;
   WeightDependentSTDPPlasticity * weightdependent_stdp = new WeightDependentSTDPPlasticity((SpikingSynapses *) voltage_spiking_synapses, (SpikingNeurons *)lif_spiking_neurons, (SpikingNeurons *) poisson_input_spiking_neurons, (stdp_plasticity_parameters_struct *) WDSTDP_PARAMS);
 
-  if (plastic)
-    BenchModel->AddPlasticityRule(weightdependent_stdp);
-
-
-  // Add my populations to the SpikingModel
+  // Add my components to the SpikingModel
+  // Note: Spike only supports a single input neuron, neuron and synapse type for now. Multiple Plasticity rules can be added
   BenchModel->spiking_neurons = lif_spiking_neurons;
   BenchModel->input_spiking_neurons = poisson_input_spiking_neurons;
   BenchModel->spiking_synapses = voltage_spiking_synapses;
+  if (plastic)
+    BenchModel->AddPlasticityRule(weightdependent_stdp);
 
   // Set up Neuron Parameters
   lif_spiking_neuron_parameters_struct * EXC_NEURON_PARAMS = new lif_spiking_neuron_parameters_struct();
