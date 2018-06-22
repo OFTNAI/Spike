@@ -1,4 +1,4 @@
-#include "CollectNeuronSpikesRecordingElectrodes.hpp"
+#include "SpikeMonitors.hpp"
 #include <stdlib.h>
 #include <iostream>
 #include <stdio.h>
@@ -8,9 +8,9 @@
 #include <time.h>
 using namespace std;
 
-// CollectNeuronSpikesRecordingElectrodes Constructor
-CollectNeuronSpikesRecordingElectrodes::CollectNeuronSpikesRecordingElectrodes(SpikingNeurons * neurons_parameter, SpikingSynapses * synapses_parameter, string full_directory_name_for_simulation_data_files_param, const char * prefix_string_param) 
-	: RecordingElectrodes(neurons_parameter, synapses_parameter, full_directory_name_for_simulation_data_files_param, prefix_string_param) {
+// SpikeMonitors Constructor
+SpikeMonitors::SpikeMonitors(SpikingNeurons * neurons_parameter, SpikingSynapses * synapses_parameter, string full_directory_name_for_simulation_data_files_param, const char * prefix_string_param) 
+	: Monitors(neurons_parameter, synapses_parameter, full_directory_name_for_simulation_data_files_param, prefix_string_param) {
 
 	// Variables
 	size_of_device_spike_store = 0;
@@ -29,8 +29,8 @@ CollectNeuronSpikesRecordingElectrodes::CollectNeuronSpikesRecordingElectrodes(S
 }
 
 
-// CollectNeuronSpikesRecordingElectrodes Destructor
-CollectNeuronSpikesRecordingElectrodes::~CollectNeuronSpikesRecordingElectrodes() {
+// SpikeMonitors Destructor
+SpikeMonitors::~SpikeMonitors() {
   free(neuron_ids_of_stored_spikes_on_host);
   free(time_in_seconds_of_stored_spikes_on_host);
   free(total_number_of_spikes_stored_on_device);
@@ -40,7 +40,7 @@ CollectNeuronSpikesRecordingElectrodes::~CollectNeuronSpikesRecordingElectrodes(
 }
 
 
-void CollectNeuronSpikesRecordingElectrodes::initialise_collect_neuron_spikes_recording_electrodes(Collect_Neuron_Spikes_Optional_Parameters * collect_neuron_spikes_optional_parameters_param) {
+void SpikeMonitors::initialise_collect_neuron_spikes_recording_electrodes(Collect_Neuron_Spikes_Optional_Parameters * collect_neuron_spikes_optional_parameters_param) {
 
 	if (collect_neuron_spikes_optional_parameters_param != nullptr) {
 		collect_neuron_spikes_optional_parameters = collect_neuron_spikes_optional_parameters_param;
@@ -54,7 +54,7 @@ void CollectNeuronSpikesRecordingElectrodes::initialise_collect_neuron_spikes_re
 
 
 
-void CollectNeuronSpikesRecordingElectrodes::allocate_pointers_for_spike_store() {
+void SpikeMonitors::allocate_pointers_for_spike_store() {
 
 	total_number_of_spikes_stored_on_device = (int*)malloc(sizeof(int));
 	total_number_of_spikes_stored_on_device[0] = 0;
@@ -67,7 +67,7 @@ void CollectNeuronSpikesRecordingElectrodes::allocate_pointers_for_spike_store()
 	}
 }
 
-void CollectNeuronSpikesRecordingElectrodes::delete_and_reset_collected_spikes() {
+void SpikeMonitors::delete_and_reset_collected_spikes() {
 
 	// Reset the spike store
 	// Host values
@@ -87,7 +87,7 @@ void CollectNeuronSpikesRecordingElectrodes::delete_and_reset_collected_spikes()
 
 
 
-void CollectNeuronSpikesRecordingElectrodes::copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(float current_time_in_seconds, int timestep_index, int number_of_timesteps_per_epoch) {
+void SpikeMonitors::copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(float current_time_in_seconds, int timestep_index, int number_of_timesteps_per_epoch) {
 
 	if (((timestep_index % collect_neuron_spikes_optional_parameters->number_of_timesteps_per_device_spike_copy_check) == 0) || (timestep_index == (number_of_timesteps_per_epoch-1))){
 
@@ -121,7 +121,7 @@ void CollectNeuronSpikesRecordingElectrodes::copy_spikes_from_device_to_host_and
 
 
 
-void CollectNeuronSpikesRecordingElectrodes::write_spikes_to_file(int epoch_number, bool isTrained) {
+void SpikeMonitors::write_spikes_to_file(int epoch_number, bool isTrained) {
 
 	clock_t write_spikes_to_file_start = clock();
 
@@ -178,8 +178,8 @@ void CollectNeuronSpikesRecordingElectrodes::write_spikes_to_file(int epoch_numb
 }
 
 
-void CollectNeuronSpikesRecordingElectrodes::collect_spikes_for_timestep(float current_time_in_seconds, float timestep) {
+void SpikeMonitors::collect_spikes_for_timestep(float current_time_in_seconds, float timestep) {
   backend()->collect_spikes_for_timestep(current_time_in_seconds, timestep);
 }
 
-SPIKE_MAKE_INIT_BACKEND(CollectNeuronSpikesRecordingElectrodes);
+SPIKE_MAKE_INIT_BACKEND(SpikeMonitors);
