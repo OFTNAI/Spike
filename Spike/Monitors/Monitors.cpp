@@ -6,7 +6,8 @@
 #include "../Helpers/TerminalHelpers.hpp"
 #include <time.h>
 
-Monitors::Monitors() {
+Monitors::Monitors(SpikingNeurons* neuron_set) {
+  neurons = neuron_set;
 }
 
 void Monitors::reset_state() {

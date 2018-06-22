@@ -12,7 +12,7 @@ class SpikingModel; // Forward Declaration
 #include "../Neurons/SpikingNeurons.hpp"
 #include "../Helpers/TimerWithMessages.hpp"
 #include "../Helpers/RandomStateManager.hpp"
-#include "../RecordingElectrodes/RecordingElectrodes.hpp"
+#include "../Monitors/Monitors.hpp"
 #include <string>
 #include <fstream>
 #include <vector>
@@ -37,7 +37,7 @@ public:
   SpikingNeurons * input_spiking_neurons = nullptr;
   
   vector<STDPPlasticity*> plasticity_rule_vec; 
-  vector<RecordingElectrodes*> recording_electrodes_vec; 
+  vector<Monitors*> monitors_vec; 
 
   bool model_complete = false;
 
@@ -53,6 +53,7 @@ public:
   void AddSynapseGroupsForNeuronGroupAndEachInputGroup(int postsynaptic_group_id, synapse_parameters_struct * synapse_params);
 
   void AddPlasticityRule(STDPPlasticity * plasticity_rule);
+  void AddMonitors(Monitors * activityMonitor);
 
   void reset_state();
   void run(float seconds);

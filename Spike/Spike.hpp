@@ -3,7 +3,6 @@
 
 // Models and Simulators
 #include "Spike/Models/SpikingModel.hpp"
-#include "Spike/Simulator/Simulator.hpp"
 
 // Neuron Models 
 #include "Spike/Neurons/LIFSpikingNeurons.hpp"
@@ -25,5 +24,8 @@
 #include "Spike/Synapses/CurrentSpikingSynapses.hpp"
 #include "Spike/Synapses/VoltageSpikingSynapses.hpp"
 
+// Monitors
+#include "Spike/Monitors/SpikeMonitors.hpp"
+#include "Spike/Monitors/RateMonitors.hpp"
 
 #endif

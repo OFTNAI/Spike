@@ -4,9 +4,7 @@ file(GLOB_RECURSE SPIKE_MAIN_FILES
   ${PROJECT_SOURCE_DIR}/Spike/Models/*.cpp
   ${PROJECT_SOURCE_DIR}/Spike/Neurons/*.cpp
   ${PROJECT_SOURCE_DIR}/Spike/Plasticity/*.cpp
-  ${PROJECT_SOURCE_DIR}/Spike/RecordingElectrodes/*.cpp
-  ${PROJECT_SOURCE_DIR}/Spike/Simulator/*.cpp
-  ${PROJECT_SOURCE_DIR}/Spike/SpikeAnalyser/*.cpp
+  ${PROJECT_SOURCE_DIR}/Spike/Monitors/*.cpp
   ${PROJECT_SOURCE_DIR}/Spike/Synapses/*.cpp
   )
 file(GLOB_RECURSE SPIKE_CUDA_FILES ${PROJECT_SOURCE_DIR}/Spike/Backend/*.cu)

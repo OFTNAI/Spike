@@ -86,6 +86,10 @@ void SpikingModel::AddPlasticityRule(STDPPlasticity * plasticity_rule){
   plasticity_rule_vec.push_back(plasticity_rule);
 }
 
+void SpikingModelAddMonitors(Monitors * activityMonitor){
+  // Adds the activity monitor to the new location
+  monitor_vec.push_back(activityMonitor);
+}
 
 void SpikingModel::finalise_model() {
   timestep_grouping = spiking_synapses->minimum_axonal_delay_in_timesteps;

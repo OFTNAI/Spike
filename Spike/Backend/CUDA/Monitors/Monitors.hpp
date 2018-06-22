@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Spike/RecordingElectrodes/RecordingElectrodes.hpp"
+#include "Spike/Monitors/Monitors.hpp"
 #include "Spike/Backend/CUDA/CUDABackend.hpp"
 
 #include "Spike/Neurons/SpikingNeurons.hpp"
@@ -13,9 +13,9 @@
 
 namespace Backend {
   namespace CUDA {
-    class RecordingElectrodes : public virtual ::Backend::RecordingElectrodes {
+    class Monitors : public virtual ::Backend::Monitors {
     public:
-      using ::Backend::RecordingElectrodes::frontend;
+      using ::Backend::Monitors::frontend;
 
       void prepare() override;
       void reset_state() override;

@@ -1,7 +1,7 @@
 foreach(example
-    VogelsAbbottNet
-    Brunel10K
-    ExampleExperiment
+    #VogelsAbbottNet
+    #Brunel10K
+    #ExampleExperiment
     )
   add_executable(${example} ${example}.cpp)
   target_link_libraries(${example}

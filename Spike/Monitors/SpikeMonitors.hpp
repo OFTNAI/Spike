@@ -12,6 +12,7 @@ namespace Backend {
     SPIKE_ADD_BACKEND_FACTORY(SpikeMonitors);
 
     virtual void copy_spikes_to_front() = 0;
+    virtual void copy_spikecount_to_front() = 0;
     virtual void collect_spikes_for_timestep(float current_time_in_seconds, float timestep) = 0;
   };
 }
@@ -40,6 +41,7 @@ public:
   int total_number_of_spikes_stored_on_host;
 
   // Host Pointers
+  SpikingNeurons * neurons;
   spike_monitor_advanced_parameters * advanced_parameters = nullptr;
   int* neuron_ids_of_stored_spikes_on_host = nullptr;
   float* spike_times_of_stored_spikes_on_host = nullptr;
@@ -48,14 +50,17 @@ public:
   float* reset_neuron_times = nullptr;
 
   // Constructor/Destructor
-  SpikeMonitors(SpikingNeurons * neurons_parameter, SpikingSynapses * synapses_parameter, string full_directory_name_for_simulation_data_files_param, const char * prefix_string_param);
+  SpikeMonitors(SpikingNeurons * neurons_parameter);
   ~SpikeMonitors() override;
+  void prepare_backend_early() override;
 
-  void initialise_collect_neuron_spikes_recording_electrodes(Collect_Neuron_Spikes_Optional_Parameters * collect_neuron_spikes_optional_parameters_param);
+  void initialise_collect_neuron_spikes_recording_electrodes();
   void allocate_pointers_for_spike_store();
 
-  void collect_spikes_for_timestep(float current_time_in_seconds, float timestep);
-  void copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(float current_time_in_seconds, int timestep_index, int number_of_timesteps_per_epoch);
+  void state_update(float current_time_in_seconds, float timestep);
+  void final_update(float current_time_in_seconds, float timestep);
+
+  void copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(float current_time_in_seconds, float timestep, bool force=false);
 
   void reset_state() override;
 

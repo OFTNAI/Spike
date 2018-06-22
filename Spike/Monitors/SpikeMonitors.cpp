@@ -9,22 +9,21 @@
 using namespace std;
 
 // SpikeMonitors Constructor
-SpikeMonitors::SpikeMonitors(SpikingNeurons * neurons_parameter, SpikingSynapses * synapses_parameter, string full_directory_name_for_simulation_data_files_param, const char * prefix_string_param) 
-	: Monitors(neurons_parameter, synapses_parameter, full_directory_name_for_simulation_data_files_param, prefix_string_param) {
+SpikeMonitors::SpikeMonitors(SpikingNeurons * neurons_parameter) : Monitors(neurons_parameter) {
 
-	// Variables
-	size_of_device_spike_store = 0;
-	total_number_of_spikes_stored_on_host = 0;
+  // Variables
+  size_of_device_spike_store = 0;
+  total_number_of_spikes_stored_on_host = 0;
 
-	// Host Pointers
-	collect_neuron_spikes_optional_parameters = new Collect_Neuron_Spikes_Optional_Parameters();
-	neuron_ids_of_stored_spikes_on_host = nullptr;
-	total_number_of_spikes_stored_on_device = nullptr;
-	time_in_seconds_of_stored_spikes_on_host = nullptr;
+  // Host Pointers
+  advanced_parameters = new spike_monitor_advanced_parameters();
+  neuron_ids_of_stored_spikes_on_host = nullptr;
+  spike_times_of_stored_spikes_on_host = nullptr;
+  total_number_of_spikes_stored_on_device = nullptr;
 
-	// Private Host Pointeres
-	reset_neuron_ids = nullptr;
-	reset_neuron_times = nullptr;
+  // Private Host Pointeres
+  reset_neuron_ids = nullptr;
+  reset_neuron_times = nullptr;
 
 }
 
@@ -32,7 +31,7 @@ SpikeMonitors::SpikeMonitors(SpikingNeurons * neurons_parameter, SpikingSynapses
 // SpikeMonitors Destructor
 SpikeMonitors::~SpikeMonitors() {
   free(neuron_ids_of_stored_spikes_on_host);
-  free(time_in_seconds_of_stored_spikes_on_host);
+  free(spike_times_of_stored_spikes_on_host);
   free(total_number_of_spikes_stored_on_device);
 
   free(reset_neuron_ids);
@@ -40,15 +39,10 @@ SpikeMonitors::~SpikeMonitors() {
 }
 
 
-void SpikeMonitors::initialise_collect_neuron_spikes_recording_electrodes(Collect_Neuron_Spikes_Optional_Parameters * collect_neuron_spikes_optional_parameters_param) {
+void SpikeMonitors::prepare_backend_early() {
 
-	if (collect_neuron_spikes_optional_parameters_param != nullptr) {
-		collect_neuron_spikes_optional_parameters = collect_neuron_spikes_optional_parameters_param;
-	}
-
-	size_of_device_spike_store = collect_neuron_spikes_optional_parameters->device_spike_store_size_multiple_of_total_neurons * neurons->total_number_of_neurons;
-
-	allocate_pointers_for_spike_store();
+  size_of_device_spike_store = advanced_parameters->device_spike_store_size_multiple_of_total_neurons * neurons->total_number_of_neurons;
+  allocate_pointers_for_spike_store();
 
 }
 
@@ -56,130 +50,76 @@ void SpikeMonitors::initialise_collect_neuron_spikes_recording_electrodes(Collec
 
 void SpikeMonitors::allocate_pointers_for_spike_store() {
 
-	total_number_of_spikes_stored_on_device = (int*)malloc(sizeof(int));
-	total_number_of_spikes_stored_on_device[0] = 0;
+  total_number_of_spikes_stored_on_device = (int*)malloc(sizeof(int));
+  total_number_of_spikes_stored_on_device[0] = 0;
 
-	reset_neuron_ids = (int *)malloc(sizeof(int)*size_of_device_spike_store);
-	reset_neuron_times = (float *)malloc(sizeof(float)*size_of_device_spike_store);
-	for (int i=0; i < size_of_device_spike_store; i++){
-		reset_neuron_ids[i] = -1;
-		reset_neuron_times[i] = -1.0f;
-	}
+  reset_neuron_ids = (int *)malloc(sizeof(int)*size_of_device_spike_store);
+  reset_neuron_times = (float *)malloc(sizeof(float)*size_of_device_spike_store);
+  for (int i=0; i < size_of_device_spike_store; i++){
+    reset_neuron_ids[i] = -1;
+    reset_neuron_times[i] = -1.0f;
+  }
 }
 
-void SpikeMonitors::delete_and_reset_collected_spikes() {
+void SpikeMonitors::reset_state() {
 
-	// Reset the spike store
-	// Host values
-	total_number_of_spikes_stored_on_host = 0;
-	total_number_of_spikes_stored_on_device[0] = 0;
-	// Free/Clear Device stuff
-	// Reset the number on the device
-    backend()->reset_state();
+  // Reset the spike store
+  // Host values
+  total_number_of_spikes_stored_on_host = 0;
+  total_number_of_spikes_stored_on_device[0] = 0;
+  // Free/Clear Device stuff
+  // Reset the number on the device
+  backend()->reset_state();
 
-	// Free malloced host stuff
-	free(neuron_ids_of_stored_spikes_on_host);
-	free(time_in_seconds_of_stored_spikes_on_host);
-	neuron_ids_of_stored_spikes_on_host = nullptr;
-	time_in_seconds_of_stored_spikes_on_host = nullptr;
-}
-
-
-
-
-void SpikeMonitors::copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(float current_time_in_seconds, int timestep_index, int number_of_timesteps_per_epoch) {
-
-	if (((timestep_index % collect_neuron_spikes_optional_parameters->number_of_timesteps_per_device_spike_copy_check) == 0) || (timestep_index == (number_of_timesteps_per_epoch-1))){
-
-		// Finally, we want to get the spikes back. Every few timesteps check the number of spikes:
-                backend()->copy_spike_counts_to_front();
-
-		// Ensure that we don't have too many
-		if (total_number_of_spikes_stored_on_device[0] > size_of_device_spike_store){
-			print_message_and_exit("Spike recorder has been overloaded! Reduce threshold.");
-		}
-
-		// Deal with them!
-		if ((total_number_of_spikes_stored_on_device[0] >= (collect_neuron_spikes_optional_parameters->proportion_of_device_spike_store_full_before_copy * size_of_device_spike_store)) ||  (timestep_index == (number_of_timesteps_per_epoch - 1))){
-
-			// Reallocate host spike arrays to accommodate for new device spikes.
-			neuron_ids_of_stored_spikes_on_host = (int*)realloc(neuron_ids_of_stored_spikes_on_host, sizeof(int)*(total_number_of_spikes_stored_on_host + total_number_of_spikes_stored_on_device[0]));
-			time_in_seconds_of_stored_spikes_on_host = (float*)realloc(time_in_seconds_of_stored_spikes_on_host, sizeof(float)*(total_number_of_spikes_stored_on_host + total_number_of_spikes_stored_on_device[0]));
-
-			// Copy device spikes into correct host array location
-                        backend()->copy_spikes_to_front();
-
-			total_number_of_spikes_stored_on_host += total_number_of_spikes_stored_on_device[0];
-
-
-			// Reset device spikes
-                        backend()->reset_state();
- 			total_number_of_spikes_stored_on_device[0] = 0;
-		}
-	}
+  // Free malloced host stuff
+  free(neuron_ids_of_stored_spikes_on_host);
+  free(spike_times_of_stored_spikes_on_host);
+  neuron_ids_of_stored_spikes_on_host = nullptr;
+  spike_times_of_stored_spikes_on_host = nullptr;
 }
 
 
+void SpikeMonitors::copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(float current_time_in_seconds, float timestep, bool force) {
+  int current_time_in_timesteps = round(current_time_in_timesteps / timestep);
 
-void SpikeMonitors::write_spikes_to_file(int epoch_number, bool isTrained) {
+  if (((current_time_in_timesteps % advanced_parameters->number_of_timesteps_per_device_spike_copy_check) == 0) || force){
 
-	clock_t write_spikes_to_file_start = clock();
+    // Finally, we want to get the spikes back. Every few timesteps check the number of spikes:
+    backend()->copy_spikecount_to_front();
 
-	// Get the names
-	string phase = "";
-	if (isTrained)
-		phase = "Trained";
-	else
-		phase = "Untrained";
-	
-	string file_IDs = full_directory_name_for_simulation_data_files + prefix_string + "_SpikeIDs_" + phase + "_Epoch" + to_string(epoch_number);
-	string file_Times = full_directory_name_for_simulation_data_files + prefix_string + "_SpikeTimes_" + phase + "_Epoch" + to_string(epoch_number);
+    // Ensure that we don't have too many
+    if (total_number_of_spikes_stored_on_device[0] > size_of_device_spike_store){
+      print_message_and_exit("Spike recorder has been overloaded! Reduce threshold.");
+    }
 
-//	// Append the clock to the file if flag
-//	if (append_clock_to_filenames){ file = file + "t" + to_string(clock()) + "_"; }
+    // Deal with them!
+    if ((total_number_of_spikes_stored_on_device[0] >= (advanced_parameters->proportion_of_device_spike_store_full_before_copy * size_of_device_spike_store)) ||  force){
 
-	if (collect_neuron_spikes_optional_parameters->human_readable_storage){
-		// Open the files
-		ofstream spikeidfile, spiketimesfile;
-		spikeidfile.open((file_IDs + ".txt"), ios::out | ios::binary);
-		spiketimesfile.open((file_Times + ".txt"), ios::out | ios::binary);
-		
+      // Reallocate host spike arrays to accommodate for new device spikes.
+      neuron_ids_of_stored_spikes_on_host = (int*)realloc(neuron_ids_of_stored_spikes_on_host, sizeof(int)*(total_number_of_spikes_stored_on_host + total_number_of_spikes_stored_on_device[0]));
+      spike_times_of_stored_spikes_on_host = (float*)realloc(spike_times_of_stored_spikes_on_host, sizeof(float)*(total_number_of_spikes_stored_on_host + total_number_of_spikes_stored_on_device[0]));
 
-		// Send the data
-		for (int i = 0; i < total_number_of_spikes_stored_on_host; i++) {
-			spikeidfile << to_string(neuron_ids_of_stored_spikes_on_host[i]) << endl;
-			spiketimesfile << to_string(time_in_seconds_of_stored_spikes_on_host[i]) << endl;
-		}
+      // Copy device spikes into correct host array location
+      backend()->copy_spikes_to_front();
 
-		// Close the files
-		spikeidfile.close();
-		spiketimesfile.close();
-	} else {
-		// Open the files
-		ofstream spikeidfile, spiketimesfile;
-		spikeidfile.open((file_IDs + ".bin"), ios::out | ios::binary);
-		spiketimesfile.open((file_Times + ".bin"), ios::out | ios::binary);
-		
+      total_number_of_spikes_stored_on_host += total_number_of_spikes_stored_on_device[0];
 
-		// Send the data
-		spikeidfile.write((char *)neuron_ids_of_stored_spikes_on_host, total_number_of_spikes_stored_on_host*sizeof(int));
-		spiketimesfile.write((char *)time_in_seconds_of_stored_spikes_on_host, total_number_of_spikes_stored_on_host*sizeof(float));
 
-		// Close the files
-		spikeidfile.close();
-		spiketimesfile.close();
-	}
-
-	//delete_and_reset_recorded_spikes();
-
-	clock_t write_spikes_to_file_end = clock();
-	float write_spikes_to_file_total_time = float(write_spikes_to_file_end - write_spikes_to_file_start) / CLOCKS_PER_SEC;
-	printf("Spikes written to file.\n Time taken: %f\n", write_spikes_to_file_total_time);
+      // Reset device spikes
+      backend()->reset_state();
+      total_number_of_spikes_stored_on_device[0] = 0;
+    }
+  }
 }
 
 
-void SpikeMonitors::collect_spikes_for_timestep(float current_time_in_seconds, float timestep) {
-  backend()->collect_spikes_for_timestep(current_time_in_seconds, timestep);
+void SpikeMonitors::state_update(float current_time_in_seconds, float timestep){
+  copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(current_time_in_seconds, timestep);
 }
+
+void SpikeMonitors::final_update(float current_time_in_seconds, float timestep){
+  copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(current_time_in_seconds, timestep, true);
+}
+
 
 SPIKE_MAKE_INIT_BACKEND(SpikeMonitors);

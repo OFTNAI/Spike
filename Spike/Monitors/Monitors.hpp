@@ -26,14 +26,13 @@ namespace Backend {
 
 class Monitors : public virtual SpikeBase {
 public:
-  Monitors();
+  Monitors(SpikingNeurons* neuron_set);
   ~Monitors() override = default;
 
+  SpikingNeurons* neurons = nullptr;
   SPIKE_ADD_BACKEND_GETSET(Monitors, SpikeBase);
   void init_backend(Context* ctx = _global_ctx) override;
-  void reset_state() override;
-
-  SpikingModel* model = nullptr;
+  virtual void reset_state() = 0;
 
 private:
   std::shared_ptr<::Backend::Monitors> _backend;

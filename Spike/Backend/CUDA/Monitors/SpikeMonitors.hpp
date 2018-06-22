@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Spike/RecordingElectrodes/CollectNeuronSpikesRecordingElectrodes.hpp"
-#include "RecordingElectrodes.hpp"
+#include "Spike/Monitors/SpikeMonitors.hpp"
+#include "Monitors.hpp"
 #include "Spike/Backend/CUDA/CUDABackend.hpp"
 #include <cuda.h>
 #include <vector_types.h>
@@ -10,19 +10,19 @@
 
 namespace Backend {
   namespace CUDA {
-    class CollectNeuronSpikesRecordingElectrodes :
-      public virtual ::Backend::CUDA::RecordingElectrodes,
-      public virtual ::Backend::CollectNeuronSpikesRecordingElectrodes {
+    class SpikeMonitors :
+      public virtual ::Backend::CUDA::Monitors,
+      public virtual ::Backend::SpikeMonitors {
     public:
-      ~CollectNeuronSpikesRecordingElectrodes() override;
-      SPIKE_MAKE_BACKEND_CONSTRUCTOR(CollectNeuronSpikesRecordingElectrodes);
-      using ::Backend::CollectNeuronSpikesRecordingElectrodes::frontend;
+      ~SpikeMonitors() override;
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(SpikeMonitors);
+      using ::Backend::SpikeMonitors::frontend;
 
       void prepare() override;
       void reset_state() override;
 
       void copy_spikes_to_front() override;
-      void copy_spike_counts_to_front() override;
+      void copy_spikecount_to_front() override;
 
       void collect_spikes_for_timestep(float current_time_in_seconds, float timestep) override;
 

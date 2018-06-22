@@ -1,26 +1,26 @@
 // -*- mode: c++ -*-
-#include "Spike/Backend/CUDA/RecordingElectrodes/CollectNeuronSpikesRecordingElectrodes.hpp"
+#include "Spike/Backend/CUDA/Monitors/SpikeMonitors.hpp"
 
-SPIKE_EXPORT_BACKEND_TYPE(CUDA, CollectNeuronSpikesRecordingElectrodes);
+SPIKE_EXPORT_BACKEND_TYPE(CUDA, SpikeMonitors);
 
 namespace Backend {
   namespace CUDA {
-    CollectNeuronSpikesRecordingElectrodes::~CollectNeuronSpikesRecordingElectrodes() {
+    SpikeMonitors::~SpikeMonitors() {
       CudaSafeCall(cudaFree(neuron_ids_of_stored_spikes_on_device));
       CudaSafeCall(cudaFree(total_number_of_spikes_stored_on_device));
       CudaSafeCall(cudaFree(time_in_seconds_of_stored_spikes_on_device));
     }
 
-    void CollectNeuronSpikesRecordingElectrodes::reset_state() {
-      RecordingElectrodes::reset_state();
+    void SpikeMonitors::reset_state() {
+      Monitors::reset_state();
 
       CudaSafeCall(cudaMemset(&(total_number_of_spikes_stored_on_device[0]), 0, sizeof(int)));
       CudaSafeCall(cudaMemcpy(neuron_ids_of_stored_spikes_on_device, frontend()->reset_neuron_ids, sizeof(int)*frontend()->size_of_device_spike_store, cudaMemcpyHostToDevice));
       CudaSafeCall(cudaMemcpy(time_in_seconds_of_stored_spikes_on_device, frontend()->reset_neuron_times, sizeof(float)*frontend()->size_of_device_spike_store, cudaMemcpyHostToDevice));
     }
 
-    void CollectNeuronSpikesRecordingElectrodes::prepare() {
-      RecordingElectrodes::prepare();
+    void SpikeMonitors::prepare() {
+      Monitors::prepare();
 
       CudaSafeCall(cudaMalloc((void **)&neuron_ids_of_stored_spikes_on_device, sizeof(int)*frontend()->size_of_device_spike_store));
       CudaSafeCall(cudaMalloc((void **)&time_in_seconds_of_stored_spikes_on_device, sizeof(float)*frontend()->size_of_device_spike_store));
@@ -28,23 +28,25 @@ namespace Backend {
     
       reset_state();
     }
+   
+    void SpikeMonitors::copy_spikecount_to_front(){
+      CudaSafeCall(cudaMemcpy((void*)&frontend()->total_number_of_spikes_stored_on_device[0], 
+                              total_number_of_spikes_stored_on_device, 
+                              sizeof(int), cudaMemcpyDeviceToHost));
+    }
 
-    void CollectNeuronSpikesRecordingElectrodes::copy_spikes_to_front() {
+    void SpikeMonitors::copy_spikes_to_front() {
       CudaSafeCall(cudaMemcpy((void*)&frontend()->neuron_ids_of_stored_spikes_on_host[frontend()->total_number_of_spikes_stored_on_host], 
                               neuron_ids_of_stored_spikes_on_device, 
                               (sizeof(int)*frontend()->total_number_of_spikes_stored_on_device[0]), 
                               cudaMemcpyDeviceToHost));
-      CudaSafeCall(cudaMemcpy((void*)&frontend()->time_in_seconds_of_stored_spikes_on_host[frontend()->total_number_of_spikes_stored_on_host], 
+      CudaSafeCall(cudaMemcpy((void*)&frontend()->spike_times_of_stored_spikes_on_host[frontend()->total_number_of_spikes_stored_on_host], 
                               time_in_seconds_of_stored_spikes_on_device, 
                               sizeof(float)*frontend()->total_number_of_spikes_stored_on_device[0], 
                               cudaMemcpyDeviceToHost));
     }
 
-    void CollectNeuronSpikesRecordingElectrodes::copy_spike_counts_to_front() {
-      CudaSafeCall(cudaMemcpy(&(frontend()->total_number_of_spikes_stored_on_device[0]), &(total_number_of_spikes_stored_on_device[0]), (sizeof(int)), cudaMemcpyDeviceToHost));
-    }
-
-    void CollectNeuronSpikesRecordingElectrodes::collect_spikes_for_timestep
+    void SpikeMonitors::collect_spikes_for_timestep
     (float current_time_in_seconds, float timestep) {
       collect_spikes_for_timestep_kernel<<<neurons_backend->number_of_neuron_blocks_per_grid, neurons_backend->threads_per_block>>>
         (neurons_backend->last_spike_time_of_each_neuron,
@@ -52,7 +54,7 @@ namespace Backend {
          neuron_ids_of_stored_spikes_on_device,
          time_in_seconds_of_stored_spikes_on_device,
          current_time_in_seconds,
-	 timestep,
+   timestep,
          neurons_frontend->total_number_of_neurons);
 
       CudaCheckError();
@@ -73,13 +75,12 @@ namespace Backend {
       while (idx < total_number_of_neurons) {
 
         // If a neuron has fired
-	
+  
         if (d_last_spike_time_of_each_neuron[idx] >= (current_time_in_seconds - 0.5f*timestep)) {
           // Increase the number of spikes stored
           // NOTE: atomicAdd return value is actually original (atomic) value BEFORE incrementation!
-          //		- So first value is actually 0 not 1!!!
+          //    - So first value is actually 0 not 1!!!
           int i = atomicAdd(&d_total_number_of_spikes_stored_on_device[0], 1);
-          __syncthreads();
 
           // In the location, add the id and the time
           d_neuron_ids_of_stored_spikes_on_device[i] = idx;

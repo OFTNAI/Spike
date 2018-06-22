@@ -18,6 +18,7 @@ int PoissonInputSpikingNeurons::AddGroup(neuron_parameters_struct * group_params
   int new_group_id = InputSpikingNeurons::AddGroup(group_params);
   poisson_input_spiking_neuron_parameters_struct * poisson_input_spiking_group_params = (poisson_input_spiking_neuron_parameters_struct*)group_params;
   rate = poisson_input_spiking_group_params->rate;
+  set_up_rates();
   return new_group_id;
 }
 

@@ -131,7 +131,6 @@ int main (int argc, char *argv[]){
   input_neuron_params->group_shape[1] = 10000;    // y-dimension of the input neuron layer
   input_neuron_params->rate = 20.0f; // Hz
   int input_layer_ID = BenchModel->AddInputNeuronGroup(input_neuron_params);
-  poisson_input_spiking_neurons->set_up_rates();
 
   /*
     Setting up NEURON POPULATION

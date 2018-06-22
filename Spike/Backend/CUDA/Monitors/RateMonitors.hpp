@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Spike/RecordingElectrodes/CountNeuronSpikesRecordingElectrodes.hpp"
-#include "RecordingElectrodes.hpp"
+#include "Spike/Monitors/RateMonitors.hpp"
+#include "Monitors.hpp"
 #include "Spike/Backend/CUDA/CUDABackend.hpp"
 #include <cuda.h>
 #include <vector_types.h>
@@ -10,13 +10,13 @@
 
 namespace Backend {
   namespace CUDA {
-    class CountNeuronSpikesRecordingElectrodes :
-      public virtual ::Backend::CUDA::RecordingElectrodes,
-      public virtual ::Backend::CountNeuronSpikesRecordingElectrodes {
+    class RateMonitors :
+      public virtual ::Backend::CUDA::Monitors,
+      public virtual ::Backend::RateMonitors {
     public:
-      ~CountNeuronSpikesRecordingElectrodes() override;
-      SPIKE_MAKE_BACKEND_CONSTRUCTOR(CountNeuronSpikesRecordingElectrodes);
-      using ::Backend::CountNeuronSpikesRecordingElectrodes::frontend;
+      ~RateMonitors() override;
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(RateMonitors);
+      using ::Backend::RateMonitors::frontend;
       
       void prepare() override;
       void reset_state() override;
@@ -33,7 +33,6 @@ namespace Backend {
     (float* d_last_spike_time_of_each_neuron,
      int* d_per_neuron_spike_counts,
      float current_time_in_seconds,
-     float timerange,
      size_t total_number_of_neurons);
   }
 }
