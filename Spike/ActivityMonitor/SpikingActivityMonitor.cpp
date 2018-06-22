@@ -1,4 +1,4 @@
-#include "SpikeMonitors.hpp"
+#include "SpikingActivityMonitor.hpp"
 #include <stdlib.h>
 #include <iostream>
 #include <stdio.h>
@@ -8,8 +8,8 @@
 #include <time.h>
 using namespace std;
 
-// SpikeMonitors Constructor
-SpikeMonitors::SpikeMonitors(SpikingNeurons * neurons_parameter) : Monitors(neurons_parameter) {
+// SpikingActivityMonitor Constructor
+SpikingActivityMonitor::SpikingActivityMonitor(SpikingNeurons * neurons_parameter) : ActivityMonitor(neurons_parameter) {
 
   // Variables
   size_of_device_spike_store = 0;
@@ -28,8 +28,8 @@ SpikeMonitors::SpikeMonitors(SpikingNeurons * neurons_parameter) : Monitors(neur
 }
 
 
-// SpikeMonitors Destructor
-SpikeMonitors::~SpikeMonitors() {
+// SpikingActivityMonitor Destructor
+SpikingActivityMonitor::~SpikingActivityMonitor() {
   free(neuron_ids_of_stored_spikes_on_host);
   free(spike_times_of_stored_spikes_on_host);
   free(total_number_of_spikes_stored_on_device);
@@ -39,7 +39,7 @@ SpikeMonitors::~SpikeMonitors() {
 }
 
 
-void SpikeMonitors::prepare_backend_early() {
+void SpikingActivityMonitor::prepare_backend_early() {
 
   size_of_device_spike_store = advanced_parameters->device_spike_store_size_multiple_of_total_neurons * neurons->total_number_of_neurons;
   allocate_pointers_for_spike_store();
@@ -48,7 +48,7 @@ void SpikeMonitors::prepare_backend_early() {
 
 
 
-void SpikeMonitors::allocate_pointers_for_spike_store() {
+void SpikingActivityMonitor::allocate_pointers_for_spike_store() {
 
   total_number_of_spikes_stored_on_device = (int*)malloc(sizeof(int));
   total_number_of_spikes_stored_on_device[0] = 0;
@@ -61,7 +61,7 @@ void SpikeMonitors::allocate_pointers_for_spike_store() {
   }
 }
 
-void SpikeMonitors::reset_state() {
+void SpikingActivityMonitor::reset_state() {
 
   // Reset the spike store
   // Host values
@@ -79,7 +79,7 @@ void SpikeMonitors::reset_state() {
 }
 
 
-void SpikeMonitors::copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(float current_time_in_seconds, float timestep, bool force) {
+void SpikingActivityMonitor::copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(float current_time_in_seconds, float timestep, bool force) {
   int current_time_in_timesteps = round(current_time_in_timesteps / timestep);
 
   if (((current_time_in_timesteps % advanced_parameters->number_of_timesteps_per_device_spike_copy_check) == 0) || force){
@@ -113,13 +113,13 @@ void SpikeMonitors::copy_spikes_from_device_to_host_and_reset_device_spikes_if_d
 }
 
 
-void SpikeMonitors::state_update(float current_time_in_seconds, float timestep){
+void SpikingActivityMonitor::state_update(float current_time_in_seconds, float timestep){
   copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(current_time_in_seconds, timestep);
 }
 
-void SpikeMonitors::final_update(float current_time_in_seconds, float timestep){
+void SpikingActivityMonitor::final_update(float current_time_in_seconds, float timestep){
   copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(current_time_in_seconds, timestep, true);
 }
 
 
-SPIKE_MAKE_INIT_BACKEND(SpikeMonitors);
+SPIKE_MAKE_INIT_BACKEND(SpikingActivityMonitor);

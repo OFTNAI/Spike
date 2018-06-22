@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Spike/Monitors/Monitors.hpp"
+#include "Spike/ActivityMonitor/ActivityMonitor.hpp"
 
 namespace Backend {
   namespace Dummy {
-    class Monitors : public virtual ::Backend::Monitors {
+    class ActivityMonitor : public virtual ::Backend::ActivityMonitor {
     public:
       void prepare() override;
       void reset_state() override;

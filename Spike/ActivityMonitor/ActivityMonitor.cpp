@@ -1,4 +1,4 @@
-#include "Monitors.hpp"
+#include "ActivityMonitor.hpp"
 #include <stdlib.h>
 #include <iostream>
 #include <stdio.h>
@@ -6,12 +6,12 @@
 #include "../Helpers/TerminalHelpers.hpp"
 #include <time.h>
 
-Monitors::Monitors(SpikingNeurons* neuron_set) {
+ActivityMonitor::Monitors(SpikingNeurons* neuron_set) {
   neurons = neuron_set;
 }
 
-void Monitors::reset_state() {
+void ActivityMonitor::reset_state() {
   backend()->reset_state();
 }
 
-SPIKE_MAKE_STUB_INIT_BACKEND(Monitors);
+SPIKE_MAKE_STUB_INIT_BACKEND(ActivityMonitor);

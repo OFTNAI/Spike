@@ -1,10 +1,10 @@
-#ifndef Monitors_H
-#define Monitors_H
+#ifndef ActivityMonitor_H
+#define ActivityMonitor_H
 
 #include <string>
 using namespace std;
 
-class Monitors; // forward definition
+class ActivityMonitor; // forward definition
 #include "Spike/Base.hpp"
 
 #include "Spike/Backend/Macros.hpp"
@@ -18,24 +18,24 @@ class Monitors; // forward definition
 
 
 namespace Backend {
-  class Monitors : public virtual SpikeBackendBase {
+  class ActivityMonitor : public virtual SpikeBackendBase {
   public:
-    SPIKE_ADD_BACKEND_FACTORY(Monitors);
+    SPIKE_ADD_BACKEND_FACTORY(ActivityMonitor);
   };
 }
 
-class Monitors : public virtual SpikeBase {
+class ActivityMonitor : public virtual SpikeBase {
 public:
-  Monitors(SpikingNeurons* neuron_set);
-  ~Monitors() override = default;
+  ActivityMonitor(SpikingNeurons* neuron_set);
+  ~ActivityMonitor() override = default;
 
   SpikingNeurons* neurons = nullptr;
-  SPIKE_ADD_BACKEND_GETSET(Monitors, SpikeBase);
+  SPIKE_ADD_BACKEND_GETSET(ActivityMonitor, SpikeBase);
   void init_backend(Context* ctx = _global_ctx) override;
   virtual void reset_state() = 0;
 
 private:
-  std::shared_ptr<::Backend::Monitors> _backend;
+  std::shared_ptr<::Backend::ActivityMonitor> _backend;
 };
 
 #endif

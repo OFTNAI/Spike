@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Spike/Monitors/Monitors.hpp"
+#include "Spike/ActivityMonitor/ActivityMonitor.hpp"
 #include "Spike/Backend/CUDA/CUDABackend.hpp"
 
 #include "Spike/Neurons/SpikingNeurons.hpp"
@@ -13,9 +13,9 @@
 
 namespace Backend {
   namespace CUDA {
-    class Monitors : public virtual ::Backend::Monitors {
+    class ActivityMonitor : public virtual ::Backend::ActivityMonitor {
     public:
-      using ::Backend::Monitors::frontend;
+      using ::Backend::ActivityMonitor::frontend;
 
       void prepare() override;
       void reset_state() override;

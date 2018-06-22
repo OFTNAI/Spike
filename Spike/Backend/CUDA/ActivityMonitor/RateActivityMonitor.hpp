@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Spike/Monitors/RateMonitors.hpp"
-#include "Monitors.hpp"
+#include "Spike/ActivityMonitor/RateActivityMonitor.hpp"
+#include "ActivityMonitor.hpp"
 #include "Spike/Backend/CUDA/CUDABackend.hpp"
 #include <cuda.h>
 #include <vector_types.h>
@@ -10,13 +10,13 @@
 
 namespace Backend {
   namespace CUDA {
-    class RateMonitors :
-      public virtual ::Backend::CUDA::Monitors,
-      public virtual ::Backend::RateMonitors {
+    class RateActivityMonitor :
+      public virtual ::Backend::CUDA::ActivityMonitor,
+      public virtual ::Backend::RateActivityMonitor {
     public:
-      ~RateMonitors() override;
-      SPIKE_MAKE_BACKEND_CONSTRUCTOR(RateMonitors);
-      using ::Backend::RateMonitors::frontend;
+      ~RateActivityMonitor() override;
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(RateActivityMonitor);
+      using ::Backend::RateActivityMonitor::frontend;
       
       void prepare() override;
       void reset_state() override;

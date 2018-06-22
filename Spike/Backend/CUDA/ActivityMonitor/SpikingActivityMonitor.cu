@@ -1,26 +1,26 @@
 // -*- mode: c++ -*-
-#include "Spike/Backend/CUDA/Monitors/SpikeMonitors.hpp"
+#include "Spike/Backend/CUDA/ActivityMonitor/SpikingActivityMonitor.hpp"
 
-SPIKE_EXPORT_BACKEND_TYPE(CUDA, SpikeMonitors);
+SPIKE_EXPORT_BACKEND_TYPE(CUDA, SpikingActivityMonitor);
 
 namespace Backend {
   namespace CUDA {
-    SpikeMonitors::~SpikeMonitors() {
+    SpikingActivityMonitor::~SpikingActivityMonitor() {
       CudaSafeCall(cudaFree(neuron_ids_of_stored_spikes_on_device));
       CudaSafeCall(cudaFree(total_number_of_spikes_stored_on_device));
       CudaSafeCall(cudaFree(time_in_seconds_of_stored_spikes_on_device));
     }
 
-    void SpikeMonitors::reset_state() {
-      Monitors::reset_state();
+    void SpikingActivityMonitor::reset_state() {
+      ActivityMonitor::reset_state();
 
       CudaSafeCall(cudaMemset(&(total_number_of_spikes_stored_on_device[0]), 0, sizeof(int)));
       CudaSafeCall(cudaMemcpy(neuron_ids_of_stored_spikes_on_device, frontend()->reset_neuron_ids, sizeof(int)*frontend()->size_of_device_spike_store, cudaMemcpyHostToDevice));
       CudaSafeCall(cudaMemcpy(time_in_seconds_of_stored_spikes_on_device, frontend()->reset_neuron_times, sizeof(float)*frontend()->size_of_device_spike_store, cudaMemcpyHostToDevice));
     }
 
-    void SpikeMonitors::prepare() {
-      Monitors::prepare();
+    void SpikingActivityMonitor::prepare() {
+      ActivityMonitor::prepare();
 
       CudaSafeCall(cudaMalloc((void **)&neuron_ids_of_stored_spikes_on_device, sizeof(int)*frontend()->size_of_device_spike_store));
       CudaSafeCall(cudaMalloc((void **)&time_in_seconds_of_stored_spikes_on_device, sizeof(float)*frontend()->size_of_device_spike_store));
@@ -29,13 +29,13 @@ namespace Backend {
       reset_state();
     }
    
-    void SpikeMonitors::copy_spikecount_to_front(){
+    void SpikingActivityMonitor::copy_spikecount_to_front(){
       CudaSafeCall(cudaMemcpy((void*)&frontend()->total_number_of_spikes_stored_on_device[0], 
                               total_number_of_spikes_stored_on_device, 
                               sizeof(int), cudaMemcpyDeviceToHost));
     }
 
-    void SpikeMonitors::copy_spikes_to_front() {
+    void SpikingActivityMonitor::copy_spikes_to_front() {
       CudaSafeCall(cudaMemcpy((void*)&frontend()->neuron_ids_of_stored_spikes_on_host[frontend()->total_number_of_spikes_stored_on_host], 
                               neuron_ids_of_stored_spikes_on_device, 
                               (sizeof(int)*frontend()->total_number_of_spikes_stored_on_device[0]), 
@@ -46,7 +46,7 @@ namespace Backend {
                               cudaMemcpyDeviceToHost));
     }
 
-    void SpikeMonitors::collect_spikes_for_timestep
+    void SpikingActivityMonitor::collect_spikes_for_timestep
     (float current_time_in_seconds, float timestep) {
       collect_spikes_for_timestep_kernel<<<neurons_backend->number_of_neuron_blocks_per_grid, neurons_backend->threads_per_block>>>
         (neurons_backend->last_spike_time_of_each_neuron,

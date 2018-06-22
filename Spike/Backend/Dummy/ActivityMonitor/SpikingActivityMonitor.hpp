@@ -1,15 +1,15 @@
 #pragma once
 
-#include "Spike/Monitors/SpikeMonitors.hpp"
-#include "Monitors.hpp"
+#include "Spike/ActivityMonitor/SpikingActivityMonitor.hpp"
+#include "ActivityMonitor.hpp"
 
 namespace Backend {
   namespace Dummy {
-    class SpikeMonitors :
-      public virtual ::Backend::Dummy::Monitors,
-      public virtual ::Backend::SpikeMonitors {
+    class SpikingActivityMonitor :
+      public virtual ::Backend::Dummy::ActivityMonitor,
+      public virtual ::Backend::SpikingActivityMonitor {
     public:
-      SPIKE_MAKE_BACKEND_CONSTRUCTOR(SpikeMonitors);
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(SpikingActivityMonitor);
 
       void prepare() override;
       void reset_state() override;

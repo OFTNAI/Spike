@@ -1,15 +1,15 @@
-#ifndef SpikeMonitors_H
-#define SpikeMonitors_H
+#ifndef SpikingActivityMonitor_H
+#define SpikingActivityMonitor_H
 
 
-#include "../Monitors/Monitors.hpp"
+#include "../ActivityMonitor/ActivityMonitor.hpp"
 
-class SpikeMonitors; // forward definition
+class SpikingActivityMonitor; // forward definition
 
 namespace Backend {
-  class SpikeMonitors : public virtual Monitors {
+  class SpikingActivityMonitor : public virtual ActivityMonitor {
   public:
-    SPIKE_ADD_BACKEND_FACTORY(SpikeMonitors);
+    SPIKE_ADD_BACKEND_FACTORY(SpikingActivityMonitor);
 
     virtual void copy_spikes_to_front() = 0;
     virtual void copy_spikecount_to_front() = 0;
@@ -30,10 +30,10 @@ struct spike_monitor_advanced_parameters {
 
 
 
-class SpikeMonitors : public Monitors {
+class SpikingActivityMonitor : public ActivityMonitor {
 public:
-  SPIKE_ADD_BACKEND_GETSET(SpikeMonitors,
-                           Monitors);
+  SPIKE_ADD_BACKEND_GETSET(SpikingActivityMonitor,
+                           ActivityMonitor);
   void init_backend(Context* ctx = _global_ctx) override;
 
   // Variables
@@ -50,8 +50,8 @@ public:
   float* reset_neuron_times = nullptr;
 
   // Constructor/Destructor
-  SpikeMonitors(SpikingNeurons * neurons_parameter);
-  ~SpikeMonitors() override;
+  SpikingActivityMonitor(SpikingNeurons * neurons_parameter);
+  ~SpikingActivityMonitor() override;
   void prepare_backend_early() override;
 
   void initialise_collect_neuron_spikes_recording_electrodes();
@@ -65,7 +65,7 @@ public:
   void reset_state() override;
 
 private:
-  std::shared_ptr<::Backend::SpikeMonitors> _backend;
+  std::shared_ptr<::Backend::SpikingActivityMonitor> _backend;
 
 };
 
