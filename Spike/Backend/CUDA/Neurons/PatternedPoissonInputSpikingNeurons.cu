@@ -1,35 +1,35 @@
 // -*- mode: c++ -*-
-#include "Spike/Backend/CUDA/Neurons/GeneralPoissonInputSpikingNeurons.hpp"
+#include "Spike/Backend/CUDA/Neurons/PatternedPoissonInputSpikingNeurons.hpp"
 
-SPIKE_EXPORT_BACKEND_TYPE(CUDA, GeneralPoissonInputSpikingNeurons);
+SPIKE_EXPORT_BACKEND_TYPE(CUDA, PatternedPoissonInputSpikingNeurons);
 
 namespace Backend {
   namespace CUDA {
-    GeneralPoissonInputSpikingNeurons::~GeneralPoissonInputSpikingNeurons() {
+    PatternedPoissonInputSpikingNeurons::~PatternedPoissonInputSpikingNeurons() {
       CudaSafeCall(cudaFree(stimuli_rates));
     }
 
-    void GeneralPoissonInputSpikingNeurons::allocate_device_pointers() {
+    void PatternedPoissonInputSpikingNeurons::allocate_device_pointers() {
     }
 
-    void GeneralPoissonInputSpikingNeurons::copy_rates_to_device() {
+    void PatternedPoissonInputSpikingNeurons::copy_rates_to_device() {
       if (stimuli_rates)
         CudaSafeCall(cudaFree(stimuli_rates));
       CudaSafeCall(cudaMalloc((void **)&stimuli_rates, sizeof(float)*frontend()->total_number_of_rates));
       CudaSafeCall(cudaMemcpy(stimuli_rates, frontend()->stimuli_rates, sizeof(float)*frontend()->total_number_of_rates, cudaMemcpyHostToDevice));
     }
 
-    void GeneralPoissonInputSpikingNeurons::reset_state() {
+    void PatternedPoissonInputSpikingNeurons::reset_state() {
       PoissonInputSpikingNeurons::reset_state();
     }
 
-    void GeneralPoissonInputSpikingNeurons::prepare() {
+    void PatternedPoissonInputSpikingNeurons::prepare() {
       PoissonInputSpikingNeurons::prepare();
       allocate_device_pointers();
       copy_rates_to_device();
     }
 
-    void GeneralPoissonInputSpikingNeurons::state_update(float current_time_in_seconds, float timestep) {
+    void PatternedPoissonInputSpikingNeurons::state_update(float current_time_in_seconds, float timestep) {
       poisson_update_membrane_potentials_kernel<<<random_state_manager_backend->block_dimensions, random_state_manager_backend->threads_per_block>>>
         (random_state_manager_backend->states,
          stimuli_rates,

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Spike/Neurons/GeneralPoissonInputSpikingNeurons.hpp"
+#include "Spike/Neurons/PatternedPoissonInputSpikingNeurons.hpp"
 #include "Spike/Backend/CUDA/CUDABackend.hpp"
 #include "PoissonInputSpikingNeurons.hpp"
 
@@ -11,13 +11,13 @@
 
 namespace Backend {
   namespace CUDA {
-    class GeneralPoissonInputSpikingNeurons : public virtual ::Backend::CUDA::PoissonInputSpikingNeurons,
-                                            public virtual ::Backend::GeneralPoissonInputSpikingNeurons {
+    class PatternedPoissonInputSpikingNeurons : public virtual ::Backend::CUDA::PoissonInputSpikingNeurons,
+                                            public virtual ::Backend::PatternedPoissonInputSpikingNeurons {
     public:
-      ~GeneralPoissonInputSpikingNeurons() override;
+      ~PatternedPoissonInputSpikingNeurons() override;
       
-      SPIKE_MAKE_BACKEND_CONSTRUCTOR(GeneralPoissonInputSpikingNeurons);
-      using ::Backend::GeneralPoissonInputSpikingNeurons::frontend;
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(PatternedPoissonInputSpikingNeurons);
+      using ::Backend::PatternedPoissonInputSpikingNeurons::frontend;
 
       void prepare() override;
       void reset_state() override;

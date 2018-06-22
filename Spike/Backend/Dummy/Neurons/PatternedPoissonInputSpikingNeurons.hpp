@@ -1,14 +1,14 @@
 #pragma once
 
-#include "Spike/Neurons/GeneralPoissonInputSpikingNeurons.hpp"
+#include "Spike/Neurons/PatternedPoissonInputSpikingNeurons.hpp"
 #include "PoissonInputSpikingNeurons.hpp"
 
 namespace Backend {
   namespace Dummy {
-    class GeneralPoissonInputSpikingNeurons : public virtual ::Backend::Dummy::PoissonInputSpikingNeurons,
-                                            public virtual ::Backend::GeneralPoissonInputSpikingNeurons {
+    class PatternedPoissonInputSpikingNeurons : public virtual ::Backend::Dummy::PoissonInputSpikingNeurons,
+                                            public virtual ::Backend::PatternedPoissonInputSpikingNeurons {
     public:
-      SPIKE_MAKE_BACKEND_CONSTRUCTOR(GeneralPoissonInputSpikingNeurons);
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(PatternedPoissonInputSpikingNeurons);
 
       void prepare() override;
       void reset_state() override;

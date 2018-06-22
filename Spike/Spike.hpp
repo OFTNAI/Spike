@@ -10,7 +10,7 @@
 
 // Input Neuron Models 
 #include "Spike/Neurons/GeneratorInputSpikingNeurons.hpp"
-#include "Spike/Neurons/GeneralPoissonInputSpikingNeurons.hpp"
+#include "Spike/Neurons/PatternedPoissonInputSpikingNeurons.hpp"
 #include "Spike/Neurons/ImagePoissonInputSpikingNeurons.hpp"
 #include "Spike/Neurons/PoissonInputSpikingNeurons.hpp"
 

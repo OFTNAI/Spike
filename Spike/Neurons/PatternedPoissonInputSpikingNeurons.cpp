@@ -1,4 +1,4 @@
-#include "GeneralPoissonInputSpikingNeurons.hpp"
+#include "PatternedPoissonInputSpikingNeurons.hpp"
 #include <stdlib.h>
 #include <stdio.h>
 #include <algorithm> // For random shuffle
@@ -12,28 +12,28 @@
 using namespace std;
 
 
-GeneralPoissonInputSpikingNeurons::GeneralPoissonInputSpikingNeurons() {
+PatternedPoissonInputSpikingNeurons::PatternedPoissonInputSpikingNeurons() {
   stimuli_rates = nullptr;
   total_number_of_rates = 0;
 }
 
-GeneralPoissonInputSpikingNeurons::~GeneralPoissonInputSpikingNeurons() {
+PatternedPoissonInputSpikingNeurons::~PatternedPoissonInputSpikingNeurons() {
   free(stimuli_rates);
 }
 
-void GeneralPoissonInputSpikingNeurons::state_update
+void PatternedPoissonInputSpikingNeurons::state_update
 (float current_time_in_seconds, float timestep) {
   backend()->state_update(current_time_in_seconds, timestep);
 }
 
-void GeneralPoissonInputSpikingNeurons::reset_stimuli(){
+void PatternedPoissonInputSpikingNeurons::reset_stimuli(){
 	total_number_of_rates = 0;
 	total_number_of_input_stimuli = 0;
 	free(stimuli_rates);
 	stimuli_rates = nullptr;
 }
 
-void GeneralPoissonInputSpikingNeurons::add_stimulus(float* rates, int num_rates){
+void PatternedPoissonInputSpikingNeurons::add_stimulus(float* rates, int num_rates){
 	// Check if the size of the rates is correct
 	if (num_rates != total_number_of_neurons){
 		printf("Error: The number of neurons does not match the number of rates!\n");
@@ -51,9 +51,9 @@ void GeneralPoissonInputSpikingNeurons::add_stimulus(float* rates, int num_rates
 }
 
 
-void GeneralPoissonInputSpikingNeurons::copy_rates_to_device() {
+void PatternedPoissonInputSpikingNeurons::copy_rates_to_device() {
   backend()->copy_rates_to_device();
 }
 
-SPIKE_MAKE_INIT_BACKEND(GeneralPoissonInputSpikingNeurons);
+SPIKE_MAKE_INIT_BACKEND(PatternedPoissonInputSpikingNeurons);
 
