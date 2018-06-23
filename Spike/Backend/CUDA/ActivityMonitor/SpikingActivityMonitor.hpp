@@ -36,6 +36,7 @@ namespace Backend {
      int* d_total_number_of_spikes_stored_on_device,
      int* d_neuron_ids_of_stored_spikes_on_device,
      float* d_time_in_seconds_of_stored_spikes_on_device,
+     int timestep_grouping,
      float current_time_in_seconds,
      float timestep,
      size_t total_number_of_neurons);

@@ -1,5 +1,5 @@
 foreach(example
-    #VogelsAbbottNet
+    VogelsAbbottNet
     #Brunel10K
     #ExampleExperiment
     )

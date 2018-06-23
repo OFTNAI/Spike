@@ -26,12 +26,16 @@ namespace Backend {
 
 class ActivityMonitor : public virtual SpikeBase {
 public:
-  ActivityMonitor(SpikingNeurons* neuron_set);
+  //ActivityMonitor(SpikingNeurons* neuron_set);
   ~ActivityMonitor() override = default;
 
-  SpikingNeurons* neurons = nullptr;
-  SPIKE_ADD_BACKEND_GETSET(ActivityMonitor, SpikeBase);
   void init_backend(Context* ctx = _global_ctx) override;
+  SPIKE_ADD_BACKEND_GETSET(ActivityMonitor, SpikeBase);
+
+  SpikingNeurons* neurons = nullptr;
+  SpikingModel* model = nullptr;
+  virtual void state_update(float current_time_in_seconds, float timestep) = 0;
+  virtual void final_update(float current_time_in_seconds, float timestep) = 0;
   virtual void reset_state() = 0;
 
 private:

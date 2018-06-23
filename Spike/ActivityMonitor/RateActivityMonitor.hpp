@@ -2,12 +2,12 @@
 #define RateActivityMonitor_H
 
 
-#include "../AcitivityMonitor/AcitivityMonitor.hpp"
+#include "../ActivityMonitor/ActivityMonitor.hpp"
 
 class RateActivityMonitor; // forward definition
 
 namespace Backend {
-  class RateActivityMonitor : public virtual AcitivityMonitor {
+  class RateActivityMonitor : public virtual ActivityMonitor {
   public:
     SPIKE_ADD_BACKEND_FACTORY(RateActivityMonitor);
 
@@ -15,17 +15,17 @@ namespace Backend {
   };
 }
 
-class RateActivityMonitor : public AcitivityMonitor {
+class RateActivityMonitor : public ActivityMonitor {
 public:
   SPIKE_ADD_BACKEND_GETSET(RateActivityMonitor,
-                           AcitivityMonitor);
+                           ActivityMonitor);
   void init_backend(Context* ctx = _global_ctx) override;
   
   // Constructor/Destructor
   RateActivityMonitor(SpikingNeurons * neurons_parameter);
   ~RateActivityMonitor() override = default;
 
-  void state_update(float current_time_in_seconds, float timestep);
+  void state_update(float current_time_in_seconds, float timestep) override;
   void initialise_count_neuron_spikes_recording_electrodes();
   void add_spikes_to_per_neuron_spike_count(float current_time_in_seconds);
 

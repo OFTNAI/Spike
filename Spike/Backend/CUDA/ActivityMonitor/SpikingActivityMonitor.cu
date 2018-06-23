@@ -20,6 +20,9 @@ namespace Backend {
     }
 
     void SpikingActivityMonitor::prepare() {
+      neurons_frontend = frontend()->neurons;
+      neurons_backend =
+        dynamic_cast<::Backend::CUDA::SpikingNeurons*>(neurons_frontend->backend());
       ActivityMonitor::prepare();
 
       CudaSafeCall(cudaMalloc((void **)&neuron_ids_of_stored_spikes_on_device, sizeof(int)*frontend()->size_of_device_spike_store));
@@ -30,7 +33,7 @@ namespace Backend {
     }
    
     void SpikingActivityMonitor::copy_spikecount_to_front(){
-      CudaSafeCall(cudaMemcpy((void*)&frontend()->total_number_of_spikes_stored_on_device[0], 
+      CudaSafeCall(cudaMemcpy((void*)&(frontend()->total_number_of_spikes_stored_on_device[0]), 
                               total_number_of_spikes_stored_on_device, 
                               sizeof(int), cudaMemcpyDeviceToHost));
     }
@@ -53,8 +56,9 @@ namespace Backend {
          total_number_of_spikes_stored_on_device,
          neuron_ids_of_stored_spikes_on_device,
          time_in_seconds_of_stored_spikes_on_device,
+         frontend()->model->timestep_grouping,
          current_time_in_seconds,
-   timestep,
+         timestep,
          neurons_frontend->total_number_of_neurons);
 
       CudaCheckError();
@@ -67,6 +71,7 @@ namespace Backend {
      int* d_total_number_of_spikes_stored_on_device,
      int* d_neuron_ids_of_stored_spikes_on_device,
      float* d_time_in_seconds_of_stored_spikes_on_device,
+     int timestep_grouping,
      float current_time_in_seconds,
      float timestep,
      size_t total_number_of_neurons){

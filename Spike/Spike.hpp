@@ -25,7 +25,7 @@
 #include "Spike/Synapses/VoltageSpikingSynapses.hpp"
 
 // Monitors
-#include "Spike/Monitors/SpikeMonitors.hpp"
-#include "Spike/Monitors/RateMonitors.hpp"
+#include "Spike/ActivityMonitor/SpikingActivityMonitor.hpp"
+#include "Spike/ActivityMonitor/RateActivityMonitor.hpp"
 
 #endif

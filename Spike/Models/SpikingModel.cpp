@@ -86,9 +86,9 @@ void SpikingModel::AddPlasticityRule(STDPPlasticity * plasticity_rule){
   plasticity_rule_vec.push_back(plasticity_rule);
 }
 
-void SpikingModelAddMonitors(Monitors * activityMonitor){
-  // Adds the activity monitor to the new location
-  monitor_vec.push_back(activityMonitor);
+void SpikingModel::AddActivityMonitor(ActivityMonitor * activityMonitor){
+  // Adds the activity monitor to the vector
+  monitors_vec.push_back(activityMonitor);
 }
 
 void SpikingModel::finalise_model() {
@@ -103,10 +103,12 @@ void SpikingModel::finalise_model() {
   for (int plasticity_id = 0; plasticity_id < plasticity_rule_vec.size(); plasticity_id++){
     plasticity_rule_vec[plasticity_id]->model = this;
   }
+  for (int monitor_id = 0; monitor_id < monitors_vec.size(); monitor_id++){
+    monitors_vec[monitor_id]->model = this;
+  }
   
   init_backend();
 
-  model_complete = true;
 }
   
 
@@ -129,6 +131,9 @@ void SpikingModel::init_backend() {
   for (int plasticity_id = 0; plasticity_id < plasticity_rule_vec.size(); plasticity_id++){
     plasticity_rule_vec[plasticity_id]->init_backend(context);
   }
+  for (int monitor_id = 0; monitor_id < monitors_vec.size(); monitor_id++){
+    monitors_vec[monitor_id]->init_backend(context);
+  }
 
   #ifndef SILENCE_MODEL_SETUP
   timer->stop_timer_and_log_time_and_message("Network set up.", true);
@@ -144,6 +149,9 @@ void SpikingModel::prepare_backend() {
   for (int plasticity_id = 0; plasticity_id < plasticity_rule_vec.size(); plasticity_id++){
     plasticity_rule_vec[plasticity_id]->prepare_backend();
   }
+  for (int monitor_id = 0; monitor_id < monitors_vec.size(); monitor_id++){
+    monitors_vec[monitor_id]->prepare_backend();
+  }
 }
 
 
@@ -153,6 +161,9 @@ void SpikingModel::reset_state() {
   input_spiking_neurons->reset_state();
   for (int plasticity_id = 0; plasticity_id < plasticity_rule_vec.size(); plasticity_id++){
     plasticity_rule_vec[plasticity_id]->reset_state();
+  }
+  for (int monitor_id = 0; monitor_id < monitors_vec.size(); monitor_id++){
+    monitors_vec[monitor_id]->reset_state();
   }
 }
 
@@ -169,6 +180,9 @@ void SpikingModel::perform_per_step_model_instructions(){
 
   if (spiking_synapses->total_number_of_synapses > 0)
     spiking_synapses->state_update(spiking_neurons, input_spiking_neurons, current_time_in_seconds, timestep);
+  
+  for (int monitor_id = 0; monitor_id < monitors_vec.size(); monitor_id++)
+    monitors_vec[monitor_id]->state_update(current_time_in_seconds, timestep);
 
   // Update time
   current_time_in_timesteps += timestep_grouping;
@@ -176,15 +190,25 @@ void SpikingModel::perform_per_step_model_instructions(){
 }
 
 void SpikingModel::run(float seconds){
-  if (!model_complete)
+  if (!model_complete){
     finalise_model();
+    prepare_backend();
+    reset_state();
+    model_complete = true;
+  }
 
+  // Calculate the number of computational steps we need to do
   int number_of_timesteps = ceil(seconds / timestep);
   int number_of_steps = ceil(number_of_timesteps / timestep_grouping);
 
+  // Run the simulation for the given number of steps
   for (int s = 0; s < number_of_steps; s++){
     perform_per_step_model_instructions();
-    current_time_in_timesteps += timestep_grouping;
   }
+
+  // Carry out any final checks and outputs from recording electrodes
+  float current_time_in_seconds = current_time_in_timesteps * timestep;
+  for (int monitor_id = 0; monitor_id < monitors_vec.size(); monitor_id++)
+    monitors_vec[monitor_id]->final_update(current_time_in_seconds, timestep);
 }
 

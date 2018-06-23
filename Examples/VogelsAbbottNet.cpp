@@ -97,6 +97,11 @@ int main (int argc, char *argv[]){
   BenchModel->input_spiking_neurons = poisson_input_spiking_neurons;
   BenchModel->spiking_synapses = conductance_spiking_synapses;
 
+  // Add a monitor for Neuron Spiking
+  SpikingActivityMonitor* spike_monitor = new SpikingActivityMonitor(lif_spiking_neurons);
+  if (!fast)
+    BenchModel->AddActivityMonitor(spike_monitor);
+
   /*
    *    NEURON PARAMETER SETUP
    */
@@ -204,33 +209,10 @@ int main (int argc, char *argv[]){
     */
 
   /*
-   *    COMPLETE NETWORK SETUP
-   */
-  BenchModel->finalise_model();
-
-
-  /*
-   *    CHOOSE SIMULATOR OPTIONS
-   */
-  Simulator_Options* simoptions = new Simulator_Options();
-  simoptions->run_simulation_general_options->presentation_time_per_stimulus_per_epoch = simtime;
-  if (!fast){
-    simoptions->recording_electrodes_options->collect_neuron_spikes_recording_electrodes_bool = true;
-    simoptions->file_storage_options->save_recorded_neuron_spikes_to_file = true;
-    //simoptions->recording_electrodes_options->collect_neuron_spikes_optional_parameters->human_readable_storage = true;
-    simoptions->recording_electrodes_options->collect_input_neuron_spikes_recording_electrodes_bool = true;
-  }
-
-
-  /*
-   *    SETUP THE SIMULATOR
-   */
-  Simulator * simulator = new Simulator(BenchModel, simoptions);
-  clock_t starttime = clock();
-  /*
    *    RUN THIS SIMULATION
    */
-  simulator->RunSimulation();
+  clock_t starttime = clock();
+  BenchModel->run(simtime);
   clock_t totaltime = clock() - starttime;
   if ( fast ){
     std::ofstream timefile;

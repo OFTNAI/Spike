@@ -12,9 +12,8 @@
 namespace Backend {
   namespace CUDA {
     struct lif_spiking_neurons_data_struct: spiking_neurons_data_struct {
-	float* membrane_time_constants_tau_m;
-	float* membrane_resistances_R;
-
+      float* membrane_time_constants_tau_m;
+      float* membrane_resistances_R;
     };
 
     class LIFSpikingNeurons : public virtual ::Backend::CUDA::SpikingNeurons,
@@ -39,10 +38,10 @@ namespace Backend {
     __global__ void lif_update_membrane_potentials(
         injection_kernel current_injection_kernel,
         spiking_synapses_data_struct* synaptic_data,
-	      spiking_neurons_data_struct* neuron_data,
+        spiking_neurons_data_struct* neuron_data,
         float background_current,
         float timestep,
-				int timestep_grouping,
+        int timestep_grouping,
         float current_time_in_seconds,
         float refactory_period_in_seconds,
         size_t total_number_of_neurons);

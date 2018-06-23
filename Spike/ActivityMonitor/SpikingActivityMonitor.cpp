@@ -9,7 +9,8 @@
 using namespace std;
 
 // SpikingActivityMonitor Constructor
-SpikingActivityMonitor::SpikingActivityMonitor(SpikingNeurons * neurons_parameter) : ActivityMonitor(neurons_parameter) {
+SpikingActivityMonitor::SpikingActivityMonitor(SpikingNeurons * neurons_parameter){
+  neurons = neurons_parameter;
 
   // Variables
   size_of_device_spike_store = 0;
@@ -19,11 +20,14 @@ SpikingActivityMonitor::SpikingActivityMonitor(SpikingNeurons * neurons_paramete
   advanced_parameters = new spike_monitor_advanced_parameters();
   neuron_ids_of_stored_spikes_on_host = nullptr;
   spike_times_of_stored_spikes_on_host = nullptr;
-  total_number_of_spikes_stored_on_device = nullptr;
 
   // Private Host Pointeres
   reset_neuron_ids = nullptr;
   reset_neuron_times = nullptr;
+  
+  // Initialize the single sized value
+  total_number_of_spikes_stored_on_device = (int*)malloc(sizeof(int));
+  total_number_of_spikes_stored_on_device[0] = 0;
 
 }
 
@@ -38,20 +42,12 @@ SpikingActivityMonitor::~SpikingActivityMonitor() {
   free(reset_neuron_times);
 }
 
-
 void SpikingActivityMonitor::prepare_backend_early() {
-
   size_of_device_spike_store = advanced_parameters->device_spike_store_size_multiple_of_total_neurons * neurons->total_number_of_neurons;
   allocate_pointers_for_spike_store();
-
 }
 
-
-
 void SpikingActivityMonitor::allocate_pointers_for_spike_store() {
-
-  total_number_of_spikes_stored_on_device = (int*)malloc(sizeof(int));
-  total_number_of_spikes_stored_on_device[0] = 0;
 
   reset_neuron_ids = (int *)malloc(sizeof(int)*size_of_device_spike_store);
   reset_neuron_times = (float *)malloc(sizeof(float)*size_of_device_spike_store);
@@ -62,7 +58,6 @@ void SpikingActivityMonitor::allocate_pointers_for_spike_store() {
 }
 
 void SpikingActivityMonitor::reset_state() {
-
   // Reset the spike store
   // Host values
   total_number_of_spikes_stored_on_host = 0;
@@ -71,16 +66,18 @@ void SpikingActivityMonitor::reset_state() {
   // Reset the number on the device
   backend()->reset_state();
 
+  /*
   // Free malloced host stuff
   free(neuron_ids_of_stored_spikes_on_host);
   free(spike_times_of_stored_spikes_on_host);
   neuron_ids_of_stored_spikes_on_host = nullptr;
   spike_times_of_stored_spikes_on_host = nullptr;
+  */
 }
 
 
 void SpikingActivityMonitor::copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(float current_time_in_seconds, float timestep, bool force) {
-  int current_time_in_timesteps = round(current_time_in_timesteps / timestep);
+  int current_time_in_timesteps = round(current_time_in_seconds / timestep);
 
   if (((current_time_in_timesteps % advanced_parameters->number_of_timesteps_per_device_spike_copy_check) == 0) || force){
 
@@ -98,7 +95,6 @@ void SpikingActivityMonitor::copy_spikes_from_device_to_host_and_reset_device_sp
       // Reallocate host spike arrays to accommodate for new device spikes.
       neuron_ids_of_stored_spikes_on_host = (int*)realloc(neuron_ids_of_stored_spikes_on_host, sizeof(int)*(total_number_of_spikes_stored_on_host + total_number_of_spikes_stored_on_device[0]));
       spike_times_of_stored_spikes_on_host = (float*)realloc(spike_times_of_stored_spikes_on_host, sizeof(float)*(total_number_of_spikes_stored_on_host + total_number_of_spikes_stored_on_device[0]));
-
       // Copy device spikes into correct host array location
       backend()->copy_spikes_to_front();
 
@@ -114,11 +110,13 @@ void SpikingActivityMonitor::copy_spikes_from_device_to_host_and_reset_device_sp
 
 
 void SpikingActivityMonitor::state_update(float current_time_in_seconds, float timestep){
+  backend()->collect_spikes_for_timestep(current_time_in_seconds, timestep);
   copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(current_time_in_seconds, timestep);
 }
 
 void SpikingActivityMonitor::final_update(float current_time_in_seconds, float timestep){
   copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(current_time_in_seconds, timestep, true);
+  printf(" Number of Spikes Recorded: %d\n", total_number_of_spikes_stored_on_host);
 }
 
 
