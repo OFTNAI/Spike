@@ -17,13 +17,19 @@ namespace Backend {
 
     void RateActivityMonitor::prepare() {
       ActivityMonitor::prepare();
-
       allocate_pointers_for_spike_count();
     }
 
     void RateActivityMonitor::allocate_pointers_for_spike_count() {
       CudaSafeCall(cudaMalloc((void **)&per_neuron_spike_counts,
                               sizeof(int) * frontend()->neurons->total_number_of_neurons));
+    }
+
+    void RateActivityMonitor::copy_spike_count_to_host(){
+      CudaSafeCall(cudaMemcpy((void*)&(frontend()->per_neuron_spike_counts[0]), 
+                              per_neuron_spike_counts, 
+                              sizeof(int)*frontend()->neurons->total_number_of_neurons,
+                              cudaMemcpyDeviceToHost));
     }
 
     void RateActivityMonitor::add_spikes_to_per_neuron_spike_count

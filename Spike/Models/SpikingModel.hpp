@@ -24,7 +24,6 @@ using namespace std;
 class SpikingModel {
 private:
   void perform_per_step_model_instructions();
-  virtual void finalise_model();
 public:
   // Constructor/Destructor
   //SpikingModel(SpikingNeurons* spiking_neurons, SpikingNeurons* input_spiking_neurons, SpikingSynapses* spiking_synapses);
@@ -60,6 +59,7 @@ public:
 
   virtual void init_backend();
   virtual void prepare_backend();
+  virtual void finalise_model();
 
 protected:
   virtual void create_parameter_arrays() {}

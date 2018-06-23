@@ -18,15 +18,16 @@ namespace Backend {
       SPIKE_MAKE_BACKEND_CONSTRUCTOR(RateActivityMonitor);
       using ::Backend::RateActivityMonitor::frontend;
       
+      int * per_neuron_spike_counts = nullptr;
+      
       void prepare() override;
       void reset_state() override;
 
       void allocate_pointers_for_spike_count(); // Not virtual
 
-      void add_spikes_to_per_neuron_spike_count
-      (float current_time_in_seconds) override;
+      void copy_spike_count_to_host() override;
+      void add_spikes_to_per_neuron_spike_count(float current_time_in_seconds) override;
 
-      int * per_neuron_spike_counts = nullptr;
     };
 
     __global__ void add_spikes_to_per_neuron_spike_count_kernel

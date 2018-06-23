@@ -90,11 +90,9 @@ int main (int argc, char *argv[]){
    */
   // Create neuron, synapse and plasticity components to this model
   LIFSpikingNeurons * lif_spiking_neurons = new LIFSpikingNeurons();
-  PoissonInputSpikingNeurons * poisson_input_spiking_neurons = new PoissonInputSpikingNeurons();
   ConductanceSpikingSynapses * conductance_spiking_synapses = new ConductanceSpikingSynapses();
   // Add component choices to the model
   BenchModel->spiking_neurons = lif_spiking_neurons;
-  BenchModel->input_spiking_neurons = poisson_input_spiking_neurons;
   BenchModel->spiking_synapses = conductance_spiking_synapses;
 
   // Add a monitor for Neuron Spiking
@@ -211,6 +209,7 @@ int main (int argc, char *argv[]){
   /*
    *    RUN THIS SIMULATION
    */
+  BenchModel->finalise_model();
   clock_t starttime = clock();
   BenchModel->run(simtime);
   clock_t totaltime = clock() - starttime;

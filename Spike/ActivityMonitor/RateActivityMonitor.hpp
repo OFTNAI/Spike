@@ -11,6 +11,7 @@ namespace Backend {
   public:
     SPIKE_ADD_BACKEND_FACTORY(RateActivityMonitor);
 
+    virtual void copy_spike_count_to_host() = 0;
     virtual void add_spikes_to_per_neuron_spike_count(float current_time_in_seconds) = 0;
   };
 }
@@ -24,9 +25,13 @@ public:
   // Constructor/Destructor
   RateActivityMonitor(SpikingNeurons * neurons_parameter);
   ~RateActivityMonitor() override = default;
+      
+  int * per_neuron_spike_counts = nullptr;
 
+  void prepare_backend_early() override;
   void state_update(float current_time_in_seconds, float timestep) override;
-  void initialise_count_neuron_spikes_recording_electrodes();
+  void final_update(float current_time_in_seconds, float timestep) override;
+  void reset_state() override;
   void add_spikes_to_per_neuron_spike_count(float current_time_in_seconds);
 
 private:
