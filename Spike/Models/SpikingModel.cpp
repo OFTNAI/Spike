@@ -84,23 +84,7 @@ void SpikingModel::AddActivityMonitor(ActivityMonitor * activityMonitor){
 void SpikingModel::finalise_model() {
   if (!model_complete){
     model_complete = true;
-
-    timestep_grouping = spiking_synapses->minimum_axonal_delay_in_timesteps;
     
-    // Outputting Network Overview
-    printf("\nBuilding Model with:\n");
-    if (input_spiking_neurons)
-      printf("  %d Input Neuron(s)\n", input_spiking_neurons->total_number_of_neurons);
-    if (spiking_neurons)
-      printf("  %d Neuron(s)\n", spiking_neurons->total_number_of_neurons);
-    if (spiking_synapses)
-      printf("  %d Synapse(s)\n", spiking_synapses->total_number_of_synapses);
-    if (plasticity_rule_vec.size() > 0)
-      printf("  %d Plasticity Rule(s)\n", (int)plasticity_rule_vec.size());
-    if (monitors_vec.size() > 0)
-      printf("  %d Activity Monitor(s)\n", (int)monitors_vec.size());
-    printf("\n");
-
     // If any component does not exist, create at least a stand-in
     if (!input_spiking_neurons)
       input_spiking_neurons = new InputSpikingNeurons();
@@ -109,6 +93,21 @@ void SpikingModel::finalise_model() {
     if (!spiking_synapses)
       spiking_synapses = new SpikingSynapses();
     
+
+    timestep_grouping = spiking_synapses->minimum_axonal_delay_in_timesteps;
+    
+    // Outputting Network Overview
+    printf("\nBuilding Model with:\n");
+    if (input_spiking_neurons->total_number_of_neurons > 0)
+      printf("  %d Input Neuron(s)\n", input_spiking_neurons->total_number_of_neurons);
+    printf("  %d Neuron(s)\n", spiking_neurons->total_number_of_neurons);
+    printf("  %d Synapse(s)\n", spiking_synapses->total_number_of_synapses);
+    if (plasticity_rule_vec.size() > 0)
+      printf("  %d Plasticity Rule(s)\n", (int)plasticity_rule_vec.size());
+    if (monitors_vec.size() > 0)
+      printf("  %d Activity Monitor(s)\n", (int)monitors_vec.size());
+    printf("\n");
+
 
     spiking_synapses->model = this;
     spiking_neurons->model = this;
@@ -140,12 +139,9 @@ void SpikingModel::init_backend() {
   context->params.threads_per_block_synapses = 512;
 
   // NB All these also call prepare_backend for the initial state:
-  if (spiking_synapses)
-    spiking_synapses->init_backend(context);
-  if (spiking_neurons)
-    spiking_neurons->init_backend(context);
-  if (input_spiking_neurons)
-    input_spiking_neurons->init_backend(context);
+  spiking_synapses->init_backend(context);
+  spiking_neurons->init_backend(context);
+  input_spiking_neurons->init_backend(context);
   for (int plasticity_id = 0; plasticity_id < plasticity_rule_vec.size(); plasticity_id++){
     plasticity_rule_vec[plasticity_id]->init_backend(context);
   }
@@ -160,14 +156,12 @@ void SpikingModel::init_backend() {
 
 
 void SpikingModel::prepare_backend() {
-  if (spiking_synapses){
-    spiking_synapses->prepare_backend();
-    context->params.maximum_axonal_delay_in_timesteps = spiking_synapses->maximum_axonal_delay_in_timesteps;
-  }
-  if (spiking_neurons)
-    spiking_neurons->prepare_backend();
-  if (input_spiking_neurons)
-    input_spiking_neurons->prepare_backend();
+  spiking_synapses->prepare_backend();
+  context->params.maximum_axonal_delay_in_timesteps = spiking_synapses->maximum_axonal_delay_in_timesteps;
+  
+  spiking_neurons->prepare_backend();
+  input_spiking_neurons->prepare_backend();
+
   for (int plasticity_id = 0; plasticity_id < plasticity_rule_vec.size(); plasticity_id++){
     plasticity_rule_vec[plasticity_id]->prepare_backend();
   }
@@ -180,12 +174,9 @@ void SpikingModel::prepare_backend() {
 void SpikingModel::reset_state() {
   finalise_model();
 
-  if (spiking_synapses)
-    spiking_synapses->reset_state();
-  if (spiking_neurons)
-    spiking_neurons->reset_state();
-  if (input_spiking_neurons)
-    input_spiking_neurons->reset_state();
+  spiking_synapses->reset_state();
+  spiking_neurons->reset_state();
+  input_spiking_neurons->reset_state();
   for (int plasticity_id = 0; plasticity_id < plasticity_rule_vec.size(); plasticity_id++){
     plasticity_rule_vec[plasticity_id]->reset_state();
   }
@@ -197,16 +188,14 @@ void SpikingModel::reset_state() {
 
 void SpikingModel::perform_per_step_model_instructions(){
   float current_time_in_seconds = current_time_in_timesteps * timestep;
-  if (spiking_neurons)
-    spiking_neurons->state_update(current_time_in_seconds, timestep);
-  if (input_spiking_neurons)
-    input_spiking_neurons->state_update(current_time_in_seconds, timestep);
+  
+  spiking_neurons->state_update(current_time_in_seconds, timestep);
+  input_spiking_neurons->state_update(current_time_in_seconds, timestep);
   
   for (int plasticity_id = 0; plasticity_id < plasticity_rule_vec.size(); plasticity_id++)
     plasticity_rule_vec[plasticity_id]->state_update(current_time_in_seconds, timestep);
 
-  if (spiking_synapses)
-    spiking_synapses->state_update(spiking_neurons, input_spiking_neurons, current_time_in_seconds, timestep);
+  spiking_synapses->state_update(spiking_neurons, input_spiking_neurons, current_time_in_seconds, timestep);
   
   for (int monitor_id = 0; monitor_id < monitors_vec.size(); monitor_id++)
     monitors_vec[monitor_id]->state_update(current_time_in_seconds, timestep);
