@@ -61,10 +61,13 @@ public:
 
   void state_update(float current_time_in_seconds, float timestep) override;
   void final_update(float current_time_in_seconds, float timestep) override;
+  void reset_state() override;
 
   void copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(float current_time_in_seconds, float timestep, bool force=false);
 
-  void reset_state() override;
+  void save_spikes_as_txt(string path);
+  void save_spikes_as_binary(string path);
+
 
 private:
   std::shared_ptr<::Backend::SpikingActivityMonitor> _backend;

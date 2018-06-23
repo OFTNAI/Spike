@@ -73,9 +73,9 @@ enum CONNECTIVITY_TYPE
   for SpikingSynapses etc.
 */
 struct synapse_parameters_struct {
-  int max_number_of_connections_per_pair = 1;
   std::vector<int> pairwise_connect_presynaptic;
   std::vector<int> pairwise_connect_postsynaptic;
+  std::vector<int> pairwise_connect_weight;
   int gaussian_synapses_per_postsynaptic_neuron = 10;
   float gaussian_synapses_standard_deviation = 10.0;
   float weight_range_bottom = 0.0;
@@ -106,7 +106,6 @@ public:
   int temp_number_of_synapses_in_last_group = 0;    /**< Tracks the number of synapses in the last added group. */
   int largest_synapse_group_size = 0;               /**< Tracks the size of the largest synaptic group. */
   bool print_synapse_group_details = false;         /**< A flag used to indicate whether group details should be printed */
-  std::vector<Plasticity*> plasticity_rule_vec;     /**< A vector of pointers to the plasticity rules to be used in the simulation */
   
 
 	
@@ -115,7 +114,6 @@ public:
   int* postsynaptic_neuron_indices = nullptr;               /**< Indices of postsynaptic neuron IDs */
   int* original_synapse_indices = nullptr;                  /**< Indices by which to order the presynaptic and postsynaptic neuron IDs if a shuffle is carried out */
   int* synapse_postsynaptic_neuron_count_index = nullptr;   /**< An array of the number of incoming synapses to each postsynaptic neuron */
-  int maximum_number_of_afferent_synapses = 0;
   float* synaptic_efficacies_or_weights = nullptr;          /**< An array of synaptic efficacies/weights accompanying the pre/postsynaptic_neuron_indices */
   
 
@@ -144,11 +142,6 @@ public:
      /param increment The number of synapses for which allocated memory must be expanded.
   */
   void increment_number_of_synapses(int increment);
-
-  /**
-     *  A function to shuffle the order of synapse array storage for increased GPU memory write speeds. Currently Unused.
-  */
-  virtual void shuffle_synapses();
 
   void reset_state() override;
 

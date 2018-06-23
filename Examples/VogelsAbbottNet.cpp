@@ -218,6 +218,9 @@ int main (int argc, char *argv[]){
     timefile.open("timefile.dat");
     timefile << std::setprecision(10) << ((float)totaltime / CLOCKS_PER_SEC);
     timefile.close();
+  } else {
+    //spike_monitor->save_spikes_as_txt("./");
+    spike_monitor->save_spikes_as_binary("./");
   }
   //cudaProfilerStop();
   return(0);

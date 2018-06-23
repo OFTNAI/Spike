@@ -120,4 +120,37 @@ void SpikingActivityMonitor::final_update(float current_time_in_seconds, float t
 }
 
 
+void SpikingActivityMonitor::save_spikes_as_txt(string path){
+  ofstream spikeidfile, spiketimesfile;
+
+  // Open output files
+  spikeidfile.open((path + "/Spike_IDs.txt"), ios::out | ios::binary);
+  spiketimesfile.open((path + "/Spike_Times.txt"), ios::out | ios::binary);
+
+  // Send the data
+  for (int i = 0; i < total_number_of_spikes_stored_on_host; i++) {
+    spikeidfile << neuron_ids_of_stored_spikes_on_host[i] << endl;
+    spiketimesfile << spike_times_of_stored_spikes_on_host[i] << endl;
+  }
+  // Close the files
+  spikeidfile.close();
+  spiketimesfile.close();
+}
+
+void SpikingActivityMonitor::save_spikes_as_binary(string path){
+  ofstream spikeidfile, spiketimesfile;
+
+  // Open output files
+  spikeidfile.open((path + "/Spike_IDs.bin"), ios::out | ios::binary);
+  spiketimesfile.open((path + "/Spike_Times.bin"), ios::out | ios::binary);
+
+  // Send the data
+  spikeidfile.write((char *)neuron_ids_of_stored_spikes_on_host, total_number_of_spikes_stored_on_host*sizeof(int));
+  spiketimesfile.write((char *)spike_times_of_stored_spikes_on_host, total_number_of_spikes_stored_on_host*sizeof(float));
+  // Close the files
+  spikeidfile.close();
+  spiketimesfile.close();
+}
+
+
 SPIKE_MAKE_INIT_BACKEND(SpikingActivityMonitor);
