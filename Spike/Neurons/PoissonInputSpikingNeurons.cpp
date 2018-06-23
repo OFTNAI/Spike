@@ -25,11 +25,9 @@ int PoissonInputSpikingNeurons::AddGroup(neuron_parameters_struct * group_params
 
 void PoissonInputSpikingNeurons::set_up_rates() {
   rates = (float*)realloc(rates, sizeof(float)*total_number_of_neurons);
-  for (int i = total_number_of_neurons - number_of_neurons_in_new_group; i < total_number_of_neurons; i++) {
+  for (int i = 0; i < total_number_of_neurons; i++) {
     rates[i] = rate;
   }
-  total_number_of_transformations_per_object = 1;
-  total_number_of_objects = 1;
   total_number_of_input_stimuli = 1;
 }
 
@@ -43,6 +41,7 @@ void PoissonInputSpikingNeurons::init_random_state(bool force) {
 }
 
 void PoissonInputSpikingNeurons::prepare_backend_early() {
+  set_up_rates();
   InputSpikingNeurons::prepare_backend_early();
   init_random_state();
 }

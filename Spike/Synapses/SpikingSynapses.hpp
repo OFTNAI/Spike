@@ -58,6 +58,8 @@ public:
 
   virtual void state_update(SpikingNeurons * neurons, SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep);
 
+  virtual void save_connectivity_as_txt(std::string path, std::string prefix="") override;
+  virtual void save_connectivity_as_binary(std::string path, std::string prefix="") override;
 private:
   std::shared_ptr<::Backend::SpikingSynapses> _backend;
 };

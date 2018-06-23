@@ -35,6 +35,10 @@ public:
   SPIKE_ADD_BACKEND_GETSET(ImagePoissonInputSpikingNeurons, PoissonInputSpikingNeurons);
   void init_backend(Context* ctx = _global_ctx) override;
   
+  int total_number_of_objects = 0;
+  int total_number_of_transformations_per_object = 0;
+  bool stimulus_is_new_object_for_object_by_object_presentation(int stimulus_index); // Moved from Input Neuron Class
+  
   int AddGroup(neuron_parameters_struct * group_params) override;
   void AddGroupForEachGaborType(neuron_parameters_struct * group_params);
 

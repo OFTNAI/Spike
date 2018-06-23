@@ -65,8 +65,8 @@ public:
 
   void copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(float current_time_in_seconds, float timestep, bool force=false);
 
-  void save_spikes_as_txt(string path);
-  void save_spikes_as_binary(string path);
+  void save_spikes_as_txt(string path, string prefix="");
+  void save_spikes_as_binary(string path, string prefix="");
 
 
 private:

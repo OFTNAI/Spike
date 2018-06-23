@@ -305,6 +305,9 @@ int ImagePoissonInputSpikingNeurons::calculate_gabor_index(int orientationIndex,
   return orientationIndex * (total_number_of_wavelengths * total_number_of_phases) + wavelengthIndex * total_number_of_phases + phaseIndex;
 }
 
+bool ImagePoissonInputSpikingNeurons::stimulus_is_new_object_for_object_by_object_presentation(int stimulus_index) {
+  return (stimulus_index % total_number_of_transformations_per_object == 0) ? true : false;
+}
 
 SPIKE_MAKE_INIT_BACKEND(ImagePoissonInputSpikingNeurons);
 

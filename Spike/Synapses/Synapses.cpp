@@ -308,13 +308,13 @@ void Synapses::increment_number_of_synapses(int increment) {
 
 }
 
-void Synapses::save_connectivity_to_txt(std::string path){
+void Synapses::save_connectivity_as_txt(std::string path, std::string prefix){
   std::ofstream preidfile, postidfile, weightfile;
 
   // Open output files
-  preidfile.open((path + "/PresynapticIDs.txt"), std::ios::out | std::ios::binary);
-  postidfile.open((path + "/PostsynapticIDs.txt"), std::ios::out | std::ios::binary);
-  weightfile.open((path + "/SynapticWeights.txt"), std::ios::out | std::ios::binary);
+  preidfile.open((path + "/" + prefix + "PresynapticIDs.txt"), std::ios::out | std::ios::binary);
+  postidfile.open((path + "/" + prefix + "PostsynapticIDs.txt"), std::ios::out | std::ios::binary);
+  weightfile.open((path + "/" + prefix + "SynapticWeights.txt"), std::ios::out | std::ios::binary);
 
   // Ensure weight data has been copied to frontend
   backend()->copy_to_frontend();
@@ -333,13 +333,13 @@ void Synapses::save_connectivity_to_txt(std::string path){
 
 };
 // Ensure copied from device, then send
-void Synapses::save_connectivity_to_binary(std::string path){
+void Synapses::save_connectivity_as_binary(std::string path, std::string prefix){
   std::ofstream preidfile, postidfile, weightfile;
 
   // Open output files
-  preidfile.open((path + "/PresynapticIDs.bin"), std::ios::out | std::ios::binary);
-  postidfile.open((path + "/PostsynapticIDs.bin"), std::ios::out | std::ios::binary);
-  weightfile.open((path + "/SynapticWeights.bin"), std::ios::out | std::ios::binary);
+  preidfile.open((path + "/" + prefix + "PresynapticIDs.bin"), std::ios::out | std::ios::binary);
+  postidfile.open((path + "/" + prefix + "PostsynapticIDs.bin"), std::ios::out | std::ios::binary);
+  weightfile.open((path + "/" + prefix + "SynapticWeights.bin"), std::ios::out | std::ios::binary);
 
   // Ensure weight data has been copied to frontend
   backend()->copy_to_frontend();
@@ -356,32 +356,70 @@ void Synapses::save_connectivity_to_binary(std::string path){
 }
 
 // Load Network??
-//void Synapses::load_connectivity_from_txt(std::string path);
-//void Synapses::load_connectivity_from_binary(std::string path);
+//void Synapses::load_connectivity_from_txt(std::string path, std::string prefix);
+//void Synapses::load_connectivity_from_binary(std::string path, std::string prefix);
 
 
-void Synapses::save_weights_to_txt(std::string path){
+void Synapses::save_weights_as_txt(std::string path, std::string prefix){
   std::ofstream weightfile;
   backend()->copy_to_frontend();
-  weightfile.open((path + "/SynapticWeights.txt"), std::ios::out | std::ios::binary);
+  weightfile.open((path + "/" + prefix + "SynapticWeights.txt"), std::ios::out | std::ios::binary);
   for (int i = 0; i < total_number_of_synapses; i++){
     weightfile << synaptic_efficacies_or_weights[i] << std::endl;
   }
   weightfile.close();
 }
 
-void Synapses::save_weights_to_binary(std::string path){
+void Synapses::save_weights_as_binary(std::string path, std::string prefix){
   std::ofstream weightfile;
   backend()->copy_to_frontend();
-  weightfile.open((path + "/SynapticWeights.bin"), std::ios::out | std::ios::binary);
+  weightfile.open((path + "/" + prefix + "SynapticWeights.bin"), std::ios::out | std::ios::binary);
   weightfile.write((char *)synaptic_efficacies_or_weights, total_number_of_synapses*sizeof(float));
   weightfile.close();
 }
 
-void Synapses::load_weights_from_txt(std::string path){
+void Synapses::load_weights_from_txt(std::string filepath){
+  std::ifstream weightfile;
+  weightfile.open(filepath, std::ios::in | std::ios::binary);
+  
+  // Getting values into a vector
+  std::vector<float> loadingweights;
+  float weightval = 0.0f;
+  while (weightfile >> weightval){
+    loadingweights.push_back(weightval);
+  }
+  weightfile.close();
+
+  if (loadingweights.size() == total_number_of_synapses){
+    for (int i = 0; i < total_number_of_synapses; i++){
+      synaptic_efficacies_or_weights[i] = loadingweights[i];
+    }
+  } else {
+    print_message_and_exit("Number of weights loading not equal to number of synapses!!");
+  }
+  
   backend()->copy_to_backend();
 }
-void Synapses::load_weights_from_binary(std::string path){
+void Synapses::load_weights_from_binary(std::string filepath){
+  std::ifstream weightfile;
+  weightfile.open(filepath, std::ios::in | std::ios::binary);
+  
+  // Getting values into a vector
+  std::vector<float> loadingweights;
+  float weightval = 0.0f;
+  while (weightfile.read(reinterpret_cast<char*>(&weightval), sizeof(float))){
+    loadingweights.push_back(weightval);
+  }
+  weightfile.close();
+
+  if (loadingweights.size() == total_number_of_synapses){
+    for (int i = 0; i < total_number_of_synapses; i++){
+      synaptic_efficacies_or_weights[i] = loadingweights[i];
+    }
+  } else {
+    print_message_and_exit("Number of weights loading not equal to number of synapses!!");
+  }
+  
   backend()->copy_to_backend();
 }
 

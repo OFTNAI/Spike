@@ -25,6 +25,7 @@ public:
   
   // Variables
   int length_of_longest_stimulus;
+  float stimulus_onset_adjustment = 0.0f;
 
   // Host Pointers
   int* number_of_spikes_in_stimuli = nullptr;

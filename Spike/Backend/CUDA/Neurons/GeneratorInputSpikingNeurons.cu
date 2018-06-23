@@ -36,14 +36,15 @@ namespace Backend {
     }
 
     void GeneratorInputSpikingNeurons::state_update(float current_time_in_seconds, float timestep) {
-      if ((frontend()->temporal_lengths_of_stimuli[frontend()->current_stimulus_index] +  timestep) > current_time_in_seconds){
+      if ((frontend()->temporal_lengths_of_stimuli[frontend()->current_stimulus_index] +  timestep) > (current_time_in_seconds - frontend()->stimulus_onset_adjustment)){
         check_for_generator_spikes_kernel<<<number_of_neuron_blocks_per_grid, threads_per_block>>>
           (neuron_ids_for_stimulus,
            spike_times_for_stimulus,
            last_spike_time_of_each_neuron,
            current_time_in_seconds,
+           frontend()->stimulus_onset_adjustment,
            timestep,
-	   frontend()->model->timestep_grouping,
+           frontend()->model->timestep_grouping,
            num_spikes_in_current_stimulus);
 
         CudaCheckError();
@@ -55,19 +56,19 @@ namespace Backend {
                                                       float *d_spike_times_for_stimulus,
                                                       float* d_last_spike_time_of_each_neuron,
                                                       float current_time_in_seconds,
+                                                      float stimulus_onset_adjustment,
                                                       float timestep,
-						      int timestep_grouping,
+                                                      int timestep_grouping,
                                                       size_t number_of_spikes_in_stimulus){
 
       // // Get thread IDs
       int idx = threadIdx.x + blockIdx.x * blockDim.x;
       while (idx < number_of_spikes_in_stimulus) {
-	for (int g=0; g < timestep_grouping; g++){
-          if (fabs((current_time_in_seconds + g*timestep) - d_spike_times_for_stimulus[idx]) < 0.5 * timestep) {
+      for (int g=0; g < timestep_grouping; g++){
+          if (fabs((current_time_in_seconds - stimulus_onset_adjustment + g*timestep) - d_spike_times_for_stimulus[idx]) < 0.5 * timestep) {
             d_last_spike_time_of_each_neuron[d_neuron_ids_for_stimulus[idx]] = current_time_in_seconds + (g*timestep);
           }
-	}
-
+        }
         idx += blockDim.x * gridDim.x;
       }
       __syncthreads();

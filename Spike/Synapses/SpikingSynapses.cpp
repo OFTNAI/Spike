@@ -95,4 +95,41 @@ void SpikingSynapses::state_update(SpikingNeurons * neurons, SpikingNeurons * in
   backend()->state_update(neurons, input_neurons, current_time_in_seconds, timestep);
 }
 
+void SpikingSynapses::save_connectivity_as_txt(std::string path, std::string prefix){
+  Synapses::save_connectivity_as_txt(path, prefix);
+  std::ofstream delayfile;
+
+  // Open output files
+  delayfile.open((path + "/" + prefix + "SynapticDelays.txt"), std::ios::out | std::ios::binary);
+
+  // Ensure weight data has been copied to frontend
+  backend()->copy_to_frontend();
+
+  // Send data to file
+  for (int i = 0; i < total_number_of_synapses; i++){
+    delayfile << delays[i] << std::endl;
+  }
+
+  // Close files
+  delayfile.close();
+
+};
+// Ensure copied from device, then send
+void SpikingSynapses::save_connectivity_as_binary(std::string path, std::string prefix){
+  Synapses::save_connectivity_as_binary(path, prefix);
+  std::ofstream delayfile;
+
+  // Open output files
+  delayfile.open((path + "/" + prefix + "SynapticDelays.txt"), std::ios::out | std::ios::binary);
+
+  // Ensure weight data has been copied to frontend
+  backend()->copy_to_frontend();
+
+  // Send data to file
+  delayfile.write((char *)delays, total_number_of_synapses*sizeof(int));
+
+  // Close files
+  delayfile.close();
+}
+
 SPIKE_MAKE_INIT_BACKEND(SpikingSynapses);

@@ -27,27 +27,27 @@ void PatternedPoissonInputSpikingNeurons::state_update
 }
 
 void PatternedPoissonInputSpikingNeurons::reset_stimuli(){
-	total_number_of_rates = 0;
-	total_number_of_input_stimuli = 0;
-	free(stimuli_rates);
-	stimuli_rates = nullptr;
+  total_number_of_rates = 0;
+  total_number_of_input_stimuli = 0;
+  free(stimuli_rates);
+  stimuli_rates = nullptr;
 }
 
 void PatternedPoissonInputSpikingNeurons::add_stimulus(float* rates, int num_rates){
-	// Check if the size of the rates is correct
-	if (num_rates != total_number_of_neurons){
-		printf("Error: The number of neurons does not match the number of rates!\n");
-		exit(1);
-	}
-	// If correct, allocate some memory save these values
-	stimuli_rates = (float*)realloc(stimuli_rates, sizeof(float)*(total_number_of_rates + num_rates));
-	for (int index = 0; index < num_rates; index++){
-		stimuli_rates[total_number_of_rates + index] = rates[index];
-	}
+  // Check if the size of the rates is correct
+  if (num_rates != total_number_of_neurons){
+    printf("Error: The number of neurons does not match the number of rates!\n");
+    exit(1);
+  }
+  // If correct, allocate some memory save these values
+  stimuli_rates = (float*)realloc(stimuli_rates, sizeof(float)*(total_number_of_rates + num_rates));
+  for (int index = 0; index < num_rates; index++){
+    stimuli_rates[total_number_of_rates + index] = rates[index];
+  }
 
-	// After storing the stimulus, correct the number of input stimuli
-	total_number_of_rates += num_rates;
-	++total_number_of_input_stimuli;
+  // After storing the stimulus, correct the number of input stimuli
+  total_number_of_rates += num_rates;
+  ++total_number_of_input_stimuli;
 }
 
 

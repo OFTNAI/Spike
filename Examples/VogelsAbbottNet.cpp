@@ -220,8 +220,10 @@ int main (int argc, char *argv[]){
     timefile.close();
   } else {
     //spike_monitor->save_spikes_as_txt("./");
-    spike_monitor->save_spikes_as_binary("./");
+    spike_monitor->save_spikes_as_binary("./", "TESTING");
   }
-  //cudaProfilerStop();
+
+  //BenchModel->spiking_synapses->save_connectivity_to_binary("./");
+  //BenchModel->spiking_synapses->save_connectivity_to_txt("./");
   return(0);
 }

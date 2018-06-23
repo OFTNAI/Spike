@@ -151,15 +151,15 @@ public:
   */
   void increment_number_of_synapses(int increment);
   
-  virtual void save_connectivity_to_txt(std::string path);
-  virtual void save_connectivity_to_binary(std::string path);
-  //virtual void load_connectivity_from_txt(std::string path);
-  //virtual void load_connectivity_from_bin(std::string path);
+  virtual void save_connectivity_as_txt(std::string path, std::string prefix="");
+  virtual void save_connectivity_as_binary(std::string path, std::string prefix="");
+  //virtual void load_connectivity_from_txt(std::string path, std::string prefix="");
+  //virtual void load_connectivity_from_bin(std::string path, std::string prefix="");
 
-  void save_weights_to_txt(std::string path);
-  void save_weights_to_binary(std::string path);
-  void load_weights_from_txt(std::string path);
-  void load_weights_from_binary(std::string path);
+  void save_weights_as_txt(std::string path, std::string prefix="");
+  void save_weights_as_binary(std::string path, std::string prefix="");
+  void load_weights_from_txt(std::string filepath);
+  void load_weights_from_binary(std::string filepath);
 
   void reset_state() override;
 
