@@ -35,7 +35,6 @@ public:
                 synapse_parameters_struct * synapse_params) override;
 
   void increment_number_of_synapses(int increment);
-  void shuffle_synapses() override;
 
   void state_update(SpikingNeurons * neurons, SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) override;
 

@@ -23,5 +23,10 @@ namespace Backend {
      float standard_deviation_sigma,
      bool presynaptic_group_is_input) {
     }
+    
+    void Synapses::copy_to_frontend(){
+    }
+    void Synapses::copy_to_backend(){
+    }
   }
 }

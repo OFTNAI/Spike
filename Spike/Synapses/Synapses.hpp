@@ -26,6 +26,9 @@
 // allows maths
 #include <math.h>
 #include <vector>
+#include <string>
+#include <fstream>
+#include <iostream>
 
 #include "Spike/Helpers/RandomStateManager.hpp"
 
@@ -48,6 +51,8 @@ namespace Backend {
      int max_number_of_connections_per_pair,
      float standard_deviation_sigma,
      bool presynaptic_group_is_input) = 0;
+    virtual void copy_to_frontend() = 0;
+    virtual void copy_to_backend() = 0;
   };
 }
 
@@ -76,6 +81,7 @@ struct synapse_parameters_struct {
   std::vector<int> pairwise_connect_presynaptic;
   std::vector<int> pairwise_connect_postsynaptic;
   std::vector<int> pairwise_connect_weight;
+  int max_number_of_connections_per_pair = 1;
   int gaussian_synapses_per_postsynaptic_neuron = 10;
   float gaussian_synapses_standard_deviation = 10.0;
   float weight_range_bottom = 0.0;
@@ -106,15 +112,17 @@ public:
   int temp_number_of_synapses_in_last_group = 0;    /**< Tracks the number of synapses in the last added group. */
   int largest_synapse_group_size = 0;               /**< Tracks the size of the largest synaptic group. */
   bool print_synapse_group_details = false;         /**< A flag used to indicate whether group details should be printed */
+  std::vector<Plasticity*> plasticity_rule_vec;     /**< A vector of pointers to the plasticity rules to be used in the simulation */
+    
   
 
 	
   // Host Pointers
   int* presynaptic_neuron_indices = nullptr;                /**< Indices of presynaptic neuron IDs */
   int* postsynaptic_neuron_indices = nullptr;               /**< Indices of postsynaptic neuron IDs */
-  int* original_synapse_indices = nullptr;                  /**< Indices by which to order the presynaptic and postsynaptic neuron IDs if a shuffle is carried out */
   int* synapse_postsynaptic_neuron_count_index = nullptr;   /**< An array of the number of incoming synapses to each postsynaptic neuron */
   float* synaptic_efficacies_or_weights = nullptr;          /**< An array of synaptic efficacies/weights accompanying the pre/postsynaptic_neuron_indices */
+  int maximum_number_of_afferent_synapses = 0;
   
 
   // Functions
@@ -142,6 +150,16 @@ public:
      /param increment The number of synapses for which allocated memory must be expanded.
   */
   void increment_number_of_synapses(int increment);
+  
+  virtual void save_connectivity_to_txt(std::string path);
+  virtual void save_connectivity_to_binary(std::string path);
+  //virtual void load_connectivity_from_txt(std::string path);
+  //virtual void load_connectivity_from_bin(std::string path);
+
+  void save_weights_to_txt(std::string path);
+  void save_weights_to_binary(std::string path);
+  void load_weights_from_txt(std::string path);
+  void load_weights_from_binary(std::string path);
 
   void reset_state() override;
 

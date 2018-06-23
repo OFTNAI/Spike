@@ -91,28 +91,6 @@ void SpikingSynapses::increment_number_of_synapses(int increment) {
 }
 
 
-void SpikingSynapses::shuffle_synapses() {
-	
-	Synapses::shuffle_synapses();
-
-	int * temp_delays = (int *)malloc(total_number_of_synapses*sizeof(int));
-  	float * temp_biological_conductance_scaling_constants_lambda = (float *)malloc(total_number_of_synapses*sizeof(float));
-  	int * temp_syn_labels = (int *)malloc(total_number_of_synapses*sizeof(int));
-	for(int i = 0; i < total_number_of_synapses; i++) {
-
-		temp_delays[i] = delays[original_synapse_indices[i]];
-    		temp_biological_conductance_scaling_constants_lambda[i] = biological_conductance_scaling_constants_lambda[original_synapse_indices[i]];
-    		temp_syn_labels[i] = syn_labels[original_synapse_indices[i]];
-
-	}
-
-	delays = temp_delays;
-  	biological_conductance_scaling_constants_lambda = temp_biological_conductance_scaling_constants_lambda;
-	syn_labels = temp_syn_labels;
-
-}
-
-
 void SpikingSynapses::state_update(SpikingNeurons * neurons, SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) {
   backend()->state_update(neurons, input_neurons, current_time_in_seconds, timestep);
 }

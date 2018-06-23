@@ -38,6 +38,8 @@ namespace Backend {
 
       void prepare() override;
       void reset_state() override;
+      void copy_to_frontend() override;
+      void copy_to_backend() override;
 
       void allocate_device_pointers(); // Not virtual
       void copy_constants_and_initial_efficacies_to_device(); // Not virtual

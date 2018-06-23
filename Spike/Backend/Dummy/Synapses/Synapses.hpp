@@ -23,6 +23,8 @@ namespace Backend {
        int max_number_of_connections_per_pair,
        float standard_deviation_sigma,
        bool presynaptic_group_is_input) final;
+      void copy_to_frontend() override;
+      void copy_to_backend() override;
     };
   } // namespace Dummy
 } // namespace Backend

@@ -80,26 +80,6 @@ void ConductanceSpikingSynapses::increment_number_of_synapses(int increment) {
 }
 
 
-void ConductanceSpikingSynapses::shuffle_synapses() {
-  SpikingSynapses::shuffle_synapses();
-
-  float * temp_synaptic_conductances_g = (float *)malloc(total_number_of_synapses*sizeof(float));
-  //float * temp_reversal_potentials_Vhat = (float *)malloc(total_number_of_synapses*sizeof(float));
-  //float * temp_decay_terms_tau_g = (float*)malloc(total_number_of_synapses*sizeof(float));
-
-  for(int i = 0; i < total_number_of_synapses; i++) {
-
-    temp_synaptic_conductances_g[i] = synaptic_conductances_g[original_synapse_indices[i]];
-    //temp_reversal_potentials_Vhat[i] = reversal_potentials_Vhat[original_synapse_indices[i]];
-    //temp_decay_terms_tau_g[i] = decay_terms_tau_g[original_synapse_indices[i]];
-  }
-
-  synaptic_conductances_g = temp_synaptic_conductances_g;
-  //reversal_potentials_Vhat = temp_reversal_potentials_Vhat;
-  //decay_terms_tau_g = temp_decay_terms_tau_g;
-
-}
-
 void ConductanceSpikingSynapses::state_update(SpikingNeurons * neurons, SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) {
   backend()->state_update(neurons, input_neurons, current_time_in_seconds, timestep);
 }

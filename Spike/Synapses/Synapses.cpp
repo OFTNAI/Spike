@@ -31,7 +31,6 @@ Synapses::~Synapses() {
   free(presynaptic_neuron_indices);
   free(postsynaptic_neuron_indices);
   free(synaptic_efficacies_or_weights);
-  free(original_synapse_indices);
   free(synapse_postsynaptic_neuron_count_index);
 
   delete random_state_manager;
@@ -71,41 +70,34 @@ void Synapses::AddGroup(int presynaptic_group_id,
   bool presynaptic_group_is_input = PRESYNAPTIC_IS_INPUT(presynaptic_group_id);
 
   if (presynaptic_group_is_input) {
-          int* start_neuron_indices_for_input_neuron_groups = input_neurons->start_neuron_indices_for_each_group;
+    int* start_neuron_indices_for_input_neuron_groups = input_neurons->start_neuron_indices_for_each_group;
     int* last_neuron_indices_for_input_neuron_groups = input_neurons->last_neuron_indices_for_each_group;
 
-          // if (stdp_on == true) print_message_and_exit("Plasticity between input neurons and model neurons is not currently supported.");
+    int corrected_presynaptic_group_id = CORRECTED_PRESYNAPTIC_ID(presynaptic_group_id, presynaptic_group_is_input);
 
-          int corrected_presynaptic_group_id = CORRECTED_PRESYNAPTIC_ID(presynaptic_group_id, presynaptic_group_is_input);
+    presynaptic_group_shape = input_neurons->group_shapes[corrected_presynaptic_group_id];
 
-          presynaptic_group_shape = input_neurons->group_shapes[corrected_presynaptic_group_id];
-
-          if (presynaptic_group_id < -1){
-            prestart = start_neuron_indices_for_input_neuron_groups[corrected_presynaptic_group_id];
-          }
-          preend = last_neuron_indices_for_input_neuron_groups[corrected_presynaptic_group_id] + 1;
-
+    if (presynaptic_group_id < -1){
+      prestart = start_neuron_indices_for_input_neuron_groups[corrected_presynaptic_group_id];
+    }
+    preend = last_neuron_indices_for_input_neuron_groups[corrected_presynaptic_group_id] + 1;
   } else {
+    presynaptic_group_shape = neurons->group_shapes[presynaptic_group_id];
 
-          presynaptic_group_shape = neurons->group_shapes[presynaptic_group_id];
-
-          if (presynaptic_group_id > 0){
-            prestart = start_neuron_indices_for_neuron_groups[presynaptic_group_id];
-          }
-          preend = last_neuron_indices_for_neuron_groups[presynaptic_group_id] + 1;
+    if (presynaptic_group_id > 0){
+      prestart = start_neuron_indices_for_neuron_groups[presynaptic_group_id];
+    }
+    preend = last_neuron_indices_for_neuron_groups[presynaptic_group_id] + 1;
 
   }
 
   // Calculate postsynaptic group start and end indices
   // Also assign postsynaptic group shape
   if (postsynaptic_group_id < 0) { // If presynaptic group is Input group EXIT
-
           print_message_and_exit("Input groups cannot be a postsynaptic neuron group.");
-
   } else if (postsynaptic_group_id >= 0){
           postsynaptic_group_shape = neurons->group_shapes[postsynaptic_group_id];
           poststart = start_neuron_indices_for_neuron_groups[postsynaptic_group_id];
-    
   }
   int postend = last_neuron_indices_for_neuron_groups[postsynaptic_group_id] + 1;
 
@@ -156,7 +148,7 @@ void Synapses::AddGroup(int presynaptic_group_id,
 
             break;
           }
-        case CONNECTIVITY_TYPE_RANDOM: //JI DO
+        case CONNECTIVITY_TYPE_RANDOM:
           {
             // If the connectivity is random
             // Begin a count
@@ -247,8 +239,6 @@ void Synapses::AddGroup(int presynaptic_group_id,
       weight = weight_range_bottom + (weight_range_top - weight_range_bottom)*((float)rand() / (RAND_MAX));
           synaptic_efficacies_or_weights[i] = weight;
 
-          original_synapse_indices[i] = i;
-
           // Used for event count
           // printf("postsynaptic_neuron_indices[i]: %d\n", postsynaptic_neuron_indices[i]);
           synapse_postsynaptic_neuron_count_index[postsynaptic_neuron_indices[i]] = neurons->per_neuron_afferent_synapse_count[postsynaptic_neuron_indices[i]];
@@ -271,15 +261,29 @@ void Synapses::AddGroup(int presynaptic_group_id,
   if (synapse_params->plasticity_vec.size() > 0){
     for (int vecid = 0; vecid < synapse_params->plasticity_vec.size(); vecid++){
       Plasticity* plasticity_ptr = synapse_params->plasticity_vec[vecid];
-      // Check first for nullptr
+      //Check first for nullptr
       if (plasticity_ptr == nullptr)
         continue;
-      plasticity_ptr->AddSynapseIndices((total_number_of_synapses - temp_number_of_synapses_in_last_group), temp_number_of_synapses_in_last_group);
+      plasticity_id = plasticity_ptr->plasticity_rule_id;
+      //Store or recall STDP Pointer
+      // Check if this pointer has already been stored
+      if (plasticity_id < 0){
+        plasticity_id = plasticity_rule_vec.size();
+        plasticity_rule_vec.push_back(plasticity_ptr);
+        // Apply ID to STDP class
+        plasticity_ptr->plasticity_rule_id = plasticity_id;
       }
+
+      plasticity_ptr->AddSynapseIndices((total_number_of_synapses - temp_number_of_synapses_in_last_group), temp_number_of_synapses_in_last_group);
+        //for (int i = (total_number_of_synapses - temp_number_of_synapses_in_last_group); i < total_number_of_synapses; i++){
+          //Set STDP on or off for synapse (now using stdp id)
+          //plasticity_ptr->AddSynapse(presynaptic_neuron_indices[i], postsynaptic_neuron_indices[i], i);
+        //}
     }
   }
 
 }
+
 
 void Synapses::increment_number_of_synapses(int increment) {
 
@@ -289,22 +293,97 @@ void Synapses::increment_number_of_synapses(int increment) {
           presynaptic_neuron_indices = (int*)malloc(total_number_of_synapses * sizeof(int));
           postsynaptic_neuron_indices = (int*)malloc(total_number_of_synapses * sizeof(int));
           synaptic_efficacies_or_weights = (float*)malloc(total_number_of_synapses * sizeof(float));
-          original_synapse_indices = (int*)malloc(total_number_of_synapses * sizeof(int));
           synapse_postsynaptic_neuron_count_index = (int*)malloc(total_number_of_synapses * sizeof(int));
   } else {
     int* temp_presynaptic_neuron_indices = (int*)realloc(presynaptic_neuron_indices, total_number_of_synapses * sizeof(int));
     int* temp_postsynaptic_neuron_indices = (int*)realloc(postsynaptic_neuron_indices, total_number_of_synapses * sizeof(int));
     float* temp_synaptic_efficacies_or_weights = (float*)realloc(synaptic_efficacies_or_weights, total_number_of_synapses * sizeof(float));
-    int* temp_original_synapse_indices = (int*)realloc(original_synapse_indices, total_number_of_synapses * sizeof(int));
     int* temp_synapse_postsynaptic_neuron_count_index = (int*)realloc(synapse_postsynaptic_neuron_count_index, total_number_of_synapses * sizeof(int));
 
     if (temp_presynaptic_neuron_indices != nullptr) presynaptic_neuron_indices = temp_presynaptic_neuron_indices;
     if (temp_postsynaptic_neuron_indices != nullptr) postsynaptic_neuron_indices = temp_postsynaptic_neuron_indices;
     if (temp_synaptic_efficacies_or_weights != nullptr) synaptic_efficacies_or_weights = temp_synaptic_efficacies_or_weights;
-    if (temp_original_synapse_indices != nullptr) original_synapse_indices = temp_original_synapse_indices;
     if (temp_synapse_postsynaptic_neuron_count_index != nullptr) synapse_postsynaptic_neuron_count_index = temp_synapse_postsynaptic_neuron_count_index;
   }
 
 }
+
+void Synapses::save_connectivity_to_txt(std::string path){
+  std::ofstream preidfile, postidfile, weightfile;
+
+  // Open output files
+  preidfile.open((path + "/PresynapticIDs.txt"), std::ios::out | std::ios::binary);
+  postidfile.open((path + "/PostsynapticIDs.txt"), std::ios::out | std::ios::binary);
+  weightfile.open((path + "/SynapticWeights.txt"), std::ios::out | std::ios::binary);
+
+  // Ensure weight data has been copied to frontend
+  backend()->copy_to_frontend();
+
+  // Send data to file
+  for (int i = 0; i < total_number_of_synapses; i++){
+    preidfile << presynaptic_neuron_indices[i] << std::endl;
+    postidfile << postsynaptic_neuron_indices[i] << std::endl;
+    weightfile << synaptic_efficacies_or_weights[i] << std::endl;
+  }
+
+  // Close files
+  preidfile.close();
+  postidfile.close();
+  weightfile.close();
+
+};
+// Ensure copied from device, then send
+void Synapses::save_connectivity_to_binary(std::string path){
+  std::ofstream preidfile, postidfile, weightfile;
+
+  // Open output files
+  preidfile.open((path + "/PresynapticIDs.bin"), std::ios::out | std::ios::binary);
+  postidfile.open((path + "/PostsynapticIDs.bin"), std::ios::out | std::ios::binary);
+  weightfile.open((path + "/SynapticWeights.bin"), std::ios::out | std::ios::binary);
+
+  // Ensure weight data has been copied to frontend
+  backend()->copy_to_frontend();
+
+  // Send data to file
+  preidfile.write((char *)presynaptic_neuron_indices, total_number_of_synapses*sizeof(int));
+  postidfile.write((char *)postsynaptic_neuron_indices, total_number_of_synapses*sizeof(int));
+  weightfile.write((char *)synaptic_efficacies_or_weights, total_number_of_synapses*sizeof(float));
+
+  // Close files
+  preidfile.close();
+  postidfile.close();
+  weightfile.close();
+}
+
+// Load Network??
+//void Synapses::load_connectivity_from_txt(std::string path);
+//void Synapses::load_connectivity_from_binary(std::string path);
+
+
+void Synapses::save_weights_to_txt(std::string path){
+  std::ofstream weightfile;
+  backend()->copy_to_frontend();
+  weightfile.open((path + "/SynapticWeights.txt"), std::ios::out | std::ios::binary);
+  for (int i = 0; i < total_number_of_synapses; i++){
+    weightfile << synaptic_efficacies_or_weights[i] << std::endl;
+  }
+  weightfile.close();
+}
+
+void Synapses::save_weights_to_binary(std::string path){
+  std::ofstream weightfile;
+  backend()->copy_to_frontend();
+  weightfile.open((path + "/SynapticWeights.bin"), std::ios::out | std::ios::binary);
+  weightfile.write((char *)synaptic_efficacies_or_weights, total_number_of_synapses*sizeof(float));
+  weightfile.close();
+}
+
+void Synapses::load_weights_from_txt(std::string path){
+  backend()->copy_to_backend();
+}
+void Synapses::load_weights_from_binary(std::string path){
+  backend()->copy_to_backend();
+}
+
 
 SPIKE_MAKE_STUB_INIT_BACKEND(Synapses);

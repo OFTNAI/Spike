@@ -124,8 +124,8 @@ void SpikingActivityMonitor::save_spikes_as_txt(string path){
   ofstream spikeidfile, spiketimesfile;
 
   // Open output files
-  spikeidfile.open((path + "/Spike_IDs.txt"), ios::out | ios::binary);
-  spiketimesfile.open((path + "/Spike_Times.txt"), ios::out | ios::binary);
+  spikeidfile.open((path + "/SpikeIDs.txt"), ios::out | ios::binary);
+  spiketimesfile.open((path + "/SpikeTimes.txt"), ios::out | ios::binary);
 
   // Send the data
   for (int i = 0; i < total_number_of_spikes_stored_on_host; i++) {
@@ -141,8 +141,8 @@ void SpikingActivityMonitor::save_spikes_as_binary(string path){
   ofstream spikeidfile, spiketimesfile;
 
   // Open output files
-  spikeidfile.open((path + "/Spike_IDs.bin"), ios::out | ios::binary);
-  spiketimesfile.open((path + "/Spike_Times.bin"), ios::out | ios::binary);
+  spikeidfile.open((path + "/SpikeIDs.bin"), ios::out | ios::binary);
+  spiketimesfile.open((path + "/SpikeTimes.bin"), ios::out | ios::binary);
 
   // Send the data
   spikeidfile.write((char *)neuron_ids_of_stored_spikes_on_host, total_number_of_spikes_stored_on_host*sizeof(int));

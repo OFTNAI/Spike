@@ -95,6 +95,25 @@ namespace Backend {
 
     }
 
+    void Synapses::copy_to_frontend(){
+      // If weights are on the device, copy them back
+      if (synaptic_efficacies_or_weights){
+        CudaSafeCall(cudaMemcpy(frontend()->synaptic_efficacies_or_weights,
+              synaptic_efficacies_or_weights,
+              sizeof(float)*frontend()->total_number_of_synapses,
+              cudaMemcpyDeviceToHost));
+      }
+    }
+    void Synapses::copy_to_backend(){
+      // If weights are on the device, copy over them
+      if (synaptic_efficacies_or_weights){
+        CudaSafeCall(cudaMemcpy(synaptic_efficacies_or_weights,
+              frontend()->synaptic_efficacies_or_weights,
+              sizeof(float)*frontend()->total_number_of_synapses,
+              cudaMemcpyHostToDevice));
+      }
+    }
+
     void Synapses::set_neuron_indices_by_sampling_from_normal_distribution
     (int original_number_of_synapses,
      int total_number_of_new_synapses,

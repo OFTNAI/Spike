@@ -30,11 +30,6 @@ void VoltageSpikingSynapses::AddGroup(int presynaptic_group_id,
 void VoltageSpikingSynapses::increment_number_of_synapses(int increment) {
 }
 
-
-void VoltageSpikingSynapses::shuffle_synapses() {
-  SpikingSynapses::shuffle_synapses();
-}
-
 void VoltageSpikingSynapses::state_update(SpikingNeurons * neurons, SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep) {
   backend()->state_update(neurons, input_neurons, current_time_in_seconds, timestep);
 }
