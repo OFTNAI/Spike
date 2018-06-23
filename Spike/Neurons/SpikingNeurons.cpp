@@ -37,4 +37,4 @@ void SpikingNeurons::state_update(float current_time_in_seconds, float timestep)
   backend()->state_update(current_time_in_seconds, timestep);
 }
 
-SPIKE_MAKE_STUB_INIT_BACKEND(SpikingNeurons);
+SPIKE_MAKE_INIT_BACKEND(SpikingNeurons);

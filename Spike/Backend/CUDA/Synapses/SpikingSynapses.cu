@@ -1,12 +1,15 @@
 // -*- mode: c++ -*-
 #include "Spike/Backend/CUDA/Synapses/SpikingSynapses.hpp"
 
-// SPIKE_EXPORT_BACKEND_TYPE(CUDA, SpikingSynapses);
+SPIKE_EXPORT_BACKEND_TYPE(CUDA, SpikingSynapses);
 
 namespace Backend {
   namespace CUDA {
 
     __device__ injection_kernel spiking_device_kernel = spiking_current_injection_kernel;
+
+    SpikingSynapses::SpikingSynapses() {
+    }
 
     SpikingSynapses::~SpikingSynapses() {
       CudaSafeCall(cudaFree(delays));

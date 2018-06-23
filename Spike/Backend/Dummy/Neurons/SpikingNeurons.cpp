@@ -1,9 +1,12 @@
 #include "SpikingNeurons.hpp"
 
-// SPIKE_EXPORT_BACKEND_TYPE(Dummy, SpikingNeurons);
+SPIKE_EXPORT_BACKEND_TYPE(Dummy, SpikingNeurons);
 
 namespace Backend {
   namespace Dummy {
+    SpikingNeurons::SpikingNeurons() {
+    }
+
     void SpikingNeurons::prepare() {
       Neurons::prepare();
     }

@@ -20,7 +20,10 @@ namespace Backend {
     class SpikingNeurons : public virtual ::Backend::CUDA::Neurons,
                            public virtual ::Backend::SpikingNeurons {
     public:
+      SpikingNeurons();
       ~SpikingNeurons() override;
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(SpikingNeurons);
+      using ::Backend::SpikingNeurons::frontend;
 
       void prepare() override;
       void reset_state() override;

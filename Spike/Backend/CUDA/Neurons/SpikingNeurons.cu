@@ -1,10 +1,12 @@
 // -*- mode: c++ -*-
 #include "Spike/Backend/CUDA/Neurons/SpikingNeurons.hpp"
 
-// SPIKE_EXPORT_BACKEND_TYPE(CUDA, SpikingNeurons);
+SPIKE_EXPORT_BACKEND_TYPE(CUDA, SpikingNeurons);
 
 namespace Backend {
   namespace CUDA {
+    SpikingNeurons::SpikingNeurons() {
+    }
     SpikingNeurons::~SpikingNeurons() {
       CudaSafeCall(cudaFree(last_spike_time_of_each_neuron));
       CudaSafeCall(cudaFree(membrane_potentials_v));

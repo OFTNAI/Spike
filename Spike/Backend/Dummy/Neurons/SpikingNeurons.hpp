@@ -8,6 +8,8 @@ namespace Backend {
     class SpikingNeurons : public virtual ::Backend::Dummy::Neurons,
                            public virtual ::Backend::SpikingNeurons {
     public:
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(SpikingNeurons);
+      SpikingNeurons();
       void prepare() override;
       void reset_state() override;
 

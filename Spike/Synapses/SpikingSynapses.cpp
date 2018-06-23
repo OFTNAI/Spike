@@ -117,4 +117,4 @@ void SpikingSynapses::state_update(SpikingNeurons * neurons, SpikingNeurons * in
   backend()->state_update(neurons, input_neurons, current_time_in_seconds, timestep);
 }
 
-SPIKE_MAKE_STUB_INIT_BACKEND(SpikingSynapses);
+SPIKE_MAKE_INIT_BACKEND(SpikingSynapses);

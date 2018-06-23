@@ -1,9 +1,11 @@
 #include "SpikingSynapses.hpp"
 
-// SPIKE_EXPORT_BACKEND_TYPE(Dummy, SpikingSynapses);
+SPIKE_EXPORT_BACKEND_TYPE(Dummy, SpikingSynapses);
 
 namespace Backend {
   namespace Dummy {
+    SpikingSynapses::SpikingSynapses() {
+    }
     void SpikingSynapses::prepare() {
       Synapses::prepare();
     }

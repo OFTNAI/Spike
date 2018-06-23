@@ -36,6 +36,7 @@ namespace Backend {
     class SpikingSynapses : public virtual ::Backend::CUDA::Synapses,
                             public virtual ::Backend::SpikingSynapses {
     public:
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(SpikingSynapses);
       
       // Variables used to determine active/inactive synapses
       int buffersize = 0;
@@ -56,6 +57,7 @@ namespace Backend {
       int* d_syn_labels = nullptr;
       neuron_inputs_struct neuron_inputs;
 
+      SpikingSynapses();
       ~SpikingSynapses() override;
       using ::Backend::SpikingSynapses::frontend;
 
