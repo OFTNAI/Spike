@@ -1,6 +1,6 @@
 foreach(example
     VogelsAbbottNet
-    #Brunel10K
+    Brunel10K
     #ExampleExperiment
     )
   add_executable(${example} ${example}.cpp)

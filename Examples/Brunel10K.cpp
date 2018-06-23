@@ -96,6 +96,12 @@ int main (int argc, char *argv[]){
   if (plastic)
     BenchModel->AddPlasticityRule(weightdependent_stdp);
 
+  // Adding Spike Detectors
+  SpikingActivityMonitor* spike_monitor = new SpikingActivityMonitor(lif_spiking_neurons);
+  if (!fast){
+    BenchModel->AddActivityMonitor(spike_monitor);
+  }
+
   // Set up Neuron Parameters
   lif_spiking_neuron_parameters_struct * EXC_NEURON_PARAMS = new lif_spiking_neuron_parameters_struct();
   lif_spiking_neuron_parameters_struct * INH_NEURON_PARAMS = new lif_spiking_neuron_parameters_struct();
@@ -246,35 +252,16 @@ int main (int argc, char *argv[]){
       BenchModel);
 
 
-  /*
-    COMPLETE NETWORK SETUP
-  */
-  BenchModel->finalise_model();
-  printf("Total Number Of Synapses: %d\n", voltage_spiking_synapses->total_number_of_synapses);
-
-
-  // Create the simulator options
-  Simulator_Options* simoptions = new Simulator_Options();
-  simoptions->run_simulation_general_options->presentation_time_per_stimulus_per_epoch = simtime;
-  if (plastic)
-    simoptions->run_simulation_general_options->apply_plasticity_to_relevant_synapses = true;
-  else 
-    simoptions->run_simulation_general_options->apply_plasticity_to_relevant_synapses = false;
-  if (!fast){
-    simoptions->recording_electrodes_options->collect_neuron_spikes_recording_electrodes_bool = true;
-    simoptions->file_storage_options->save_recorded_neuron_spikes_to_file = true;
     //simoptions->recording_electrodes_options->collect_neuron_spikes_optional_parameters->human_readable_storage = true;
-    simoptions->recording_electrodes_options->collect_input_neuron_spikes_recording_electrodes_bool = true;
-    simoptions->recording_electrodes_options->network_state_archive_recording_electrodes_bool = true;
-    simoptions->recording_electrodes_options->network_state_archive_optional_parameters->human_readable_storage = false;
-    simoptions->file_storage_options->write_initial_synaptic_weights_to_file_bool = true;
-
-  }
+    //simoptions->recording_electrodes_options->network_state_archive_recording_electrodes_bool = true;
 
 
-  Simulator * simulator = new Simulator(BenchModel, simoptions);
+
+  /*
+    RUN SIMULATION
+  */
   clock_t starttime = clock();
-  simulator->RunSimulation();
+  BenchModel->run(simtime);
   clock_t totaltime = clock() - starttime;
   if ( fast ){
     std::ofstream timefile;

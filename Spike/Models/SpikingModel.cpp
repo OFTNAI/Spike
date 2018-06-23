@@ -79,6 +79,9 @@ void SpikingModel::AddActivityMonitor(ActivityMonitor * activityMonitor){
 
 void SpikingModel::finalise_model() {
   if (!model_complete){
+    printf("\n-----------\n");
+    printf("---SPIKE---\n");
+    printf("-----------\n\n");
     model_complete = true;
     
     // If any component does not exist, create at least a stand-in
@@ -93,7 +96,7 @@ void SpikingModel::finalise_model() {
     timestep_grouping = spiking_synapses->minimum_axonal_delay_in_timesteps;
     
     // Outputting Network Overview
-    printf("\nBuilding Model with:\n");
+    printf("Building Model with:\n");
     if (input_spiking_neurons->total_number_of_neurons > 0)
       printf("  %d Input Neuron(s)\n", input_spiking_neurons->total_number_of_neurons);
     printf("  %d Neuron(s)\n", spiking_neurons->total_number_of_neurons);
@@ -210,7 +213,7 @@ void SpikingModel::run(float seconds){
 
   // Run the simulation for the given number of steps
   for (int s = 0; s < number_of_steps; s++){
-    current_time_in_seconds = starttime + s*timestep;
+    current_time_in_seconds = starttime + s*timestep_grouping*timestep;
     perform_per_step_model_instructions();
   }
 
