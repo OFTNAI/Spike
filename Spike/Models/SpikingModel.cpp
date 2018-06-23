@@ -7,10 +7,6 @@
 
 // SpikingModel Constructor
 SpikingModel::SpikingModel () {
-  timestep = 0.0001f;               // Default 0.1ms timestep
-  spiking_synapses = nullptr;
-  spiking_neurons = nullptr;
-  input_spiking_neurons = nullptr;
 }
 
 
@@ -183,11 +179,11 @@ void SpikingModel::reset_state() {
   for (int monitor_id = 0; monitor_id < monitors_vec.size(); monitor_id++){
     monitors_vec[monitor_id]->reset_state();
   }
+  current_time_in_seconds = 0.0f;
 }
 
 
 void SpikingModel::perform_per_step_model_instructions(){
-  float current_time_in_seconds = current_time_in_timesteps * timestep;
   
   spiking_neurons->state_update(current_time_in_seconds, timestep);
   input_spiking_neurons->state_update(current_time_in_seconds, timestep);
@@ -200,12 +196,10 @@ void SpikingModel::perform_per_step_model_instructions(){
   for (int monitor_id = 0; monitor_id < monitors_vec.size(); monitor_id++)
     monitors_vec[monitor_id]->state_update(current_time_in_seconds, timestep);
 
-  // Update time
-  current_time_in_timesteps += timestep_grouping;
-
 }
 
 void SpikingModel::run(float seconds){
+  float starttime = current_time_in_seconds;
   finalise_model();
 
   printf("Running model for %f seconds \n", seconds);
@@ -216,13 +210,15 @@ void SpikingModel::run(float seconds){
 
   // Run the simulation for the given number of steps
   for (int s = 0; s < number_of_steps; s++){
+    current_time_in_seconds = starttime + s*timestep;
     perform_per_step_model_instructions();
   }
 
   // Carry out any final checks and outputs from recording electrodes
-  float current_time_in_seconds = current_time_in_timesteps * timestep;
   for (int monitor_id = 0; monitor_id < monitors_vec.size(); monitor_id++)
     monitors_vec[monitor_id]->final_update(current_time_in_seconds, timestep);
 
+  // Finally, ensure that the time at the end of the run is correct
+  current_time_in_seconds = starttime + seconds;
 }
 

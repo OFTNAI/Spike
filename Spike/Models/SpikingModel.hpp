@@ -24,6 +24,7 @@ using namespace std;
 class SpikingModel {
 private:
   void perform_per_step_model_instructions();
+  float current_time_in_seconds = 0.0f;
 public:
   // Constructor/Destructor
   //SpikingModel(SpikingNeurons* spiking_neurons, SpikingNeurons* input_spiking_neurons, SpikingSynapses* spiking_synapses);
@@ -40,8 +41,7 @@ public:
 
   bool model_complete = false;
 
-  float timestep;
-  int current_time_in_timesteps = 0;
+  float timestep = 0.0001;
   int timestep_grouping = 1;
   void SetTimestep(float timestep_parameter);
 
