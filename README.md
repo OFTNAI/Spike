@@ -4,6 +4,8 @@ A GPGPU based Spiking Neural Network (SNN) designed to provide users flexibility
 
 ## Getting Started
 
+[Click here for a getting started guide and a description of the main components of spike.](https://sites.google.com/view/spike-simulator/home)
+
 Please see the requirements for this simulator below. The comparison of Spike to other simulators can be see in the [SNNSimulatorComparison](https://github.com/nasiryahm/SNNSimulatorComparison) repository.
 
 Executing the install.sh file in this directory will create a Build folder and compile the example networks in the Examples folder.
@@ -28,9 +30,9 @@ This tool should be capable of running on any Linux/Mac OS system with an NVIDIA
 If you have any questions or wish to contribute, please contact: 
 
 Development Team:
-  Nasir Ahmad (nasir.ahmad@psy.ox.ac.uk)
-  James Isbister (james.isbister@psy.ox.ac.uk)
-  Toby St Clere Smithe (toby.smithe@psy.ox.ac.uk)
+  - Nasir Ahmad (nasir.ahmad@psy.ox.ac.uk)
+  - James Isbister (james.isbister@psy.ox.ac.uk)
+  - Toby St Clere Smithe (toby.smithe@psy.ox.ac.uk)
 
 Contributors:
-  Akihiro Eguchi
+  - Akihiro Eguchi
