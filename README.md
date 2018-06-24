@@ -27,6 +27,10 @@ This tool should be capable of running on any Linux/Mac OS system with an NVIDIA
 ## Contact Us
 If you have any questions or wish to contribute, please contact: 
 
-Co-Creators: Nasir Ahmad (nasir.ahmad@psy.ox.ac.uk) & James Isbister (james.isbister@psy.ox.ac.uk)
+Development Team:
+  Nasir Ahmad (nasir.ahmad@psy.ox.ac.uk)
+  James Isbister (james.isbister@psy.ox.ac.uk)
+  Toby St Clere Smithe (toby.smithe@psy.ox.ac.uk)
 
-Contributors: Toby St Clere Smithe (toby.smithe@psy.ox.ac.uk), Akihiro Eguchi (akihiro.eguchi@psy.ox.ac.uk)
+Contributors:
+  Akihiro Eguchi
