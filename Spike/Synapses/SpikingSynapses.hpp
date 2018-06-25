@@ -19,6 +19,7 @@ namespace Backend {
 
 struct spiking_synapse_parameters_struct : synapse_parameters_struct {
   float delay_range[2];
+  std::vector<int> pairwise_connect_delay;
 };
 
 class SpikingSynapses : public Synapses {

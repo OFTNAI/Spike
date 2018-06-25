@@ -242,6 +242,14 @@ void Synapses::AddGroup(int presynaptic_group_id,
       weight = weight_range_bottom + (weight_range_top - weight_range_bottom)*((float)rand() / (RAND_MAX));
           synaptic_efficacies_or_weights[i] = weight;
 
+    if (synapse_params->connectivity_type == CONNECTIVITY_TYPE_PAIRWISE){
+      if (synapse_params->pairwise_connect_weight.size() == temp_number_of_synapses_in_last_group){
+        synaptic_efficacies_or_weights[i] == synapse_params->pairwise_connect_weight[i - original_number_of_synapses];
+      } else if (synapse_params->pairwise_connect_weight.size() != 0) {
+        print_message_and_exit("PAIRWISE CONNECTION ISSUE: Weight vector length not as expected. Should be the same length as pre/post vecs.");
+      }
+    }
+
           // Used for event count
           // printf("postsynaptic_neuron_indices[i]: %d\n", postsynaptic_neuron_indices[i]);
           synapse_postsynaptic_neuron_count_index[postsynaptic_neuron_indices[i]] = neurons->per_neuron_afferent_synapse_count[postsynaptic_neuron_indices[i]];
