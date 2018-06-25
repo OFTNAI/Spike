@@ -99,8 +99,8 @@ int main (int argc, char *argv[]){
   input_to_excitatory_parameters->weight_range[0] = 0.5f;   // Create uniform distributions of weights [0.5, 10.0]
   input_to_excitatory_parameters->weight_range[1] = 10.0f;
   input_to_excitatory_parameters->weight_scaling_constant = excitatory_population_params->somatic_leakage_conductance_g0;
-  input_to_excitatory_parameters->delay_range[0] = timestep;    // Create uniform distributions of delays [1 timestep, 5 timesteps]
-  input_to_excitatory_parameters->delay_range[1] = 5*timestep;
+  input_to_excitatory_parameters->delay_range[0] = 8*timestep;    // Create uniform distributions of delays [1 timestep, 5 timesteps]
+  input_to_excitatory_parameters->delay_range[1] = 8*timestep;
   // The connectivity types for synapses include:
     // CONNECTIVITY_TYPE_ALL_TO_ALL
     // CONNECTIVITY_TYPE_ONE_TO_ONE

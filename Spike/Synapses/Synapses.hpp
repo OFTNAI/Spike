@@ -114,7 +114,9 @@ public:
   bool print_synapse_group_details = false;         /**< A flag used to indicate whether group details should be printed */
   std::vector<Plasticity*> plasticity_rule_vec;     /**< A vector of pointers to the plasticity rules to be used in the simulation */
   std::vector<int> last_index_of_synapse_per_group; 
-    
+  std::vector<bool> prepop_is_input;
+  std::vector<int> prepop_start_per_group;
+  std::vector<int> postpop_start_per_group;
   
 
 	

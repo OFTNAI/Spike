@@ -1,16 +1,16 @@
 // -*- mode: c++ -*-
-#include "Spike/Backend/CUDA/Plasticity/VogelsSTDPPlasticity.hpp"
+#include "Spike/Backend/CUDA/Plasticity/InhibitorySTDPPlasticity.hpp"
 
-SPIKE_EXPORT_BACKEND_TYPE(CUDA, VogelsSTDPPlasticity);
+SPIKE_EXPORT_BACKEND_TYPE(CUDA, InhibitorySTDPPlasticity);
 
 namespace Backend {
   namespace CUDA {
-    VogelsSTDPPlasticity::~VogelsSTDPPlasticity() {
+    InhibitorySTDPPlasticity::~InhibitorySTDPPlasticity() {
       CudaSafeCall(cudaFree(vogels_pre_memory_trace));
       CudaSafeCall(cudaFree(vogels_post_memory_trace));
     }
 
-    void VogelsSTDPPlasticity::reset_state() {
+    void InhibitorySTDPPlasticity::reset_state() {
       STDPPlasticity::reset_state();
 
       CudaSafeCall(cudaMemcpy((void*)vogels_pre_memory_trace,
@@ -27,7 +27,7 @@ namespace Backend {
                               cudaMemcpyHostToDevice));
     }
 
-    void VogelsSTDPPlasticity::prepare() {
+    void InhibitorySTDPPlasticity::prepare() {
       STDPPlasticity::prepare();
 
       vogels_memory_trace_reset = (float*)malloc(sizeof(float)*total_number_of_plastic_synapses);
@@ -38,7 +38,7 @@ namespace Backend {
       allocate_device_pointers();
     }
 
-    void VogelsSTDPPlasticity::allocate_device_pointers() {
+    void InhibitorySTDPPlasticity::allocate_device_pointers() {
       // The following doesn't do anything in original code...
       // ::Backend::CUDA::STDPPlasticity::allocate_device_pointers();
 
@@ -47,7 +47,7 @@ namespace Backend {
       CudaSafeCall(cudaMalloc((void **)&vogels_prevupdate, sizeof(int)*total_number_of_plastic_synapses));
     }
 
-    void VogelsSTDPPlasticity::apply_stdp_to_synapse_weights(float current_time_in_seconds, float timestep) {
+    void InhibitorySTDPPlasticity::apply_stdp_to_synapse_weights(float current_time_in_seconds, float timestep) {
 
     // Vogels update rule requires a neuron wise memory trace. This must be updated upon neuron firing.
     vogels_apply_stdp_to_synapse_weights_kernel<<<neurons_backend->number_of_neuron_blocks_per_grid, neurons_backend->threads_per_block>>>
@@ -78,7 +78,7 @@ namespace Backend {
      float* vogels_pre_memory_trace,
      float* vogels_post_memory_trace,
      float* vogels_prevupdate,
-     struct vogels_stdp_plasticity_parameters_struct stdp_vars,
+     struct inhibitory_stdp_plasticity_parameters_struct stdp_vars,
      float currtime,
      float timestep,
      int timestep_grouping,

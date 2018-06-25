@@ -293,7 +293,9 @@ int Synapses::AddGroup(int presynaptic_group_id,
     }
   }
 
-
+  postpop_start_per_group.push_back(poststart);
+  prepop_is_input.push_back(presynaptic_group_is_input);
+  prepop_start_per_group.push_back(prestart);
   last_index_of_synapse_per_group.push_back(total_number_of_synapses);
   return(last_index_of_synapse_per_group.size() - 1);
 
@@ -332,6 +334,14 @@ void Synapses::save_connectivity_as_txt(std::string path, std::string prefix, in
   if ((synapsegroupid > 0) && (synapsegroupid < last_index_of_synapse_per_group.size())){
     startid = last_index_of_synapse_per_group[synapsegroupid - 1];
   }
+  int precorrection = 0;
+  int postcorrection = 0;
+  bool presynaptic_group_is_input = false;
+  if (synapsegroupid >= 0){
+    postcorrection = postpop_start_per_group[synapsegroupid];
+    precorrection = prepop_start_per_group[synapsegroupid];
+    presynaptic_group_is_input = prepop_is_input[synapsegroupid];
+  }
   std::ofstream preidfile, postidfile, weightfile;
 
   // Open output files
@@ -344,8 +354,8 @@ void Synapses::save_connectivity_as_txt(std::string path, std::string prefix, in
 
   // Send data to file
   for (int i = startid; i < endid; i++){
-    preidfile << presynaptic_neuron_indices[i] << std::endl;
-    postidfile << postsynaptic_neuron_indices[i] << std::endl;
+    preidfile << CORRECTED_PRESYNAPTIC_ID(presynaptic_neuron_indices[i], presynaptic_group_is_input) - precorrection << std::endl;
+    postidfile << postsynaptic_neuron_indices[i] - postcorrection << std::endl;
     weightfile << synaptic_efficacies_or_weights[i] << std::endl;
   }
 
@@ -362,6 +372,14 @@ void Synapses::save_connectivity_as_binary(std::string path, std::string prefix,
   if ((synapsegroupid > 0) && (synapsegroupid < last_index_of_synapse_per_group.size())){
     startid = last_index_of_synapse_per_group[synapsegroupid - 1];
   }
+  int precorrection = 0;
+  int postcorrection = 0;
+  bool presynaptic_group_is_input = false;
+  if (synapsegroupid >= 0){
+    postcorrection = postpop_start_per_group[synapsegroupid];
+    precorrection = prepop_start_per_group[synapsegroupid];
+    presynaptic_group_is_input = prepop_is_input[synapsegroupid];
+  }
   std::ofstream preidfile, postidfile, weightfile;
 
   // Open output files
@@ -373,8 +391,18 @@ void Synapses::save_connectivity_as_binary(std::string path, std::string prefix,
   backend()->copy_to_frontend();
 
   // Send data to file
+  int preid, postid;
+  for (int i = startid; i < endid; i++){
+    preid = CORRECTED_PRESYNAPTIC_ID(presynaptic_neuron_indices[startid], presynaptic_group_is_input) - precorrection;
+    postid = postsynaptic_neuron_indices[startid] - postcorrection;
+    preidfile.write((char *)&preid, (endid - startid)*sizeof(int));
+    postidfile.write((char *)&postid, (endid - startid)*sizeof(int));
+  }
+  /*
+  // Send data to file
   preidfile.write((char *)&presynaptic_neuron_indices[startid], (endid - startid)*sizeof(int));
   postidfile.write((char *)&postsynaptic_neuron_indices[startid], (endid - startid)*sizeof(int));
+  */
   weightfile.write((char *)&synaptic_efficacies_or_weights[startid], (endid - startid)*sizeof(float));
 
   // Close files

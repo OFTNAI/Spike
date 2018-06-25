@@ -15,7 +15,7 @@
 
 // Plasticity Rules 
 #include "Spike/Plasticity/EvansSTDPPlasticity.hpp"
-#include "Spike/Plasticity/VogelsSTDPPlasticity.hpp"
+#include "Spike/Plasticity/InhibitorySTDPPlasticity.hpp"
 #include "Spike/Plasticity/WeightDependentSTDPPlasticity.hpp"
 #include "Spike/Plasticity/WeightNormSTDPPlasticity.hpp"
 

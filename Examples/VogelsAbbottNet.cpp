@@ -220,7 +220,7 @@ int main (int argc, char *argv[]){
     timefile.close();
   } else {
     //spike_monitor->save_spikes_as_txt("./");
-    spike_monitor->save_spikes_as_binary("./", "TESTING");
+    spike_monitor->save_spikes_as_binary("./", "VA");
   }
 
   //BenchModel->spiking_synapses->save_connectivity_as_binary("./");

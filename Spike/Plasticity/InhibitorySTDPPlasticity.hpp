@@ -1,5 +1,5 @@
-// Vogels STDPPlasticity Class Header
-// VogelsSTDPPlasticity.h
+// Inhibitory STDPPlasticity Class Header
+// InhibitorySTDPPlasticity.h
 //
 // This STDPPlasticity learning rule is extracted from the following paper:
 
@@ -8,8 +8,8 @@
 // This implementation is based upon the inhibitory STDP rule described for detailed balance
 
 
-#ifndef VOGELS_STDP_H
-#define VOGELS_STDP_H
+#ifndef INHIBIT_STDP_H
+#define INHIBIT_STDP_H
 
 // Get Synapses & Neurons Class
 #include "../Synapses/SpikingSynapses.hpp"
@@ -23,20 +23,20 @@
 // allows maths
 #include <math.h>
 
-class VogelsSTDPPlasticity; // forward definition
+class InhibitorySTDPPlasticity; // forward definition
 
 namespace Backend {
-  class VogelsSTDPPlasticity : public virtual STDPPlasticity {
+  class InhibitorySTDPPlasticity : public virtual STDPPlasticity {
   public:
-    SPIKE_ADD_BACKEND_FACTORY(VogelsSTDPPlasticity);
+    SPIKE_ADD_BACKEND_FACTORY(InhibitorySTDPPlasticity);
 
     virtual void apply_stdp_to_synapse_weights(float current_time_in_seconds, float timestep) = 0;
   };
 }
 
 // STDP Parameters
-struct vogels_stdp_plasticity_parameters_struct : stdp_plasticity_parameters_struct {
-  vogels_stdp_plasticity_parameters_struct() : tau_istdp(0.02f), learningrate(0.0004f), targetrate(10.0f), momentumrate{0.0f} { } // default Constructor
+struct inhibitory_stdp_plasticity_parameters_struct : stdp_plasticity_parameters_struct {
+  inhibitory_stdp_plasticity_parameters_struct() : tau_istdp(0.02f), learningrate(0.0004f), targetrate(10.0f), momentumrate{0.0f} { } // default Constructor
   // STDP Parameters
   float tau_istdp;
   float learningrate;
@@ -46,16 +46,16 @@ struct vogels_stdp_plasticity_parameters_struct : stdp_plasticity_parameters_str
 };
 
 
-class VogelsSTDPPlasticity : public STDPPlasticity {
+class InhibitorySTDPPlasticity : public STDPPlasticity {
 public:
-  VogelsSTDPPlasticity(SpikingSynapses* synapses,
+  InhibitorySTDPPlasticity(SpikingSynapses* synapses,
                            SpikingNeurons* neurons,
                            SpikingNeurons* input_neurons,
                            stdp_plasticity_parameters_struct* stdp_parameters);
-  ~VogelsSTDPPlasticity() override;
-  SPIKE_ADD_BACKEND_GETSET(VogelsSTDPPlasticity, STDPPlasticity);
+  ~InhibitorySTDPPlasticity() override;
+  SPIKE_ADD_BACKEND_GETSET(InhibitorySTDPPlasticity, STDPPlasticity);
 
-  struct vogels_stdp_plasticity_parameters_struct* stdp_params;
+  struct inhibitory_stdp_plasticity_parameters_struct* stdp_params;
 
   void init_backend(Context* ctx = _global_ctx) override;
   void prepare_backend_late() override;
@@ -66,7 +66,7 @@ public:
   void apply_stdp_to_synapse_weights(float current_time_in_seconds, float timestep);
 
 private:
-  std::shared_ptr<::Backend::VogelsSTDPPlasticity> _backend;
+  std::shared_ptr<::Backend::InhibitorySTDPPlasticity> _backend;
 };
 
 #endif

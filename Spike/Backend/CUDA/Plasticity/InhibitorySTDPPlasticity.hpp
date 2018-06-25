@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Spike/Plasticity/VogelsSTDPPlasticity.hpp"
+#include "Spike/Plasticity/InhibitorySTDPPlasticity.hpp"
 #include "STDPPlasticity.hpp"
 
 #include "Spike/Backend/CUDA/Neurons/SpikingNeurons.hpp"
@@ -14,17 +14,17 @@
 
 namespace Backend {
   namespace CUDA {
-    class VogelsSTDPPlasticity : public virtual ::Backend::CUDA::STDPPlasticity,
-                           public virtual ::Backend::VogelsSTDPPlasticity {
+    class InhibitorySTDPPlasticity : public virtual ::Backend::CUDA::STDPPlasticity,
+                           public virtual ::Backend::InhibitorySTDPPlasticity {
     public:
       float* vogels_memory_trace_reset = nullptr; 
       float* vogels_pre_memory_trace = nullptr;
       float* vogels_post_memory_trace = nullptr;
       float* vogels_prevupdate= nullptr;
 
-      ~VogelsSTDPPlasticity() override;
-      SPIKE_MAKE_BACKEND_CONSTRUCTOR(VogelsSTDPPlasticity);
-      using ::Backend::VogelsSTDPPlasticity::frontend;
+      ~InhibitorySTDPPlasticity() override;
+      SPIKE_MAKE_BACKEND_CONSTRUCTOR(InhibitorySTDPPlasticity);
+      using ::Backend::InhibitorySTDPPlasticity::frontend;
 
       void prepare() override;
       void reset_state() override;
@@ -43,7 +43,7 @@ namespace Backend {
      float* vogels_pre_memory_trace,
      float* vogels_post_memory_trace,
      float* vogels_prevupdate,
-     struct vogels_stdp_plasticity_parameters_struct stdp_vars,
+     struct inhibitory_stdp_plasticity_parameters_struct stdp_vars,
      float currtime,
      float timestep,
      int timestep_grouping,

@@ -1,21 +1,21 @@
-#include "VogelsSTDPPlasticity.hpp"
+#include "InhibitorySTDPPlasticity.hpp"
 
-SPIKE_EXPORT_BACKEND_TYPE(Dummy, VogelsSTDPPlasticity
+SPIKE_EXPORT_BACKEND_TYPE(Dummy, InhibitorySTDPPlasticity
 );
 
 namespace Backend {
   namespace Dummy {
-    void VogelsSTDPPlasticity
+    void InhibitorySTDPPlasticity
   ::prepare() {
       STDPPlasticity::prepare();
     }
 
-    void VogelsSTDPPlasticity
+    void InhibitorySTDPPlasticity
   ::reset_state() {
       STDPPlasticity::reset_state();
     }
 
-    void VogelsSTDPPlasticity
+    void InhibitorySTDPPlasticity
   ::apply_stdp_to_synapse_weights
     (float current_time_in_seconds, float timestep) {
     }
