@@ -176,9 +176,9 @@ int main (int argc, char *argv[]){
 
   // Biological Scaling factors (ensures that voltage is in mV)
   float weight_multiplier = 1.0; //powf(10.0, -3.0);
-  EXC_OUT_SYN_PARAMS->biological_conductance_scaling_constant_lambda = weight_multiplier;
-  INH_OUT_SYN_PARAMS->biological_conductance_scaling_constant_lambda = weight_multiplier;
-  INPUT_SYN_PARAMS->biological_conductance_scaling_constant_lambda = weight_multiplier;
+  EXC_OUT_SYN_PARAMS->weight_scaling_constant = weight_multiplier;
+  INH_OUT_SYN_PARAMS->weight_scaling_constant = weight_multiplier;
+  INPUT_SYN_PARAMS->weight_scaling_constant = weight_multiplier;
 
   connect_with_sparsity(
       input_layer_ID, EXCITATORY_NEURONS[0],

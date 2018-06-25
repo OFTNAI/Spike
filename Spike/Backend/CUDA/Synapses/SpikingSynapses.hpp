@@ -52,7 +52,6 @@ namespace Backend {
       int* delays = nullptr;
       int* spikes_travelling_to_synapse = nullptr;
       float* time_of_last_spike_to_reach_synapse = nullptr;
-      float * biological_conductance_scaling_constants_lambda = nullptr;
 
       int* d_syn_labels = nullptr;
       neuron_inputs_struct neuron_inputs;
@@ -114,7 +113,7 @@ namespace Backend {
         neuron_inputs_struct neuron_inputs,
         int* postsynaptic_neuron_indices,
         float* synaptic_efficacies_or_weights,
-        float* biological_conductance_scaling_constants_lambda,
+        float* weight_scaling_constants,
         float* last_spike_to_reach_synapse,
         int* d_delays,
         int * d_syn_labels,

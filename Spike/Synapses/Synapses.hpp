@@ -84,8 +84,8 @@ struct synapse_parameters_struct {
   int max_number_of_connections_per_pair = 1;
   int gaussian_synapses_per_postsynaptic_neuron = 10;
   float gaussian_synapses_standard_deviation = 10.0;
-  float weight_range_bottom = 0.0;
-  float weight_range_top = 1.0;
+  float[2] weight_range = {0.0f, 0.0f};
+  float weight_scaling_constant = 1.0;
   float random_connectivity_probability;
   int connectivity_type = CONNECTIVITY_TYPE_ALL_TO_ALL;
   std::vector<Plasticity*> plasticity_vec;
@@ -122,6 +122,7 @@ public:
   int* postsynaptic_neuron_indices = nullptr;               /**< Indices of postsynaptic neuron IDs */
   int* synapse_postsynaptic_neuron_count_index = nullptr;   /**< An array of the number of incoming synapses to each postsynaptic neuron */
   float* synaptic_efficacies_or_weights = nullptr;          /**< An array of synaptic efficacies/weights accompanying the pre/postsynaptic_neuron_indices */
+  float * weight_scaling_constants = nullptr;
   int maximum_number_of_afferent_synapses = 0;
   
 

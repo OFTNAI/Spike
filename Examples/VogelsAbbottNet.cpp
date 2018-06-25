@@ -163,8 +163,8 @@ int main (int argc, char *argv[]){
   INH_OUT_SYN_PARAMS->decay_term_tau_g = 10.0f*pow(10.0, -3);  // 10ms
 
   // Biological Scaling factors -> This sets the scale of the weights
-  EXC_OUT_SYN_PARAMS->biological_conductance_scaling_constant_lambda = 10.0f*pow(10.0,-9);
-  INH_OUT_SYN_PARAMS->biological_conductance_scaling_constant_lambda = 10.0f*pow(10.0,-9);
+  EXC_OUT_SYN_PARAMS->weight_scaling_constant = 10.0f*pow(10.0,-9);
+  INH_OUT_SYN_PARAMS->weight_scaling_constant = 10.0f*pow(10.0,-9);
 
   // Connect neurons randomly with a 2% probability
   EXC_OUT_SYN_PARAMS->connectivity_type = CONNECTIVITY_TYPE_RANDOM;

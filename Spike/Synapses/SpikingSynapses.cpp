@@ -6,7 +6,6 @@ SpikingSynapses::~SpikingSynapses() {
   std::cout << "SpikingSynapses::~SpikingSynapses\n";
 #endif
   free(delays);
-  free(biological_conductance_scaling_constants_lambda);
 
 }
 
@@ -76,7 +75,6 @@ void SpikingSynapses::AddGroup(int presynaptic_group_id,
 		if (delay_range_in_timesteps[0] != delay_range_in_timesteps[1])
 			delayval = delay_range_in_timesteps[0] + (delay_range_in_timesteps[1] - delay_range_in_timesteps[0]) * ((float)rand() / (RAND_MAX));
 		delays[i] = round(delayval);
-    		biological_conductance_scaling_constants_lambda[i] = spiking_synapse_group_params->biological_conductance_scaling_constant_lambda;
 		syn_labels[i] = 0; // Conductance or other systems can now use this if they wish
 	}
     	if (neurons->total_number_of_neurons > neuron_pop_size)
@@ -86,7 +84,6 @@ void SpikingSynapses::AddGroup(int presynaptic_group_id,
 
 void SpikingSynapses::increment_number_of_synapses(int increment) {
   delays = (int*)realloc(delays, total_number_of_synapses * sizeof(int));
-  biological_conductance_scaling_constants_lambda = (float*)realloc(biological_conductance_scaling_constants_lambda, total_number_of_synapses * sizeof(float));
   syn_labels = (int*)realloc(syn_labels, total_number_of_synapses * sizeof(int));
 }
 

@@ -13,6 +13,7 @@ namespace Backend {
       CudaSafeCall(cudaFree(synaptic_efficacies_or_weights));
       CudaSafeCall(cudaFree(temp_synaptic_efficacies_or_weights));
       CudaSafeCall(cudaFree(synapse_postsynaptic_neuron_count_index));
+      CudaSafeCall(cudaFree(weight_scaling_constants));
       CudaSafeCall(cudaFree(d_synaptic_data));
 #ifdef CRAZY_DEBUG
       std::cout << "\n!!!!!!!!!!!!!!!!!!!!---AAAAAA---!!!!!!!!!!!!!!!!!!!\n";
@@ -38,6 +39,8 @@ namespace Backend {
                               sizeof(float)*frontend()->total_number_of_synapses));
       CudaSafeCall(cudaMalloc((void **)&synapse_postsynaptic_neuron_count_index,
                               sizeof(float)*frontend()->total_number_of_synapses));
+      CudaSafeCall(cudaMalloc((void **)&weight_scaling_constants,
+                              sizeof(float)*frontend()->total_number_of_synapses));
       CudaSafeCall(cudaMalloc((void **)&d_synaptic_data,
                               sizeof(synapses_data_struct)));
     }
@@ -60,6 +63,9 @@ namespace Backend {
                               frontend()->synapse_postsynaptic_neuron_count_index,
                               sizeof(float)*frontend()->total_number_of_synapses,
                               cudaMemcpyHostToDevice));
+      CudaSafeCall(cudaMemcpy(weight_scaling_constants,
+                              frontend()->weight_scaling_constants,
+                              sizeof(float)*frontend()->total_number_of_synapses, cudaMemcpyHostToDevice));
     }
 
 

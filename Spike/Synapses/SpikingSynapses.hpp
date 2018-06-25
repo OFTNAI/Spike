@@ -18,8 +18,7 @@ namespace Backend {
 }
 
 struct spiking_synapse_parameters_struct : synapse_parameters_struct {
-  spiking_synapse_parameters_struct(): biological_conductance_scaling_constant_lambda(1.0) { synapse_parameters_struct(); }
-  float biological_conductance_scaling_constant_lambda;
+  spiking_synapse_parameters_struct(): { synapse_parameters_struct(); }
   float delay_range[2];
 };
 
@@ -34,7 +33,6 @@ public:
 
   // Host Pointers
   int* delays = nullptr;
-  float * biological_conductance_scaling_constants_lambda = nullptr;
   SpikingModel* model = nullptr;
 
   // For spike array stuff
