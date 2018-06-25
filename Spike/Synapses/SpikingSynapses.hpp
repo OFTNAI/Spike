@@ -18,7 +18,6 @@ namespace Backend {
 }
 
 struct spiking_synapse_parameters_struct : synapse_parameters_struct {
-  spiking_synapse_parameters_struct(): { synapse_parameters_struct(); }
   float delay_range[2];
 };
 

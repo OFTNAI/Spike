@@ -167,12 +167,12 @@ int main (int argc, char *argv[]){
   // Set Weight Range (in mVs)
   float weight_val = 0.1f*powf(10.0, -3.0);
   float gamma = 5.0f;
-  EXC_OUT_SYN_PARAMS->weight_range_bottom = weight_val;
-  EXC_OUT_SYN_PARAMS->weight_range_top = weight_val;
-  INH_OUT_SYN_PARAMS->weight_range_bottom = -gamma * weight_val;
-  INH_OUT_SYN_PARAMS->weight_range_top = -gamma * weight_val;
-  INPUT_SYN_PARAMS->weight_range_bottom = weight_val;
-  INPUT_SYN_PARAMS->weight_range_top = weight_val;
+  EXC_OUT_SYN_PARAMS->weight_range[0] = weight_val;
+  EXC_OUT_SYN_PARAMS->weight_range[1] = weight_val;
+  INH_OUT_SYN_PARAMS->weight_range[0] = -gamma * weight_val;
+  INH_OUT_SYN_PARAMS->weight_range[1] = -gamma * weight_val;
+  INPUT_SYN_PARAMS->weight_range[0] = weight_val;
+  INPUT_SYN_PARAMS->weight_range[1] = weight_val;
 
   // Biological Scaling factors (ensures that voltage is in mV)
   float weight_multiplier = 1.0; //powf(10.0, -3.0);

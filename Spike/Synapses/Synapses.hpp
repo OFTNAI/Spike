@@ -84,7 +84,7 @@ struct synapse_parameters_struct {
   int max_number_of_connections_per_pair = 1;
   int gaussian_synapses_per_postsynaptic_neuron = 10;
   float gaussian_synapses_standard_deviation = 10.0;
-  float[2] weight_range = {0.0f, 0.0f};
+  float weight_range[2] = {0.0f, 0.0f};
   float weight_scaling_constant = 1.0;
   float random_connectivity_probability;
   int connectivity_type = CONNECTIVITY_TYPE_ALL_TO_ALL;

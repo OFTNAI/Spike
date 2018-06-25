@@ -154,10 +154,10 @@ int main (int argc, char *argv[]){
   EXC_OUT_SYN_PARAMS->reversal_potential_Vhat = 0.0f*pow(10.0, -3);
   INH_OUT_SYN_PARAMS->reversal_potential_Vhat = -80.0f*pow(10.0, -3);
   // Set Weight Range?
-  EXC_OUT_SYN_PARAMS->weight_range_bottom = 0.4f;
-  EXC_OUT_SYN_PARAMS->weight_range_top = 0.4f;
-  INH_OUT_SYN_PARAMS->weight_range_bottom = 5.1f;
-  INH_OUT_SYN_PARAMS->weight_range_top = 5.1f;
+  EXC_OUT_SYN_PARAMS->weight_range[0] = 0.4f;
+  EXC_OUT_SYN_PARAMS->weight_range[1] = 0.4f;
+  INH_OUT_SYN_PARAMS->weight_range[0] = 5.1f;
+  INH_OUT_SYN_PARAMS->weight_range[1] = 5.1f;
   // Set timescales
   EXC_OUT_SYN_PARAMS->decay_term_tau_g = 5.0f*pow(10.0, -3);  // 5ms
   INH_OUT_SYN_PARAMS->decay_term_tau_g = 10.0f*pow(10.0, -3);  // 10ms
@@ -223,7 +223,7 @@ int main (int argc, char *argv[]){
     spike_monitor->save_spikes_as_binary("./", "TESTING");
   }
 
-  //BenchModel->spiking_synapses->save_connectivity_to_binary("./");
-  //BenchModel->spiking_synapses->save_connectivity_to_txt("./");
+  //BenchModel->spiking_synapses->save_connectivity_as_binary("./");
+  //BenchModel->spiking_synapses->save_connectivity_as_txt("./");
   return(0);
 }

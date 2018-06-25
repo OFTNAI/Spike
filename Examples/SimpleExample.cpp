@@ -44,7 +44,7 @@ int main (int argc, char *argv[]){
   // Allocate your chosen components to the simulator
   ExampleModel->input_spiking_neurons = generator_input_neurons;
   ExampleModel->spiking_neurons = lif_spiking_neurons;
-  ExampleModel->spiking_synapses = current_spiking_synapses;
+  ExampleModel->spiking_synapses = conductance_spiking_synapses;
 
   /*
       ADD ANY ACTIVITY MONITORS OR PLASTICITY RULES YOU WISH FOR 
@@ -159,15 +159,15 @@ int main (int argc, char *argv[]){
 
   // The only argument to run is the number of seconds
   float simtime = 5.0f;
-  generator_input_neuron_->select_stimulus(first_stimulus);
+  generator_input_neurons->select_stimulus(first_stimulus);
   ExampleModel->run(simtime);
 
-  generator_input_neuron_->select_stimulus(second_stimulus);
+  generator_input_neurons->select_stimulus(second_stimulus);
   ExampleModel->run(simtime);
   
 
-  spike_monito_->save_spikes_as_txt("./");
-  ExampleModel->spiking_synapses->save_connectivity_to_txt("./");
+  spike_monitor->save_spikes_as_txt("./");
+  ExampleModel->spiking_synapses->save_connectivity_as_txt("./");
 
   return 0;
 }
