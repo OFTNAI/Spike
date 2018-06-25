@@ -136,7 +136,7 @@ void SpikingSynapses::save_connectivity_as_binary(std::string path, std::string 
   std::ofstream delayfile;
 
   // Open output files
-  delayfile.open((path + "/" + prefix + "SynapticDelays.txt"), std::ios::out | std::ios::binary);
+  delayfile.open((path + "/" + prefix + "SynapticDelays.bin"), std::ios::out | std::ios::binary);
 
   // Ensure weight data has been copied to frontend
   backend()->copy_to_frontend();
