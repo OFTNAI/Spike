@@ -43,7 +43,7 @@ void Synapses::reset_state() {
 }
 
 
-void Synapses::AddGroup(int presynaptic_group_id, 
+int Synapses::AddGroup(int presynaptic_group_id, 
                         int postsynaptic_group_id, 
                         Neurons * neurons,
                         Neurons * input_neurons,
@@ -293,6 +293,10 @@ void Synapses::AddGroup(int presynaptic_group_id,
     }
   }
 
+
+  last_index_of_synapse_per_group.push_back(total_number_of_synapses);
+  return(last_index_of_synapse_per_group.size() - 1);
+
 }
 
 
@@ -322,7 +326,12 @@ void Synapses::increment_number_of_synapses(int increment) {
 
 }
 
-void Synapses::save_connectivity_as_txt(std::string path, std::string prefix){
+void Synapses::save_connectivity_as_txt(std::string path, std::string prefix, int synapsegroupid){
+  int startid = 0;
+  int endid = last_index_of_synapse_per_group[synapsegroupid];
+  if ((synapsegroupid > 0) && (synapsegroupid < last_index_of_synapse_per_group.size())){
+    startid = last_index_of_synapse_per_group[synapsegroupid - 1];
+  }
   std::ofstream preidfile, postidfile, weightfile;
 
   // Open output files
@@ -334,7 +343,7 @@ void Synapses::save_connectivity_as_txt(std::string path, std::string prefix){
   backend()->copy_to_frontend();
 
   // Send data to file
-  for (int i = 0; i < total_number_of_synapses; i++){
+  for (int i = startid; i < endid; i++){
     preidfile << presynaptic_neuron_indices[i] << std::endl;
     postidfile << postsynaptic_neuron_indices[i] << std::endl;
     weightfile << synaptic_efficacies_or_weights[i] << std::endl;
@@ -347,7 +356,12 @@ void Synapses::save_connectivity_as_txt(std::string path, std::string prefix){
 
 };
 // Ensure copied from device, then send
-void Synapses::save_connectivity_as_binary(std::string path, std::string prefix){
+void Synapses::save_connectivity_as_binary(std::string path, std::string prefix, int synapsegroupid){
+  int startid = 0;
+  int endid = last_index_of_synapse_per_group[synapsegroupid];
+  if ((synapsegroupid > 0) && (synapsegroupid < last_index_of_synapse_per_group.size())){
+    startid = last_index_of_synapse_per_group[synapsegroupid - 1];
+  }
   std::ofstream preidfile, postidfile, weightfile;
 
   // Open output files
@@ -359,9 +373,9 @@ void Synapses::save_connectivity_as_binary(std::string path, std::string prefix)
   backend()->copy_to_frontend();
 
   // Send data to file
-  preidfile.write((char *)presynaptic_neuron_indices, total_number_of_synapses*sizeof(int));
-  postidfile.write((char *)postsynaptic_neuron_indices, total_number_of_synapses*sizeof(int));
-  weightfile.write((char *)synaptic_efficacies_or_weights, total_number_of_synapses*sizeof(float));
+  preidfile.write((char *)&presynaptic_neuron_indices[startid], (endid - startid)*sizeof(int));
+  postidfile.write((char *)&postsynaptic_neuron_indices[startid], (endid - startid)*sizeof(int));
+  weightfile.write((char *)&synaptic_efficacies_or_weights[startid], (endid - startid)*sizeof(float));
 
   // Close files
   preidfile.close();
@@ -373,26 +387,57 @@ void Synapses::save_connectivity_as_binary(std::string path, std::string prefix)
 //void Synapses::load_connectivity_from_txt(std::string path, std::string prefix);
 //void Synapses::load_connectivity_from_binary(std::string path, std::string prefix);
 
+void Synapses::save_weights_as_txt(std::string path, std::string prefix, int synapsegroupid){
+  int startid = 0;
+  int endid = last_index_of_synapse_per_group[synapsegroupid];
+  if ((synapsegroupid > 0) && (synapsegroupid < last_index_of_synapse_per_group.size())){
+    startid = last_index_of_synapse_per_group[synapsegroupid - 1];
+  }
 
-void Synapses::save_weights_as_txt(std::string path, std::string prefix){
   std::ofstream weightfile;
   backend()->copy_to_frontend();
   weightfile.open((path + "/" + prefix + "SynapticWeights.txt"), std::ios::out | std::ios::binary);
-  for (int i = 0; i < total_number_of_synapses; i++){
+  for (int i = startid; i < endid; i++){
     weightfile << synaptic_efficacies_or_weights[i] << std::endl;
   }
   weightfile.close();
 }
 
-void Synapses::save_weights_as_binary(std::string path, std::string prefix){
+void Synapses::save_weights_as_binary(std::string path, std::string prefix, int synapsegroupid){
+  int startid = 0;
+  int endid = last_index_of_synapse_per_group[synapsegroupid];
+  if ((synapsegroupid > 0) && (synapsegroupid < last_index_of_synapse_per_group.size())){
+    startid = last_index_of_synapse_per_group[synapsegroupid - 1];
+  }
+
   std::ofstream weightfile;
   backend()->copy_to_frontend();
   weightfile.open((path + "/" + prefix + "SynapticWeights.bin"), std::ios::out | std::ios::binary);
-  weightfile.write((char *)synaptic_efficacies_or_weights, total_number_of_synapses*sizeof(float));
+  weightfile.write((char *)&synaptic_efficacies_or_weights[startid], (endid - startid)*sizeof(float));
+  
   weightfile.close();
 }
 
-void Synapses::load_weights_from_txt(std::string filepath){
+
+void Synapses::load_weights(std::vector<float> weights, int synapsegroupid){
+  int startid = 0;
+  int endid = last_index_of_synapse_per_group[synapsegroupid];
+  if ((synapsegroupid > 0) && (synapsegroupid < last_index_of_synapse_per_group.size())){
+    startid = last_index_of_synapse_per_group[synapsegroupid - 1];
+  }
+
+  if (weights.size() == (endid - startid)){
+    for (int i = startid; i < endid; i++){
+      synaptic_efficacies_or_weights[i] = weights[i - startid];
+    }
+  } else {
+    print_message_and_exit("Number of weights loading not equal to number of synapses!!");
+  }
+  
+  backend()->copy_to_backend();
+}
+
+void Synapses::load_weights_from_txt(std::string filepath, int synapsegroupid){
   std::ifstream weightfile;
   weightfile.open(filepath, std::ios::in | std::ios::binary);
   
@@ -404,17 +449,10 @@ void Synapses::load_weights_from_txt(std::string filepath){
   }
   weightfile.close();
 
-  if (loadingweights.size() == total_number_of_synapses){
-    for (int i = 0; i < total_number_of_synapses; i++){
-      synaptic_efficacies_or_weights[i] = loadingweights[i];
-    }
-  } else {
-    print_message_and_exit("Number of weights loading not equal to number of synapses!!");
-  }
-  
-  backend()->copy_to_backend();
+  load_weights(loadingweights);
+
 }
-void Synapses::load_weights_from_binary(std::string filepath){
+void Synapses::load_weights_from_binary(std::string filepath, int synapsegroupid){
   std::ifstream weightfile;
   weightfile.open(filepath, std::ios::in | std::ios::binary);
   
@@ -425,16 +463,8 @@ void Synapses::load_weights_from_binary(std::string filepath){
     loadingweights.push_back(weightval);
   }
   weightfile.close();
-
-  if (loadingweights.size() == total_number_of_synapses){
-    for (int i = 0; i < total_number_of_synapses; i++){
-      synaptic_efficacies_or_weights[i] = loadingweights[i];
-    }
-  } else {
-    print_message_and_exit("Number of weights loading not equal to number of synapses!!");
-  }
   
-  backend()->copy_to_backend();
+  load_weights(loadingweights);
 }
 
 

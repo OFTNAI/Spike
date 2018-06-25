@@ -6,7 +6,7 @@ VoltageSpikingSynapses::~VoltageSpikingSynapses() {
 }
 
 
-void VoltageSpikingSynapses::AddGroup(int presynaptic_group_id, 
+int VoltageSpikingSynapses::AddGroup(int presynaptic_group_id, 
                                           int postsynaptic_group_id, 
                                           Neurons * neurons,
                                           Neurons * input_neurons,
@@ -14,7 +14,7 @@ void VoltageSpikingSynapses::AddGroup(int presynaptic_group_id,
                                           synapse_parameters_struct * synapse_params) {
 	
 	
-  SpikingSynapses::AddGroup(presynaptic_group_id, 
+  int groupID = SpikingSynapses::AddGroup(presynaptic_group_id, 
                             postsynaptic_group_id, 
                             neurons,
                             input_neurons,
@@ -25,6 +25,8 @@ void VoltageSpikingSynapses::AddGroup(int presynaptic_group_id,
   
   // Incrementing number of synapses
   VoltageSpikingSynapses::increment_number_of_synapses(temp_number_of_synapses_in_last_group);
+
+  return(groupID);
 }
 
 void VoltageSpikingSynapses::increment_number_of_synapses(int increment) {

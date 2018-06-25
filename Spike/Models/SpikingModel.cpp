@@ -40,17 +40,19 @@ int SpikingModel::AddInputNeuronGroup(neuron_parameters_struct * group_params) {
 }
 
 
-void SpikingModel::AddSynapseGroup(int presynaptic_group_id, 
+int SpikingModel::AddSynapseGroup(int presynaptic_group_id, 
               int postsynaptic_group_id, 
               synapse_parameters_struct * synapse_params) {
   if (spiking_synapses == nullptr) print_message_and_exit("Please set synapse pointer before adding synapses.");
 
-  spiking_synapses->AddGroup(presynaptic_group_id, 
+  int groupID = spiking_synapses->AddGroup(presynaptic_group_id, 
               postsynaptic_group_id, 
               spiking_neurons,
               input_spiking_neurons,
               timestep,
               synapse_params);
+
+  return(groupID);
 }
 
 

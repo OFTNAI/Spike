@@ -113,6 +113,7 @@ public:
   int largest_synapse_group_size = 0;               /**< Tracks the size of the largest synaptic group. */
   bool print_synapse_group_details = false;         /**< A flag used to indicate whether group details should be printed */
   std::vector<Plasticity*> plasticity_rule_vec;     /**< A vector of pointers to the plasticity rules to be used in the simulation */
+  std::vector<int> last_index_of_synapse_per_group; 
     
   
 
@@ -139,7 +140,7 @@ public:
   \param timestep A float indicating the timestep at which the simulator is running.
   \param synapse_params A synapse_parameters_struct pointer describing the connectivity arrangement to be added between the pre and postsynaptic neuron populations.
    */
-  virtual void AddGroup(int presynaptic_group_id, 
+  virtual int AddGroup(int presynaptic_group_id, 
                         int postsynaptic_group_id, 
                         Neurons * neurons,
                         Neurons * input_neurons,
@@ -152,15 +153,17 @@ public:
   */
   void increment_number_of_synapses(int increment);
   
-  virtual void save_connectivity_as_txt(std::string path, std::string prefix="");
-  virtual void save_connectivity_as_binary(std::string path, std::string prefix="");
+  virtual void save_connectivity_as_txt(std::string path, std::string prefix="", int synapsegroupid=-1);
+  virtual void save_connectivity_as_binary(std::string path, std::string prefix="", int synapsegroupid=-1);
   //virtual void load_connectivity_from_txt(std::string path, std::string prefix="");
   //virtual void load_connectivity_from_bin(std::string path, std::string prefix="");
 
-  void save_weights_as_txt(std::string path, std::string prefix="");
-  void save_weights_as_binary(std::string path, std::string prefix="");
-  void load_weights_from_txt(std::string filepath);
-  void load_weights_from_binary(std::string filepath);
+  void save_weights_as_txt(std::string path, std::string prefix="", int synapsegroupid=-1);
+  void save_weights_as_binary(std::string path, std::string prefix="", int synapsegroupid=-1);
+
+  void load_weights(std::vector<float> weights, int synapsegroupid=-1);
+  void load_weights_from_txt(std::string filepath, int synapsegroupid=-1);
+  void load_weights_from_binary(std::string filepath, int synapsegroupid=-1);
 
   void reset_state() override;
 

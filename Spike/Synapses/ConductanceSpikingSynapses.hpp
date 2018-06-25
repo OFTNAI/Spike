@@ -35,7 +35,7 @@ public:
   vector<float> decay_terms_tau_g;
 
   // Synapse Functions
-  void AddGroup(int presynaptic_group_id, 
+  int AddGroup(int presynaptic_group_id, 
                 int postsynaptic_group_id, 
                 Neurons * neurons,
                 Neurons * input_neurons,

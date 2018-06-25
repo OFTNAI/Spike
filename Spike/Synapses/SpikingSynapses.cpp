@@ -19,7 +19,7 @@ SpikingSynapses::~SpikingSynapses() {
 //    2 number float array for delay range
 //    Boolean value to indicate if population is STDP based
 //    Parameter = either probability for random synapses or S.D. for Gaussian
-void SpikingSynapses::AddGroup(int presynaptic_group_id, 
+int SpikingSynapses::AddGroup(int presynaptic_group_id, 
             int postsynaptic_group_id, 
             Neurons * neurons,
             Neurons * input_neurons,
@@ -27,7 +27,7 @@ void SpikingSynapses::AddGroup(int presynaptic_group_id,
             synapse_parameters_struct * synapse_params) {
   
   
-  Synapses::AddGroup(presynaptic_group_id, 
+  int groupID = Synapses::AddGroup(presynaptic_group_id, 
               postsynaptic_group_id, 
               neurons,
               input_neurons,
@@ -87,6 +87,8 @@ void SpikingSynapses::AddGroup(int presynaptic_group_id,
   if (neurons->total_number_of_neurons > neuron_pop_size)
     neuron_pop_size = neurons->total_number_of_neurons; 
 
+  return groupID;
+
 }
 
 void SpikingSynapses::increment_number_of_synapses(int increment) {
@@ -99,8 +101,13 @@ void SpikingSynapses::state_update(SpikingNeurons * neurons, SpikingNeurons * in
   backend()->state_update(neurons, input_neurons, current_time_in_seconds, timestep);
 }
 
-void SpikingSynapses::save_connectivity_as_txt(std::string path, std::string prefix){
-  Synapses::save_connectivity_as_txt(path, prefix);
+void SpikingSynapses::save_connectivity_as_txt(std::string path, std::string prefix, int synapsegroupid){
+  int startid = 0;
+  int endid = last_index_of_synapse_per_group[synapsegroupid];
+  if ((synapsegroupid > 0) && (synapsegroupid < last_index_of_synapse_per_group.size())){
+    startid = last_index_of_synapse_per_group[synapsegroupid - 1];
+  }
+  Synapses::save_connectivity_as_txt(path, prefix, synapsegroupid);
   std::ofstream delayfile;
 
   // Open output files
@@ -110,7 +117,7 @@ void SpikingSynapses::save_connectivity_as_txt(std::string path, std::string pre
   backend()->copy_to_frontend();
 
   // Send data to file
-  for (int i = 0; i < total_number_of_synapses; i++){
+  for (int i = startid; i < endid; i++){
     delayfile << delays[i] << std::endl;
   }
 
@@ -119,8 +126,13 @@ void SpikingSynapses::save_connectivity_as_txt(std::string path, std::string pre
 
 };
 // Ensure copied from device, then send
-void SpikingSynapses::save_connectivity_as_binary(std::string path, std::string prefix){
-  Synapses::save_connectivity_as_binary(path, prefix);
+void SpikingSynapses::save_connectivity_as_binary(std::string path, std::string prefix, int synapsegroupid){
+  int startid = 0;
+  int endid = last_index_of_synapse_per_group[synapsegroupid];
+  if ((synapsegroupid > 0) && (synapsegroupid < last_index_of_synapse_per_group.size())){
+    startid = last_index_of_synapse_per_group[synapsegroupid - 1];
+  }
+  Synapses::save_connectivity_as_binary(path, prefix, synapsegroupid);
   std::ofstream delayfile;
 
   // Open output files
@@ -130,7 +142,7 @@ void SpikingSynapses::save_connectivity_as_binary(std::string path, std::string 
   backend()->copy_to_frontend();
 
   // Send data to file
-  delayfile.write((char *)delays, total_number_of_synapses*sizeof(int));
+  delayfile.write((char *)&delays[startid], (endid - startid)*sizeof(int));
 
   // Close files
   delayfile.close();

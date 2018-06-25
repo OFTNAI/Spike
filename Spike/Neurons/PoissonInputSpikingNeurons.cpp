@@ -28,7 +28,6 @@ void PoissonInputSpikingNeurons::set_up_rates() {
   for (int i = 0; i < total_number_of_neurons; i++) {
     rates[i] = rate;
   }
-  total_number_of_input_stimuli = 1;
 }
 
 

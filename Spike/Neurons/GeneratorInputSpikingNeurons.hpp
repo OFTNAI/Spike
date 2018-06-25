@@ -36,6 +36,7 @@ public:
   void state_update(float current_time_in_seconds, float timestep) override;
 
   int add_stimulus(int spikenumber, int* ids, float* spiketimes);
+  int add_stimulus(std::vector<int> ids, std::vector<float> spiketimes);
 
 private:
   std::shared_ptr<::Backend::GeneratorInputSpikingNeurons> _backend;

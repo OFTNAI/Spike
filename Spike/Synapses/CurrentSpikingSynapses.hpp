@@ -29,7 +29,7 @@ public:
   void init_backend(Context* ctx = _global_ctx) override;
   
   vector<float> decay_terms_tau;
-  void AddGroup(int presynaptic_group_id, 
+  int AddGroup(int presynaptic_group_id, 
                 int postsynaptic_group_id, 
                 Neurons * neurons,
                 Neurons * input_neurons,

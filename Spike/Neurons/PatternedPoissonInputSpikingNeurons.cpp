@@ -52,6 +52,9 @@ int PatternedPoissonInputSpikingNeurons::add_stimulus(float* rates, int num_rate
   return(total_number_of_input_stimuli - 1);
 }
 
+int PatternedPoissonInputSpikingNeurons::add_stimulus(std::vector<float> rates){
+  return(add_stimulus(rates.data(), rates.size()));
+}
 
 void PatternedPoissonInputSpikingNeurons::copy_rates_to_device() {
   backend()->copy_rates_to_device();

@@ -1,4 +1,5 @@
 #include "GeneratorInputSpikingNeurons.hpp"
+#include "../Helpers/TerminalHelpers.hpp"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -69,4 +70,10 @@ int GeneratorInputSpikingNeurons::add_stimulus(int spikenumber, int* ids, float*
   return (total_number_of_input_stimuli - 1);
 }
 
+int GeneratorInputSpikingNeurons::add_stimulus(std::vector<int> ids, std::vector<float> spiketimes){
+  if (ids.size() != spiketimes.size())
+    print_message_and_exit("LENGTH MISMATCH: Length of ID vector should be the same as the Spike Times vector!");
+
+  return(add_stimulus((int)ids.size(), ids.data(), spiketimes.data()));
+}
 SPIKE_MAKE_INIT_BACKEND(GeneratorInputSpikingNeurons);

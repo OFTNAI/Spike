@@ -16,7 +16,7 @@ ConductanceSpikingSynapses::~ConductanceSpikingSynapses() {
 }
 
 
-void ConductanceSpikingSynapses::AddGroup(int presynaptic_group_id, 
+int ConductanceSpikingSynapses::AddGroup(int presynaptic_group_id, 
                                           int postsynaptic_group_id, 
                                           Neurons * neurons,
                                           Neurons * input_neurons,
@@ -24,7 +24,7 @@ void ConductanceSpikingSynapses::AddGroup(int presynaptic_group_id,
                                           synapse_parameters_struct * synapse_params) {
 	
 	
-  SpikingSynapses::AddGroup(presynaptic_group_id, 
+  int groupID = SpikingSynapses::AddGroup(presynaptic_group_id, 
                             postsynaptic_group_id, 
                             neurons,
                             input_neurons,
@@ -70,6 +70,8 @@ void ConductanceSpikingSynapses::AddGroup(int presynaptic_group_id,
   		syn_labels[i] = indextoset;
   	}
   }
+
+  return(groupID);
 }
 
 void ConductanceSpikingSynapses::increment_number_of_synapses(int increment) {

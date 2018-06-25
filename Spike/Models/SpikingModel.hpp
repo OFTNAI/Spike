@@ -48,7 +48,7 @@ public:
   int AddNeuronGroup(neuron_parameters_struct * group_params);
   int AddInputNeuronGroup(neuron_parameters_struct * group_params);
 
-  void AddSynapseGroup(int presynaptic_group_id, int postsynaptic_group_id, synapse_parameters_struct * synapse_params);
+  int AddSynapseGroup(int presynaptic_group_id, int postsynaptic_group_id, synapse_parameters_struct * synapse_params);
   void AddSynapseGroupsForNeuronGroupAndEachInputGroup(int postsynaptic_group_id, synapse_parameters_struct * synapse_params);
 
   void AddPlasticityRule(STDPPlasticity * plasticity_rule);
