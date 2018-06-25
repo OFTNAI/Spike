@@ -33,7 +33,7 @@ void PatternedPoissonInputSpikingNeurons::reset_stimuli(){
   stimuli_rates = nullptr;
 }
 
-void PatternedPoissonInputSpikingNeurons::add_stimulus(float* rates, int num_rates){
+int PatternedPoissonInputSpikingNeurons::add_stimulus(float* rates, int num_rates){
   // Check if the size of the rates is correct
   if (num_rates != total_number_of_neurons){
     printf("Error: The number of neurons does not match the number of rates!\n");
@@ -48,6 +48,8 @@ void PatternedPoissonInputSpikingNeurons::add_stimulus(float* rates, int num_rat
   // After storing the stimulus, correct the number of input stimuli
   total_number_of_rates += num_rates;
   ++total_number_of_input_stimuli;
+
+  return(total_number_of_input_stimuli - 1);
 }
 
 

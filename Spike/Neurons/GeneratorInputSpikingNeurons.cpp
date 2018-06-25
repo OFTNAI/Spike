@@ -23,7 +23,7 @@ void GeneratorInputSpikingNeurons::state_update(float current_time_in_seconds,  
   backend()->state_update(current_time_in_seconds, timestep);
 }
 
-void GeneratorInputSpikingNeurons::AddStimulus(int spikenumber, int* ids, float* spiketimes){
+int GeneratorInputSpikingNeurons::add_stimulus(int spikenumber, int* ids, float* spiketimes){
   ++total_number_of_input_stimuli;
   // If the number of spikes in this stimulus is larger than any other ...
   if (spikenumber > length_of_longest_stimulus){
@@ -65,6 +65,8 @@ void GeneratorInputSpikingNeurons::AddStimulus(int spikenumber, int* ids, float*
   }
   // Set the correct array location for maximum length
   temporal_lengths_of_stimuli[total_number_of_input_stimuli - 1] = maxlen;
+
+  return (total_number_of_input_stimuli - 1);
 }
 
 SPIKE_MAKE_INIT_BACKEND(GeneratorInputSpikingNeurons);

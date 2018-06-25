@@ -34,7 +34,7 @@ public:
  
   void state_update(float current_time_in_seconds, float timestep) override;
   void reset_stimuli();  
-  void add_stimulus(float* rates, int num_rates);
+  int add_stimulus(float* rates, int num_rates);
   void copy_rates_to_device();
 
   // Variable to hold stimuli
