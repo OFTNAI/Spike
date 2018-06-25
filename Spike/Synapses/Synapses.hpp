@@ -80,7 +80,7 @@ enum CONNECTIVITY_TYPE
 struct synapse_parameters_struct {
   std::vector<int> pairwise_connect_presynaptic;
   std::vector<int> pairwise_connect_postsynaptic;
-  std::vector<int> pairwise_connect_weight;
+  std::vector<float> pairwise_connect_weight;
   int max_number_of_connections_per_pair = 1;
   int gaussian_synapses_per_postsynaptic_neuron = 10;
   float gaussian_synapses_standard_deviation = 10.0;

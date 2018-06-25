@@ -244,7 +244,7 @@ int Synapses::AddGroup(int presynaptic_group_id,
 
     if (synapse_params->connectivity_type == CONNECTIVITY_TYPE_PAIRWISE){
       if (synapse_params->pairwise_connect_weight.size() == temp_number_of_synapses_in_last_group){
-        synaptic_efficacies_or_weights[i] == synapse_params->pairwise_connect_weight[i - original_number_of_synapses];
+        synaptic_efficacies_or_weights[i] = synapse_params->pairwise_connect_weight[i - original_number_of_synapses];
       } else if (synapse_params->pairwise_connect_weight.size() != 0) {
         print_message_and_exit("PAIRWISE CONNECTION ISSUE: Weight vector length not as expected. Should be the same length as pre/post vecs.");
       }
@@ -343,6 +343,7 @@ void Synapses::save_connectivity_as_txt(std::string path, std::string prefix, in
     presynaptic_group_is_input = prepop_is_input[synapsegroupid];
   }
   std::ofstream preidfile, postidfile, weightfile;
+  backend()->copy_to_frontend();
 
   // Open output files
   preidfile.open((path + "/" + prefix + "PresynapticIDs.txt"), std::ios::out | std::ios::binary);
@@ -381,6 +382,7 @@ void Synapses::save_connectivity_as_binary(std::string path, std::string prefix,
     presynaptic_group_is_input = prepop_is_input[synapsegroupid];
   }
   std::ofstream preidfile, postidfile, weightfile;
+  backend()->copy_to_frontend();
 
   // Open output files
   preidfile.open((path + "/" + prefix + "PresynapticIDs.bin"), std::ios::out | std::ios::binary);

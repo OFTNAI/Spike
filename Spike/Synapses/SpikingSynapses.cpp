@@ -78,7 +78,7 @@ int SpikingSynapses::AddGroup(int presynaptic_group_id,
     syn_labels[i] = 0; // Conductance or other systems can now use this if they wish
     if (spiking_synapse_group_params->connectivity_type == CONNECTIVITY_TYPE_PAIRWISE){
       if (spiking_synapse_group_params->pairwise_connect_delay.size() == temp_number_of_synapses_in_last_group){
-        delays[i] == spiking_synapse_group_params->pairwise_connect_delay[i + temp_number_of_synapses_in_last_group - total_number_of_synapses];
+        delays[i] = (int)round(spiking_synapse_group_params->pairwise_connect_delay[i + temp_number_of_synapses_in_last_group - total_number_of_synapses] / timestep);
       } else if (spiking_synapse_group_params->pairwise_connect_delay.size() != 0) {
         print_message_and_exit("PAIRWISE CONNECTION ISSUE: Delay vector length not as expected. Should be the same length as pre/post vecs.");
       }
