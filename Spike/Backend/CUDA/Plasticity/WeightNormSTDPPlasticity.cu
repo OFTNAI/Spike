@@ -120,7 +120,6 @@ namespace Backend {
       }
       indx += blockDim.x * gridDim.x;
     }
-    __syncthreads();
   }
 
     __global__ void weight_division_calc(
@@ -142,7 +141,6 @@ namespace Backend {
       }
       idx += blockDim.x * gridDim.x;    
     }
-    __syncthreads();
   }
 
 

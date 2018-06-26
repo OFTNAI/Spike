@@ -66,9 +66,8 @@ function(add_cuda_exe_lib name files libraries is_lib)
         COMMAND ${CUDA_NVCC_EXECUTABLE} ${flags} -Xcompiler '-fPIC' ${lib_list} -o ${obj_name}.dlink.o ${obj_list} -lcudadevrt
         #COMMAND g++ -shared -o ${obj_name}.so ${obj_list} ${obj_name}.dlink.o ${CUDART}
         COMMAND ${CUDA_NVCC_EXECUTABLE} ${CUDA_NVCC_FLAGS} ${lib_list} -lib -o ${obj_name}.a ${obj_list} ${obj_name}.dlink.o -lcudadevrt
-        #COMMAND ${CUDA_NVCC_EXECUTABLE} ${CUDA_NVCC_FLAGS} -Xcompiler '-fPIC' -I${PROJECT_SOURCE_DIR} ${lib_list} -lib -o ${obj_name}.a ${files} -lcudadevrt
+        #COMMAND ${CUDA_NVCC_EXECUTABLE} -G -g ${CUDA_NVCC_FLAGS} -Xcompiler '-fPIC' -I${PROJECT_SOURCE_DIR} -lib -o ${obj_name}.a ${files}
 
-        
         DEPENDS ${obj_list}
         COMMENT "Linking ${name}"
     )

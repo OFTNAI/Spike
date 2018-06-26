@@ -88,7 +88,7 @@ namespace Backend {
         float temp_membrane_resistance_R = neuron_data->membrane_resistances_R[idx];
         float membrane_potential_Vi = neuron_data->membrane_potentials_v[idx];
 
-        for (int g=0; g < timestep_grouping; g++){    
+        for (int g=0; g < timestep_grouping; g++){
             float voltage_input_for_timestep = current_injection_kernel(
                   synaptic_data,
                   in_neuron_data,

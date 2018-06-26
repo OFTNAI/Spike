@@ -78,9 +78,9 @@ namespace Backend {
       max_num_blocks_per_grid = deviceProp.multiProcessorCount*(deviceProp.maxThreadsPerMultiProcessor / threads);
       int theoretical_number = (frontend()->total_number_of_synapses + threads) / threads;
       if (theoretical_number < max_num_blocks_per_grid)
-	number_of_synapse_blocks_per_grid = dim3(theoretical_number);
+  number_of_synapse_blocks_per_grid = dim3(theoretical_number);
       else
-	number_of_synapse_blocks_per_grid = dim3(max_num_blocks_per_grid);
+  number_of_synapse_blocks_per_grid = dim3(max_num_blocks_per_grid);
       //printf("%d, %d\n", max_num_blocks_per_grid, theoretical_number);
     }
 
@@ -212,7 +212,7 @@ namespace Backend {
           }
 
           if (presynaptic_y_set == false) {
-			
+      
             float value_from_normal_distribution_for_y = curand_normal(&d_states[t_idx]);
             float scaled_value_from_normal_distribution_for_y = standard_deviation_sigma * value_from_normal_distribution_for_y;
             int rounded_scaled_value_from_normal_distribution_for_y = round(scaled_value_from_normal_distribution_for_y);
@@ -231,14 +231,13 @@ namespace Backend {
             }
             break;
           }
-			
+      
 
-        }	
+        } 
         idx += blockDim.x * gridDim.x;
 
-      }	
+      } 
 
-      __syncthreads();
 
     }
 

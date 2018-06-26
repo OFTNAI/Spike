@@ -140,14 +140,16 @@ namespace Backend {
         presynaptic_neuron_indices,
         (neurons_backend->frontend()->total_number_of_neurons + input_neurons_backend->frontend()->total_number_of_neurons));
       CudaCheckError();
-      
+      /*
       CudaSafeCall(cudaMemcpy(
-        &h_num_active_synapses,
-        num_active_synapses,
-        sizeof(int), cudaMemcpyDeviceToHost));
+          &h_num_active_synapses,
+          num_active_synapses,
+          sizeof(int), cudaMemcpyDeviceToHost));
       int blocks_per_grid = ((h_num_active_synapses / threads_per_block.x) + 1);
       if (blocks_per_grid > max_num_blocks_per_grid) blocks_per_grid = max_num_blocks_per_grid;
-      activate_synapses<<<blocks_per_grid, threads_per_block>>>(
+      */
+      //activate_synapses<<<blocks_per_grid, threads_per_block>>>(
+      activate_synapses<<<neurons_backend->number_of_neuron_blocks_per_grid, threads_per_block>>>(
         neurons_backend->per_neuron_efferent_synapse_total,
         neurons_backend->per_neuron_efferent_synapse_indices,
         input_neurons_backend->per_neuron_efferent_synapse_total,

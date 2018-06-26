@@ -13,6 +13,7 @@
 
 // Including the primary Spike header gives access to all models and components
 #include "Spike/Spike.hpp"
+#include "Spike/Backend/CUDA/Helpers/ErrorCheck.hpp"
 // Utility functions in case you want to load from .mat file
 #include "UtilityFunctions.hpp"
 

@@ -11,9 +11,9 @@
 namespace Backend {
   namespace CUDA {
     struct conductance_spiking_synapses_data_struct: spiking_synapses_data_struct {
-	    float* decay_terms_tau_g;
-	    float* reversal_potentials_Vhat;
-	    float* neuron_wise_conductance_trace;
+      float* decay_terms_tau_g;
+      float* reversal_potentials_Vhat;
+      float* neuron_wise_conductance_trace;
     };
     class ConductanceSpikingSynapses : public virtual ::Backend::CUDA::SpikingSynapses,
                                        public virtual ::Backend::ConductanceSpikingSynapses {

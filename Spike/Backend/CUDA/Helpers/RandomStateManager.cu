@@ -45,8 +45,7 @@ namespace Backend {
                     // cores to get the same sequence of numbers for some reason - use thread id!
                     0,    // the offset is how much extra we advance in the sequence for each call; can be 0
                     &d_states[idx]);
-        __syncthreads();
-	idx += blockDim.x * gridDim.x;
+        idx += blockDim.x * gridDim.x;
       }
     }
   }

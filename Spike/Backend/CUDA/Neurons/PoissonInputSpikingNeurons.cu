@@ -92,7 +92,6 @@ namespace Backend {
         idx += blockDim.x * gridDim.x;
 
       }
-      __syncthreads();
     }
   }
 }
