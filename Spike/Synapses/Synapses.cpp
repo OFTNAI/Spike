@@ -330,7 +330,9 @@ void Synapses::increment_number_of_synapses(int increment) {
 
 void Synapses::save_connectivity_as_txt(std::string path, std::string prefix, int synapsegroupid){
   int startid = 0;
-  int endid = last_index_of_synapse_per_group[synapsegroupid];
+  int endid = total_number_of_synapses;
+  if (synapsegroupid >= 0)
+    endid = last_index_of_synapse_per_group[synapsegroupid];
   if ((synapsegroupid > 0) && (synapsegroupid < last_index_of_synapse_per_group.size())){
     startid = last_index_of_synapse_per_group[synapsegroupid - 1];
   }
@@ -355,7 +357,10 @@ void Synapses::save_connectivity_as_txt(std::string path, std::string prefix, in
 
   // Send data to file
   for (int i = startid; i < endid; i++){
-    preidfile << CORRECTED_PRESYNAPTIC_ID(presynaptic_neuron_indices[i], presynaptic_group_is_input) - precorrection << std::endl;
+    if (synapsegroupid >= 0)
+      preidfile << CORRECTED_PRESYNAPTIC_ID(presynaptic_neuron_indices[i], presynaptic_group_is_input) - precorrection << std::endl;
+    else 
+      preidfile << presynaptic_neuron_indices[i];
     postidfile << postsynaptic_neuron_indices[i] - postcorrection << std::endl;
     weightfile << synaptic_efficacies_or_weights[i] << std::endl;
   }
@@ -369,7 +374,9 @@ void Synapses::save_connectivity_as_txt(std::string path, std::string prefix, in
 // Ensure copied from device, then send
 void Synapses::save_connectivity_as_binary(std::string path, std::string prefix, int synapsegroupid){
   int startid = 0;
-  int endid = last_index_of_synapse_per_group[synapsegroupid];
+  int endid = total_number_of_synapses;
+  if (synapsegroupid >= 0)
+    endid = last_index_of_synapse_per_group[synapsegroupid];
   if ((synapsegroupid > 0) && (synapsegroupid < last_index_of_synapse_per_group.size())){
     startid = last_index_of_synapse_per_group[synapsegroupid - 1];
   }
@@ -395,10 +402,13 @@ void Synapses::save_connectivity_as_binary(std::string path, std::string prefix,
   // Send data to file
   int preid, postid;
   for (int i = startid; i < endid; i++){
-    preid = CORRECTED_PRESYNAPTIC_ID(presynaptic_neuron_indices[startid], presynaptic_group_is_input) - precorrection;
-    postid = postsynaptic_neuron_indices[startid] - postcorrection;
-    preidfile.write((char *)&preid, (endid - startid)*sizeof(int));
-    postidfile.write((char *)&postid, (endid - startid)*sizeof(int));
+    if (synapsegroupid >= 0)
+      preid = CORRECTED_PRESYNAPTIC_ID(presynaptic_neuron_indices[i], presynaptic_group_is_input) - precorrection;
+    else
+      preid = presynaptic_neuron_indices[i];
+    postid = postsynaptic_neuron_indices[i] - postcorrection;
+    preidfile.write((char *)&preid, sizeof(int));
+    postidfile.write((char *)&postid, sizeof(int));
   }
   /*
   // Send data to file
@@ -419,7 +429,9 @@ void Synapses::save_connectivity_as_binary(std::string path, std::string prefix,
 
 void Synapses::save_weights_as_txt(std::string path, std::string prefix, int synapsegroupid){
   int startid = 0;
-  int endid = last_index_of_synapse_per_group[synapsegroupid];
+  int endid = total_number_of_synapses;
+  if (synapsegroupid >= 0)
+    endid = last_index_of_synapse_per_group[synapsegroupid];
   if ((synapsegroupid > 0) && (synapsegroupid < last_index_of_synapse_per_group.size())){
     startid = last_index_of_synapse_per_group[synapsegroupid - 1];
   }
@@ -435,7 +447,9 @@ void Synapses::save_weights_as_txt(std::string path, std::string prefix, int syn
 
 void Synapses::save_weights_as_binary(std::string path, std::string prefix, int synapsegroupid){
   int startid = 0;
-  int endid = last_index_of_synapse_per_group[synapsegroupid];
+  int endid = total_number_of_synapses;
+  if (synapsegroupid >= 0)
+    endid = last_index_of_synapse_per_group[synapsegroupid];
   if ((synapsegroupid > 0) && (synapsegroupid < last_index_of_synapse_per_group.size())){
     startid = last_index_of_synapse_per_group[synapsegroupid - 1];
   }
@@ -451,7 +465,9 @@ void Synapses::save_weights_as_binary(std::string path, std::string prefix, int 
 
 void Synapses::load_weights(std::vector<float> weights, int synapsegroupid){
   int startid = 0;
-  int endid = last_index_of_synapse_per_group[synapsegroupid];
+  int endid = total_number_of_synapses;
+  if (synapsegroupid >= 0)
+    endid = last_index_of_synapse_per_group[synapsegroupid];
   if ((synapsegroupid > 0) && (synapsegroupid < last_index_of_synapse_per_group.size())){
     startid = last_index_of_synapse_per_group[synapsegroupid - 1];
   }

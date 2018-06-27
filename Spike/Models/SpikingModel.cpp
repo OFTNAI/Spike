@@ -187,6 +187,9 @@ void SpikingModel::reset_state() {
   for (int monitor_id = 0; monitor_id < monitors_vec.size(); monitor_id++){
     monitors_vec[monitor_id]->reset_state();
   }
+}
+
+void SpikingModel::reset_time() {
   current_time_in_seconds = 0.0f;
 }
 

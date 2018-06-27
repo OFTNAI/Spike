@@ -55,6 +55,7 @@ public:
   void AddActivityMonitor(ActivityMonitor * activityMonitor);
 
   void reset_state();
+  void reset_time();
   void run(float seconds);
 
   virtual void init_backend();

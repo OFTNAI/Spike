@@ -103,7 +103,9 @@ void SpikingSynapses::state_update(SpikingNeurons * neurons, SpikingNeurons * in
 
 void SpikingSynapses::save_connectivity_as_txt(std::string path, std::string prefix, int synapsegroupid){
   int startid = 0;
-  int endid = last_index_of_synapse_per_group[synapsegroupid];
+  int endid = total_number_of_synapses;
+  if (synapsegroupid >= 0)
+    endid = last_index_of_synapse_per_group[synapsegroupid];
   if ((synapsegroupid > 0) && (synapsegroupid < last_index_of_synapse_per_group.size())){
     startid = last_index_of_synapse_per_group[synapsegroupid - 1];
   }
@@ -128,7 +130,9 @@ void SpikingSynapses::save_connectivity_as_txt(std::string path, std::string pre
 // Ensure copied from device, then send
 void SpikingSynapses::save_connectivity_as_binary(std::string path, std::string prefix, int synapsegroupid){
   int startid = 0;
-  int endid = last_index_of_synapse_per_group[synapsegroupid];
+  int endid = total_number_of_synapses;
+  if (synapsegroupid >= 0)
+    endid = last_index_of_synapse_per_group[synapsegroupid];
   if ((synapsegroupid > 0) && (synapsegroupid < last_index_of_synapse_per_group.size())){
     startid = last_index_of_synapse_per_group[synapsegroupid - 1];
   }
