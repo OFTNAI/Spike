@@ -184,9 +184,6 @@ void SpikingModel::reset_state() {
   for (int plasticity_id = 0; plasticity_id < plasticity_rule_vec.size(); plasticity_id++){
     plasticity_rule_vec[plasticity_id]->reset_state();
   }
-  for (int monitor_id = 0; monitor_id < monitors_vec.size(); monitor_id++){
-    monitors_vec[monitor_id]->reset_state();
-  }
 }
 
 void SpikingModel::reset_time() {

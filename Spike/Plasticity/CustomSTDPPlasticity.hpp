@@ -1,5 +1,5 @@
-#ifndef WEIGHTDEPENDENT_STDP_H
-#define WEIGHTDEPENDENT_STDP_H
+#ifndef CUSTOM_STDP_H
+#define CUSTOM_STDP_H
 
 // Get Synapses & Neurons Class
 #include "../Synapses/SpikingSynapses.hpp"
@@ -13,43 +13,41 @@
 // allows maths
 #include <math.h>
 
-class WeightDependentSTDPPlasticity; // forward definition
+class CustomSTDPPlasticity; // forward definition
 
 namespace Backend {
-  class WeightDependentSTDPPlasticity : public virtual STDPPlasticity {
+  class CustomSTDPPlasticity : public virtual STDPPlasticity {
   public:
-    SPIKE_ADD_BACKEND_FACTORY(WeightDependentSTDPPlasticity);
+    SPIKE_ADD_BACKEND_FACTORY(CustomSTDPPlasticity);
 
     virtual void apply_stdp_to_synapse_weights(float current_time_in_seconds, float timestep) = 0;
   };
 }
 
 // STDP Parameters
-struct weightdependent_stdp_plasticity_parameters_struct : stdp_plasticity_parameters_struct {
-  weightdependent_stdp_plasticity_parameters_struct() : 
-    a_minus(1.0), a_plus(1.0), tau_minus(0.02f), tau_plus(0.02f), lambda(1.0f), alpha(1.0f), w_max(1.0f), nearest_spike_only(false) { } // default Constructor
+struct custom_stdp_plasticity_parameters_struct : stdp_plasticity_parameters_struct {
+  custom_stdp_plasticity_parameters_struct() : 
+    a_minus(1.0), a_plus(1.0), tau_minus(0.02f), tau_plus(0.02f), w_max(1.0f), nearest_spike_only(false) { } // default Constructor
   // STDPPlasticity Parameters
   float a_minus;
   float a_plus;
   float tau_minus;
   float tau_plus;
-  float lambda;
-  float alpha;
   float w_max;
   bool nearest_spike_only;
 };
 
 
-class WeightDependentSTDPPlasticity : public STDPPlasticity {
+class CustomSTDPPlasticity : public STDPPlasticity {
 public:
-  WeightDependentSTDPPlasticity(SpikingSynapses* synapses,
+  CustomSTDPPlasticity(SpikingSynapses* synapses,
                            SpikingNeurons* neurons,
                            SpikingNeurons* input_neurons,
                            stdp_plasticity_parameters_struct* stdp_parameters);
-  ~WeightDependentSTDPPlasticity() override;
-  SPIKE_ADD_BACKEND_GETSET(WeightDependentSTDPPlasticity, STDPPlasticity);
+  ~CustomSTDPPlasticity() override;
+  SPIKE_ADD_BACKEND_GETSET(CustomSTDPPlasticity, STDPPlasticity);
 
-  struct weightdependent_stdp_plasticity_parameters_struct* stdp_params;
+  struct custom_stdp_plasticity_parameters_struct* stdp_params;
 
   void init_backend(Context* ctx = _global_ctx) override;
   void prepare_backend_late() override;
@@ -59,7 +57,7 @@ public:
   void apply_stdp_to_synapse_weights(float current_time_in_seconds, float timestep);
 
 private:
-  std::shared_ptr<::Backend::WeightDependentSTDPPlasticity> _backend;
+  std::shared_ptr<::Backend::CustomSTDPPlasticity> _backend;
 };
 
 #endif
