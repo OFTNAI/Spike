@@ -495,13 +495,13 @@ void Synapses::load_weights_from_txt(std::string filepath, int synapsegroupid){
   }
   weightfile.close();
 
-  load_weights(loadingweights);
+  load_weights(loadingweights, synapsegroupid);
 
 }
 void Synapses::load_weights_from_binary(std::string filepath, int synapsegroupid){
   std::ifstream weightfile;
   weightfile.open(filepath, std::ios::in | std::ios::binary);
-  
+
   // Getting values into a vector
   std::vector<float> loadingweights;
   float weightval = 0.0f;
@@ -510,7 +510,7 @@ void Synapses::load_weights_from_binary(std::string filepath, int synapsegroupid
   }
   weightfile.close();
   
-  load_weights(loadingweights);
+  load_weights(loadingweights, synapsegroupid);
 }
 
 
