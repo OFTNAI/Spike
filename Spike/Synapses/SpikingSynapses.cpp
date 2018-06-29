@@ -116,7 +116,8 @@ void SpikingSynapses::save_connectivity_as_txt(std::string path, std::string pre
   delayfile.open((path + "/" + prefix + "SynapticDelays.txt"), std::ios::out | std::ios::binary);
 
   // Ensure weight data has been copied to frontend
-  backend()->copy_to_frontend();
+  if (_backend)
+    backend()->copy_to_frontend();
 
   // Send data to file
   for (int i = startid; i < endid; i++){
@@ -143,7 +144,8 @@ void SpikingSynapses::save_connectivity_as_binary(std::string path, std::string 
   delayfile.open((path + "/" + prefix + "SynapticDelays.bin"), std::ios::out | std::ios::binary);
 
   // Ensure weight data has been copied to frontend
-  backend()->copy_to_frontend();
+  if (_backend)
+    backend()->copy_to_frontend();
 
   // Send data to file
   delayfile.write((char *)&delays[startid], (endid - startid)*sizeof(int));

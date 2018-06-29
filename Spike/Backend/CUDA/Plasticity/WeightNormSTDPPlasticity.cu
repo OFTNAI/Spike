@@ -135,7 +135,7 @@ namespace Backend {
     while (idx < total_number_of_neurons) {
       if (neuron_in_plasticity_set[idx])
       {
-        if ((sum_squared_afferent_values[idx] - afferent_weight_change_updater[idx] < 0.01))
+        if ((sum_squared_afferent_values[idx] - afferent_weight_change_updater[idx] < (sum_squared_afferent_values[idx]*0.01)))
           printf("NORMALIZATION DIFF VERY LARGE. DANGER OF SYNAPSES ALL -> ZERO: %f, %f \n",
               sum_squared_afferent_values[idx],
               afferent_weight_change_updater[idx]);

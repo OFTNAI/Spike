@@ -16,10 +16,15 @@ WeightNormSTDPPlasticity::~WeightNormSTDPPlasticity(){
 }
 
 void WeightNormSTDPPlasticity::state_update(float current_time_in_seconds, float timestep){
+  //if (((int)round(current_time_in_seconds / timestep) % 1000) == 0)
   backend()->weight_normalization();
 }
 
 void WeightNormSTDPPlasticity::reset_state() {
+  for (int index = 0; index < total_number_of_plastic_synapses; index++){
+      int synindex = plastic_synapses[index];
+      initial_weights[index] = syns->synaptic_efficacies_or_weights[synindex];
+  }
   backend()->reset_state();
 }
 
@@ -50,7 +55,8 @@ void WeightNormSTDPPlasticity::prepare_backend_early(){
     }
     // If there is a target total, then meet it:
     if (plasticity_parameters->settarget){
-      for (int synindex = 0; synindex < num_synapses; synindex++){
+      for (int index = 0; index < num_synapses; index++){
+        int synindex = plastic_synapses[index];
         int postneuron = syns->postsynaptic_neuron_indices[synindex];
         if (postneuron >= 0){
           syns->synaptic_efficacies_or_weights[synindex] /= sqrt(sum_squared_afferent_values[postneuron]);
