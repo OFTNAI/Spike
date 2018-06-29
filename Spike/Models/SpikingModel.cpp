@@ -122,9 +122,8 @@ void SpikingModel::finalise_model() {
     for (int monitor_id = 0; monitor_id < monitors_vec.size(); monitor_id++){
       monitors_vec[monitor_id]->model = this;
     }
-    
     init_backend();
-    prepare_backend();
+    //prepare_backend();
     reset_state();
   }
 }

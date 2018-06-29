@@ -12,6 +12,7 @@ WeightNormSTDPPlasticity::~WeightNormSTDPPlasticity(){
   free(sum_squared_afferent_values);
   free(afferent_weight_change_updater);
   free(neuron_in_plasticity_set);
+  free(initial_weights);
 }
 
 void WeightNormSTDPPlasticity::state_update(float current_time_in_seconds, float timestep){
@@ -24,11 +25,13 @@ void WeightNormSTDPPlasticity::reset_state() {
 
 
 void WeightNormSTDPPlasticity::prepare_backend_early(){
+  printf("Prepping\n");
   // By making use of the neuron and synapses, I can determine which weights are contributing to the calculation to be done
   if (syns && neurs && plasticity_parameters) {
   if (plasticity_rule_id >= 0){
     sum_squared_afferent_values = (float*) malloc (neurs->total_number_of_neurons*sizeof(float));
     afferent_weight_change_updater = (float*) malloc (neurs->total_number_of_neurons*sizeof(float));
+    initial_weights = (float*) malloc (total_number_of_plastic_synapses*sizeof(float));
     neuron_in_plasticity_set = (bool*) malloc (neurs->total_number_of_neurons*sizeof(bool));
     // Initialize the above values to -1, Only those neurons involved in the weight normalization rule should be counted.
     for (int neuronid = 0; neuronid < neurs->total_number_of_neurons; neuronid++){
@@ -38,10 +41,12 @@ void WeightNormSTDPPlasticity::prepare_backend_early(){
     }
     // Now for every synapse (that is a part of this stdp rule), find the post-synaptic neuron and sum the weight^2
     int num_synapses = total_number_of_plastic_synapses;
-    for (int synindex = 0; synindex < num_synapses; synindex++){
+    for (int index = 0; index < num_synapses; index++){
+      int synindex = plastic_synapses[index];
       int postneuron = syns->postsynaptic_neuron_indices[synindex];
       neuron_in_plasticity_set[postneuron] = true;
       sum_squared_afferent_values[postneuron] += pow(syns->synaptic_efficacies_or_weights[synindex], 2.0f);
+      initial_weights[index] = syns->synaptic_efficacies_or_weights[synindex];
     }
     // If there is a target total, then meet it:
     if (plasticity_parameters->settarget){

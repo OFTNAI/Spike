@@ -81,11 +81,11 @@ namespace Backend {
         int idx = d_plastic_synapse_indices[indx];
         // First decay the memory trace (USING INDX FOR TRACE HERE AND BELOW)
         float stdp_pre_memory_trace_val = stdp_pre_memory_trace[indx];
-        float stdp_post_memory_trace_val = stdp_post_memory_trace[indx];
+        //float stdp_post_memory_trace_val = stdp_post_memory_trace[indx];
         int postid = d_postsyns[idx];
 
         for (int g=0; g < timestep_grouping; g++){	
-          stdp_post_memory_trace_val *= expf( - timestep / stdp_vars.tau_minus);
+          //stdp_post_memory_trace_val *= expf( - timestep / stdp_vars.tau_minus);
           stdp_pre_memory_trace_val *= expf(- timestep / stdp_vars.tau_plus);
           // First update the memory trace for every pre and post neuron
           if (fabs(d_time_of_last_spike_to_reach_synapse[idx] - (current_time_in_seconds + g*timestep)) < 0.5f*timestep){
@@ -94,18 +94,20 @@ namespace Backend {
             if (stdp_vars.nearest_spike_only)
               stdp_pre_memory_trace_val = stdp_vars.a_plus;
           }
+          /*
           // Dealing with LTP
           if (fabs(d_last_spike_time_of_each_neuron[postid] - (current_time_in_seconds + g*timestep)) < 0.5f*timestep){
             stdp_post_memory_trace_val += stdp_vars.a_minus;
             if (stdp_vars.nearest_spike_only)
               stdp_post_memory_trace_val = stdp_vars.a_minus;
           }
+          */
           
           float syn_update_val = 0.0f; 
           float old_synaptic_weight = d_synaptic_efficacies_or_weights[idx];
           if (fabs(d_time_of_last_spike_to_reach_synapse[idx] - (current_time_in_seconds + g*timestep)) < 0.5f*timestep){
             // Carry out the necessary LTD
-            syn_update_val -= stdp_post_memory_trace_val;
+            syn_update_val -= stdp_vars.a_minus; //stdp_post_memory_trace_val;
           }
           if (fabs(d_last_spike_time_of_each_neuron[postid] - (current_time_in_seconds + g*timestep)) < 0.5f*timestep){
               // If output neuron just fired, do LTP
@@ -123,7 +125,7 @@ namespace Backend {
 
         // Correctly set the trace values
         stdp_pre_memory_trace[indx] = stdp_pre_memory_trace_val;
-        stdp_post_memory_trace[indx] = stdp_post_memory_trace_val;
+        //stdp_post_memory_trace[indx] = stdp_post_memory_trace_val;
 
         indx += blockDim.x * gridDim.x;
       }

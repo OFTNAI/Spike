@@ -1,8 +1,8 @@
 // Weight Normalization (Spiking) Class Header
 // SpikingWeightNormPlasiticity.hpp
 //
-//	Author: Nasir Ahmad
-//	Date: 29/05/2016
+//  Author: Nasir Ahmad
+//  Date: 29/05/2016
 
 #ifndef SPIKINGWEIGHTNORMPLASTICITY_H
 #define SPIKINGWEIGHTNORMPLASTICITY_H
@@ -39,10 +39,10 @@ static_assert(std::has_virtual_destructor<Backend::WeightNormSTDPPlasticity>::va
 
 // WeightNormSTDPPlasticity Parameters
 struct weightnorm_stdp_plasticity_parameters_struct : stdp_plasticity_parameters_struct {
-	weightnorm_stdp_plasticity_parameters_struct() {}
-	// The normalization can be either done with the initialized total or with a specific target
-	bool settarget = false;
-	float target = 0.0;
+  weightnorm_stdp_plasticity_parameters_struct() {}
+  // The normalization can be either done with the initialized total or with a specific target
+  bool settarget = false;
+  float target = 0.0;
 };
 
 
@@ -58,6 +58,7 @@ public:
 
   float* sum_squared_afferent_values = nullptr;
   float* afferent_weight_change_updater = nullptr;
+  float* initial_weights = nullptr;
   bool* neuron_in_plasticity_set = nullptr;
 
   void init_backend(Context* ctx = _global_ctx) override;

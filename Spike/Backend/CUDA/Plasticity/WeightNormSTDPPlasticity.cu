@@ -17,7 +17,7 @@ namespace Backend {
   if (total_number_of_plastic_synapses > 0) {
 
     // Now load values into device memory
-    CudaSafeCall(cudaMemcpy((void*)initial_weights, &(frontend()->plastic_synapses[0]), sizeof(float)*total_number_of_plastic_synapses, cudaMemcpyHostToDevice));
+    CudaSafeCall(cudaMemcpy((void*)initial_weights, &(frontend()->initial_weights[0]), sizeof(float)*total_number_of_plastic_synapses, cudaMemcpyHostToDevice));
 
     CudaSafeCall(cudaMemcpy((void*)afferent_weight_change_updater,
         (void*)frontend()->afferent_weight_change_updater,
@@ -136,7 +136,9 @@ namespace Backend {
       if (neuron_in_plasticity_set[idx])
       {
         if ((sum_squared_afferent_values[idx] - afferent_weight_change_updater[idx] < 0.01))
-          printf("NORMALIZATION DIFF VERY LARGE. DANGER OF SYNAPSES ALL -> ZERO");
+          printf("NORMALIZATION DIFF VERY LARGE. DANGER OF SYNAPSES ALL -> ZERO: %f, %f \n",
+              sum_squared_afferent_values[idx],
+              afferent_weight_change_updater[idx]);
         weight_divisor[idx] = sqrtf(sum_squared_afferent_values[idx] + afferent_weight_change_updater[idx]) / sqrtf(sum_squared_afferent_values[idx]);
       }
       idx += blockDim.x * gridDim.x;    
