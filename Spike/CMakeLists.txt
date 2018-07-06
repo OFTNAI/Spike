@@ -12,6 +12,10 @@ file(GLOB_RECURSE SPIKE_DUMMY_FILES ${PROJECT_SOURCE_DIR}/Spike/Backend/Dummy/*.
 
 set(WHOLE_ARCHIVE_FLAG "-Wl,--whole-archive")
 set(NO_WHOLE_ARCHIVE_FLAG "-Wl,--no-whole-archive")
+if (APPLE)
+  set(WHOLE_ARCHIVE_FLAG "-Wl,-all_load")
+  set(NO_WHOLE_ARCHIVE_FLAG "-Wl,-noall_load")
+endif()
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 add_library(SpikeDummy STATIC
