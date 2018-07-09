@@ -1,37 +1,38 @@
 # Spike
-http://oftnai.github.io/Spike/
 
 A GPGPU based Spiking Neural Network (SNN) designed to provide users flexibility in the creation of simulations and high speed in execution. Written in C++/CUDA. (Distributed under the MIT License, See LICENSE)
 
-# Requirements
-  - Windows 8 (or greater), OS X 10.10.5 (or greater), (Soon to be tested on Linux)
-  - NVIDIA GPU capable of CUDA code exectution
-  - NVIDIA CUDA Toolkit >= v7.5
-  - Catch.hpp v1.5.6 (https://github.com/philsquared/Catch/tree/master/single_include)
+## Getting Started
 
-Other packages:
-  - MathGL (http://sourceforge.net/projects/mathgl/files/): Recommended, allows the creation of plots
-  - Dakota (https://dakota.sandia.gov/content/packages): Recommended for parameter optimization using genetic algorithms
+[Click here for a getting started guide and a description of the main components of spike.](https://sites.google.com/view/spike-simulator/home)
 
-For installation instructions, see "Install.txt" file.
+Please see the requirements for this simulator below. The comparison of Spike to other simulators can be see in the [SNNSimulatorComparison](https://github.com/nasiryahm/SNNSimulatorComparison) repository.
 
-# Release Log
+Executing the install.sh file in this directory will create a Build folder and compile the example networks in the Examples folder.
 
-v1.0 (13/07/2016):  
-  - Overhaul of code structure for fully separated Neuron, Synapse, STDP and Simulator Classes.
-  - Addition of LIF Neuron type and Conductance based Synapses
-  - Ability to create 2D Neuron Layers and Synapse Connectivities
-  - Scripts for Gabor filtering of images (to represent V1 simple cell outputs)
-  - "Tests" folder containing unittests. Created using Catch (https://github.com/philsquared/Catch) v1.5.6
-  - Plotting functionality reliant upon the MathGL library (mathgl.sourceforge.net/)
-  - Install.txt file descriping the steps necessary for installation
-  - Example Networks in the "Experiments" folder
+## Requirements
+  - NVIDIA GPU capable of CUDA code execution
+  - NVIDIA CUDA Toolkit v7.5 (or greater)
+  - C++11 compiler
+  - CMAKE v3.1 (or greater)
+
+This simulator is under constant development. We recommend users to regularly update any codebase which they use. This software is regularly tested on Ubuntu 16.04 with NVIDIA GPUs (Geforce GTX 980, Geforce GTX 980ti, Geforce GTX 1080, Geforce GTX 1070++) The software has been tested on CUDA Toolkit 7.5 and above.
+
+This tool should be capable of running on any Linux/Mac OS system with an NVIDIA GPU of Compute Capability >= 5.2
+
+## Recent Updates
+  - Addition of VogelsAbbott and Brunel Examples
+  - High speed synapse management
+  - Relocatable device code for neuron current injections
 
 
-This simulator is under constant development. We recommend users to regularly update any codebase which they use. This software is regularly tested on Mac OSX (El Capitan) and Windows 8 using NVIDIA GPUs (e.g. Geforce GTX 980, Geforce GTX 980ti, Geforce GTX 1080 etc.) The software has been tested on CUDA Toolkit 7.5 and above.
+## Contact Us
+If you have any questions or wish to contribute, please contact: 
 
-Any individuals who have any questions or wish to contribute, please contact: 
+Development Team:
+  - Nasir Ahmad (nasir.ahmad@psy.ox.ac.uk)
+  - James Isbister (james.isbister@psy.ox.ac.uk)
+  - Toby St Clere Smithe (toby.smithe@psy.ox.ac.uk)
 
-Co-Creators: Nasir Ahmad (nasir.ahmad@psy.ox.ac.uk) & James Isbister (james.isbister@psy.ox.ac.uk)
-
-Contributors: Akihiro Eguchi (akihiro.eguchi@psy.ox.ac.uk)
+Contributors:
+  - Akihiro Eguchi

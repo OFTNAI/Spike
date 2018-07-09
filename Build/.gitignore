@@ -1,0 +1,3 @@
+# Exclude everything EXCEPT the build script
+*
+!build.sh
