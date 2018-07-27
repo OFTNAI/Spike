@@ -26,6 +26,7 @@
 #include <time.h>
 #include <iomanip>
 #include <vector>
+#include <cstdio>
 
 int main (int argc, char *argv[]){
   /*
