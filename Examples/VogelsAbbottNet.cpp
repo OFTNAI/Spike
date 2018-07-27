@@ -66,7 +66,7 @@ int main (int argc, char *argv[]){
         break;
       case 2:
         printf("Running with minimum delay: %s timesteps\n", optarg);
-        ss << optarg
+        ss << optarg;
         ss >> num_timesteps_min_delay;
         ss.clear();
         if (num_timesteps_max_delay < num_timesteps_min_delay)
@@ -74,7 +74,7 @@ int main (int argc, char *argv[]){
         break;
       case 3:
         printf("Running with maximum delay: %s timesteps\n", optarg);
-        ss << optarg
+        ss << optarg;
         ss >> num_timesteps_max_delay;
         ss.clear();
         if (num_timesteps_max_delay < num_timesteps_min_delay){
