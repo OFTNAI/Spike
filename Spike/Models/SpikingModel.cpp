@@ -190,13 +190,15 @@ void SpikingModel::reset_time() {
 }
 
 
-void SpikingModel::perform_per_step_model_instructions(){
+void SpikingModel::perform_per_step_model_instructions(bool plasticity_on){
   
   spiking_neurons->state_update(current_time_in_seconds, timestep);
   input_spiking_neurons->state_update(current_time_in_seconds, timestep);
   
-  for (int plasticity_id = 0; plasticity_id < plasticity_rule_vec.size(); plasticity_id++)
-    plasticity_rule_vec[plasticity_id]->state_update(current_time_in_seconds, timestep);
+  if (plasticity_on){
+    for (int plasticity_id = 0; plasticity_id < plasticity_rule_vec.size(); plasticity_id++)
+      plasticity_rule_vec[plasticity_id]->state_update(current_time_in_seconds, timestep);
+  }
 
   spiking_synapses->state_update(spiking_neurons, input_spiking_neurons, current_time_in_seconds, timestep);
   
@@ -205,7 +207,7 @@ void SpikingModel::perform_per_step_model_instructions(){
 
 }
 
-void SpikingModel::run(float seconds){
+void SpikingModel::run(float seconds, bool plasticity_on){
   float starttime = current_time_in_seconds;
   finalise_model();
 
@@ -218,7 +220,7 @@ void SpikingModel::run(float seconds){
   // Run the simulation for the given number of steps
   for (int s = 0; s < number_of_steps; s++){
     current_time_in_seconds = starttime + s*timestep_grouping*timestep;
-    perform_per_step_model_instructions();
+    perform_per_step_model_instructions(plasticity_on);
   }
 
   // Carry out any final checks and outputs from recording electrodes
