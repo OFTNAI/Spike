@@ -194,10 +194,10 @@ int Synapses::AddGroup(int presynaptic_group_id,
               std::normal_distribution<float> pre_distribution_y((float)pre_centre_y, standard_deviation_sigma); 
 
               int pre_x = (int)round(pre_distribution_x(generator));
-              while ((pre_x < 0) || (pre_x > presynaptic_group_shape[0]))
+              while ((pre_x < 0) || (pre_x >= presynaptic_group_shape[0]))
                   pre_x = (int)(pre_distribution_x(generator));
               int pre_y = (int)(pre_distribution_y(generator));
-              while ((pre_y < 0) || (pre_y > presynaptic_group_shape[1]))
+              while ((pre_y < 0) || (pre_y >= presynaptic_group_shape[1]))
                   pre_y = (int)round(pre_distribution_y(generator));
              
               for (int n=0; n < max_number_of_connections_per_pair; n++){ 
@@ -289,7 +289,7 @@ int Synapses::AddGroup(int presynaptic_group_id,
     input_neurons->AddEfferentSynapse(presynaptic_id, i);
     else
     neurons->AddEfferentSynapse(presynaptic_id, i);
-   
+
   }
 
   // SETTING UP PLASTICITY
@@ -323,6 +323,7 @@ int Synapses::AddGroup(int presynaptic_group_id,
   prepop_is_input.push_back(presynaptic_group_is_input);
   prepop_start_per_group.push_back(prestart);
   last_index_of_synapse_per_group.push_back(total_number_of_synapses);
+
   return(last_index_of_synapse_per_group.size() - 1);
 
 }
