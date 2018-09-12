@@ -104,8 +104,10 @@ void SpikingModel::finalise_model() {
     printf("Building Model with:\n");
     if (input_spiking_neurons->total_number_of_neurons > 0)
       printf("  %d Input Neuron(s)\n", input_spiking_neurons->total_number_of_neurons);
-    printf("  %d Neuron(s)\n", spiking_neurons->total_number_of_neurons);
-    printf("  %d Synapse(s)\n", spiking_synapses->total_number_of_synapses);
+    if (spiking_neurons->total_number_of_neurons > 0)
+      printf("  %d Neuron(s)\n", spiking_neurons->total_number_of_neurons);
+    if (spiking_synapses->total_number_of_synapses > 0)
+      printf("  %d Synapse(s)\n", spiking_synapses->total_number_of_synapses);
     if (plasticity_rule_vec.size() > 0)
       printf("  %d Plasticity Rule(s)\n", (int)plasticity_rule_vec.size());
     if (monitors_vec.size() > 0)

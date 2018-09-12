@@ -107,6 +107,8 @@ namespace Backend {
     (::SpikingNeurons* neurons,
      ::SpikingNeurons* input_neurons,
      float current_time_in_seconds, float timestep) {
+
+      if (frontend()->total_number_of_synapses > 0){
       
       // Calculate buffer location
       int bufferloc = (int)(std::round(current_time_in_seconds / timestep)) % buffersize;
@@ -175,6 +177,7 @@ namespace Backend {
       CudaCheckError();
       CudaSafeCall(cudaMemset(num_active_synapses, 0, sizeof(int)));
       CudaSafeCall(cudaMemset(num_activated_neurons, 0, sizeof(int)));
+      }
       
     }
       
