@@ -26,6 +26,7 @@
 #include <time.h>
 #include <iomanip>
 #include <vector>
+#include <cstdio>
 
 int main (int argc, char *argv[]){
   /*
@@ -33,6 +34,7 @@ int main (int argc, char *argv[]){
    */
   // These are separate from Spike but allow run-time changes to simulations
   // The defaults are that simulations are for 20s and the delay is 0.8ms
+  std::stringstream ss;
   float simtime = 20.0;
   bool fast = false;
   int num_timesteps_min_delay = 8;
@@ -54,7 +56,9 @@ int main (int argc, char *argv[]){
     switch (opt){
       case 0:
         printf("Running with a simulation time of: %ss\n", optarg);
-        simtime = std::stof(optarg);
+        ss << optarg;
+        ss >> simtime;
+        ss.clear();
         break;
       case 1:
         printf("Running in fast mode (no spike collection)\n");
@@ -62,13 +66,17 @@ int main (int argc, char *argv[]){
         break;
       case 2:
         printf("Running with minimum delay: %s timesteps\n", optarg);
-        num_timesteps_min_delay = std::stoi(optarg);
+        ss << optarg;
+        ss >> num_timesteps_min_delay;
+        ss.clear();
         if (num_timesteps_max_delay < num_timesteps_min_delay)
           num_timesteps_max_delay = num_timesteps_min_delay;
         break;
       case 3:
         printf("Running with maximum delay: %s timesteps\n", optarg);
-        num_timesteps_max_delay = std::stoi(optarg);
+        ss << optarg;
+        ss >> num_timesteps_max_delay;
+        ss.clear();
         if (num_timesteps_max_delay < num_timesteps_min_delay){
           std::cerr << "ERROR: Max timestep shouldn't be smaller than min!" << endl;
           exit(1);

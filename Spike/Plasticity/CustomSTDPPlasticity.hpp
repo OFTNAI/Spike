@@ -34,6 +34,7 @@ struct custom_stdp_plasticity_parameters_struct : stdp_plasticity_parameters_str
   float tau_minus;
   float tau_plus;
   float w_max;
+  float learning_rate;
   bool nearest_spike_only;
 };
 
