@@ -31,11 +31,9 @@ __device__ float my_conductance_spiking_injection_kernel(
   
   conductance_spiking_synapses_data_struct* synaptic_data = (conductance_spiking_synapses_data_struct*) in_synaptic_data;
     
-  int total_number_of_neurons =  neuron_data->total_number_of_neurons;
   float total_current = 0.0f;
   for (int syn_label = 0; syn_label < synaptic_data->num_syn_labels; syn_label++){
-    float decay_term_value = synaptic_data->decay_terms_tau_g[syn_label];
-    float decay_factor = expf(- timestep / decay_term_value);
+    float decay_factor = synaptic_data->decay_factors_g[syn_label];
     float reversal_value = synaptic_data->reversal_potentials_Vhat[syn_label];
     float synaptic_conductance_g = synaptic_data->neuron_wise_conductance_trace[syn_label + idx*synaptic_data->num_syn_labels];
     // Update the synaptic conductance

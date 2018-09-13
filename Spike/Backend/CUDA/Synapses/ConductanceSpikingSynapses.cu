@@ -11,7 +11,7 @@ namespace Backend {
     ConductanceSpikingSynapses::~ConductanceSpikingSynapses() {
       CudaSafeCall(cudaFree(neuron_wise_conductance_trace));
       CudaSafeCall(cudaFree(d_synaptic_data));
-      CudaSafeCall(cudaFree(d_decay_terms_tau_g));
+      CudaSafeCall(cudaFree(d_decay_factors_g));
       CudaSafeCall(cudaFree(d_reversal_potentials_Vhat));
       free(h_neuron_wise_conductance_trace);
     }
@@ -35,7 +35,7 @@ namespace Backend {
       synaptic_data = new conductance_spiking_synapses_data_struct();
       memcpy(synaptic_data, &temp_synaptic_data, sizeof(spiking_synapses_data_struct));
       conductance_spiking_synapses_data_struct* this_synaptic_data = static_cast<conductance_spiking_synapses_data_struct*>(synaptic_data); 
-      this_synaptic_data->decay_terms_tau_g = d_decay_terms_tau_g;
+      this_synaptic_data->decay_factors_g = d_decay_factors_g;
       this_synaptic_data->reversal_potentials_Vhat = d_reversal_potentials_Vhat;
       this_synaptic_data->neuron_wise_conductance_trace = neuron_wise_conductance_trace;
       this_synaptic_data->synapse_type = CONDUCTANCE;
@@ -58,7 +58,7 @@ namespace Backend {
 
     void ConductanceSpikingSynapses::allocate_device_pointers() {
       CudaSafeCall(cudaMalloc((void **)&neuron_wise_conductance_trace, sizeof(float)*conductance_trace_length));
-      CudaSafeCall(cudaMalloc((void **)&d_decay_terms_tau_g, sizeof(float)*frontend()->num_syn_labels));
+      CudaSafeCall(cudaMalloc((void **)&d_decay_factors_g, sizeof(float)*frontend()->num_syn_labels));
       CudaSafeCall(cudaMalloc((void **)&d_reversal_potentials_Vhat, sizeof(float)*frontend()->num_syn_labels));
       CudaSafeCall(cudaFree(d_synaptic_data));
       CudaSafeCall(cudaMalloc((void **)&d_synaptic_data, sizeof(conductance_spiking_synapses_data_struct)));
@@ -73,9 +73,12 @@ namespace Backend {
         neuron_wise_conductance_trace,
         h_neuron_wise_conductance_trace,
         sizeof(float)*conductance_trace_length, cudaMemcpyHostToDevice));
+      vector<float> decay_vals_g;
+      for (int syn_label_indx = 0; syn_label_indx < frontend()->num_syn_labels; syn_label_indx++)
+        decay_vals_g.push_back((expf(-frontend()->model->timestep / frontend()->decay_terms_tau_g[syn_label_indx])));
       CudaSafeCall(cudaMemcpy(
-        d_decay_terms_tau_g,
-        &(frontend()->decay_terms_tau_g[0]),
+        d_decay_factors_g,
+        decay_vals_g.data(),
         sizeof(float)*frontend()->num_syn_labels, cudaMemcpyHostToDevice));
       CudaSafeCall(cudaMemcpy(
         d_reversal_potentials_Vhat,
@@ -105,30 +108,26 @@ namespace Backend {
         int timestep_grouping,
         int idx,
         int g){
-      
       conductance_spiking_synapses_data_struct* synaptic_data = (conductance_spiking_synapses_data_struct*) in_synaptic_data;
         
-      int total_number_of_neurons =  neuron_data->total_number_of_neurons;
       float total_current = 0.0f;
       for (int syn_label = 0; syn_label < synaptic_data->num_syn_labels; syn_label++){
-        float decay_term_value = synaptic_data->decay_terms_tau_g[syn_label];
-        float decay_factor = expf(- timestep / decay_term_value);
+        float decay_factor = synaptic_data->decay_factors_g[syn_label];
         float reversal_value = synaptic_data->reversal_potentials_Vhat[syn_label];
-        float synaptic_conductance_g = synaptic_data->neuron_wise_conductance_trace[total_number_of_neurons*syn_label + idx];
+        float synaptic_conductance_g = synaptic_data->neuron_wise_conductance_trace[syn_label + idx*synaptic_data->num_syn_labels];
         // Update the synaptic conductance
         synaptic_conductance_g *= decay_factor;
         int bufferloc = ((synaptic_data->neuron_inputs.bufferloc[0] + g) % synaptic_data->neuron_inputs.temporal_buffersize)*synaptic_data->neuron_inputs.input_buffersize;
         
-        synaptic_conductance_g += synaptic_data->neuron_inputs.circular_input_buffer[bufferloc + syn_label*total_number_of_neurons + idx];
+        synaptic_conductance_g += synaptic_data->neuron_inputs.circular_input_buffer[bufferloc + syn_label + idx*synaptic_data->num_syn_labels];
         // Reset the conductance update
-        synaptic_data->neuron_inputs.circular_input_buffer[bufferloc + syn_label*total_number_of_neurons + idx] = 0.0f;
+        synaptic_data->neuron_inputs.circular_input_buffer[bufferloc + syn_label + idx*synaptic_data->num_syn_labels] = 0.0f;
         total_current += synaptic_conductance_g*(reversal_value - current_membrane_voltage);
-        synaptic_data->neuron_wise_conductance_trace[total_number_of_neurons*syn_label + idx] = synaptic_conductance_g;
-
+        synaptic_data->neuron_wise_conductance_trace[syn_label + idx*synaptic_data->num_syn_labels] = synaptic_conductance_g;
+    
       }
-        
       return total_current*multiplication_to_volts;
-    }
+    };
 
   }
 }

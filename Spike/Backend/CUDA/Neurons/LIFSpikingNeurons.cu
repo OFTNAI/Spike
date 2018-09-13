@@ -10,11 +10,13 @@ namespace Backend {
     }
     LIFSpikingNeurons::~LIFSpikingNeurons() {
       CudaSafeCall(cudaFree(membrane_time_constants_tau_m));
+      CudaSafeCall(cudaFree(membrane_decay_constants));
       CudaSafeCall(cudaFree(membrane_resistances_R));
     }
 
     void LIFSpikingNeurons::allocate_device_pointers() {
       CudaSafeCall(cudaMalloc((void **)&membrane_time_constants_tau_m, sizeof(float)*frontend()->total_number_of_neurons));
+      CudaSafeCall(cudaMalloc((void **)&membrane_decay_constants, sizeof(float)*frontend()->total_number_of_neurons));
       CudaSafeCall(cudaMalloc((void **)&membrane_resistances_R, sizeof(float)*frontend()->total_number_of_neurons));
       CudaSafeCall(cudaFree(d_neuron_data));
       CudaSafeCall(cudaMalloc((void **)&d_neuron_data, sizeof(lif_spiking_neurons_data_struct)));
@@ -25,8 +27,19 @@ namespace Backend {
                               frontend()->membrane_time_constants_tau_m,
                               sizeof(float)*frontend()->total_number_of_neurons,
                               cudaMemcpyHostToDevice));
+      vector<float> m_decay_constants;
+      for (int n=0; n < frontend()->total_number_of_neurons; n++)
+        m_decay_constants.push_back(frontend()->model->timestep / frontend()->membrane_time_constants_tau_m[n]);
+
+      CudaSafeCall(cudaMemcpy(membrane_decay_constants,
+                              m_decay_constants.data(),
+                              sizeof(float)*frontend()->total_number_of_neurons,
+                              cudaMemcpyHostToDevice));
+      vector<float> m_resistance_constants;
+      for (int n=0; n < frontend()->total_number_of_neurons; n++)
+        m_resistance_constants.push_back(m_decay_constants[n]*frontend()->membrane_resistances_R[n]);
       CudaSafeCall(cudaMemcpy(membrane_resistances_R,
-                              frontend()->membrane_resistances_R,
+                              m_resistance_constants.data(),
                               sizeof(float)*frontend()->total_number_of_neurons,
                               cudaMemcpyHostToDevice));
     }
@@ -43,6 +56,7 @@ namespace Backend {
       memcpy(neuron_data, &temp_neuron_data, sizeof(spiking_neurons_data_struct));
       lif_spiking_neurons_data_struct* this_neuron_data = static_cast<lif_spiking_neurons_data_struct*>(neuron_data);
       this_neuron_data->membrane_time_constants_tau_m = membrane_time_constants_tau_m;
+      this_neuron_data->membrane_decay_constants = membrane_decay_constants;
       this_neuron_data->membrane_resistances_R = membrane_resistances_R;
       CudaSafeCall(cudaMemcpy(d_neuron_data,
                               neuron_data,
@@ -88,7 +102,7 @@ namespace Backend {
       while (idx < total_number_of_neurons) {
 
         lif_spiking_neurons_data_struct* neuron_data = (lif_spiking_neurons_data_struct*) in_neuron_data;
-        float equation_constant = timestep / neuron_data->membrane_time_constants_tau_m[idx];
+        float equation_constant = neuron_data->membrane_decay_constants[idx];//timestep / neuron_data->membrane_time_constants_tau_m[idx];
         float resting_potential_V0 = neuron_data->resting_potentials_v0[idx];
         float temp_membrane_resistance_R = neuron_data->membrane_resistances_R[idx];
         float membrane_potential_Vi = neuron_data->membrane_potentials_v[idx];
@@ -99,7 +113,7 @@ namespace Backend {
             voltage_input_for_timestep = current_injection_kernel(
                   synaptic_data,
                   in_neuron_data,
-                  temp_membrane_resistance_R*equation_constant,
+                  temp_membrane_resistance_R,
                   membrane_potential_Vi,
                   current_time_in_seconds,
                   timestep,
@@ -113,7 +127,7 @@ namespace Backend {
                 voltage_input_for_timestep = INLINE_LIF::my_conductance_spiking_injection_kernel(
                   synaptic_data,
                   in_neuron_data,
-                  temp_membrane_resistance_R*equation_constant,
+                  temp_membrane_resistance_R,
                   membrane_potential_Vi,
                   current_time_in_seconds,
                   timestep,
@@ -125,7 +139,7 @@ namespace Backend {
                 voltage_input_for_timestep = INLINE_LIF::my_current_spiking_injection_kernel(
                   synaptic_data,
                   in_neuron_data,
-                  temp_membrane_resistance_R*equation_constant,
+                  temp_membrane_resistance_R,
                   membrane_potential_Vi,
                   current_time_in_seconds,
                   timestep,
@@ -137,7 +151,7 @@ namespace Backend {
                 voltage_input_for_timestep = INLINE_LIF::my_voltage_spiking_injection_kernel(
                   synaptic_data,
                   in_neuron_data,
-                  temp_membrane_resistance_R*equation_constant,
+                  temp_membrane_resistance_R,
                   membrane_potential_Vi,
                   current_time_in_seconds,
                   timestep,

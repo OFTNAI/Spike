@@ -15,6 +15,7 @@ namespace Backend {
   namespace CUDA {
     struct lif_spiking_neurons_data_struct: spiking_neurons_data_struct {
       float* membrane_time_constants_tau_m;
+      float* membrane_decay_constants;
       float* membrane_resistances_R;
     };
 
@@ -22,6 +23,7 @@ namespace Backend {
                               public virtual ::Backend::LIFSpikingNeurons {
     public:
       float * membrane_time_constants_tau_m = nullptr;
+      float * membrane_decay_constants = nullptr;
       float * membrane_resistances_R = nullptr;
 
       ~LIFSpikingNeurons() override;
