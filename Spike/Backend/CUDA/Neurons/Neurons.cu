@@ -61,6 +61,7 @@ namespace Backend {
 
       neuron_data = new neurons_data_struct();
       neuron_data->total_number_of_neurons = frontend()->total_number_of_neurons;
+      neuron_data->per_neuron_efferent_synapse_count = per_neuron_efferent_synapse_count;
       CudaSafeCall(cudaMemcpy(
 		d_neuron_data,
 		neuron_data,

@@ -38,6 +38,7 @@ namespace Backend {
       this_synaptic_data->decay_terms_tau_g = d_decay_terms_tau_g;
       this_synaptic_data->reversal_potentials_Vhat = d_reversal_potentials_Vhat;
       this_synaptic_data->neuron_wise_conductance_trace = neuron_wise_conductance_trace;
+      this_synaptic_data->synapse_type = CONDUCTANCE;
       CudaSafeCall(cudaMemcpy(
         d_synaptic_data,
         synaptic_data,

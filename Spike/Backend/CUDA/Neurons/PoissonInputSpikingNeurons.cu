@@ -6,6 +6,9 @@ SPIKE_EXPORT_BACKEND_TYPE(CUDA, PoissonInputSpikingNeurons);
 
 namespace Backend {
   namespace CUDA {
+    namespace INLINE_POIS {
+      #include "Spike/Backend/CUDA/InlineDeviceFunctions.hpp"
+    }
     PoissonInputSpikingNeurons::~PoissonInputSpikingNeurons() {
       CudaSafeCall(cudaFree(rates));
     }
@@ -38,8 +41,13 @@ namespace Backend {
     }
 
     void PoissonInputSpikingNeurons::state_update(float current_time_in_seconds, float timestep) {
-      poisson_update_membrane_potentials_kernel<<<random_state_manager_backend->block_dimensions, random_state_manager_backend->threads_per_block>>>
-        (random_state_manager_backend->states,
+      ::Backend::CUDA::SpikingSynapses* synapses_backend =
+        dynamic_cast<::Backend::CUDA::SpikingSynapses*>(frontend()->model->spiking_synapses->backend());
+      poisson_update_membrane_potentials_kernel<<<random_state_manager_backend->block_dimensions, random_state_manager_backend->threads_per_block>>>(
+         synapses_backend->host_syn_activation_kernel,
+         synapses_backend->d_synaptic_data,
+         d_neuron_data,
+         random_state_manager_backend->states,
          rates,
          membrane_potentials_v,
          timestep,
@@ -54,7 +62,11 @@ namespace Backend {
   CudaCheckError();
     }
 
-    __global__ void poisson_update_membrane_potentials_kernel(curandState_t* d_states,
+    __global__ void poisson_update_membrane_potentials_kernel(
+        synaptic_activation_kernel syn_activation_kernel,
+        spiking_synapses_data_struct* synaptic_data,
+        spiking_neurons_data_struct* in_neuron_data,
+        curandState_t* d_states,
        float *d_rates,
        float *d_membrane_potentials_v,
        float timestep,
@@ -85,6 +97,16 @@ namespace Backend {
             // if the randomnumber is less than the rate
             if (random_float < (rate * timestep)) {
               d_last_spike_time_of_each_neuron[idx] = current_time_in_seconds + (g*timestep);
+              #ifndef INLINEDEVICEFUNCS
+                syn_activation_kernel(
+              #else
+                INLINE_POIS::my_activate_synapses(
+              #endif
+                  synaptic_data,
+                  in_neuron_data,
+                  g,
+                  idx,
+                  true);
             } 
           }
         }

@@ -7,7 +7,9 @@
 //	Date: 31/3/2016
 
 // Define this to turn on error checking
-#define CUDA_ERROR_CHECK
+//#define CUDA_ERROR_CHECK
+// Define this to use the faster INLINE device functions
+#define INLINEDEVICEFUNCS
 
 #include <cuda.h>
 #include <cuda_runtime.h>

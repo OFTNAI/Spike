@@ -13,6 +13,14 @@
 
 namespace Backend {
   namespace CUDA {
+
+    enum SYNAPSE_TYPE
+    {
+      EMPTY,
+      CONDUCTANCE,
+      CURRENT,
+      VOLTAGE
+    };
     struct neuron_inputs_struct {
       float* circular_input_buffer = nullptr;
       int* bufferloc = nullptr;
@@ -21,7 +29,14 @@ namespace Backend {
     };
     struct spiking_synapses_data_struct: synapses_data_struct {
       neuron_inputs_struct neuron_inputs;
-      int num_syn_labels;
+      int synapse_type = EMPTY;
+      int num_syn_labels = 0;
+      int* num_activated_neurons = nullptr;
+      int* num_active_synapses = nullptr;
+      int* active_synapse_counts = nullptr;
+      int* presynaptic_neuron_indices = nullptr;
+      int* group_indices = nullptr;
+
     };
     typedef float (*injection_kernel)(
         spiking_synapses_data_struct* synaptic_data,
@@ -33,6 +48,12 @@ namespace Backend {
         int timestep_grouping,
         int idx,
         int g);
+    typedef void (*synaptic_activation_kernel)(
+      spiking_synapses_data_struct* synaptic_data,
+      spiking_neurons_data_struct* neuron_data,
+      int timestep_group_index,
+      int preneuron_idx,
+      bool is_input);
     class SpikingSynapses : public virtual ::Backend::CUDA::Synapses,
                             public virtual ::Backend::SpikingSynapses {
     public:
@@ -43,8 +64,6 @@ namespace Backend {
       int* group_indices = nullptr;
       int* num_active_synapses = nullptr;
       int* num_activated_neurons = nullptr;
-      int* activated_neuron_afferents = nullptr;
-      int* activated_neuron_afferents_count = nullptr;
       int* active_synapse_counts = nullptr;
       int* presynaptic_neuron_indices = nullptr;
       int h_num_active_synapses = 0;
@@ -63,6 +82,7 @@ namespace Backend {
       spiking_synapses_data_struct* synaptic_data;
       spiking_synapses_data_struct* d_synaptic_data;
       injection_kernel host_injection_kernel;
+      synaptic_activation_kernel host_syn_activation_kernel;
 
       void prepare() override;
       void reset_state() override;
@@ -76,17 +96,23 @@ namespace Backend {
 
     };
 
-      __device__ float spiking_current_injection_kernel(
-  spiking_synapses_data_struct* synaptic_data,
-  spiking_neurons_data_struct* neuron_data,
-  float multiplication_to_volts,
-  float current_membrane_voltage,
-  float current_time_in_seconds,
-  float timestep,
-  int timestep_grouping,
-  int idx,
-  int g);
+    __device__ float spiking_current_injection_kernel(
+      spiking_synapses_data_struct* synaptic_data,
+      spiking_neurons_data_struct* neuron_data,
+      float multiplication_to_volts,
+      float current_membrane_voltage,
+      float current_time_in_seconds,
+      float timestep,
+      int timestep_grouping,
+      int idx,
+      int g);
 
+    __device__ void get_active_synapses(
+      spiking_synapses_data_struct* synaptic_data,
+      spiking_neurons_data_struct* neuron_data,
+      int timestep_group_index,
+      int preneuron_idx,
+      bool is_input);
 
     __global__ void get_active_synapses_kernel(
       int* d_per_neuron_efferent_synapse_count,

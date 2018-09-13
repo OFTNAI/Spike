@@ -5,6 +5,8 @@
 #include "Spike/Backend/CUDA/CUDABackend.hpp"
 #include "Spike/Backend/CUDA/Neurons/SpikingNeurons.hpp"
 #include "Spike/Backend/CUDA/Synapses/ConductanceSpikingSynapses.hpp"
+#include "Spike/Backend/CUDA/Synapses/CurrentSpikingSynapses.hpp"
+#include "Spike/Backend/CUDA/Synapses/VoltageSpikingSynapses.hpp"
 
 #include <cuda.h>
 #include <vector_types.h>
@@ -37,6 +39,7 @@ namespace Backend {
 
     __global__ void lif_update_membrane_potentials(
         injection_kernel current_injection_kernel,
+        synaptic_activation_kernel syn_activation_kernel,
         spiking_synapses_data_struct* synaptic_data,
         spiking_neurons_data_struct* neuron_data,
         float background_current,

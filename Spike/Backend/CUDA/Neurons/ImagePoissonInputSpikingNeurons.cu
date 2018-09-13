@@ -30,8 +30,13 @@ namespace Backend {
     }
 
     void ImagePoissonInputSpikingNeurons::state_update(float current_time_in_seconds, float timestep) {
-      poisson_update_membrane_potentials_kernel<<<random_state_manager_backend->block_dimensions, random_state_manager_backend->threads_per_block>>>
-        (random_state_manager_backend->states,
+      ::Backend::CUDA::SpikingSynapses* synapses_backend =
+        dynamic_cast<::Backend::CUDA::SpikingSynapses*>(frontend()->model->spiking_synapses->backend());
+      poisson_update_membrane_potentials_kernel<<<random_state_manager_backend->block_dimensions, random_state_manager_backend->threads_per_block>>>(
+         synapses_backend->host_syn_activation_kernel,
+         synapses_backend->d_synaptic_data,
+         d_neuron_data,
+         random_state_manager_backend->states,
          gabor_input_rates,
          membrane_potentials_v,
          timestep,

@@ -7,6 +7,7 @@ namespace Backend {
   namespace CUDA {
 
     __device__ injection_kernel spiking_device_kernel = spiking_current_injection_kernel;
+    __device__ synaptic_activation_kernel spiking_syn_activation_kernel = get_active_synapses;
 
     SpikingSynapses::SpikingSynapses() {
     }
@@ -64,8 +65,15 @@ namespace Backend {
       copy_constants_and_initial_efficacies_to_device();
 
       synaptic_data = new spiking_synapses_data_struct();
+      synaptic_data->synapse_type = EMPTY;
       synaptic_data->num_syn_labels = frontend()->num_syn_labels;
       synaptic_data->neuron_inputs = neuron_inputs;
+      synaptic_data->num_activated_neurons = num_activated_neurons;
+      synaptic_data->num_active_synapses = num_active_synapses;
+      synaptic_data->active_synapse_counts = active_synapse_counts;
+      synaptic_data->presynaptic_neuron_indices = presynaptic_neuron_indices;
+      synaptic_data->group_indices = group_indices;
+
       CudaSafeCall(cudaMemcpy(d_synaptic_data,
         synaptic_data,
         sizeof(spiking_synapses_data_struct),
@@ -89,6 +97,12 @@ namespace Backend {
         &host_injection_kernel,
         spiking_device_kernel,
         sizeof(injection_kernel)));
+      // Setting injection kernel
+      CudaSafeCall(cudaMemcpyFromSymbol(
+        &host_syn_activation_kernel,
+        spiking_syn_activation_kernel,
+        sizeof(synaptic_activation_kernel)));
+
       CudaSafeCall(cudaMalloc((void **)&neuron_inputs.circular_input_buffer, sizeof(float)*neuron_inputs.temporal_buffersize*neuron_inputs.input_buffersize));
       CudaSafeCall(cudaMalloc((void **)&neuron_inputs.bufferloc, sizeof(int)));
     }
@@ -122,6 +136,7 @@ namespace Backend {
         dynamic_cast<::Backend::CUDA::SpikingNeurons*>(input_neurons->backend());
       assert(input_neurons_backend);
 
+      /*
       // Steps for the synapses to cary out:
       // - Get the active synapses
       // - Update the delay sets based upon these
@@ -142,6 +157,7 @@ namespace Backend {
         presynaptic_neuron_indices,
         (neurons_backend->frontend()->total_number_of_neurons + input_neurons_backend->frontend()->total_number_of_neurons));
       CudaCheckError();
+      */
       /*
       CudaSafeCall(cudaMemcpy(
           &h_num_active_synapses,
@@ -180,6 +196,21 @@ namespace Backend {
       }
       
     }
+      
+    __device__ void get_active_synapses(
+      spiking_synapses_data_struct* synaptic_data,
+      spiking_neurons_data_struct* neuron_data,
+      int timestep_group_index,
+      int preneuron_idx,
+      bool is_input)
+    {
+      int synapse_count = neuron_data->per_neuron_efferent_synapse_count[preneuron_idx];
+      atomicAdd(synaptic_data->num_active_synapses, synapse_count);
+      int pos = atomicAdd(synaptic_data->num_activated_neurons, 1);
+      synaptic_data->active_synapse_counts[pos] = synapse_count;
+      synaptic_data->presynaptic_neuron_indices[pos] = CORRECTED_PRESYNAPTIC_ID(preneuron_idx, is_input);
+      synaptic_data->group_indices[pos] = timestep_group_index;
+    };
       
     
     __global__ void get_active_synapses_kernel(

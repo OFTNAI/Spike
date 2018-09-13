@@ -13,6 +13,13 @@ namespace Backend {
 
     void VoltageSpikingSynapses::prepare() {
       SpikingSynapses::prepare();
+
+      synaptic_data->synapse_type = VOLTAGE;
+      CudaSafeCall(cudaMemcpy(
+        d_synaptic_data,
+        synaptic_data,
+        sizeof(spiking_synapses_data_struct), cudaMemcpyHostToDevice));
+
       allocate_device_pointers();
       copy_constants_and_initial_efficacies_to_device();
     }

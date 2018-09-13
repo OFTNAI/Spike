@@ -5,6 +5,9 @@ SPIKE_EXPORT_BACKEND_TYPE(CUDA, LIFSpikingNeurons);
 
 namespace Backend {
   namespace CUDA {
+    namespace INLINE_LIF {
+      #include "Spike/Backend/CUDA/InlineDeviceFunctions.hpp"
+    }
     LIFSpikingNeurons::~LIFSpikingNeurons() {
       CudaSafeCall(cudaFree(membrane_time_constants_tau_m));
       CudaSafeCall(cudaFree(membrane_resistances_R));
@@ -56,6 +59,7 @@ namespace Backend {
         dynamic_cast<::Backend::CUDA::SpikingSynapses*>(frontend()->model->spiking_synapses->backend());
       lif_update_membrane_potentials<<<number_of_neuron_blocks_per_grid, threads_per_block>>>
         (synapses_backend->host_injection_kernel,
+         synapses_backend->host_syn_activation_kernel,
          synapses_backend->d_synaptic_data,
          d_neuron_data,
          frontend()->background_current,
@@ -70,6 +74,7 @@ namespace Backend {
     /* KERNELS BELOW */
     __global__ void lif_update_membrane_potentials(
         injection_kernel current_injection_kernel,
+        synaptic_activation_kernel syn_activation_kernel,
         spiking_synapses_data_struct* synaptic_data,
         spiking_neurons_data_struct* in_neuron_data,
         float background_current,
@@ -87,9 +92,11 @@ namespace Backend {
         float resting_potential_V0 = neuron_data->resting_potentials_v0[idx];
         float temp_membrane_resistance_R = neuron_data->membrane_resistances_R[idx];
         float membrane_potential_Vi = neuron_data->membrane_potentials_v[idx];
+        float voltage_input_for_timestep = 0.0f;
 
         for (int g=0; g < timestep_grouping; g++){
-            float voltage_input_for_timestep = current_injection_kernel(
+          #ifndef INLINEDEVICEFUNCS
+            voltage_input_for_timestep = current_injection_kernel(
                   synaptic_data,
                   in_neuron_data,
                   temp_membrane_resistance_R*equation_constant,
@@ -99,27 +106,77 @@ namespace Backend {
                   timestep_grouping,
                   idx,
                   g);
-            if (((current_time_in_seconds + g*timestep) - neuron_data->last_spike_time_of_each_neuron[idx]) > refractory_period_in_seconds){
-              
-              membrane_potential_Vi = equation_constant * resting_potential_V0 + (1 - equation_constant) * membrane_potential_Vi + equation_constant * background_current + voltage_input_for_timestep;
-              
+          #else
+            switch (synaptic_data->synapse_type)
+            {
+              case CONDUCTANCE: 
+                voltage_input_for_timestep = INLINE_LIF::my_conductance_spiking_injection_kernel(
+                  synaptic_data,
+                  in_neuron_data,
+                  temp_membrane_resistance_R*equation_constant,
+                  membrane_potential_Vi,
+                  current_time_in_seconds,
+                  timestep,
+                  timestep_grouping,
+                  idx,
+                  g);
+                break;
+              case CURRENT: 
+                voltage_input_for_timestep = INLINE_LIF::my_current_spiking_injection_kernel(
+                  synaptic_data,
+                  in_neuron_data,
+                  temp_membrane_resistance_R*equation_constant,
+                  membrane_potential_Vi,
+                  current_time_in_seconds,
+                  timestep,
+                  timestep_grouping,
+                  idx,
+                  g);
+                break;
+              case VOLTAGE: 
+                voltage_input_for_timestep = INLINE_LIF::my_voltage_spiking_injection_kernel(
+                  synaptic_data,
+                  in_neuron_data,
+                  temp_membrane_resistance_R*equation_constant,
+                  membrane_potential_Vi,
+                  current_time_in_seconds,
+                  timestep,
+                  timestep_grouping,
+                  idx,
+                  g);
+                break;
+              default:
+                break;
+            }
+          #endif
+          if (((current_time_in_seconds + g*timestep) - neuron_data->last_spike_time_of_each_neuron[idx]) > refractory_period_in_seconds){
+            
+            membrane_potential_Vi = equation_constant * resting_potential_V0 + (1 - equation_constant) * membrane_potential_Vi + equation_constant * background_current + voltage_input_for_timestep;
+            
     
-              // Finally check for a spike
-              if (membrane_potential_Vi >= neuron_data->thresholds_for_action_potential_spikes[idx]){
-                neuron_data->last_spike_time_of_each_neuron[idx] = current_time_in_seconds + (g*timestep);
-                membrane_potential_Vi = neuron_data->after_spike_reset_potentials_vreset[idx];
-                //break;
-                continue;
-        }
-
+            // Finally check for a spike
+            if (membrane_potential_Vi >= neuron_data->thresholds_for_action_potential_spikes[idx]){
+              neuron_data->last_spike_time_of_each_neuron[idx] = current_time_in_seconds + (g*timestep);
+              membrane_potential_Vi = neuron_data->after_spike_reset_potentials_vreset[idx];
+              #ifndef INLINEDEVICEFUNCS
+                syn_activation_kernel(
+              #else
+                INLINE_LIF::my_activate_synapses(
+              #endif
+                  synaptic_data,
+                  in_neuron_data,
+                  g,
+                  idx,
+                  false);
+              //break;
+              continue;
+            }
+          }
       }
-    }
-          
-    neuron_data->membrane_potentials_v[idx] = membrane_potential_Vi;
-    
-          idx += blockDim.x * gridDim.x;
-        }
-     } 
+      neuron_data->membrane_potentials_v[idx] = membrane_potential_Vi;
+      idx += blockDim.x * gridDim.x;
+      }
+    } 
 
 
   } // namespace CUDA
