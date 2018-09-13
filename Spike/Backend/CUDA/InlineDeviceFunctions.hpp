@@ -37,19 +37,18 @@ __device__ float my_conductance_spiking_injection_kernel(
     float decay_term_value = synaptic_data->decay_terms_tau_g[syn_label];
     float decay_factor = expf(- timestep / decay_term_value);
     float reversal_value = synaptic_data->reversal_potentials_Vhat[syn_label];
-    float synaptic_conductance_g = synaptic_data->neuron_wise_conductance_trace[total_number_of_neurons*syn_label + idx];
+    float synaptic_conductance_g = synaptic_data->neuron_wise_conductance_trace[syn_label + idx*synaptic_data->num_syn_labels];
     // Update the synaptic conductance
     synaptic_conductance_g *= decay_factor;
     int bufferloc = ((synaptic_data->neuron_inputs.bufferloc[0] + g) % synaptic_data->neuron_inputs.temporal_buffersize)*synaptic_data->neuron_inputs.input_buffersize;
     
-    synaptic_conductance_g += synaptic_data->neuron_inputs.circular_input_buffer[bufferloc + syn_label*total_number_of_neurons + idx];
+    synaptic_conductance_g += synaptic_data->neuron_inputs.circular_input_buffer[bufferloc + syn_label + idx*synaptic_data->num_syn_labels];
     // Reset the conductance update
-    synaptic_data->neuron_inputs.circular_input_buffer[bufferloc + syn_label*total_number_of_neurons + idx] = 0.0f;
+    synaptic_data->neuron_inputs.circular_input_buffer[bufferloc + syn_label + idx*synaptic_data->num_syn_labels] = 0.0f;
     total_current += synaptic_conductance_g*(reversal_value - current_membrane_voltage);
-    synaptic_data->neuron_wise_conductance_trace[total_number_of_neurons*syn_label + idx] = synaptic_conductance_g;
+    synaptic_data->neuron_wise_conductance_trace[syn_label + idx*synaptic_data->num_syn_labels] = synaptic_conductance_g;
 
   }
-    
   return total_current*multiplication_to_volts;
 };
 

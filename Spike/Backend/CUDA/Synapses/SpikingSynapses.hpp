@@ -142,6 +142,7 @@ namespace Backend {
         float* weight_scaling_constants,
         float* last_spike_to_reach_synapse,
         int* d_delays,
+        int num_syn_labels,
         int * d_syn_labels,
         float timestep,
         float current_time_in_seconds,

@@ -180,6 +180,7 @@ namespace Backend {
         weight_scaling_constants,
         time_of_last_spike_to_reach_synapse,
         delays,
+        frontend()->num_syn_labels,
         d_syn_labels,
         timestep,
         current_time_in_seconds,
@@ -262,6 +263,7 @@ namespace Backend {
         float* weight_scaling_constants,
         float* d_time_of_last_spike_to_reach_synapse,
         int* d_delays,
+        int num_syn_labels,
         int * d_syn_labels,
         float timestep,
         float current_time_in_seconds,
@@ -301,7 +303,7 @@ namespace Backend {
 
         int syn_label = d_syn_labels[synapse_id];
         float weightinput = weight_scaling_constants[synapse_id]*synaptic_efficacies_or_weights[synapse_id];
-        atomicAdd(&neuron_inputs.circular_input_buffer[targetloc*neuron_inputs.input_buffersize + syn_label*total_number_of_neurons + postneuron], weightinput);
+        atomicAdd(&neuron_inputs.circular_input_buffer[targetloc*neuron_inputs.input_buffersize + syn_label + postneuron*num_syn_labels], weightinput);
         d_time_of_last_spike_to_reach_synapse[synapse_id] = current_time_in_seconds + (d_delays[synapse_id] + group_indices[pos])*timestep;
 
         indx += blockDim.x * gridDim.x;
