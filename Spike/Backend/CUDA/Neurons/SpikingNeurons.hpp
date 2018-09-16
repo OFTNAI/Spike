@@ -15,6 +15,10 @@ namespace Backend {
         float* thresholds_for_action_potential_spikes;
         float* resting_potentials_v0;
         float* after_spike_reset_potentials_vreset;
+
+        uint8_t* neuron_spike_time_bitbuffer;
+        int* neuron_spike_time_bitbuffer_bytesize;
+        int* neuron_spike_time_bitbuffer_currentloc;
     };
 
     class SpikingNeurons : public virtual ::Backend::CUDA::Neurons,
@@ -29,11 +33,17 @@ namespace Backend {
       void reset_state() override;
 
       // Device Pointers
-      float* last_spike_time_of_each_neuron;
+      float* last_spike_time_of_each_neuron = nullptr;
       float* membrane_potentials_v;
       float* thresholds_for_action_potential_spikes;
       float* resting_potentials_v0;
       float* after_spike_reset_potentials_vreset;
+
+      // Keeping neuorn spike times
+      int h_neuron_spike_time_bitbuffer_bytesize;
+      uint8_t* neuron_spike_time_bitbuffer = nullptr;
+      int* neuron_spike_time_bitbuffer_bytesize;
+      int* neuron_spike_time_bitbuffer_currentloc = nullptr;
 
       spiking_neurons_data_struct* neuron_data;
       spiking_neurons_data_struct* d_neuron_data;
