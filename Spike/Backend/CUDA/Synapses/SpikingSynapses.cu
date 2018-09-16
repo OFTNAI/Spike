@@ -137,28 +137,6 @@ namespace Backend {
       assert(input_neurons_backend);
 
       /*
-      // Steps for the synapses to cary out:
-      // - Get the active synapses
-      // - Update the delay sets based upon these
-      // - Add any current where necessary (atomically)
-      // - Deliver current to destination
-      get_active_synapses_kernel<<<neurons_backend->number_of_neuron_blocks_per_grid, threads_per_block>>>(
-        neurons_backend->per_neuron_efferent_synapse_count,
-        input_neurons_backend->per_neuron_efferent_synapse_count,
-        neurons_backend->last_spike_time_of_each_neuron,
-        input_neurons_backend->last_spike_time_of_each_neuron,
-        current_time_in_seconds,
-        timestep,
-        input_neurons_backend->frontend()->total_number_of_neurons,
-        group_indices,
-        num_active_synapses,
-        num_activated_neurons,
-        active_synapse_counts,
-        presynaptic_neuron_indices,
-        (neurons_backend->frontend()->total_number_of_neurons + input_neurons_backend->frontend()->total_number_of_neurons));
-      CudaCheckError();
-      */
-      /*
       CudaSafeCall(cudaMemcpy(
           &h_num_active_synapses,
           num_active_synapses,
@@ -190,6 +168,7 @@ namespace Backend {
         frontend()->model->timestep_grouping,
         presynaptic_neuron_indices,
         active_synapse_counts,
+        num_activated_neurons,
         num_active_synapses);
       CudaCheckError();
       CudaSafeCall(cudaMemset(num_active_synapses, 0, sizeof(int)));
@@ -206,49 +185,13 @@ namespace Backend {
       bool is_input)
     {
       int synapse_count = neuron_data->per_neuron_efferent_synapse_count[preneuron_idx];
-      atomicAdd(synaptic_data->num_active_synapses, synapse_count);
+      atomicMax(synaptic_data->num_active_synapses, synapse_count);
       int pos = atomicAdd(synaptic_data->num_activated_neurons, 1);
       synaptic_data->active_synapse_counts[pos] = synapse_count;
       synaptic_data->presynaptic_neuron_indices[pos] = CORRECTED_PRESYNAPTIC_ID(preneuron_idx, is_input);
       synaptic_data->group_indices[pos] = timestep_group_index;
     };
       
-    
-    __global__ void get_active_synapses_kernel(
-      int* d_per_neuron_efferent_synapse_count,
-      int* d_per_input_neuron_efferent_synapse_count,
-      float* d_last_spike_time_of_each_neuron,
-      float* d_last_spike_time_of_each_input_neuron,
-      float current_time_in_seconds,
-      float timestep,
-      int num_input_neurons,
-      int* group_indices,
-      int* num_active_synapses,
-      int* num_activated_neurons,
-      int* active_synapse_counts,
-      int* presynaptic_neuron_indices,
-      size_t total_number_of_neurons) {
-
-      int indx = threadIdx.x + blockIdx.x * blockDim.x;
-      while (indx < total_number_of_neurons) {
-    
-    int idx = indx - (num_input_neurons); 
-        bool presynaptic_is_input = PRESYNAPTIC_IS_INPUT(idx);
-  int corr_idx = CORRECTED_PRESYNAPTIC_ID(idx, presynaptic_is_input);
-        float effecttime = presynaptic_is_input ? d_last_spike_time_of_each_input_neuron[corr_idx] : d_last_spike_time_of_each_neuron[corr_idx];
-         
-  int groupindex = (int)lroundf((effecttime - current_time_in_seconds) / timestep);
-        if (groupindex >= 0){
-            int synapse_count = presynaptic_is_input ? d_per_input_neuron_efferent_synapse_count[corr_idx] : d_per_neuron_efferent_synapse_count[corr_idx];
-            int pos = atomicAdd(&num_activated_neurons[0], 1);
-      atomicAdd(&num_active_synapses[0], synapse_count);
-      active_synapse_counts[pos] = synapse_count;
-      presynaptic_neuron_indices[pos] = idx;
-      group_indices[pos] = groupindex;
-        }
-        indx += blockDim.x * gridDim.x;
-      }
-    }
 
     __global__ void activate_synapses(
         int* d_per_neuron_efferent_synapse_total,
@@ -273,6 +216,7 @@ namespace Backend {
         int timestep_grouping,
         int* presynaptic_neuron_indices,
         int* active_synapse_counts,
+        int* num_activated_neurons,
         int* num_active_synapses)
     {
       int indx = threadIdx.x + blockIdx.x * blockDim.x;
@@ -280,16 +224,15 @@ namespace Backend {
         neuron_inputs.bufferloc[0] = (bufferloc + timestep_grouping) % buffersize;
       }
 
-      int pos = 0;
-      int idx = indx;
-      while (indx < num_active_synapses[0]) {
-  
+      while (indx < num_active_synapses[0]*num_activated_neurons[0]) {
+ 
+        int pos = indx / num_active_synapses[0]; 
+        int idx = indx % num_active_synapses[0]; 
         int synapse_count = active_synapse_counts[pos];
 
-        while(idx >= synapse_count){
-          idx -= synapse_count;
-          pos += 1;
-          synapse_count = active_synapse_counts[pos];
+        if (idx >= synapse_count){
+          indx += blockDim.x * gridDim.x;
+          continue;
         }
 
         int neuron = presynaptic_neuron_indices[pos];
@@ -307,9 +250,7 @@ namespace Backend {
         d_time_of_last_spike_to_reach_synapse[synapse_id] = current_time_in_seconds + (d_delays[synapse_id] + group_indices[pos])*timestep;
 
         indx += blockDim.x * gridDim.x;
-        idx += blockDim.x * gridDim.x;
       }
-
     }
 
       __device__ float spiking_current_injection_kernel(
