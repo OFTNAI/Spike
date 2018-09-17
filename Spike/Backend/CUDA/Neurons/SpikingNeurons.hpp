@@ -7,6 +7,10 @@
 #include <cuda.h>
 #include <vector_types.h>
 
+#define BITLOC(current_time_in_seconds, timestep, g, bufsizebytes) ((int)(ceil(current_time_in_seconds / timestep) + g) % (8*bufsizebytes))
+#define BYTELOC(bitloc) (bitloc / 8)
+#define SUBBITLOC(bitloc) (bitloc % 8)
+
 namespace Backend {
   namespace CUDA {
     struct spiking_neurons_data_struct : neurons_data_struct {
@@ -18,7 +22,6 @@ namespace Backend {
 
         uint8_t* neuron_spike_time_bitbuffer;
         int* neuron_spike_time_bitbuffer_bytesize;
-        int* neuron_spike_time_bitbuffer_currentloc;
     };
 
     class SpikingNeurons : public virtual ::Backend::CUDA::Neurons,
@@ -41,9 +44,8 @@ namespace Backend {
 
       // Keeping neuorn spike times
       int h_neuron_spike_time_bitbuffer_bytesize;
+      int* neuron_spike_time_bitbuffer_bytesize = nullptr;
       uint8_t* neuron_spike_time_bitbuffer = nullptr;
-      int* neuron_spike_time_bitbuffer_bytesize;
-      int* neuron_spike_time_bitbuffer_currentloc = nullptr;
 
       spiking_neurons_data_struct* neuron_data;
       spiking_neurons_data_struct* d_neuron_data;
@@ -62,5 +64,5 @@ namespace Backend {
       
     };
 
-  } // namespace CUDA
+  }
 } // namespace Backend

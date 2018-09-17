@@ -8,6 +8,7 @@
 
 // Define this to turn on error checking
 //#define CUDA_ERROR_CHECK
+
 // Define this to use the faster INLINE device functions
 #define INLINEDEVICEFUNCS
 

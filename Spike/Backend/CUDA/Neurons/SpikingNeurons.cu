@@ -7,6 +7,7 @@ namespace Backend {
   namespace CUDA {
     SpikingNeurons::SpikingNeurons() {
     }
+
     SpikingNeurons::~SpikingNeurons() {
       CudaSafeCall(cudaFree(last_spike_time_of_each_neuron));
       CudaSafeCall(cudaFree(membrane_potentials_v));
@@ -16,7 +17,6 @@ namespace Backend {
       CudaSafeCall(cudaFree(d_neuron_data));
 
       CudaSafeCall(cudaFree(neuron_spike_time_bitbuffer));
-      CudaSafeCall(cudaFree(neuron_spike_time_bitbuffer_currentloc));
       CudaSafeCall(cudaFree(neuron_spike_time_bitbuffer));
     }
 
@@ -30,10 +30,9 @@ namespace Backend {
 
       CudaSafeCall(cudaMalloc((void **)&d_neuron_data, sizeof(spiking_neurons_data_struct)));
       
-      h_neuron_spike_time_bitbuffer_bytesize = (int)ceil((float)(frontend()->model->spiking_synapses->maximum_axonal_delay_in_timesteps + frontend()->model->timestep_grouping) / 8.0f);
+      h_neuron_spike_time_bitbuffer_bytesize = (int)ceil((float)(frontend()->model->spiking_synapses->maximum_axonal_delay_in_timesteps*frontend()->model->timestep_grouping) / 8.0f);
       CudaSafeCall(cudaMalloc((void **)&neuron_spike_time_bitbuffer_bytesize, sizeof(int)));
-      CudaSafeCall(cudaMalloc((void **)&neuron_spike_time_bitbuffer_currentloc, sizeof(int)));
-      CudaSafeCall(cudaMalloc((void **)&neuron_spike_time_bitbuffer, sizeof(uint8_t)*h_neuron_spike_time_bitbuffer_bytesize));
+      CudaSafeCall(cudaMalloc((void **)&neuron_spike_time_bitbuffer, sizeof(uint8_t)*frontend()->total_number_of_neurons*h_neuron_spike_time_bitbuffer_bytesize));
     }
 
     void SpikingNeurons::copy_constants_to_device() {
@@ -57,7 +56,6 @@ namespace Backend {
       neuron_data->after_spike_reset_potentials_vreset = after_spike_reset_potentials_vreset;
 
       neuron_data->neuron_spike_time_bitbuffer = neuron_spike_time_bitbuffer;
-      neuron_data->neuron_spike_time_bitbuffer_currentloc = neuron_spike_time_bitbuffer_currentloc;
       neuron_data->neuron_spike_time_bitbuffer_bytesize = neuron_spike_time_bitbuffer_bytesize;
 
 
@@ -86,8 +84,7 @@ namespace Backend {
                               sizeof(float)*frontend()->total_number_of_neurons,
                               cudaMemcpyHostToDevice));
 
-      CudaSafeCall(cudaMemset(neuron_spike_time_bitbuffer_currentloc, 0, sizeof(int)));
-      CudaSafeCall(cudaMemset(neuron_spike_time_bitbuffer, 0, sizeof(uint8_t)*h_neuron_spike_time_bitbuffer_bytesize));
+      CudaSafeCall(cudaMemset(neuron_spike_time_bitbuffer, 0, sizeof(uint8_t)*frontend()->total_number_of_neurons*h_neuron_spike_time_bitbuffer_bytesize));
       CudaSafeCall(cudaMemcpy(neuron_spike_time_bitbuffer_bytesize,
                               &h_neuron_spike_time_bitbuffer_bytesize,
                               sizeof(int),
