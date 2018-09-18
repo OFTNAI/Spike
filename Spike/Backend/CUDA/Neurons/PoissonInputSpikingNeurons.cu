@@ -81,14 +81,17 @@ namespace Backend {
    
       int t_idx = threadIdx.x + blockIdx.x * blockDim.x;
       int idx = t_idx;
+      int bufsize = in_neuron_data->neuron_spike_time_bitbuffer_bytesize[0];
+
       while (idx < total_number_of_input_neurons){
 
         int rate_index = (total_number_of_input_neurons * current_stimulus_index) + idx;
-
         float rate = d_rates[rate_index];
 
         if (rate > 0.01) {
           for (int g=0; g < timestep_grouping; g++){
+            int bitloc = ((int)roundf(current_time_in_seconds / timestep) + g) % (8*bufsize);
+            in_neuron_data->neuron_spike_time_bitbuffer[idx*bufsize + (bitloc / 8)] &= ~(1 << (bitloc % 8));
             // Creates random float between 0 and 1 from uniform distribution
             // d_states effectively provides a different seed for each thread
             // curand_uniform produces different float every time you call it
@@ -96,7 +99,7 @@ namespace Backend {
       
             // if the randomnumber is less than the rate
             if (random_float < (rate * timestep)) {
-              d_last_spike_time_of_each_neuron[idx] = current_time_in_seconds + (g*timestep);
+              in_neuron_data->neuron_spike_time_bitbuffer[idx*bufsize + (bitloc / 8)] |= (1 << (bitloc % 8));
               #ifndef INLINEDEVICEFUNCS
                 syn_activation_kernel(
               #else

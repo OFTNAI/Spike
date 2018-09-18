@@ -103,16 +103,16 @@ namespace Backend {
       while (idx < total_number_of_neurons) {
 
         lif_spiking_neurons_data_struct* neuron_data = (lif_spiking_neurons_data_struct*) in_neuron_data;
-        float equation_constant = neuron_data->membrane_decay_constants[idx];//timestep / neuron_data->membrane_time_constants_tau_m[idx];
+        float equation_constant = neuron_data->membrane_decay_constants[idx];
         float resting_potential_V0 = neuron_data->resting_potentials_v0[idx];
         float temp_membrane_resistance_R = neuron_data->membrane_resistances_R[idx];
         float membrane_potential_Vi = neuron_data->membrane_potentials_v[idx];
         float voltage_input_for_timestep = 0.0f;
         int bufsize = in_neuron_data->neuron_spike_time_bitbuffer_bytesize[0];
-
+          
         for (int g=0; g < timestep_grouping; g++){
-          int bitloc = BITLOC(current_time_in_seconds, timestep, g, bufsize);
-          in_neuron_data->neuron_spike_time_bitbuffer[idx*bufsize + BYTELOC(bitloc)] &= ~(1 << SUBBITLOC(bitloc));
+          int bitloc = ((int)roundf(current_time_in_seconds / timestep) + g) % (bufsize*8);
+          in_neuron_data->neuron_spike_time_bitbuffer[idx*bufsize + (bitloc / 8)] &= ~(1 << (bitloc % 8));
           #ifndef INLINEDEVICEFUNCS
             voltage_input_for_timestep = current_injection_kernel(
                   synaptic_data,
@@ -173,7 +173,7 @@ namespace Backend {
     
             // Finally check for a spike
             if (membrane_potential_Vi >= neuron_data->thresholds_for_action_potential_spikes[idx]){
-              in_neuron_data->neuron_spike_time_bitbuffer[idx*bufsize + BYTELOC(bitloc)] |= (1 << SUBBITLOC(bitloc));
+              in_neuron_data->neuron_spike_time_bitbuffer[idx*bufsize + (bitloc / 8)] |= (1 << (bitloc % 8));
 
               neuron_data->last_spike_time_of_each_neuron[idx] = current_time_in_seconds + (g*timestep);
               membrane_potential_Vi = neuron_data->after_spike_reset_potentials_vreset[idx];

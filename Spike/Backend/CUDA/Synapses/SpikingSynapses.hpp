@@ -34,7 +34,7 @@ namespace Backend {
       int* num_activated_neurons = nullptr;
       int* num_active_synapses = nullptr;
       int* active_synapse_counts = nullptr;
-      int* presynaptic_neuron_indices = nullptr;
+      int* active_presynaptic_neuron_indices = nullptr;
       int* group_indices = nullptr;
 
     };
@@ -65,7 +65,7 @@ namespace Backend {
       int* num_active_synapses = nullptr;
       int* num_activated_neurons = nullptr;
       int* active_synapse_counts = nullptr;
-      int* presynaptic_neuron_indices = nullptr;
+      int* active_presynaptic_neuron_indices = nullptr;
       int h_num_active_synapses = 0;
       // Device pointers
       int* delays = nullptr;
@@ -135,7 +135,7 @@ namespace Backend {
         int total_number_of_neurons,
         int* group_indices,
         int timestep_grouping,
-        int* presynaptic_neuron_indices,
+        int* active_presynaptic_neuron_indices,
         int* active_synapse_counts,
         int* num_activated_neurons,
         int* num_active_synapses);

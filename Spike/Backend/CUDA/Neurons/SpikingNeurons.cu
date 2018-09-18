@@ -30,7 +30,7 @@ namespace Backend {
 
       CudaSafeCall(cudaMalloc((void **)&d_neuron_data, sizeof(spiking_neurons_data_struct)));
       
-      h_neuron_spike_time_bitbuffer_bytesize = (int)ceil((float)(frontend()->model->spiking_synapses->maximum_axonal_delay_in_timesteps*frontend()->model->timestep_grouping) / 8.0f);
+      h_neuron_spike_time_bitbuffer_bytesize = ((frontend()->model->spiking_synapses->maximum_axonal_delay_in_timesteps + 2*frontend()->model->timestep_grouping) / 8) + 1;
       CudaSafeCall(cudaMalloc((void **)&neuron_spike_time_bitbuffer_bytesize, sizeof(int)));
       CudaSafeCall(cudaMalloc((void **)&neuron_spike_time_bitbuffer, sizeof(uint8_t)*frontend()->total_number_of_neurons*h_neuron_spike_time_bitbuffer_bytesize));
     }
@@ -84,7 +84,7 @@ namespace Backend {
                               sizeof(float)*frontend()->total_number_of_neurons,
                               cudaMemcpyHostToDevice));
 
-      CudaSafeCall(cudaMemset(neuron_spike_time_bitbuffer, 0, sizeof(uint8_t)*frontend()->total_number_of_neurons*h_neuron_spike_time_bitbuffer_bytesize));
+      CudaSafeCall(cudaMemset(neuron_spike_time_bitbuffer, 0, (sizeof(uint8_t)*frontend()->total_number_of_neurons*h_neuron_spike_time_bitbuffer_bytesize)));
       CudaSafeCall(cudaMemcpy(neuron_spike_time_bitbuffer_bytesize,
                               &h_neuron_spike_time_bitbuffer_bytesize,
                               sizeof(int),

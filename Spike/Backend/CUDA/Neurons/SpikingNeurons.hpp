@@ -7,7 +7,8 @@
 #include <cuda.h>
 #include <vector_types.h>
 
-#define BITLOC(current_time_in_seconds, timestep, g, bufsizebytes) ((int)(ceil(current_time_in_seconds / timestep) + g) % (8*bufsizebytes))
+//#define BITLOC(current_time_in_seconds, timestep, offset, bufsizebytes) (((int)ceil(current_time_in_seconds / timestep) + offset) % bufsizebytes*8)
+//(((int)(ceil(current_time_in_seconds / timestep)) + g) % (8*bufsizebytes))
 #define BYTELOC(bitloc) (bitloc / 8)
 #define SUBBITLOC(bitloc) (bitloc % 8)
 

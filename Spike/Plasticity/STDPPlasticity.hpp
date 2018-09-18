@@ -52,6 +52,7 @@ public:
   void reset_state() override;
 
   SpikingSynapses* syns = nullptr;
+  SpikingNeurons* in_neurs = nullptr;
   SpikingNeurons* neurs = nullptr;
   SpikingModel* model = nullptr;
   

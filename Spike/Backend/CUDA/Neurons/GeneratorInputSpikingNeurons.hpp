@@ -3,6 +3,7 @@
 #include "Spike/Neurons/GeneratorInputSpikingNeurons.hpp"
 #include "InputSpikingNeurons.hpp"
 #include "Spike/Backend/CUDA/CUDABackend.hpp"
+#include "Spike/Backend/CUDA/Synapses/SpikingSynapses.hpp"
 
 #include <cuda.h>
 #include <vector_types.h>
@@ -32,14 +33,18 @@ namespace Backend {
       void state_update(float current_time_in_seconds, float timestep) override;
     };
 
-    __global__ void check_for_generator_spikes_kernel(int *d_neuron_ids_for_stimulus,
-                                                      float *d_spike_times_for_stimulus,
-                                                      float* d_last_spike_time_of_each_neuron,
-                                                      float current_time_in_seconds,
-                                                      float stimulus_onset_adjustment,
-                                                      float timestep,
-                                                      int timestep_grouping,
-                                                      size_t number_of_spikes_in_stimulus);
+    __global__ void check_for_generator_spikes_kernel(
+        synaptic_activation_kernel syn_activation_kernel,
+        spiking_synapses_data_struct* synaptic_data,
+        spiking_neurons_data_struct* in_neuron_data,
+        int *d_neuron_ids_for_stimulus,
+        float *d_spike_times_for_stimulus,
+        float* d_last_spike_time_of_each_neuron,
+        float current_time_in_seconds,
+        float stimulus_onset_adjustment,
+        float timestep,
+        int timestep_grouping,
+        size_t number_of_spikes_in_stimulus);
 
   }
 }

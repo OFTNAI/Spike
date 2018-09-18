@@ -45,11 +45,15 @@ namespace Backend {
     void WeightDependentSTDPPlasticity::apply_stdp_to_synapse_weights(float current_time_in_seconds, float timestep) {
         ltp_and_ltd<<<synapses_backend->number_of_synapse_blocks_per_grid, synapses_backend->threads_per_block>>>
           (synapses_backend->postsynaptic_neuron_indices,
-           synapses_backend->time_of_last_spike_to_reach_synapse,
-           neurons_backend->last_spike_time_of_each_neuron,
+           synapses_backend->presynaptic_neuron_indices,
+           synapses_backend->delays,
+           neurons_backend->d_neuron_data,
+           input_neurons_backend->d_neuron_data,
            synapses_backend->synaptic_efficacies_or_weights,
            stdp_pre_memory_trace,
            stdp_post_memory_trace,
+           expf(- timestep / frontend()->stdp_params->tau_minus),
+           expf(- timestep / frontend()->stdp_params->tau_plus),
            *(frontend()->stdp_params),
            timestep,
            frontend()->model->timestep_grouping,
@@ -62,11 +66,15 @@ namespace Backend {
 
     __global__ void ltp_and_ltd
           (int* d_postsyns,
-           float* d_time_of_last_spike_to_reach_synapse,
-           float* d_last_spike_time_of_each_neuron,
+           int* d_presyns,
+           int* d_syndelays,
+           spiking_neurons_data_struct* neuron_data,
+           spiking_neurons_data_struct* input_neuron_data,
            float* d_synaptic_efficacies_or_weights,
            float* stdp_pre_memory_trace,
            float* stdp_post_memory_trace,
+           float post_decay,
+           float pre_decay,
            weightdependent_stdp_plasticity_parameters_struct stdp_vars,
            float timestep,
            int timestep_grouping,
@@ -79,42 +87,64 @@ namespace Backend {
       // Running though all neurons
       while (indx < total_number_of_plastic_synapses) {
         int idx = d_plastic_synapse_indices[indx];
-        // First decay the memory trace (USING INDX FOR TRACE HERE AND BELOW)
+
+        // Getting synapse details
         float stdp_pre_memory_trace_val = stdp_pre_memory_trace[indx];
         float stdp_post_memory_trace_val = stdp_post_memory_trace[indx];
         int postid = d_postsyns[idx];
+        int preid = d_presyns[idx];
+        int bufsize = input_neuron_data->neuron_spike_time_bitbuffer_bytesize[0];
+        float old_synaptic_weight = d_synaptic_efficacies_or_weights[idx];
+        float new_synaptic_weight = old_synaptic_weight;
 
-        for (int g=0; g < timestep_grouping; g++){	
-          stdp_post_memory_trace_val *= expf( - timestep / stdp_vars.tau_minus);
-          stdp_pre_memory_trace_val *= expf(- timestep / stdp_vars.tau_plus);
-          // First update the memory trace for every pre and post neuron
-          if (fabs(d_time_of_last_spike_to_reach_synapse[idx] - (current_time_in_seconds + g*timestep)) < 0.5f*timestep){
-            // Update the presynaptic memory trace
+        // Correcting for input vs output neuron types
+        bool is_input = PRESYNAPTIC_IS_INPUT(preid);
+        int corr_preid = CORRECTED_PRESYNAPTIC_ID(preid, is_input);
+        uint8_t* pre_bitbuffer = is_input ? input_neuron_data->neuron_spike_time_bitbuffer : neuron_data->neuron_spike_time_bitbuffer;
+
+        // Looping over timesteps
+        for (int g=0; g < timestep_grouping; g++){
+          // Decaying STDP traces
+          stdp_post_memory_trace_val *= post_decay;
+          stdp_pre_memory_trace_val *= pre_decay;
+
+          // Bit Indexing to detect spikes
+          int postbitloc = ((int)roundf(current_time_in_seconds / timestep) + g) % (bufsize*8);
+          int prebitloc = postbitloc - d_syndelays[idx];
+          prebitloc = (prebitloc < 0) ? (bufsize*8 + prebitloc) : prebitloc;
+
+
+          // OnPre Trace Update
+          if (pre_bitbuffer[corr_preid*bufsize + (prebitloc / 8)] & (1 << (prebitloc % 8))){
             stdp_pre_memory_trace_val += stdp_vars.a_plus;
             if (stdp_vars.nearest_spike_only)
               stdp_pre_memory_trace_val = stdp_vars.a_plus;
           }
-          // Dealing with LTP
-          if (fabs(d_last_spike_time_of_each_neuron[postid] - (current_time_in_seconds + g*timestep)) < 0.5f*timestep){
+          // OnPost Trace Update
+          if (neuron_data->neuron_spike_time_bitbuffer[postid*bufsize + (postbitloc / 8)] & (1 << (postbitloc % 8))){
             stdp_post_memory_trace_val += stdp_vars.a_minus;
             if (stdp_vars.nearest_spike_only)
               stdp_post_memory_trace_val = stdp_vars.a_minus;
           }
           
           float syn_update_val = 0.0f; 
-          float old_synaptic_weight = d_synaptic_efficacies_or_weights[idx];
-          if (fabs(d_time_of_last_spike_to_reach_synapse[idx] - (current_time_in_seconds + g*timestep)) < 0.5f*timestep){
-            // Carry out the necessary LTD
+          old_synaptic_weight = new_synaptic_weight;
+          // OnPre Weight Update
+          if (pre_bitbuffer[corr_preid*bufsize + (prebitloc / 8)] & (1 << (prebitloc % 8))){
             syn_update_val -= stdp_vars.lambda * stdp_vars.alpha * old_synaptic_weight * stdp_post_memory_trace_val;
           }
-          if (fabs(d_last_spike_time_of_each_neuron[postid] - (current_time_in_seconds + g*timestep)) < 0.5f*timestep){
-              // If output neuron just fired, do LTP
-            syn_update_val += stdp_vars.lambda * (stdp_vars.w_max - old_synaptic_weight) *stdp_pre_memory_trace_val;
+          // OnPost Weight Update
+          if (neuron_data->neuron_spike_time_bitbuffer[postid*bufsize + (postbitloc / 8)] & (1 << (postbitloc % 8))){
+            syn_update_val += stdp_vars.lambda * (stdp_vars.w_max - old_synaptic_weight) * stdp_pre_memory_trace_val;
           }
-          float new_synaptic_weight = old_synaptic_weight + syn_update_val;
-          if (new_synaptic_weight >= 0.0f)
-              d_synaptic_efficacies_or_weights[idx] = new_synaptic_weight;
+
+          new_synaptic_weight = old_synaptic_weight + syn_update_val;
+          if (new_synaptic_weight < 0.0f)
+            new_synaptic_weight = 0.0f;
         }
+        
+        // Weight Update
+        d_synaptic_efficacies_or_weights[idx] = new_synaptic_weight;
 
         // Correctly set the trace values
         stdp_pre_memory_trace[indx] = stdp_pre_memory_trace_val;

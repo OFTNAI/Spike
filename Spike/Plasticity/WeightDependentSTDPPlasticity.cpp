@@ -12,6 +12,7 @@ WeightDependentSTDPPlasticity::WeightDependentSTDPPlasticity(SpikingSynapses* sy
 	stdp_params = (weightdependent_stdp_plasticity_parameters_struct *)stdp_parameters;
 	syns = synapses;
 	neurs = neurons;
+	in_neurs = input_neurons;
 }
 
 WeightDependentSTDPPlasticity::~WeightDependentSTDPPlasticity() {

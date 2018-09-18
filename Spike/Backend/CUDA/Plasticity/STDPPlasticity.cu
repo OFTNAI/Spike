@@ -12,6 +12,8 @@ namespace Backend {
 
     void STDPPlasticity::prepare() {
 
+      input_neurons_backend = dynamic_cast<::Backend::CUDA::SpikingNeurons*>
+        (frontend()->in_neurs->backend());
       neurons_backend = dynamic_cast<::Backend::CUDA::SpikingNeurons*>
         (frontend()->neurs->backend());
       synapses_backend = dynamic_cast<::Backend::CUDA::SpikingSynapses*>

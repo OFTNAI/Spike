@@ -20,12 +20,10 @@ EvansSTDPPlasticity::~EvansSTDPPlasticity() {
 
 void EvansSTDPPlasticity::prepare_backend_late() {
   // Create extra LIF arrays
-  recent_postsynaptic_activities_D = (float*)realloc(recent_postsynaptic_activities_D, (neurs->total_number_of_neurons*sizeof(float)));
-  recent_presynaptic_activities_C = (float*)realloc(recent_presynaptic_activities_C, syns->total_number_of_synapses*sizeof(float));
-  for (int i = 0; i < neurs->total_number_of_neurons; i++){
+  recent_postsynaptic_activities_D = (float*)realloc(recent_postsynaptic_activities_D, total_number_of_plastic_synapses);
+  recent_presynaptic_activities_C = (float*)realloc(recent_presynaptic_activities_C, total_number_of_plastic_synapses);
+  for (int i = 0; i < total_number_of_plastic_synapses; i++){
     recent_postsynaptic_activities_D[i] = 0.0f;
-  }
-  for (int i = 0; i < syns->total_number_of_synapses; i++){
     recent_presynaptic_activities_C[i] = 0.0f;
   }
 }
@@ -33,21 +31,11 @@ void EvansSTDPPlasticity::prepare_backend_late() {
 // Run the STDP
 void EvansSTDPPlasticity::state_update (float current_time_in_seconds, float timestep){
   // Update
-  update_synaptic_efficacies_or_weights(current_time_in_seconds);
-  update_presynaptic_activities(timestep, current_time_in_seconds);
-  update_postsynaptic_activities(timestep, current_time_in_seconds);
+  update_synaptic_efficacies_or_weights(current_time_in_seconds, timestep);
 }
 
-void EvansSTDPPlasticity::update_synaptic_efficacies_or_weights(float current_time_in_seconds) {
-  backend()->update_synaptic_efficacies_or_weights(current_time_in_seconds);
-}
-
-void EvansSTDPPlasticity::update_presynaptic_activities(float timestep, float current_time_in_seconds) {
-  backend()->update_presynaptic_activities(timestep, current_time_in_seconds);
-}
-
-void EvansSTDPPlasticity::update_postsynaptic_activities(float timestep, float current_time_in_seconds) {
-  backend()->update_postsynaptic_activities(timestep, current_time_in_seconds);
+void EvansSTDPPlasticity::update_synaptic_efficacies_or_weights(float current_time_in_seconds, float timestep) {
+  backend()->update_synaptic_efficacies_or_weights(current_time_in_seconds, timestep);
 }
 
 SPIKE_MAKE_INIT_BACKEND(EvansSTDPPlasticity);

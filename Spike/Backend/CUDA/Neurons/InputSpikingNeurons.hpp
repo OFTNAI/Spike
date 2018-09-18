@@ -3,6 +3,9 @@
 #include "Spike/Neurons/InputSpikingNeurons.hpp"
 #include "SpikingNeurons.hpp"
 #include "Spike/Backend/CUDA/CUDABackend.hpp"
+#include "Spike/Backend/CUDA/Synapses/ConductanceSpikingSynapses.hpp"
+#include "Spike/Backend/CUDA/Synapses/CurrentSpikingSynapses.hpp"
+#include "Spike/Backend/CUDA/Synapses/VoltageSpikingSynapses.hpp"
 
 #include <cuda.h>
 #include <vector_types.h>

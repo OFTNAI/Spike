@@ -53,100 +53,105 @@ namespace Backend {
     vogels_apply_stdp_to_synapse_weights_kernel<<<neurons_backend->number_of_neuron_blocks_per_grid, neurons_backend->threads_per_block>>>
       (synapses_backend->presynaptic_neuron_indices,
        synapses_backend->postsynaptic_neuron_indices,
-       neurons_backend->last_spike_time_of_each_neuron,
-       synapses_backend->time_of_last_spike_to_reach_synapse,
+       synapses_backend->delays,
+       neurons_backend->d_neuron_data,
+       input_neurons_backend->d_neuron_data,
        synapses_backend->synaptic_efficacies_or_weights,
        vogels_pre_memory_trace,
        vogels_post_memory_trace,
-       vogels_prevupdate,
+       expf(- timestep / frontend()->stdp_params->tau_istdp),
        *(frontend()->stdp_params),
-       current_time_in_seconds,
        timestep,
        frontend()->model->timestep_grouping,
+       current_time_in_seconds,
        plastic_synapse_indices,
        total_number_of_plastic_synapses);
     CudaCheckError();
     }
 
-    // Find nearest spike
     __global__ void vogels_apply_stdp_to_synapse_weights_kernel
-    (int* d_presyns,
-     int* d_postsyns,
-     float* d_last_spike_time_of_each_neuron,
-     float* d_time_of_last_spike_to_reach_synapse,
-     float* d_synaptic_efficacies_or_weights,
-     float* vogels_pre_memory_trace,
-     float* vogels_post_memory_trace,
-     float* vogels_prevupdate,
-     struct inhibitory_stdp_plasticity_parameters_struct stdp_vars,
-     float currtime,
-     float timestep,
-     int timestep_grouping,
-     int* d_plastic_synapse_indices,
-     size_t total_number_of_plastic_synapses){
+          (int* d_postsyns,
+           int* d_presyns,
+           int* d_syndelays,
+           spiking_neurons_data_struct* neuron_data,
+           spiking_neurons_data_struct* input_neuron_data,
+           float* d_synaptic_efficacies_or_weights,
+           float* vogels_pre_memory_trace,
+           float* vogels_post_memory_trace,
+           float trace_decay,
+           struct inhibitory_stdp_plasticity_parameters_struct stdp_vars,
+           float timestep,
+           int timestep_grouping,
+           float current_time_in_seconds,
+           int* d_plastic_synapse_indices,
+           size_t total_number_of_plastic_synapses){
       // Global Index
       int indx = threadIdx.x + blockIdx.x * blockDim.x;
 
-      // Running though all stdp synapses
-      while (indx < total_number_of_plastic_synapses){
-        // Getting an index for the correct synapse
+      // Running though all neurons
+      while (indx < total_number_of_plastic_synapses) {
         int idx = d_plastic_synapse_indices[indx];
-        
-  // Find the post synaptic neuron ids:
-        int post_neuron_id = d_postsyns[idx];
 
-  float vogels_pre_memory_trace_val = vogels_pre_memory_trace[indx];
-  float vogels_post_memory_trace_val = vogels_post_memory_trace[indx];
-  float weightupdate = vogels_prevupdate[indx];
-        float new_syn_weight = d_synaptic_efficacies_or_weights[idx];
-  bool updated = false;
+        // Getting synapse details
+        float vogels_pre_memory_trace_val = vogels_pre_memory_trace[indx];
+        float vogels_post_memory_trace_val = vogels_post_memory_trace[indx];
+        int postid = d_postsyns[idx];
+        int preid = d_presyns[idx];
+        int bufsize = input_neuron_data->neuron_spike_time_bitbuffer_bytesize[0];
+        float new_synaptic_weight = d_synaptic_efficacies_or_weights[idx];
 
-  for (int g=0; g < timestep_grouping; g++){
-    // First decaying the memory traces
-    vogels_pre_memory_trace_val *= expf(- timestep / stdp_vars.tau_istdp);
-    vogels_post_memory_trace_val *= expf( - timestep / stdp_vars.tau_istdp);
+        // Correcting for input vs output neuron types
+        bool is_input = PRESYNAPTIC_IS_INPUT(preid);
+        int corr_preid = CORRECTED_PRESYNAPTIC_ID(preid, is_input);
+        uint8_t* pre_bitbuffer = is_input ? input_neuron_data->neuron_spike_time_bitbuffer : neuron_data->neuron_spike_time_bitbuffer;
 
-          // Check whether the pre-synaptic neuron has fired now
-          if (fabs(d_time_of_last_spike_to_reach_synapse[idx] - (currtime + g*timestep)) < 0.5f*timestep){
-            weightupdate += stdp_vars.learningrate*(vogels_post_memory_trace_val);
-            // Alpha must be calculated as 2 * targetrate * tau_istdp
-            weightupdate += - stdp_vars.learningrate*(2.0*stdp_vars.targetrate*stdp_vars.tau_istdp);
-            if (new_syn_weight < 0.0f)
-              new_syn_weight = 0.0f;
-      updated = true;
-            //d_synaptic_efficacies_or_weights[idx] = new_syn_weight;
-          }
+        // Looping over timesteps
+        for (int g=0; g < timestep_grouping; g++){	
+          // Decaying STDP traces
+          vogels_pre_memory_trace_val *= trace_decay;
+          vogels_post_memory_trace_val *= trace_decay;
 
-          // Check whether the post-synaptic neuron has fired now
-          if (fabs(d_last_spike_time_of_each_neuron[post_neuron_id] - (currtime + g*timestep)) < 0.5f*timestep){
-            weightupdate += stdp_vars.learningrate*(vogels_pre_memory_trace_val);
-      updated=true;
-            //d_synaptic_efficacies_or_weights[idx] = new_syn_weight;
-          }
-   
-    // If necessary, update the trace values:
-          if (fabs(d_last_spike_time_of_each_neuron[post_neuron_id] - (currtime + g*timestep)) < 0.5f*timestep)
-            vogels_post_memory_trace_val += 1.0f;
-          if (fabs(d_time_of_last_spike_to_reach_synapse[idx] - (currtime + g*timestep)) < 0.5f*timestep)
+          // Bit Indexing to detect spikes
+          int postbitloc = ((int)roundf(current_time_in_seconds / timestep) + g) % (bufsize*8);
+          int prebitloc = postbitloc - d_syndelays[idx];
+          prebitloc = (prebitloc < 0) ? (bufsize*8 + prebitloc) : prebitloc;
+
+          // OnPre Trace Update
+          if (pre_bitbuffer[corr_preid*bufsize + (prebitloc / 8)] & (1 << (prebitloc % 8))){
             vogels_pre_memory_trace_val += 1.0f;
+          }
+          // OnPost Trace Update
+          if (neuron_data->neuron_spike_time_bitbuffer[postid*bufsize + (postbitloc / 8)] & (1 << (postbitloc % 8))){
+            vogels_post_memory_trace_val += 1.0f;
+          }
+          
+          float syn_update_val = 0.0f; 
+          // OnPre Weight Update
+          if (pre_bitbuffer[corr_preid*bufsize + (prebitloc / 8)] & (1 << (prebitloc % 8))){
+            syn_update_val += stdp_vars.learningrate*(vogels_post_memory_trace_val);
+            syn_update_val += - stdp_vars.learningrate*(2.0*stdp_vars.targetrate*stdp_vars.tau_istdp);
+          }
+          // OnPost Weight Update
+          if (neuron_data->neuron_spike_time_bitbuffer[postid*bufsize + (postbitloc / 8)] & (1 << (postbitloc % 8))){
+            syn_update_val += stdp_vars.learningrate*(vogels_pre_memory_trace_val);
+          }
 
-    if (updated){ 
-      new_syn_weight += weightupdate;
-      weightupdate *= stdp_vars.momentumrate;
-    updated = false;
-    }
+          new_synaptic_weight += syn_update_val;
+          // Weight Update
+          if (new_synaptic_weight < 0.0f){
+            new_synaptic_weight = 0.0f;
+          }
+        }
 
-  }
-
-  d_synaptic_efficacies_or_weights[idx] = new_syn_weight;
-
-  // Update vogels memory trace values
-  vogels_pre_memory_trace[indx] = vogels_pre_memory_trace_val;
-  vogels_post_memory_trace[indx] = vogels_post_memory_trace_val;
-  vogels_prevupdate[indx] = weightupdate;
+        // Update Weight
+        d_synaptic_efficacies_or_weights[idx] = new_synaptic_weight;
+        // Correctly set the trace values
+        vogels_pre_memory_trace[indx] = vogels_pre_memory_trace_val;
+        vogels_post_memory_trace[indx] = vogels_post_memory_trace_val;
 
         indx += blockDim.x * gridDim.x;
       }
+
     }
   }
 }

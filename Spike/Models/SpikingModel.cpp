@@ -96,9 +96,11 @@ void SpikingModel::finalise_model() {
     
 
     timestep_grouping = spiking_synapses->minimum_axonal_delay_in_timesteps;
-    // Don't let the total timestep grouping to exceed 1ms
-    if (timestep_grouping * timestep > 0.002)
-      timestep_grouping = (int)round(0.002f / timestep);
+    // Don't let the total timestep grouping to exceed 2ms
+    /*
+    if (timestep_grouping * timestep > 0.001)
+      timestep_grouping = (int)round(0.001f / timestep);
+      */
     
     // Outputting Network Overview
     printf("Building Model with:\n");

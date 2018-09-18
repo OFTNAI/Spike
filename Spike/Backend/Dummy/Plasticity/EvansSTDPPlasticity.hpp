@@ -14,11 +14,7 @@ namespace Backend {
       void reset_state() override;
 
       void update_synaptic_efficacies_or_weights
-      (float current_time_in_seconds) override;
-      void update_presynaptic_activities
-      (float timestep, float current_time_in_seconds) override;
-      void update_postsynaptic_activities
-      (float timestep, float current_time_in_seconds) override;
+      (float current_time_in_seconds, float timestep) override;
     };
   }
 }

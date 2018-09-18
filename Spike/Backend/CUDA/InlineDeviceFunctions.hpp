@@ -12,7 +12,7 @@ __device__ void my_activate_synapses(
   atomicMax(synaptic_data->num_active_synapses, synapse_count);
   int pos = atomicAdd(synaptic_data->num_activated_neurons, 1);
   synaptic_data->active_synapse_counts[pos] = synapse_count;
-  synaptic_data->presynaptic_neuron_indices[pos] = CORRECTED_PRESYNAPTIC_ID(preneuron_idx, is_input);
+  synaptic_data->active_presynaptic_neuron_indices[pos] = CORRECTED_PRESYNAPTIC_ID(preneuron_idx, is_input);
   synaptic_data->group_indices[pos] = timestep_group_index;
 };
 

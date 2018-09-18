@@ -80,9 +80,9 @@ namespace Backend {
       int bufsize = neuron_data->neuron_spike_time_bitbuffer_bytesize[0];
       while (idx < total_number_of_neurons) {
         for (int g=0; g < timestep_grouping; g++){
-          int bitloc = BITLOC(current_time_in_seconds, timestep, g, bufsize);
+          int bitloc = ((int)roundf(current_time_in_seconds / timestep) + g) % (8*bufsize);
           // If a neuron has fired
-          if (neuron_data->neuron_spike_time_bitbuffer[idx*bufsize + BYTELOC(bitloc)] & (1 << SUBBITLOC(bitloc))){
+          if (neuron_data->neuron_spike_time_bitbuffer[idx*bufsize + (bitloc / 8)] & (1 << (bitloc % 8))){
             // Increase the number of spikes stored
             // NOTE: atomicAdd return value is actually original (atomic) value BEFORE incrementation!
             //    - So first value is actually 0 not 1!!!

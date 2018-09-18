@@ -20,7 +20,7 @@ namespace Backend {
       CudaSafeCall(cudaFree(num_active_synapses));
       CudaSafeCall(cudaFree(num_activated_neurons));
       CudaSafeCall(cudaFree(active_synapse_counts));
-      CudaSafeCall(cudaFree(presynaptic_neuron_indices));
+      CudaSafeCall(cudaFree(active_presynaptic_neuron_indices));
       CudaSafeCall(cudaFree(neuron_inputs.circular_input_buffer));
       CudaSafeCall(cudaFree(d_synaptic_data));
     }
@@ -70,8 +70,8 @@ namespace Backend {
       synaptic_data->neuron_inputs = neuron_inputs;
       synaptic_data->num_activated_neurons = num_activated_neurons;
       synaptic_data->num_active_synapses = num_active_synapses;
+      synaptic_data->active_presynaptic_neuron_indices = active_presynaptic_neuron_indices;
       synaptic_data->active_synapse_counts = active_synapse_counts;
-      synaptic_data->presynaptic_neuron_indices = presynaptic_neuron_indices;
       synaptic_data->group_indices = group_indices;
 
       CudaSafeCall(cudaMemcpy(d_synaptic_data,
@@ -90,7 +90,7 @@ namespace Backend {
       CudaSafeCall(cudaMalloc((void **)&num_active_synapses, sizeof(int)));
       CudaSafeCall(cudaMalloc((void **)&num_activated_neurons, sizeof(int)));
       CudaSafeCall(cudaMalloc((void **)&active_synapse_counts, sizeof(int)*(frontend()->total_number_of_synapses)));
-      CudaSafeCall(cudaMalloc((void **)&presynaptic_neuron_indices, sizeof(int)*(frontend()->total_number_of_synapses)));
+      CudaSafeCall(cudaMalloc((void **)&active_presynaptic_neuron_indices, sizeof(int)*(frontend()->total_number_of_synapses)));
       CudaSafeCall(cudaMalloc((void **)&d_synaptic_data, sizeof(spiking_synapses_data_struct)));
       // Setting injection kernel
       CudaSafeCall(cudaMemcpyFromSymbol(
@@ -166,7 +166,7 @@ namespace Backend {
         neurons_backend->frontend()->total_number_of_neurons,
         group_indices,
         frontend()->model->timestep_grouping,
-        presynaptic_neuron_indices,
+        active_presynaptic_neuron_indices,
         active_synapse_counts,
         num_activated_neurons,
         num_active_synapses);
@@ -188,7 +188,7 @@ namespace Backend {
       atomicMax(synaptic_data->num_active_synapses, synapse_count);
       int pos = atomicAdd(synaptic_data->num_activated_neurons, 1);
       synaptic_data->active_synapse_counts[pos] = synapse_count;
-      synaptic_data->presynaptic_neuron_indices[pos] = CORRECTED_PRESYNAPTIC_ID(preneuron_idx, is_input);
+      synaptic_data->active_presynaptic_neuron_indices[pos] = CORRECTED_PRESYNAPTIC_ID(preneuron_idx, is_input);
       synaptic_data->group_indices[pos] = timestep_group_index;
     };
       
@@ -214,7 +214,7 @@ namespace Backend {
         int total_number_of_neurons,
         int* group_indices,
         int timestep_grouping,
-        int* presynaptic_neuron_indices,
+        int* active_presynaptic_neuron_indices,
         int* active_synapse_counts,
         int* num_activated_neurons,
         int* num_active_synapses)
@@ -235,7 +235,7 @@ namespace Backend {
           continue;
         }
 
-        int neuron = presynaptic_neuron_indices[pos];
+        int neuron = active_presynaptic_neuron_indices[pos];
         bool presynaptic_is_input = PRESYNAPTIC_IS_INPUT(neuron);
         int corr_idx = CORRECTED_PRESYNAPTIC_ID(neuron, presynaptic_is_input);
 
@@ -247,7 +247,6 @@ namespace Backend {
         int syn_label = d_syn_labels[synapse_id];
         float weightinput = weight_scaling_constants[synapse_id]*synaptic_efficacies_or_weights[synapse_id];
         atomicAdd(&neuron_inputs.circular_input_buffer[targetloc*neuron_inputs.input_buffersize + syn_label + postneuron*num_syn_labels], weightinput);
-        d_time_of_last_spike_to_reach_synapse[synapse_id] = current_time_in_seconds + (d_delays[synapse_id] + group_indices[pos])*timestep;
 
         indx += blockDim.x * gridDim.x;
       }

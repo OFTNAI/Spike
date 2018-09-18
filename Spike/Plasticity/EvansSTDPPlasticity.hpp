@@ -1,8 +1,8 @@
 // Evans STDP Class Header
 // EvansSTDPPlasticity.h
 //
-//	Author: Nasir Ahmad
-//	Date: 23/06/2016
+//  Author: Nasir Ahmad
+//  Date: 23/06/2016
 
 #ifndef Evans_STDP_H
 #define Evans_STDP_H
@@ -25,9 +25,7 @@ namespace Backend {
   public:
     SPIKE_ADD_BACKEND_FACTORY(EvansSTDPPlasticity);
 
-    virtual void update_synaptic_efficacies_or_weights(float current_time_in_seconds) = 0;
-    virtual void update_presynaptic_activities(float timestep, float current_time_in_seconds) = 0;
-    virtual void update_postsynaptic_activities(float timestep, float current_time_in_seconds) = 0;
+    virtual void update_synaptic_efficacies_or_weights(float current_time_in_seconds, float timestep) = 0;
   };
 }
 
@@ -51,21 +49,16 @@ public:
 
   struct evans_stdp_plasticity_parameters_struct* stdp_params = nullptr;
 
-  //(NEURON-WISE)
   float* recent_postsynaptic_activities_D = nullptr;
-
-  //(SYNAPSE-WISE)
   float* recent_presynaptic_activities_C = nullptr;
 
   void init_backend(Context* ctx = _global_ctx) override;
   void prepare_backend_late() override;
 
   void state_update(float current_time_in_seconds, float timestep) override;
-	
+  
   // Updates for this model
-  void update_presynaptic_activities(float timestep, float current_time_in_seconds);
-  void update_synaptic_efficacies_or_weights(float current_time_in_seconds);
-  void update_postsynaptic_activities(float timestep, float current_time_in_seconds);
+  void update_synaptic_efficacies_or_weights(float current_time_in_seconds, float timestep);
 
 private:
   std::shared_ptr<::Backend::EvansSTDPPlasticity> _backend;
