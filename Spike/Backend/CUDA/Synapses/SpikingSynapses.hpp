@@ -69,8 +69,6 @@ namespace Backend {
       int h_num_active_synapses = 0;
       // Device pointers
       int* delays = nullptr;
-      int* spikes_travelling_to_synapse = nullptr;
-      float* time_of_last_spike_to_reach_synapse = nullptr;
 
       int* d_syn_labels = nullptr;
       neuron_inputs_struct neuron_inputs;
@@ -125,7 +123,6 @@ namespace Backend {
         int* postsynaptic_neuron_indices,
         float* synaptic_efficacies_or_weights,
         float* weight_scaling_constants,
-        float* last_spike_to_reach_synapse,
         int* d_delays,
         int num_syn_labels,
         int * d_syn_labels,

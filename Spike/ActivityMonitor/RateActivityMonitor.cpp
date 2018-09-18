@@ -26,7 +26,7 @@ void RateActivityMonitor::prepare_backend_early() {
 }
 
 void RateActivityMonitor::state_update(float current_time_in_seconds, float timestep) {
-  backend()->add_spikes_to_per_neuron_spike_count(current_time_in_seconds);
+  backend()->add_spikes_to_per_neuron_spike_count(current_time_in_seconds, timestep);
 }
 
 void RateActivityMonitor::final_update(float current_time_in_seconds, float timestep){

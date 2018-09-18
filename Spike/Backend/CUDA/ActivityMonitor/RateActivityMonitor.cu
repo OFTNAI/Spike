@@ -33,31 +33,40 @@ namespace Backend {
     }
 
     void RateActivityMonitor::add_spikes_to_per_neuron_spike_count
-    (float current_time_in_seconds) {
+    (float current_time_in_seconds, float timestep) {
       add_spikes_to_per_neuron_spike_count_kernel<<<neurons_backend->number_of_neuron_blocks_per_grid, neurons_backend->threads_per_block>>>
-        (neurons_backend->last_spike_time_of_each_neuron,
+        (neurons_backend->d_neuron_data,
          per_neuron_spike_counts,
          current_time_in_seconds,
+         timestep,
+         frontend()->model->timestep_grouping,
          frontend()->neurons->total_number_of_neurons);
          CudaCheckError();
     }
 
     __global__ void add_spikes_to_per_neuron_spike_count_kernel
-    (float* d_last_spike_time_of_each_neuron,
+    (spiking_neurons_data_struct* neuron_data,
      int* d_per_neuron_spike_counts,
      float current_time_in_seconds,
+     float timestep,
+     int timestep_grouping,
      size_t total_number_of_neurons) {
-
+      
       int idx = threadIdx.x + blockIdx.x * blockDim.x;
+      int bufsize = neuron_data->neuron_spike_time_bitbuffer_bytesize[0];
       while (idx < total_number_of_neurons) {
-
-        if (d_last_spike_time_of_each_neuron[idx] >= current_time_in_seconds) {
-          atomicAdd(&d_per_neuron_spike_counts[idx], 1);
+        for (int g=0; g < timestep_grouping; g++){
+          int bitloc = ((int)roundf(current_time_in_seconds / timestep) + g) % (8*bufsize);
+          // If a neuron has fired
+          if (neuron_data->neuron_spike_time_bitbuffer[idx*bufsize + (bitloc / 8)] & (1 << (bitloc % 8))){
+            atomicAdd(&d_per_neuron_spike_counts[idx], 1);
+          }
         }
 
         idx += blockDim.x * gridDim.x;
       }
     }
+
   }
 }
 

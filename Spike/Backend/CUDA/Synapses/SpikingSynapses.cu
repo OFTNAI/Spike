@@ -15,7 +15,6 @@ namespace Backend {
     SpikingSynapses::~SpikingSynapses() {
       CudaSafeCall(cudaFree(delays));
       CudaSafeCall(cudaFree(d_syn_labels));
-      CudaSafeCall(cudaFree(time_of_last_spike_to_reach_synapse));
       CudaSafeCall(cudaFree(group_indices));
       CudaSafeCall(cudaFree(num_active_synapses));
       CudaSafeCall(cudaFree(num_activated_neurons));
@@ -28,17 +27,6 @@ namespace Backend {
     void SpikingSynapses::reset_state() {
       Synapses::reset_state();
 
-      // Set last spike times to -1000 so that the times do not affect current simulation.
-      float *last_spike_to_reach_synapse = (float*)malloc(frontend()->total_number_of_synapses*sizeof(float));
-      for (int i=0; i < frontend()->total_number_of_synapses; i++)
-        last_spike_to_reach_synapse[i] = -1000.0f;
-
-      CudaSafeCall(cudaMemcpy(time_of_last_spike_to_reach_synapse,
-        last_spike_to_reach_synapse,
-        frontend()->total_number_of_synapses*sizeof(float),
-        cudaMemcpyHostToDevice));
-      free(last_spike_to_reach_synapse);
-      
       // Spike Buffer Resetting
       CudaSafeCall(cudaMemset(num_active_synapses, 0, sizeof(int)));
       CudaSafeCall(cudaMemset(num_activated_neurons, 0, sizeof(int)));
@@ -84,7 +72,6 @@ namespace Backend {
     void SpikingSynapses::allocate_device_pointers() {
       CudaSafeCall(cudaMalloc((void **)&delays, sizeof(int)*frontend()->total_number_of_synapses));
       CudaSafeCall(cudaMalloc((void **)&d_syn_labels, sizeof(int)*frontend()->total_number_of_synapses));
-      CudaSafeCall(cudaMalloc((void **)&time_of_last_spike_to_reach_synapse, sizeof(float)*frontend()->total_number_of_synapses));
       // Device pointers for spike buffer and active synapse/neuron storage
       CudaSafeCall(cudaMalloc((void **)&group_indices, sizeof(int)*(frontend()->total_number_of_synapses)));
       CudaSafeCall(cudaMalloc((void **)&num_active_synapses, sizeof(int)));
@@ -156,7 +143,6 @@ namespace Backend {
         postsynaptic_neuron_indices,
         synaptic_efficacies_or_weights,
         weight_scaling_constants,
-        time_of_last_spike_to_reach_synapse,
         delays,
         frontend()->num_syn_labels,
         d_syn_labels,
@@ -204,7 +190,6 @@ namespace Backend {
         int* postsynaptic_neuron_indices,
         float* synaptic_efficacies_or_weights,
         float* weight_scaling_constants,
-        float* d_time_of_last_spike_to_reach_synapse,
         int* d_delays,
         int num_syn_labels,
         int * d_syn_labels,
