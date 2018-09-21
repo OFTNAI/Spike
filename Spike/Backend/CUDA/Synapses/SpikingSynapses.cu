@@ -240,7 +240,6 @@ namespace Backend {
       if ((threadIdx.x + blockIdx.x * blockDim.x) == 0){
         num_activated_neurons[0] = 0;
       }
-      __syncthreads();
     }
 
       __device__ float spiking_current_injection_kernel(
