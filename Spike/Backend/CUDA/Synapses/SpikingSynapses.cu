@@ -157,8 +157,8 @@ namespace Backend {
         num_activated_neurons,
         num_active_synapses);
       CudaCheckError();
-      CudaSafeCall(cudaMemset(num_active_synapses, 0, sizeof(int)));
-      CudaSafeCall(cudaMemset(num_activated_neurons, 0, sizeof(int)));
+      //CudaSafeCall(cudaMemset(num_active_synapses, 0, sizeof(int)));
+      //CudaSafeCall(cudaMemset(num_activated_neurons, 0, sizeof(int)));
       }
       
     }
@@ -235,6 +235,12 @@ namespace Backend {
 
         indx += blockDim.x * gridDim.x;
       }
+
+      __syncthreads();
+      if ((threadIdx.x + blockIdx.x * blockDim.x) == 0){
+        num_activated_neurons[0] = 0;
+      }
+      __syncthreads();
     }
 
       __device__ float spiking_current_injection_kernel(
