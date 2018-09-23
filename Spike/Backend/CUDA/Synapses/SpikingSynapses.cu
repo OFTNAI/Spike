@@ -239,6 +239,7 @@ namespace Backend {
       __syncthreads();
       if ((threadIdx.x + blockIdx.x * blockDim.x) == 0){
         num_activated_neurons[0] = 0;
+        num_active_synapses[0] = 0;
       }
     }
 
