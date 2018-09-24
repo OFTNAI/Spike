@@ -56,6 +56,7 @@ namespace Backend {
          resting_potentials_v0,
          last_spike_time_of_each_neuron,
          current_time_in_seconds,
+         (int)roundf(current_time_in_seconds / timestep),
          frontend()->total_number_of_neurons,
          frontend()->current_stimulus_index);
 
@@ -75,6 +76,7 @@ namespace Backend {
        float* d_resting_potentials,
        float* d_last_spike_time_of_each_neuron,
        float current_time_in_seconds,
+       int timestep_index,
        size_t total_number_of_input_neurons,
        int current_stimulus_index) {
 
@@ -90,7 +92,7 @@ namespace Backend {
 
         if (rate > 0.01) {
           for (int g=0; g < timestep_grouping; g++){
-            int bitloc = ((int)roundf(current_time_in_seconds / timestep) + g) % (8*bufsize);
+            int bitloc = (timestep_index + g) % (8*bufsize);
             in_neuron_data->neuron_spike_time_bitbuffer[idx*bufsize + (bitloc / 8)] &= ~(1 << (bitloc % 8));
             // Creates random float between 0 and 1 from uniform distribution
             // d_states effectively provides a different seed for each thread
@@ -109,6 +111,7 @@ namespace Backend {
                   in_neuron_data,
                   g,
                   idx,
+                  timestep_index / timestep_grouping,
                   true);
             } 
           }

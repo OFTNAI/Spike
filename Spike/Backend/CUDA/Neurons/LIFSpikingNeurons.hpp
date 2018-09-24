@@ -48,6 +48,7 @@ namespace Backend {
         float timestep,
         int timestep_grouping,
         float current_time_in_seconds,
+        int timestep_index,
         float refactory_period_in_seconds,
         size_t total_number_of_neurons);
   }

@@ -30,6 +30,7 @@ public:
 
   SPIKE_ADD_BACKEND_GETSET(SpikingSynapses, Synapses);
   void init_backend(Context* ctx = _global_ctx) override;
+  void prepare_backend_early() override;
 
   // Host Pointers
   int* delays = nullptr;
@@ -53,7 +54,8 @@ public:
                 synapse_parameters_struct * synapse_params) override;
 
   void increment_number_of_synapses(int increment);
-  //virtual void sort_synapses();
+  void sort_synapses();
+  void set_synapse_start(int pre_index, int syn_start);
 
   virtual void state_update(SpikingNeurons * neurons, SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep);
 

@@ -6,13 +6,14 @@ __device__ void my_activate_synapses(
   spiking_neurons_data_struct* neuron_data,
   int timestep_group_index,
   int preneuron_idx,
+  int timestep_index,
   bool is_input)
 {
+  int pos = atomicAdd(&synaptic_data->num_activated_neurons[timestep_index % 2], 1);
   int synapse_count = neuron_data->per_neuron_efferent_synapse_count[preneuron_idx];
-  atomicMax(synaptic_data->num_active_synapses, synapse_count);
-  int pos = atomicAdd(synaptic_data->num_activated_neurons, 1);
+  int synapse_start = neuron_data->per_neuron_efferent_synapse_start[preneuron_idx];
   synaptic_data->active_synapse_counts[pos] = synapse_count;
-  synaptic_data->active_presynaptic_neuron_indices[pos] = CORRECTED_PRESYNAPTIC_ID(preneuron_idx, is_input);
+  synaptic_data->active_synapse_starts[pos] = synapse_start;
   synaptic_data->group_indices[pos] = timestep_group_index;
 };
 

@@ -127,7 +127,9 @@ public:
   float* synaptic_efficacies_or_weights = nullptr;          /**< An array of synaptic efficacies/weights accompanying the pre/postsynaptic_neuron_indices */
   float * weight_scaling_constants = nullptr;
   int maximum_number_of_afferent_synapses = 0;
-  
+
+  bool synapses_sorted = false;
+  int* synapse_presort_indices = nullptr;   // Re-sorting synapses by pre-synaptic neuron
 
   // Functions
 
@@ -154,7 +156,7 @@ public:
      /param increment The number of synapses for which allocated memory must be expanded.
   */
   void increment_number_of_synapses(int increment);
-  //virtual void sort_synapses();
+  void sort_synapses();
   
   virtual void save_connectivity_as_txt(std::string path, std::string prefix="", int synapsegroupid=-1);
   virtual void save_connectivity_as_binary(std::string path, std::string prefix="", int synapsegroupid=-1);

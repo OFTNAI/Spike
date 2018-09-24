@@ -17,7 +17,7 @@ Neurons::Neurons() {
 	per_neuron_afferent_synapse_count = nullptr;
 	group_shapes = nullptr;
 	per_neuron_efferent_synapse_count = nullptr;
-	per_neuron_efferent_synapse_indices = nullptr;
+	per_neuron_efferent_synapse_start = nullptr;
 }
 
 
@@ -28,9 +28,7 @@ Neurons::~Neurons() {
 	free(per_neuron_afferent_synapse_count);
 	free(group_shapes);
 	free(per_neuron_efferent_synapse_count);
-	for (int i = 0; i < total_number_of_neurons; i++)
-		free(per_neuron_efferent_synapse_indices[i]);
-	free(per_neuron_efferent_synapse_indices);
+	free(per_neuron_efferent_synapse_start);
 }
 
 
@@ -65,7 +63,7 @@ int Neurons::AddGroup(neuron_parameters_struct * group_params){
 
 	// Extend neuron afferent storage
 	per_neuron_efferent_synapse_count = (int*)realloc(per_neuron_efferent_synapse_count, total_number_of_neurons*sizeof(int));
-	per_neuron_efferent_synapse_indices = (int**)realloc(per_neuron_efferent_synapse_indices, total_number_of_neurons*sizeof(int*));
+	per_neuron_efferent_synapse_start = (int*)realloc(per_neuron_efferent_synapse_start, total_number_of_neurons*sizeof(int));
 	
 
 	// Used for event count
@@ -73,7 +71,7 @@ int Neurons::AddGroup(neuron_parameters_struct * group_params){
 	for (int i = total_number_of_neurons - number_of_neurons_in_new_group; i < total_number_of_neurons; i++) {
 		per_neuron_afferent_synapse_count[i] = 0;
 		per_neuron_efferent_synapse_count[i] = 0;
-		per_neuron_efferent_synapse_indices[i] = nullptr;
+		per_neuron_efferent_synapse_start[i] = 0;
 	}
 	
 	return new_group_id;
@@ -81,8 +79,10 @@ int Neurons::AddGroup(neuron_parameters_struct * group_params){
 
 void Neurons::AddEfferentSynapse(int neuron_id, int synapse_id){
 	per_neuron_efferent_synapse_count[neuron_id]++;
-	per_neuron_efferent_synapse_indices[neuron_id] = (int*)realloc(per_neuron_efferent_synapse_indices[neuron_id], sizeof(int)*per_neuron_efferent_synapse_count[neuron_id]);
-	per_neuron_efferent_synapse_indices[neuron_id][per_neuron_efferent_synapse_count[neuron_id] - 1] = synapse_id;
+  if (per_neuron_efferent_synapse_count[neuron_id] > max_num_efferent_synapses)
+    max_num_efferent_synapses = per_neuron_efferent_synapse_count[neuron_id];
+	//per_neuron_efferent_synapse_indices[neuron_id] = (int*)realloc(per_neuron_efferent_synapse_indices[neuron_id], sizeof(int)*per_neuron_efferent_synapse_count[neuron_id]);
+	//per_neuron_efferent_synapse_indices[neuron_id][per_neuron_efferent_synapse_count[neuron_id] - 1] = synapse_id;
 }
 
 void Neurons::reset_state() {

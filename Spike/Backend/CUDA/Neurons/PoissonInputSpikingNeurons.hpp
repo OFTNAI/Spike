@@ -50,6 +50,7 @@ namespace Backend {
        float* d_resting_potentials,
        float* d_last_spike_time_of_each_neuron,
        float current_time_in_seconds,
+       int timestep_index,
        size_t total_number_of_input_neurons,
        int current_stimulus_index);
   }

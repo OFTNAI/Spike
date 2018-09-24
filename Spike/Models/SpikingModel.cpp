@@ -142,8 +142,8 @@ void SpikingModel::init_backend() {
   TimerWithMessages* timer = new TimerWithMessages("Setting Up Network...\n");
   #endif
 
-  context->params.threads_per_block_neurons = 512;
-  context->params.threads_per_block_synapses = 512;
+  context->params.threads_per_block_neurons = 32;
+  context->params.threads_per_block_synapses = 32;
 
   // NB All these also call prepare_backend for the initial state:
   spiking_synapses->init_backend(context);

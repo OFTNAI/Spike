@@ -31,12 +31,18 @@ namespace Backend {
       neuron_inputs_struct neuron_inputs;
       int synapse_type = EMPTY;
       int num_syn_labels = 0;
+      int* syn_labels = nullptr;
       int* num_activated_neurons = nullptr;
       int* num_active_synapses = nullptr;
       int* active_synapse_counts = nullptr;
+      int* active_synapse_starts = nullptr;
       int* active_presynaptic_neuron_indices = nullptr;
       int* group_indices = nullptr;
 
+      int* postsynaptic_neuron_indices = nullptr;
+      int* delays = nullptr;
+      float* synaptic_efficacies_or_weights = nullptr;
+      float* weight_scaling_constants = nullptr;
     };
     typedef float (*injection_kernel)(
         spiking_synapses_data_struct* synaptic_data,
@@ -65,6 +71,7 @@ namespace Backend {
       int* num_active_synapses = nullptr;
       int* num_activated_neurons = nullptr;
       int* active_synapse_counts = nullptr;
+      int* active_synapse_starts = nullptr;
       int* active_presynaptic_neuron_indices = nullptr;
       int h_num_active_synapses = 0;
       // Device pointers
@@ -113,28 +120,13 @@ namespace Backend {
       bool is_input);
     
     __global__ void activate_synapses(
-        int* d_per_neuron_efferent_synapse_total,
-        int* d_per_neuron_efferent_synapse_indices,
-        int* d_per_input_neuron_efferent_synapse_total,
-        int* d_per_input_neuron_efferent_synapse_indices,
+        spiking_synapses_data_struct* synaptic_data,
+        spiking_neurons_data_struct* neurons_data,
+        spiking_neurons_data_struct* in_neurons_data,
         int bufferloc,
-        int buffersize,
-        neuron_inputs_struct neuron_inputs,
-        int* postsynaptic_neuron_indices,
-        float* synaptic_efficacies_or_weights,
-        float* weight_scaling_constants,
-        int* d_delays,
-        int num_syn_labels,
-        int * d_syn_labels,
         float timestep,
         float current_time_in_seconds,
-        int total_number_of_synapses,
-        int total_number_of_neurons,
-        int* group_indices,
-        int timestep_grouping,
-        int* active_presynaptic_neuron_indices,
-        int* active_synapse_counts,
-        int* num_activated_neurons,
-        int* num_active_synapses);
+        int timestep_index,
+        int timestep_grouping);
   }
 }

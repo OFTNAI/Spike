@@ -51,6 +51,7 @@ namespace Backend {
            current_time_in_seconds,
            frontend()->stimulus_onset_adjustment,
            timestep,
+           (int)roundf(current_time_in_seconds / timestep),
            frontend()->model->timestep_grouping,
            num_spikes_in_current_stimulus);
 
@@ -69,6 +70,7 @@ namespace Backend {
         float current_time_in_seconds,
         float stimulus_onset_adjustment,
         float timestep,
+        int timestep_index,
         int timestep_grouping,
         size_t number_of_spikes_in_stimulus){
 
@@ -77,7 +79,7 @@ namespace Backend {
       int bufsize = neuron_data->neuron_spike_time_bitbuffer_bytesize[0];
       while (idx < number_of_spikes_in_stimulus) {
         for (int g=0; g < timestep_grouping; g++){
-          int bitloc = ((int)roundf(current_time_in_seconds / timestep) + g) % (8*bufsize);
+          int bitloc = (timestep_index + g) % (8*bufsize);
           neuron_data->neuron_spike_time_bitbuffer[idx*bufsize + (bitloc / 8)] &= ~(1 << (bitloc % 8));
           if (fabs((current_time_in_seconds - stimulus_onset_adjustment + g*timestep) - d_spike_times_for_stimulus[idx]) < 0.5 * timestep) {
             neuron_data->neuron_spike_time_bitbuffer[d_neuron_ids_for_stimulus[idx]*bufsize + (bitloc / 8)] |= (1 << (bitloc % 8));
@@ -90,6 +92,7 @@ namespace Backend {
                 neuron_data,
                 g,
                 idx,
+                timestep_index,
                 true);
           }
         }

@@ -43,6 +43,7 @@ namespace Backend {
         float current_time_in_seconds,
         float stimulus_onset_adjustment,
         float timestep,
+        int timstep_index,
         int timestep_grouping,
         size_t number_of_spikes_in_stimulus);
 

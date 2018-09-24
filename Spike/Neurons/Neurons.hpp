@@ -64,13 +64,14 @@ public:
   int number_of_neurons_in_new_group;			/**< Stores number of neurons in most recently added group */
 
   // Host Pointers
-  int *start_neuron_indices_for_each_group;	/**< Indices of the beginnings of each group in the total population. */
-  int *last_neuron_indices_for_each_group;	/**< Indices of the final neuron in each group. */
-  int * per_neuron_afferent_synapse_count;	/**< A (host-side) count of the number of afferent synapses for each neuron */
-  int **group_shapes;							/**< The 2D shape of each group. */
+  int *start_neuron_indices_for_each_group = nullptr;	/**< Indices of the beginnings of each group in the total population. */
+  int *last_neuron_indices_for_each_group = nullptr;	/**< Indices of the final neuron in each group. */
+  int * per_neuron_afferent_synapse_count = nullptr;	/**< A (host-side) count of the number of afferent synapses for each neuron */
+  int **group_shapes = nullptr;							/**< The 2D shape of each group. */
 
-  int *per_neuron_efferent_synapse_count;	/**< An array containing the number of output synapses from each neuron */
-  int **per_neuron_efferent_synapse_indices;	/**< A 2D array detailing the synapse indices of efferent synapses from each neuron */
+  int *per_neuron_efferent_synapse_count = nullptr;	/**< An array containing the number of output synapses from each neuron */
+  int *per_neuron_efferent_synapse_start = nullptr;
+  int max_num_efferent_synapses = 0;
   
   /**  
    *  Determines the total number of neurons by which the simulation should increase.

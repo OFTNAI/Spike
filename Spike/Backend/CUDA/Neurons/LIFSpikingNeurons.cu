@@ -81,6 +81,7 @@ namespace Backend {
          timestep,
          frontend()->model->timestep_grouping,
          current_time_in_seconds,
+         (int)(roundf(current_time_in_seconds / timestep)),
          frontend()->refractory_period_in_seconds,
          frontend()->total_number_of_neurons);
 
@@ -96,6 +97,7 @@ namespace Backend {
         float timestep,
         int timestep_grouping,
         float current_time_in_seconds,
+        int timestep_index,
         float refractory_period_in_seconds,
         size_t total_number_of_neurons) {
       // Get thread IDs
@@ -111,7 +113,7 @@ namespace Backend {
         int bufsize = in_neuron_data->neuron_spike_time_bitbuffer_bytesize[0];
           
         for (int g=0; g < timestep_grouping; g++){
-          int bitloc = ((int)roundf(current_time_in_seconds / timestep) + g) % (bufsize*8);
+          int bitloc = (timestep_index + g) % (bufsize*8);
           in_neuron_data->neuron_spike_time_bitbuffer[idx*bufsize + (bitloc / 8)] &= ~(1 << (bitloc % 8));
           #ifndef INLINEDEVICEFUNCS
             voltage_input_for_timestep = current_injection_kernel(
@@ -186,6 +188,7 @@ namespace Backend {
                   in_neuron_data,
                   g,
                   idx,
+                  timestep_index / timestep_grouping,
                   false);
               //break;
               continue;

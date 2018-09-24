@@ -45,6 +45,7 @@ namespace Backend {
          resting_potentials_v0,
          last_spike_time_of_each_neuron,
          current_time_in_seconds,
+         (int)roundf(current_time_in_seconds / timestep),
          frontend()->total_number_of_neurons,
          frontend()->current_stimulus_index);
 
