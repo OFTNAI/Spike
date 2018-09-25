@@ -31,12 +31,13 @@ void Synapses::prepare_backend_early() {
 void Synapses::sort_synapses(){
   if (!synapses_sorted){
     // Initializing Index Array
-    synapse_presort_indices = (int*)malloc(total_number_of_synapses * sizeof(int));
+    synapse_sort_indices = (int*)malloc(total_number_of_synapses * sizeof(int));
+    synapse_reversesort_indices = (int*)malloc(total_number_of_synapses * sizeof(int));
     for (int s=0; s < total_number_of_synapses; s++){
-      synapse_presort_indices[s] = s;
+      synapse_sort_indices[s] = s;
     }
     // Carrying out argsort with the indices array storage
-    std::sort(synapse_presort_indices, synapse_presort_indices + total_number_of_synapses,
+    std::sort(synapse_sort_indices, synapse_sort_indices + total_number_of_synapses,
          [&](int i, int j){return presynaptic_neuron_indices[i] < presynaptic_neuron_indices[j];});
     int* temp_presyn_array = (int*)malloc(total_number_of_synapses * sizeof(int));
     int* temp_postsyn_array = (int*)malloc(total_number_of_synapses * sizeof(int));
@@ -44,10 +45,12 @@ void Synapses::sort_synapses(){
     float* temp_scaling_array = (float*)malloc(total_number_of_synapses * sizeof(float));
     // Re-ordering arrays
     for (int s=0; s < total_number_of_synapses; s++){
-      temp_presyn_array[s] = presynaptic_neuron_indices[synapse_presort_indices[s]];
-      temp_postsyn_array[s] = postsynaptic_neuron_indices[synapse_presort_indices[s]];
-      temp_weight_array[s] = synaptic_efficacies_or_weights[synapse_presort_indices[s]];
-      temp_scaling_array[s] = weight_scaling_constants[synapse_presort_indices[s]];
+      temp_presyn_array[s] = presynaptic_neuron_indices[synapse_sort_indices[s]];
+      temp_postsyn_array[s] = postsynaptic_neuron_indices[synapse_sort_indices[s]];
+      temp_weight_array[s] = synaptic_efficacies_or_weights[synapse_sort_indices[s]];
+      temp_scaling_array[s] = weight_scaling_constants[synapse_sort_indices[s]];
+
+      synapse_reversesort_indices[synapse_sort_indices[s]] = s;
     }
 
     free(presynaptic_neuron_indices);
@@ -70,7 +73,8 @@ Synapses::~Synapses() {
   free(postsynaptic_neuron_indices);
   free(synaptic_efficacies_or_weights);
   free(synapse_postsynaptic_neuron_count_index);
-  free(synapse_presort_indices);
+  free(synapse_sort_indices);
+  free(synapse_reversesort_indices);
   free(weight_scaling_constants);
 
   delete random_state_manager;

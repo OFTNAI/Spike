@@ -18,10 +18,6 @@ WeightDependentSTDPPlasticity::WeightDependentSTDPPlasticity(SpikingSynapses* sy
 WeightDependentSTDPPlasticity::~WeightDependentSTDPPlasticity() {
 }
 
-void WeightDependentSTDPPlasticity::prepare_backend_late() {
-}
-
-
 // Run the STDP
 void WeightDependentSTDPPlasticity::state_update(float current_time_in_seconds, float timestep){
   apply_stdp_to_synapse_weights(current_time_in_seconds, timestep);

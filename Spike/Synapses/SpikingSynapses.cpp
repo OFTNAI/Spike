@@ -11,7 +11,7 @@ SpikingSynapses::~SpikingSynapses() {
 
 void SpikingSynapses::prepare_backend_early() {
   Synapses::prepare_backend_early();
-  sort_synapses();
+  SpikingSynapses::sort_synapses();
   
   // Setting Neuron and InputNeuron start indices
   set_synapse_start(presynaptic_neuron_indices[0], 0);
@@ -37,8 +37,8 @@ void SpikingSynapses::sort_synapses(){
   int* temp_synlabel_array = (int*)malloc(total_number_of_synapses * sizeof(int));
   // Re-ordering arrays
   for (int s=0; s < total_number_of_synapses; s++){
-    temp_delay_array[s] = delays[synapse_presort_indices[s]];
-    temp_synlabel_array[s] = syn_labels[synapse_presort_indices[s]];
+    temp_delay_array[s] = delays[synapse_sort_indices[s]];
+    temp_synlabel_array[s] = syn_labels[synapse_sort_indices[s]];
   }
 
   free(delays);

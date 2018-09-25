@@ -129,7 +129,8 @@ public:
   int maximum_number_of_afferent_synapses = 0;
 
   bool synapses_sorted = false;
-  int* synapse_presort_indices = nullptr;   // Re-sorting synapses by pre-synaptic neuron
+  int* synapse_sort_indices = nullptr;   // Re-sorting synapses by pre-synaptic neuron
+  int* synapse_reversesort_indices = nullptr;   // Re-sorting synapses by pre-synaptic neuron
 
   // Functions
 
