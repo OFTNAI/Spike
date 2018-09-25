@@ -160,7 +160,7 @@ void SpikingSynapses::save_connectivity_as_txt(std::string path, std::string pre
 
   // Send data to file
   for (int i = startid; i < endid; i++){
-    delayfile << delays[i] << std::endl;
+    delayfile << delays[synapse_reversesort_indices[i]] << std::endl;
   }
 
   // Close files
@@ -187,7 +187,9 @@ void SpikingSynapses::save_connectivity_as_binary(std::string path, std::string 
     backend()->copy_to_frontend();
 
   // Send data to file
-  delayfile.write((char *)&delays[startid], (endid - startid)*sizeof(int));
+  for (int i = startid; i < endid; i++){
+    delayfile.write((char *)&delays[synapse_reversesort_indices[i]], sizeof(int));
+  }
 
   // Close files
   delayfile.close();
