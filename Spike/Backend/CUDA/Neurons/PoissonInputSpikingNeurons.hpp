@@ -31,6 +31,7 @@ namespace Backend {
 
       ::Backend::CUDA::RandomStateManager* random_state_manager_backend = nullptr;
       float * rates = nullptr;
+      bool * active = nullptr;
       
       void allocate_device_pointers(); // Not virtual
       void copy_constants_to_device(); // Not virtual
@@ -43,6 +44,7 @@ namespace Backend {
         spiking_neurons_data_struct* in_neuron_data,
         curandState_t* d_states,
        float *d_rates,
+       bool *active,
        float *d_membrane_potentials_v,
        float timestep,
        int timestep_grouping,

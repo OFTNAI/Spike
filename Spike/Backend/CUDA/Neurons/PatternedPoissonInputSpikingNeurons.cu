@@ -38,6 +38,7 @@ namespace Backend {
          d_neuron_data,
          random_state_manager_backend->states,
          stimuli_rates,
+         active,
          membrane_potentials_v,
          timestep,
          frontend()->model->timestep_grouping,
