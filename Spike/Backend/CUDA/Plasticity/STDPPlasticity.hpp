@@ -21,6 +21,7 @@ namespace Backend {
     class STDPPlasticity : public virtual ::Backend::CUDA::Plasticity,
         public virtual ::Backend::STDPPlasticity {
     protected:
+      ::Backend::CUDA::SpikingNeurons* input_neurons_backend = nullptr;
       ::Backend::CUDA::SpikingNeurons* neurons_backend = nullptr;
       ::Backend::CUDA::SpikingSynapses* synapses_backend = nullptr;
     public:

@@ -8,7 +8,9 @@
 namespace Backend {
   namespace CUDA {
     struct neurons_data_struct {
-	    int total_number_of_neurons;
+      int total_number_of_neurons;
+      int * per_neuron_efferent_synapse_count = nullptr;
+      int * per_neuron_efferent_synapse_start = nullptr;
     };
 
     class Neurons : public virtual ::Backend::Neurons {
@@ -19,20 +21,18 @@ namespace Backend {
       void reset_state() override;
 
       // Device Pointers
-      int * per_neuron_afferent_synapse_count = nullptr;	/**< A (device-side) count of the number of afferent synapses for each neuron */
+      int * per_neuron_afferent_synapse_count = nullptr;  /**< A (device-side) count of the number of afferent synapses for each neuron */
       
-      int * h_per_neuron_efferent_synapse_total = nullptr;
-      int * per_neuron_efferent_synapse_total = nullptr;
       int * per_neuron_efferent_synapse_count = nullptr;
-      int * per_neuron_efferent_synapse_indices = nullptr;
+      int * per_neuron_efferent_synapse_start = nullptr;
 
-      dim3 number_of_neuron_blocks_per_grid;		/**< CUDA Device number of blocks */
-      dim3 threads_per_block;						/**< CUDA Device number of threads */
+      dim3 number_of_neuron_blocks_per_grid;    /**< CUDA Device number of blocks */
+      dim3 threads_per_block;           /**< CUDA Device number of threads */
       neurons_data_struct* neuron_data;
       neurons_data_struct* d_neuron_data;
 
       void allocate_device_pointers(); // Not virtual
-	
+  
       /**  
        *  Allows copying of static data related to neuron dynamics to the device.
        */

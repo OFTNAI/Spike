@@ -52,7 +52,7 @@ public:
   struct weightdependent_stdp_plasticity_parameters_struct* stdp_params;
 
   void init_backend(Context* ctx = _global_ctx) override;
-  void prepare_backend_late() override;
+  //void prepare_backend_late() override;
 
   void state_update(float current_time_in_seconds, float timestep) override;
 

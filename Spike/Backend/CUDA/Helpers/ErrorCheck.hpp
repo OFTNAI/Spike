@@ -9,6 +9,15 @@
 // Define this to turn on error checking
 //#define CUDA_ERROR_CHECK
 
+// Define this to use the faster INLINE device functions
+#define INLINEDEVICEFUNCS
+
+/*
+#define BITLOC(time, timestep, offset, buffersize) (((int)roundf(time / timestep) + offset) % buffersize)
+#define BYTEIDX(bitloc) (bitloc / 8)
+#define BITIDX(bitloc) (bitloc % 8)
+*/
+
 #include <cuda.h>
 #include <cuda_runtime.h>
 #include <stdio.h>

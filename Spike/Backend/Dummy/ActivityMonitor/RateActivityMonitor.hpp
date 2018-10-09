@@ -15,7 +15,7 @@ namespace Backend {
       void reset_state() override;
 
       void add_spikes_to_per_neuron_spike_count
-      (float current_time_in_seconds) override;
+      (float current_time_in_seconds, float timestep) override;
       void copy_spike_count_to_host() override;
     };
   }

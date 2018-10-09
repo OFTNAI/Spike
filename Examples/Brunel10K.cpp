@@ -34,6 +34,7 @@ int main (int argc, char *argv[]){
   float sparseness = 0.1;
   bool fast = false;
   bool plastic = false;
+  std::stringstream ss;
   const char* const short_opts = "";
   const option long_opts[] = {
     {"simtime", 1, nullptr, 0},
@@ -50,7 +51,9 @@ int main (int argc, char *argv[]){
     switch (opt){
       case 0:
         printf("Running with a simulation time of: %ss\n", optarg);
-        simtime = std::stof(optarg);
+        ss << optarg;
+        ss >> simtime;
+        ss.clear();
         break;
       case 1:
         printf("Running in fast mode (no spike collection)\n");
