@@ -76,9 +76,7 @@ void GeneratorInputSpikingNeurons::select_stimulus(int stimulus_index) {
 
   InputSpikingNeurons::select_stimulus(stimulus_index);
 
-  if (stimulus_has_been_previously_set) reset_state();
-
-  stimulus_has_been_previously_set = true;
+  if (_backend) reset_state();
 
 }
 
