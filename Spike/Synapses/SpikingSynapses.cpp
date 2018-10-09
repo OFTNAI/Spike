@@ -9,6 +9,46 @@ SpikingSynapses::~SpikingSynapses() {
 
 }
 
+void SpikingSynapses::prepare_backend_early() {
+  Synapses::prepare_backend_early();
+  Synapses::sort_synapses(model->input_spiking_neurons, model->spiking_neurons);
+  SpikingSynapses::sort_synapses();
+  
+  // Setting Neuron and InputNeuron start indices
+  set_synapse_start(presynaptic_neuron_indices[0], 0);
+  for (int s=1; s < total_number_of_synapses; s++){
+    if (presynaptic_neuron_indices[s-1] != presynaptic_neuron_indices[s])
+      set_synapse_start(presynaptic_neuron_indices[s], s); 
+  }
+}
+
+void SpikingSynapses::set_synapse_start(int pre_index, int syn_start){
+  bool is_presynaptic = PRESYNAPTIC_IS_INPUT(pre_index);
+  int corr_pre_index = CORRECTED_PRESYNAPTIC_ID(pre_index, is_presynaptic);
+
+  int* neuron_start_indices = is_presynaptic ? model->input_spiking_neurons->per_neuron_efferent_synapse_start : model->spiking_neurons->per_neuron_efferent_synapse_start;
+
+  neuron_start_indices[corr_pre_index] = syn_start;
+}
+
+
+void SpikingSynapses::sort_synapses(){
+  
+  int* temp_delay_array = (int*)malloc(total_number_of_synapses * sizeof(int));
+  int* temp_synlabel_array = (int*)malloc(total_number_of_synapses * sizeof(int));
+  // Re-ordering arrays
+  for (int s=0; s < total_number_of_synapses; s++){
+    temp_delay_array[s] = delays[synapse_sort_indices[s]];
+    temp_synlabel_array[s] = syn_labels[synapse_sort_indices[s]];
+  }
+
+  free(delays);
+  free(syn_labels);
+
+  delays = temp_delay_array;
+  syn_labels = temp_synlabel_array;
+}
+
 // Connection Detail implementation
 //  INPUT:
 //    Pre-neuron population ID
@@ -121,7 +161,7 @@ void SpikingSynapses::save_connectivity_as_txt(std::string path, std::string pre
 
   // Send data to file
   for (int i = startid; i < endid; i++){
-    delayfile << delays[i] << std::endl;
+    delayfile << delays[synapse_reversesort_indices[i]] << std::endl;
   }
 
   // Close files
@@ -148,7 +188,9 @@ void SpikingSynapses::save_connectivity_as_binary(std::string path, std::string 
     backend()->copy_to_frontend();
 
   // Send data to file
-  delayfile.write((char *)&delays[startid], (endid - startid)*sizeof(int));
+  for (int i = startid; i < endid; i++){
+    delayfile.write((char *)&delays[synapse_reversesort_indices[i]], sizeof(int));
+  }
 
   // Close files
   delayfile.close();

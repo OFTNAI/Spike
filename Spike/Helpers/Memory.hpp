@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <stdio.h>
 
 #include "Spike/Base.hpp"
 #include "Spike/Backend/Backend.hpp"

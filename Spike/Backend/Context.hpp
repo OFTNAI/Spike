@@ -6,8 +6,8 @@
 #include <string>
 
 struct DeviceParameters {
-  int threads_per_block_neurons = 512;
-  int threads_per_block_synapses = 512;
+  int threads_per_block_neurons = 32;
+  int threads_per_block_synapses = 32;
   int maximum_axonal_delay_in_timesteps = 0;
 };
 

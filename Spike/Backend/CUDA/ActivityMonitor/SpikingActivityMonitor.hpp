@@ -32,7 +32,7 @@ namespace Backend {
     };
 
     __global__ void collect_spikes_for_timestep_kernel
-    (float* d_last_spike_time_of_each_neuron,
+    (spiking_neurons_data_struct* neuron_data,
      int* d_total_number_of_spikes_stored_on_device,
      int* d_neuron_ids_of_stored_spikes_on_device,
      float* d_time_in_seconds_of_stored_spikes_on_device,

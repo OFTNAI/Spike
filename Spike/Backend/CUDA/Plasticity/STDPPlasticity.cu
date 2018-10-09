@@ -12,10 +12,12 @@ namespace Backend {
 
     void STDPPlasticity::prepare() {
 
+      input_neurons_backend = dynamic_cast<::Backend::CUDA::SpikingNeurons*>
+        (frontend()->model->input_spiking_neurons->backend());
       neurons_backend = dynamic_cast<::Backend::CUDA::SpikingNeurons*>
-        (frontend()->neurs->backend());
+        (frontend()->model->spiking_neurons->backend());
       synapses_backend = dynamic_cast<::Backend::CUDA::SpikingSynapses*>
-        (frontend()->syns->backend());
+        (frontend()->model->spiking_synapses->backend());
 
       // Get the correct ID
       int plasticity_id = frontend()->plasticity_rule_id;

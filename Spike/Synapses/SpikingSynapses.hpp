@@ -19,7 +19,7 @@ namespace Backend {
 
 struct spiking_synapse_parameters_struct : synapse_parameters_struct {
   float delay_range[2];
-  std::vector<int> pairwise_connect_delay;
+  std::vector<float> pairwise_connect_delay;
 };
 
 class SpikingSynapses : public Synapses {
@@ -30,6 +30,7 @@ public:
 
   SPIKE_ADD_BACKEND_GETSET(SpikingSynapses, Synapses);
   void init_backend(Context* ctx = _global_ctx) override;
+  void prepare_backend_early() override;
 
   // Host Pointers
   int* delays = nullptr;
@@ -53,6 +54,8 @@ public:
                 synapse_parameters_struct * synapse_params) override;
 
   void increment_number_of_synapses(int increment);
+  void sort_synapses();
+  void set_synapse_start(int pre_index, int syn_start);
 
   virtual void state_update(SpikingNeurons * neurons, SpikingNeurons * input_neurons, float current_time_in_seconds, float timestep);
 

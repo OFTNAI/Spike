@@ -8,6 +8,7 @@
 #include "../Helpers/TerminalHelpers.hpp"
 
 #include <algorithm> // for random shuffle
+#include <vector> // for random shuffle
 #include <random>
 
 // Synapses Constructor
@@ -25,6 +26,58 @@ Synapses::Synapses(int seedval) {
 
 void Synapses::prepare_backend_early() {
   random_state_manager->init_backend(backend()->context);
+  // Sort synapses by pre-synaptic neuron
+  //sort_synapses();
+}
+
+void Synapses::sort_synapses(Neurons* input_neurons, Neurons* neurons){
+  if (!synapses_sorted){
+    std::vector<std::vector<int>> per_neuron_synapses;
+    int total_possible_pre_neurons = input_neurons->total_number_of_neurons + neurons->total_number_of_neurons;
+    for (int n=0; n < total_possible_pre_neurons; n++){
+      std::vector<int> empty;
+      per_neuron_synapses.push_back(empty);
+    }
+
+    for (int s=0; s < total_number_of_synapses; s++){
+      per_neuron_synapses[input_neurons->total_number_of_neurons + presynaptic_neuron_indices[s]].push_back(s);
+    }
+
+    // Sorting
+    int count = 0;
+    for (int n=0; n < total_possible_pre_neurons; n++){
+      for (int s=0; s < per_neuron_synapses[n].size(); s++){
+        synapse_sort_indices[count] = per_neuron_synapses[n][s];
+        count++;
+      }
+    }
+    
+    int* temp_presyn_array = (int*)malloc(total_number_of_synapses * sizeof(int));
+    int* temp_postsyn_array = (int*)malloc(total_number_of_synapses * sizeof(int));
+    float* temp_weight_array = (float*)malloc(total_number_of_synapses * sizeof(float));
+    float* temp_scaling_array = (float*)malloc(total_number_of_synapses * sizeof(float));
+    // Re-ordering arrays
+    for (int s=0; s < total_number_of_synapses; s++){
+      temp_presyn_array[s] = presynaptic_neuron_indices[synapse_sort_indices[s]];
+      temp_postsyn_array[s] = postsynaptic_neuron_indices[synapse_sort_indices[s]];
+      temp_weight_array[s] = synaptic_efficacies_or_weights[synapse_sort_indices[s]];
+      temp_scaling_array[s] = weight_scaling_constants[synapse_sort_indices[s]];
+
+      synapse_reversesort_indices[synapse_sort_indices[s]] = s;
+    }
+
+    free(presynaptic_neuron_indices);
+    free(postsynaptic_neuron_indices);
+    free(synaptic_efficacies_or_weights);
+    free(weight_scaling_constants);
+
+    presynaptic_neuron_indices = temp_presyn_array;
+    postsynaptic_neuron_indices = temp_postsyn_array;
+    synaptic_efficacies_or_weights = temp_weight_array;
+    weight_scaling_constants = temp_scaling_array;
+
+    synapses_sorted = true;
+  }
 }
 
 // Synapses Destructor
@@ -33,6 +86,8 @@ Synapses::~Synapses() {
   free(postsynaptic_neuron_indices);
   free(synaptic_efficacies_or_weights);
   free(synapse_postsynaptic_neuron_count_index);
+  free(synapse_sort_indices);
+  free(synapse_reversesort_indices);
   free(weight_scaling_constants);
 
   delete random_state_manager;
@@ -290,6 +345,8 @@ int Synapses::AddGroup(int presynaptic_group_id,
     else
     neurons->AddEfferentSynapse(presynaptic_id, i);
 
+    synapse_sort_indices[i] = i;
+    synapse_reversesort_indices[i] = i;
   }
 
   // SETTING UP PLASTICITY
@@ -319,6 +376,8 @@ int Synapses::AddGroup(int presynaptic_group_id,
     }
   }
 
+
+
   postpop_start_per_group.push_back(poststart);
   prepop_is_input.push_back(presynaptic_group_is_input);
   prepop_start_per_group.push_back(prestart);
@@ -339,18 +398,24 @@ void Synapses::increment_number_of_synapses(int increment) {
           synaptic_efficacies_or_weights = (float*)malloc(total_number_of_synapses * sizeof(float));
           weight_scaling_constants = (float*)malloc(total_number_of_synapses * sizeof(float));
           synapse_postsynaptic_neuron_count_index = (int*)malloc(total_number_of_synapses * sizeof(int));
+          synapse_sort_indices = (int*)malloc(total_number_of_synapses * sizeof(int));
+          synapse_reversesort_indices = (int*)malloc(total_number_of_synapses * sizeof(int));
   } else {
     int* temp_presynaptic_neuron_indices = (int*)realloc(presynaptic_neuron_indices, total_number_of_synapses * sizeof(int));
     int* temp_postsynaptic_neuron_indices = (int*)realloc(postsynaptic_neuron_indices, total_number_of_synapses * sizeof(int));
     float* temp_synaptic_efficacies_or_weights = (float*)realloc(synaptic_efficacies_or_weights, total_number_of_synapses * sizeof(float));
     int* temp_synapse_postsynaptic_neuron_count_index = (int*)realloc(synapse_postsynaptic_neuron_count_index, total_number_of_synapses * sizeof(int));
     float* temp_weight_scaling_constants = (float*)realloc(weight_scaling_constants, total_number_of_synapses * sizeof(float));
+    int* temp_sort_indices = (int*)realloc(synapse_sort_indices, total_number_of_synapses * sizeof(int));
+    int* temp_revsort_indices = (int*)realloc(synapse_reversesort_indices, total_number_of_synapses * sizeof(int));
 
     if (temp_presynaptic_neuron_indices != nullptr) presynaptic_neuron_indices = temp_presynaptic_neuron_indices;
     if (temp_postsynaptic_neuron_indices != nullptr) postsynaptic_neuron_indices = temp_postsynaptic_neuron_indices;
     if (temp_synaptic_efficacies_or_weights != nullptr) synaptic_efficacies_or_weights = temp_synaptic_efficacies_or_weights;
     if (temp_synapse_postsynaptic_neuron_count_index != nullptr) synapse_postsynaptic_neuron_count_index = temp_synapse_postsynaptic_neuron_count_index;
     if (temp_weight_scaling_constants != nullptr) weight_scaling_constants = temp_weight_scaling_constants;
+    if (temp_sort_indices != nullptr) synapse_sort_indices = temp_sort_indices;
+    if (temp_revsort_indices != nullptr) synapse_reversesort_indices = temp_revsort_indices;
   }
 
 }
@@ -385,11 +450,11 @@ void Synapses::save_connectivity_as_txt(std::string path, std::string prefix, in
   // Send data to file
   for (int i = startid; i < endid; i++){
     if (synapsegroupid >= 0)
-      preidfile << CORRECTED_PRESYNAPTIC_ID(presynaptic_neuron_indices[i], presynaptic_group_is_input) - precorrection << std::endl;
+      preidfile << CORRECTED_PRESYNAPTIC_ID(presynaptic_neuron_indices[synapse_reversesort_indices[i]], presynaptic_group_is_input) - precorrection << std::endl;
     else 
-      preidfile << presynaptic_neuron_indices[i];
-    postidfile << postsynaptic_neuron_indices[i] - postcorrection << std::endl;
-    weightfile << synaptic_efficacies_or_weights[i] << std::endl;
+      preidfile << presynaptic_neuron_indices[synapse_reversesort_indices[i]];
+    postidfile << postsynaptic_neuron_indices[synapse_reversesort_indices[i]] - postcorrection << std::endl;
+    weightfile << synaptic_efficacies_or_weights[synapse_reversesort_indices[i]] << std::endl;
   }
 
   // Close files
@@ -428,21 +493,24 @@ void Synapses::save_connectivity_as_binary(std::string path, std::string prefix,
 
   // Send data to file
   int preid, postid;
+  float weight;
   for (int i = startid; i < endid; i++){
     if (synapsegroupid >= 0)
-      preid = CORRECTED_PRESYNAPTIC_ID(presynaptic_neuron_indices[i], presynaptic_group_is_input) - precorrection;
+      preid = CORRECTED_PRESYNAPTIC_ID(presynaptic_neuron_indices[synapse_reversesort_indices[i]], presynaptic_group_is_input) - precorrection;
     else
-      preid = presynaptic_neuron_indices[i];
-    postid = postsynaptic_neuron_indices[i] - postcorrection;
+      preid = presynaptic_neuron_indices[synapse_reversesort_indices[i]];
+    postid = postsynaptic_neuron_indices[synapse_reversesort_indices[i]] - postcorrection;
+    weight = synaptic_efficacies_or_weights[synapse_reversesort_indices[i]];
     preidfile.write((char *)&preid, sizeof(int));
     postidfile.write((char *)&postid, sizeof(int));
+    weightfile.write((char *)&weight, sizeof(float));
   }
   /*
   // Send data to file
   preidfile.write((char *)&presynaptic_neuron_indices[startid], (endid - startid)*sizeof(int));
   postidfile.write((char *)&postsynaptic_neuron_indices[startid], (endid - startid)*sizeof(int));
   */
-  weightfile.write((char *)&synaptic_efficacies_or_weights[startid], (endid - startid)*sizeof(float));
+  //weightfile.write((char *)&synaptic_efficacies_or_weights[startid], (endid - startid)*sizeof(float));
 
   // Close files
   preidfile.close();
@@ -468,7 +536,7 @@ void Synapses::save_weights_as_txt(std::string path, std::string prefix, int syn
     backend()->copy_to_frontend();
   weightfile.open((path + "/" + prefix + "SynapticWeights.txt"), std::ios::out | std::ios::binary);
   for (int i = startid; i < endid; i++){
-    weightfile << synaptic_efficacies_or_weights[i] << std::endl;
+    weightfile << synaptic_efficacies_or_weights[synapse_reversesort_indices[i]] << std::endl;
   }
   weightfile.close();
 }
@@ -486,7 +554,9 @@ void Synapses::save_weights_as_binary(std::string path, std::string prefix, int 
   if (_backend)
     backend()->copy_to_frontend();
   weightfile.open((path + "/" + prefix + "SynapticWeights.bin"), std::ios::out | std::ios::binary);
-  weightfile.write((char *)&synaptic_efficacies_or_weights[startid], (endid - startid)*sizeof(float));
+  for (int i = startid; i < endid; i++){
+    weightfile.write((char *)&synaptic_efficacies_or_weights[synapse_reversesort_indices[i]], sizeof(float));
+  }
   
   weightfile.close();
 }
@@ -503,7 +573,7 @@ void Synapses::load_weights(std::vector<float> weights, int synapsegroupid){
 
   if (weights.size() == (endid - startid)){
     for (int i = startid; i < endid; i++){
-      synaptic_efficacies_or_weights[i] = weights[i - startid];
+      synaptic_efficacies_or_weights[synapse_reversesort_indices[i]] = weights[i - startid];
     }
   } else {
     print_message_and_exit("Number of weights loading not equal to number of synapses!!");

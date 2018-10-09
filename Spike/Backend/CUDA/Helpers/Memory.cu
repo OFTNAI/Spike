@@ -1,5 +1,6 @@
 #include "Spike/Backend/CUDA/Helpers/Memory.hpp"
 #include "Spike/Backend/CUDA/Helpers/ErrorCheck.hpp"
+#include <stdio.h>
 
 namespace Backend {
   namespace CUDA {

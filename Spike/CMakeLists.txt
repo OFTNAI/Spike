@@ -33,7 +33,7 @@ target_link_libraries(Spike PRIVATE ${WHOLE_ARCHIVE_FLAG}
 
 
 set(CUDA_NVCC_FLAGS "-std=c++11")
-set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} "-arch=sm_52")
+set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} "-arch=sm_37")
 function(add_cuda_exe_lib name files libraries is_lib)
     set (obj_list)
     foreach(file ${files})
