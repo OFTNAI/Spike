@@ -75,7 +75,8 @@ int GeneratorInputSpikingNeurons::add_stimulus(int spikenumber, int* ids, float*
 void GeneratorInputSpikingNeurons::select_stimulus(int stimulus_index) {
 
   InputSpikingNeurons::select_stimulus(stimulus_index);
-  reset_state();
+
+  if (_backend) reset_state();
 
 }
 
