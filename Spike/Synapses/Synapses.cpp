@@ -9,6 +9,7 @@
 
 #include <algorithm> // for random shuffle
 #include <vector> // for random shuffle
+#include <random>
 
 // Synapses Constructor
 Synapses::Synapses() {
@@ -234,9 +235,33 @@ int Synapses::AddGroup(int presynaptic_group_id,
             int number_of_new_synapses_per_postsynaptic_neuron = synapse_params->gaussian_synapses_per_postsynaptic_neuron;
       
             int number_of_postsynaptic_neurons_in_group = postend - poststart;
-            int total_number_of_new_synapses = number_of_new_synapses_per_postsynaptic_neuron * number_of_postsynaptic_neurons_in_group;
-            Synapses::increment_number_of_synapses(total_number_of_new_synapses);
+            int total_number_of_unique_synapses = number_of_new_synapses_per_postsynaptic_neuron * number_of_postsynaptic_neurons_in_group;
+            Synapses::increment_number_of_synapses(total_number_of_unique_synapses*max_number_of_connections_per_pair);
+            for (int i=0; i < total_number_of_unique_synapses;i++){
+              int postid = i / number_of_new_synapses_per_postsynaptic_neuron;
+              float post_fractional_centre_x = ((float)(postid % postsynaptic_group_shape[0]) / postsynaptic_group_shape[0]);
+              float post_fractional_centre_y = ((float)(postid / postsynaptic_group_shape[1]) / postsynaptic_group_shape[1]);
+              int pre_centre_x = presynaptic_group_shape[0] * post_fractional_centre_x;
+              int pre_centre_y = presynaptic_group_shape[1] * post_fractional_centre_y;
 
+              std::default_random_engine generator;
+              std::normal_distribution<float> pre_distribution_x((float)pre_centre_x, standard_deviation_sigma); 
+              std::normal_distribution<float> pre_distribution_y((float)pre_centre_y, standard_deviation_sigma); 
+
+              int pre_x = (int)round(pre_distribution_x(generator));
+              while ((pre_x < 0) || (pre_x >= presynaptic_group_shape[0]))
+                  pre_x = (int)(pre_distribution_x(generator));
+              int pre_y = (int)(pre_distribution_y(generator));
+              while ((pre_y < 0) || (pre_y >= presynaptic_group_shape[1]))
+                  pre_y = (int)round(pre_distribution_y(generator));
+             
+              for (int n=0; n < max_number_of_connections_per_pair; n++){ 
+                postsynaptic_neuron_indices[original_number_of_synapses + i + n*total_number_of_unique_synapses] = poststart + postid;
+                presynaptic_neuron_indices[original_number_of_synapses + i + n*total_number_of_unique_synapses] = CORRECTED_PRESYNAPTIC_ID(prestart + pre_x + presynaptic_group_shape[1] * pre_y, presynaptic_group_is_input);
+              }
+            }
+
+            /*
             backend()->set_neuron_indices_by_sampling_from_normal_distribution
               (original_number_of_synapses,
                total_number_of_new_synapses,
@@ -249,9 +274,10 @@ int Synapses::AddGroup(int presynaptic_group_id,
                max_number_of_connections_per_pair,
                standard_deviation_sigma,
                presynaptic_group_is_input);
+               */
 
-            if (total_number_of_new_synapses > largest_synapse_group_size) {
-              largest_synapse_group_size = total_number_of_new_synapses;
+            if (total_number_of_unique_synapses*max_number_of_connections_per_pair > largest_synapse_group_size) {
+              largest_synapse_group_size = total_number_of_unique_synapses*max_number_of_connections_per_pair;
             }
 
             break;
@@ -321,7 +347,6 @@ int Synapses::AddGroup(int presynaptic_group_id,
 
     synapse_sort_indices[i] = i;
     synapse_reversesort_indices[i] = i;
-   
   }
 
   // SETTING UP PLASTICITY
@@ -357,6 +382,7 @@ int Synapses::AddGroup(int presynaptic_group_id,
   prepop_is_input.push_back(presynaptic_group_is_input);
   prepop_start_per_group.push_back(prestart);
   last_index_of_synapse_per_group.push_back(total_number_of_synapses);
+
   return(last_index_of_synapse_per_group.size() - 1);
 
 }

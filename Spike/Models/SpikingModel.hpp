@@ -23,7 +23,7 @@ using namespace std;
 
 class SpikingModel {
 private:
-  void perform_per_step_model_instructions();
+  void perform_per_step_model_instructions(bool plasticity_on);
   float current_time_in_seconds = 0.0f;
 public:
   // Constructor/Destructor
@@ -56,7 +56,7 @@ public:
 
   void reset_state();
   void reset_time();
-  void run(float seconds);
+  void run(float seconds, bool plasticity_on=true);
 
   virtual void init_backend();
   virtual void prepare_backend();

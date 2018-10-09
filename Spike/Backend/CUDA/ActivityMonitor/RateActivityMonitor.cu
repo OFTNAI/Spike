@@ -17,6 +17,9 @@ namespace Backend {
 
     void RateActivityMonitor::prepare() {
       ActivityMonitor::prepare();
+      neurons_frontend = frontend()->neurons;
+      neurons_backend =
+        dynamic_cast<::Backend::CUDA::SpikingNeurons*>(neurons_frontend->backend());
       allocate_pointers_for_spike_count();
     }
 

@@ -23,7 +23,7 @@ public:
   
   int current_stimulus_index = 0;
   int total_number_of_input_stimuli = 0;
-  void select_stimulus(int stimulus_index);
+  virtual void select_stimulus(int stimulus_index);
   int AddGroup(neuron_parameters_struct * group_params) override;
 
 private:
