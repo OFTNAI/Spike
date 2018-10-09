@@ -135,7 +135,7 @@ namespace Backend {
           }
           // OnPost Weight Update
           if (neuron_data->neuron_spike_time_bitbuffer[postid*bufsize + (postbitloc / 8)] & (1 << (postbitloc % 8))){
-            syn_update_val -= stdp_vars.learning_rate * (stdp_vars.w_max - old_synaptic_weight) * stdp_pre_memory_trace_val;
+            syn_update_val += stdp_vars.learning_rate * (stdp_vars.w_max - old_synaptic_weight) * stdp_pre_memory_trace_val;
           }
 
           new_synaptic_weight = old_synaptic_weight + syn_update_val;

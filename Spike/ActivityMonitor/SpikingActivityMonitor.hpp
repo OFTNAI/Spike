@@ -8,7 +8,7 @@ class SpikingActivityMonitor; // forward definition
 
 struct spike_monitor_advanced_parameters {
 
-  spike_monitor_advanced_parameters(): number_of_timesteps_per_device_spike_copy_check(50), device_spike_store_size_multiple_of_total_neurons(52), proportion_of_device_spike_store_full_before_copy(0.2) {}
+  spike_monitor_advanced_parameters(): number_of_timesteps_per_device_spike_copy_check(50), device_spike_store_size_multiple_of_total_neurons(60), proportion_of_device_spike_store_full_before_copy(0.2) {}
 
   int number_of_timesteps_per_device_spike_copy_check;
   int device_spike_store_size_multiple_of_total_neurons;

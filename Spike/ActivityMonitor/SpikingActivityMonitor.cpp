@@ -77,9 +77,9 @@ void SpikingActivityMonitor::reset_state() {
 
 
 void SpikingActivityMonitor::copy_spikes_from_device_to_host_and_reset_device_spikes_if_device_spike_count_above_threshold(float current_time_in_seconds, float timestep, bool force) {
-  int current_time_in_timesteps = round(current_time_in_seconds / timestep);
+  int current_time_in_timesteps = round(current_time_in_seconds / timestep) / model->timestep_grouping;
 
-  if (((current_time_in_timesteps % advanced_parameters->number_of_timesteps_per_device_spike_copy_check) == 0) || force){
+  if (((current_time_in_timesteps % (advanced_parameters->number_of_timesteps_per_device_spike_copy_check / model->timestep_grouping)) == 0) || force){
 
     // Finally, we want to get the spikes back. Every few timesteps check the number of spikes:
     backend()->copy_spikecount_to_front();

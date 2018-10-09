@@ -51,8 +51,8 @@ namespace Backend {
 
     // Vogels update rule requires a neuron wise memory trace. This must be updated upon neuron firing.
     vogels_apply_stdp_to_synapse_weights_kernel<<<neurons_backend->number_of_neuron_blocks_per_grid, neurons_backend->threads_per_block>>>
-      (synapses_backend->presynaptic_neuron_indices,
-       synapses_backend->postsynaptic_neuron_indices,
+       (synapses_backend->postsynaptic_neuron_indices,
+       synapses_backend->presynaptic_neuron_indices,
        synapses_backend->delays,
        neurons_backend->d_neuron_data,
        input_neurons_backend->d_neuron_data,
