@@ -157,7 +157,7 @@ public:
      /param increment The number of synapses for which allocated memory must be expanded.
   */
   void increment_number_of_synapses(int increment);
-  void sort_synapses();
+  void sort_synapses(Neurons* input_neurons, Neurons* neurons);
   
   virtual void save_connectivity_as_txt(std::string path, std::string prefix="", int synapsegroupid=-1);
   virtual void save_connectivity_as_binary(std::string path, std::string prefix="", int synapsegroupid=-1);

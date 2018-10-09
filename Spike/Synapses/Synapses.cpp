@@ -8,6 +8,7 @@
 #include "../Helpers/TerminalHelpers.hpp"
 
 #include <algorithm> // for random shuffle
+#include <vector> // for random shuffle
 
 // Synapses Constructor
 Synapses::Synapses() {
@@ -25,18 +26,31 @@ Synapses::Synapses(int seedval) {
 void Synapses::prepare_backend_early() {
   random_state_manager->init_backend(backend()->context);
   // Sort synapses by pre-synaptic neuron
-  sort_synapses();
+  //sort_synapses();
 }
 
-void Synapses::sort_synapses(){
+void Synapses::sort_synapses(Neurons* input_neurons, Neurons* neurons){
   if (!synapses_sorted){
-    // Initializing Index Array
-    for (int s=0; s < total_number_of_synapses; s++){
-      synapse_sort_indices[s] = s;
+    std::vector<std::vector<int>> per_neuron_synapses;
+    int total_possible_pre_neurons = input_neurons->total_number_of_neurons + neurons->total_number_of_neurons;
+    for (int n=0; n < total_possible_pre_neurons; n++){
+      std::vector<int> empty;
+      per_neuron_synapses.push_back(empty);
     }
-    // Carrying out argsort with the indices array storage
-    std::sort(synapse_sort_indices, synapse_sort_indices + total_number_of_synapses,
-         [&](int i, int j){return presynaptic_neuron_indices[i] < presynaptic_neuron_indices[j];});
+
+    for (int s=0; s < total_number_of_synapses; s++){
+      per_neuron_synapses[input_neurons->total_number_of_neurons + presynaptic_neuron_indices[s]].push_back(s);
+    }
+
+    // Sorting
+    int count = 0;
+    for (int n=0; n < total_possible_pre_neurons; n++){
+      for (int s=0; s < per_neuron_synapses[n].size(); s++){
+        synapse_sort_indices[count] = per_neuron_synapses[n][s];
+        count++;
+      }
+    }
+    
     int* temp_presyn_array = (int*)malloc(total_number_of_synapses * sizeof(int));
     int* temp_postsyn_array = (int*)malloc(total_number_of_synapses * sizeof(int));
     float* temp_weight_array = (float*)malloc(total_number_of_synapses * sizeof(float));
