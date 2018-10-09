@@ -68,12 +68,6 @@ int GeneratorInputSpikingNeurons::add_stimulus(int spikenumber, int* ids, float*
   // Set the correct array location for maximum length
   temporal_lengths_of_stimuli[stimulus_index] = maxlen;
 
-  if (total_number_of_input_stimuli == 1) {
-    printf("neuron_id_matrix_for_stimuli[0][0]: %d\n", neuron_id_matrix_for_stimuli[0][0]); 
-    // printf("neuron_id_matrix_for_stimuli[1][1]: %d\n", neuron_id_matrix_for_stimuli[1][1]); 
-  }
-
-
   return stimulus_index;
 }
 
