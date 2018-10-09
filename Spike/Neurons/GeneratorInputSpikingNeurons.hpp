@@ -38,6 +38,8 @@ public:
   int add_stimulus(int spikenumber, int* ids, float* spiketimes);
   int add_stimulus(std::vector<int> ids, std::vector<float> spiketimes);
 
+  void select_stimulus(int stimulus_index) override;
+
 private:
   std::shared_ptr<::Backend::GeneratorInputSpikingNeurons> _backend;
 };
