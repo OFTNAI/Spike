@@ -50,7 +50,9 @@ int main (int argc, char *argv[]){
       ADD ANY ACTIVITY MONITORS OR PLASTICITY RULES YOU WISH FOR 
   */
   SpikingActivityMonitor* spike_monitor = new SpikingActivityMonitor(lif_spiking_neurons);
+  SpikingActivityMonitor* input_spike_monitor = new SpikingActivityMonitor(generator_input_neurons);
   ExampleModel->AddActivityMonitor(spike_monitor);
+  ExampleModel->AddActivityMonitor(input_spike_monitor);
 
   /*
       SETUP PROPERTIES AND CREATE NETWORK:
@@ -158,7 +160,8 @@ int main (int argc, char *argv[]){
   */
 
   // The only argument to run is the number of seconds
-  float simtime = 5.0f;
+  ExampleModel->finalise_model();
+  float simtime = 50.0f;
   generator_input_neurons->select_stimulus(first_stimulus);
   ExampleModel->run(simtime);
 
@@ -166,7 +169,8 @@ int main (int argc, char *argv[]){
   ExampleModel->run(simtime);
   
 
-  spike_monitor->save_spikes_as_txt("./");
+  //spike_monitor->save_spikes_as_txt("./");
+  input_spike_monitor->save_spikes_as_txt("./");
   ExampleModel->spiking_synapses->save_connectivity_as_txt("./");
 
   return 0;

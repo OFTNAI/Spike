@@ -53,7 +53,7 @@ public:
   float* recent_presynaptic_activities_C = nullptr;
 
   void init_backend(Context* ctx = _global_ctx) override;
-  void prepare_backend_late() override;
+  void prepare_backend_early() override;
 
   void state_update(float current_time_in_seconds, float timestep) override;
   
