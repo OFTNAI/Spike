@@ -100,7 +100,7 @@ namespace Backend {
             // Creates random float between 0 and 1 from uniform distribution
             // d_states effectively provides a different seed for each thread
             // curand_uniform produces different float every time you call it
-            if (in_neuron_data->last_spike_time_of_each_neuron[idx] <= (current_time_in_seconds + g*timestep)){
+            if ((in_neuron_data->last_spike_time_of_each_neuron[idx] <= (current_time_in_seconds + g*timestep)) || (!active)){
               int rate_index = (total_number_of_input_neurons * current_stimulus_index) + idx;
               float rate = d_rates[rate_index];
               float random_float = curand_uniform(&d_states[t_idx]);

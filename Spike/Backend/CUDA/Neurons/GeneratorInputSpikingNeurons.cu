@@ -109,6 +109,7 @@ namespace Backend {
           if (fabs((current_time_in_seconds - stimulus_onset_adjustment + g*timestep) - d_spike_times_for_stimulus[idx]) < 0.5 * timestep) {
             int bitloc = (timestep_index + g) % (8*bufsize);
             neuron_data->neuron_spike_time_bitbuffer[d_neuron_ids_for_stimulus[idx]*bufsize + (bitloc / 8)] |= (1 << (bitloc % 8));
+           neuron_data->last_spike_time_of_each_neuron[d_neuron_ids_for_stimulus[idx]] = current_time_in_seconds + g*timestep;
             #ifndef INLINEDEVICEFUNCS
               syn_activation_kernel(
             #else
