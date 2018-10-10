@@ -161,7 +161,7 @@ int main (int argc, char *argv[]){
 
   // The only argument to run is the number of seconds
   ExampleModel->finalise_model();
-  float simtime = 5.0f;
+  float simtime = 50.0f;
   generator_input_neurons->select_stimulus(first_stimulus);
   ExampleModel->run(simtime);
 

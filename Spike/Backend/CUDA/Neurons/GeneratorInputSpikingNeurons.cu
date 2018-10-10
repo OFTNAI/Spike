@@ -39,8 +39,8 @@ namespace Backend {
     }
 
     void GeneratorInputSpikingNeurons::state_update(float current_time_in_seconds, float timestep) {
-      //if ((frontend()->temporal_lengths_of_stimuli[frontend()->current_stimulus_index] +  (frontend()->model->timestep_grouping + 1)*timestep) > (current_time_in_seconds - frontend()->stimulus_onset_adjustment)){
-        ::Backend::CUDA::SpikingSynapses* synapses_backend = dynamic_cast<::Backend::CUDA::SpikingSynapses*>(frontend()->model->spiking_synapses->backend());
+      ::Backend::CUDA::SpikingSynapses* synapses_backend = dynamic_cast<::Backend::CUDA::SpikingSynapses*>(frontend()->model->spiking_synapses->backend());
+      if ((frontend()->temporal_lengths_of_stimuli[frontend()->current_stimulus_index] + (h_neuron_spike_time_bitbuffer_bytesize*8 + 1)*timestep) > (current_time_in_seconds - frontend()->stimulus_onset_adjustment)){
 
         reset_spike_times<<<number_of_neuron_blocks_per_grid, threads_per_block>>>(
            d_neuron_data,
@@ -65,7 +65,7 @@ namespace Backend {
            num_spikes_in_current_stimulus);
 
         CudaCheckError();
-      //}
+      }
     }
 
     __global__ void reset_spike_times(
