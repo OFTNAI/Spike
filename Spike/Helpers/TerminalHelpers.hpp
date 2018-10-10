@@ -11,6 +11,11 @@ inline void print_line_of_dashes_with_blank_lines_either_side(){
 	printf("\n----------------------------------\n\n");
 }
 
+inline void print_message_with_line_of_dashes_with_blank_lines_either_side(const char * message){
+	printf("\n----------------------------------\n");
+	printf("%s", message);
+	print_line_of_dashes_with_blank_lines_either_side();
+}
 
 inline void print_message_and_exit(const char * message)
 {
