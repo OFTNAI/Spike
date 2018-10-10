@@ -9,8 +9,6 @@
 
 EvansSTDPPlasticity::EvansSTDPPlasticity(SpikingSynapses* synapses, SpikingNeurons* neurons, SpikingNeurons* input_neurons, stdp_plasticity_parameters_struct* stdp_parameters){
   stdp_params = (evans_stdp_plasticity_parameters_struct *)stdp_parameters;
-  syns = synapses;
-  neurs = neurons;
 }
 
 EvansSTDPPlasticity::~EvansSTDPPlasticity() {
@@ -18,10 +16,10 @@ EvansSTDPPlasticity::~EvansSTDPPlasticity() {
   free(recent_presynaptic_activities_C);
 }
 
-void EvansSTDPPlasticity::prepare_backend_late() {
+void EvansSTDPPlasticity::prepare_backend_early() {
   // Create extra LIF arrays
-  recent_postsynaptic_activities_D = (float*)realloc(recent_postsynaptic_activities_D, total_number_of_plastic_synapses);
-  recent_presynaptic_activities_C = (float*)realloc(recent_presynaptic_activities_C, total_number_of_plastic_synapses);
+  recent_postsynaptic_activities_D = (float*)realloc(recent_postsynaptic_activities_D, sizeof(float)*total_number_of_plastic_synapses);
+  recent_presynaptic_activities_C = (float*)realloc(recent_presynaptic_activities_C, sizeof(float)*total_number_of_plastic_synapses);
   for (int i = 0; i < total_number_of_plastic_synapses; i++){
     recent_postsynaptic_activities_D[i] = 0.0f;
     recent_presynaptic_activities_C[i] = 0.0f;
