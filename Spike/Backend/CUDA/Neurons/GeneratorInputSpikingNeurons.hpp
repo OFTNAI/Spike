@@ -45,6 +45,7 @@ namespace Backend {
         float timestep,
         int timstep_index,
         int timestep_grouping,
+        int total_number_of_neurons,
         size_t number_of_spikes_in_stimulus);
 
   }
