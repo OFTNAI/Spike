@@ -31,6 +31,7 @@ struct custom_stdp_plasticity_parameters_struct : stdp_plasticity_parameters_str
   // STDPPlasticity Parameters
   float a_minus;
   float a_plus;
+  float a_star;
   float tau_minus;
   float tau_plus;
   float w_max;

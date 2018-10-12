@@ -26,9 +26,9 @@ namespace Backend {
 
     void PoissonInputSpikingNeurons::reset_state() {
       InputSpikingNeurons::reset_state();
-      bool* init = (bool*)malloc(sizeof(bool)*frontend()->total_number_of_neurons);
+      bool * init = (bool*)malloc(sizeof(bool)*frontend()->total_number_of_neurons);
       for (int n=0; n < frontend()->total_number_of_neurons; n++)
-        init[0] = false;
+        init[n] = false;
       CudaSafeCall(cudaMemcpy(active, init, sizeof(bool)*frontend()->total_number_of_neurons, cudaMemcpyHostToDevice));
       free(init);
     }
@@ -100,7 +100,8 @@ namespace Backend {
             // Creates random float between 0 and 1 from uniform distribution
             // d_states effectively provides a different seed for each thread
             // curand_uniform produces different float every time you call it
-            if ((in_neuron_data->last_spike_time_of_each_neuron[idx] <= (current_time_in_seconds + g*timestep)) || (!active)){
+            in_neuron_data->neuron_spike_time_bitbuffer[idx*bufsize + (bitloc / 8)] &= ~(1 << (bitloc % 8));
+            if ((in_neuron_data->last_spike_time_of_each_neuron[idx] <= (current_time_in_seconds + g*timestep)) || (!active[idx])){
               int rate_index = (total_number_of_input_neurons * current_stimulus_index) + idx;
               float rate = d_rates[rate_index];
               float random_float = curand_uniform(&d_states[t_idx]);
@@ -123,9 +124,6 @@ namespace Backend {
                 active[idx] = true;
               }
             } 
-            else {
-              in_neuron_data->neuron_spike_time_bitbuffer[idx*bufsize + (bitloc / 8)] &= ~(1 << (bitloc % 8));
-            }
         } 
       idx += blockDim.x * gridDim.x;
       }

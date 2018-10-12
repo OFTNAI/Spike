@@ -44,6 +44,11 @@ void PoissonInputSpikingNeurons::prepare_backend_early() {
   InputSpikingNeurons::prepare_backend_early();
   init_random_state();
 }
+  
+void PoissonInputSpikingNeurons::select_stimulus(int stimulus_index){
+  InputSpikingNeurons::select_stimulus(stimulus_index);
+  if (_backend) reset_state();
+}
 
 void PoissonInputSpikingNeurons::state_update(float current_time_in_seconds, float timestep) {
   backend()->state_update(current_time_in_seconds, timestep);

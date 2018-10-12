@@ -41,6 +41,7 @@ public:
   int AddGroup(neuron_parameters_struct * group_params) override;
 
   void state_update(float current_time_in_seconds, float timestep) override;
+  void select_stimulus(int stimulus_index) override;
 
 private:
   std::shared_ptr<::Backend::PoissonInputSpikingNeurons> _backend;
