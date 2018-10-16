@@ -23,7 +23,6 @@ namespace Backend {
     };
     struct neuron_inputs_struct {
       float* circular_input_buffer = nullptr;
-      int* bufferloc = nullptr;
       int input_buffersize = 0;
       int temporal_buffersize = 0;
     };
@@ -51,15 +50,15 @@ namespace Backend {
         float membrane_voltage,
         float current_time_in_seconds,
         float timestep,
-        int timestep_grouping,
         int idx,
         int g);
     typedef void (*synaptic_activation_kernel)(
-      spiking_synapses_data_struct* synaptic_data,
-      spiking_neurons_data_struct* neuron_data,
-      int timestep_group_index,
-      int preneuron_idx,
-      bool is_input);
+        spiking_synapses_data_struct* synaptic_data,
+        spiking_neurons_data_struct* neuron_data,
+        int timestep_group_index,
+        int preneuron_idx,
+        int timestep_index,
+        bool is_input);
     class SpikingSynapses : public virtual ::Backend::CUDA::Synapses,
                             public virtual ::Backend::SpikingSynapses {
     public:
@@ -108,7 +107,6 @@ namespace Backend {
       float current_membrane_voltage,
       float current_time_in_seconds,
       float timestep,
-      int timestep_grouping,
       int idx,
       int g);
 
@@ -117,6 +115,7 @@ namespace Backend {
       spiking_neurons_data_struct* neuron_data,
       int timestep_group_index,
       int preneuron_idx,
+      int timestep_index,
       bool is_input);
     
     __global__ void activate_synapses(

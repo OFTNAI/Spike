@@ -105,24 +105,24 @@ namespace Backend {
         float current_membrane_voltage,
         float current_time_in_seconds,
         float timestep,
-        int timestep_grouping,
         int idx,
         int g){
+      
       conductance_spiking_synapses_data_struct* synaptic_data = (conductance_spiking_synapses_data_struct*) in_synaptic_data;
         
-      int bufferloc = ((synaptic_data->neuron_inputs.bufferloc[0] + g) % synaptic_data->neuron_inputs.temporal_buffersize)*synaptic_data->neuron_inputs.input_buffersize;
-
+      int bufferloc = (((int)roundf(current_time_in_seconds / timestep) + g) % synaptic_data->neuron_inputs.temporal_buffersize)*synaptic_data->neuron_inputs.input_buffersize;
+        
       float total_current = 0.0f;
       for (int syn_label = 0; syn_label < synaptic_data->num_syn_labels; syn_label++){
         float decay_factor = synaptic_data->decay_factors_g[syn_label];
         float reversal_value = synaptic_data->reversal_potentials_Vhat[syn_label];
         float synaptic_conductance_g = synaptic_data->neuron_wise_conductance_trace[syn_label + idx*synaptic_data->num_syn_labels];
         // Update the synaptic conductance
-        synaptic_conductance_g *= decay_factor;
-        synaptic_conductance_g += synaptic_data->neuron_inputs.circular_input_buffer[bufferloc + syn_label + idx*synaptic_data->num_syn_labels];
+        synaptic_conductance_g = decay_factor*synaptic_conductance_g + synaptic_data->neuron_inputs.circular_input_buffer[bufferloc + syn_label + idx*synaptic_data->num_syn_labels];
         // Reset the conductance update
         synaptic_data->neuron_inputs.circular_input_buffer[bufferloc + syn_label + idx*synaptic_data->num_syn_labels] = 0.0f;
         total_current += synaptic_conductance_g*(reversal_value - current_membrane_voltage);
+    
         synaptic_data->neuron_wise_conductance_trace[syn_label + idx*synaptic_data->num_syn_labels] = synaptic_conductance_g;
     
       }

@@ -32,7 +32,6 @@ namespace Backend {
       //CudaSafeCall(cudaMemset(num_active_synapses, 0, sizeof(int)));
       CudaSafeCall(cudaMemset(num_activated_neurons, 0, 2*sizeof(int)));
       CudaSafeCall(cudaMemset(neuron_inputs.circular_input_buffer, 0.0f, sizeof(float)*neuron_inputs.temporal_buffersize*neuron_inputs.input_buffersize));
-      CudaSafeCall(cudaMemset(neuron_inputs.bufferloc, 0, sizeof(int)));
     }
 
     void SpikingSynapses::copy_weights_to_host() {
@@ -100,7 +99,6 @@ namespace Backend {
         sizeof(synaptic_activation_kernel)));
 
       CudaSafeCall(cudaMalloc((void **)&neuron_inputs.circular_input_buffer, sizeof(float)*neuron_inputs.temporal_buffersize*neuron_inputs.input_buffersize));
-      CudaSafeCall(cudaMalloc((void **)&neuron_inputs.bufferloc, sizeof(int)));
     }
 
     void SpikingSynapses::copy_constants_and_initial_efficacies_to_device() {
@@ -127,7 +125,6 @@ namespace Backend {
       
       // Calculate buffer location
       int bufferloc = (int)(std::round(current_time_in_seconds / timestep)) % buffersize;
-      //synaptic_data->neuron_inputs = neuron_inputs;
 
 
       ::Backend::CUDA::SpikingNeurons* neurons_backend =
@@ -137,17 +134,6 @@ namespace Backend {
         dynamic_cast<::Backend::CUDA::SpikingNeurons*>(input_neurons->backend());
       assert(input_neurons_backend);
 
-      /*
-      CudaSafeCall(cudaMemcpy(
-          &h_num_active_synapses,
-          num_active_synapses,
-          sizeof(int), cudaMemcpyDeviceToHost));
-      int blocks_per_grid = ((h_num_active_synapses / threads_per_block.x) + 1);
-      if (blocks_per_grid > max_num_blocks_per_grid) blocks_per_grid = max_num_blocks_per_grid;
-      */
-      //activate_synapses<<<number_of_synapse_blocks_per_grid, threads_per_block>>>(
-      //int max_efferents = max(neurons_backend->frontend()->max_num_efferent_synapses, input_neurons_backend->frontend()->max_num_efferent_synapses);
-      //activate_synapses<<<((max_efferents / threads_per_block.x) + 1), threads_per_block>>>(
       activate_synapses<<<neurons_backend->number_of_neuron_blocks_per_grid, threads_per_block>>>(
           d_synaptic_data,
           neurons_backend->d_neuron_data,
@@ -158,8 +144,6 @@ namespace Backend {
           ((int)roundf(current_time_in_seconds / timestep)),
           frontend()->model->timestep_grouping);
       CudaCheckError();
-      //CudaSafeCall(cudaMemset(num_active_synapses, 0, sizeof(int)));
-      //CudaSafeCall(cudaMemset(num_activated_neurons, 0, sizeof(int)));
       }
       
     }
@@ -169,13 +153,14 @@ namespace Backend {
       spiking_neurons_data_struct* neuron_data,
       int timestep_group_index,
       int preneuron_idx,
+      int timestep_index,
       bool is_input)
     {
+      int pos = atomicAdd(&synaptic_data->num_activated_neurons[timestep_index % 2], 1);
       int synapse_count = neuron_data->per_neuron_efferent_synapse_count[preneuron_idx];
-      atomicMax(synaptic_data->num_active_synapses, synapse_count);
-      int pos = atomicAdd(synaptic_data->num_activated_neurons, 1);
+      int synapse_start = neuron_data->per_neuron_efferent_synapse_start[preneuron_idx];
       synaptic_data->active_synapse_counts[pos] = synapse_count;
-      synaptic_data->active_presynaptic_neuron_indices[pos] = CORRECTED_PRESYNAPTIC_ID(preneuron_idx, is_input);
+      synaptic_data->active_synapse_starts[pos] = synapse_start;
       synaptic_data->group_indices[pos] = timestep_group_index;
     };
       
@@ -192,7 +177,6 @@ namespace Backend {
     {
       int indx = threadIdx.x + blockIdx.x * blockDim.x;
       if (indx == 0){
-        synaptic_data->neuron_inputs.bufferloc[0] = (bufferloc + timestep_grouping) % synaptic_data->neuron_inputs.temporal_buffersize;
         synaptic_data->num_activated_neurons[((timestep_index / timestep_grouping) + 1) % 2] = 0;
       }
       while (indx < (synaptic_data->num_active_synapses[0]*synaptic_data->num_activated_neurons[((timestep_index / timestep_grouping) % 2)])) {
@@ -218,15 +202,14 @@ namespace Backend {
     }
 
       __device__ float spiking_current_injection_kernel(
-  spiking_synapses_data_struct* synaptic_data,
-  spiking_neurons_data_struct* neuron_data,
-  float current_membrane_voltage,
-  float current_time_in_seconds,
-  float timestep,
-  float multiplication_to_volts,
-  int timestep_grouping,
-  int idx,
-  int g){
+        spiking_synapses_data_struct* synaptic_data,
+        spiking_neurons_data_struct* neuron_data,
+        float current_membrane_voltage,
+        float current_time_in_seconds,
+        float timestep,
+        float multiplication_to_volts,
+        int idx,
+        int g){
         return 0.0f;
       };
 

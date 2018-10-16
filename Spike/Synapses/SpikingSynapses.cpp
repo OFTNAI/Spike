@@ -97,18 +97,6 @@ int SpikingSynapses::AddGroup(int presynaptic_group_id,
 #endif
   }
   
-  if (delay_range_in_timesteps[0] > maximum_axonal_delay_in_timesteps){
-    maximum_axonal_delay_in_timesteps = delay_range_in_timesteps[0];
-  } else if (delay_range_in_timesteps[1] > maximum_axonal_delay_in_timesteps){
-    maximum_axonal_delay_in_timesteps = delay_range_in_timesteps[1];
-  }
-  if (delay_range_in_timesteps[0] < minimum_axonal_delay_in_timesteps){
-    minimum_axonal_delay_in_timesteps = delay_range_in_timesteps[0];
-  } else if (delay_range_in_timesteps[1] < minimum_axonal_delay_in_timesteps){
-    minimum_axonal_delay_in_timesteps = delay_range_in_timesteps[1];
-  }
-
-
   for (int i = (total_number_of_synapses - temp_number_of_synapses_in_last_group); i < total_number_of_synapses; i++){
     // Setup Delays
     float delayval = delay_range_in_timesteps[0];
@@ -123,6 +111,10 @@ int SpikingSynapses::AddGroup(int presynaptic_group_id,
         print_message_and_exit("PAIRWISE CONNECTION ISSUE: Delay vector length not as expected. Should be the same length as pre/post vecs.");
       }
     }
+    
+    // Ensure max/min delays are set correctly
+    if (delays[i] > maximum_axonal_delay_in_timesteps) maximum_axonal_delay_in_timesteps = delays[i];
+    if (delays[i] < minimum_axonal_delay_in_timesteps) minimum_axonal_delay_in_timesteps = delays[i];
   }
   if (neurons->total_number_of_neurons > neuron_pop_size)
     neuron_pop_size = neurons->total_number_of_neurons; 

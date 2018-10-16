@@ -58,23 +58,22 @@ namespace Backend {
         float current_membrane_voltage,
         float current_time_in_seconds,
         float timestep,
-        int timestep_grouping,
         int idx,
         int g){
       
       spiking_synapses_data_struct* synaptic_data = (spiking_synapses_data_struct*) in_synaptic_data;
         
-      int total_number_of_neurons =  neuron_data->total_number_of_neurons;
+      int bufferloc = (((int)roundf(current_time_in_seconds / timestep) + g) % synaptic_data->neuron_inputs.temporal_buffersize)*synaptic_data->neuron_inputs.input_buffersize;
+    
       float total_current = 0.0f;
       for (int syn_label = 0; syn_label < synaptic_data->num_syn_labels; syn_label++){
-        int bufferloc = ((synaptic_data->neuron_inputs.bufferloc[0] + g) % synaptic_data->neuron_inputs.temporal_buffersize)*synaptic_data->neuron_inputs.input_buffersize;
+        total_current += synaptic_data->neuron_inputs.circular_input_buffer[bufferloc + syn_label + idx*synaptic_data->num_syn_labels];
         
-        total_current += synaptic_data->neuron_inputs.circular_input_buffer[bufferloc + syn_label*total_number_of_neurons + idx];
-        synaptic_data->neuron_inputs.circular_input_buffer[bufferloc + syn_label*total_number_of_neurons + idx] = 0.0f;
+        synaptic_data->neuron_inputs.circular_input_buffer[bufferloc + syn_label + idx*synaptic_data->num_syn_labels] = 0.0f;
         
       }
-
-
+    
+    
       // This is already in volts, no conversion necessary
       return total_current;
     }
