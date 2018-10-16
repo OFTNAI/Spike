@@ -46,7 +46,6 @@ namespace Backend {
         float current_membrane_voltage,
         float current_time_in_seconds,
         float timestep,
-        int timestep_grouping,
         int idx,
         int g);
   }

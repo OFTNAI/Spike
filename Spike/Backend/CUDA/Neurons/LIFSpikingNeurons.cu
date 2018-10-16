@@ -123,7 +123,6 @@ namespace Backend {
                   membrane_potential_Vi,
                   current_time_in_seconds,
                   timestep,
-                  timestep_grouping,
                   idx,
                   g);
           #else
@@ -137,7 +136,6 @@ namespace Backend {
                   membrane_potential_Vi,
                   current_time_in_seconds,
                   timestep,
-                  timestep_grouping,
                   idx,
                   g);
                 break;
@@ -149,7 +147,6 @@ namespace Backend {
                   membrane_potential_Vi,
                   current_time_in_seconds,
                   timestep,
-                  timestep_grouping,
                   idx,
                   g);
                 break;
@@ -161,7 +158,6 @@ namespace Backend {
                   membrane_potential_Vi,
                   current_time_in_seconds,
                   timestep,
-                  timestep_grouping,
                   idx,
                   g);
                 break;
@@ -190,8 +186,6 @@ namespace Backend {
                   idx,
                   timestep_index / timestep_grouping,
                   false);
-              //break;
-              continue;
             }
           }
       }
