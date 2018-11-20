@@ -239,8 +239,8 @@ int Synapses::AddGroup(int presynaptic_group_id,
             Synapses::increment_number_of_synapses(total_number_of_unique_synapses*max_number_of_connections_per_pair);
             for (int i=0; i < total_number_of_unique_synapses;i++){
               int postid = i / number_of_new_synapses_per_postsynaptic_neuron;
-              float post_fractional_centre_x = ((float)(postid % postsynaptic_group_shape[0]) / postsynaptic_group_shape[0]);
-              float post_fractional_centre_y = ((float)(postid / postsynaptic_group_shape[1]) / postsynaptic_group_shape[1]);
+              float post_fractional_centre_x = ((float)(postid % postsynaptic_group_shape[0]) / (float)postsynaptic_group_shape[0]);
+              float post_fractional_centre_y = ((float)((float)postid / (float)postsynaptic_group_shape[1]) / (float)postsynaptic_group_shape[1]);
               int pre_centre_x = presynaptic_group_shape[0] * post_fractional_centre_x;
               int pre_centre_y = presynaptic_group_shape[1] * post_fractional_centre_y;
 
