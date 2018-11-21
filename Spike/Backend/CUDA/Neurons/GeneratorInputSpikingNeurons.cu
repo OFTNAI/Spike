@@ -118,8 +118,8 @@ namespace Backend {
                 synaptic_data,
                 neuron_data,
                 g,
-                idx,
-                timestep_index,
+                d_neuron_ids_for_stimulus[idx],
+                timestep_index / timestep_grouping,
                 true);
           }
         }
