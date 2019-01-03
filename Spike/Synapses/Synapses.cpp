@@ -226,6 +226,28 @@ int Synapses::AddGroup(int presynaptic_group_id,
             }
             break;
           }
+          case CONNECTIVITY_TYPE_RANDOM_2:
+          {
+
+            int number_of_neurons_in_start_group = preend - prestart;
+            int number_of_neurons_in_post_group = postend - poststart;
+            float first_part = (float)number_of_neurons_in_start_group * synapse_params->random_connectivity_probability;
+            int total_number_of_synapses_to_create = floor(first_part * float(number_of_neurons_in_post_group));
+            Synapses::increment_number_of_synapses(total_number_of_synapses_to_create);
+
+            for (int new_synapse_index = original_number_of_synapses; new_synapse_index < original_number_of_synapses + total_number_of_synapses_to_create; new_synapse_index++) {
+
+              float prob1 = ((float)rand() / (RAND_MAX));
+              float prob2 = ((float)rand() / (RAND_MAX));
+              int pre_neuron_index = prestart + floor((prob1 * (float)number_of_neurons_in_start_group));
+              int post_neuron_index = poststart + floor((prob2 * (float)number_of_neurons_in_post_group));
+
+              presynaptic_neuron_indices[new_synapse_index] = CORRECTED_PRESYNAPTIC_ID(pre_neuron_index, presynaptic_group_is_input);
+              postsynaptic_neuron_indices[new_synapse_index] = post_neuron_index;
+
+            }
+            break;
+          }
     
         case CONNECTIVITY_TYPE_GAUSSIAN_SAMPLE:
           {

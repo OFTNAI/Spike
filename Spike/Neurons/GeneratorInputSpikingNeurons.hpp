@@ -24,7 +24,7 @@ public:
   SPIKE_ADD_BACKEND_GETSET(GeneratorInputSpikingNeurons, InputSpikingNeurons);
   
   // Variables
-  int length_of_longest_stimulus;
+  int length_of_longest_stimulus = 0;
   float stimulus_onset_adjustment = 0.0f;
 
   // Host Pointers
