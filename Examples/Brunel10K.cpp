@@ -243,17 +243,6 @@ int main (int argc, char *argv[]){
       INH_NEURON_PARAMS, INH_NEURON_PARAMS,
       INH_OUT_SYN_PARAMS, sparseness,
       BenchModel);
-  connect_with_sparsity(
-      input_layer_ID, EXCITATORY_NEURONS[0],
-      input_neuron_params, EXC_NEURON_PARAMS,
-      INPUT_SYN_PARAMS, sparseness,
-      BenchModel);
-  connect_with_sparsity(
-      input_layer_ID, INHIBITORY_NEURONS[0],
-      input_neuron_params, INH_NEURON_PARAMS,
-      INPUT_SYN_PARAMS, sparseness,
-      BenchModel);
-
 
     //simoptions->recording_electrodes_options->collect_neuron_spikes_optional_parameters->human_readable_storage = true;
     //simoptions->recording_electrodes_options->network_state_archive_recording_electrodes_bool = true;
