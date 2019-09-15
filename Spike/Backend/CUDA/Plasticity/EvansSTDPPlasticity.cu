@@ -32,8 +32,8 @@ namespace Backend {
       // RUN AFTER NETWORK HAS BEEN STARTED
       // (eg, see prepare_backend() call at end of
       //  FourLayerVisionSpikingModel::finalise_model)
-      CudaSafeCall(cudaMalloc((void **)&recent_postsynaptic_activities_D, sizeof(float)*frontend()->model->spiking_neurons->total_number_of_neurons));
-      CudaSafeCall(cudaMalloc((void **)&recent_presynaptic_activities_C, sizeof(float)*frontend()->model->spiking_synapses->total_number_of_synapses));
+      CudaSafeCall(cudaMalloc((void **)&recent_postsynaptic_activities_D, sizeof(float)*total_number_of_plastic_synapses));
+      CudaSafeCall(cudaMalloc((void **)&recent_presynaptic_activities_C, sizeof(float)*total_number_of_plastic_synapses));
 
     }
 
