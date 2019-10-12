@@ -121,8 +121,8 @@ int main (int argc, char *argv[]){
   EXC_NEURON_PARAMS->after_spike_reset_potential_vreset = 0.0f*pow(10.0, -3);
   INH_NEURON_PARAMS->after_spike_reset_potential_vreset = 0.0f*pow(10.0, -3);
 
-  EXC_NEURON_PARAMS->absolute_refractory_period = 0.0f*pow(10, -3);  // ms
-  INH_NEURON_PARAMS->absolute_refractory_period = 0.0f*pow(10, -3);  // ms
+  EXC_NEURON_PARAMS->absolute_refractory_period = 2.0f*pow(10, -3);  // ms
+  INH_NEURON_PARAMS->absolute_refractory_period = 2.0f*pow(10, -3);  // ms
 
   EXC_NEURON_PARAMS->threshold_for_action_potential_spike = 20.0f*pow(10.0, -3);
   INH_NEURON_PARAMS->threshold_for_action_potential_spike = 20.0f*pow(10.0, -3);
