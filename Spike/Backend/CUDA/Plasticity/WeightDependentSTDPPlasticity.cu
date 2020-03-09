@@ -137,6 +137,7 @@ namespace Backend {
           temp_post_trace += (post_spike_g > pre_spike_g) ? -stdp_vars.a_minus*expf(-((timestep_grouping - post_spike_g)*timestep) / post_decay): 0.0f;
           temp_post_trace *= (1.0f / (expf(-(timestep_grouping - pre_spike_g)*timestep / post_decay))); 
           syn_update_val -= stdp_vars.lambda * stdp_vars.alpha * old_synaptic_weight * temp_post_trace;
+          syn_update_val -= stdp_vars.lambda * stdp_vars.alpha_decay * stdp_vars.w_max; // 0.035
         }
         // OnPost Weight Update
         if (post_spike_g >= 0){

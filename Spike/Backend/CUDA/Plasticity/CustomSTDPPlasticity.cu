@@ -108,6 +108,19 @@ namespace Backend {
           stdp_post_memory_trace_val *= post_decay;
           stdp_pre_memory_trace_val *= pre_decay;
 
+          // stdp_post_memory_trace_val -= stdp_post_memory_trace_val * post_decay * timestep;
+          // stdp_pre_memory_trace_val -= stdp_pre_memory_trace_val * pre_decay * timestep;
+          
+          // if (idx == 237094) {
+          //   printf("post_decay: %f\n", post_decay);
+          //   printf("stdp_pre_memory_trace_val: %f\n", stdp_pre_memory_trace_val);
+          // }
+
+          // stdp_post_memory_trace_val -= timestep * (stdp_post_memory_trace_val / post_decay);
+          // stdp_pre_memory_trace_val -= timestep * (stdp_pre_memory_trace_val / pre_decay);
+
+          
+
           // Bit Indexing to detect spikes
           int postbitloc = ((int)roundf(current_time_in_seconds / timestep) + g) % (bufsize*8);
           int prebitloc = postbitloc - d_syndelays[idx];
@@ -117,6 +130,7 @@ namespace Backend {
           // OnPre Trace Update
           if (pre_bitbuffer[corr_preid*bufsize + (prebitloc / 8)] & (1 << (prebitloc % 8))){
             stdp_pre_memory_trace_val += stdp_vars.a_plus;
+
             if (stdp_vars.nearest_spike_only)
               stdp_pre_memory_trace_val = stdp_vars.a_plus;
           }
@@ -131,18 +145,36 @@ namespace Backend {
           old_synaptic_weight = new_synaptic_weight;
           // OnPre Weight Update
           if (pre_bitbuffer[corr_preid*bufsize + (prebitloc / 8)] & (1 << (prebitloc % 8))){
-            syn_update_val -= stdp_vars.learning_rate * (old_synaptic_weight / stdp_vars.w_max) * stdp_post_memory_trace_val + stdp_vars.learning_rate*stdp_vars.a_star;
+            // syn_update_val -= stdp_vars.learning_rate * (old_synaptic_weight / stdp_vars.w_max) * stdp_post_memory_trace_val + stdp_vars.learning_rate*stdp_vars.a_star;
+            // syn_update_val -= stdp_vars.learning_rate * old_synaptic_weight * stdp_post_memory_trace_val + stdp_vars.learning_rate * stdp_vars.a_star;
+            syn_update_val -= stdp_vars.learning_rate * old_synaptic_weight * stdp_post_memory_trace_val + stdp_vars.learning_rate * stdp_vars.a_star * stdp_vars.w_max;
           }
           // OnPost Weight Update
           if (neuron_data->neuron_spike_time_bitbuffer[postid*bufsize + (postbitloc / 8)] & (1 << (postbitloc % 8))){
+
+            //JI Including readding weight decay in case of pre case
             syn_update_val += stdp_vars.learning_rate * stdp_pre_memory_trace_val;
+            if (stdp_pre_memory_trace_val > 0.1) {
+              syn_update_val += stdp_vars.learning_rate * stdp_vars.a_star * stdp_vars.w_max;
+            }
+
+            // Were using this before
+            // syn_update_val += stdp_vars.learning_rate * stdp_pre_memory_trace_val;
+
+            // This was previously commented out
+            // syn_update_val += stdp_vars.learning_rate * (stdp_vars.w_max - old_synaptic_weight) * stdp_pre_memory_trace_val;
+            
           }
+
 
           new_synaptic_weight = old_synaptic_weight + syn_update_val;
           if (new_synaptic_weight < 0.0f)
             new_synaptic_weight = 0.0f;
+
+          if (new_synaptic_weight > stdp_vars.w_max)
+            new_synaptic_weight = stdp_vars.w_max;
         }
-        
+
         // Weight Update
         d_synaptic_efficacies_or_weights[idx] = new_synaptic_weight;
 
